@@ -6,7 +6,8 @@
  */
 
 #include <faiss/Index.h>
-#include <faiss/IndexSVSUncompressed.h>
+#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSLVQ4x4.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 
@@ -16,9 +17,10 @@ namespace {
 pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
-TEST(SVSIO, WriteAndReadIndex) {
-    const faiss::idx_t d = 64;
-    faiss::IndexSVSUncompressed index(d);
+template <typename T>
+void write_and_read_index() {
+    constexpr faiss::idx_t d = 64;
+    T index(d);
     std::vector<float> xb(d * 100);
     std::mt19937 gen(123);
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -34,10 +36,9 @@ TEST(SVSIO, WriteAndReadIndex) {
     ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
 
     // Deserialize
-    faiss::IndexSVSUncompressed* loaded = nullptr;
+    T* loaded = nullptr;
     ASSERT_NO_THROW({
-        loaded = dynamic_cast<faiss::IndexSVSUncompressed*>(
-                faiss::read_index(filename.c_str()));
+        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
     });
 
     // Basic checks
@@ -54,8 +55,13 @@ TEST(SVSIO, WriteAndReadIndex) {
     EXPECT_EQ(loaded->prune_to, index.prune_to);
     EXPECT_EQ(loaded->use_full_search_history, index.use_full_search_history);
 
-    // Question: Save/load of SVS indices is tested within SVS. Do we still want
-    // to validate `loaded->impl`?
-
     delete loaded;
+}
+
+TEST(SVSIO, WriteAndReadIndexIndexSVS) {
+    write_and_read_index<faiss::IndexSVS>();
+}
+
+TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x4) {
+    write_and_read_index<faiss::IndexSVSLVQ4x4>();
 }

@@ -8,7 +8,11 @@
 #pragma once
 
 #include <numeric>
+#include <utility>
 #include <vector>
+
+#include <filesystem>
+#include <sstream>
 
 #include "faiss/Index.h"
 #include "faiss/impl/FaissAssert.h"
@@ -18,6 +22,21 @@ class DynamicVamana;
 }
 
 namespace faiss {
+
+namespace detail {
+struct SVSTempDirectory {
+    std::filesystem::path root;
+    std::filesystem::path config;
+    std::filesystem::path graph;
+    std::filesystem::path data;
+
+    SVSTempDirectory();
+    ~SVSTempDirectory();
+
+    void write_files_to_stream(std::ostream& out) const;
+    void write_stream_to_files(std::istream& in) const;
+};
+} // namespace detail
 
 struct IndexSVS : Index {
     // sequential labels
@@ -54,13 +73,13 @@ struct IndexSVS : Index {
 
     /* Serialization and deserialization helpers */
     void serialize_impl(std::ostream& out) const;
-    void deserialize_impl(std::istream& in);
+    virtual void deserialize_impl(std::istream& in);
 
     /* The actual SVS implementation */
     svs::DynamicVamana* impl{nullptr};
 
     /* Initializes the implementation, using the provided data */
-    void init_impl(idx_t n, const float* x);
+    virtual void init_impl(idx_t n, const float* x);
 };
 
 } // namespace faiss

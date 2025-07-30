@@ -62,4 +62,34 @@ void IndexSVSLVQ4x4::init_impl(idx_t n, const float* x) {
     }
 }
 
+void IndexSVSLVQ4x4::deserialize_impl(std::istream& in) {
+    FAISS_THROW_IF_MSG(
+            impl, "Cannot deserialize: SVS index already initialized.");
+
+    // Write stream to files that can be read by DynamicVamana::assemble()
+    detail::SVSTempDirectory tmp;
+    tmp.write_stream_to_files(in);
+
+    switch (metric_type) {
+        case METRIC_INNER_PRODUCT:
+            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
+                    tmp.config.string(),
+                    svs::GraphLoader(tmp.graph.string()),
+                    svs::lib::load_from_disk<storage_type>(tmp.data.string()),
+                    svs::distance::DistanceIP(),
+                    num_threads));
+            break;
+        case METRIC_L2:
+            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
+                    tmp.config.string(),
+                    svs::GraphLoader(tmp.graph.string()),
+                    svs::lib::load_from_disk<storage_type>(tmp.data.string()),
+                    svs::distance::DistanceL2(),
+                    num_threads));
+            break;
+        default:
+            FAISS_ASSERT(!"not supported SVS distance");
+    }
+}
+
 } // namespace faiss

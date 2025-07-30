@@ -46,6 +46,8 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSFlat.h>
+#include <faiss/IndexSVSLVQ4x4.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1245,7 +1247,8 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = ivrq;
     } else if (h == fourcc("ISVD") || h == fourcc("IS44")) {
         // SVS dynamic vamana
-        auto svs = new IndexSVS();
+        IndexSVS* svs;
+        svs = h == fourcc("ISVD") ? new IndexSVS() : new IndexSVSLVQ4x4();
 
         // Read class properties
         READ1(svs->d);
@@ -1273,16 +1276,14 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
         auto svs = new IndexSVSFlat();
+    } else {
+        FAISS_THROW_FMT(
+                "Index type 0x%08x (\"%s\") not recognized",
+                h,
+                fourcc_inv_printable(h).c_str());
+        idx = nullptr;
     }
-}
-else {
-    FAISS_THROW_FMT(
-            "Index type 0x%08x (\"%s\") not recognized",
-            h,
-            fourcc_inv_printable(h).c_str());
-    idx = nullptr;
-}
-return idx;
+    return idx;
 }
 
 Index* read_index(FILE* f, int io_flags) {

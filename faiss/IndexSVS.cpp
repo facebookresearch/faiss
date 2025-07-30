@@ -12,39 +12,29 @@
 #include "svs/core/data.h"
 #include "svs/orchestrators/dynamic_vamana.h"
 
-#include <filesystem>
-#include <sstream>
-
 namespace faiss {
 
 namespace detail {
-struct SVSTempDirectory {
-    std::filesystem::path root;
-    std::filesystem::path config;
-    std::filesystem::path graph;
-    std::filesystem::path data;
+SVSTempDirectory::SVSTempDirectory() {
+    root = std::filesystem::temp_directory_path() /
+            ("faiss_svs_" + std::to_string(std::rand()));
+    config = root / "config";
+    graph = root / "graph";
+    data = root / "data";
 
-    SVSTempDirectory() {
-        root = std::filesystem::temp_directory_path() /
-                ("faiss_svs_" + std::to_string(std::rand()));
-        config = root / "config";
-        graph = root / "graph";
-        data = root / "data";
+    std::filesystem::create_directories(config);
+    std::filesystem::create_directories(graph);
+    std::filesystem::create_directories(data);
+}
 
-        std::filesystem::create_directories(config);
-        std::filesystem::create_directories(graph);
-        std::filesystem::create_directories(data);
-    }
+SVSTempDirectory::~SVSTempDirectory() {
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec); // best-effort cleanup
+}
 
-    ~SVSTempDirectory() {
-        std::error_code ec;
-        std::filesystem::remove_all(root, ec); // best-effort cleanup
-    }
-};
-
-void write_files_to_stream(const SVSTempDirectory& tmp, std::ostream& out) {
-    for (const auto& dir : {tmp.config, tmp.graph, tmp.data}) {
-        const std::string dir_name = dir.filename().string(); // "config", etc.
+void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
+    for (const auto& dir : {config, graph, data}) {
+        const std::string dir_name = dir.filename().string();
         for (const auto& entry : std::filesystem::directory_iterator(dir)) {
             const std::string filename = entry.path().filename().string();
 
@@ -72,7 +62,7 @@ void write_files_to_stream(const SVSTempDirectory& tmp, std::ostream& out) {
     }
 }
 
-void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
+void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
     while (in && in.peek() != EOF) {
         uint64_t dir_len, file_len, file_size;
 
@@ -90,11 +80,11 @@ void write_stream_to_files(std::istream& in, const SVSTempDirectory& tmp) {
 
         std::filesystem::path base;
         if (dir_name == "config") {
-            base = tmp.config;
+            base = config;
         } else if (dir_name == "graph") {
-            base = tmp.graph;
+            base = graph;
         } else if (dir_name == "data") {
-            base = tmp.data;
+            base = data;
         } else {
             FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
         }
@@ -227,7 +217,7 @@ void IndexSVS::serialize_impl(std::ostream& out) const {
     // Write index to temporary files and concatenate the contents
     detail::SVSTempDirectory tmp;
     impl->save(tmp.config, tmp.graph, tmp.data);
-    detail::write_files_to_stream(tmp, out);
+    tmp.write_files_to_stream(out);
 }
 
 void IndexSVS::deserialize_impl(std::istream& in) {
@@ -236,7 +226,7 @@ void IndexSVS::deserialize_impl(std::istream& in) {
 
     // Write stream to files that can be read by DynamicVamana::assemble()
     detail::SVSTempDirectory tmp;
-    detail::write_stream_to_files(in, tmp);
+    tmp.write_stream_to_files(in);
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
