@@ -319,9 +319,11 @@ to test the GPU code.
 
 ## Build for Web browsers
 
+This content was heavily referenced from this post: **[Fortran on WebAssembly](https://gws.phd/posts/fortran_wasm/)**.
+
 ### Setup Emscripten
 
-Refer to [Download Emscripten](https://emscripten.org/docs/getting_started/downloads.html) to setup emscripten.
+Refer to '[Download Emscripten](https://emscripten.org/docs/getting_started/downloads.html)' to setup emscripten.
 
 ### Build `flang` from LLVM for wasm target
 
@@ -387,15 +389,15 @@ cp build-wasm
 
 ```bash
 emcmake cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DFAISS_OPT_LEVEL=generic \
-    -DFAISS_ENABLE_GPU=OFF \
-    -DFAISS_ENABLE_PYTHON=OFF \
-    -DFAISS_ENABLE_C_API=OFF \
-    -DFAISS_ENABLE_EXTRAS=OFF \
-    -DBUILD_TESTING=OFF
+  -DCMAKE_BUILD_TYPE=Release \
+  -DFAISS_OPT_LEVEL=generic \
+  -DFAISS_ENABLE_GPU=OFF \
+  -DFAISS_ENABLE_PYTHON=OFF \
+  -DFAISS_ENABLE_C_API=OFF \
+  -DFAISS_ENABLE_EXTRAS=OFF \
+  -DBUILD_TESTING=OFF
 ```
 
 ```bash
-emmake make faiss -j12  # build faiss/libfaiss.a
+emmake make faiss -j${nproc}  # build faiss/libfaiss.a
 ```
