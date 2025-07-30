@@ -1257,9 +1257,7 @@ Index* read_index(IOReader* f, int io_flags) {
             svs = new IndexSVS(); // uncompressed
         }
 
-        // Read class properties
-        READ1(svs->d);
-        READ1(svs->metric_type);
+        read_index_header(svs, f);
         READ1(svs->num_threads);
         READ1(svs->graph_max_degree);
         READ1(svs->alpha);
@@ -1283,6 +1281,8 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
         auto svs = new IndexSVSFlat();
+
+        idx = svs;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

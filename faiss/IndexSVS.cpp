@@ -136,6 +136,7 @@ void IndexSVS::add(idx_t n, const float* x) {
 void IndexSVS::reset() {
     if (impl) {
         delete impl;
+        impl = nullptr;
     }
     ntotal = 0;
 }
@@ -147,6 +148,7 @@ void IndexSVS::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT(impl);
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 

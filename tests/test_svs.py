@@ -181,7 +181,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         # Verify all parameters are set correctly
         self.assertEqual(index.num_threads, 4)
         self.assertEqual(index.graph_max_degree, 32)
-        self.assertEqual(index.alpha, 1.5)
+        self.assertAlmostEqual(index.alpha, 1.5, places=6)
         self.assertEqual(index.search_window_size, 20)
         self.assertEqual(index.search_buffer_capacity, 25)
         self.assertEqual(index.construction_window_size, 80)
@@ -196,7 +196,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         # Verify default values match C++ header
         self.assertEqual(index.num_threads, 1)
         self.assertEqual(index.graph_max_degree, 64)
-        self.assertEqual(index.alpha, 1.2)
+        self.assertAlmostEqual(index.alpha, 1.2, places=6)
         self.assertEqual(index.search_window_size, 10)
         self.assertEqual(index.search_buffer_capacity, 10)
         self.assertEqual(index.construction_window_size, 40)
@@ -231,7 +231,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         self.assertIsInstance(loaded, self.target_class)
         self.assertEqual(loaded.num_threads, 8)
         self.assertEqual(loaded.graph_max_degree, 48)
-        self.assertEqual(loaded.alpha, 1.8)
+        self.assertAlmostEqual(loaded.alpha, 1.8, places=6)
         self.assertEqual(loaded.search_window_size, 15)
         self.assertEqual(loaded.search_buffer_capacity, 18)
         self.assertEqual(loaded.construction_window_size, 60)

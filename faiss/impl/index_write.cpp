@@ -896,9 +896,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             h = fourcc("ISVD"); // uncompressed
         }
         WRITE1(h);
-
-        WRITE1(svs->d);
-        WRITE1(svs->metric_type);
+        write_index_header(idx, f);
         WRITE1(svs->num_threads);
         WRITE1(svs->graph_max_degree);
         WRITE1(svs->alpha);
@@ -919,6 +917,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITEANDCHECK(blob.data(), blob_size);
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
+        uint32_t h = fourcc("ISVF");
+        WRITE1(h);
+        write_index_header(idx, f);
+        WRITE1(svs->num_threads);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }

@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/Index.h>
 #include <faiss/IndexSVSFlat.h>
-#include "faiss/Index.h"
 
-#include "faiss/impl/FaissAssert.h"
-#include "svs/core/data.h"
-#include "svs/core/query_result.h"
-#include "svs/orchestrators/exhaustive.h"
+#include <faiss/impl/FaissAssert.h>
+#include <svs/core/data.h>
+#include <svs/core/query_result.h>
+#include <svs/orchestrators/exhaustive.h>
 
 namespace faiss {
 
@@ -28,8 +28,10 @@ void IndexSVSFlat::add(idx_t n, const float* x) {
 }
 
 void IndexSVSFlat::reset() {
-    delete impl;
-    impl = nullptr;
+    if (impl) {
+        delete impl;
+        impl = nullptr;
+    }
 }
 
 IndexSVSFlat::~IndexSVSFlat() {}
@@ -41,6 +43,7 @@ void IndexSVSFlat::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT(impl);
     FAISS_THROW_IF_NOT(k > 0);
 
     auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
