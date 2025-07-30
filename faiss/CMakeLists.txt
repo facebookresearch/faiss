@@ -49,6 +49,7 @@ set(FAISS_SRC
   IndexShardsIVF.cpp
   IndexSVS.cpp
   IndexSVSLVQ4x4.cpp
+  IndexSVSLVQ4x8.cpp
   IndexSVSFlat.cpp
   #IndexSVSLeanVec4x4.cpp
   IndexNeuralNetCodec.cpp

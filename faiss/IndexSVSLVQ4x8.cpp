@@ -13,6 +13,4 @@ namespace faiss {
 IndexSVSLVQ4x8::IndexSVSLVQ4x8(idx_t d, MetricType metric)
         : IndexSVSLVQ4x4(d, metric) {}
 
-IndexSVSLVQ4x8::~IndexSVSLVQ4x8() {}
-
 } // namespace faiss

@@ -8,6 +8,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSLVQ4x4.h>
+#include <faiss/IndexSVSLVQ4x8.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 
@@ -64,4 +65,8 @@ TEST(SVSIO, WriteAndReadIndexIndexSVS) {
 
 TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x4) {
     write_and_read_index<faiss::IndexSVSLVQ4x4>();
+}
+
+TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x8) {
+    write_and_read_index<faiss::IndexSVSLVQ4x8>();
 }

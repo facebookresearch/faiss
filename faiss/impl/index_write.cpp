@@ -46,6 +46,7 @@
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ4x4.h>
+#include <faiss/IndexSVSLVQ4x8.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -887,12 +888,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
         uint32_t h;
 
-        if (dynamic_cast<const IndexSVSLVQ4x4*>(idx)) {
-            // LVQ4x4
-            h = fourcc("IS44");
+        if (dynamic_cast<const IndexSVSLVQ4x8*>(idx)) {
+            h = fourcc("IS48"); // LVQ4x8
+        } else if (dynamic_cast<const IndexSVSLVQ4x4*>(idx)) {
+            h = fourcc("IS44"); // LVQ4x4
         } else {
-            // dynamic vamana
-            h = fourcc("ISVD");
+            h = fourcc("ISVD"); // uncompressed
         }
         WRITE1(h);
 
