@@ -262,7 +262,7 @@ void StandardGpuResourcesImpl::setDefaultStream(
         if (it != userDefaultStreams_.end()) {
             prevStream = it->second;
         } else {
-            FAISS_ASSERT(defaultStreams_.find(device) != defaultStreams_.end());
+            FAISS_ASSERT(defaultStreams_.count(device));
             prevStream = defaultStreams_[device];
         }
 
@@ -290,7 +290,7 @@ void StandardGpuResourcesImpl::revertDefaultStream(int device) {
             // There was a user stream set that we need to synchronize against
             cudaStream_t prevStream = userDefaultStreams_[device];
 
-            FAISS_ASSERT(defaultStreams_.find(device) != defaultStreams_.end());
+            FAISS_ASSERT(defaultStreams_.count(device));
             cudaStream_t newStream = defaultStreams_[device];
 
             streamWait({newStream}, {prevStream});
@@ -331,7 +331,7 @@ void StandardGpuResourcesImpl::setLogMemoryAllocations(bool enable) {
 bool StandardGpuResourcesImpl::isInitialized(int device) const {
     // Use default streams as a marker for whether or not a certain
     // device has been initialized
-    return defaultStreams_.find(device) != defaultStreams_.end();
+    return defaultStreams_.count(device) != 0;
 }
 
 void StandardGpuResourcesImpl::initializeForDevice(int device) {
@@ -442,10 +442,10 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
             blasHandle, CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION);
 #endif
 
-    FAISS_ASSERT(allocs_.find(device) == allocs_.end());
+    FAISS_ASSERT(allocs_.count(device) == 0);
     allocs_[device] = std::unordered_map<void*, AllocRequest>();
 
-    FAISS_ASSERT(tempMemory_.find(device) == tempMemory_.end());
+    FAISS_ASSERT(tempMemory_.count(device) == 0);
     auto mem = std::make_unique<StackDeviceMemory>(
             this,
             device,

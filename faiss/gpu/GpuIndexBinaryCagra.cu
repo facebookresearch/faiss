@@ -32,6 +32,7 @@
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
 #include <cstddef>
+#include <cstdio>
 
 #include <optional>
 #include "GpuResources.h"
