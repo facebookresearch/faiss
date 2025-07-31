@@ -249,7 +249,7 @@ void IndexSVS::deserialize_impl(std::istream& in) {
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");
-    }   
+    }
 }
 
 } // namespace faiss

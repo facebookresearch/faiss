@@ -13,11 +13,7 @@
 
 namespace faiss {
 
-enum LVQLevel {
-  LVQ_4x0,
-  LVQ_4x4,
-  LVQ_4x8
-};
+enum LVQLevel { LVQ_4x0, LVQ_4x4, LVQ_4x8 };
 
 struct IndexSVSLVQ : IndexSVS {
     using blocked_alloc_type =
@@ -33,7 +29,10 @@ struct IndexSVSLVQ : IndexSVS {
             LVQDataset<4, 8, svs::Dynamic, strategy_type_4, blocked_alloc_type>;
 
     IndexSVSLVQ() = default;
-    IndexSVSLVQ(idx_t d, MetricType metric = METRIC_L2, LVQLevel lvq_level = LVQLevel::LVQ_4x4);
+    IndexSVSLVQ(
+            idx_t d,
+            MetricType metric = METRIC_L2,
+            LVQLevel lvq_level = LVQLevel::LVQ_4x4);
 
     ~IndexSVSLVQ() override = default;
 
