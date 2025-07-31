@@ -29,7 +29,7 @@ SVSTempDirectory::SVSTempDirectory() {
 
 SVSTempDirectory::~SVSTempDirectory() {
     std::error_code ec;
-    std::filesystem::remove_all(root, ec); // best-effort cleanup
+    std::filesystem::remove_all(root, ec);
 }
 
 void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
@@ -107,6 +107,7 @@ IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {
 IndexSVS::~IndexSVS() {
     if (impl) {
         delete impl;
+        impl = nullptr;
     }
 }
 
