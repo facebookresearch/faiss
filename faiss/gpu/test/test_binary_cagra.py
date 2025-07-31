@@ -26,10 +26,6 @@ import faiss
 
 from faiss.contrib import evaluation
 
-
-
-
-
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
@@ -114,7 +110,7 @@ class TestIndexBinaryIDMap(unittest.TestCase):
     def test_add_with_ids(self):
         d = 128 * 8
         k = 10
-        n = 10000
+        n = 100000
 
         res = faiss.StandardGpuResources()
 
@@ -122,25 +118,20 @@ class TestIndexBinaryIDMap(unittest.TestCase):
         index_gpu = faiss.GpuIndexBinaryCagra(res, d)
         index_idmap = faiss.IndexBinaryIDMap(index_gpu)
 
-        # Generate data with custom IDs
         xb = np.random.randint(
             low=0, high=256, size=(n, d // 8), dtype=np.uint8)
         ids = np.arange(1000000, 1000000 + n).astype(np.int64)
 
-        # Add with IDs
         index_idmap.add_with_ids(xb, ids)
 
-        # Search
-        nq = 100
+        nq = 1000
         xq = np.random.randint(
             low=0, high=256, size=(nq, d // 8), dtype=np.uint8)
         D, I = index_idmap.search(xq, k)
 
-        # Verify returned IDs are in our ID range
         self.assertTrue(np.all(I >= 1000000))
         self.assertTrue(np.all(I < 1000000 + n))
 
-        # Test searching for exact vectors
         D_exact, I_exact = index_idmap.search(xb[:10], 1)
         expected_ids = ids[:10].reshape(-1, 1)
         np.testing.assert_array_equal(I_exact, expected_ids)
