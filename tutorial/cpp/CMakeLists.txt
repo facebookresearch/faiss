@@ -33,11 +33,11 @@ target_link_libraries(9-RefineComparison PRIVATE faiss)
 add_executable(10-SVS EXCLUDE_FROM_ALL 10-SVS.cpp)
 target_link_libraries(10-SVS PRIVATE faiss)
 
-add_executable(11-SVSLVQ4x4 EXCLUDE_FROM_ALL 11-SVSLVQ4x4.cpp)
-target_link_libraries(11-SVSLVQ4x4 PRIVATE faiss)
+add_executable(11-SVSLVQ EXCLUDE_FROM_ALL 11-SVSLVQ.cpp)
+target_link_libraries(11-SVSLVQ PRIVATE faiss)
 
-add_executable(12-SVSLeanVec4x4 EXCLUDE_FROM_ALL 12-SVSLeanVec4x4.cpp)
-target_link_libraries(12-SVSLeanVec4x4 PRIVATE faiss)
+add_executable(12-SVSLeanVec EXCLUDE_FROM_ALL 12-SVSLeanVec.cpp)
+target_link_libraries(12-SVSLeanVec PRIVATE faiss)
 
 add_executable(13-tmp-svscomp EXCLUDE_FROM_ALL 13-tmp-svscomp.cpp)
 target_link_libraries(13-tmp-svscomp PRIVATE faiss)

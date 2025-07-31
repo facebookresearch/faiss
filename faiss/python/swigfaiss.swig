@@ -196,8 +196,7 @@ typedef uint64_t size_t;
 
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ4x4.h>
-#include <faiss/IndexSVSLVQ4x8.h>
+#include <faiss/IndexSVSLVQ.h>
 
 %}
 
@@ -687,8 +686,7 @@ struct faiss::simd16uint16 {};
 
 %include  <faiss/IndexSVS.h>
 %include  <faiss/IndexSVSFlat.h>
-%include  <faiss/IndexSVSLVQ4x4.h>
-%include  <faiss/IndexSVSLVQ4x8.h>
+%include  <faiss/IndexSVSLVQ.h>
 
 #ifdef GPU_WRAPPER
 
@@ -837,8 +835,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
     DOWNCAST ( IndexSVSFlat )
-    DOWNCAST ( IndexSVSLVQ4x8 )
-    DOWNCAST ( IndexSVSLVQ4x4 )
+    DOWNCAST ( IndexSVSLVQ )
     DOWNCAST ( IndexSVS )
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

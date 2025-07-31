@@ -48,10 +48,9 @@ set(FAISS_SRC
   IndexShards.cpp
   IndexShardsIVF.cpp
   IndexSVS.cpp
-  IndexSVSLVQ4x4.cpp
-  IndexSVSLVQ4x8.cpp
+  IndexSVSLVQ.cpp
   IndexSVSFlat.cpp
-  #IndexSVSLeanVec4x4.cpp
+  #IndexSVSLeanVec.cpp
   IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
@@ -151,8 +150,8 @@ set(FAISS_HEADERS
   IndexShards.h
   IndexShardsIVF.h
   IndexSVS.h
-  IndexSVSLVQ4x4.h
-  #IndexSVSLeanVec4x4.h
+  IndexSVSLVQ.h
+  #IndexSVSLeanVec.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
