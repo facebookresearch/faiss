@@ -292,7 +292,7 @@ void GpuIndexBinaryCagra::searchImpl_(
     }
 }
 
-void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
+void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
     FAISS_ASSERT(index);
 
     DeviceScope scope(cagraConfig_.device);
@@ -310,14 +310,12 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
     auto hnsw = index->hnsw;
     // copy level 0 to a dense knn graph matrix
     std::vector<idx_t> knn_graph;
-    knn_graph.reserve(index->ntotal * hnsw.nb_neighbors(0));
-
+    knn_graph.resize(index->ntotal * hnsw.nb_neighbors(0));
 #pragma omp parallel for
     for (size_t i = 0; i < index->ntotal; ++i) {
         size_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
-            // knn_graph.push_back(hnsw.neighbors[j]);
             knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
                     hnsw.neighbors[j];
         }
@@ -335,25 +333,29 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSW* index) {
     this->is_trained = true;
 }
 
-void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
+void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
 
     DeviceScope scope(cagraConfig_.device);
 
-    //
     // Index information
-    //
     index->d = this->d;
     FAISS_THROW_IF_NOT(this->d % 8 == 0);
     index->code_size = this->d / 8;
     index->is_trained = this->is_trained;
-    // This needs to be zeroed out as this implementation adds vectors to the
-    // cpuIndex instead of copying fields
     index->ntotal = 0;
 
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
-    if (index->storage and index->own_fields) {
+
+    // Validate M
+    FAISS_THROW_IF_NOT_FMT(
+            graph_degree % 2 == 0 && M > 0,
+            "CAGRA graph degree %d must be even and positive for conversion to HNSW (M=%d)",
+            static_cast<int>(graph_degree),
+            static_cast<int>(M));
+
+    if (index->storage && index->own_fields) {
         delete index->storage;
     }
 
@@ -368,14 +370,20 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
     auto n_train = this->ntotal;
     auto stream = resources_->getDefaultStream(cagraConfig_.device);
 
-    auto train_data = toHost<uint8_t, 2>(
+    auto train_dataset = toHost<uint8_t, 2>(
             const_cast<uint8_t*>(index_->get_training_dataset()),
             stream,
             {idx_t(n_train), this->d / 8});
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
-    index->add(n_train, train_data.data());
+    if (!index->base_level_only) {
+        index->add(n_train, train_dataset.data());
+    } else {
+        index->hnsw.prepare_level_tab(n_train, false);
+        index->storage->add(n_train, train_dataset.data());
+        index->ntotal = n_train;
+    }
 
     auto graph = get_knngraph();
 
@@ -383,12 +391,13 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSW* index) const {
     for (idx_t i = 0; i < n_train; i++) {
         size_t begin, end;
         index->hnsw.neighbor_range(i, 0, &begin, &end);
+        FAISS_ASSERT(end - begin == graph_degree);
+
         for (size_t j = begin; j < end; j++) {
             index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
         }
     }
 
-    // turn back on to allow new vectors to be added to level 0
     index->init_level0 = true;
     index->keep_max_size_level0 = false;
 }
