@@ -15,8 +15,8 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
 #if defined USE_NVIDIA_CUVS
-#include <faiss/IndexHNSW.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexHNSW.h>
 #endif
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFFlat.h>
@@ -556,7 +556,8 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         return new GpuIndexBinaryFlat(provider, ii, config);
     }
 #if defined USE_NVIDIA_CUVS
-    else if (auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
+    else if (
+            auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;
         GpuIndexBinaryCagra* res =

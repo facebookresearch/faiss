@@ -211,7 +211,8 @@ void copyToTest(
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
-        faiss::IndexBinaryHNSWCagra copiedCpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexBinaryHNSWCagra copiedCpuIndex(
+                opt.dim, opt.graphDegree / 2);
         gpuIndex.copyTo(&copiedCpuIndex);
         copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
 

@@ -316,7 +316,8 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
         size_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
-            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] = hnsw.neighbors[j];
+            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
+                    hnsw.neighbors[j];
         }
     }
 
@@ -346,12 +347,13 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
 
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
-    
+
     // Validate M
     FAISS_THROW_IF_NOT_FMT(
             graph_degree % 2 == 0 && M > 0,
             "CAGRA graph degree %d must be even and positive for conversion to HNSW (M=%d)",
-            static_cast<int>(graph_degree), static_cast<int>(M));
+            static_cast<int>(graph_degree),
+            static_cast<int>(M));
 
     if (index->storage && index->own_fields) {
         delete index->storage;
