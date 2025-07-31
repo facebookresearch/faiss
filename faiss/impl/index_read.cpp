@@ -1245,8 +1245,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
-    } else if (
-            h == fourcc("ILVQ") || h == fourcc("ISVD")) {
+    } else if (h == fourcc("ILVQ") || h == fourcc("ISVD")) {
         IndexSVS* svs;
         if (h == fourcc("ILVQ")) {
             svs = new IndexSVSLVQ(); // LVQ
@@ -1264,6 +1263,9 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->max_candidate_pool_size);
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
+        if (h == fourcc("ILVQ")) {
+            READ1(dynamic_cast<IndexSVSLVQ*>(svs)->lvq_level);
+        }
 
         // Read the binary blob from which impl will be reconstructed
         uint64_t blob_size;

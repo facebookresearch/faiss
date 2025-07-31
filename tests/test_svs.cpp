@@ -7,8 +7,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexSVS.h>
-#include <faiss/IndexSVSLVQ4x4.h>
-#include <faiss/IndexSVSLVQ4x8.h>
+#include <faiss/IndexSVSLVQ.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 
@@ -19,10 +18,8 @@ pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 }
 
 template <typename T>
-void write_and_read_index() {
-    constexpr faiss::idx_t d = 64;
-    T index(d);
-    std::vector<float> xb(d * 100);
+void write_and_read_index(T& index) {
+    std::vector<float> xb(index.d * 100);
     std::mt19937 gen(123);
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
     for (size_t i = 0; i < xb.size(); ++i) {
@@ -60,13 +57,28 @@ void write_and_read_index() {
 }
 
 TEST(SVSIO, WriteAndReadIndexIndexSVS) {
-    write_and_read_index<faiss::IndexSVS>();
+    constexpr faiss::idx_t d = 64;
+    faiss::IndexSVS index{d};
+    write_and_read_index(index);
+}
+
+TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x0) {
+    constexpr faiss::idx_t d = 64;
+    faiss::IndexSVSLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ_4x0;
+    write_and_read_index(index);
 }
 
 TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x4) {
-    write_and_read_index<faiss::IndexSVSLVQ4x4>();
+    constexpr faiss::idx_t d = 64;
+    faiss::IndexSVSLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ_4x4;
+    write_and_read_index(index);
 }
 
 TEST(SVSIO, WriteAndReadIndexIndexSVSLVQ4x8) {
-    write_and_read_index<faiss::IndexSVSLVQ4x8>();
+    constexpr faiss::idx_t d = 64;
+    faiss::IndexSVSLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ_4x8;
+    write_and_read_index(index);
 }

@@ -887,7 +887,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
         uint32_t h;
 
-        if (dynamic_cast<const IndexSVSLVQ*>(idx)) {
+        auto* lvq = dynamic_cast<const IndexSVSLVQ*>(idx);
+
+        if (lvq != nullptr) {
             h = fourcc("ILVQ"); // LVQ
         } else {
             h = fourcc("ISVD"); // uncompressed
@@ -903,6 +905,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->max_candidate_pool_size);
         WRITE1(svs->prune_to);
         WRITE1(svs->use_full_search_history);
+        if (lvq != nullptr) {
+            WRITE1(lvq->lvq_level);
+        }
 
         std::stringstream ss;
         svs->serialize_impl(ss);
