@@ -133,13 +133,21 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992acad71f339ba9f2ebf66937e5fde9f146cc" prot="public">
+          <name>ITERATIVE_SEARCH</name>
+          <briefdescription>
+<para>Use iterative search to build knn graph. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="43" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="43" bodyend="48"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="43" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="43" bodyend="50"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" prot="public" static="no" strong="yes">
         <type></type>
@@ -168,7 +176,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="51" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="51" bodyend="54"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="53" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="53" bodyend="56"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02" prot="public" static="no" strong="yes">
         <type></type>
@@ -210,7 +218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="188" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="188" bodyend="195"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="190" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="190" bodyend="197"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821e" prot="public" static="no" strong="yes">
         <type></type>
@@ -243,7 +251,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/GpuIndexCagra.h" line="197" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="197" bodyend="197"/>
+        <location file="faiss/gpu/GpuIndexCagra.h" line="199" column="1" bodyfile="faiss/gpu/GpuIndexCagra.h" bodystart="199" bodyend="199"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1_1gpu_1a863afc54e6d0c3bf6a34490d02acd459" prot="public" static="no" strong="no">
         <type></type>

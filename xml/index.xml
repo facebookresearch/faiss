@@ -10332,6 +10332,7 @@
     <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992ac" kind="enum"><name>graph_build_algo</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992aca024a07775560847f41dcb5aa52c37418" kind="enumvalue"><name>IVF_PQ</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992aca5c5827c864a6a539617cb236291f0285" kind="enumvalue"><name>NN_DESCENT</name></member>
+    <member refid="namespacefaiss_1_1gpu_1aa0e933a28e0037517f9678db957992acad71f339ba9f2ebf66937e5fde9f146cc" kind="enumvalue"><name>ITERATIVE_SEARCH</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39" kind="enum"><name>codebook_gen</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39a5056773a9c21a05e14106e853dc39c42" kind="enumvalue"><name>PER_SUBSPACE</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa3d8d5d9d02d583d49ccb9d2c70e8a39ab4bc06123f1a290656a492b25ebab336" kind="enumvalue"><name>PER_CLUSTER</name></member>
