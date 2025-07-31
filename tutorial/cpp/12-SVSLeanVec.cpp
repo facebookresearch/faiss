@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <random>
 
-#include <faiss/IndexSVSLVQ4x4.h>
+#include <faiss/IndexSVSLeanVec.h>
 
 using idx_t = faiss::idx_t;
 
@@ -39,7 +39,7 @@ int main() {
 
     int k = 4;
 
-    faiss::IndexSVSLVQ4x4 index(d);
+    faiss::IndexSVSLeanVec index(d);
     index.add(nb, xb);
 
     { // search xq

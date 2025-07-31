@@ -47,8 +47,7 @@
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ4x4.h>
-#include <faiss/IndexSVSLVQ4x8.h>
+#include <faiss/IndexSVSLVQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1247,12 +1246,10 @@ Index* read_index(IOReader* f, int io_flags) {
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
     } else if (
-            h == fourcc("IS48") || h == fourcc("IS44") || h == fourcc("ISVD")) {
+            h == fourcc("ILVQ") || h == fourcc("ISVD")) {
         IndexSVS* svs;
-        if (h == fourcc("IS48")) {
-            svs = new IndexSVSLVQ4x8(); // LVQ4x8
-        } else if (h == fourcc("IS44")) {
-            svs = new IndexSVSLVQ4x4(); // LVQ4x4
+        if (h == fourcc("ILVQ")) {
+            svs = new IndexSVSLVQ(); // LVQ
         } else if (h == fourcc("ISVD")) {
             svs = new IndexSVS(); // uncompressed
         }
