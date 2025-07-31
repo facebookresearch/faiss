@@ -1276,11 +1276,13 @@ Index* read_index(IOReader* f, int io_flags) {
         svs->deserialize_impl(ss);
         idx = svs;
     } else if (h == fourcc("ISVS")) {
+        // TODO
         // SVS static vamana
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
-        auto svs = new IndexSVSFlat();
-
+        IndexSVSFlat* svs = new IndexSVSFlat();
+        read_index_header(svs, f);
+        READ1(svs->num_threads);
         idx = svs;
     } else {
         FAISS_THROW_FMT(

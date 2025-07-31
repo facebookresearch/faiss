@@ -32,6 +32,7 @@ void IndexSVSFlat::reset() {
         delete impl;
         impl = nullptr;
     }
+    ntotal = 0;
 }
 
 IndexSVSFlat::~IndexSVSFlat() {}
@@ -69,6 +70,7 @@ void IndexSVSFlat::search(
 void IndexSVSFlat::init_impl(idx_t n, const float* x) {
     auto data = svs::data::SimpleData<float>(n, d);
     auto threadpool = svs::threads::as_threadpool(num_threads);
+    ntotal = n;
 
     svs::threads::parallel_for(
             threadpool,
