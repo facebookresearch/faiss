@@ -58,7 +58,6 @@ class TestInterop(unittest.TestCase):
 
         evaluation.check_ref_knn_with_draws(Dnew2, Inew2, Dnew, Inew, k)
 
-
     def test_interop(self):
         self.do_interop()
 
