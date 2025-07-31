@@ -1014,7 +1014,6 @@ void write_index_binary(const IndexBinary* idx, IOWriter* f) {
         write_index_binary_header(idxhnsw, f);
 
         if (h == fourcc("IBHc")) {
-            std::cout << "writing IndexBinaryHNSWCagra" << std::endl;
             auto idxcagra = dynamic_cast<const IndexBinaryHNSWCagra*>(idxhnsw);
             WRITE1(idxcagra->keep_max_size_level0);
             WRITE1(idxcagra->base_level_only);

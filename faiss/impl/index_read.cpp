@@ -1400,7 +1400,6 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
         idxhnsw->own_fields = true;
         idx = idxhnsw;
     } else if (h == fourcc("IBHc")) {
-        std::cout << "reading IndexBinaryHNSWCagra" << std::endl;
         IndexBinaryHNSWCagra* idxhnsw = new IndexBinaryHNSWCagra();
         read_index_binary_header(idxhnsw, f);
         READ1(idxhnsw->keep_max_size_level0);
