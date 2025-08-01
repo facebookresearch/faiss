@@ -10,9 +10,6 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <sstream>
-#include <string>
-#include <typeinfo>
 
 #include <faiss/Index.h>
 
