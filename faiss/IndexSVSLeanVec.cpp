@@ -23,10 +23,12 @@ IndexSVSLeanVec::IndexSVSLeanVec(
 }
 
 void IndexSVSLeanVec::train(idx_t n, const float* x) {
-    auto data = svs::data::ConstSimpleDataView<float>(x, n, d);
-    auto means = utils::compute_medioid(data, num_threads);
-    leanvec_matrix = compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(
-            data, means, num_threads, leanvec_d);
+    const auto data =
+            svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
+    auto threadpool = svs::threads::as_threadpool(num_threads);
+    auto means = svs::utils::compute_medioid(data, threadpool);
+    auto matrix = svs::leanvec::compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(data, means, threadpool, svs::lib::MaybeStatic<svs::Dynamic>{leanvec_d});
+    leanvec_matrix = svs::leanvec::LeanVecMatrices<svs::Dynamic>(matrix, matrix);
     is_trained = true;
 }
 
@@ -50,35 +52,35 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
             compressed_data;
 
     switch (leanvec_level) {
-        case LeanVecLevel::Level4x4:
+        case LeanVecLevel::LeanVec_4x4:
             compressed_data = storage_type_4x4::reduce(
                     data,
                     leanvec_matrix,
                     threadpool,
                     0,
-                    leanvec_d,
+                    svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
                     blocked_alloc_type{});
             break;
-        case LeanVecLevel::Level4x8:
+        case LeanVecLevel::LeanVec_4x8:
             compressed_data = storage_type_4x8::reduce(
                     data,
                     leanvec_matrix,
                     threadpool,
                     0,
-                    leanvec_d,
+                    svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
                     blocked_alloc_type{});
             break;
-        case LeanVecLevel::Level8x8:
+        case LeanVecLevel::LeanVec_8x8:
             compressed_data = storage_type_8x8::reduce(
                     data,
                     leanvec_matrix,
                     threadpool,
                     0,
-                    leanvec_d,
+                    svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
                     blocked_alloc_type{});
             break;
         default:
-            FAISS_ASSERT(!"not supported SVS LVQ level");
+            FAISS_ASSERT(!"not supported SVS LeanVec level");
     }
 
     svs::threads::parallel_for(
@@ -104,11 +106,11 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
                 if constexpr (std::is_same_v<
                                       std::decay_t<decltype(storage)>,
                                       std::monostate>) {
-                    FAISS_ASSERT(!"SVS LVQ data is not initialized.");
+                    FAISS_ASSERT(!"SVS LeanVec data is not initialized.");
                 } else {
                     switch (metric_type) {
                         case METRIC_INNER_PRODUCT:
-                            impl = std::make_unique<svs::DynamicVamana>(
+                            impl = new svs::DynamicVamana(
                                     svs::DynamicVamana::build<float>(
                                             std::move(build_parameters),
                                             std::forward<decltype(storage)>(
@@ -118,7 +120,7 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
                                             std::move(threadpool)));
                             break;
                         case METRIC_L2:
-                            impl = std::make_unique<svs::DynamicVamana>(
+                            impl = new svs::DynamicVamana(
                                     svs::DynamicVamana::build<float>(
                                             std::move(build_parameters),
                                             std::forward<decltype(storage)>(

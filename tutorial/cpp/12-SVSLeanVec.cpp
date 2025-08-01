@@ -40,6 +40,7 @@ int main() {
     int k = 4;
 
     faiss::IndexSVSLeanVec index(d);
+    index.train(nb, xb);
     index.add(nb, xb);
 
     { // search xq

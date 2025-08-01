@@ -48,3 +48,5 @@ print(f"{k} nearest neighbors of the 5 last query vectors (after reloading)")
 print(I[-5:])                  # neighbors of the 5 last queries
 
 idx = faiss.IndexSVSLVQ(d, faiss.METRIC_L2, faiss.LVQ_4x8) # example of using SVS LVQ
+
+idx_2 = faiss.IndexSVSLeanVec(d, faiss.METRIC_L2, 0, faiss.LeanVec_4x4) # example of using SVS LeanVec
