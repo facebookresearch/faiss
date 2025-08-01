@@ -50,7 +50,7 @@ set(FAISS_SRC
   IndexSVS.cpp
   IndexSVSLVQ.cpp
   IndexSVSFlat.cpp
-  #IndexSVSLeanVec.cpp
+  IndexSVSLeanVec.cpp
   IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
@@ -151,7 +151,7 @@ set(FAISS_HEADERS
   IndexShardsIVF.h
   IndexSVS.h
   IndexSVSLVQ.h
-  #IndexSVSLeanVec.h
+  IndexSVSLeanVec.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -328,7 +328,7 @@ endif()
 
 # Experimental SVS cmake build
 include(FetchContent)
-set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.8-dev/svs-shared-library-0.0.8-NIGHTLY-20250630.tar.gz")
+set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.8-dev/svs-shared-library-0.0.8-20250731.tar.gz")
 FetchContent_Declare(
     svs
     URL "${SVS_URL}"
