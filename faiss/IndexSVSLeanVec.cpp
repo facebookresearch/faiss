@@ -7,6 +7,7 @@
 
 #include <faiss/IndexSVSLeanVec.h>
 #include <variant>
+#include "faiss/impl/FaissAssert.h"
 #include "svs/core/medioid.h"
 #include "svs/orchestrators/dynamic_vamana.h"
 
@@ -27,8 +28,14 @@ void IndexSVSLeanVec::train(idx_t n, const float* x) {
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
     auto threadpool = svs::threads::as_threadpool(num_threads);
     auto means = svs::utils::compute_medioid(data, threadpool);
-    auto matrix = svs::leanvec::compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(data, means, threadpool, svs::lib::MaybeStatic<svs::Dynamic>{leanvec_d});
-    leanvec_matrix = svs::leanvec::LeanVecMatrices<svs::Dynamic>(matrix, matrix);
+    auto matrix =
+            svs::leanvec::compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(
+                    data,
+                    means,
+                    threadpool,
+                    svs::lib::MaybeStatic<svs::Dynamic>{leanvec_d});
+    leanvec_matrix =
+            svs::leanvec::LeanVecMatrices<svs::Dynamic>(matrix, matrix);
     is_trained = true;
 }
 
@@ -38,6 +45,10 @@ void IndexSVSLeanVec::reset() {
 }
 
 void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            is_trained,
+            "Cannot initialize SVS LeanVec index without training first.");
+
     // TODO: support ConstSimpleDataView in SVS shared/static lib
     const auto data =
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
@@ -135,6 +146,69 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
                 }
             },
             compressed_data);
+}
+
+void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
+    FAISS_THROW_IF_MSG(
+            impl, "Cannot deserialize: SVS index already initialized.");
+
+    // Write stream to files that can be read by DynamicVamana::assemble()
+    detail::SVSTempDirectory tmp;
+    tmp.write_stream_to_files(in);
+
+    std::variant<svs::DistanceIP, svs::DistanceL2> svs_distance;
+    switch (metric_type) {
+        case METRIC_INNER_PRODUCT:
+            svs_distance = svs::DistanceIP();
+            break;
+        case METRIC_L2:
+            svs_distance = svs::DistanceL2();
+            break;
+        default:
+            FAISS_ASSERT(!"not supported SVS distance");
+    }
+
+    std::visit(
+            [&](auto&& svs_distance) {
+                switch (leanvec_level) {
+                    case LeanVecLevel::LeanVec_4x4:
+                        impl = new svs::DynamicVamana(
+                                svs::DynamicVamana::assemble<float>(
+                                        tmp.config.string(),
+                                        svs::GraphLoader(tmp.graph.string()),
+                                        svs::lib::load_from_disk<
+                                                storage_type_4x4>(
+                                                tmp.data.string()),
+                                        svs_distance,
+                                        num_threads));
+                        break;
+                    case LeanVecLevel::LeanVec_4x8:
+                        impl = new svs::DynamicVamana(
+                                svs::DynamicVamana::assemble<float>(
+                                        tmp.config.string(),
+                                        svs::GraphLoader(tmp.graph.string()),
+                                        svs::lib::load_from_disk<
+                                                storage_type_4x8>(
+                                                tmp.data.string()),
+                                        svs_distance,
+                                        num_threads));
+                        break;
+                    case LeanVecLevel::LeanVec_8x8:
+                        impl = new svs::DynamicVamana(
+                                svs::DynamicVamana::assemble<float>(
+                                        tmp.config.string(),
+                                        svs::GraphLoader(tmp.graph.string()),
+                                        svs::lib::load_from_disk<
+                                                storage_type_8x8>(
+                                                tmp.data.string()),
+                                        svs_distance,
+                                        num_threads));
+                        break;
+                    default:
+                        FAISS_ASSERT(!"not supported SVS LVQ level");
+                }
+            },
+            svs_distance);
 }
 
 } // namespace faiss

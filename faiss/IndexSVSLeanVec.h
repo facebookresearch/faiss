@@ -58,6 +58,8 @@ struct IndexSVSLeanVec : IndexSVS {
     LeanVecLevel leanvec_level;
 
     svs::leanvec::LeanVecMatrices<svs::Dynamic> leanvec_matrix;
+
+    void deserialize_impl(std::istream& in) override;
 };
 
 } // namespace faiss

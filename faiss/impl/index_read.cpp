@@ -48,6 +48,7 @@
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
+#include <faiss/IndexSVSLeanVec.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1245,10 +1246,13 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
-    } else if (h == fourcc("ILVQ") || h == fourcc("ISVD")) {
+    } else if (
+            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
         IndexSVS* svs;
         if (h == fourcc("ILVQ")) {
             svs = new IndexSVSLVQ(); // LVQ
+        } else if (h == fourcc("ISVL")) {
+            svs = new IndexSVSLeanVec(); // LeanVec
         } else if (h == fourcc("ISVD")) {
             svs = new IndexSVS(); // uncompressed
         }
@@ -1265,6 +1269,10 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->use_full_search_history);
         if (h == fourcc("ILVQ")) {
             READ1(dynamic_cast<IndexSVSLVQ*>(svs)->lvq_level);
+        }
+        if (h == fourcc("ISVL")) {
+            READ1(dynamic_cast<IndexSVSLeanVec*>(svs)->leanvec_d);
+            READ1(dynamic_cast<IndexSVSLeanVec*>(svs)->leanvec_level);
         }
 
         // Read the binary blob from which impl will be reconstructed

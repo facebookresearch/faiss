@@ -9,6 +9,7 @@
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
+#include <faiss/IndexSVSLeanVec.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 #include <type_traits>
@@ -45,6 +46,7 @@ std::vector<float> SVSIOTest::test_data;
 
 template <typename T>
 void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
+    index.train(n, xb.data());
     index.add(n, xb.data());
 
     std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
@@ -102,6 +104,30 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x8) {
     faiss::IndexSVSLVQ index{d};
     index.lvq_level = faiss::LVQLevel::LVQ_4x8;
     write_and_read_index(index, test_data, n);
+}
+
+TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec4x4) {
+    faiss::IndexSVSLeanVec index{
+            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
+    write_and_read_index(index, test_data, n);
+}
+
+TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec4x8) {
+    faiss::IndexSVSLeanVec index{
+            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x8};
+    write_and_read_index(index, test_data, n);
+}
+
+TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec8x8) {
+    faiss::IndexSVSLeanVec index{
+            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_8x8};
+    write_and_read_index(index, test_data, n);
+}
+
+TEST_F(SVSIOTest, LeanVecThrowsWithoutTraining) {
+    faiss::IndexSVSLeanVec index{
+            64, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
+    ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSFlat) {

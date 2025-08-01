@@ -46,6 +46,7 @@
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
+#include <faiss/IndexSVSLeanVec.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -888,9 +889,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h;
 
         auto* lvq = dynamic_cast<const IndexSVSLVQ*>(idx);
+        auto* lean = dynamic_cast<const IndexSVSLeanVec*>(idx);
 
         if (lvq != nullptr) {
             h = fourcc("ILVQ"); // LVQ
+        } else if (lean != nullptr) {
+            h = fourcc("ISVL"); // LeanVec
         } else {
             h = fourcc("ISVD"); // uncompressed
         }
@@ -907,6 +911,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->use_full_search_history);
         if (lvq != nullptr) {
             WRITE1(lvq->lvq_level);
+        }
+        if (lean != nullptr) {
+            WRITE1(lean->leanvec_d);
+            WRITE1(lean->leanvec_level);
         }
 
         std::stringstream ss;
