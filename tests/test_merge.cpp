@@ -23,7 +23,7 @@ namespace {
 
 pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-typedef faiss::idx_t idx_t;
+using idx_t = faiss::idx_t;
 
 // parameters to use for the test
 int d = 64;

@@ -44,7 +44,9 @@ enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
     /// Use NN-Descent to build all-neighbors knn graph
-    NN_DESCENT
+    NN_DESCENT,
+    /// Use iterative search to build knn graph
+    ITERATIVE_SEARCH
 };
 
 /// A type for specifying how PQ codebooks are created.

@@ -32,7 +32,7 @@ int nlist = 40;
 
 using namespace faiss;
 
-typedef faiss::idx_t idx_t;
+using idx_t = faiss::idx_t;
 
 std::vector<float> get_data(size_t nb, int seed) {
     std::vector<float> x(nb * d);

@@ -71,7 +71,9 @@ struct Options {
     int device;
 };
 
-void queryTest(double expected_recall) {
+void queryTest(
+        faiss::gpu::graph_build_algo build_algo,
+        double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
@@ -90,6 +92,10 @@ void queryTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
+        config.build_algo = build_algo;
+        if (build_algo == faiss::gpu::graph_build_algo::NN_DESCENT) {
+            config.nn_descent_niter = 20;
+        }
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, cpuIndex.d, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
@@ -172,11 +178,17 @@ void queryTest(double expected_recall) {
     }
 }
 
-TEST(TestGpuIndexBinaryCagra, Query) {
-    queryTest(0.98);
+TEST(TestGpuIndexBinaryCagra, Query_NN_DESCENT) {
+    queryTest(faiss::gpu::graph_build_algo::NN_DESCENT, 0.98);
 }
 
-void copyToTest(double expected_recall) {
+TEST(TestGpuIndexBinaryCagra, Query_ITERATIVE_SEARCH) {
+    queryTest(faiss::gpu::graph_build_algo::ITERATIVE_SEARCH, 0.98);
+}
+
+void copyToTest(
+        faiss::gpu::graph_build_algo build_algo,
+        double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
@@ -191,11 +203,16 @@ void copyToTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
+        config.build_algo = build_algo;
+        if (build_algo == faiss::gpu::graph_build_algo::NN_DESCENT) {
+            config.nn_descent_niter = 20;
+        }
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
 
-        faiss::IndexBinaryHNSW copiedCpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexBinaryHNSWCagra copiedCpuIndex(
+                opt.dim, opt.graphDegree / 2);
         gpuIndex.copyTo(&copiedCpuIndex);
         copiedCpuIndex.hnsw.efConstruction = opt.k * 2;
 
@@ -295,18 +312,24 @@ void copyToTest(double expected_recall) {
     }
 }
 
-TEST(TestGpuIndexBinaryCagra, CopyTo) {
-    copyToTest(0.98);
+TEST(TestGpuIndexBinaryCagra, CopyTo_NN_DESCENT) {
+    copyToTest(faiss::gpu::graph_build_algo::NN_DESCENT, 0.98);
 }
 
-void copyFromTest(double expected_recall) {
+TEST(TestGpuIndexBinaryCagra, CopyTo_ITERATIVE_SEARCH) {
+    copyToTest(faiss::gpu::graph_build_algo::ITERATIVE_SEARCH, 0.98);
+}
+
+void copyFromTest(
+        faiss::gpu::graph_build_algo build_algo,
+        double expected_recall) {
     for (int tries = 0; tries < 5; ++tries) {
         Options opt;
 
         auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
 
         // train cpu index
-        faiss::IndexBinaryHNSW cpuIndex(opt.dim, opt.graphDegree / 2);
+        faiss::IndexBinaryHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2);
         cpuIndex.hnsw.efConstruction = opt.k * 2;
         cpuIndex.add(opt.numTrain, trainVecs.data());
 
@@ -322,6 +345,10 @@ void copyFromTest(double expected_recall) {
         config.device = opt.device;
         config.graph_degree = opt.graphDegree;
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
+        config.build_algo = build_algo;
+        if (build_algo == faiss::gpu::graph_build_algo::NN_DESCENT) {
+            config.nn_descent_niter = 20;
+        }
 
         faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
         gpuIndex.train(opt.numTrain, trainVecs.data());
@@ -397,8 +424,12 @@ void copyFromTest(double expected_recall) {
     }
 }
 
-TEST(TestGpuIndexBinaryCagra, CopyFrom) {
-    copyFromTest(0.98);
+TEST(TestGpuIndexBinaryCagra, CopyFrom_NN_DESCENT) {
+    copyFromTest(faiss::gpu::graph_build_algo::NN_DESCENT, 0.98);
+}
+
+TEST(TestGpuIndexBinaryCagra, CopyFrom_ITERATIVE_SEARCH) {
+    copyFromTest(faiss::gpu::graph_build_algo::ITERATIVE_SEARCH, 0.98);
 }
 
 int main(int argc, char** argv) {
