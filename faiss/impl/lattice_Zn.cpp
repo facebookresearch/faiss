@@ -18,7 +18,6 @@
 #include <queue>
 #include <unordered_set>
 
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/distances.h>
 
 namespace faiss {
@@ -53,8 +52,9 @@ struct Comb {
 
     uint64_t operator()(int n, int p) const {
         assert(n < nmax && p < nmax);
-        if (p > n)
+        if (p > n) {
             return 0;
+        }
         return tab[n * nmax + p];
     }
 };
@@ -66,8 +66,9 @@ point_list_t sum_of_sq(float total, int v, int n, float add = 0) {
     if (total < 0) {
         return point_list_t();
     } else if (n == 1) {
-        while (sqr(v + add) > total)
+        while (sqr(v + add) > total) {
             v--;
+        }
         if (sqr(v + add) == total) {
             return point_list_t(1, v + add);
         } else {
@@ -118,8 +119,9 @@ uint64_t repeats_encode_64(
                 code_comb += comb(rank, occ + 1);
                 occ++;
                 coded |= uint64_t{1} << i;
-                if (occ == r->n)
+                if (occ == r->n) {
                     break;
+                }
             }
             rank++;
         }
@@ -155,8 +157,9 @@ void repeats_decode_64(
                 decoded |= uint64_t{1} << i;
                 c[i] = r->val;
                 occ++;
-                if (occ == r->n)
+                if (occ == r->n) {
                     break;
+                }
                 next_rank = decode_comb_1(&code_comb, r->n - occ, next_rank);
             }
         }
@@ -210,8 +213,9 @@ uint64_t Repeats::encode(const float* c) const {
                     code_comb += comb(rank, occ + 1);
                     occ++;
                     coded[i] = true;
-                    if (occ == r->n)
+                    if (occ == r->n) {
                         break;
+                    }
                 }
                 rank++;
             }
@@ -247,8 +251,9 @@ void Repeats::decode(uint64_t code, float* c) const {
                     decoded[i] = true;
                     c[i] = r->val;
                     occ++;
-                    if (occ == r->n)
+                    if (occ == r->n) {
                         break;
+                    }
                     next_rank =
                             decode_comb_1(&code_comb, r->n - occ, next_rank);
                 }
@@ -440,10 +445,11 @@ void ZnSphereCodec::decode(uint64_t code, float* c) const {
     int i0 = 0, i1 = natom;
     while (i0 + 1 < i1) {
         int imed = (i0 + i1) / 2;
-        if (code_segments[imed].c0 <= code)
+        if (code_segments[imed].c0 <= code) {
             i0 = imed;
-        else
+        } else {
             i1 = imed;
+        }
     }
     const CodeSegment& cs = code_segments[i0];
     code -= cs.c0;
@@ -592,10 +598,11 @@ void ZnSphereCodecRec::decode(uint64_t code, float* c) const {
                     &all_nv_cum[(ld * (r2 + 1) + r2sub) * (r2 + 1)];
             while (i1 > i0 + 1) {
                 int imed = (i0 + i1) / 2;
-                if (cum[imed] <= codei)
+                if (cum[imed] <= codei) {
                     i0 = imed;
-                else
+                } else {
                     i1 = imed;
+                }
             }
             int r2a = i0, r2b = r2sub - i0;
             codei -= cum[r2a];

@@ -44,7 +44,9 @@ enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
     /// Use NN-Descent to build all-neighbors knn graph
-    NN_DESCENT
+    NN_DESCENT,
+    /// Use iterative search to build knn graph
+    ITERATIVE_SEARCH
 };
 
 /// A type for specifying how PQ codebooks are created.
@@ -285,6 +287,11 @@ struct GpuIndexCagra : public GpuIndex {
     bool addImplRequiresIDs_() const override;
 
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -312,7 +319,8 @@ struct GpuIndexCagra : public GpuIndex {
     std::variant<
             std::monostate,
             std::shared_ptr<CuvsCagra<float>>,
-            std::shared_ptr<CuvsCagra<half>>>
+            std::shared_ptr<CuvsCagra<half>>,
+            std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
 };
 

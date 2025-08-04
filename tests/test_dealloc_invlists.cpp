@@ -74,8 +74,9 @@ struct EncapsulateInvertedLists : InvertedLists {
             : InvertedLists(il->nlist, il->code_size), il(il) {}
 
     static void* memdup(const void* m, size_t size) {
-        if (size == 0)
+        if (size == 0) {
             return nullptr;
+        }
         return memcpy(malloc(size), m, size);
     }
 

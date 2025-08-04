@@ -71,6 +71,10 @@ void IndexPQ::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexPQ::train(idx_t n, const void* x, NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 namespace {
 
 template <class PQDecoder>
@@ -254,6 +258,17 @@ void IndexPQ::search(
         indexPQ_stats.nq += n;
         indexPQ_stats.ncode += n * ntotal;
     }
+}
+
+void IndexPQ::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexPQStats::reset() {
@@ -874,6 +889,13 @@ void MultiIndexQuantizer::train(idx_t n, const float* x) {
         ntotal *= pq.ksub;
 }
 
+void MultiIndexQuantizer::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
+}
+
 // block size used in MultiIndexQuantizer::search
 int multi_index_quantizer_search_bs = 32768;
 
@@ -956,6 +978,17 @@ void MultiIndexQuantizer::search(
     }
 }
 
+void MultiIndexQuantizer::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void MultiIndexQuantizer::reconstruct(idx_t key, float* recons) const {
     int64_t jj = key;
     for (int m = 0; m < pq.M; m++) {
@@ -970,6 +1003,13 @@ void MultiIndexQuantizer::add(idx_t /*n*/, const float* /*x*/) {
     FAISS_THROW_MSG(
             "This index has virtual elements, "
             "it does not support add");
+}
+
+void MultiIndexQuantizer::add(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
 }
 
 void MultiIndexQuantizer::reset() {
@@ -1019,6 +1059,13 @@ void MultiIndexQuantizer2::train(idx_t n, const float* x) {
     for (int i = 0; i < pq.M; i++) {
         assign_indexes[i]->add(pq.ksub, pq.get_centroids(i, 0));
     }
+}
+
+void MultiIndexQuantizer2::train(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    Index::train(n, x, numeric_type);
 }
 
 void MultiIndexQuantizer2::search(
@@ -1110,6 +1157,17 @@ void MultiIndexQuantizer2::search(
             }
         }
     }
+}
+
+void MultiIndexQuantizer2::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 } // namespace faiss

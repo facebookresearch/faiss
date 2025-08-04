@@ -56,6 +56,17 @@ void IndexFlat::search(
     }
 }
 
+void IndexFlat::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -400,8 +411,13 @@ void IndexFlat1D::update_permutation() {
 
 void IndexFlat1D::add(idx_t n, const float* x) {
     IndexFlatL2::add(n, x);
-    if (continuous_update)
+    if (continuous_update) {
         update_permutation();
+    }
+}
+
+void IndexFlat1D::add(idx_t n, const void* x, NumericType numeric_type) {
+    Index::add(n, x, numeric_type);
 }
 
 void IndexFlat1D::reset() {
@@ -453,10 +469,11 @@ void IndexFlat1D::search(
 
         while (i0 + 1 < i1) {
             idx_t imed = (i0 + i1) / 2;
-            if (xb[perm[imed]] <= q)
+            if (xb[perm[imed]] <= q) {
                 i0 = imed;
-            else
+            } else {
                 i1 = imed;
+            }
         }
 
         // query is between xb[perm[i0]] and xb[perm[i1]]
@@ -516,6 +533,17 @@ void IndexFlat1D::search(
         }
     done:;
     }
+}
+
+void IndexFlat1D::search(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 } // namespace faiss

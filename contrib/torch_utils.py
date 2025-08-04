@@ -131,7 +131,7 @@ def torch_replace_method(the_class, name, replacement,
 ##################################################################
 
 def handle_torch_Index(the_class):
-    def torch_replacement_add(self, x):
+    def torch_replacement_add(self, x, numeric_type = faiss.Float32):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
             return self.add_numpy(x)
@@ -139,19 +139,25 @@ def handle_torch_Index(the_class):
         assert type(x) is torch.Tensor
         n, d = x.shape
         assert d == self.d
-        x_ptr = swig_ptr_from_FloatTensor(x)
+        if numeric_type == faiss.Float32:
+            x_ptr = swig_ptr_from_FloatTensor(x)
+        elif numeric_type == faiss.Float16:
+            x_ptr = swig_ptr_from_HalfTensor(x)
+        else:
+            raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
+
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_c(n, x_ptr)
+                self.add_c(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.add_c(n, x_ptr)
+            self.add_c(n, x_ptr, numeric_type)
 
-    def torch_replacement_add_with_ids(self, x, ids):
+    def torch_replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
             return self.add_with_ids_numpy(x, ids)
@@ -159,7 +165,12 @@ def handle_torch_Index(the_class):
         assert type(x) is torch.Tensor
         n, d = x.shape
         assert d == self.d
-        x_ptr = swig_ptr_from_FloatTensor(x)
+        if numeric_type == faiss.Float32:
+            x_ptr = swig_ptr_from_FloatTensor(x)
+        elif numeric_type == faiss.Float16:
+            x_ptr = swig_ptr_from_HalfTensor(x)
+        else:
+            raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
 
         assert type(ids) is torch.Tensor
         assert ids.shape == (n, ), 'not same number of vectors as ids'
@@ -170,10 +181,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_with_ids_c(n, x_ptr, ids_ptr)
+                self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
         else:
             # CPU torch
-            self.add_with_ids_c(n, x_ptr, ids_ptr)
+            self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
 
     def torch_replacement_assign(self, x, k, labels=None):
         if type(x) is np.ndarray:
@@ -204,7 +215,7 @@ def handle_torch_Index(the_class):
 
         return labels
 
-    def torch_replacement_train(self, x):
+    def torch_replacement_train(self, x, numeric_type = faiss.Float32):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
             return self.train_numpy(x)
@@ -212,21 +223,31 @@ def handle_torch_Index(the_class):
         assert type(x) is torch.Tensor
         n, d = x.shape
         assert d == self.d
-        x_ptr = swig_ptr_from_FloatTensor(x)
+        if numeric_type == faiss.Float32:
+            x_ptr = swig_ptr_from_FloatTensor(x)
+        elif numeric_type == faiss.Float16:
+            x_ptr = swig_ptr_from_HalfTensor(x)
+        else:
+            raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.train_c(n, x_ptr)
+                self.train_c(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.train_c(n, x_ptr)
+            self.train_c(n, x_ptr, numeric_type)
 
-    def search_methods_common(x, k, D, I):
+    def search_methods_common(x, k, D, I, numeric_type=faiss.Float32):
         n, d = x.shape
-        x_ptr = swig_ptr_from_FloatTensor(x)
+        if numeric_type == faiss.Float32:
+            x_ptr = swig_ptr_from_FloatTensor(x)
+        elif numeric_type == faiss.Float16:
+            x_ptr = swig_ptr_from_HalfTensor(x)
+        else:
+            raise ValueError("numeric type must be either faiss.Float32 or faiss.Float16 ")
 
         if D is None:
             D = torch.empty(n, k, device=x.device, dtype=torch.float32)
@@ -244,7 +265,7 @@ def handle_torch_Index(the_class):
 
         return x_ptr, D_ptr, I_ptr, D, I
 
-    def torch_replacement_search(self, x, k, D=None, I=None):
+    def torch_replacement_search(self, x, k, D=None, I=None, numeric_type=faiss.Float32):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
             return self.search_numpy(x, k, D=D, I=I)
@@ -260,10 +281,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.search_c(n, x_ptr, k, D_ptr, I_ptr)
+                self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
         else:
             # CPU torch
-            self.search_c(n, x_ptr, k, D_ptr, I_ptr)
+            self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
 
         return D, I
 

@@ -6,7 +6,7 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 24.12, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4.
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.04, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4.
 
 To install the latest stable release:
 
@@ -98,7 +98,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=25.04
+  - libcuvs=25.08
 - for the python bindings:
   - python 3,
   - numpy,
@@ -112,15 +112,10 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 [cuVS](https://docs.rapids.ai/api/cuvs/nightly/) contains state-of-the-art implementations of several algorithms for running approximate nearest neighbors and clustering on the GPU. It is built on top of the [RAPIDS RAFT](https://github.com/rapidsai/raft) library of high performance machine learning primitives. Building Faiss with cuVS enabled allows a user to choose between regular GPU implementations in Faiss and cuVS implementations for specific algorithms.
 
 The libcuvs dependency should be installed via conda:
-1. With CUDA 12.0 - 12.5:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=12.0,<=12.5'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.08 'cuda-version>=12.0,<=12.5'
 ```
-2. With CUDA 11.4 - 11.8
-```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=24.12 'cuda-version>=11.4,<=11.8'
-```
-For more ways to install cuVS 24.12, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 25.08, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ## Step 1: invoking CMake
 
