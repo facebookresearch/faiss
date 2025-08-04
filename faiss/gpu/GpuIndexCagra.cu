@@ -536,19 +536,29 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
                     "Only base level copy is supported for Int8 types in GpuIndexCagra::copyTo");
         } else {
             index->hnsw.prepare_level_tab(n_train, false);
-            // applying encoding logic of Quantizer8bitDirectSigned
-            uint8_t* encoded_train_dataset = new uint8_t[n_train * index->d];
-            for (int i = 0; i < n_train * index->d; i++) {
-                encoded_train_dataset[i] = train_dataset[i] + 128;
+            // Directly update train_dataset with encoding of
+            // Quantizer8bitDirectSigned
+            for (int64_t i = 0; i < ((int64_t)n_train) * index->d; ++i) {
+                train_dataset[i] = static_cast<uint8_t>(
+                        static_cast<int>(train_dataset[i]) + 128);
             }
+
             index->storage->add_sa_codes(
-                    n_train, encoded_train_dataset, nullptr);
-            delete[] encoded_train_dataset;
+                    n_train,
+                    reinterpret_cast<uint8_t*>(train_dataset),
+                    nullptr);
+
             index->ntotal = n_train;
         }
 
         if (allocation) {
             delete[] train_dataset;
+        } else {
+            // Recover after appending
+            for (int64_t i = 0; i < ((int64_t)n_train) * index->d; ++i) {
+                train_dataset[i] = static_cast<int8_t>(
+                        static_cast<int>(train_dataset[i]) - 128);
+            }
         }
     }
 
