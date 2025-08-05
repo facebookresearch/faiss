@@ -31,8 +31,6 @@
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
 
-#include <faiss/IndexBinaryFlat.h>
-
 namespace faiss {
 
 AutoTuneCriterion::AutoTuneCriterion(idx_t nq, idx_t nnn)
