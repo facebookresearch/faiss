@@ -38,6 +38,7 @@ set(FAISS_TEST_SRC
   test_hamming.cpp
   test_mmap.cpp
   test_zerocopy.cpp
+  test_gpu_cagra_c_api.cpp
 )
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
@@ -84,9 +85,11 @@ find_package(GTest CONFIG REQUIRED)
 target_link_libraries(faiss_test PRIVATE
   OpenMP::OpenMP_CXX
   GTest::gtest_main
+  faiss_c
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
 gtest_discover_tests(faiss_test)
+
