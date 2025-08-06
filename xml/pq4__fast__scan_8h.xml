@@ -9,6 +9,8 @@
       <node id="5">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="6" relation="include">
         </childnode>
       </node>
@@ -16,14 +18,6 @@
         <label>faiss/impl/CodePacker.h</label>
         <link refid="CodePacker_8h_source"/>
         <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -39,7 +33,7 @@
       <node id="2">
         <label>cstdint</label>
       </node>
-      <node id="7">
+      <node id="6">
         <label>cstdio</label>
       </node>
       <node id="3">

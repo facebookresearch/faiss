@@ -15,6 +15,8 @@
         <link refid="MetricType_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss/impl/IDSelector.h</label>
@@ -26,12 +28,12 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="9">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -47,7 +49,7 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
@@ -71,7 +73,7 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -85,9 +87,9 @@
       <node id="19">
         <label>faiss/utils/hamming_distance/common.h</label>
         <link refid="common_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="20">
@@ -97,9 +99,9 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -132,10 +134,10 @@
       <node id="21">
         <label>cstddef</label>
       </node>
-      <node id="8">
+      <node id="7">
         <label>cstdint</label>
       </node>
-      <node id="9">
+      <node id="8">
         <label>cstdio</label>
       </node>
       <node id="13">

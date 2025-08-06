@@ -7,20 +7,16 @@
     <includes refid="utils_8h" local="no">faiss/utils/utils.h</includes>
     <includedby refid="GpuIndexBinaryCagra_8h" local="no">faiss/gpu/GpuIndexBinaryCagra.h</includedby>
     <incdepgraph>
-      <node id="10">
+      <node id="7">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -32,12 +28,6 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexBinaryFlat.h</label>
@@ -46,9 +36,9 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -56,84 +46,86 @@
         <link refid="IndexBinaryHNSW_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="8">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="13">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
       </node>
-      <node id="14">
-        <label>faiss/impl/FaissException.h</label>
-        <link refid="FaissException_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="23">
-        <label>faiss/impl/HNSW.h</label>
-        <link refid="HNSW_8h_source"/>
-        <childnode refid="24" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
+      <node id="9">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
       </node>
-      <node id="18">
-        <label>faiss/impl/maybe_owned_vector.h</label>
-        <link refid="maybe__owned__vector_8h_source"/>
-        <childnode refid="19" relation="include">
+      <node id="10">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="12">
+      <node id="22">
+        <label>faiss/impl/HNSW.h</label>
+        <link refid="HNSW_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/maybe_owned_vector.h</label>
+        <link refid="maybe__owned__vector_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
         <childnode refid="5" relation="include">
@@ -141,76 +133,76 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="27">
+      <node id="26">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
         <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
         <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
         <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
       </node>
-      <node id="22">
+      <node id="21">
         <label>faiss/utils/approx_topk/mode.h</label>
         <link refid="mode_8h_source"/>
       </node>
-      <node id="33">
+      <node id="32">
         <label>faiss/utils/ordered_key_value.h</label>
         <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="33">
         <label>faiss/utils/random.h</label>
         <link refid="random_8h_source"/>
-        <childnode refid="30" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
       </node>
-      <node id="36">
+      <node id="35">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
-        <childnode refid="30" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="31">
+      <node id="30">
         <label>cassert</label>
       </node>
-      <node id="28">
+      <node id="27">
         <label>climits</label>
       </node>
-      <node id="29">
+      <node id="28">
         <label>cmath</label>
       </node>
-      <node id="19">
+      <node id="18">
         <label>cstddef</label>
       </node>
       <node id="5">
@@ -219,49 +211,46 @@
       <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="17">
+      <node id="15">
         <label>cstdlib</label>
       </node>
-      <node id="20">
+      <node id="19">
         <label>cstring</label>
       </node>
-      <node id="15">
+      <node id="11">
         <label>exception</label>
       </node>
-      <node id="32">
+      <node id="31">
         <label>limits</label>
       </node>
-      <node id="21">
+      <node id="20">
         <label>memory</label>
       </node>
-      <node id="26">
+      <node id="25">
         <label>omp.h</label>
       </node>
-      <node id="24">
+      <node id="23">
         <label>queue</label>
       </node>
-      <node id="35">
+      <node id="34">
         <label>random</label>
       </node>
-      <node id="37">
+      <node id="36">
         <label>set</label>
       </node>
-      <node id="7">
+      <node id="16">
         <label>sstream</label>
       </node>
-      <node id="30">
+      <node id="29">
         <label>stdint.h</label>
       </node>
-      <node id="8">
+      <node id="12">
         <label>string</label>
       </node>
-      <node id="9">
-        <label>typeinfo</label>
-      </node>
-      <node id="25">
+      <node id="24">
         <label>unordered_set</label>
       </node>
-      <node id="16">
+      <node id="13">
         <label>utility</label>
       </node>
       <node id="3">
@@ -281,6 +270,7 @@
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexBinaryHNSW" prot="public">faiss::IndexBinaryHNSW</innerclass>
+    <innerclass refid="structfaiss_1_1IndexBinaryHNSWCagra" prot="public">faiss::IndexBinaryHNSWCagra</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -366,7 +356,36 @@
 <codeline lineno="77" refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="79"><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="structfaiss_1_1IndexBinaryHNSWCagra" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexBinaryHNSWCagra" kindref="compound">IndexBinaryHNSWCagra</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexBinaryHNSW" kindref="compound">IndexBinaryHNSW</ref><sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra" kindref="compound">IndexBinaryHNSWCagra</ref>();</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra" kindref="compound">IndexBinaryHNSWCagra</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kindref="member">d</ref>,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>set<sp/>to<sp/>true,<sp/>the<sp/>index<sp/>is<sp/>immutable.</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>option<sp/>is<sp/>used<sp/>to<sp/>copy<sp/>the<sp/>knn<sp/>graph<sp/>from<sp/>GpuIndexBinaryCagra</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>the<sp/>base<sp/>level<sp/>of<sp/>IndexBinaryHNSWCagra<sp/>without<sp/>adding<sp/>upper<sp/>levels.</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Doing<sp/>so<sp/>enables<sp/>to<sp/>search<sp/>the<sp/>HNSW<sp/>index,<sp/>but<sp/>removes<sp/>the</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ability<sp/>to<sp/>add<sp/>vectors.</highlight></codeline>
+<codeline lineno="89" refid="structfaiss_1_1IndexBinaryHNSWCagra_1a0157df8a36e387929c3d985c765bd803" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra_1a0157df8a36e387929c3d985c765bd803" kindref="member">base_level_only</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>When<sp/>`base_level_only`<sp/>is<sp/>set<sp/>to<sp/>`True`,<sp/>the<sp/>search<sp/>function</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>searches<sp/>only<sp/>the<sp/>base<sp/>level<sp/>knn<sp/>graph<sp/>of<sp/>the<sp/>HNSW<sp/>index.</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>parameter<sp/>selects<sp/>the<sp/>entry<sp/>point<sp/>by<sp/>randomly<sp/>selecting</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>some<sp/>points<sp/>and<sp/>using<sp/>the<sp/>best<sp/>one.</highlight></codeline>
+<codeline lineno="95" refid="structfaiss_1_1IndexBinaryHNSWCagra_1ac5033e01ec3b444551a908ec38332dab" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra_1ac5033e01ec3b444551a908ec38332dab" kindref="member">num_base_level_search_entrypoints</ref><sp/>=<sp/>32;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="structfaiss_1_1IndexBinaryHNSWCagra_1a7025f344df296c7013e1f0cae6b2ad1f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra_1a7025f344df296c7013e1f0cae6b2ad1f" kindref="member">add</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>x)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>entry<sp/>point<sp/>for<sp/>search</highlight></codeline>
+<codeline lineno="100" refid="structfaiss_1_1IndexBinaryHNSWCagra_1a27062d5b8113dacd2385e97ee61815f4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryHNSWCagra_1a27062d5b8113dacd2385e97ee61815f4" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>x,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>k,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>distances,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/IndexBinaryHNSW.h"/>
   </compounddef>

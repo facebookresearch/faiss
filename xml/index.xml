@@ -883,8 +883,8 @@
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1aa2c767f9e58a3ffd8ba691e232a3919b" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a495d6b525bb80241efd78dd1e020cbed" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1af5303d471d0b3d63d726a7545271718f" kind="function"><name>train</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a7d398cdd28b84546c4eebf56a9256dab" kind="function"><name>copyFrom</name></member>
-    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a09558f398ffd237a147416ed4b2f816f" kind="function"><name>copyTo</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a1c79a4bd223bac10f0574f7eebb3a279" kind="function"><name>copyFrom</name></member>
+    <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1af7e62f46f5c63bba0720ffd428d155c6" kind="function"><name>copyTo</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a9a479a77b968c79c83665ade6a7f5f1c" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ac5cacd21aee427a1f603bac4ca8cd276" kind="function"><name>get_knngraph</name></member>
     <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ab55c347db8bdb5ae0fa61805220b603f" kind="function"><name>search</name></member>
@@ -2574,6 +2574,47 @@
     <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" kind="function"><name>sa_code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" kind="function"><name>add_sa_codes</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1IndexBinaryHNSWCagra" kind="struct"><name>faiss::IndexBinaryHNSWCagra</name>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1a0157df8a36e387929c3d985c765bd803" kind="variable"><name>base_level_only</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1ac5033e01ec3b444551a908ec38332dab" kind="variable"><name>num_base_level_search_entrypoints</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a85919341ea47e6dec7968e29d09cbb1e" kind="variable"><name>hnsw</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a66ef25000227ce004b285cfa39dadb24" kind="variable"><name>own_fields</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" kind="variable"><name>storage</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e370041e7fdaaf992684c53632592dd" kind="variable"><name>init_level0</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a9bb86344140e03d28a49bd80384b2443" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a0e485a7189eec2675032486d3b12cf88" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a277c2645b8def11c5d982384098c5380" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a41b6759d127475d5fcd2b3982a8f355e" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a132119ae93e240b54621c5c669853c7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1a3793bd8c0e9bfdc478c1f8edc2f86cfa" kind="function"><name>IndexBinaryHNSWCagra</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1a064afe06254715088ed0d3e89227a54b" kind="function"><name>IndexBinaryHNSWCagra</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1a7025f344df296c7013e1f0cae6b2ad1f" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSWCagra_1a27062d5b8113dacd2385e97ee61815f4" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7e5fd2b6a03e56690293ae8a1dae3ea1" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a384cbb714369ea28bf55209450d6e160" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a54d064dc7fb501af4a3cad5de069d71b" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1ad24f16c343ac124c00950b3076dda6f4" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1af509e0e2a6194a270a4887e20f54d866" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1a7bab1a84623e4b9531263c4935315ca9" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1abf82dd0c7719eb18aa89cdad773fee6a" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a7d8f56aff2b732ce74fbc0f09af45e63" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a5ea7dee38e40f66b86d892bab2b6b80e" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" kind="function"><name>display</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" kind="function"><name>add_sa_codes</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryIVF" kind="struct"><name>faiss::IndexBinaryIVF</name>
     <member refid="structfaiss_1_1IndexBinaryIVF_1a094ef9572645ff86a76ff4df967bf65a" kind="variable"><name>invlists</name></member>

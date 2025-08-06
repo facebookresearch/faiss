@@ -19,6 +19,8 @@
         <link refid="MetricType_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/AuxIndexStructures.h</label>
@@ -35,7 +37,7 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -78,12 +80,12 @@
         <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="11">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
       <node id="18">
@@ -99,7 +101,7 @@
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
@@ -125,7 +127,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -140,10 +142,10 @@
       <node id="20">
         <label>cmath</label>
       </node>
-      <node id="10">
+      <node id="9">
         <label>cstdint</label>
       </node>
-      <node id="11">
+      <node id="10">
         <label>cstdio</label>
       </node>
       <node id="4">

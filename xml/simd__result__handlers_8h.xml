@@ -17,7 +17,9 @@
       <node id="26">
         <label>faiss/MetricType.h</label>
         <link refid="MetricType_8h_source"/>
-        <childnode refid="22" relation="include">
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="28">
