@@ -14,7 +14,6 @@
 #include <faiss/AutoTune.h>
 
 #include <cinttypes>
-#include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
