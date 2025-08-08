@@ -545,40 +545,34 @@ IndexNSG* parse_IndexNSG(
  * Parse IndexSVS
  */
 
-LVQLevel parse_lvq(
-      const std::string lvq_string) {
-    if(lvq_string == "LVQ_4x0") {
+LVQLevel parse_lvq(const std::string lvq_string) {
+    if (lvq_string == "LVQ_4x0") {
         return LVQLevel::LVQ_4x0;
     }
-    if(lvq_string == "LVQ_4x4") {
+    if (lvq_string == "LVQ_4x4") {
         return LVQLevel::LVQ_4x4;
     }
-    if(lvq_string == "LVQ_4x8") {
+    if (lvq_string == "LVQ_4x8") {
         return LVQLevel::LVQ_4x8;
     }
     FAISS_ASSERT(!"not supported SVS LVQ level");
 }
 
-LeanVecLevel parse_leanvec(
-      const std::string leanvec_string) {
-    if(leanvec_string == "LeanVec_4x4") {
+LeanVecLevel parse_leanvec(const std::string leanvec_string) {
+    if (leanvec_string == "LeanVec_4x4") {
         return LeanVecLevel::LeanVec_4x4;
     }
-    if(leanvec_string == "LeanVec_4x8") {
+    if (leanvec_string == "LeanVec_4x8") {
         return LeanVecLevel::LeanVec_4x8;
     }
-    if(leanvec_string == "LeanVec_8x8") {
+    if (leanvec_string == "LeanVec_8x8") {
         return LeanVecLevel::LeanVec_8x8;
     }
     FAISS_ASSERT(!"not supported SVS Leanvec level");
 }
 
-
-IndexSVS* parse_IndexSVS(
-        const std::string code_string,
-        int d,
-        MetricType mt) {
-    if(code_string.empty()) {
+IndexSVS* parse_IndexSVS(const std::string code_string, int d, MetricType mt) {
+    if (code_string.empty()) {
         IndexSVS* svs = new IndexSVS(d, mt);
         return svs;
     }
@@ -597,7 +591,8 @@ IndexSVS* parse_IndexSVS(
                 sm[2].length() > 0 ? sm[2].str().substr(1) : "0";
 
         int leanvec_d = std::stoul(leanvec_d_string);
-        IndexSVSLeanVec* sleanvec = new IndexSVSLeanVec(d, mt, leanvec_d, parse_leanvec(sm[1].str()));
+        IndexSVSLeanVec* sleanvec = new IndexSVSLeanVec(
+                d, mt, leanvec_d, parse_leanvec(sm[1].str()));
         return sleanvec;
     }
 
