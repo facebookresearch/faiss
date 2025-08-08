@@ -8,7 +8,6 @@
 #include <faiss/IndexAdditiveQuantizer.h>
 
 #include <algorithm>
-#include <cmath>
 #include <cstring>
 
 #include <faiss/impl/FaissAssert.h>
