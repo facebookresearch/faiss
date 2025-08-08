@@ -32,10 +32,6 @@ void IndexFlatCodes::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
-void IndexFlatCodes::add(idx_t n, const void* x, NumericType numeric_type) {
-    Index::add(n, x, numeric_type);
-};
-
 void IndexFlatCodes::add_sa_codes(
         idx_t n,
         const uint8_t* codes_in,
@@ -268,17 +264,6 @@ void IndexFlatCodes::search(
     const IDSelector* sel = params ? params->sel : nullptr;
     dispatch_knn_ResultHandler(
             n, distances, labels, k, metric_type, sel, r, this, x);
-}
-
-void IndexFlatCodes::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexFlatCodes::range_search(

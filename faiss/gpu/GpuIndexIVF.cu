@@ -298,14 +298,6 @@ void GpuIndexIVF::addImpl_(idx_t n, const float* x, const idx_t* xids) {
     ntotal += n;
 }
 
-void GpuIndexIVF::addImpl_(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        const idx_t* ids) {
-    GpuIndex::addImpl_(n, x, numeric_type, ids);
-}
-
 int GpuIndexIVF::getCurrentNProbe_(const SearchParameters* params) const {
     size_t use_nprobe = nprobe;
     if (params) {
@@ -352,17 +344,6 @@ void GpuIndexIVF::searchImpl_(
 
     baseIndex_->search(
             quantizer, queries, use_nprobe, k, outDistances, outLabels);
-}
-
-void GpuIndexIVF::searchImpl_(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        int k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    GpuIndex::searchImpl_(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexIVF::search_preassigned(

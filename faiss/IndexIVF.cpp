@@ -184,22 +184,10 @@ void IndexIVF::add(idx_t n, const float* x) {
     add_with_ids(n, x, nullptr);
 }
 
-void IndexIVF::add(idx_t n, const void* x, NumericType numeric_type) {
-    Index::add(n, x, numeric_type);
-}
-
 void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
     std::unique_ptr<idx_t[]> coarse_idx(new idx_t[n]);
     quantizer->assign(n, x, coarse_idx.get());
     add_core(n, x, xids, coarse_idx.get());
-}
-
-void IndexIVF::add_with_ids(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        const idx_t* xids) {
-    Index::add_with_ids(n, x, numeric_type, xids);
 }
 
 void IndexIVF::add_sa_codes(idx_t n, const uint8_t* codes, const idx_t* xids) {
@@ -403,17 +391,6 @@ void IndexIVF::search(
         // all)
         sub_search_func(n, x, distances, labels, &indexIVF_stats);
     }
-}
-
-void IndexIVF::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void IndexIVF::search_preassigned(
@@ -1210,10 +1187,6 @@ void IndexIVF::train(idx_t n, const float* x) {
     }
 
     is_trained = true;
-}
-
-void IndexIVF::train(idx_t n, const void* x, NumericType numeric_type) {
-    Index::train(n, x, numeric_type);
 }
 
 idx_t IndexIVF::train_encoder_num_vectors() const {

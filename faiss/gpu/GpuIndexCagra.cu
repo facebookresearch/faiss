@@ -42,7 +42,7 @@ GpuIndexCagra::GpuIndexCagra(
     this->is_trained = false;
 }
 
-void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
+void GpuIndexCagra::trainEx(idx_t n, const void* x, NumericType numeric_type) {
     numeric_type_ = numeric_type;
     bool index_is_initialized = !std::holds_alternative<std::monostate>(index_);
 
@@ -151,15 +151,15 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
 }
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
-    train(n, static_cast<const void*>(x), NumericType::Float32);
+    trainEx(n, static_cast<const void*>(x), NumericType::Float32);
 }
 
-void GpuIndexCagra::add(idx_t n, const void* x, NumericType numeric_type) {
-    train(n, x, numeric_type);
+void GpuIndexCagra::addEx(idx_t n, const void* x, NumericType numeric_type) {
+    trainEx(n, x, numeric_type);
 }
 
 void GpuIndexCagra::add(idx_t n, const float* x) {
-    add(n, x, NumericType::Float32);
+    addEx(n, x, NumericType::Float32);
 }
 
 bool GpuIndexCagra::addImplRequiresIDs_() const {
@@ -170,15 +170,15 @@ void GpuIndexCagra::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     FAISS_THROW_MSG("adding vectors is not supported by GpuIndexCagra.");
 };
 
-void GpuIndexCagra::addImpl_(
+void GpuIndexCagra::addImplEx_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
         const idx_t* ids) {
-    GpuIndex::addImpl_(n, x, numeric_type, ids);
+    GpuIndex::addImplEx_(n, x, numeric_type, ids);
 }
 
-void GpuIndexCagra::searchImpl_(
+void GpuIndexCagra::searchImplEx_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -289,7 +289,7 @@ void GpuIndexCagra::searchImpl_(
         float* distances,
         idx_t* labels,
         const SearchParameters* search_params) const {
-    searchImpl_(
+    searchImplEx_(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,
@@ -299,7 +299,7 @@ void GpuIndexCagra::searchImpl_(
             search_params);
 }
 
-void GpuIndexCagra::copyFrom(
+void GpuIndexCagra::copyFromEx(
         const faiss::IndexHNSWCagra* index,
         NumericType numeric_type) {
     FAISS_ASSERT(index);
@@ -386,7 +386,7 @@ void GpuIndexCagra::copyFrom(
 }
 
 void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
-    copyFrom(index, NumericType::Float32);
+    copyFromEx(index, NumericType::Float32);
 }
 
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {

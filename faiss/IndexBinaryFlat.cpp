@@ -25,10 +25,6 @@ void IndexBinaryFlat::add(idx_t n, const uint8_t* x) {
     ntotal += n;
 }
 
-void IndexBinaryFlat::add(idx_t n, const void* x, NumericType numeric_type) {
-    IndexBinary::add(n, x, numeric_type);
-}
-
 void IndexBinaryFlat::reset() {
     xb.clear();
     ntotal = 0;
@@ -79,17 +75,6 @@ void IndexBinaryFlat::search(
                     sel);
         }
     }
-}
-
-void IndexBinaryFlat::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        int32_t* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    IndexBinary::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 size_t IndexBinaryFlat::remove_ids(const IDSelector& sel) {

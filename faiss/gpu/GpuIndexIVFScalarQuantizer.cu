@@ -278,13 +278,5 @@ void GpuIndexIVFScalarQuantizer::train(idx_t n, const float* x) {
 
     this->is_trained = true;
 }
-
-void GpuIndexIVFScalarQuantizer::train(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type) {
-    GpuIndex::train(n, x, numeric_type);
-}
-
 } // namespace gpu
 } // namespace faiss
