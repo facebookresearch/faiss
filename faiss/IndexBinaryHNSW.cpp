@@ -26,7 +26,6 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
-#include <algorithm>
 #include <random>
 
 namespace faiss {
