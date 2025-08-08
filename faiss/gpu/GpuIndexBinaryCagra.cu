@@ -348,13 +348,6 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
 
-    // Validate M
-    FAISS_THROW_IF_NOT_FMT(
-            graph_degree % 2 == 0 && M > 0,
-            "CAGRA graph degree %d must be even and positive for conversion to HNSW (M=%d)",
-            static_cast<int>(graph_degree),
-            static_cast<int>(M));
-
     if (index->storage && index->own_fields) {
         delete index->storage;
     }
