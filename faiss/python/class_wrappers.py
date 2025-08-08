@@ -871,8 +871,8 @@ def handle_IndexBinary(the_class):
         self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
 
     def replacement_train(self, x):
-        n, d = x.shape
         x = _check_dtype_uint8(x)
+        n, d = x.shape
         assert d == self.code_size
         self.train_c(n, swig_ptr(x))
 
