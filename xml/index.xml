@@ -10228,6 +10228,7 @@
     <member refid="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" kind="function"><name>partition</name></member>
     <member refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" kind="function"><name>simd_histogram_8</name></member>
     <member refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" kind="function"><name>simd_histogram_16</name></member>
+    <member refid="namespacefaiss_1a147211a9b3ab1ef2bda1a6296803d4d0" kind="function"><name>rabitq_dp_popcnt</name></member>
     <member refid="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" kind="function"><name>float_rand</name></member>
     <member refid="namespacefaiss_1aa149aec8f65085773f664bb7b5884743" kind="function"><name>float_randn</name></member>
     <member refid="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8" kind="function"><name>int64_rand</name></member>
@@ -10301,13 +10302,13 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d153" kind="namespace"><name>faiss::@153</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d171" kind="namespace"><name>faiss::@171</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d173" kind="namespace"><name>faiss::@173</name>
+  <compound refid="namespacefaiss_1_1_0d172" kind="namespace"><name>faiss::@172</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d174" kind="namespace"><name>faiss::@174</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d175" kind="namespace"><name>faiss::@175</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d176" kind="namespace"><name>faiss::@176</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -10988,6 +10989,10 @@
   </compound>
   <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
   </compound>
+  <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
+  </compound>
+  <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
+  </compound>
   <compound refid="generic_8h" kind="file"><name>generic.h</name>
   </compound>
   <compound refid="mode_8h" kind="file"><name>mode.h</name>
@@ -11029,10 +11034,6 @@
   </compound>
   <compound refid="hamming_8h" kind="file"><name>hamming.h</name>
   </compound>
-  <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-  </compound>
-  <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-  </compound>
   <compound refid="avx512-inl_8h" kind="file"><name>avx512-inl.h</name>
   </compound>
   <compound refid="common_8h" kind="file"><name>common.h</name>
@@ -11060,6 +11061,8 @@
     <member refid="prefetch_8h_1a1031c6bf5de254eb24d635fb2044e746" kind="function"><name>prefetch_L3</name></member>
   </compound>
   <compound refid="quantize__lut_8h" kind="file"><name>quantize_lut.h</name>
+  </compound>
+  <compound refid="rabitq__simd_8h" kind="file"><name>rabitq_simd.h</name>
   </compound>
   <compound refid="random_8h" kind="file"><name>random.h</name>
   </compound>

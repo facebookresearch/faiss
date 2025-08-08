@@ -9086,6 +9086,73 @@
         </inbodydescription>
         <location file="faiss/utils/partitioning.h" line="54" column="6" declfile="faiss/utils/partitioning.h" declline="54" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a147211a9b3ab1ef2bda1a6296803d4d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rabitq_dp_popcnt</definition>
+        <argsstring>(const uint8_t *query, const uint8_t *binary_data, size_t d, size_t qb)</argsstring>
+        <name>rabitq_dp_popcnt</name>
+        <qualifiedname>faiss::rabitq_dp_popcnt</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>binary_data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>qb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute dot product between query and binary data using popcount operations.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>query</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to rearranged rotated query data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>binary_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Pointer to binary data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>qb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of quantization bits </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Dot product result as float </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="498" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="498" bodyend="537"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::float_rand</definition>
