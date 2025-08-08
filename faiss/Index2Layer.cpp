@@ -11,7 +11,6 @@
 
 #include <cassert>
 #include <cinttypes>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 
