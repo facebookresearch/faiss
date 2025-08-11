@@ -47,6 +47,14 @@ print(I[:5])                   # neighbors of the 5 first queries
 print(f"{k} nearest neighbors of the 5 last query vectors (after reloading)")
 print(I[-5:])                  # neighbors of the 5 last queries
 
-idx = faiss.IndexSVSLVQ(d, faiss.METRIC_L2, faiss.LVQ_4x8) # example of using SVS LVQ
+lvq_idx = faiss.IndexSVSLVQ(d, faiss.METRIC_L2, faiss.LVQ_4x8) # example of using SVS LVQ
+lvq_idx_fac = faiss.index_factory(d, 'SVS_LVQ_4x8', faiss.METRIC_L2) # example of using factory for SVS LVQ
+lvq_idx_fac.add(xb)
+lvq_idx_fac.search(xq, k)
 
-idx_2 = faiss.IndexSVSLeanVec(d, faiss.METRIC_L2, 0, faiss.LeanVec_4x4) # example of using SVS LeanVec
+
+leanvec_idx = faiss.IndexSVSLeanVec(d, faiss.METRIC_L2, 0, faiss.LeanVec_4x4) # example of using SVS LeanVec
+leanvec_idx_fac = faiss.index_factory(d, 'SVS_LeanVec_4x4,32', faiss.METRIC_L2) # example of using factory for SVS LeanVec
+leanvec_idx_fac.train(xb)
+leanvec_idx_fac.add(xb)
+leanvec_idx_fac.search(xq, k)

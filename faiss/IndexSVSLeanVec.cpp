@@ -19,7 +19,7 @@ IndexSVSLeanVec::IndexSVSLeanVec(
         size_t leanvec_dims,
         LeanVecLevel leanvec_level)
         : IndexSVS(d, metric), leanvec_level{leanvec_level} {
-    leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_d;
+    leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
     is_trained = false;
 }
 
