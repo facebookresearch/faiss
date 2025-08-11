@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="202" column="11" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="202" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="192" column="11" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizer.h" line="203" column="5" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="203" bodyend="203"/>
+        <location file="faiss/IndexAdditiveQuantizer.h" line="193" column="5" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="193" bodyend="193"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -87,7 +87,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizer.h" line="201" column="1" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="201" bodyend="204"/>
+    <location file="faiss/IndexAdditiveQuantizer.h" line="191" column="1" bodyfile="faiss/IndexAdditiveQuantizer.h" bodystart="191" bodyend="194"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer_1aa4e4f4aaeba8c80fc24f34c8f858e78f" prot="public" virt="non-virtual"><scope>faiss::SearchParametersResidualCoarseQuantizer</scope><name>beam_factor</name></member>
       <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersResidualCoarseQuantizer</scope><name>sel</name></member>

@@ -216,33 +216,6 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryFlat.h" line="38" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1abc4a3866a0e899b4b8666cb145d864ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>void faiss::IndexBinaryFlat::add</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type) override</argsstring>
-        <name>add</name>
-        <qualifiedname>faiss::IndexBinaryFlat::add</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexBinary_1a733b00988a4c48b1182023d13dc0f0b2">add</reimplements>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="39" column="10"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::IndexBinaryFlat::reset</definition>
@@ -257,7 +230,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="41" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="40" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a7a7812438f41665abe536cf623680341" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -325,51 +298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="43" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a769a16d1f30c48f29cd8d3f64a96e5aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>void faiss::IndexBinaryFlat::search</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, int32_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
-        <name>search</name>
-        <qualifiedname>faiss::IndexBinaryFlat::search</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexBinary_1a8c53952b7b317a6302e32e8fdf8b3b7f">search</reimplements>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>numeric_type</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>k</declname>
-        </param>
-        <param>
-          <type>int32_t *</type>
-          <declname>distances</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>labels</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="50" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="42" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1aecebd5a7e9073092343c337857b1e899" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -433,7 +362,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="59" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="50" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1a65c83fa2f2740fc17089e63dc7b70076" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -475,7 +404,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="66" column="10"/>
+        <location file="faiss/IndexBinaryFlat.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1ae5127fb557880bf5996531714f32b3d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -495,7 +424,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="71" column="12"/>
+        <location file="faiss/IndexBinaryFlat.h" line="62" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinaryFlat_1aed44f8312ec3b3190e3d09c180fb8c46" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -509,7 +438,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryFlat.h" line="73" column="5" bodyfile="faiss/IndexBinaryFlat.h" bodystart="73" bodyend="73"/>
+        <location file="faiss/IndexBinaryFlat.h" line="64" column="5" bodyfile="faiss/IndexBinaryFlat.h" bodystart="64" bodyend="64"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -556,14 +485,12 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="54" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a3ea5e39564542897806c38f45256bfb6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a55d909e0723f7a1650ee37b592e58187" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::IndexBinary::train</definition>
+        <definition>virtual void faiss::IndexBinary::trainEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::IndexBinary::train</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1af5303d471d0b3d63d726a7545271718f">train</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexBinaryHNSW_1a54d064dc7fb501af4a3cad5de069d71b">train</reimplementedby>
+        <name>trainEx</name>
+        <qualifiedname>faiss::IndexBinary::trainEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -583,6 +510,32 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="55" column="18" bodyfile="faiss/IndexBinary.h" bodystart="55" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1af8bda88da7695c56a0ca34302fbd6e24" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::IndexBinary::addEx</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
+        <name>addEx</name>
+        <qualifiedname>faiss::IndexBinary::addEx</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexBinary.h" line="69" column="18" bodyfile="faiss/IndexBinary.h" bodystart="69" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -624,12 +577,12 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="84" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1abf82dd0c7719eb18aa89cdad773fee6a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a15c826baaebfa8e3d380c8794abc02e6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::IndexBinary::add_with_ids</definition>
+        <definition>virtual void faiss::IndexBinary::add_with_idsEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, const idx_t *xids)</argsstring>
-        <name>add_with_ids</name>
-        <qualifiedname>faiss::IndexBinary::add_with_ids</qualifiedname>
+        <name>add_with_idsEx</name>
+        <qualifiedname>faiss::IndexBinary::add_with_idsEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -653,6 +606,49 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="85" column="18" bodyfile="faiss/IndexBinary.h" bodystart="85" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a52b4e42f5e273c2634a9de7300f1c4aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::IndexBinary::searchEx</definition>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, int32_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const</argsstring>
+        <name>searchEx</name>
+        <qualifiedname>faiss::IndexBinary::searchEx</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numeric_type</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexBinary.h" line="114" column="18" bodyfile="faiss/IndexBinary.h" bodystart="114" bodyend="132"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -967,13 +963,13 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexBinaryFlat.h" line="23" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="23" bodyend="74"/>
+    <location file="faiss/IndexBinaryFlat.h" line="23" column="1" bodyfile="faiss/IndexBinaryFlat.h" bodystart="23" bodyend="65"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexBinaryFlat_1ad2e6f7d9e4672caff89b6045cd2a808a" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add</name></member>
-      <member refid="structfaiss_1_1IndexBinaryFlat_1abc4a3866a0e899b4b8666cb145d864ad" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1IndexBinary_1abf82dd0c7719eb18aa89cdad773fee6a" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1a15c826baaebfa8e3d380c8794abc02e6" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>add_with_idsEx</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1af8bda88da7695c56a0ca34302fbd6e24" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>addEx</name></member>
       <member refid="structfaiss_1_1IndexBinaryFlat_1a0ca03ea03e068fe9cfb84236d4991df1" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>approx_topk_mode</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>assign</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>check_compatible_for_merge</name></member>
@@ -997,10 +993,10 @@
       <member refid="structfaiss_1_1IndexBinaryFlat_1a1765bac1dad81f86e226446483b5470e" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>reset</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>sa_code_size</name></member>
       <member refid="structfaiss_1_1IndexBinaryFlat_1a7a7812438f41665abe536cf623680341" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>search</name></member>
-      <member refid="structfaiss_1_1IndexBinaryFlat_1a769a16d1f30c48f29cd8d3f64a96e5aa" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1a52b4e42f5e273c2634a9de7300f1c4aa" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>searchEx</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a3c0ffd1655d8a5486660cb025340c9a4" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>train</name></member>
-      <member refid="structfaiss_1_1IndexBinary_1a3ea5e39564542897806c38f45256bfb6" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>train</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1a55d909e0723f7a1650ee37b592e58187" prot="public" virt="virtual"><scope>faiss::IndexBinaryFlat</scope><name>trainEx</name></member>
       <member refid="structfaiss_1_1IndexBinaryFlat_1a9fa80e22a4accee4da0ee152a4910c1b" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>use_heap</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1IndexBinaryFlat_1aa11d18951320b7a5cbb4789e37f84e65" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFlat</scope><name>xb</name></member>

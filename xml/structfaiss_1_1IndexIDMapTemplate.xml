@@ -143,12 +143,12 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="32" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a1f29cda8e6f836681209aa4f1ef6cee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1ac26ff789e045702754b29f53c685b0dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::add_with_ids</definition>
+        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::add_with_idsEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, const idx_t *xids) override</argsstring>
-        <name>add_with_ids</name>
-        <qualifiedname>faiss::IndexIDMapTemplate::add_with_ids</qualifiedname>
+        <name>add_with_idsEx</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::add_with_idsEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -196,12 +196,12 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="41" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a3338a0c1c8657ef6f6b723f648335a21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a7cd5ef3b551e4d08d09aa2fe66324f70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::add</definition>
+        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::addEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type) override</argsstring>
-        <name>add</name>
-        <qualifiedname>faiss::IndexIDMapTemplate::add</qualifiedname>
+        <name>addEx</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::addEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -261,12 +261,12 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="44" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a8124cf9e9e7a34a64d118f856396f13a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1af474f0a93a81f47539b1db942307ba5c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::search</definition>
+        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::searchEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, distance_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
-        <name>search</name>
-        <qualifiedname>faiss::IndexIDMapTemplate::search</qualifiedname>
+        <name>searchEx</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::searchEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -326,12 +326,12 @@
         </inbodydescription>
         <location file="faiss/IndexIDMap.h" line="60" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a1bb89f9515cf628a1f5682ba3251e4f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIDMapTemplate_1a344239af34644ff51e8542b88cefd790" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::train</definition>
+        <definition>void faiss::IndexIDMapTemplate&lt; IndexT &gt;::trainEx</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type) override</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::IndexIDMapTemplate::train</qualifiedname>
+        <name>trainEx</name>
+        <qualifiedname>faiss::IndexIDMapTemplate::trainEx</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -566,10 +566,10 @@
     <location file="faiss/IndexIDMap.h" line="21" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="21" bodyend="86"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a79498bca09342333e351bb6a4da8984d" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add</name></member>
-      <member refid="structfaiss_1_1IndexIDMapTemplate_1a3338a0c1c8657ef6f6b723f648335a21" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1ab8d1ceb41636c39ea47a91fcb923e0db" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a4cc8ae99154bf436d1cbe70a4205bfcd" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1IndexIDMapTemplate_1a1f29cda8e6f836681209aa4f1ef6cee9" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1IndexIDMapTemplate_1ac26ff789e045702754b29f53c685b0dd" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>add_with_idsEx</name></member>
+      <member refid="structfaiss_1_1IndexIDMapTemplate_1a7cd5ef3b551e4d08d09aa2fe66324f70" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>addEx</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a4f8a46a711b5f2d4f921c717b4ebba37" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1ad3e369ada29b7412c33e509f687efb00" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>component_t</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a79508a1aa0a0b898e2e975e42f343db7" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>distance_t</name></member>
@@ -584,9 +584,9 @@
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a31821431b6a6b960ecb18b8c2ac46372" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>reset</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1ad31234e502c5dd7c8881a25cd582424a" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>sa_code_size</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a1d73b0360c566007ce7aa7270f9a0c92" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>search</name></member>
-      <member refid="structfaiss_1_1IndexIDMapTemplate_1a8124cf9e9e7a34a64d118f856396f13a" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexIDMapTemplate_1af474f0a93a81f47539b1db942307ba5c" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>searchEx</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a6b9a5e978a69c99d93b6b8b2a3324f34" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>train</name></member>
-      <member refid="structfaiss_1_1IndexIDMapTemplate_1a1bb89f9515cf628a1f5682ba3251e4f6" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>train</name></member>
+      <member refid="structfaiss_1_1IndexIDMapTemplate_1a344239af34644ff51e8542b88cefd790" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>trainEx</name></member>
       <member refid="structfaiss_1_1IndexIDMapTemplate_1a07bd2e93b6d9ad135f2c60acc38e3341" prot="public" virt="non-virtual"><scope>faiss::IndexIDMapTemplate</scope><name>~IndexIDMapTemplate</name></member>
     </listofallmembers>
   </compounddef>
