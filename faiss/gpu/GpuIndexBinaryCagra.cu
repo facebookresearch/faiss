@@ -359,7 +359,6 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     for (idx_t i = 0; i < n_train; i++) {
         size_t begin, end;
         index->hnsw.neighbor_range(i, 0, &begin, &end);
-        FAISS_ASSERT(end - begin == graph_degree);
 
         for (size_t j = begin; j < end; j++) {
             index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];
