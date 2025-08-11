@@ -17,7 +17,7 @@
 #include <sstream>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 11
+#define FAISS_VERSION_MINOR 12
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
