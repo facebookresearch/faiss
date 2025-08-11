@@ -7,23 +7,70 @@
 
 #pragma once
 
+#include "faiss/Index.h"
+#include "faiss/impl/FaissAssert.h"
+
+#include <cstdint>
 #include <numeric>
 #include <utility>
 #include <vector>
 
 #include <filesystem>
-#include <sstream>
+#include <streambuf>
 
-#include "faiss/Index.h"
-#include "faiss/impl/FaissAssert.h"
+#ifdef _WIN32
+#include <io.h> // _lseeki64, _write
+#else
+#include <unistd.h> // lseek
+#endif
+#include <cstdint>
 
 namespace svs {
 class DynamicVamana;
 }
 
 namespace faiss {
+struct IOWriter;
+}
 
-namespace detail {
+namespace faiss {
+
+namespace svs_io {
+
+/* helpers to get and seek positions in fd for back-patching blob size */
+static inline bool fd_cur_pos(int fd, uint64_t& pos) {
+#ifdef _WIN32
+    __int64 p = _lseeki64(fd, 0, SEEK_CUR);
+    if (p < 0)
+        return false;
+    pos = (uint64_t)p;
+    return true;
+#else
+    off_t p = ::lseek(fd, 0, SEEK_CUR);
+    if (p < 0)
+        return false;
+    pos = (uint64_t)p;
+    return true;
+#endif
+}
+
+static inline bool fd_seek(int fd, uint64_t pos) {
+#ifdef _WIN32
+    return _lseeki64(fd, (__int64)pos, SEEK_SET) >= 0;
+#else
+    return ::lseek(fd, (off_t)pos, SEEK_SET) >= 0;
+#endif
+}
+
+struct WriterStreambuf : std::streambuf {
+    faiss::IOWriter* w;
+    uint64_t written = 0;
+    explicit WriterStreambuf(faiss::IOWriter* w_);
+    std::streamsize xsputn(const char* s, std::streamsize n) override;
+    int overflow(int ch) override;
+};
+
+/* temporary directory for SVS Vamana indices that tries to always clean up */
 struct SVSTempDirectory {
     std::filesystem::path root;
     std::filesystem::path config;
@@ -36,7 +83,7 @@ struct SVSTempDirectory {
     void write_files_to_stream(std::ostream& out) const;
     void write_stream_to_files(std::istream& in) const;
 };
-} // namespace detail
+} // namespace svs_io
 
 struct IndexSVS : Index {
     size_t num_threads = 1;

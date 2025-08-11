@@ -682,8 +682,11 @@ struct faiss::simd16uint16 {};
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
-
 %include <faiss/utils/approx_topk/mode.h>
+
+/* Hide SVS I/O helpers */
+%ignore faiss::svs_io::WriterStreambuf;
+%ignore faiss::svs_io::SVSTempDirectory;
 
 %include  <faiss/IndexSVS.h>
 %include  <faiss/IndexSVSFlat.h>

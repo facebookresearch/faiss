@@ -153,7 +153,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
             impl, "Cannot deserialize: SVS index already initialized.");
 
     // Write stream to files that can be read by DynamicVamana::assemble()
-    detail::SVSTempDirectory tmp;
+    svs_io::SVSTempDirectory tmp;
     tmp.write_stream_to_files(in);
 
     std::variant<svs::DistanceIP, svs::DistanceL2> svs_distance;

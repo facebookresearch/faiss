@@ -898,33 +898,79 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         } else {
             h = fourcc("ISVD"); // uncompressed
         }
-        WRITE1(h);
-        write_index_header(idx, f);
-        WRITE1(svs->num_threads);
-        WRITE1(svs->graph_max_degree);
-        WRITE1(svs->alpha);
-        WRITE1(svs->search_window_size);
-        WRITE1(svs->search_buffer_capacity);
-        WRITE1(svs->construction_window_size);
-        WRITE1(svs->max_candidate_pool_size);
-        WRITE1(svs->prune_to);
-        WRITE1(svs->use_full_search_history);
-        if (lvq != nullptr) {
-            WRITE1(lvq->lvq_level);
-        }
-        if (lean != nullptr) {
-            WRITE1(lean->leanvec_d);
-            WRITE1(lean->leanvec_level);
+
+        // The SVS implementation will write its contents to three directories,
+        // which we will read back here for writing to the actual output file.
+        // To avoid a full copy of the index in memory, we stream chunks.
+        // This requires some additional work on the output file and we need
+        // to keep track of some file positions.
+
+        // Helper because we need to write the header twice
+        auto write_header = [&](uint64_t blob_size) {
+            faiss::BufferedIOWriter bwr(f);
+            faiss::IOWriter* f = &bwr; // <-- shadow 'f' so WRITE1 uses bwr
+
+            // type tag + your existing header fields
+            WRITE1(h);
+            write_index_header(idx, f);
+            WRITE1(svs->num_threads);
+            WRITE1(svs->graph_max_degree);
+            WRITE1(svs->alpha);
+            WRITE1(svs->search_window_size);
+            WRITE1(svs->search_buffer_capacity);
+            WRITE1(svs->construction_window_size);
+            WRITE1(svs->max_candidate_pool_size);
+            WRITE1(svs->prune_to);
+            WRITE1(svs->use_full_search_history);
+            if (lvq != nullptr) {
+                WRITE1(lvq->lvq_level);
+            }
+            if (lean != nullptr) {
+                WRITE1(lean->leanvec_d);
+                WRITE1(lean->leanvec_level);
+            }
+
+            WRITE1(blob_size);
+        };
+
+        int fd = f->filedescriptor();
+        uint64_t header_start = 0;
+        FAISS_THROW_IF_NOT_MSG(
+                svs_io::fd_cur_pos(fd, header_start), "lseek failed at start");
+
+        // At this point we don't know the blob size yet, so we write a 0
+        write_header(0);
+
+        // Now we write the blob and keep track how much we advance the file
+        uint64_t payload_start = 0;
+        FAISS_THROW_IF_NOT_MSG(
+                svs_io::fd_cur_pos(fd, payload_start),
+                "lseek after header failed");
+
+        {
+            faiss::BufferedIOWriter bwr(f);
+            svs_io::WriterStreambuf wbuf(&bwr);
+            std::ostream os(&wbuf);
+
+            static_cast<const IndexSVS*>(idx)->serialize_impl(os);
+            os.flush();
         }
 
-        std::stringstream ss;
-        svs->serialize_impl(ss);
-        std::string blob = ss.str();
+        uint64_t payload_end = 0;
+        FAISS_THROW_IF_NOT_MSG(
+                svs_io::fd_cur_pos(fd, payload_end),
+                "lseek after payload failed");
 
-        // Write blob size and contents
-        uint64_t blob_size = blob.size();
-        WRITE1(blob_size);
-        WRITEANDCHECK(blob.data(), blob_size);
+        uint64_t blob_size = payload_end - payload_start;
+        FAISS_THROW_IF_NOT_MSG(
+                svs_io::fd_seek(fd, header_start),
+                "seek to header_start failed");
+
+        // We write the header again, this time with the actual blob size
+        write_header(blob_size);
+
+        // seek back to end of payload
+        svs_io::fd_seek(fd, payload_end);
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
         uint32_t h = fourcc("ISVF");

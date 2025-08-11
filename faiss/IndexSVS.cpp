@@ -8,13 +8,30 @@
 #include "faiss/IndexSVS.h"
 #include "faiss/Index.h"
 #include "faiss/MetricType.h"
+#include "faiss/impl/io.h"
 
 #include "svs/core/data.h"
 #include "svs/orchestrators/dynamic_vamana.h"
 
 namespace faiss {
+namespace svs_io {
+WriterStreambuf::WriterStreambuf(faiss::IOWriter* w_) : w(w_) {}
 
-namespace detail {
+std::streamsize WriterStreambuf::xsputn(const char* s, std::streamsize n) {
+    size_t k = (*w)(s, 1, (size_t)n);
+    written += k;
+    return (std::streamsize)k;
+}
+
+int WriterStreambuf::overflow(int ch) {
+    if (ch == traits_type::eof())
+        return 0;
+    char c = (char)ch;
+    size_t k = (*w)(&c, 1, 1);
+    written += k;
+    return ch;
+}
+
 SVSTempDirectory::SVSTempDirectory() {
     root = std::filesystem::temp_directory_path() /
             ("faiss_svs_" + std::to_string(std::rand()));
@@ -30,6 +47,19 @@ SVSTempDirectory::SVSTempDirectory() {
 SVSTempDirectory::~SVSTempDirectory() {
     std::error_code ec;
     std::filesystem::remove_all(root, ec);
+}
+
+static inline void read_exact(std::istream& in, void* p, size_t n) {
+    char* c = static_cast<char*>(p);
+    size_t got = 0;
+    while (got < n) {
+        in.read(c + got, n - got);
+        std::streamsize r = in.gcount();
+        if (r <= 0) {
+            FAISS_THROW_IF_NOT_MSG(false, "Unexpected EOF while reading");
+        }
+        got += size_t(r);
+    }
 }
 
 void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
@@ -63,40 +93,59 @@ void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
 }
 
 void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
-    while (in && in.peek() != EOF) {
-        uint64_t dir_len, file_len, file_size;
+    constexpr size_t BUFSZ = 1 << 20; // 1 MiB
+    std::vector<char> buf(BUFSZ);
 
+    for (;;) {
+        uint64_t dir_len = 0;
+
+        // Try to read next record. If we’re at clean EOF (no bytes), stop.
         in.read(reinterpret_cast<char*>(&dir_len), sizeof(dir_len));
+        if (!in) {
+            // No bytes read? clean EOF. Partial? error.
+            if (in.eof() && in.gcount() == 0)
+                return;
+            FAISS_THROW_IF_NOT_MSG(false, "Corrupt stream: partial header");
+        }
+
         std::string dir_name(dir_len, '\0');
-        in.read(dir_name.data(), dir_len);
+        read_exact(in, dir_name.data(), dir_len);
 
-        in.read(reinterpret_cast<char*>(&file_len), sizeof(file_len));
+        uint64_t file_len = 0;
+        read_exact(in, &file_len, sizeof(file_len));
         std::string filename(file_len, '\0');
-        in.read(filename.data(), file_len);
+        read_exact(in, filename.data(), file_len);
 
-        in.read(reinterpret_cast<char*>(&file_size), sizeof(file_size));
-        std::vector<char> buffer(file_size);
-        in.read(buffer.data(), file_size);
+        uint64_t file_size = 0;
+        read_exact(in, &file_size, sizeof(file_size));
 
         std::filesystem::path base;
-        if (dir_name == "config") {
+        if (dir_name == "config")
             base = config;
-        } else if (dir_name == "graph") {
+        else if (dir_name == "graph")
             base = graph;
-        } else if (dir_name == "data") {
+        else if (dir_name == "data")
             base = data;
-        } else {
+        else
             FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
-        }
 
         std::filesystem::path full_path = base / filename;
         std::ofstream out(full_path, std::ios::binary);
         FAISS_THROW_IF_NOT_MSG(out, "Failed to open temp SVS file for writing");
-        out.write(buffer.data(), buffer.size());
+
+        // Stream body in chunks
+        uint64_t remaining = file_size;
+        while (remaining > 0) {
+            size_t want = size_t(std::min<uint64_t>(remaining, buf.size()));
+            read_exact(in, buf.data(), want);
+            out.write(buf.data(), want);
+            FAISS_THROW_IF_NOT_MSG(out, "Short write to temp SVS file");
+            remaining -= want;
+        }
     }
 }
 
-} // namespace detail
+} // namespace svs_io
 
 IndexSVS::IndexSVS() : Index{} {}
 
@@ -218,7 +267,7 @@ void IndexSVS::serialize_impl(std::ostream& out) const {
             impl, "Cannot serialize: SVS index not initialized.");
 
     // Write index to temporary files and concatenate the contents
-    detail::SVSTempDirectory tmp;
+    svs_io::SVSTempDirectory tmp;
     impl->save(tmp.config, tmp.graph, tmp.data);
     tmp.write_files_to_stream(out);
 }
@@ -228,7 +277,7 @@ void IndexSVS::deserialize_impl(std::istream& in) {
             impl, "Cannot deserialize: SVS index already initialized.");
 
     // Write stream to files that can be read by DynamicVamana::assemble()
-    detail::SVSTempDirectory tmp;
+    svs_io::SVSTempDirectory tmp;
     tmp.write_stream_to_files(in);
 
     switch (metric_type) {
