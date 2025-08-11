@@ -674,6 +674,261 @@ static IndexIVFPQ* read_ivfpq(IOReader* f, uint32_t h, int io_flags) {
 
 int read_old_fmt_hack = 0;
 
+/* static */ void readAdditiveQuantizerByType(
+        bool is_LSQ,
+        bool is_RQ,
+        bool is_PLSQ,
+        AdditiveQuantizer* aq,
+        IOReader* f,
+        int io_flags) {
+    if (is_LSQ) {
+        read_LocalSearchQuantizer((LocalSearchQuantizer*)aq, f);
+    } else if (is_RQ) {
+        read_ResidualQuantizer((ResidualQuantizer*)aq, f, io_flags);
+    } else if (is_PLSQ) {
+        read_ProductLocalSearchQuantizer((ProductLocalSearchQuantizer*)aq, f);
+    } else {
+        read_ProductResidualQuantizer(
+                (ProductResidualQuantizer*)aq, f, io_flags);
+    }
+}
+
+static void readCommonFastScanParameters(
+        IOReader* f,
+        int& implem,
+        int& bbs,
+        int& qbs,
+        size_t& M,
+        size_t& nbits,
+        size_t& ksub,
+        size_t& code_size,
+        bool& rescale_norm,
+        int& norm_scale,
+        size_t& max_train_points) {
+    READ1(implem);
+    READ1(bbs);
+    READ1(qbs);
+
+    READ1(M);
+    READ1(nbits);
+    READ1(ksub);
+    READ1(code_size);
+
+    READ1(rescale_norm);
+    READ1(norm_scale);
+    READ1(max_train_points);
+}
+
+static void readIVFFastScanParameters(
+        IOReader* f,
+        bool& by_residual,
+        int& implem,
+        int& bbs,
+        int& qbs,
+        size_t& M,
+        size_t& nbits,
+        size_t& ksub,
+        size_t& code_size,
+        size_t& qbs2,
+        size_t& M2,
+        bool& rescale_norm,
+        int& norm_scale,
+        size_t& max_train_points) {
+    READ1(by_residual);
+    READ1(implem);
+    READ1(bbs);
+    READ1(qbs);
+
+    READ1(M);
+    READ1(nbits);
+    READ1(ksub);
+    READ1(code_size);
+    READ1(qbs2);
+    READ1(M2);
+
+    READ1(rescale_norm);
+    READ1(norm_scale);
+    READ1(max_train_points);
+}
+
+static IndexAdditiveQuantizerFastScan* readIndexAdditiveQuantizerFastScan(
+        uint32_t h,
+        IOReader* f,
+        int io_flags) {
+    bool is_LSQ = h == fourcc("ILfs");
+    bool is_RQ = h == fourcc("IRfs");
+    bool is_PLSQ = h == fourcc("IPLf");
+
+    IndexAdditiveQuantizerFastScan* idxaqfs;
+    if (is_LSQ) {
+        idxaqfs = new IndexLocalSearchQuantizerFastScan();
+    } else if (is_RQ) {
+        idxaqfs = new IndexResidualQuantizerFastScan();
+    } else if (is_PLSQ) {
+        idxaqfs = new IndexProductLocalSearchQuantizerFastScan();
+    } else {
+        idxaqfs = new IndexProductResidualQuantizerFastScan();
+    }
+    read_index_header(idxaqfs, f);
+
+    readAdditiveQuantizerByType(
+            is_LSQ, is_RQ, is_PLSQ, idxaqfs->aq, f, io_flags);
+
+    readCommonFastScanParameters(
+            f,
+            idxaqfs->implem,
+            idxaqfs->bbs,
+            idxaqfs->qbs,
+            idxaqfs->M,
+            idxaqfs->nbits,
+            idxaqfs->ksub,
+            idxaqfs->code_size,
+            idxaqfs->rescale_norm,
+            idxaqfs->norm_scale,
+            idxaqfs->max_train_points);
+
+    READ1(idxaqfs->ntotal2);
+    READ1(idxaqfs->M2);
+
+    READVECTOR(idxaqfs->codes);
+    return idxaqfs;
+}
+
+static IndexIVFAdditiveQuantizerFastScan* readIndexIVFAdditiveQuantizerFastScan(
+        uint32_t h,
+        IOReader* f,
+        int io_flags) {
+    bool is_LSQ = h == fourcc("IVLf");
+    bool is_RQ = h == fourcc("IVRf");
+    bool is_PLSQ = h == fourcc("NPLf");
+
+    IndexIVFAdditiveQuantizerFastScan* ivaqfs;
+    if (is_LSQ) {
+        ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
+    } else if (is_RQ) {
+        ivaqfs = new IndexIVFResidualQuantizerFastScan();
+    } else if (is_PLSQ) {
+        ivaqfs = new IndexIVFProductLocalSearchQuantizerFastScan();
+    } else {
+        ivaqfs = new IndexIVFProductResidualQuantizerFastScan();
+    }
+    read_ivf_header(ivaqfs, f);
+
+    readAdditiveQuantizerByType(
+            is_LSQ, is_RQ, is_PLSQ, ivaqfs->aq, f, io_flags);
+
+    readIVFFastScanParameters(
+            f,
+            ivaqfs->by_residual,
+            ivaqfs->implem,
+            ivaqfs->bbs,
+            ivaqfs->qbs,
+            ivaqfs->M,
+            ivaqfs->nbits,
+            ivaqfs->ksub,
+            ivaqfs->code_size,
+            ivaqfs->qbs2,
+            ivaqfs->M2,
+            ivaqfs->rescale_norm,
+            ivaqfs->norm_scale,
+            ivaqfs->max_train_points);
+
+    read_InvertedLists(ivaqfs, f, io_flags);
+    ivaqfs->init_code_packer();
+    return ivaqfs;
+}
+
+static IndexIVFAdditiveQuantizer* readIndexIVFAdditiveQuantizer(
+        uint32_t h,
+        IOReader* f,
+        int io_flags) {
+    bool is_LSQ = h == fourcc("IwLS");
+    bool is_RQ = h == fourcc("IwRQ");
+    bool is_PLSQ = h == fourcc("IwPL");
+
+    IndexIVFAdditiveQuantizer* iva;
+    if (is_LSQ) {
+        iva = new IndexIVFLocalSearchQuantizer();
+    } else if (is_RQ) {
+        iva = new IndexIVFResidualQuantizer();
+    } else if (is_PLSQ) {
+        iva = new IndexIVFProductLocalSearchQuantizer();
+    } else {
+        iva = new IndexIVFProductResidualQuantizer();
+    }
+    read_ivf_header(iva, f);
+    READ1(iva->code_size);
+
+    readAdditiveQuantizerByType(is_LSQ, is_RQ, is_PLSQ, iva->aq, f, io_flags);
+
+    READ1(iva->by_residual);
+    READ1(iva->use_precomputed_table);
+    read_InvertedLists(iva, f, io_flags);
+    return iva;
+}
+
+static IndexHNSW* readIndexHNSW(uint32_t h, IOReader* f, int io_flags) {
+    IndexHNSW* idxhnsw = nullptr;
+    if (h == fourcc("IHNf")) {
+        idxhnsw = new IndexHNSWFlat();
+    } else if (h == fourcc("IHNp")) {
+        idxhnsw = new IndexHNSWPQ();
+    } else if (h == fourcc("IHNs")) {
+        idxhnsw = new IndexHNSWSQ();
+    } else if (h == fourcc("IHN2")) {
+        idxhnsw = new IndexHNSW2Level();
+    } else if (h == fourcc("IHNc")) {
+        idxhnsw = new IndexHNSWCagra();
+    } else if (h == fourcc("IHc2")) {
+        idxhnsw = new IndexHNSWCagra();
+    } else {
+        FAISS_THROW_MSG("unknown fourcc for HNSW index");
+    }
+    read_index_header(idxhnsw, f);
+    if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
+        READ1(idxhnsw->keep_max_size_level0);
+        auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
+        READ1(idx_hnsw_cagra->base_level_only);
+        READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
+        if (h == fourcc("IHc2")) {
+            READ1(idx_hnsw_cagra->numeric_type_);
+        } else { // cagra before numeric_type_ was introduced
+            idx_hnsw_cagra->set_numeric_type(faiss::Float32);
+        }
+    }
+    read_HNSW(&idxhnsw->hnsw, f);
+    idxhnsw->storage = read_index(f, io_flags);
+    idxhnsw->own_fields = idxhnsw->storage != nullptr;
+    if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
+        dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
+    }
+    return idxhnsw;
+}
+
+static IndexNSG* readIndexNSG(uint32_t h, IOReader* f, int io_flags) {
+    IndexNSG* idxnsg;
+    if (h == fourcc("INSf")) {
+        idxnsg = new IndexNSGFlat();
+    } else if (h == fourcc("INSp")) {
+        idxnsg = new IndexNSGPQ();
+    } else if (h == fourcc("INSs")) {
+        idxnsg = new IndexNSGSQ();
+    } else {
+        FAISS_THROW_MSG("unknown fourcc for NSG index");
+    }
+    read_index_header(idxnsg, f);
+    READ1(idxnsg->GK);
+    READ1(idxnsg->build_type);
+    READ1(idxnsg->nndescent_S);
+    READ1(idxnsg->nndescent_R);
+    READ1(idxnsg->nndescent_L);
+    READ1(idxnsg->nndescent_iter);
+    read_NSG(&idxnsg->nsg, f);
+    idxnsg->storage = read_index(f, io_flags);
+    idxnsg->own_fields = true;
+    return idxnsg;
+}
+
 Index* read_index(IOReader* f, int io_flags) {
     Index* idx = nullptr;
     uint32_t h;
@@ -797,102 +1052,11 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("ILfs") || h == fourcc("IRfs") || h == fourcc("IPRf") ||
             h == fourcc("IPLf")) {
-        bool is_LSQ = h == fourcc("ILfs");
-        bool is_RQ = h == fourcc("IRfs");
-        bool is_PLSQ = h == fourcc("IPLf");
-
-        IndexAdditiveQuantizerFastScan* idxaqfs;
-        if (is_LSQ) {
-            idxaqfs = new IndexLocalSearchQuantizerFastScan();
-        } else if (is_RQ) {
-            idxaqfs = new IndexResidualQuantizerFastScan();
-        } else if (is_PLSQ) {
-            idxaqfs = new IndexProductLocalSearchQuantizerFastScan();
-        } else {
-            idxaqfs = new IndexProductResidualQuantizerFastScan();
-        }
-        read_index_header(idxaqfs, f);
-
-        if (is_LSQ) {
-            read_LocalSearchQuantizer((LocalSearchQuantizer*)idxaqfs->aq, f);
-        } else if (is_RQ) {
-            read_ResidualQuantizer(
-                    (ResidualQuantizer*)idxaqfs->aq, f, io_flags);
-        } else if (is_PLSQ) {
-            read_ProductLocalSearchQuantizer(
-                    (ProductLocalSearchQuantizer*)idxaqfs->aq, f);
-        } else {
-            read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)idxaqfs->aq, f, io_flags);
-        }
-
-        READ1(idxaqfs->implem);
-        READ1(idxaqfs->bbs);
-        READ1(idxaqfs->qbs);
-
-        READ1(idxaqfs->M);
-        READ1(idxaqfs->nbits);
-        READ1(idxaqfs->ksub);
-        READ1(idxaqfs->code_size);
-        READ1(idxaqfs->ntotal2);
-        READ1(idxaqfs->M2);
-
-        READ1(idxaqfs->rescale_norm);
-        READ1(idxaqfs->norm_scale);
-        READ1(idxaqfs->max_train_points);
-
-        READVECTOR(idxaqfs->codes);
-        idx = idxaqfs;
+        idx = readIndexAdditiveQuantizerFastScan(h, f, io_flags);
     } else if (
             h == fourcc("IVLf") || h == fourcc("IVRf") || h == fourcc("NPLf") ||
             h == fourcc("NPRf")) {
-        bool is_LSQ = h == fourcc("IVLf");
-        bool is_RQ = h == fourcc("IVRf");
-        bool is_PLSQ = h == fourcc("NPLf");
-
-        IndexIVFAdditiveQuantizerFastScan* ivaqfs;
-        if (is_LSQ) {
-            ivaqfs = new IndexIVFLocalSearchQuantizerFastScan();
-        } else if (is_RQ) {
-            ivaqfs = new IndexIVFResidualQuantizerFastScan();
-        } else if (is_PLSQ) {
-            ivaqfs = new IndexIVFProductLocalSearchQuantizerFastScan();
-        } else {
-            ivaqfs = new IndexIVFProductResidualQuantizerFastScan();
-        }
-        read_ivf_header(ivaqfs, f);
-
-        if (is_LSQ) {
-            read_LocalSearchQuantizer((LocalSearchQuantizer*)ivaqfs->aq, f);
-        } else if (is_RQ) {
-            read_ResidualQuantizer((ResidualQuantizer*)ivaqfs->aq, f, io_flags);
-        } else if (is_PLSQ) {
-            read_ProductLocalSearchQuantizer(
-                    (ProductLocalSearchQuantizer*)ivaqfs->aq, f);
-        } else {
-            read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)ivaqfs->aq, f, io_flags);
-        }
-
-        READ1(ivaqfs->by_residual);
-        READ1(ivaqfs->implem);
-        READ1(ivaqfs->bbs);
-        READ1(ivaqfs->qbs);
-
-        READ1(ivaqfs->M);
-        READ1(ivaqfs->nbits);
-        READ1(ivaqfs->ksub);
-        READ1(ivaqfs->code_size);
-        READ1(ivaqfs->qbs2);
-        READ1(ivaqfs->M2);
-
-        READ1(ivaqfs->rescale_norm);
-        READ1(ivaqfs->norm_scale);
-        READ1(ivaqfs->max_train_points);
-
-        read_InvertedLists(ivaqfs, f, io_flags);
-        ivaqfs->init_code_packer();
-        idx = ivaqfs;
+        idx = readIndexIVFAdditiveQuantizerFastScan(h, f, io_flags);
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         IndexIVFFlat* ivfl = new IndexIVFFlat();
         std::vector<std::vector<idx_t>> ids;
@@ -975,36 +1139,7 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IwLS") || h == fourcc("IwRQ") || h == fourcc("IwPL") ||
             h == fourcc("IwPR")) {
-        bool is_LSQ = h == fourcc("IwLS");
-        bool is_RQ = h == fourcc("IwRQ");
-        bool is_PLSQ = h == fourcc("IwPL");
-        IndexIVFAdditiveQuantizer* iva;
-        if (is_LSQ) {
-            iva = new IndexIVFLocalSearchQuantizer();
-        } else if (is_RQ) {
-            iva = new IndexIVFResidualQuantizer();
-        } else if (is_PLSQ) {
-            iva = new IndexIVFProductLocalSearchQuantizer();
-        } else {
-            iva = new IndexIVFProductResidualQuantizer();
-        }
-        read_ivf_header(iva, f);
-        READ1(iva->code_size);
-        if (is_LSQ) {
-            read_LocalSearchQuantizer((LocalSearchQuantizer*)iva->aq, f);
-        } else if (is_RQ) {
-            read_ResidualQuantizer((ResidualQuantizer*)iva->aq, f, io_flags);
-        } else if (is_PLSQ) {
-            read_ProductLocalSearchQuantizer(
-                    (ProductLocalSearchQuantizer*)iva->aq, f);
-        } else {
-            read_ProductResidualQuantizer(
-                    (ProductResidualQuantizer*)iva->aq, f, io_flags);
-        }
-        READ1(iva->by_residual);
-        READ1(iva->use_precomputed_table);
-        read_InvertedLists(iva, f, io_flags);
-        idx = iva;
+        idx = readIndexIVFAdditiveQuantizer(h, f, io_flags);
     } else if (h == fourcc("IwSh")) {
         IndexIVFSpectralHash* ivsp = new IndexIVFSpectralHash();
         read_ivf_header(ivsp, f);
@@ -1100,67 +1235,10 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
             h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2")) {
-        IndexHNSW* idxhnsw = nullptr;
-        if (h == fourcc("IHNf")) {
-            idxhnsw = new IndexHNSWFlat();
-        }
-        if (h == fourcc("IHNp")) {
-            idxhnsw = new IndexHNSWPQ();
-        }
-        if (h == fourcc("IHNs")) {
-            idxhnsw = new IndexHNSWSQ();
-        }
-        if (h == fourcc("IHN2")) {
-            idxhnsw = new IndexHNSW2Level();
-        }
-        if (h == fourcc("IHNc")) {
-            idxhnsw = new IndexHNSWCagra();
-        }
-        if (h == fourcc("IHc2")) {
-            idxhnsw = new IndexHNSWCagra();
-        }
-        read_index_header(idxhnsw, f);
-        if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
-            READ1(idxhnsw->keep_max_size_level0);
-            auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
-            READ1(idx_hnsw_cagra->base_level_only);
-            READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
-            if (h == fourcc("IHc2")) {
-                READ1(idx_hnsw_cagra->numeric_type_);
-            } else { // cagra before numeric_type_ was introduced
-                idx_hnsw_cagra->set_numeric_type(faiss::Float32);
-            }
-        }
-        read_HNSW(&idxhnsw->hnsw, f);
-        idxhnsw->storage = read_index(f, io_flags);
-        idxhnsw->own_fields = idxhnsw->storage != nullptr;
-        if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
-            dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
-        }
-        idx = idxhnsw;
+        idx = readIndexHNSW(h, f, io_flags);
     } else if (
             h == fourcc("INSf") || h == fourcc("INSp") || h == fourcc("INSs")) {
-        IndexNSG* idxnsg;
-        if (h == fourcc("INSf")) {
-            idxnsg = new IndexNSGFlat();
-        }
-        if (h == fourcc("INSp")) {
-            idxnsg = new IndexNSGPQ();
-        }
-        if (h == fourcc("INSs")) {
-            idxnsg = new IndexNSGSQ();
-        }
-        read_index_header(idxnsg, f);
-        READ1(idxnsg->GK);
-        READ1(idxnsg->build_type);
-        READ1(idxnsg->nndescent_S);
-        READ1(idxnsg->nndescent_R);
-        READ1(idxnsg->nndescent_L);
-        READ1(idxnsg->nndescent_iter);
-        read_NSG(&idxnsg->nsg, f);
-        idxnsg->storage = read_index(f, io_flags);
-        idxnsg->own_fields = true;
-        idx = idxnsg;
+        idx = readIndexNSG(h, f, io_flags);
     } else if (h == fourcc("INNf")) {
         IndexNNDescent* idxnnd = new IndexNNDescentFlat();
         read_index_header(idxnnd, f);
