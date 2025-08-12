@@ -8,22 +8,19 @@
 #pragma once
 
 #include "faiss/Index.h"
-#include "faiss/impl/FaissAssert.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <numeric>
+#include <streambuf>
 #include <utility>
 #include <vector>
 
-#include <filesystem>
-#include <streambuf>
-
-#ifdef _WIN32
-#include <io.h> // _lseeki64, _write
-#else
-#include <unistd.h> // lseek
-#endif
-#include <cstdint>
+namespace faiss {
+struct IOReader;
+struct IOWriter;
+} // namespace faiss
 
 namespace svs {
 class DynamicVamana;
@@ -34,56 +31,6 @@ struct IOWriter;
 }
 
 namespace faiss {
-
-namespace svs_io {
-
-/* helpers to get and seek positions in fd for back-patching blob size */
-static inline bool fd_cur_pos(int fd, uint64_t& pos) {
-#ifdef _WIN32
-    __int64 p = _lseeki64(fd, 0, SEEK_CUR);
-    if (p < 0)
-        return false;
-    pos = (uint64_t)p;
-    return true;
-#else
-    off_t p = ::lseek(fd, 0, SEEK_CUR);
-    if (p < 0)
-        return false;
-    pos = (uint64_t)p;
-    return true;
-#endif
-}
-
-static inline bool fd_seek(int fd, uint64_t pos) {
-#ifdef _WIN32
-    return _lseeki64(fd, (__int64)pos, SEEK_SET) >= 0;
-#else
-    return ::lseek(fd, (off_t)pos, SEEK_SET) >= 0;
-#endif
-}
-
-struct WriterStreambuf : std::streambuf {
-    faiss::IOWriter* w;
-    uint64_t written = 0;
-    explicit WriterStreambuf(faiss::IOWriter* w_);
-    std::streamsize xsputn(const char* s, std::streamsize n) override;
-    int overflow(int ch) override;
-};
-
-/* temporary directory for SVS Vamana indices that tries to always clean up */
-struct SVSTempDirectory {
-    std::filesystem::path root;
-    std::filesystem::path config;
-    std::filesystem::path graph;
-    std::filesystem::path data;
-
-    SVSTempDirectory();
-    ~SVSTempDirectory();
-
-    void write_files_to_stream(std::ostream& out) const;
-    void write_stream_to_files(std::istream& in) const;
-};
-} // namespace svs_io
 
 struct IndexSVS : Index {
     size_t num_threads = 1;
@@ -124,5 +71,43 @@ struct IndexSVS : Index {
     /* Initializes the implementation, using the provided data */
     virtual void init_impl(idx_t n, const float* x);
 };
+
+// We provide some helpers for efficient I/O in the svs_io namespace
+// These can be excluded from the Python bindings
+namespace svs_io {
+// Bridges IOWriter to std::ostream (used for streaming payload out)
+struct WriterStreambuf : std::streambuf {
+    IOWriter* w; // not owning
+    explicit WriterStreambuf(IOWriter* w_);
+    ~WriterStreambuf() override; // out-of-line def in .cpp
+   protected:
+    std::streamsize xsputn(const char* s, std::streamsize n) override;
+    int overflow(int ch) override;
+};
+
+// Bridges IOReader to std::istream (used to read payload to EOF)
+struct ReaderStreambuf : std::streambuf {
+    IOReader* r;           // not owning
+    std::vector<char> buf; // ring buffer (default 1 MiB)
+    explicit ReaderStreambuf(IOReader* rr, size_t bsz = (1u << 20));
+    ~ReaderStreambuf() override; // out-of-line def in .cpp
+   protected:
+    int_type underflow() override;
+};
+
+/* temporary directory for SVS Vamana indices that tries to always clean up */
+struct SVSTempDirectory {
+    std::filesystem::path root;
+    std::filesystem::path config;
+    std::filesystem::path graph;
+    std::filesystem::path data;
+
+    SVSTempDirectory();
+    ~SVSTempDirectory();
+
+    void write_files_to_stream(std::ostream& out) const;
+    void write_stream_to_files(std::istream& in) const;
+};
+} // namespace svs_io
 
 } // namespace faiss

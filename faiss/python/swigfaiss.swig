@@ -685,6 +685,7 @@ struct faiss::simd16uint16 {};
 %include <faiss/utils/approx_topk/mode.h>
 
 /* Hide SVS I/O helpers */
+%ignore faiss::svs_io::ReaderStreambuf;
 %ignore faiss::svs_io::WriterStreambuf;
 %ignore faiss::svs_io::SVSTempDirectory;
 

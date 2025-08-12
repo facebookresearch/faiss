@@ -14,138 +14,6 @@
 #include "svs/orchestrators/dynamic_vamana.h"
 
 namespace faiss {
-namespace svs_io {
-WriterStreambuf::WriterStreambuf(faiss::IOWriter* w_) : w(w_) {}
-
-std::streamsize WriterStreambuf::xsputn(const char* s, std::streamsize n) {
-    size_t k = (*w)(s, 1, (size_t)n);
-    written += k;
-    return (std::streamsize)k;
-}
-
-int WriterStreambuf::overflow(int ch) {
-    if (ch == traits_type::eof())
-        return 0;
-    char c = (char)ch;
-    size_t k = (*w)(&c, 1, 1);
-    written += k;
-    return ch;
-}
-
-SVSTempDirectory::SVSTempDirectory() {
-    root = std::filesystem::temp_directory_path() /
-            ("faiss_svs_" + std::to_string(std::rand()));
-    config = root / "config";
-    graph = root / "graph";
-    data = root / "data";
-
-    std::filesystem::create_directories(config);
-    std::filesystem::create_directories(graph);
-    std::filesystem::create_directories(data);
-}
-
-SVSTempDirectory::~SVSTempDirectory() {
-    std::error_code ec;
-    std::filesystem::remove_all(root, ec);
-}
-
-static inline void read_exact(std::istream& in, void* p, size_t n) {
-    char* c = static_cast<char*>(p);
-    size_t got = 0;
-    while (got < n) {
-        in.read(c + got, n - got);
-        std::streamsize r = in.gcount();
-        if (r <= 0) {
-            FAISS_THROW_IF_NOT_MSG(false, "Unexpected EOF while reading");
-        }
-        got += size_t(r);
-    }
-}
-
-void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
-    for (const auto& dir : {config, graph, data}) {
-        const std::string dir_name = dir.filename().string();
-        for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-            const std::string filename = entry.path().filename().string();
-
-            const uint64_t dir_len = dir_name.size();
-            const uint64_t file_len = filename.size();
-            const uint64_t file_size = std::filesystem::file_size(entry.path());
-
-            out.write(reinterpret_cast<const char*>(&dir_len), sizeof(dir_len));
-            out.write(dir_name.data(), dir_len);
-
-            out.write(
-                    reinterpret_cast<const char*>(&file_len), sizeof(file_len));
-            out.write(filename.data(), file_len);
-
-            out.write(
-                    reinterpret_cast<const char*>(&file_size),
-                    sizeof(file_size));
-
-            std::ifstream in(entry.path(), std::ios::binary);
-            FAISS_THROW_IF_NOT_MSG(
-                    in, "Failed to open temp SVS file for reading");
-
-            out << in.rdbuf();
-        }
-    }
-}
-
-void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
-    constexpr size_t BUFSZ = 1 << 20; // 1 MiB
-    std::vector<char> buf(BUFSZ);
-
-    for (;;) {
-        uint64_t dir_len = 0;
-
-        // Try to read next record. If we’re at clean EOF (no bytes), stop.
-        in.read(reinterpret_cast<char*>(&dir_len), sizeof(dir_len));
-        if (!in) {
-            // No bytes read? clean EOF. Partial? error.
-            if (in.eof() && in.gcount() == 0)
-                return;
-            FAISS_THROW_IF_NOT_MSG(false, "Corrupt stream: partial header");
-        }
-
-        std::string dir_name(dir_len, '\0');
-        read_exact(in, dir_name.data(), dir_len);
-
-        uint64_t file_len = 0;
-        read_exact(in, &file_len, sizeof(file_len));
-        std::string filename(file_len, '\0');
-        read_exact(in, filename.data(), file_len);
-
-        uint64_t file_size = 0;
-        read_exact(in, &file_size, sizeof(file_size));
-
-        std::filesystem::path base;
-        if (dir_name == "config")
-            base = config;
-        else if (dir_name == "graph")
-            base = graph;
-        else if (dir_name == "data")
-            base = data;
-        else
-            FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
-
-        std::filesystem::path full_path = base / filename;
-        std::ofstream out(full_path, std::ios::binary);
-        FAISS_THROW_IF_NOT_MSG(out, "Failed to open temp SVS file for writing");
-
-        // Stream body in chunks
-        uint64_t remaining = file_size;
-        while (remaining > 0) {
-            size_t want = size_t(std::min<uint64_t>(remaining, buf.size()));
-            read_exact(in, buf.data(), want);
-            out.write(buf.data(), want);
-            FAISS_THROW_IF_NOT_MSG(out, "Short write to temp SVS file");
-            remaining -= want;
-        }
-    }
-}
-
-} // namespace svs_io
 
 IndexSVS::IndexSVS() : Index{} {}
 
@@ -301,5 +169,161 @@ void IndexSVS::deserialize_impl(std::istream& in) {
             FAISS_ASSERT(!"not supported SVS distance");
     }
 }
+
+namespace svs_io {
+
+WriterStreambuf::WriterStreambuf(IOWriter* w_) : w(w_) {}
+
+WriterStreambuf::~WriterStreambuf() = default;
+
+std::streamsize WriterStreambuf::xsputn(const char* s, std::streamsize n) {
+    if (n <= 0)
+        return 0;
+    size_t wrote = (*w)(s, 1, static_cast<size_t>(n));
+    return static_cast<std::streamsize>(wrote);
+}
+
+int WriterStreambuf::overflow(int ch) {
+    if (ch == traits_type::eof())
+        return 0;
+    char c = static_cast<char>(ch);
+    size_t wrote = (*w)(&c, 1, 1);
+    return wrote == 1 ? ch : traits_type::eof();
+}
+
+ReaderStreambuf::ReaderStreambuf(IOReader* rr, size_t bsz)
+        : r(rr), buf(std::max<size_t>(bsz, 4096)) {
+    // empty get area initially
+    setg(buf.data(), buf.data(), buf.data());
+}
+
+ReaderStreambuf::~ReaderStreambuf() = default;
+
+std::streambuf::int_type ReaderStreambuf::underflow() {
+    if (gptr() < egptr()) {
+        return traits_type::to_int_type(*gptr());
+    }
+    size_t got = (*r)(buf.data(), 1, buf.size());
+    if (got == 0) {
+        return traits_type::eof(); // upstream EOF
+    }
+    setg(buf.data(), buf.data(), buf.data() + got);
+    return traits_type::to_int_type(*gptr());
+}
+
+SVSTempDirectory::SVSTempDirectory() {
+    root = std::filesystem::temp_directory_path() /
+            ("faiss_svs_" + std::to_string(std::rand()));
+    config = root / "config";
+    graph = root / "graph";
+    data = root / "data";
+
+    std::filesystem::create_directories(config);
+    std::filesystem::create_directories(graph);
+    std::filesystem::create_directories(data);
+}
+
+SVSTempDirectory::~SVSTempDirectory() {
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+}
+
+static inline void read_exact(std::istream& in, void* p, size_t n) {
+    char* c = static_cast<char*>(p);
+    size_t got = 0;
+    while (got < n) {
+        in.read(c + got, n - got);
+        std::streamsize r = in.gcount();
+        if (r <= 0) {
+            FAISS_THROW_IF_NOT_MSG(false, "Unexpected EOF while reading");
+        }
+        got += size_t(r);
+    }
+}
+
+void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
+    for (const auto& dir : {config, graph, data}) {
+        const std::string dir_name = dir.filename().string();
+        for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+            const std::string filename = entry.path().filename().string();
+
+            const uint64_t dir_len = dir_name.size();
+            const uint64_t file_len = filename.size();
+            const uint64_t file_size = std::filesystem::file_size(entry.path());
+
+            out.write(reinterpret_cast<const char*>(&dir_len), sizeof(dir_len));
+            out.write(dir_name.data(), dir_len);
+
+            out.write(
+                    reinterpret_cast<const char*>(&file_len), sizeof(file_len));
+            out.write(filename.data(), file_len);
+
+            out.write(
+                    reinterpret_cast<const char*>(&file_size),
+                    sizeof(file_size));
+
+            std::ifstream in(entry.path(), std::ios::binary);
+            FAISS_THROW_IF_NOT_MSG(
+                    in, "Failed to open temp SVS file for reading");
+
+            out << in.rdbuf();
+        }
+    }
+}
+
+void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
+    constexpr size_t BUFSZ = 1 << 20; // 1 MiB
+    std::vector<char> buf(BUFSZ);
+
+    for (;;) {
+        uint64_t dir_len = 0;
+
+        // Try to read next record. If we’re at clean EOF (no bytes), stop.
+        in.read(reinterpret_cast<char*>(&dir_len), sizeof(dir_len));
+        if (!in) {
+            // No bytes read? clean EOF. Partial? error.
+            if (in.eof() && in.gcount() == 0)
+                return;
+            FAISS_THROW_IF_NOT_MSG(false, "Corrupt stream: partial header");
+        }
+
+        std::string dir_name(dir_len, '\0');
+        read_exact(in, dir_name.data(), dir_len);
+
+        uint64_t file_len = 0;
+        read_exact(in, &file_len, sizeof(file_len));
+        std::string filename(file_len, '\0');
+        read_exact(in, filename.data(), file_len);
+
+        uint64_t file_size = 0;
+        read_exact(in, &file_size, sizeof(file_size));
+
+        std::filesystem::path base;
+        if (dir_name == "config")
+            base = config;
+        else if (dir_name == "graph")
+            base = graph;
+        else if (dir_name == "data")
+            base = data;
+        else
+            FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
+
+        std::filesystem::path full_path = base / filename;
+        std::ofstream out(full_path, std::ios::binary);
+        FAISS_THROW_IF_NOT_MSG(out, "Failed to open temp SVS file for writing");
+
+        // Stream body in chunks
+        uint64_t remaining = file_size;
+        while (remaining > 0) {
+            size_t want = size_t(std::min<uint64_t>(remaining, buf.size()));
+            read_exact(in, buf.data(), want);
+            out.write(buf.data(), want);
+            FAISS_THROW_IF_NOT_MSG(out, "Short write to temp SVS file");
+            remaining -= want;
+        }
+    }
+}
+
+} // namespace svs_io
 
 } // namespace faiss

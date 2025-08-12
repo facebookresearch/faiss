@@ -1275,13 +1275,10 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(dynamic_cast<IndexSVSLeanVec*>(svs)->leanvec_level);
         }
 
-        // Read the binary blob from which impl will be reconstructed
-        uint64_t blob_size;
-        READ1(blob_size);
-        std::string blob(blob_size, '\0');
-        READANDCHECK(blob.data(), blob_size);
-        std::stringstream ss(std::move(blob));
-        svs->deserialize_impl(ss);
+        faiss::BufferedIOReader br(f);
+        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        std::istream is(&rbuf);
+        svs->deserialize_impl(is);
         idx = svs;
     } else if (h == fourcc("ISVS")) {
         // TODO
