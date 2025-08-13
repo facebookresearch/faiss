@@ -26,7 +26,6 @@
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <faiss/impl/FaissAssert.h>
-
 #include <memory>
 #include <utility>
 #include <vector>
@@ -79,6 +78,46 @@ enum AllocType {
     /// to calling cudaMalloc which are sized to just the request at hand. These
     /// "overflow" temporary allocations are marked with this AllocType.
     TemporaryMemoryOverflow = 11,
+
+    /// When using StandardGpuResources, any MemorySpace::Fixed allocations
+    /// that cannot be satisfied within the TemporaryMemoryBuffer region fall
+    /// back
+    /// to calling cudaMalloc which are sized to just the request at hand. These
+    /// "overflow" temporary allocations are marked with this AllocType.
+    FixedMemoryOverflow = 12,
+
+    /// Primary data storage for general inverted list codes
+    InvListData = 13,
+
+    /// Primary data storage for general inverted list ids
+    InvListIndices = 14,
+
+    /// Primary data storage for coarse quantizers
+    CoarseQuantizer = 15,
+
+    /// Primary data storage for distances calculated from coarse quantizer
+    CoarseDistancesOutput = 16,
+
+    /// Primary data storage for ids calculated from coarse quantizer
+    CoarseIndicesOutput = 17,
+
+    /// Primary data storage for inputs of the multi-sequence algorithm
+    MultiSequenceInput = 18,
+
+    /// Primary data storage for Term 3 in IVF or IMI indexes
+    Term3 = 19,
+
+    /// Primary data storage for transposed Term 3 in IVF or IMI indexes
+    Term3Transposed = 20,
+
+    /// Primary data storage for queries
+    Query = 21,
+
+    /// Primary data storage for transposed queries
+    QueryTransposed = 22,
+
+    /// Primary data storage for splitted queries
+    QuerySplitted = 23
 };
 
 /// Convert an AllocType to string
@@ -97,6 +136,9 @@ enum MemorySpace {
     /// Managed using cudaMallocManaged/cudaFree (typical Unified CPU/GPU
     /// memory)
     Unified = 2,
+
+    /// Device memory reserved for fixed size allocations used by indexes
+    Fixed = 3,
 };
 
 /// Convert a MemorySpace to string
@@ -137,6 +179,9 @@ AllocInfo makeDevAlloc(AllocType at, cudaStream_t st);
 
 /// Create an AllocInfo for the current device with MemorySpace::Temporary
 AllocInfo makeTempAlloc(AllocType at, cudaStream_t st);
+
+/// Create an AllocInfo for the current device with MemorySpace::Fixed
+AllocInfo makeFixedAlloc(AllocType at, cudaStream_t st);
 
 /// Create an AllocInfo for the current device
 AllocInfo makeSpaceAlloc(AllocType at, MemorySpace sp, cudaStream_t st);

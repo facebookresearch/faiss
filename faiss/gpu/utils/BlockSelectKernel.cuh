@@ -165,5 +165,39 @@ void runBlockSelectPair(
         int k,
         cudaStream_t stream);
 
+void runBlockSelect(
+        Tensor<float, 2, true>& in,
+        Tensor<float, 2, true>& outKeys,
+        Tensor<ushort, 2, true>& outIndices,
+        bool dir,
+        int k,
+        cudaStream_t stream);
+
+void runBlockSelectPair(
+        Tensor<float, 2, true>& inKeys,
+        Tensor<ushort, 2, true>& inIndices,
+        Tensor<float, 2, true>& outKeys,
+        Tensor<ushort, 2, true>& outIndices,
+        bool dir,
+        int k,
+        cudaStream_t stream);
+
+void runBlockSelect(
+        Tensor<half, 2, true>& in,
+        Tensor<half, 2, true>& outKeys,
+        Tensor<ushort, 2, true>& outIndices,
+        bool dir,
+        int k,
+        cudaStream_t stream);
+
+void runBlockSelectPair(
+        Tensor<half, 2, true>& inKeys,
+        Tensor<ushort, 2, true>& inIndices,
+        Tensor<half, 2, true>& outKeys,
+        Tensor<ushort, 2, true>& outIndices,
+        bool dir,
+        int k,
+        cudaStream_t stream);
+
 } // namespace gpu
 } // namespace faiss

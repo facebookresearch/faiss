@@ -42,6 +42,10 @@ class FlatIndex {
    public:
     FlatIndex(GpuResources* res, int dim, bool useFloat16, MemorySpace space);
 
+    /// Calculate the memory space in bytes for storing in the index a given
+    /// number of vectors according to given dimension and the stored format
+    static size_t calcMemorySpaceSize(int numVecs, int dims, bool useFloat16);
+
     /// Whether or not this flat index primarily stores data in float16
     bool getUseFloat16() const;
 
