@@ -45,10 +45,12 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#ifdef FAISS_USE_SVS
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
 #include <faiss/IndexSVSLeanVec.h>
+#endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1246,7 +1248,9 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
-    } else if (
+    }
+#ifdef FAISS_USE_SVS
+    else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
         IndexSVS* svs;
         if (h == fourcc("ILVQ")) {
@@ -1289,7 +1293,9 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(svs, f);
         READ1(svs->num_threads);
         idx = svs;
-    } else {
+    }
+#endif // FAISS_USE_SVS
+    else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",
                 h,

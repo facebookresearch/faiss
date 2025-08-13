@@ -102,9 +102,9 @@ set(FAISS_SRC
 
 if(FAISS_USE_SVS)
   list(APPEND FAISS_SRC
+    IndexSVSFlat.cpp
     IndexSVS.cpp
     IndexSVSLVQ.cpp
-    IndexSVSFlat.cpp
     IndexSVSLeanVec.cpp
   )
 endif()
@@ -253,6 +253,7 @@ set(FAISS_HEADERS
 
 if(FAISS_USE_SVS)
   list(APPEND FAISS_HEADERS
+    IndexSVSFlat.h
     IndexSVS.h
     IndexSVSLVQ.h
     IndexSVSLeanVec.h
