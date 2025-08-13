@@ -328,7 +328,7 @@ endif()
 
 # Experimental SVS cmake build
 include(FetchContent)
-set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.8-dev/svs-shared-library-0.0.8-20250731.tar.gz")
+set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
 FetchContent_Declare(
     svs
     URL "${SVS_URL}"
