@@ -239,7 +239,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         GpuIndexCagra* res =
                 new GpuIndexCagra(provider, icg->d, icg->metric_type, config);
-        res->copyFromEx(icg, icg->get_numeric_type());
+        res->copyFrom_ex(icg, icg->get_numeric_type());
         return res;
     }
 #endif
