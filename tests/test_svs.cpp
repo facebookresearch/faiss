@@ -79,6 +79,11 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
         ASSERT_NE(lvq_loaded, nullptr);
         EXPECT_EQ(lvq_loaded->lvq_level, index.lvq_level);
     }
+    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSLeanVec>) {
+        auto* lvq_loaded = dynamic_cast<faiss::IndexSVSLeanVec*>(loaded);
+        ASSERT_NE(lvq_loaded, nullptr);
+        EXPECT_EQ(lvq_loaded->leanvec_level, index.leanvec_level);
+    }
 
     delete loaded;
 }
