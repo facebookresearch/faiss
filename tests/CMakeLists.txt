@@ -38,8 +38,11 @@ set(FAISS_TEST_SRC
   test_hamming.cpp
   test_mmap.cpp
   test_zerocopy.cpp
-  test_svs.cpp  # TODO: should be guarded by FAISS_ENABLE_SVS
 )
+
+if(FAISS_USE_SVS)
+  list(APPEND FAISS_TEST_SRC test_svs.cpp)
+endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
 

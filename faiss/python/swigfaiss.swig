@@ -684,6 +684,7 @@ struct faiss::simd16uint16 {};
 %template(IndexIDMap2) faiss::IndexIDMap2Template<faiss::Index>;
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
+
 %include <faiss/utils/approx_topk/mode.h>
 
 #ifdef FAISS_USE_SVS

@@ -33,6 +33,11 @@ macro(configure_swigfaiss source)
       SWIG_FLAGS -DSWIGWIN
     )
   endif()
+  if(FAISS_USE_SVS)
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_USE_SVS
+    )
+  endif()
   if(FAISS_ENABLE_GPU)
     set_source_files_properties(${source} PROPERTIES
       COMPILE_DEFINITIONS GPU_WRAPPER
@@ -203,6 +208,15 @@ else()
   target_compile_options(swigfaiss_avx512_spr PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+endif()
+
+if(FAISS_USE_SVS)
+  target_compile_definitions(swigfaiss PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_USE_SVS)
 endif()
 
 if(FAISS_ENABLE_GPU)

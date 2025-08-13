@@ -218,7 +218,9 @@ add_ref_in_constructor(IDSelectorTranslated, slice(2))
 add_ref_in_constructor(IDSelectorXOr, slice(2))
 add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
-add_ref_in_constructor(IndexSVS, 0)
+if "SVS" in get_compile_options():
+    add_ref_in_constructor(IndexSVS, 0)
+    add_ref_in_constructor(IndexSVSFlat, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)

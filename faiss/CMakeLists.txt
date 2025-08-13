@@ -162,7 +162,6 @@ set(FAISS_HEADERS
   index_factory.h
   index_io.h
   impl/AdditiveQuantizer.h
-  impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/CodePacker.h
   impl/IDSelector.h
@@ -269,6 +268,7 @@ endif()
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
 add_library(faiss ${FAISS_SRC})
+
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -338,7 +338,6 @@ if(NOT WIN32)
   endif()
 endif()
 
-# Experimental SVS cmake build
 if(FAISS_USE_SVS)
   include(FetchContent)
   set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
@@ -355,14 +354,7 @@ endif()
 
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-)
-if(FAISS_USE_SVS)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>
-  )
-endif()
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_avx2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -375,6 +367,11 @@ target_include_directories(faiss_avx512_spr PUBLIC
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_sve PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+if(FAISS_USE_SVS)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+endif()
 
 set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve PROPERTIES
   POSITION_INDEPENDENT_CODE ON
