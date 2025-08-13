@@ -47,10 +47,6 @@ set(FAISS_SRC
   IndexScalarQuantizer.cpp
   IndexShards.cpp
   IndexShardsIVF.cpp
-  IndexSVS.cpp
-  IndexSVSLVQ.cpp
-  IndexSVSFlat.cpp
-  IndexSVSLeanVec.cpp
   IndexNeuralNetCodec.cpp
   MatrixStats.cpp
   MetaIndexes.cpp
@@ -104,6 +100,15 @@ set(FAISS_SRC
   utils/distances_fused/simdlib_based.cpp
 )
 
+if(FAISS_USE_SVS)
+  list(APPEND FAISS_SRC
+    IndexSVS.cpp
+    IndexSVSLVQ.cpp
+    IndexSVSFlat.cpp
+    IndexSVSLeanVec.cpp
+  )
+endif()
+
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
@@ -149,9 +154,6 @@ set(FAISS_HEADERS
   IndexScalarQuantizer.h
   IndexShards.h
   IndexShardsIVF.h
-  IndexSVS.h
-  IndexSVSLVQ.h
-  IndexSVSLeanVec.h
   MatrixStats.h
   MetaIndexes.h
   MetricType.h
@@ -159,6 +161,7 @@ set(FAISS_HEADERS
   clone_index.h
   index_factory.h
   index_io.h
+  impl/AdditiveQuantizer.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/CodePacker.h
@@ -248,6 +251,14 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
 )
 
+if(FAISS_USE_SVS)
+  list(APPEND FAISS_HEADERS
+    IndexSVS.h
+    IndexSVSLVQ.h
+    IndexSVSLeanVec.h
+  )
+endif()
+
 if(NOT WIN32)
   list(APPEND FAISS_SRC invlists/OnDiskInvertedLists.cpp)
   list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
@@ -327,24 +338,30 @@ if(NOT WIN32)
 endif()
 
 # Experimental SVS cmake build
-include(FetchContent)
-set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
-FetchContent_Declare(
-    svs
-    URL "${SVS_URL}"
-)
-FetchContent_MakeAvailable(svs)
-list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
-find_package(svs REQUIRED)
+if(FAISS_USE_SVS)
+  include(FetchContent)
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
+  FetchContent_Declare(
+      svs
+      URL "${SVS_URL}"
+  )
+  FetchContent_MakeAvailable(svs)
+  list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
+  find_package(svs REQUIRED)
 
-target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
+endif()
 
 # Handle `#include <faiss/foo.h>`.
-# Handle `#include <svs/foo.h>`.
 target_include_directories(faiss PUBLIC
-  $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 )
+if(FAISS_USE_SVS)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>
+  )
+endif()
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_avx2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -369,6 +386,14 @@ if(WIN32)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
+endif()
+
+if(FAISS_USE_SVS)
+  target_compile_definitions(faiss PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_USE_SVS)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_USE_SVS)
 endif()
 
 if(WIN32)

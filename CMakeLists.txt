@@ -68,6 +68,7 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
+option(FAISS_USE_SVS "Enable SVS (Scalable Vector Search) integration." ON)
 
 if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)

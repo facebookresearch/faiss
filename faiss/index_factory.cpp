@@ -50,9 +50,11 @@
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
 
+#ifdef FAISS_USE_SVS
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSLVQ.h>
 #include <faiss/IndexSVSLeanVec.h>
+#endif
 #include <string>
 
 namespace faiss {
@@ -541,6 +543,7 @@ IndexNSG* parse_IndexNSG(
     return nullptr;
 }
 
+#ifdef FAISS_USE_SVS
 /***************************************************************
  * Parse IndexSVS
  */
@@ -598,6 +601,7 @@ IndexSVS* parse_IndexSVS(const std::string code_string, int d, MetricType mt) {
 
     return nullptr;
 }
+#endif // FAISS_USE_SVS
 
 /***************************************************************
  * Parse basic indexes
@@ -884,6 +888,7 @@ std::unique_ptr<Index> index_factory_sub(
         return std::unique_ptr<Index>(index);
     }
 
+#ifdef FAISS_USE_SVS
     if (re_match(description, "SVS([_].*)?", sm)) {
         // We also accept empty code string
         std::string code_string =
@@ -902,6 +907,7 @@ std::unique_ptr<Index> index_factory_sub(
                 description.c_str());
         return std::unique_ptr<Index>(index);
     }
+#endif // FAISS_USE_SVS
 
     // NSG variants (it was unclear in the old version that the separator was a
     // "," so we support both "_" and ",")
