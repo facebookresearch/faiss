@@ -8,6 +8,7 @@
 #pragma once
 
 #include "faiss/Index.h"
+#include "faiss/impl/svs_io.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -71,43 +72,5 @@ struct IndexSVS : Index {
     /* Initializes the implementation, using the provided data */
     virtual void init_impl(idx_t n, const float* x);
 };
-
-// We provide some helpers for efficient I/O in the svs_io namespace
-// These can be excluded from the Python bindings
-namespace svs_io {
-// Bridges IOWriter to std::ostream (used for streaming payload out)
-struct WriterStreambuf : std::streambuf {
-    IOWriter* w; // not owning
-    explicit WriterStreambuf(IOWriter* w_);
-    ~WriterStreambuf() override; // out-of-line def in .cpp
-   protected:
-    std::streamsize xsputn(const char* s, std::streamsize n) override;
-    int overflow(int ch) override;
-};
-
-// Bridges IOReader to std::istream (used to read payload to EOF)
-struct ReaderStreambuf : std::streambuf {
-    IOReader* r;           // not owning
-    std::vector<char> buf; // ring buffer (default 1 MiB)
-    explicit ReaderStreambuf(IOReader* rr, size_t bsz = (1u << 20));
-    ~ReaderStreambuf() override; // out-of-line def in .cpp
-   protected:
-    int_type underflow() override;
-};
-
-/* temporary directory for SVS Vamana indices that tries to always clean up */
-struct SVSTempDirectory {
-    std::filesystem::path root;
-    std::filesystem::path config;
-    std::filesystem::path graph;
-    std::filesystem::path data;
-
-    SVSTempDirectory();
-    ~SVSTempDirectory();
-
-    void write_files_to_stream(std::ostream& out) const;
-    void write_stream_to_files(std::istream& in) const;
-};
-} // namespace svs_io
 
 } // namespace faiss

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "faiss/Index.h"
+#include "faiss/impl/svs_io.h"
 
 #include "svs/core/distance.h"
 

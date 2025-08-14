@@ -106,6 +106,7 @@ if(FAISS_USE_SVS)
     IndexSVS.cpp
     IndexSVSLVQ.cpp
     IndexSVSLeanVec.cpp
+    impl/svs_io.cpp
   )
 endif()
 
