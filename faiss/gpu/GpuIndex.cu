@@ -110,16 +110,16 @@ size_t GpuIndex::getMinPagingSize() const {
     return minPagedSize_;
 }
 
-void GpuIndex::addEx(idx_t n, const void* x, NumericType numeric_type) {
-    add_with_idsEx(n, x, numeric_type, nullptr);
+void GpuIndex::add_ex(idx_t n, const void* x, NumericType numeric_type) {
+    add_with_ids_ex(n, x, numeric_type, nullptr);
 }
 
 void GpuIndex::add(idx_t n, const float* x) {
     // Pass to add_with_ids
-    addEx(n, x, NumericType::Float32);
+    add_ex(n, x, NumericType::Float32);
 }
 
-void GpuIndex::add_with_idsEx(
+void GpuIndex::add_with_ids_ex(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -143,14 +143,14 @@ void GpuIndex::add_with_idsEx(
         }
     }
 
-    addPagedEx_(n, x, numeric_type, ids ? ids : generatedIds.data());
+    addPaged_ex_(n, x, numeric_type, ids ? ids : generatedIds.data());
 }
 
 void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
-    add_with_idsEx(n, static_cast<const void*>(x), NumericType::Float32, ids);
+    add_with_ids_ex(n, static_cast<const void*>(x), NumericType::Float32, ids);
 }
 
-void GpuIndex::addPagedEx_(
+void GpuIndex::addPaged_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -179,14 +179,15 @@ void GpuIndex::addPagedEx_(
 
             for (idx_t i = 0; i < n; i += tileSize) {
                 auto curNum = std::min(tileSize, n - i);
-                addPageEx_(
+                addPage_ex_(
                         curNum,
                         static_cast<const void*>(typed_x + i * this->d),
                         numeric_type,
                         ids ? ids + i : nullptr);
             }
         } else {
-            addPageEx_(n, static_cast<const void*>(typed_x), numeric_type, ids);
+            addPage_ex_(
+                    n, static_cast<const void*>(typed_x), numeric_type, ids);
         }
     };
 
@@ -202,10 +203,10 @@ void GpuIndex::addPagedEx_(
 }
 
 void GpuIndex::addPaged_(idx_t n, const float* x, const idx_t* ids) {
-    addPagedEx_(n, static_cast<const void*>(x), NumericType::Float32, ids);
+    addPaged_ex_(n, static_cast<const void*>(x), NumericType::Float32, ids);
 }
 
-void GpuIndex::addPageEx_(
+void GpuIndex::addPage_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -235,13 +236,13 @@ void GpuIndex::addPageEx_(
                     stream,
                     {n});
 
-            addImplEx_(
+            addImpl_ex_(
                     n,
                     static_cast<const void*>(vecs.data()),
                     numeric_type,
                     ids ? indices.data() : nullptr);
         } else {
-            addImplEx_(
+            addImpl_ex_(
                     n,
                     static_cast<const void*>(vecs.data()),
                     numeric_type,
@@ -261,7 +262,7 @@ void GpuIndex::addPageEx_(
 }
 
 void GpuIndex::addPage_(idx_t n, const float* x, const idx_t* ids) {
-    addPageEx_(n, static_cast<const void*>(x), NumericType::Float32, ids);
+    addPage_ex_(n, static_cast<const void*>(x), NumericType::Float32, ids);
 }
 
 void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
@@ -281,7 +282,7 @@ void GpuIndex::assign(idx_t n, const float* x, idx_t* labels, idx_t k) const {
     search(n, x, k, distances.data(), labels);
 }
 
-void GpuIndex::searchEx(
+void GpuIndex::search_ex(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -329,7 +330,7 @@ void GpuIndex::searchEx(
                 (size_t)n * this->d * get_numeric_type_size(numeric_type);
 
         if (dataSize >= minPagedSize_) {
-            searchFromCpuPagedEx_(
+            searchFromCpuPaged_ex_(
                     n,
                     x,
                     numeric_type,
@@ -342,7 +343,7 @@ void GpuIndex::searchEx(
     }
 
     if (!usePaged) {
-        searchNonPagedEx_(
+        searchNonPaged_ex_(
                 n,
                 x,
                 numeric_type,
@@ -364,7 +365,7 @@ void GpuIndex::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    searchEx(
+    search_ex(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,
@@ -386,7 +387,7 @@ void GpuIndex::search_and_reconstruct(
     reconstruct_batch(n * k, labels, recons);
 }
 
-void GpuIndex::searchNonPagedEx_(
+void GpuIndex::searchNonPaged_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -416,7 +417,7 @@ void GpuIndex::searchNonPagedEx_(
                 stream,
                 {n, this->d});
 
-        searchImplEx_(
+        searchImpl_ex_(
                 n,
                 static_cast<const void*>(vecs.data()),
                 numeric_type,
@@ -432,7 +433,7 @@ void GpuIndex::searchNonPagedEx_(
                 stream,
                 {n, this->d});
 
-        searchImplEx_(
+        searchImpl_ex_(
                 n,
                 static_cast<const void*>(vecs.data()),
                 numeric_type,
@@ -452,7 +453,7 @@ void GpuIndex::searchNonPaged_(
         float* outDistancesData,
         idx_t* outIndicesData,
         const SearchParameters* params) const {
-    searchNonPagedEx_(
+    searchNonPaged_ex_(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,
@@ -462,7 +463,7 @@ void GpuIndex::searchNonPaged_(
             params);
 }
 
-void GpuIndex::searchFromCpuPagedEx_(
+void GpuIndex::searchFromCpuPaged_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -491,7 +492,7 @@ void GpuIndex::searchFromCpuPagedEx_(
             auto outDistancesSlice = outDistances.narrowOutermost(cur, num);
             auto outIndicesSlice = outIndices.narrowOutermost(cur, num);
             if (numeric_type == NumericType::Float32) {
-                searchNonPagedEx_(
+                searchNonPaged_ex_(
                         num,
                         static_cast<const void*>(
                                 static_cast<const float*>(x) + cur * this->d),
@@ -501,7 +502,7 @@ void GpuIndex::searchFromCpuPagedEx_(
                         outIndicesSlice.data(),
                         params);
             } else if (numeric_type == NumericType::Float16) {
-                searchNonPagedEx_(
+                searchNonPaged_ex_(
                         num,
                         static_cast<const void*>(
                                 static_cast<const half*>(x) + cur * this->d),
@@ -511,7 +512,7 @@ void GpuIndex::searchFromCpuPagedEx_(
                         outIndicesSlice.data(),
                         params);
             } else if (numeric_type == NumericType::Int8) {
-                searchNonPagedEx_(
+                searchNonPaged_ex_(
                         num,
                         static_cast<const void*>(
                                 static_cast<const int8_t*>(x) + cur * this->d),
@@ -631,7 +632,7 @@ void GpuIndex::searchFromCpuPagedEx_(
                 auto outIndicesSlice =
                         outIndices.narrowOutermost(cur3, numToProcess);
 
-                searchImplEx_(
+                searchImpl_ex_(
                         numToProcess,
                         static_cast<const void*>(bufGpus[cur3BufIndex]->data()),
                         numeric_type,
@@ -691,7 +692,7 @@ void GpuIndex::searchFromCpuPaged_(
         float* outDistancesData,
         idx_t* outIndicesData,
         const SearchParameters* params) const {
-    searchFromCpuPagedEx_(
+    searchFromCpuPaged_ex_(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,
