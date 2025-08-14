@@ -49,8 +49,24 @@ def _numeric_to_str(numeric_type):
         return 'float16'
     elif numeric_type == faiss.Int8:
         return 'int8'
+    elif numeric_type == faiss.Int64:
+        return 'int64'
     else:
-        raise ValueError("numeric type must be either faiss.Float32, faiss.Float16, or faiss.Int8")
+        raise ValueError("numeric type must be either faiss.Float32, faiss.Float16, faiss.Int8, or faiss.Int64")
+
+
+def _np_dtype_to_faiss_type(dtype):
+    if dtype == np.int64:
+        return faiss.Int64
+    elif dtype == np.float32:
+        return faiss.Float32
+    elif dtype == np.float16:
+        return faiss.Float16
+    elif dtype == np.int8:
+        return faiss.Int8
+    else:
+        raise ValueError("given numpy dtype should be either np.int64, np.float32, np.float16, or np.int8 to convert to faiss numeric types")
+
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
     """ Replaces a method in a class with another version. The old method
@@ -241,7 +257,7 @@ def handle_Index(the_class):
         else:
             self.add_ex(n, swig_ptr(x), numeric_type)
 
-    def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
+    def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32, ids_type = faiss.Int64):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
         The index must be trained before vectors can be added to it.
         Vector `i` is stored in `x[i]` and has id `ids[i]`.
@@ -259,11 +275,11 @@ def handle_Index(the_class):
         assert d == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
-        ids = np.ascontiguousarray(ids, dtype='int64')
-        if numeric_type == faiss.Float32:
-            self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
-        else:
-            self.add_with_ids_ex(n, swig_ptr(x), numeric_type, swig_ptr(ids))
+        ids = np.ascontiguousarray(ids, dtype=_numeric_to_str(ids_type))
+        # if numeric_type == faiss.Float32:
+        #     self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+        # else:
+        self.add_with_ids_ex(n, swig_ptr(x), numeric_type, swig_ptr(ids), ids_type)
 
 
     def replacement_assign(self, x, k, labels=None):
@@ -357,13 +373,15 @@ def handle_Index(the_class):
 
         if I is None:
             I = np.empty((n, k), dtype=np.int64)
+            labels_type = faiss.Int64   # if I is not given, return as int64 types
         else:
             assert I.shape == (n, k)
+            labels_type = _np_dtype_to_faiss_type(I.dtype)
 
-        if numeric_type == faiss.Float32:
-            self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
-        else:
-            self.search_ex(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
+        # if numeric_type == faiss.Float32:
+        #     self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
+        # else:
+        self.search_ex(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), labels_type, params)
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
