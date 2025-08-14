@@ -64,8 +64,10 @@ def _np_dtype_to_faiss_type(dtype):
         return faiss.Float16
     elif dtype == np.int8:
         return faiss.Int8
+    elif dtype == np.uint8:
+        return faiss.UInt8
     else:
-        raise ValueError("given numpy dtype should be either np.int64, np.float32, np.float16, or np.int8 to convert to faiss numeric types")
+        raise ValueError("given numpy dtype should be either np.int64, np.float32, np.float16, np.int8, or np.uint8 to convert to faiss numeric types")
 
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
@@ -371,7 +373,7 @@ def handle_Index(the_class):
 
         if I is None:
             I = np.empty((n, k), dtype=np.int64)
-            labels_type = faiss.Int64   # if I is not given, return as int64 types
+            labels_type = faiss.Int64   # if I is not given, default to int64 types
         else:
             assert I.shape == (n, k)
             labels_type = _np_dtype_to_faiss_type(I.dtype)

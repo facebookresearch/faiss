@@ -186,7 +186,7 @@ def handle_torch_Index(the_class):
         if ids_type == faiss.Int64:
             ids_ptr = swig_ptr_from_Int64Tensor(ids)
         else:
-            raise ValueError("ids type must be faiss.Int64")
+            raise ValueError("ids type for add_with_ids must be faiss.Int64")
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'

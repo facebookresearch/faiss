@@ -88,7 +88,7 @@ class GpuIndex : public faiss::Index {
             const void* x,
             NumericType numeric_type,
             const void* ids,
-            NumericType xids_type) override;
+            NumericType ids_type) override;
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
