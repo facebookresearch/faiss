@@ -8,18 +8,20 @@
 // -*- c++ -*-
 
 #include "GpuIndex_c.h"
-#include "GpuAutoTune_c.h"
-#include "macros_impl.h"
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/impl/FaissAssert.h>
+#include "GpuAutoTune_c.h"
+#include "macros_impl.h"
 
 using faiss::gpu::GpuIndexConfig;
 
 DEFINE_GETTER(GpuIndexConfig, int, device)
 
-int faiss_index_gpu_to_cpu_new(const FaissIndex* gpu_index, FaissIndex** p_out) {
+int faiss_index_gpu_to_cpu_new(
+        const FaissIndex* gpu_index,
+        FaissIndex** p_out) {
     int result = faiss_index_gpu_to_cpu(gpu_index, p_out);
     return result;
 }
@@ -42,14 +44,10 @@ int faiss_GpuIndexCagra_new(
         faiss::gpu::GpuIndexCagraConfig config;
         config.graph_degree = graph_degree;
 
-        auto gpu_res =
-                reinterpret_cast<faiss::gpu::StandardGpuResources*>(res);
+        auto gpu_res = reinterpret_cast<faiss::gpu::StandardGpuResources*>(res);
 
         auto cagra_index = new faiss::gpu::GpuIndexCagra(
-                gpu_res,
-                d,
-                static_cast<faiss::MetricType>(metric),
-                config);
+                gpu_res, d, static_cast<faiss::MetricType>(metric), config);
 
         *p_index = reinterpret_cast<FaissIndex*>(cagra_index);
         return 0;

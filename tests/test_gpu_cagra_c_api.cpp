@@ -12,18 +12,18 @@
 #include "c_api/AutoTune_c.h"
 #include "c_api/Index_c.h"
 #include "c_api/error_c.h"
-#include "c_api/index_factory_c.h"
-#include "c_api/index_io_c.h"
 #include "c_api/gpu/DeviceUtils_c.h"
 #include "c_api/gpu/GpuAutoTune_c.h"
-#include "c_api/gpu/StandardGpuResources_c.h"
 #include "c_api/gpu/GpuIndex_c.h"
 #include "c_api/gpu/GpuResources_c.h"
+#include "c_api/gpu/StandardGpuResources_c.h"
+#include "c_api/index_factory_c.h"
+#include "c_api/index_io_c.h"
 
 namespace {
 
 class GpuCagraCAPITest : public ::testing::Test {
-protected:
+   protected:
     void SetUp() override {
         // Check GPU availability
         int gpus = -1;
@@ -76,7 +76,10 @@ TEST_F(GpuCagraCAPITest, TestGpuIndexCagraCreation) {
                 FaissIndex* index = nullptr;
 
                 // Test index creation
-                EXPECT_EQ(faiss_GpuIndexCagra_new(&index, gpu_res_, d, metric, graph_degree), 0);
+                EXPECT_EQ(
+                        faiss_GpuIndexCagra_new(
+                                &index, gpu_res_, d, metric, graph_degree),
+                        0);
                 EXPECT_NE(index, nullptr);
 
                 // Test basic properties
@@ -114,7 +117,10 @@ TEST_F(GpuCagraCAPITest, TestGpuToCpuConversion) {
     size_t graph_degree = 64;
     FaissIndex* gpu_index = nullptr;
 
-    EXPECT_EQ(faiss_GpuIndexCagra_new(&gpu_index, gpu_res_, d, METRIC_L2, graph_degree), 0);
+    EXPECT_EQ(
+            faiss_GpuIndexCagra_new(
+                    &gpu_index, gpu_res_, d, METRIC_L2, graph_degree),
+            0);
     EXPECT_NE(gpu_index, nullptr);
 
     // Add some vectors to train the index
@@ -129,7 +135,9 @@ TEST_F(GpuCagraCAPITest, TestGpuToCpuConversion) {
 
     // Test that both indices have the same basic properties
     EXPECT_EQ(faiss_Index_d(gpu_index), faiss_Index_d(cpu_index));
-    EXPECT_EQ(faiss_Index_is_trained(gpu_index), faiss_Index_is_trained(cpu_index));
+    EXPECT_EQ(
+            faiss_Index_is_trained(gpu_index),
+            faiss_Index_is_trained(cpu_index));
 
     // Clean up
     faiss_Index_free(gpu_index);
@@ -150,12 +158,20 @@ TEST_F(GpuCagraCAPITest, TestCpuToGpuConversion) {
 
     // Convert CPU index to GPU
     FaissGpuIndex* gpu_index = nullptr;
-    EXPECT_EQ(faiss_index_cpu_to_gpu(reinterpret_cast<FaissGpuResourcesProvider*>(gpu_res_), 0, cpu_index, &gpu_index), 0);
+    EXPECT_EQ(
+            faiss_index_cpu_to_gpu(
+                    reinterpret_cast<FaissGpuResourcesProvider*>(gpu_res_),
+                    0,
+                    cpu_index,
+                    &gpu_index),
+            0);
     EXPECT_NE(gpu_index, nullptr);
 
     // Test that both indices have the same basic properties
     EXPECT_EQ(faiss_Index_d(cpu_index), faiss_Index_d(gpu_index));
-    EXPECT_EQ(faiss_Index_is_trained(cpu_index), faiss_Index_is_trained(gpu_index));
+    EXPECT_EQ(
+            faiss_Index_is_trained(cpu_index),
+            faiss_Index_is_trained(gpu_index));
 
     // Clean up
     faiss_Index_free(cpu_index);
@@ -175,7 +191,10 @@ TEST_F(GpuCagraCAPITest, TestEndToEndWorkflow) {
     // Create GPU CAGRA index
     FaissIndex* gpu_index = nullptr;
     size_t graph_degree = 64;
-    EXPECT_EQ(faiss_GpuIndexCagra_new(&gpu_index, gpu_res_, d, METRIC_L2, graph_degree), 0);
+    EXPECT_EQ(
+            faiss_GpuIndexCagra_new(
+                    &gpu_index, gpu_res_, d, METRIC_L2, graph_degree),
+            0);
     EXPECT_NE(gpu_index, nullptr);
 
     // Add vectors to the index
@@ -191,7 +210,9 @@ TEST_F(GpuCagraCAPITest, TestEndToEndWorkflow) {
     std::vector<idx_t> I(k * nq);
     std::vector<float> D(k * nq);
 
-    EXPECT_EQ(faiss_Index_search(gpu_index, nq, xq.data(), k, D.data(), I.data()), 0);
+    EXPECT_EQ(
+            faiss_Index_search(gpu_index, nq, xq.data(), k, D.data(), I.data()),
+            0);
 
     // Verify search results
     for (int i = 0; i < nq; ++i) {
@@ -211,12 +232,14 @@ TEST_F(GpuCagraCAPITest, TestEndToEndWorkflow) {
     std::vector<idx_t> I_cpu(k * nq);
     std::vector<float> D_cpu(k * nq);
 
-    EXPECT_EQ(faiss_Index_search(cpu_index, nq, xq.data(), k, D_cpu.data(), I_cpu.data()), 0);
+    EXPECT_EQ(
+            faiss_Index_search(
+                    cpu_index, nq, xq.data(), k, D_cpu.data(), I_cpu.data()),
+            0);
 
     // Clean up
     faiss_SearchParameters_free(search_params);
     faiss_Index_free(gpu_index);
     faiss_Index_free(cpu_index);
 }
-}
-
+} // namespace
