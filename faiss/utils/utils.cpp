@@ -124,7 +124,7 @@ std::string get_compile_options() {
     options += "GENERIC ";
 #endif
 
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
     options += "SVS ";
 #endif
 

@@ -100,7 +100,7 @@ set(FAISS_SRC
   utils/distances_fused/simdlib_based.cpp
 )
 
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_SRC
     IndexSVSFlat.cpp
     IndexSVS.cpp
@@ -251,7 +251,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
 )
 
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_HEADERS
     IndexSVSFlat.h
     IndexSVS.h
@@ -339,7 +339,7 @@ if(NOT WIN32)
   endif()
 endif()
 
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   include(FetchContent)
   set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
   FetchContent_Declare(
@@ -368,7 +368,7 @@ target_include_directories(faiss_avx512_spr PUBLIC
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_sve PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   # Handle `#include <svs/foo.h>`.
   target_include_directories(faiss PUBLIC
     $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
@@ -387,12 +387,12 @@ if(WIN32)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
 endif()
 
-if(FAISS_USE_SVS)
-  target_compile_definitions(faiss PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(faiss_avx2 PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(faiss_avx512 PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(faiss_sve PRIVATE FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS)
 endif()
 
 if(WIN32)

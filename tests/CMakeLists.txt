@@ -40,7 +40,7 @@ set(FAISS_TEST_SRC
   test_zerocopy.cpp
 )
 
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 

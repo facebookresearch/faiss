@@ -194,7 +194,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexIVFRaBitQ.h>
 
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
@@ -687,7 +687,7 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/utils/approx_topk/mode.h>
 
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
 /* Hide SVS I/O helpers */
 %ignore faiss::svs_io::ReaderStreambuf;
 %ignore faiss::svs_io::WriterStreambuf;
@@ -697,7 +697,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/IndexSVSFlat.h>
 %include  <faiss/IndexSVSLVQ.h>
 %include  <faiss/IndexSVSLeanVec.h>
-#endif // FAISS_USE_SVS
+#endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
 
@@ -845,12 +845,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
     DOWNCAST ( IndexSVSFlat )
     DOWNCAST ( IndexSVSLeanVec )
     DOWNCAST ( IndexSVSLVQ )
     DOWNCAST ( IndexSVS )
-#endif // FAISS_USE_SVS
+#endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

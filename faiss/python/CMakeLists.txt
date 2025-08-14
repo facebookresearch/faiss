@@ -33,9 +33,9 @@ macro(configure_swigfaiss source)
       SWIG_FLAGS -DSWIGWIN
     )
   endif()
-  if(FAISS_USE_SVS)
+  if(FAISS_ENABLE_SVS)
     set_property(SOURCE ${source} APPEND PROPERTY
-      SWIG_FLAGS -DFAISS_USE_SVS
+      SWIG_FLAGS -DFAISS_ENABLE_SVS
     )
   endif()
   if(FAISS_ENABLE_GPU)
@@ -210,13 +210,13 @@ else()
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
 endif()
 
-if(FAISS_USE_SVS)
-  target_compile_definitions(swigfaiss PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_USE_SVS)
-  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS)
 endif()
 
 if(FAISS_ENABLE_GPU)

@@ -43,7 +43,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
 #include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 #include <faiss/IndexSVSLVQ.h>
@@ -888,7 +888,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
     }
-#ifdef FAISS_USE_SVS
+#ifdef FAISS_ENABLE_SVS
     else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
         // The SVS implementation will write its contents to three directories,
         // which we will read back here for writing to the actual output file.
@@ -951,7 +951,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         svs->serialize_impl(os);
         os.flush();
     }
-#endif // FAISS_USE_SVS
+#endif // FAISS_ENABLE_SVS
     else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }

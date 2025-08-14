@@ -30,7 +30,7 @@ target_link_libraries(8-PQFastScanRefine PRIVATE faiss)
 add_executable(9-RefineComparison EXCLUDE_FROM_ALL 9-RefineComparison.cpp)
 target_link_libraries(9-RefineComparison PRIVATE faiss)
 
-if(FAISS_USE_SVS)
+if(FAISS_ENABLE_SVS)
   add_executable(10-SVS EXCLUDE_FROM_ALL 10-SVS.cpp)
   target_link_libraries(10-SVS PRIVATE faiss)
 
