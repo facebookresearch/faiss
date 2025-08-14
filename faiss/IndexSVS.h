@@ -7,28 +7,15 @@
 
 #pragma once
 
-#include "faiss/Index.h"
-#include "faiss/impl/svs_io.h"
+#include <faiss/Index.h>
+#include <faiss/impl/svs_io.h>
 
 #include <cstddef>
-#include <cstdint>
-#include <filesystem>
 #include <numeric>
-#include <streambuf>
-#include <utility>
 #include <vector>
-
-namespace faiss {
-struct IOReader;
-struct IOWriter;
-} // namespace faiss
 
 namespace svs {
 class DynamicVamana;
-}
-
-namespace faiss {
-struct IOWriter;
 }
 
 namespace faiss {

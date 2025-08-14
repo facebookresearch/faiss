@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "faiss/IndexSVS.h"
-#include "faiss/Index.h"
-#include "faiss/MetricType.h"
-#include "faiss/impl/io.h"
+#include <faiss/IndexSVS.h>
 
-#include "svs/core/data.h"
-#include "svs/orchestrators/dynamic_vamana.h"
+#include <svs/core/data.h>
+#include <svs/orchestrators/dynamic_vamana.h>
+
+#include <faiss/MetricType.h>
 
 namespace faiss {
 

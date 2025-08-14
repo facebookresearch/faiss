@@ -7,17 +7,12 @@
 
 #pragma once
 
-#include <filesystem>
 #include <iostream>
-#include <memory>
-#include <numeric>
-#include <variant>
-#include <vector>
 
-#include "faiss/Index.h"
-#include "faiss/impl/svs_io.h"
+#include <svs/core/distance.h>
 
-#include "svs/core/distance.h"
+#include <faiss/Index.h>
+#include <faiss/impl/svs_io.h>
 
 namespace svs {
 class Flat;

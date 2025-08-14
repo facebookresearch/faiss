@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/Index.h>
-#include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <svs/core/data.h>
 #include <svs/core/query_result.h>
+
 #include <svs/orchestrators/exhaustive.h>
 
 namespace faiss {

@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexSVSLVQ.h>
+
 #include <variant>
 
-#include "faiss/IndexSVSLVQ.h"
-#include "svs/orchestrators/dynamic_vamana.h"
+#include <svs/orchestrators/dynamic_vamana.h>
 namespace faiss {
 
 IndexSVSLVQ::IndexSVSLVQ(idx_t d, MetricType metric, LVQLevel lvq_level)

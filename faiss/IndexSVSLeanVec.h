@@ -9,7 +9,7 @@
 
 #include <faiss/IndexSVS.h>
 
-#include "svs/extensions/vamana/leanvec.h"
+#include <svs/extensions/vamana/leanvec.h>
 
 namespace faiss {
 

@@ -9,7 +9,7 @@
 
 #include <faiss/IndexSVS.h>
 
-#include "svs/extensions/vamana/lvq.h"
+#include <svs/extensions/vamana/lvq.h>
 
 namespace faiss {
 

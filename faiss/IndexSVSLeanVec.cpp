@@ -6,10 +6,13 @@
  */
 
 #include <faiss/IndexSVSLeanVec.h>
+
 #include <variant>
-#include "faiss/impl/FaissAssert.h"
-#include "svs/core/medioid.h"
-#include "svs/orchestrators/dynamic_vamana.h"
+
+#include <svs/core/medioid.h>
+#include <svs/orchestrators/dynamic_vamana.h>
+
+#include <faiss/impl/FaissAssert.h>
 
 namespace faiss {
 
