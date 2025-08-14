@@ -117,6 +117,7 @@ void GpuIndex::add_ex(idx_t n, const void* x, NumericType numeric_type) {
 void GpuIndex::add(idx_t n, const float* x) {
     // Pass to add_with_ids
     add_ex(n, x, NumericType::Float32);
+    add_ex(n, x, NumericType::Float32);
 }
 
 void GpuIndex::add_with_ids_ex(
