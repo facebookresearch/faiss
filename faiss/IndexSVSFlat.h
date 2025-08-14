@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <filesystem>
+#include <iostream>
 #include <memory>
 #include <numeric>
 #include <variant>
@@ -49,6 +51,10 @@ struct IndexSVSFlat : Index {
 
     /* Initializes the implementation, using the provided data */
     virtual void init_impl(idx_t n, const float* x);
+
+    /* Serialization */
+    void serialize_impl(std::ostream& out) const;
+    void deserialize_impl(std::istream& in);
 };
 
 } // namespace faiss

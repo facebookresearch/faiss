@@ -1284,14 +1284,16 @@ Index* read_index(IOReader* f, int io_flags) {
         std::istream is(&rbuf);
         svs->deserialize_impl(is);
         idx = svs;
-    } else if (h == fourcc("ISVS")) {
-        // TODO
-        // SVS static vamana
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
         IndexSVSFlat* svs = new IndexSVSFlat();
         read_index_header(svs, f);
         READ1(svs->num_threads);
+
+        faiss::BufferedIOReader br(f);
+        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        std::istream is(&rbuf);
+        svs->deserialize_impl(is);
         idx = svs;
     }
 #endif // FAISS_USE_SVS

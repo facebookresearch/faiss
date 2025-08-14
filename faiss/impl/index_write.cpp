@@ -934,7 +934,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         faiss::svs_io::WriterStreambuf wbuf(&bwr);
         std::ostream os(&wbuf);
 
-        static_cast<const IndexSVS*>(idx)->serialize_impl(os);
+        svs->serialize_impl(os);
         os.flush();
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
@@ -942,6 +942,14 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(idx, f);
         WRITE1(svs->num_threads);
+
+        // payload (stream to file)
+        faiss::BufferedIOWriter bwr(f);
+        faiss::svs_io::WriterStreambuf wbuf(&bwr);
+        std::ostream os(&wbuf);
+
+        svs->serialize_impl(os);
+        os.flush();
     }
 #endif // FAISS_USE_SVS
     else {

@@ -187,11 +187,6 @@ class TestSVSAdapterFlat(TestSVSAdapter):
         # This test is expected to fail for IndexSVSFlat as it doesn't support batch operations yet
         super().test_svs_batch_operations()
 
-    @unittest.expectedFailure
-    def test_svs_serialization(self):
-        # TODO
-        # This test is expected to fail for IndexSVSFlat as it doesn't support serialization yet
-        super().test_svs_batch_operations()
 
 
 class TestSVSVamanaParameters(unittest.TestCase):
