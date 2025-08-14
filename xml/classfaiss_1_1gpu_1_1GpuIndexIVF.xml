@@ -659,14 +659,14 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="79" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6b8ed1b45c00119c77773ad6edcc5437" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1afab6f6c4b430e672bad9bee8264cc6f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::addEx</definition>
+        <definition>void faiss::gpu::GpuIndex::add_ex</definition>
         <argsstring>(idx_t, const void *x, NumericType numeric_type) override</argsstring>
-        <name>addEx</name>
-        <qualifiedname>faiss::gpu::GpuIndex::addEx</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a458b2647de77cd8b798c5d21c29a9759">addEx</reimplements>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a7ac65a57239f9a5fb1b53b61d593bcc2">addEx</reimplementedby>
+        <name>add_ex</name>
+        <qualifiedname>faiss::gpu::GpuIndex::add_ex</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1">add_ex</reimplements>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ae6308a059e81139f55e67dfc709e6a6e">add_ex</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
         </param>
@@ -714,13 +714,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="85" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a877b8d4c3f19e0c3499975e654989706" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1aa4ee320c856211e4e6238b95eb338996" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::add_with_idsEx</definition>
+        <definition>void faiss::gpu::GpuIndex::add_with_ids_ex</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, const idx_t *xids) override</argsstring>
-        <name>add_with_idsEx</name>
-        <qualifiedname>faiss::gpu::GpuIndex::add_with_idsEx</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a38483813bdd344061b84ae4a0b28a4ca">add_with_idsEx</reimplements>
+        <name>add_with_ids_ex</name>
+        <qualifiedname>faiss::gpu::GpuIndex::add_with_ids_ex</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5">add_with_ids_ex</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -819,13 +819,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="99" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a7d13952cd9bddd1b836e221c1f1590ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a5dbd8404a4bf32a43dbf9a349a680b9d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::searchEx</definition>
+        <definition>void faiss::gpu::GpuIndex::search_ex</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
-        <name>searchEx</name>
-        <qualifiedname>faiss::gpu::GpuIndex::searchEx</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1ad379dbf54bec42c949908e3083355345">searchEx</reimplements>
+        <name>search_ex</name>
+        <qualifiedname>faiss::gpu::GpuIndex::search_ex</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9">search_ex</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1045,13 +1045,13 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="130" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a87e8fdc1bd1c534d7851de3263568b99" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::Index::trainEx</definition>
+        <definition>virtual void faiss::Index::train_ex</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type)</argsstring>
-        <name>trainEx</name>
-        <qualifiedname>faiss::Index::trainEx</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ac138858acc828858b4889986c97ef35a">trainEx</reimplementedby>
+        <name>train_ex</name>
+        <qualifiedname>faiss::Index::train_ex</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a8a472fd13dca61dd0da11b0db3486d29">train_ex</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1927,12 +1927,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="141" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a0e4268968b410acc222a3ae1db6e8dfa" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::copyFromEx</definition>
+        <definition>void faiss::gpu::GpuIndex::copyFrom_ex</definition>
         <argsstring>(const faiss::Index *index, NumericType numeric_type)</argsstring>
-        <name>copyFromEx</name>
-        <qualifiedname>faiss::gpu::GpuIndex::copyFromEx</qualifiedname>
+        <name>copyFrom_ex</name>
+        <qualifiedname>faiss::gpu::GpuIndex::copyFrom_ex</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>index</declname>
@@ -1968,12 +1968,12 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="151" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1ac73597c28a7b13a2e768735341855138" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>void faiss::gpu::GpuIndex::copyToEx</definition>
+        <definition>void faiss::gpu::GpuIndex::copyTo_ex</definition>
         <argsstring>(faiss::Index *index, NumericType numeric_type)</argsstring>
-        <name>copyToEx</name>
-        <qualifiedname>faiss::gpu::GpuIndex::copyToEx</qualifiedname>
+        <name>copyTo_ex</name>
+        <qualifiedname>faiss::gpu::GpuIndex::copyTo_ex</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
           <declname>index</declname>
@@ -1990,13 +1990,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="152" column="10" bodyfile="faiss/gpu/GpuIndex.h" bodystart="152" bodyend="158"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1af40feac86824cac5727ba8ab7026be34" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::gpu::GpuIndex::addImplEx_</definition>
+        <definition>virtual void faiss::gpu::GpuIndex::addImpl_ex_</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, const idx_t *ids)</argsstring>
-        <name>addImplEx_</name>
-        <qualifiedname>faiss::gpu::GpuIndex::addImplEx_</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1ae5265837f86f59177c5a62eb93a500d1">addImplEx_</reimplementedby>
+        <name>addImpl_ex_</name>
+        <qualifiedname>faiss::gpu::GpuIndex::addImpl_ex_</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a5c1bdf0218c82973bdfd605eadd0fe9c">addImpl_ex_</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -2021,13 +2021,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="168" column="18" bodyfile="faiss/gpu/GpuIndex.h" bodystart="168" bodyend="178"/>
       </memberdef>
-      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1a45bae4d9d964f59c15ca2e21b2f44a37" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::gpu::GpuIndex::searchImplEx_</definition>
+        <definition>virtual void faiss::gpu::GpuIndex::searchImpl_ex_</definition>
         <argsstring>(idx_t n, const void *x, NumericType numeric_type, int k, float *distances, idx_t *labels, const SearchParameters *params) const</argsstring>
-        <name>searchImplEx_</name>
-        <qualifiedname>faiss::gpu::GpuIndex::searchImplEx_</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1afd4f63a4e95e251f5cacce8ce80adb61">searchImplEx_</reimplementedby>
+        <name>searchImpl_ex_</name>
+        <qualifiedname>faiss::gpu::GpuIndex::searchImpl_ex_</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a14e2742e30b4b1a047d7fe18ebf56399">searchImpl_ex_</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -2436,12 +2436,12 @@
     <location file="faiss/gpu/GpuIndexIVF.h" line="40" column="1" bodyfile="faiss/gpu/GpuIndexIVF.h" bodystart="40" bodyend="151"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5fcf3e9af349e17c27ce82fc0ed94966" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afab6f6c4b430e672bad9bee8264cc6f4" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add_ex</name></member>
       <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add_sa_codes</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e7fa779ba9d47b0af36161de2a3b191" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add_with_ids</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a877b8d4c3f19e0c3499975e654989706" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add_with_idsEx</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6b8ed1b45c00119c77773ad6edcc5437" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>addEx</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1aa4ee320c856211e4e6238b95eb338996" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>add_with_ids_ex</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a4ee966b45a15731bae209004e5a126b9" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>addImpl_</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1af40feac86824cac5727ba8ab7026be34" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>addImplEx_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a326582851098d2a21cc8da1a5844ab91" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>addImpl_ex_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a69731ab85d119127e1fe603757b28400" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>addImplRequiresIDs_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ab6382636bc3f651645ee66d8744f7c0f" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>assign</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ae4703ba976dbdd01678a5fc51d14f855" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>baseIndex_</name></member>
@@ -2454,10 +2454,10 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ab62da82105579618d1b89a810d61e3bd" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>config_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a94c2c171f9a2d27085dea9101067bdf2" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyFrom</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9d1657c6a28e0581b3bc96699e12a2ab" prot="protected" virt="non-virtual" ambiguityscope="faiss::gpu::GpuIndex::"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyFrom</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a0e4268968b410acc222a3ae1db6e8dfa" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyFromEx</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6a0e4752e859384892a5603173219dc3" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyFrom_ex</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a9153ac747b50b454d85416edcf484bd3" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyTo</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6fa51de122f2cf2bd49727d909fb4b6c" prot="protected" virt="non-virtual" ambiguityscope="faiss::gpu::GpuIndex::"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyTo</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1ac73597c28a7b13a2e768735341855138" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyToEx</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a364859c1d6cba39edb039ecf98fa5f04" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>copyTo_ex</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>cp</name></member>
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>d</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>decode_listno</name></member>
@@ -2506,14 +2506,14 @@
       <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>sa_encode</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a7d7d3746b5f02be8317e142d966c7d4f" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>search</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6d03010928f0a641ac6a1b45c0c034f0" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>search_and_reconstruct</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a5dbd8404a4bf32a43dbf9a349a680b9d" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>search_ex</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a95222865727ad3693314e5c649a48f68" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>search_preassigned</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a7d13952cd9bddd1b836e221c1f1590ba" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>searchEx</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1aae2b4372ad0d546f8a0be679e97d527c" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>searchImpl_</name></member>
-      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a45bae4d9d964f59c15ca2e21b2f44a37" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>searchImplEx_</name></member>
+      <member refid="classfaiss_1_1gpu_1_1GpuIndex_1afcc8ff0e3bc043b2a72af04e86c9d627" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>searchImpl_ex_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a6c82cbea6b02cc996d634f822c1d310b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>setMinPagingSize</name></member>
       <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>train_q1</name></member>
-      <member refid="structfaiss_1_1Index_1a87e8fdc1bd1c534d7851de3263568b99" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>trainEx</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>trainQuantizer_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a5dd1337334747db6655d55627a13c561" prot="public" virt="pure-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>updateQuantizer</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVF</scope><name>verbose</name></member>
