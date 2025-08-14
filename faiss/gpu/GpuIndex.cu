@@ -117,7 +117,6 @@ void GpuIndex::add_ex(idx_t n, const void* x, NumericType numeric_type) {
 void GpuIndex::add(idx_t n, const float* x) {
     // Pass to add_with_ids
     add_ex(n, x, NumericType::Float32);
-    add_ex(n, x, NumericType::Float32);
 }
 
 void GpuIndex::add_with_ids_ex(
@@ -136,6 +135,10 @@ void GpuIndex::add_with_ids_ex(
 
     std::vector<idx_t> generatedIds;
 
+    FAISS_THROW_IF_NOT_MSG(
+            ids_type == NumericType::Int64 || !ids,
+            "GpuIndex::add_with_ids_ex only supports int64 as ids type");
+
     // Generate IDs if we need them
     if (!ids && addImplRequiresIDs_()) {
         generatedIds = std::vector<idx_t>(n);
@@ -145,9 +148,6 @@ void GpuIndex::add_with_ids_ex(
         }
     }
 
-    FAISS_THROW_IF_NOT_MSG(
-            ids_type == NumericType::Int64 || !ids,
-            "GpuIndex::add_with_ids_ex only supports int64 as ids type");
     addPaged_ex_(
             n,
             x,

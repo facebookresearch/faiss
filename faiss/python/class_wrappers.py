@@ -276,9 +276,7 @@ def handle_Index(the_class):
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
         ids = np.ascontiguousarray(ids, dtype=_numeric_to_str(ids_type))
-        # if numeric_type == faiss.Float32:
-        #     self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
-        # else:
+        
         self.add_with_ids_ex(n, swig_ptr(x), numeric_type, swig_ptr(ids), ids_type)
 
 
@@ -378,9 +376,6 @@ def handle_Index(the_class):
             assert I.shape == (n, k)
             labels_type = _np_dtype_to_faiss_type(I.dtype)
 
-        # if numeric_type == faiss.Float32:
-        #     self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
-        # else:
         self.search_ex(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), labels_type, params)
         return D, I
 
