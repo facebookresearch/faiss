@@ -341,7 +341,7 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   include(FetchContent)
-  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.9/svs-shared-library-0.0.9.tar.gz")
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.0.8-dev/svs-shared-library-0.0.8-20250815.tar.gz")
   FetchContent_Declare(
       svs
       URL "${SVS_URL}"
@@ -349,6 +349,7 @@ if(FAISS_ENABLE_SVS)
   FetchContent_MakeAvailable(svs)
   list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
   find_package(svs REQUIRED)
+  target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
 
   target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
 endif()

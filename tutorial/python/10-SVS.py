@@ -16,7 +16,6 @@ xq[:, 0] += np.arange(nq) / 1000.
 
 import faiss                        # make faiss available
 index = faiss.IndexSVS(d)           # build the index (DynamicVamana, float32)
-index.num_threads = 72
 
 # index = faiss.IndexSVSFlat(d)     # build the SVSFlat index
 # index = faiss.IndexSVSLVQ(d)      # build the SVSLVQ index, quantization parameters

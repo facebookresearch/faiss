@@ -23,7 +23,6 @@ namespace faiss {
 struct IndexSVSFlat : Index {
     // sequential labels
     size_t nlabels{0};
-    size_t num_threads = 1;
 
     IndexSVSFlat() = default;
     IndexSVSFlat(idx_t d, MetricType metric = METRIC_L2);

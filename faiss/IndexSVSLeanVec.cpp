@@ -29,7 +29,8 @@ IndexSVSLeanVec::IndexSVSLeanVec(
 void IndexSVSLeanVec::train(idx_t n, const float* x) {
     const auto data =
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
-    auto threadpool = svs::threads::as_threadpool(num_threads);
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
     auto means = svs::utils::compute_medioid(data, threadpool);
     auto matrix =
             svs::leanvec::compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(
@@ -56,7 +57,8 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
     const auto data =
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
     std::vector<size_t> labels(n);
-    auto threadpool = svs::threads::as_threadpool(num_threads);
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
 
     std::variant<
             std::monostate,
@@ -158,6 +160,8 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
     // Write stream to files that can be read by DynamicVamana::assemble()
     svs_io::SVSTempDirectory tmp;
     tmp.write_stream_to_files(in);
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
 
     std::variant<svs::DistanceIP, svs::DistanceL2> svs_distance;
     switch (metric_type) {
@@ -183,7 +187,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
                                                 storage_type_4x4>(
                                                 tmp.data.string()),
                                         svs_distance,
-                                        num_threads));
+                                        std::move(threadpool)));
                         break;
                     case LeanVecLevel::LeanVec_4x8:
                         impl = new svs::DynamicVamana(
@@ -194,7 +198,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
                                                 storage_type_4x8>(
                                                 tmp.data.string()),
                                         svs_distance,
-                                        num_threads));
+                                        std::move(threadpool)));
                         break;
                     case LeanVecLevel::LeanVec_8x8:
                         impl = new svs::DynamicVamana(
@@ -205,7 +209,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
                                                 storage_type_8x8>(
                                                 tmp.data.string()),
                                         svs_distance,
-                                        num_threads));
+                                        std::move(threadpool)));
                         break;
                     default:
                         FAISS_ASSERT(!"not supported SVS LVQ level");
