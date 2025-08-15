@@ -295,8 +295,15 @@ struct is_maybe_owned_vector : std::false_type {};
 template <typename T>
 struct is_maybe_owned_vector<MaybeOwnedVector<T>> : std::true_type {};
 
+// guard with c++-17 (maybe, it is available somewhere in
+// faiss/impl/platform.h?).
+// This allows headers to be included in c++11 code.
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+
 template <typename T>
 inline constexpr bool is_maybe_owned_vector_v = is_maybe_owned_vector<T>::value;
+
+#endif
 
 template <typename T>
 bool operator==(
