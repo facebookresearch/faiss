@@ -193,10 +193,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
+                self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr, ids_type)
         else:
             # CPU torch
-            self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
+            self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr, ids_type)
 
     def torch_replacement_assign(self, x, k, labels=None):
         if type(x) is np.ndarray:
