@@ -9,7 +9,6 @@
 #include <omp.h>
 
 #include <memory>
-#include <numeric>
 
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
