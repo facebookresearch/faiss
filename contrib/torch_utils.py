@@ -152,10 +152,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.addEx(n, x_ptr, numeric_type)
+                self.add_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.addEx(n, x_ptr, numeric_type)
+            self.add_ex(n, x_ptr, numeric_type)
 
     def torch_replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         if type(x) is np.ndarray:
@@ -181,10 +181,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_with_idsEx(n, x_ptr, numeric_type, ids_ptr)
+                self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
         else:
             # CPU torch
-            self.add_with_idsEx(n, x_ptr, numeric_type, ids_ptr)
+            self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
 
     def torch_replacement_assign(self, x, k, labels=None):
         if type(x) is np.ndarray:
@@ -235,10 +235,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.trainEx(n, x_ptr, numeric_type)
+                self.train_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.trainEx(n, x_ptr, numeric_type)
+            self.train_ex(n, x_ptr, numeric_type)
 
     def search_methods_common(x, k, D, I, numeric_type=faiss.Float32):
         n, d = x.shape
@@ -281,10 +281,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.searchEx(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+                self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
         else:
             # CPU torch
-            self.searchEx(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+            self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
 
         return D, I
 
