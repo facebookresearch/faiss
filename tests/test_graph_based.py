@@ -186,8 +186,12 @@ class TestHNSW(unittest.TestCase):
             faiss.serialize_index(index2))
 
         # add storage afterwards
-        index.storage = faiss.clone_index(index.storage)
-        index.own_fields = True
+        # Trying to call index.storage.get_distance_computer() after cloning
+        # will crash, unless we assign to an intermediate variable.
+        # We also get a heap-use-after-free unless we set own_fields to False.
+        temp = faiss.clone_index(index.storage)
+        index.storage = temp
+        temp.this.own(False)  # Alternatively set index.own_fields = False
 
         Dnew, Inew = index.search(self.xq, 5)
         np.testing.assert_array_equal(Dnew, Dref)

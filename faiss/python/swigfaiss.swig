@@ -64,6 +64,20 @@ typedef uint64_t size_t;
  * the language includes for their respective matrix libraries.
  *******************************************************************/
 
+/********************************************************
+ * Don't transfer ownership when assigning to a struct field
+ ********************************************************/
+
+// https://github.com/swig/swig/issues/2709
+// override default behavior
+%typemap(in, noblock=1) SWIGTYPE * (void  *argp = 0, int res = 0) {
+  res = SWIG_ConvertPtr($input, &argp,$descriptor, /* $disown | */ %convertptr_flags);
+  if (!SWIG_IsOK(res)) {
+    %argument_fail(res, "$type", $symname, $argnum);
+  }
+  $1 = %reinterpret_cast(argp, $ltype);
+}
+
 %{
 
 
