@@ -66,7 +66,6 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     ASSERT_NE(loaded->impl, nullptr);
     EXPECT_EQ(loaded->d, index.d);
     EXPECT_EQ(loaded->metric_type, index.metric_type);
-    EXPECT_EQ(loaded->num_threads, index.num_threads);
     EXPECT_EQ(loaded->graph_max_degree, index.graph_max_degree);
     EXPECT_EQ(loaded->alpha, index.alpha);
     EXPECT_EQ(loaded->search_window_size, index.search_window_size);
@@ -158,7 +157,6 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVSFlat) {
     EXPECT_EQ(loaded->d, index.d);
     EXPECT_EQ(loaded->nlabels, index.nlabels);
     EXPECT_EQ(loaded->metric_type, index.metric_type);
-    EXPECT_EQ(loaded->num_threads, index.num_threads);
 
     delete loaded;
 }

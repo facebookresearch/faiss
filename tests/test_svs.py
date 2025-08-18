@@ -80,8 +80,6 @@ class TestSVSAdapter(unittest.TestCase):
         """Test FAISS serialization system works with SVS indices"""
         index = self._create_instance()
 
-        index.num_threads = 2
-
         index.add(self.xb)
         D_before, I_before = index.search(self.xq, 4)
 
@@ -94,7 +92,6 @@ class TestSVSAdapter(unittest.TestCase):
         self.assertEqual(loaded.d, self.d)
         self.assertEqual(loaded.ntotal, self.nb)
         self.assertEqual(loaded.metric_type, index.metric_type)
-        self.assertEqual(loaded.num_threads, index.num_threads)
 
         # Verify functionality is preserved
         D_after, I_after = loaded.search(self.xq, 4)
@@ -211,7 +208,6 @@ class TestSVSVamanaParameters(unittest.TestCase):
         index = self._create_instance()
 
         # Set non-default values for all parameters
-        index.num_threads = 4
         index.graph_max_degree = 32
         index.alpha = 1.5
         index.search_window_size = 20
@@ -222,7 +218,6 @@ class TestSVSVamanaParameters(unittest.TestCase):
         index.use_full_search_history = False
 
         # Verify all parameters are set correctly
-        self.assertEqual(index.num_threads, 4)
         self.assertEqual(index.graph_max_degree, 32)
         self.assertAlmostEqual(index.alpha, 1.5, places=6)
         self.assertEqual(index.search_window_size, 20)
@@ -237,7 +232,6 @@ class TestSVSVamanaParameters(unittest.TestCase):
         index = self._create_instance()
 
         # Verify default values match C++ header
-        self.assertEqual(index.num_threads, 1)
         self.assertEqual(index.graph_max_degree, 64)
         self.assertAlmostEqual(index.alpha, 1.2, places=6)
         self.assertEqual(index.search_window_size, 10)
@@ -252,7 +246,6 @@ class TestSVSVamanaParameters(unittest.TestCase):
         index = self._create_instance()
 
         # Set distinctive non-default values
-        index.num_threads = 8
         index.graph_max_degree = 48
         index.alpha = 1.8
         index.search_window_size = 15
@@ -272,7 +265,6 @@ class TestSVSVamanaParameters(unittest.TestCase):
 
         # Verify all parameters are preserved
         self.assertIsInstance(loaded, self.target_class)
-        self.assertEqual(loaded.num_threads, 8)
         self.assertEqual(loaded.graph_max_degree, 48)
         self.assertAlmostEqual(loaded.alpha, 1.8, places=6)
         self.assertEqual(loaded.search_window_size, 15)
