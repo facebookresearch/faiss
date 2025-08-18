@@ -195,7 +195,7 @@ int faiss_Index_compute_residual_n(
 
 int faiss_Index_sa_code_size(const FaissIndex* index, size_t* size) {
     try {
-        reinterpret_cast<const faiss::Index*>(index)->sa_code_size();
+        *size = reinterpret_cast<const faiss::Index*>(index)->sa_code_size();
     }
     CATCH_AND_HANDLE
 }

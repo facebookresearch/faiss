@@ -101,22 +101,8 @@ void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
     this->ntotal = n;
 }
 
-void GpuIndexBinaryCagra::train(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type) {
-    IndexBinary::train(n, x, numeric_type);
-}
-
 void GpuIndexBinaryCagra::add(idx_t n, const uint8_t* x) {
     train(n, x);
-}
-
-void GpuIndexBinaryCagra::add(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type) {
-    IndexBinary::add(n, x, numeric_type);
 }
 
 void GpuIndexBinaryCagra::search(
@@ -179,17 +165,6 @@ void GpuIndexBinaryCagra::search(
     // Copy back if necessary
     fromDevice<int, 2>(outDistances, distances, stream);
     fromDevice<idx_t, 2>(outIndices, labels, stream);
-}
-
-void GpuIndexBinaryCagra::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        int* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    IndexBinary::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 void GpuIndexBinaryCagra::searchNonPaged_(
@@ -348,13 +323,6 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     auto graph_degree = index_->get_knngraph_degree();
     auto M = graph_degree / 2;
 
-    // Validate M
-    FAISS_THROW_IF_NOT_FMT(
-            graph_degree % 2 == 0 && M > 0,
-            "CAGRA graph degree %d must be even and positive for conversion to HNSW (M=%d)",
-            static_cast<int>(graph_degree),
-            static_cast<int>(M));
-
     if (index->storage && index->own_fields) {
         delete index->storage;
     }
@@ -391,7 +359,6 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     for (idx_t i = 0; i < n_train; i++) {
         size_t begin, end;
         index->hnsw.neighbor_range(i, 0, &begin, &end);
-        FAISS_ASSERT(end - begin == graph_degree);
 
         for (size_t j = begin; j < end; j++) {
             index->hnsw.neighbors[j] = graph[i * graph_degree + (j - begin)];

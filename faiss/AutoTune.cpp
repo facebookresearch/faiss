@@ -14,7 +14,6 @@
 #include <faiss/AutoTune.h>
 
 #include <cinttypes>
-#include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
@@ -30,8 +29,6 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
-
-#include <faiss/IndexBinaryFlat.h>
 
 namespace faiss {
 

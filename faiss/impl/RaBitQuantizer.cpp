@@ -7,15 +7,15 @@
 
 #include <faiss/impl/RaBitQuantizer.h>
 
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <vector>
-
-#include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
 
 namespace faiss {
 
@@ -351,27 +351,9 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
     const size_t di_8b = (d + 7) / 8;
     const size_t di_64b = (di_8b / 8) * 8;
 
-    uint64_t dot_qo = 0;
-    for (size_t j = 0; j < qb; j++) {
-        const uint8_t* query_j = rearranged_rotated_qq.data() + j * di_8b;
-
-        // process 64-bit popcounts
-        uint64_t count_dot = 0;
-        for (size_t i = 0; i < di_64b; i += 8) {
-            const auto qv = *(const uint64_t*)(query_j + i);
-            const auto yv = *(const uint64_t*)(binary_data + i);
-            count_dot += __builtin_popcountll(qv & yv);
-        }
-
-        // process leftovers
-        for (size_t i = di_64b; i < di_8b; i++) {
-            const auto qv = *(query_j + i);
-            const auto yv = *(binary_data + i);
-            count_dot += __builtin_popcount(qv & yv);
-        }
-
-        dot_qo += (count_dot << j);
-    }
+    // Use the optimized popcount function from rabitq_simd.h
+    float dot_qo =
+            rabitq_dp_popcnt(rearranged_rotated_qq.data(), binary_data, d, qb);
 
     // It was a willful decision (after the discussion) to not to pre-cache
     //   the sum of all bits, just in order to reduce the overhead per vector.
