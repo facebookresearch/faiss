@@ -147,14 +147,9 @@ struct Codec8bit {
         for (size_t j = 0; j < 8; j++) {
             result[j] = decode_component(code, i + j);
         }
-
-        // vfloat32m1x2_t res;
-        // res.val[0] = __riscv_vle32_v_f32m1(result, 4);       
-        // res.val[1] = __riscv_vle32_v_f32m1(result + 4, 4);   
         vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);       
         vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);   
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(res1, res2);
-        return res;
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
     }
 #endif
 };
@@ -237,8 +232,7 @@ struct Codec4bit {
         }
         vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);       
         vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);   
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(res1, res2);
-        return res;
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
     }
 #endif
 };
@@ -413,8 +407,7 @@ struct Codec6bit {
         }
         vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);       
         vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);   
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(res1, res2);
-        return res;
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
     }
 #endif
 };
@@ -689,11 +682,6 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
         vfloat32m1_t vdiff_0 = __riscv_vle32_v_f32m1(this->vdiff + i, 4);
         vfloat32m1_t vdiff_1 = __riscv_vle32_v_f32m1(this->vdiff + i + 4, 4);
 
-        // float32x4x2_t vmin_8 = {
-        //     __riscv_vle32_v_f32m1(this->vmin + i, 4),
-        //     __riscv_vle32_v_f32m1(this->vmin + i + 4, 4)
-        // };
-
         return __riscv_vcreate_v_f32m1x2(
                 __riscv_vfmacc_vv_f32m1(vmin_0, __riscv_vget_v_f32m1x2_f32m1(xi, 0), vdiff_0, 4),
                 __riscv_vfmacc_vv_f32m1(vmin_1, __riscv_vget_v_f32m1x2_f32m1(xi, 1), vdiff_1, 4));
@@ -795,14 +783,10 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
         vuint16mf2_t u16_val0 = __riscv_vle16_v_u16mf2(base + 4 * i, 4);
         vuint16mf2_t u16_val1 = __riscv_vle16_v_u16mf2(base + 4 * i + 4, 4);
 
-        vfloat16mf2_t f16_val0 = __riscv_vreinterpret_v_u16mf2_f16mf2(u16_val0);
-        vfloat16mf2_t f16_val1 = __riscv_vreinterpret_v_u16mf2_f16mf2(u16_val1);
+        vfloat32m1_t f32_val0 = __riscv_vfwcvt_f_f_v_f32m1(__riscv_vreinterpret_v_u16mf2_f16mf2(u16_val0), 4);
+        vfloat32m1_t f32_val1 = __riscv_vfwcvt_f_f_v_f32m1(__riscv_vreinterpret_v_u16mf2_f16mf2(u16_val1), 4);
 
-        vfloat32m1_t f32_val0 = __riscv_vfwcvt_f_f_v_f32m1(f16_val0, 4);
-        vfloat32m1_t f32_val1 = __riscv_vfwcvt_f_f_v_f32m1(f16_val1, 4);
-
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
-        return res;
+        return __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
     }
 };
 #endif
@@ -899,26 +883,19 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
     reconstruct_8_components(const uint8_t* code, int i) const {
     const uint16_t* base = reinterpret_cast<const uint16_t*>(code);
     
-    
     vuint16mf2_t u16_val0 = __riscv_vle16_v_u16mf2(base + 4 * i, 4);
     vuint16mf2_t u16_val1 = __riscv_vle16_v_u16mf2(base + 4 * i + 4, 4);
-
-    
+  
     vuint32m1_t u32_val0 = __riscv_vzext_vf2_u32m1(u16_val0, 4);
     vuint32m1_t u32_val1 = __riscv_vzext_vf2_u32m1(u16_val1, 4);
-
-    
+ 
     vuint32m1_t shifted0 = __riscv_vsll_vx_u32m1(u32_val0, 16, 4);
     vuint32m1_t shifted1 = __riscv_vsll_vx_u32m1(u32_val1, 16, 4);
-
     
     vfloat32m1_t f32_val0 = __riscv_vreinterpret_v_u32m1_f32m1(shifted0);
     vfloat32m1_t f32_val1 = __riscv_vreinterpret_v_u32m1_f32m1(shifted1);
-
-    
-    vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
-
-    return res;
+ 
+    return __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
     }
 };
 #endif
@@ -1019,29 +996,21 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
     reconstruct_8_components(const uint8_t* code, int i) const {
         
         const uint8_t* base = code + i;
-        printf("[RVV](5)using: reconstruct_8_components.\n");
         
         vuint8mf4_t u8_val = __riscv_vle8_v_u8mf4(base, 8);
-
         
         vuint16mf2_t u16_val = __riscv_vzext_vf2_u16mf2(u8_val, 8);
-
         
         vuint16mf2_t u16_val_0 = __riscv_vslideup_vx_u16mf2(u16_val, u16_val, 0, 4);
         vuint16mf2_t u16_val_1 = __riscv_vslideup_vx_u16mf2(u16_val, u16_val, 4, 4);
-
-        
+     
         vuint32m1_t u32_val_0 = __riscv_vzext_vf2_u32m1(u16_val_0, 4);
         vuint32m1_t u32_val_1 = __riscv_vzext_vf2_u32m1(u16_val_1, 4);
-
-        
+     
         vfloat32m1_t f32_val_0 = __riscv_vreinterpret_v_u32m1_f32m1(u32_val_0);
         vfloat32m1_t f32_val_1 = __riscv_vreinterpret_v_u32m1_f32m1(u32_val_1);
-
-        
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(f32_val_0, f32_val_1);
-
-        return res;
+    
+        return __riscv_vcreate_v_f32m1x2(f32_val_0, f32_val_1);
     }
 };
 #endif
@@ -1151,7 +1120,6 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
     reconstruct_8_components(const uint8_t* code, int i) const {
         
         vuint8m1_t x8 = __riscv_vle8_v_u8m1(code + i, 8);
-        printf("[RVV](6)using: reconstruct_8_components.\n");
         
         vuint16m2_t y16_all = __riscv_vzext_vf2_u16m2(x8, 8);
       
@@ -1171,9 +1139,7 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
         f32_0 = __riscv_vfsub_vv_f32m1(f32_0, bias, 4);
         f32_1 = __riscv_vfsub_vv_f32m1(f32_1, bias, 4);
 
-        
-        vfloat32m1x2_t res = __riscv_vcreate_v_f32m1x2(f32_0, f32_1);
-        return res;
+        return __riscv_vcreate_v_f32m1x2(f32_0, f32_1);
     }
 };
 #endif
@@ -1571,7 +1537,7 @@ struct SimilarityL2<8> {
     const float* y;
     const float* yi;
 
-    float accu8[8];  // Using an array to hold the accumulator
+    float accu8[8];  
 
     explicit SimilarityL2(const float* y) : y(y) {}
 
@@ -1615,17 +1581,14 @@ struct SimilarityL2<8> {
         vfloat32m1_t y0 = __riscv_vget_v_f32m1x2_f32m1(y, 0);
         vfloat32m1_t y1 = __riscv_vget_v_f32m1x2_f32m1(y, 1);
 
-        // Load the accumulator
         vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
         vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
 
-        // Compute (y - x)^2
         vfloat32m1_t sub0 = __riscv_vfsub_vv_f32m1(y0, x0, 4);
         vfloat32m1_t sub1 = __riscv_vfsub_vv_f32m1(y1, x1, 4);
         acc0 = __riscv_vfmacc_vv_f32m1(acc0, sub0, sub0, 4);
         acc1 = __riscv_vfmacc_vv_f32m1(acc1, sub1, sub1, 4);
 
-        // Store the results back to the accumulator
         __riscv_vse32_v_f32m1(accu8 + 0, acc0, 4);
         __riscv_vse32_v_f32m1(accu8 + 4, acc1, 4);
     }
@@ -1634,7 +1597,6 @@ struct SimilarityL2<8> {
 
         vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
         vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
-
 
         vfloat32m1_t sum0 = __riscv_vfredusum_vs_f32m1_f32m1(acc0, acc0, 4);
         vfloat32m1_t sum1 = __riscv_vfredusum_vs_f32m1_f32m1(acc1, acc1, 4);
@@ -2567,11 +2529,7 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     if (d % 16 == 0) {
         return select_quantizer_1<16>(qtype, d, trained);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
-    if (d % 8 == 0) {
-        return select_quantizer_1<8>(qtype, d, trained);
-    } else
-#elif defined(USE_RVV)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -2612,15 +2570,7 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
                     qtype, d, trained);
         }
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
-    if (d % 8 == 0) {
-        if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
-        } else {
-            return select_distance_computer<SimilarityIP<8>>(qtype, d, trained);
-        }
-    } else
-#elif defined(USE_RVV)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2995,12 +2945,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         return sel0_InvertedListScanner<16>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
-    if (d % 8 == 0) {
-        return sel0_InvertedListScanner<8>(
-                mt, this, quantizer, store_pairs, sel, by_residual);
-    } else
-#elif defined(USE_RVV)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
