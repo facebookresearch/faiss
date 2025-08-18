@@ -69,7 +69,8 @@ void IndexSVSFlat::search(
 
 void IndexSVSFlat::init_impl(idx_t n, const float* x) {
     auto data = svs::data::SimpleData<float>(n, d);
-    auto threadpool = svs::threads::as_threadpool(num_threads);
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
     ntotal = n;
 
     svs::threads::parallel_for(
@@ -113,7 +114,8 @@ void IndexSVSFlat::deserialize_impl(std::istream& in) {
     svs_io::SVSTempDirectory tmp;
     tmp.write_stream_to_files(in);
 
-    auto threadpool = svs::threads::as_threadpool(num_threads);
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:

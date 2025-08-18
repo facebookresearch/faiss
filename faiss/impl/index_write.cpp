@@ -912,7 +912,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
 
         WRITE1(h);
         write_index_header(svs, f);
-        WRITE1(svs->num_threads);
         WRITE1(svs->graph_max_degree);
         WRITE1(svs->alpha);
         WRITE1(svs->search_window_size);
@@ -941,7 +940,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("ISVF");
         WRITE1(h);
         write_index_header(idx, f);
-        WRITE1(svs->num_threads);
 
         // payload (stream to file)
         faiss::BufferedIOWriter bwr(f);

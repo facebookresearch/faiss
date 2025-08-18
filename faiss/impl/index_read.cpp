@@ -1262,7 +1262,6 @@ Index* read_index(IOReader* f, int io_flags) {
         }
 
         read_index_header(svs, f);
-        READ1(svs->num_threads);
         READ1(svs->graph_max_degree);
         READ1(svs->alpha);
         READ1(svs->search_window_size);
@@ -1288,7 +1287,6 @@ Index* read_index(IOReader* f, int io_flags) {
         // SVS Flat
         IndexSVSFlat* svs = new IndexSVSFlat();
         read_index_header(svs, f);
-        READ1(svs->num_threads);
 
         faiss::BufferedIOReader br(f);
         faiss::svs_io::ReaderStreambuf rbuf(&br);

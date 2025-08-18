@@ -21,7 +21,6 @@ class DynamicVamana;
 namespace faiss {
 
 struct IndexSVS : Index {
-    size_t num_threads = 1;
     size_t graph_max_degree = 64;
     float alpha = 1.2;
     size_t search_window_size = 10;
