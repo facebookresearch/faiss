@@ -352,6 +352,10 @@ if(FAISS_ENABLE_SVS)
   target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
 
   target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx2 PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx512 PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_sve PUBLIC svs::svs svs::svs_shared_library)
 endif()
 
 # Handle `#include <faiss/foo.h>`.
@@ -372,6 +376,18 @@ target_include_directories(faiss_sve PUBLIC
 if(FAISS_ENABLE_SVS)
   # Handle `#include <svs/foo.h>`.
   target_include_directories(faiss PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx2 PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx512 PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx512_spr PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_sve PUBLIC
     $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
 endif()
 
