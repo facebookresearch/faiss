@@ -193,6 +193,8 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
                 graph_build_params(index_params_.intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter_;
+        graph_build_params.metric =
+                metricFaissToCuvs(metric_, false);
         index_params_.graph_build_params = graph_build_params;
     }
 
