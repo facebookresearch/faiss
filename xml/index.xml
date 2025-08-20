@@ -9997,7 +9997,6 @@
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" kind="typedef"><name>int_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" kind="variable"><name>hnsw_stats</name></member>
-    <member refid="namespacefaiss_1a6ea61905a62fd4878c2cbbda144836a1" kind="variable"><name>is_maybe_owned_vector_v</name></member>
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
     <member refid="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" kind="variable"><name>simd_result_handlers_accept_virtual</name></member>

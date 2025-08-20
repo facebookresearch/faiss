@@ -809,25 +809,32 @@
 <codeline lineno="295"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
 <codeline lineno="296" refid="structfaiss_1_1is__maybe__owned__vector_3_01MaybeOwnedVector_3_01T_01_4_01_4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1is__maybe__owned__vector" kindref="compound">is_maybe_owned_vector</ref>&lt;<ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector</ref>&lt;T&gt;&gt;<sp/>:<sp/>std::true_type<sp/>{};</highlight></codeline>
 <codeline lineno="297"><highlight class="normal"></highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="299"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_maybe_owned_vector_v<sp/>=<sp/><ref refid="structfaiss_1_1is__maybe__owned__vector" kindref="compound">is_maybe_owned_vector&lt;T&gt;::value</ref>;</highlight></codeline>
-<codeline lineno="300"><highlight class="normal"></highlight></codeline>
-<codeline lineno="301"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight></codeline>
-<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;T&gt;</ref>&amp;<sp/>lhs,</highlight></codeline>
-<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;T&gt;</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
-<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.size()<sp/>==<sp/>rhs.size()<sp/>&amp;&amp;</highlight></codeline>
-<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!memcmp(lhs.data(),<sp/>rhs.data(),<sp/>lhs.byte_size());</highlight></codeline>
-<codeline lineno="307"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="308"><highlight class="normal"></highlight></codeline>
-<codeline lineno="309"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
-<codeline lineno="310"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(</highlight></codeline>
-<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MaybeOwnedVector&lt;T&gt;&amp;<sp/>lhs,</highlight></codeline>
-<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MaybeOwnedVector&lt;T&gt;&amp;<sp/>rhs)<sp/>{</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(lhs<sp/>==<sp/>rhs);</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight><highlight class="comment">//<sp/>guard<sp/>with<sp/>c++-17<sp/>(maybe,<sp/>it<sp/>is<sp/>available<sp/>somewhere<sp/>in</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight><highlight class="comment">//<sp/>faiss/impl/platform.h?).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>allows<sp/>headers<sp/>to<sp/>be<sp/>included<sp/>in<sp/>c++11<sp/>code.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>((defined(_MSVC_LANG)<sp/>&amp;&amp;<sp/>_MSVC_LANG<sp/>&gt;=<sp/>201703L)<sp/>||<sp/>__cplusplus<sp/>&gt;=<sp/>201703L)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_maybe_owned_vector_v<sp/>=<sp/><ref refid="structfaiss_1_1is__maybe__owned__vector" kindref="compound">is_maybe_owned_vector&lt;T&gt;::value</ref>;</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;T&gt;</ref>&amp;<sp/>lhs,</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;T&gt;</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.size()<sp/>==<sp/>rhs.size()<sp/>&amp;&amp;</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>!memcmp(lhs.data(),<sp/>rhs.data(),<sp/>lhs.byte_size());</highlight></codeline>
 <codeline lineno="314"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="315"><highlight class="normal"></highlight></codeline>
-<codeline lineno="316"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MaybeOwnedVector&lt;T&gt;&amp;<sp/>lhs,</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MaybeOwnedVector&lt;T&gt;&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!(lhs<sp/>==<sp/>rhs);</highlight></codeline>
+<codeline lineno="321"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight></codeline>
+<codeline lineno="323"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/maybe_owned_vector.h"/>
   </compounddef>

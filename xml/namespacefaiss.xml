@@ -664,26 +664,6 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="257" column="28" declfile="faiss/impl/HNSW.h" declline="257" declcolumn="28"/>
       </memberdef>
-      <memberdef kind="variable" id="namespacefaiss_1a6ea61905a62fd4878c2cbbda144836a1" prot="public" static="no" constexpr="yes" mutable="no">
-        <templateparamlist>
-          <param>
-            <type>typename T</type>
-          </param>
-        </templateparamlist>
-        <type>constexpr bool</type>
-        <definition>constexpr bool faiss::is_maybe_owned_vector_v</definition>
-        <argsstring></argsstring>
-        <name>is_maybe_owned_vector_v</name>
-        <qualifiedname>faiss::is_maybe_owned_vector_v</qualifiedname>
-        <initializer>= <ref refid="structfaiss_1_1is__maybe__owned__vector" kindref="compound">is_maybe_owned_vector</ref>&lt;T&gt;::value</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/maybe_owned_vector.h" line="299" column="23" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="299" bodyend="-1"/>
-      </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
         <definition>FAISS_API int faiss::product_quantizer_compute_codes_bs</definition>
@@ -2154,7 +2134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/maybe_owned_vector.h" line="302" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="302" bodyend="307"/>
+        <location file="faiss/impl/maybe_owned_vector.h" line="309" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="309" bodyend="314"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a19490ca11481c398d216a3e808386497" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2181,7 +2161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/maybe_owned_vector.h" line="310" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="310" bodyend="314"/>
+        <location file="faiss/impl/maybe_owned_vector.h" line="317" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="317" bodyend="321"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a96c58ee85ae690c955ed9e9d2b417b09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
