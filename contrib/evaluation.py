@@ -291,6 +291,7 @@ def check_ref_range_results(Lref, Dref, Iref,
 # OperatingPoints functions
 # this is the Python version of the AutoTune object in C++
 
+
 class OperatingPoints:
     """
     Manages a set of search parameters with associated performance and time.
@@ -428,6 +429,7 @@ class OperatingPointsWithRanges(OperatingPoints):
 ###############################################################
 # Timer object
 
+
 class TimerIter:
     def __init__(self, timer):
         self.ts = []
@@ -452,6 +454,7 @@ class TimerIter:
                 # if timeout, we use all the runs
                 timer.times = times[:]
             raise StopIteration
+
 
 class RepeatTimer:
     """

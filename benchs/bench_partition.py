@@ -7,6 +7,7 @@ import time
 import faiss
 import numpy as np
 
+
 def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
     print(
         f"n={n} qin={qin} maxval={maxval} id_type={id_type}  ",

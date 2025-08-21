@@ -43,6 +43,7 @@ class PartitionTests:
 def pointer_to_minus1():
     return np.array([-1], dtype='int64').view("uint64")
 
+
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
