@@ -199,10 +199,10 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         # Validate the layout of the memory info
         mem_info = res.getMemoryInfo()
 
-        assert type(mem_info) == dict
-        assert type(mem_info[0]['FlatData']) == tuple
-        assert type(mem_info[0]['FlatData'][0]) == int
-        assert type(mem_info[0]['FlatData'][1]) == int
+        assert isinstance(mem_info, dict)
+        assert isinstance(mem_info[0]['FlatData'], tuple)
+        assert isinstance(mem_info[0]['FlatData'][0], int)
+        assert isinstance(mem_info[0]['FlatData'][1], int)
 
         gpu_index.nprobe = 4
 
