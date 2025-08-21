@@ -33,7 +33,7 @@ def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
         faiss.copy_array_to_AlignedTable(vals, tab_a)
         t0 = time.time()
         # print("tab a type", tab_a.get())
-        if type(qin) == int:
+        if isinstance(qin, int):
             q = qin
             faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
