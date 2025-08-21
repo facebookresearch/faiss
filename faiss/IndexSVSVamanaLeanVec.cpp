@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVSLeanVec.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 
 #include <variant>
 
@@ -16,17 +16,18 @@
 
 namespace faiss {
 
-IndexSVSLeanVec::IndexSVSLeanVec(
+IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         idx_t d,
+        size_t degree,
         MetricType metric,
         size_t leanvec_dims,
         LeanVecLevel leanvec_level)
-        : IndexSVS(d, metric), leanvec_level{leanvec_level} {
+        : IndexSVSVamana(d, degree, metric), leanvec_level{leanvec_level} {
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
     is_trained = false;
 }
 
-void IndexSVSLeanVec::train(idx_t n, const float* x) {
+void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
     const auto data =
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
     auto threadpool = svs::threads::ThreadPoolHandle(
@@ -43,12 +44,12 @@ void IndexSVSLeanVec::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexSVSLeanVec::reset() {
+void IndexSVSVamanaLeanVec::reset() {
     is_trained = false;
-    IndexSVS::reset();
+    IndexSVSVamana::reset();
 }
 
-void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
+void IndexSVSVamanaLeanVec::init_impl(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(
             is_trained,
             "Cannot initialize SVS LeanVec index without training first.");
@@ -68,7 +69,7 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
             compressed_data;
 
     switch (leanvec_level) {
-        case LeanVecLevel::LeanVec_4x4:
+        case LeanVecLevel::LeanVec4x4:
             compressed_data = storage_type_4x4::reduce(
                     data,
                     leanvec_matrix,
@@ -77,7 +78,7 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
                     svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
                     blocked_alloc_type{});
             break;
-        case LeanVecLevel::LeanVec_4x8:
+        case LeanVecLevel::LeanVec4x8:
             compressed_data = storage_type_4x8::reduce(
                     data,
                     leanvec_matrix,
@@ -86,7 +87,7 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
                     svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
                     blocked_alloc_type{});
             break;
-        case LeanVecLevel::LeanVec_8x8:
+        case LeanVecLevel::LeanVec8x8:
             compressed_data = storage_type_8x8::reduce(
                     data,
                     leanvec_matrix,
@@ -153,7 +154,7 @@ void IndexSVSLeanVec::init_impl(idx_t n, const float* x) {
             compressed_data);
 }
 
-void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
+void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 
@@ -178,7 +179,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
     std::visit(
             [&](auto&& svs_distance) {
                 switch (leanvec_level) {
-                    case LeanVecLevel::LeanVec_4x4:
+                    case LeanVecLevel::LeanVec4x4:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),
@@ -189,7 +190,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
                                         svs_distance,
                                         std::move(threadpool)));
                         break;
-                    case LeanVecLevel::LeanVec_4x8:
+                    case LeanVecLevel::LeanVec4x8:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),
@@ -200,7 +201,7 @@ void IndexSVSLeanVec::deserialize_impl(std::istream& in) {
                                         svs_distance,
                                         std::move(threadpool)));
                         break;
-                    case LeanVecLevel::LeanVec_8x8:
+                    case LeanVecLevel::LeanVec8x8:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),

@@ -5,17 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVSLVQ.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
 
 #include <variant>
 
 #include <svs/orchestrators/dynamic_vamana.h>
 namespace faiss {
 
-IndexSVSLVQ::IndexSVSLVQ(idx_t d, MetricType metric, LVQLevel lvq_level)
-        : IndexSVS(d, metric), lvq_level{lvq_level} {}
+IndexSVSVamanaLVQ::IndexSVSVamanaLVQ(
+        idx_t d,
+        size_t degree,
+        MetricType metric,
+        LVQLevel lvq_level)
+        : IndexSVSVamana(d, degree, metric), lvq_level{lvq_level} {}
 
-void IndexSVSLVQ::init_impl(idx_t n, const float* x) {
+void IndexSVSVamanaLVQ::init_impl(idx_t n, const float* x) {
     // TODO: support ConstSimpleDataView in SVS shared/static lib
     const auto data =
             svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
@@ -31,15 +35,15 @@ void IndexSVSLVQ::init_impl(idx_t n, const float* x) {
             compressed_data;
 
     switch (lvq_level) {
-        case LVQLevel::LVQ_4x0:
+        case LVQLevel::LVQ4x0:
             compressed_data = storage_type_4x0::compress(
                     data, threadpool, 0, blocked_alloc_type{});
             break;
-        case LVQLevel::LVQ_4x4:
+        case LVQLevel::LVQ4x4:
             compressed_data = storage_type_4x4::compress(
                     data, threadpool, 0, blocked_alloc_type{});
             break;
-        case LVQLevel::LVQ_4x8:
+        case LVQLevel::LVQ4x8:
             compressed_data = storage_type_4x8::compress(
                     data, threadpool, 0, blocked_alloc_type{});
             break;
@@ -101,7 +105,7 @@ void IndexSVSLVQ::init_impl(idx_t n, const float* x) {
             compressed_data);
 }
 
-void IndexSVSLVQ::deserialize_impl(std::istream& in) {
+void IndexSVSVamanaLVQ::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 
@@ -126,7 +130,7 @@ void IndexSVSLVQ::deserialize_impl(std::istream& in) {
     std::visit(
             [&](auto&& svs_distance) {
                 switch (lvq_level) {
-                    case LVQLevel::LVQ_4x0:
+                    case LVQLevel::LVQ4x0:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),
@@ -137,7 +141,7 @@ void IndexSVSLVQ::deserialize_impl(std::istream& in) {
                                         svs_distance,
                                         std::move(threadpool)));
                         break;
-                    case LVQLevel::LVQ_4x4:
+                    case LVQLevel::LVQ4x4:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),
@@ -148,7 +152,7 @@ void IndexSVSLVQ::deserialize_impl(std::istream& in) {
                                         svs_distance,
                                         std::move(threadpool)));
                         break;
-                    case LVQLevel::LVQ_4x8:
+                    case LVQLevel::LVQ4x8:
                         impl = new svs::DynamicVamana(
                                 svs::DynamicVamana::assemble<float>(
                                         tmp.config.string(),

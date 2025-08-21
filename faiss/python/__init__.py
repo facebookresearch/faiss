@@ -219,7 +219,7 @@ add_ref_in_constructor(IDSelectorXOr, slice(2))
 add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 if "SVS" in get_compile_options():
-    add_ref_in_constructor(IndexSVS, 0)
+    add_ref_in_constructor(IndexSVSVamana, 0)
     add_ref_in_constructor(IndexSVSFlat, 0)
 
 # seems really marginal...

@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <random>
 
-#include <faiss/IndexSVSLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 
 using idx_t = faiss::idx_t;
 
@@ -39,7 +39,8 @@ int main() {
 
     int k = 4;
 
-    faiss::IndexSVSLVQ index(d);
+    faiss::IndexSVSVamanaLeanVec index(d, 32);
+    index.train(nb, xb);
     index.add(nb, xb);
 
     { // search xq

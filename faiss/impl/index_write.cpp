@@ -44,10 +44,10 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #ifdef FAISS_ENABLE_SVS
-#include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ.h>
-#include <faiss/IndexSVSLeanVec.h>
+#include <faiss/IndexSVSVamana.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
@@ -889,7 +889,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_InvertedLists(ivrq->invlists, f);
     }
 #ifdef FAISS_ENABLE_SVS
-    else if (const IndexSVS* svs = dynamic_cast<const IndexSVS*>(idx)) {
+    else if (
+            const IndexSVSVamana* svs =
+                    dynamic_cast<const IndexSVSVamana*>(idx)) {
         // The SVS implementation will write its contents to three directories,
         // which we will read back here for writing to the actual output file.
         // To avoid a full copy of the index in memory, we stream chunks.
@@ -900,8 +902,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         // assume EOF means end of binary SVS blobl.
 
         uint32_t h;
-        auto* lvq = dynamic_cast<const IndexSVSLVQ*>(svs);
-        auto* lean = dynamic_cast<const IndexSVSLeanVec*>(svs);
+        auto* lvq = dynamic_cast<const IndexSVSVamanaLVQ*>(svs);
+        auto* lean = dynamic_cast<const IndexSVSVamanaLeanVec*>(svs);
         if (lvq != nullptr) {
             h = fourcc("ILVQ"); // LVQ
         } else if (lean != nullptr) {

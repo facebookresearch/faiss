@@ -15,11 +15,7 @@ xq = np.random.random((nq, d)).astype('float32')
 xq[:, 0] += np.arange(nq) / 1000.
 
 import faiss                        # make faiss available
-index = faiss.IndexSVS(d)           # build the index (DynamicVamana, float32)
-
-# index = faiss.IndexSVSFlat(d)     # build the SVSFlat index
-# index = faiss.IndexSVSLVQ(d)      # build the SVSLVQ index, quantization parameters
-# index = faiss.IndexSVSLeanVec(d)   # build the SVSLeanVec index, quantization parameters
+index = faiss.IndexSVSVamana(d, 64)           # build the index (DynamicVamana, float32)
 
 print(index.is_trained)
 index.add(xb)                  # add vectors to the index
@@ -46,14 +42,27 @@ print(I[:5])                   # neighbors of the 5 first queries
 print(f"{k} nearest neighbors of the 5 last query vectors (after reloading)")
 print(I[-5:])                  # neighbors of the 5 last queries
 
-lvq_idx = faiss.IndexSVSLVQ(d, faiss.METRIC_L2, faiss.LVQ_4x8) # example of using SVS LVQ
-lvq_idx_fac = faiss.index_factory(d, 'SVS_LVQ_4x8', faiss.METRIC_L2) # example of using factory for SVS LVQ
-lvq_idx_fac.add(xb)
-lvq_idx_fac.search(xq, k)
+flat_idx_fac = faiss.index_factory(d, 'SVS,Flat', faiss.METRIC_L2) # example of using factory for SVS Flat
+flat_idx_fac.add(xb)
+flat_idx_fac.search(xq, k)
+
+uncompressed_idx_fac = faiss.index_factory(d, 'SVS,Vamana64', faiss.METRIC_L2) # example of using factory for SVS Vamana uncompressed
+uncompressed_idx_fac.add(xb)
+uncompressed_idx_fac.search(xq, k)
+
+lvq_idx = faiss.IndexSVSVamanaLVQ(d, faiss.METRIC_L2, faiss.LVQ4x8) # example of using SVS Vamana uncompressed
+lvq_idx_fac_2 = faiss.index_factory(d, 'SVS,Vamana32,LVQ4x4', faiss.METRIC_L2) # example of using factory for SVS Vamana LVQ
+lvq_idx_fac_2.add(xb)
+lvq_idx_fac_2.search(xq, k)
 
 
-leanvec_idx = faiss.IndexSVSLeanVec(d, faiss.METRIC_L2, 0, faiss.LeanVec_4x4) # example of using SVS LeanVec
-leanvec_idx_fac = faiss.index_factory(d, 'SVS_LeanVec_4x4,32', faiss.METRIC_L2) # example of using factory for SVS LeanVec
+leanvec_idx = faiss.IndexSVSVamanaLeanVec(d, faiss.METRIC_L2, 0, faiss.LeanVec4x4) # example of using SVS Vamana LeanVec
+leanvec_idx_fac = faiss.index_factory(d, 'SVS,Vamana32,LeanVec4x4', faiss.METRIC_L2) # example of using factory for SVS Vamana LeanVec
 leanvec_idx_fac.train(xb)
 leanvec_idx_fac.add(xb)
 leanvec_idx_fac.search(xq, k)
+
+leanvec_idx_fac2 = faiss.index_factory(d, 'SVS,Vamana64,LeanVec4x4_16', faiss.METRIC_L2) # example of using factory for SVS Vamana LeanVec. leanvec_dim is 16
+leanvec_idx_fac2.train(xb)
+leanvec_idx_fac2.add(xb)
+leanvec_idx_fac2.search(xq, k)

@@ -20,21 +20,21 @@ class DynamicVamana;
 
 namespace faiss {
 
-struct IndexSVS : Index {
-    size_t graph_max_degree = 64;
+struct IndexSVSVamana : Index {
+    size_t graph_max_degree;
+    size_t prune_to;
     float alpha = 1.2;
     size_t search_window_size = 10;
     size_t search_buffer_capacity = 10;
     size_t construction_window_size = 40;
     size_t max_candidate_pool_size = 200;
-    size_t prune_to = 60;
     bool use_full_search_history = true;
 
-    IndexSVS();
+    IndexSVSVamana();
 
-    IndexSVS(idx_t d, MetricType metric = METRIC_L2);
+    IndexSVSVamana(idx_t d, size_t degree, MetricType metric = METRIC_L2);
 
-    virtual ~IndexSVS() override;
+    virtual ~IndexSVSVamana() override;
 
     void add(idx_t n, const float* x) override;
 
