@@ -200,6 +200,7 @@ def do_multi_test(qtype):
 # Test
 #
 
+
 class TestSQ(unittest.TestCase):
     def test_fp16(self):
         do_multi_test(faiss.ScalarQuantizer.QT_fp16)

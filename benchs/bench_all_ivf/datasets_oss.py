@@ -25,6 +25,7 @@ def sanitize(x):
 # Dataset
 #################################################################
 
+
 class DatasetCentroids(faiss_datasets.Dataset):
 
     def __init__(self, ds, indexfile):

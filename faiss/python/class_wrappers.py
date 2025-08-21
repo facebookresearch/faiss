@@ -1193,6 +1193,7 @@ def add_to_referenced_objects(self, ref):
     else:
         self.referenced_objects.append(ref)
 
+
 class RememberSwigOwnership:
     """
     SWIG's seattr transfers ownership of SWIG wrapped objects to the class
