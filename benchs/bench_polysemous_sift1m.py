@@ -5,8 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 
 from __future__ import print_function
-import time
-import numpy as np
 
 import faiss
 from datasets import load_sift1M, evaluate

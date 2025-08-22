@@ -23,7 +23,6 @@ wget https://dl.fbaipublicfiles.com/QINCo/models/bigann_8x8_L2.pt
 
 """
 
-import numpy as np
 from faiss.contrib.vecs_io import bvecs_mmap
 import sys
 import time
@@ -32,7 +31,6 @@ import faiss
 
 # make sure pickle deserialization will work
 sys.path.append("/tmp/Qinco")
-import model_qinco
 
 with torch.no_grad():
 
