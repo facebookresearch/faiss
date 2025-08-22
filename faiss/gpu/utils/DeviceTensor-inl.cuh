@@ -76,8 +76,8 @@ __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         const AllocInfo& info,
         const IndexT sizes[Dim])
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
@@ -95,8 +95,8 @@ __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         const AllocInfo& info,
         std::initializer_list<IndexT> sizes)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
@@ -155,8 +155,8 @@ __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
                   nullptr,
                   t.sizes(),
                   t.strides()) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
