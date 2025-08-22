@@ -29,8 +29,6 @@ from faiss.contrib import evaluation
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
-
-
 class TestInterop(unittest.TestCase):
 
     def do_interop(self):
@@ -67,8 +65,6 @@ class TestInterop(unittest.TestCase):
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
-
-
 class TestComputeGT(unittest.TestCase):
 
     def do_compute_GT(self, build_algo=None):
@@ -107,8 +103,6 @@ class TestComputeGT(unittest.TestCase):
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
-
-
 class TestIndexBinaryIDMap(unittest.TestCase):
     """Test IndexBinaryIDMap functionality with GpuIndexBinaryCagra"""
 
