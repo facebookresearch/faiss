@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSVamana.h>
 
 #include <svs/core/data.h>
 #include <svs/orchestrators/dynamic_vamana.h>
@@ -14,20 +14,22 @@
 
 namespace faiss {
 
-IndexSVS::IndexSVS() : Index{} {}
+IndexSVSVamana::IndexSVSVamana() : Index{} {}
 
-IndexSVS::IndexSVS(idx_t d, MetricType metric) : Index(d, metric) {
+IndexSVSVamana::IndexSVSVamana(idx_t d, size_t degree, MetricType metric)
+        : Index(d, metric), graph_max_degree{degree} {
+    prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 }
 
-IndexSVS::~IndexSVS() {
+IndexSVSVamana::~IndexSVSVamana() {
     if (impl) {
         delete impl;
         impl = nullptr;
     }
 }
 
-void IndexSVS::add(idx_t n, const float* x) {
+void IndexSVSVamana::add(idx_t n, const float* x) {
     if (!impl) {
         init_impl(n, x);
         return;
@@ -50,7 +52,7 @@ void IndexSVS::add(idx_t n, const float* x) {
     impl->add_points(data, labels);
 }
 
-void IndexSVS::reset() {
+void IndexSVSVamana::reset() {
     if (impl) {
         delete impl;
         impl = nullptr;
@@ -58,7 +60,7 @@ void IndexSVS::reset() {
     ntotal = 0;
 }
 
-void IndexSVS::search(
+void IndexSVSVamana::search(
         idx_t n,
         const float* x,
         idx_t k,
@@ -83,7 +85,7 @@ void IndexSVS::search(
     impl->search(results, queries, sp);
 }
 
-void IndexSVS::init_impl(idx_t n, const float* x) {
+void IndexSVSVamana::init_impl(idx_t n, const float* x) {
     std::vector<size_t> labels(n);
     auto data = svs::data::SimpleData<float>(n, d);
     auto threadpool = svs::threads::ThreadPoolHandle(
@@ -130,7 +132,7 @@ void IndexSVS::init_impl(idx_t n, const float* x) {
     }
 }
 
-void IndexSVS::serialize_impl(std::ostream& out) const {
+void IndexSVSVamana::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
@@ -140,7 +142,7 @@ void IndexSVS::serialize_impl(std::ostream& out) const {
     tmp.write_files_to_stream(out);
 }
 
-void IndexSVS::deserialize_impl(std::istream& in) {
+void IndexSVSVamana::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 

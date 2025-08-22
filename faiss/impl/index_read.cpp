@@ -46,10 +46,10 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #ifdef FAISS_ENABLE_SVS
-#include <faiss/IndexSVS.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ.h>
-#include <faiss/IndexSVSLeanVec.h>
+#include <faiss/IndexSVSVamana.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
@@ -1252,13 +1252,15 @@ Index* read_index(IOReader* f, int io_flags) {
 #ifdef FAISS_ENABLE_SVS
     else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
-        IndexSVS* svs;
+        // Vamana
+        IndexSVSVamana* svs;
         if (h == fourcc("ILVQ")) {
-            svs = new IndexSVSLVQ(); // LVQ
+            svs = new IndexSVSVamanaLVQ(); // Vamana LVQ
         } else if (h == fourcc("ISVL")) {
-            svs = new IndexSVSLeanVec(); // LeanVec
+            svs = new IndexSVSVamanaLeanVec(); // Vamana LeanVec
         } else if (h == fourcc("ISVD")) {
-            svs = new IndexSVS(); // uncompressed
+            svs = new IndexSVSVamana(); // public SVS datatypes including fp32,
+                                        // fp16, and SQ8
         }
 
         read_index_header(svs, f);
@@ -1271,11 +1273,11 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
         if (h == fourcc("ILVQ")) {
-            READ1(dynamic_cast<IndexSVSLVQ*>(svs)->lvq_level);
+            READ1(dynamic_cast<IndexSVSVamanaLVQ*>(svs)->lvq_level);
         }
         if (h == fourcc("ISVL")) {
-            READ1(dynamic_cast<IndexSVSLeanVec*>(svs)->leanvec_d);
-            READ1(dynamic_cast<IndexSVSLeanVec*>(svs)->leanvec_level);
+            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_d);
+            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
         }
 
         faiss::BufferedIOReader br(f);

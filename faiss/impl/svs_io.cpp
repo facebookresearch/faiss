@@ -48,7 +48,7 @@ std::streambuf::int_type ReaderStreambuf::underflow() {
     }
     size_t got = (*r)(buf.data(), 1, buf.size());
     if (got == 0) {
-        return traits_type::eof(); 
+        return traits_type::eof();
     }
     setg(buf.data(), buf.data(), buf.data() + got);
     return traits_type::to_int_type(*gptr());

@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSVamana.h>
 
 #include <svs/extensions/vamana/lvq.h>
 
 namespace faiss {
 
-enum LVQLevel { LVQ_4x0, LVQ_4x4, LVQ_4x8 };
+enum LVQLevel { LVQ4x0, LVQ4x4, LVQ4x8 };
 
-struct IndexSVSLVQ : IndexSVS {
+struct IndexSVSVamanaLVQ : IndexSVSVamana {
     using blocked_alloc_type =
             svs::data::Blocked<svs::lib::Allocator<std::byte>>;
 
@@ -28,13 +28,14 @@ struct IndexSVSLVQ : IndexSVS {
     using storage_type_4x8 = svs::quantization::lvq::
             LVQDataset<4, 8, svs::Dynamic, strategy_type_4, blocked_alloc_type>;
 
-    IndexSVSLVQ() = default;
-    IndexSVSLVQ(
+    IndexSVSVamanaLVQ() = default;
+    IndexSVSVamanaLVQ(
             idx_t d,
+            size_t degree,
             MetricType metric = METRIC_L2,
-            LVQLevel lvq_level = LVQLevel::LVQ_4x4);
+            LVQLevel lvq_level = LVQLevel::LVQ4x4);
 
-    ~IndexSVSLVQ() override = default;
+    ~IndexSVSVamanaLVQ() override = default;
 
     void init_impl(idx_t n, const float* x) override;
 

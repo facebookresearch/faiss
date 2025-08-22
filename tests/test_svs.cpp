@@ -6,10 +6,10 @@
  */
 
 #include <faiss/Index.h>
-#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSVamana.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ.h>
-#include <faiss/IndexSVSLeanVec.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 #include <type_traits>
@@ -74,13 +74,13 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     EXPECT_EQ(loaded->max_candidate_pool_size, index.max_candidate_pool_size);
     EXPECT_EQ(loaded->prune_to, index.prune_to);
     EXPECT_EQ(loaded->use_full_search_history, index.use_full_search_history);
-    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSLVQ>) {
-        auto* lvq_loaded = dynamic_cast<faiss::IndexSVSLVQ*>(loaded);
+    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSVamanaLVQ>) {
+        auto* lvq_loaded = dynamic_cast<faiss::IndexSVSVamanaLVQ*>(loaded);
         ASSERT_NE(lvq_loaded, nullptr);
         EXPECT_EQ(lvq_loaded->lvq_level, index.lvq_level);
     }
-    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSLeanVec>) {
-        auto* lvq_loaded = dynamic_cast<faiss::IndexSVSLeanVec*>(loaded);
+    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSVamanaLeanVec>) {
+        auto* lvq_loaded = dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
         ASSERT_NE(lvq_loaded, nullptr);
         EXPECT_EQ(lvq_loaded->leanvec_level, index.leanvec_level);
     }
@@ -89,48 +89,48 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVS) {
-    faiss::IndexSVS index{d};
+    faiss::IndexSVSVamana index{d};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x0) {
-    faiss::IndexSVSLVQ index{d};
-    index.lvq_level = faiss::LVQLevel::LVQ_4x0;
+    faiss::IndexSVSVamanaLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ4x0;
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x4) {
-    faiss::IndexSVSLVQ index{d};
-    index.lvq_level = faiss::LVQLevel::LVQ_4x4;
+    faiss::IndexSVSVamanaLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ4x4;
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x8) {
-    faiss::IndexSVSLVQ index{d};
-    index.lvq_level = faiss::LVQLevel::LVQ_4x8;
+    faiss::IndexSVSVamanaLVQ index{d};
+    index.lvq_level = faiss::LVQLevel::LVQ4x8;
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec4x4) {
-    faiss::IndexSVSLeanVec index{
+TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x4) {
+    faiss::IndexSVSVamanaLeanVec index{
             d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec4x8) {
-    faiss::IndexSVSLeanVec index{
+TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x8) {
+    faiss::IndexSVSVamanaLeanVec index{
             d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x8};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLeanVec8x8) {
-    faiss::IndexSVSLeanVec index{
+TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec8x8) {
+    faiss::IndexSVSVamanaLeanVec index{
             d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_8x8};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, LeanVecThrowsWithoutTraining) {
-    faiss::IndexSVSLeanVec index{
+    faiss::IndexSVSVamanaLeanVec index{
             64, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
     ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
 }

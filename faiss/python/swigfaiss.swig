@@ -195,10 +195,10 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFRaBitQ.h>
 
 #ifdef FAISS_ENABLE_SVS
-#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSVamana.h>
 #include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSLVQ.h>
-#include <faiss/IndexSVSLeanVec.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
 #endif
 
 %}
@@ -693,10 +693,10 @@ struct faiss::simd16uint16 {};
 %ignore faiss::svs_io::WriterStreambuf;
 %ignore faiss::svs_io::SVSTempDirectory;
 
-%include  <faiss/IndexSVS.h>
+%include  <faiss/IndexSVSVamana.h>
 %include  <faiss/IndexSVSFlat.h>
-%include  <faiss/IndexSVSLVQ.h>
-%include  <faiss/IndexSVSLeanVec.h>
+%include  <faiss/IndexSVSVamanaLVQ.h>
+%include  <faiss/IndexSVSVamanaLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
@@ -847,9 +847,9 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
 #ifdef FAISS_ENABLE_SVS
     DOWNCAST ( IndexSVSFlat )
-    DOWNCAST ( IndexSVSLeanVec )
-    DOWNCAST ( IndexSVSLVQ )
-    DOWNCAST ( IndexSVS )
+    DOWNCAST ( IndexSVSVamanaLeanVec )
+    DOWNCAST ( IndexSVSVamanaLVQ )
+    DOWNCAST ( IndexSVSVamana )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

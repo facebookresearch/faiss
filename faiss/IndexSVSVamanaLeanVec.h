@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include <faiss/IndexSVS.h>
+#include <faiss/IndexSVSVamana.h>
 
 #include <svs/extensions/vamana/leanvec.h>
 
 namespace faiss {
 
-enum LeanVecLevel { LeanVec_4x4, LeanVec_4x8, LeanVec_8x8 };
+enum LeanVecLevel { LeanVec4x4, LeanVec4x8, LeanVec8x8 };
 
-struct IndexSVSLeanVec : IndexSVS {
+struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     using blocked_alloc_type =
             svs::data::Blocked<svs::lib::Allocator<std::byte>>;
     using storage_type_4x4 = svs::leanvec::LeanDataset<
@@ -37,15 +37,16 @@ struct IndexSVSLeanVec : IndexSVS {
             svs::Dynamic,
             blocked_alloc_type>;
 
-    IndexSVSLeanVec() = default;
+    IndexSVSVamanaLeanVec() = default;
 
-    IndexSVSLeanVec(
+    IndexSVSVamanaLeanVec(
             idx_t d,
+            size_t degree,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            LeanVecLevel leanvec_level = LeanVecLevel::LeanVec_4x4);
+            LeanVecLevel leanvec_level = LeanVecLevel::LeanVec4x4);
 
-    ~IndexSVSLeanVec() override = default;
+    ~IndexSVSVamanaLeanVec() override = default;
 
     void reset() override;
 
