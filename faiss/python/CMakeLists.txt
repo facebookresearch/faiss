@@ -265,7 +265,7 @@ target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
-  COMPONENTS Development NumPy
+  COMPONENTS Development.Module NumPy
 )
 
 add_library(faiss_python_callbacks EXCLUDE_FROM_ALL
