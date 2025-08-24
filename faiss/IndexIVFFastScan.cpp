@@ -379,7 +379,9 @@ ResultHandlerCompare<C, true>* make_knn_handler_fixC(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel) {
+        const IDSelector* sel,
+        uint16_t* io_simd_dis = nullptr,
+        typename C::TI* io_simd_ids = nullptr) {
     using HeapHC = HeapHandler<C, true>;
     using ReservoirHC = ReservoirHandler<C, true>;
     using SingleResultHC = SingleResultHandler<C, true>;
@@ -387,26 +389,10 @@ ResultHandlerCompare<C, true>* make_knn_handler_fixC(
     if (k == 1) {
         return new SingleResultHC(n, 0, distances, labels, sel);
     } else if (impl % 2 == 0) {
-        return new HeapHC(n, 0, k, distances, labels, sel);
+        return new HeapHC(
+                n, 0, k, distances, labels, sel, io_simd_dis, io_simd_ids);
     } else /* if (impl % 2 == 1) */ {
         return new ReservoirHC(n, 0, k, 2 * k, distances, labels, sel);
-    }
-}
-
-SIMDResultHandlerToFloat* make_knn_handler(
-        bool is_max,
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel) {
-    if (is_max) {
-        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel);
-    } else {
-        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel);
     }
 }
 
@@ -485,6 +471,25 @@ int compute_search_nslice(
 }
 
 } // namespace
+
+SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
+        bool is_max,
+        int impl,
+        idx_t n,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        uint16_t* io_simd_dis,
+        int64_t* io_simd_ids) const {
+    if (is_max) {
+        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
+                impl, n, k, distances, labels, sel, io_simd_dis, io_simd_ids);
+    } else {
+        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
+                impl, n, k, distances, labels, sel, io_simd_dis, io_simd_ids);
+    }
+}
 
 void IndexIVFFastScan::search_dispatch_implem(
         idx_t n,

@@ -147,6 +147,16 @@ struct IndexIVFFastScan : IndexIVF {
             const SearchParameters* params = nullptr) const override;
 
     // internal search funcs
+    SIMDResultHandlerToFloat* make_knn_handler(
+            bool is_max,
+            int impl,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            uint16_t* io_simd_dis = nullptr,
+            int64_t* io_simd_ids = nullptr) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
