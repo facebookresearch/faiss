@@ -111,7 +111,7 @@ size_t GpuIndex::getMinPagingSize() const {
 }
 
 void GpuIndex::add_ex(idx_t n, const void* x, NumericType numeric_type) {
-    add_with_ids_ex(n, x, numeric_type, nullptr);
+    add_with_ids_ex(n, x, numeric_type, nullptr, NumericType::NONE);
 }
 
 void GpuIndex::add(idx_t n, const float* x) {
@@ -123,7 +123,8 @@ void GpuIndex::add_with_ids_ex(
         idx_t n,
         const void* x,
         NumericType numeric_type,
-        const idx_t* ids) {
+        const void* ids,
+        NumericType ids_type) {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
@@ -134,6 +135,10 @@ void GpuIndex::add_with_ids_ex(
 
     std::vector<idx_t> generatedIds;
 
+    FAISS_THROW_IF_NOT_MSG(
+            ids_type == NumericType::Int64 || !ids,
+            "GpuIndex::add_with_ids_ex only supports int64 as ids type");
+
     // Generate IDs if we need them
     if (!ids && addImplRequiresIDs_()) {
         generatedIds = std::vector<idx_t>(n);
@@ -143,11 +148,20 @@ void GpuIndex::add_with_ids_ex(
         }
     }
 
-    addPaged_ex_(n, x, numeric_type, ids ? ids : generatedIds.data());
+    addPaged_ex_(
+            n,
+            x,
+            numeric_type,
+            ids ? static_cast<const idx_t*>(ids) : generatedIds.data());
 }
 
 void GpuIndex::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
-    add_with_ids_ex(n, static_cast<const void*>(x), NumericType::Float32, ids);
+    add_with_ids_ex(
+            n,
+            static_cast<const void*>(x),
+            NumericType::Float32,
+            static_cast<const void*>(ids),
+            NumericType::Int64);
 }
 
 void GpuIndex::addPaged_ex_(
@@ -288,10 +302,14 @@ void GpuIndex::search_ex(
         NumericType numeric_type,
         idx_t k,
         float* distances,
-        idx_t* labels,
+        void* labels,
+        NumericType labels_type,
         const SearchParameters* params) const {
     DeviceScope scope(config_.device);
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
+    FAISS_THROW_IF_NOT_MSG(
+            labels_type == NumericType::Int64,
+            "GpuIndex::search_ex only supports int64 as labels type");
 
     validateKSelect(k, should_use_cuvs(config_));
 
@@ -315,7 +333,11 @@ void GpuIndex::search_ex(
             resources_.get(), config_.device, distances, stream, {n, k});
 
     auto outLabels = toDeviceTemporary<idx_t, 2>(
-            resources_.get(), config_.device, labels, stream, {n, k});
+            resources_.get(),
+            config_.device,
+            static_cast<idx_t*>(labels),
+            stream,
+            {n, k});
 
     bool usePaged = false;
 
@@ -355,7 +377,7 @@ void GpuIndex::search_ex(
 
     // Copy back if necessary
     fromDevice<float, 2>(outDistances, distances, stream);
-    fromDevice<idx_t, 2>(outLabels, labels, stream);
+    fromDevice<idx_t, 2>(outLabels, static_cast<idx_t*>(labels), stream);
 }
 
 void GpuIndex::search(
@@ -371,7 +393,8 @@ void GpuIndex::search(
             NumericType::Float32,
             k,
             distances,
-            labels,
+            static_cast<void*>(labels),
+            NumericType::Int64,
             params);
 }
 
