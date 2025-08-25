@@ -12,11 +12,9 @@ import matplotlib.pyplot as plt
 
 
 try:
-    from faiss.contrib.datasets_fb import \
-        DatasetSIFT1M, DatasetDeep1B, DatasetBigANN
+    from faiss.contrib.datasets_fb import DatasetBigANN
 except ImportError:
-    from faiss.contrib.datasets import \
-        DatasetSIFT1M, DatasetDeep1B, DatasetBigANN
+    from faiss.contrib.datasets import DatasetBigANN
 
 # ds = DatasetDeep1B(10**6)
 ds = DatasetBigANN(nb_M=50)

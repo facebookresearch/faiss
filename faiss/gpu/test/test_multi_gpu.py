@@ -11,6 +11,7 @@ import faiss
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
+
 class TestShardedFlat(unittest.TestCase):
 
     @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
@@ -130,6 +131,8 @@ class TestShardedFlat(unittest.TestCase):
 
 
 # This class also has a multi-GPU test within
+
+
 class EvalIVFPQAccuracy(unittest.TestCase):
     def get_dataset(self, small_one=False):
         if not small_one:
@@ -199,10 +202,10 @@ class EvalIVFPQAccuracy(unittest.TestCase):
         # Validate the layout of the memory info
         mem_info = res.getMemoryInfo()
 
-        assert type(mem_info) == dict
-        assert type(mem_info[0]['FlatData']) == tuple
-        assert type(mem_info[0]['FlatData'][0]) == int
-        assert type(mem_info[0]['FlatData'][1]) == int
+        assert isinstance(mem_info, dict)
+        assert isinstance(mem_info[0]['FlatData'], tuple)
+        assert isinstance(mem_info[0]['FlatData'][0], int)
+        assert isinstance(mem_info[0]['FlatData'][1], int)
 
         gpu_index.nprobe = 4
 

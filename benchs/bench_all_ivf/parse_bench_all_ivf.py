@@ -7,11 +7,6 @@ import os
 import numpy as np
 from collections import defaultdict
 from matplotlib import pyplot
-
-import re
-
-from argparse import Namespace
-
 from faiss.contrib.factory_tools import get_code_size as unitsize
 
 
@@ -262,14 +257,14 @@ def plot_tradeoffs(db, allres, allstats, code_size, recall_rank):
     # times come after the perf measure
     times_idx = len(stat0["ranks"])
 
-    if type(code_size) == int:
+    if isinstance(code_size, int):
         if code_size == 0:
             code_size = [0, 1e50]
             code_size_name = "any code size"
         else:
             code_size_name = "code_size=%d" % code_size
             code_size = [code_size, code_size]
-    elif type(code_size) == tuple:
+    elif isinstance(code_size, tuple):
         code_size_name = "code_size in [%d, %d]" % code_size
     else:
         assert False

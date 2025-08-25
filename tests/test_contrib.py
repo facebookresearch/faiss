@@ -588,6 +588,7 @@ class TestClustering(unittest.TestCase):
         ndiff = (Iref != Inew).sum()
         self.assertLess(ndiff, 53)
 
+
 class TestBigBatchSearch(unittest.TestCase):
 
     def do_test(self, factory_string, metric=faiss.METRIC_L2):
@@ -717,6 +718,8 @@ class TestCodeSet(unittest.TestCase):
     platform.system() == 'Windows',
     'OnDiskInvertedLists is unsupported on Windows.'
 )
+
+
 class TestMerge(unittest.TestCase):
     @contextmanager
     def temp_directory(self):

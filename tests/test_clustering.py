@@ -9,7 +9,6 @@ import numpy as np
 
 import faiss
 import unittest
-import array
 
 from common_faiss_tests import get_dataset_2
 

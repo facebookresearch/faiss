@@ -541,6 +541,7 @@ class TestIndexResidualQuantizer(unittest.TestCase):
 # As a coarse quantizer
 ###########################################################
 
+
 class TestIVFResidualCoarseQuantizer(unittest.TestCase):
 
     def test_IVF_resiudal(self):

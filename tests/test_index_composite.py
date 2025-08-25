@@ -19,6 +19,7 @@ from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.inspect_tools import make_LinearTransform_matrix
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
+
 class TestRemoveFastScan(unittest.TestCase):
     def do_test(self, ntotal, removed):
         d = 20
@@ -371,6 +372,8 @@ class TestTransformChain(unittest.TestCase):
 
 @unittest.skipIf(platform.system() == 'Windows', \
                  'Mmap not supported on Windows.')
+
+
 class TestRareIO(unittest.TestCase):
 
     def compare_results(self, index1, index2, xq):
@@ -530,6 +533,8 @@ class TestSerialize(unittest.TestCase):
 
 @unittest.skipIf(platform.system() == 'Windows',
                  'OnDiskInvertedLists is unsupported on Windows.')
+
+
 class TestRenameOndisk(unittest.TestCase):
 
     def test_rename(self):

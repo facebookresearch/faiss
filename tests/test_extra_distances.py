@@ -243,6 +243,7 @@ class TestExtraDistances(unittest.TestCase):
         )
         self.assertTrue(np.all(np.isnan(dis_out_of_range)))
 
+
 class TestKNN(unittest.TestCase):
     """ test that the knn search gives the same as distance matrix + argmin """
 

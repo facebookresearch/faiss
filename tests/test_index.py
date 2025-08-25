@@ -10,19 +10,18 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import unittest
 import faiss
-import tempfile
-import os
 import re
-import warnings
 
 from common_faiss_tests import get_dataset, get_dataset_2
 from faiss.contrib.evaluation import check_ref_knn_with_draws
+
 
 class TestModuleInterface(unittest.TestCase):
 
     def test_version_attribute(self):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
+
 
 class TestIndexFlat(unittest.TestCase):
 
@@ -623,6 +622,7 @@ class TestShardReplicas(unittest.TestCase):
         self.assertEqual(index.ntotal, nb)
         index.remove_replica(index1)
         self.assertEqual(index.ntotal, 0)
+
 
 class TestReconsException(unittest.TestCase):
 

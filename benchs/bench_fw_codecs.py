@@ -3,14 +3,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import logging
 import argparse
+import logging
 import os
 
 from faiss.benchs.bench_fw.benchmark import Benchmark
 from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
 from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptorClassic
-from faiss.benchs.bench_fw.index import IndexFromFactory
 
 logging.basicConfig(level=logging.INFO)
 

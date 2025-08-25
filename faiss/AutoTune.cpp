@@ -20,15 +20,14 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVF.h>
-#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexShardsIVF.h>
-#include <faiss/MetaIndexes.h>
 
 namespace faiss {
 

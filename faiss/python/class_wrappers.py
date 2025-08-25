@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import inspect
-
 import faiss
 import numpy as np
 
@@ -1192,6 +1190,7 @@ def add_to_referenced_objects(self, ref):
         self.referenced_objects = [ref]
     else:
         self.referenced_objects.append(ref)
+
 
 class RememberSwigOwnership:
     """

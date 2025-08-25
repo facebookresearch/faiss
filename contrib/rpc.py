@@ -84,8 +84,10 @@ class FileSock:
         if len(c)==0 or chr(c[0])=='\n':
             return s
 
+
 class ClientExit(Exception):
     pass
+
 
 class ServerException(Exception):
     pass
@@ -195,6 +197,7 @@ class Server:
         for l in f:
             ret+=l
         return ret
+
 
 class Client:
     """

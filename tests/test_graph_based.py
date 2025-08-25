@@ -217,6 +217,7 @@ class TestHNSW(unittest.TestCase):
         self.assertEqual(index_flat.ntotal, 0)
         self.assertEqual(index_hnsw.ntotal, 0)
 
+
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
