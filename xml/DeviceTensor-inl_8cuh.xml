@@ -85,8 +85,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IndexT<sp/>sizes[Dim])</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=<sp/>std::move(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes())));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes()));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>(T*)reservation_.get();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>||<sp/>(this-&gt;getSizeInBytes()<sp/>==<sp/>0));</highlight></codeline>
@@ -104,8 +104,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>AllocInfo&amp;<sp/>info,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::initializer_list&lt;IndexT&gt;<sp/>sizes)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Tensor&lt;T,<sp/>Dim,<sp/>InnerContig,<sp/>IndexT,<sp/>PtrTraits&gt;(nullptr,<sp/>sizes)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=<sp/>std::move(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes())));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes()));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>(T*)reservation_.get();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>||<sp/>(this-&gt;getSizeInBytes()<sp/>==<sp/>0));</highlight></codeline>
@@ -164,8 +164,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nullptr,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.sizes(),</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t.strides())<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=<sp/>std::move(</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes())));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;reservation_<sp/>=</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>res-&gt;allocMemoryHandle(AllocRequest(info,<sp/>this-&gt;getSizeInBytes()));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;data_<sp/>=<sp/>(T*)reservation_.get();</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(this-&gt;data_<sp/>||<sp/>(this-&gt;getSizeInBytes()<sp/>==<sp/>0));</highlight></codeline>
