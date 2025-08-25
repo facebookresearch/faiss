@@ -43,6 +43,12 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/IndexSVSFlat.h>
+#include <faiss/IndexSVSVamana.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
+#endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -881,7 +887,72 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->by_residual);
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
-    } else {
+    }
+#ifdef FAISS_ENABLE_SVS
+    else if (
+            const IndexSVSVamana* svs =
+                    dynamic_cast<const IndexSVSVamana*>(idx)) {
+        // The SVS implementation will write its contents to three directories,
+        // which we will read back here for writing to the actual output file.
+        // To avoid a full copy of the index in memory, we stream chunks.
+        // This means we cannot write the output blob size in the header, as
+        // we only know the number of bytes at the very end.
+        // One solution would be to write a footer and read it in index_read(),
+        // but since the file ends anyway after index_write() is done, we just
+        // assume EOF means end of binary SVS blobl.
+
+        uint32_t h;
+        auto* lvq = dynamic_cast<const IndexSVSVamanaLVQ*>(svs);
+        auto* lean = dynamic_cast<const IndexSVSVamanaLeanVec*>(svs);
+        if (lvq != nullptr) {
+            h = fourcc("ILVQ"); // LVQ
+        } else if (lean != nullptr) {
+            h = fourcc("ISVL"); // LeanVec
+        } else {
+            h = fourcc("ISVD"); // uncompressed
+        }
+
+        WRITE1(h);
+        write_index_header(svs, f);
+        WRITE1(svs->graph_max_degree);
+        WRITE1(svs->alpha);
+        WRITE1(svs->search_window_size);
+        WRITE1(svs->search_buffer_capacity);
+        WRITE1(svs->construction_window_size);
+        WRITE1(svs->max_candidate_pool_size);
+        WRITE1(svs->prune_to);
+        WRITE1(svs->use_full_search_history);
+        if (lvq != nullptr) {
+            WRITE1(lvq->lvq_level);
+        }
+        if (lean != nullptr) {
+            WRITE1(lean->leanvec_d);
+            WRITE1(lean->leanvec_level);
+        }
+
+        // payload (stream to file)
+        faiss::BufferedIOWriter bwr(f);
+        faiss::svs_io::WriterStreambuf wbuf(&bwr);
+        std::ostream os(&wbuf);
+
+        svs->serialize_impl(os);
+        os.flush();
+    } else if (
+            const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
+        uint32_t h = fourcc("ISVF");
+        WRITE1(h);
+        write_index_header(idx, f);
+
+        // payload (stream to file)
+        faiss::BufferedIOWriter bwr(f);
+        faiss::svs_io::WriterStreambuf wbuf(&bwr);
+        std::ostream os(&wbuf);
+
+        svs->serialize_impl(os);
+        os.flush();
+    }
+#endif // FAISS_ENABLE_SVS
+    else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }
 }
