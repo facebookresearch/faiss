@@ -17,6 +17,7 @@ from faiss.contrib.inspect_tools import get_invlist
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
+
 class TestLUTQuantization(unittest.TestCase):
 
     def compute_dis_float(self, codes, LUT, bias):
@@ -164,6 +165,7 @@ def three_metrics(Dref, Iref, Dnew, Inew):
 ##########################################################
 # Tests for various IndexIVFPQFastScan implementations
 ##########################################################
+
 
 class TestIVFImplem1(unittest.TestCase):
     """ Verify implem 1 (search from original invlists)

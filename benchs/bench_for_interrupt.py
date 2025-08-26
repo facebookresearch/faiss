@@ -80,6 +80,7 @@ index_1.add(xb)
 print('set nprobe=', nprobe)
 faiss.ParameterSpace().set_index_parameter(index_1, 'nprobe', nprobe)
 
+
 class ResultHeap:
     """ Combine query results from a sliced dataset """
 

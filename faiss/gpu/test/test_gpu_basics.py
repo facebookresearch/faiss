@@ -269,6 +269,7 @@ def make_t(num, d, clamp=False, seed=None):
         x = (x * 255).astype('uint8').astype('float32')
     return x
 
+
 class TestKnn(unittest.TestCase):
     def test_input_types(self):
         self.do_test_input_types(0, 0)
@@ -368,6 +369,7 @@ class TestKnn(unittest.TestCase):
 
         self.assertGreaterEqual((out_i_f16 == ref_i_f16).sum(), ref_i_f16.size - 5)
         np.testing.assert_allclose(ref_d_f16, out_d_f16, atol = 2e-3)
+
 
 class TestAllPairwiseDistance(unittest.TestCase):
     def test_dist(self):

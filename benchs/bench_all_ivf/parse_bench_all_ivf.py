@@ -7,11 +7,6 @@ import os
 import numpy as np
 from collections import defaultdict
 from matplotlib import pyplot
-
-import re
-
-from argparse import Namespace
-
 from faiss.contrib.factory_tools import get_code_size as unitsize
 
 
