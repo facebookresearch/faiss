@@ -12,6 +12,7 @@ import getpass
 from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap
 from .exhaustive_search import knn
 
+
 class Dataset:
     """ Generic abstract class for a test dataset """
 
@@ -319,6 +320,7 @@ class DatasetMusic100(Dataset):
             assert k <= 100
             gt = gt[:, :k]
         return gt
+
 
 class DatasetGIST1M(Dataset):
     """

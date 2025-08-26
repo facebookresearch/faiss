@@ -11,6 +11,7 @@ import faiss
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
+
 class TestShardedFlat(unittest.TestCase):
 
     @unittest.skipIf(faiss.get_num_gpus() < 2, "multiple GPU only test")
@@ -130,6 +131,8 @@ class TestShardedFlat(unittest.TestCase):
 
 
 # This class also has a multi-GPU test within
+
+
 class EvalIVFPQAccuracy(unittest.TestCase):
     def get_dataset(self, small_one=False):
         if not small_one:
