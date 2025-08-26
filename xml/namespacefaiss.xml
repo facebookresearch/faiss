@@ -9131,7 +9131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="498" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="498" bodyend="537"/>
+        <location file="faiss/utils/rabitq_simd.h" line="504" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="504" bodyend="543"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
