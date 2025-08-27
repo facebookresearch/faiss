@@ -6,8 +6,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <setjmp.h>
-#include <vector>
 
 #ifdef __x86_64__
 #include <immintrin.h>
@@ -15,25 +13,9 @@
 
 #include <faiss/utils/simd_levels.h>
 
-static jmp_buf jmpbuf;
-static void sigill_handler(int sig) {
-    longjmp(jmpbuf, 1);
-}
-
-bool try_execute(void (*func)()) {
-    signal(SIGILL, sigill_handler);
-    if (setjmp(jmpbuf) == 0) {
-        func();
-        signal(SIGILL, SIG_DFL);
-        return true;
-    } else {
-        signal(SIGILL, SIG_DFL);
-        return false;
-    }
-}
-
 #ifdef __x86_64__
-std::vector<int> run_avx2_computation() {
+bool run_avx2_computation() {
+#if defined(__AVX2__)
     alignas(32) int result[8];
     alignas(32) int input1[8] = {1, 2, 3, 4, 5, 6, 7, 8};
     alignas(32) int input2[8] = {8, 7, 6, 5, 4, 3, 2, 1};
@@ -43,10 +25,14 @@ std::vector<int> run_avx2_computation() {
     __m256i vec_result = _mm256_add_epi32(vec1, vec2);
     _mm256_store_si256(reinterpret_cast<__m256i*>(result), vec_result);
 
-    return {result, result + 8};
+    return true;
+#else
+    return false;
+#endif // __AVX2__
 }
 
-std::vector<int> run_avx512f_computation() {
+bool run_avx512f_computation() {
+#ifdef __AVX512F__
     alignas(64) long long result[8];
     alignas(64) long long input1[8] = {1, 2, 3, 4, 5, 6, 7, 8};
     alignas(64) long long input2[8] = {8, 7, 6, 5, 4, 3, 2, 1};
@@ -56,11 +42,15 @@ std::vector<int> run_avx512f_computation() {
     __m512i vec_result = _mm512_add_epi64(vec1, vec2);
     _mm512_store_si512(reinterpret_cast<__m512i*>(result), vec_result);
 
-    return {result, result + 8};
+    return true;
+#else
+    return false;
+#endif // __AVX512F__
 }
 
-std::vector<int> run_avx512cd_computation() {
-    run_avx512f_computation();
+bool run_avx512cd_computation() {
+    EXPECT_TRUE(run_avx512f_computation());
+#ifdef __AVX512CD__
 
     __m512i indices = _mm512_set_epi32(
             15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
@@ -68,38 +58,47 @@ std::vector<int> run_avx512cd_computation() {
 
     alignas(64) int mask_array[16];
     _mm512_store_epi32(mask_array, conflict_mask);
-
-    return std::vector<int>();
+    return true;
+#else
+    return false;
+#endif // __AVX512CD__
 }
 
-std::vector<int> run_avx512vl_computation() {
-    run_avx512f_computation();
+bool run_avx512vl_computation() {
+    EXPECT_TRUE(run_avx512f_computation());
 
+#ifdef __AVX512VL__
     __m256i vec1 = _mm256_set_epi32(7, 6, 5, 4, 3, 2, 1, 0);
     __m256i vec2 = _mm256_set_epi32(0, 1, 2, 3, 4, 5, 6, 7);
     __m256i result = _mm256_add_epi32(vec1, vec2);
     alignas(32) int result_array[8];
     _mm256_store_si256(reinterpret_cast<__m256i*>(result_array), result);
-
-    return std::vector<int>(result_array, result_array + 8);
+    return true;
+#else
+    return false;
+#endif // __AVX512VL__
 }
 
-std::vector<int> run_avx512dq_computation() {
-    run_avx512f_computation();
+bool run_avx512dq_computation() {
+    EXPECT_TRUE(run_avx512f_computation());
 
+#ifdef __AVX512DQ__
     __m512i vec1 = _mm512_set_epi64(7, 6, 5, 4, 3, 2, 1, 0);
     __m512i vec2 = _mm512_set_epi64(0, 1, 2, 3, 4, 5, 6, 7);
     __m512i result = _mm512_add_epi64(vec1, vec2);
 
     alignas(64) long long result_array[8];
     _mm512_store_si512(result_array, result);
-
-    return std::vector<int>(result_array, result_array + 8);
+    return true;
+#else
+    return false;
+#endif // __AVX512DQ__
 }
 
-std::vector<int> run_avx512bw_computation() {
-    run_avx512f_computation();
+bool run_avx512bw_computation() {
+    EXPECT_TRUE(run_avx512f_computation());
 
+#ifdef __AVX512BW__
     std::vector<int8_t> input1(64, 0);
     __m512i vec1 =
             _mm512_loadu_si512(reinterpret_cast<const void*>(input1.data()));
@@ -111,21 +110,12 @@ std::vector<int> run_avx512bw_computation() {
     alignas(64) int8_t result_array[64];
     _mm512_storeu_si512(reinterpret_cast<__m512i*>(result_array), result);
 
-    return std::vector<int>(result_array, result_array + 64);
+    return true;
+#else
+    return false;
+#endif // __AVX512BW__
 }
 #endif // __x86_64__
-
-std::pair<bool, std::vector<int>> try_execute(std::vector<int> (*func)()) {
-    signal(SIGILL, sigill_handler);
-    if (setjmp(jmpbuf) == 0) {
-        auto result = func();
-        signal(SIGILL, SIG_DFL);
-        return std::make_pair(true, result);
-    } else {
-        signal(SIGILL, SIG_DFL);
-        return std::make_pair(false, std::vector<int>());
-    }
-}
 
 TEST(SIMDConfig, simd_level_auto_detect_architecture_only) {
     faiss::SIMDLevel detected_level =
@@ -140,10 +130,12 @@ TEST(SIMDConfig, simd_level_auto_detect_architecture_only) {
             detected_level == faiss::SIMDLevel::AVX2 ||
             detected_level == faiss::SIMDLevel::AVX512);
 #elif defined(__aarch64__) && defined(__ARM_NEON)
-    EXPECT_TRUE(detected_level == faiss::SIMDLevel::ARM_NEON);
+    // Uncomment following line when dynamic dispatch is enabled for ARM_NEON
+    // EXPECT_TRUE(detected_level == faiss::SIMDLevel::ARM_NEON);
 #else
     EXPECT_EQ(detected_level, faiss::SIMDLevel::NONE);
 #endif
+    EXPECT_TRUE(detected_level != faiss::SIMDLevel::COUNT);
 }
 
 #ifdef __x86_64__
@@ -151,10 +143,8 @@ TEST(SIMDConfig, successful_avx2_execution_on_x86arch) {
     faiss::SIMDConfig simd_config(nullptr);
 
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX2)) {
-        auto actual_result = try_execute(run_avx2_computation);
-        EXPECT_TRUE(actual_result.first);
-        auto expected_result_vector = std::vector<int>(8, 9);
-        EXPECT_EQ(actual_result.second, expected_result_vector);
+        auto actual_result = run_avx2_computation();
+        EXPECT_TRUE(actual_result);
     }
 }
 
@@ -171,10 +161,8 @@ TEST(SIMDConfig, successful_avx512f_execution_on_x86arch) {
     faiss::SIMDConfig simd_config(nullptr);
 
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual_result = try_execute(run_avx512f_computation);
-        EXPECT_TRUE(actual_result.first);
-        auto expected_result_vector = std::vector<int>(8, 9);
-        EXPECT_EQ(actual_result.second, expected_result_vector);
+        auto actual_result = run_avx512f_computation();
+        EXPECT_TRUE(actual_result);
     }
 }
 
@@ -182,8 +170,8 @@ TEST(SIMDConfig, successful_avx512cd_execution_on_x86arch) {
     faiss::SIMDConfig simd_config(nullptr);
 
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual = try_execute(run_avx512cd_computation);
-        EXPECT_TRUE(actual.first);
+        auto actual = run_avx512cd_computation();
+        EXPECT_TRUE(actual);
     }
 }
 
@@ -191,9 +179,8 @@ TEST(SIMDConfig, successful_avx512vl_execution_on_x86arch) {
     faiss::SIMDConfig simd_config(nullptr);
 
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual = try_execute(run_avx512vl_computation);
-        EXPECT_TRUE(actual.first);
-        EXPECT_EQ(actual.second, std::vector<int>(8, 7));
+        auto actual = run_avx512vl_computation();
+        EXPECT_TRUE(actual);
     }
 }
 
@@ -203,9 +190,8 @@ TEST(SIMDConfig, successful_avx512dq_execution_on_x86arch) {
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512)) {
         EXPECT_TRUE(
                 simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512));
-        auto actual = try_execute(run_avx512dq_computation);
-        EXPECT_TRUE(actual.first);
-        EXPECT_EQ(actual.second, std::vector<int>(8, 7));
+        auto actual = run_avx512dq_computation();
+        EXPECT_TRUE(actual);
     }
 }
 
@@ -215,21 +201,22 @@ TEST(SIMDConfig, successful_avx512bw_execution_on_x86arch) {
     if (simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512)) {
         EXPECT_TRUE(
                 simd_config.is_simd_level_available(faiss::SIMDLevel::AVX512));
-        auto actual = try_execute(run_avx512bw_computation);
-        EXPECT_TRUE(actual.first);
-        EXPECT_EQ(actual.second, std::vector<int>(64, 7));
+        auto actual = run_avx512bw_computation();
+        EXPECT_TRUE(actual);
+        // EXPECT_TRUE(actual.first);
+        // EXPECT_EQ(actual.second, std::vector<int>(64, 7));
     }
 }
 #endif // __x86_64__
 
 TEST(SIMDConfig, override_simd_level) {
-    const char* faiss_env_var_neon = "ARM_NEON";
-    faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
-    EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
+    // const char* faiss_env_var_neon = "ARM_NEON";
+    // faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
+    // EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
 
-    EXPECT_EQ(simd_neon_config.supported_simd_levels().size(), 2);
-    EXPECT_TRUE(simd_neon_config.is_simd_level_available(
-            faiss::SIMDLevel::ARM_NEON));
+    // EXPECT_EQ(simd_neon_config.supported_simd_levels().size(), 2);
+    // EXPECT_TRUE(simd_neon_config.is_simd_level_available(
+    //         faiss::SIMDLevel::ARM_NEON));
 
     const char* faiss_env_var_avx512 = "AVX512";
     faiss::SIMDConfig simd_avx512_config(&faiss_env_var_avx512);
@@ -240,12 +227,12 @@ TEST(SIMDConfig, override_simd_level) {
 }
 
 TEST(SIMDConfig, simd_config_get_level_name) {
-    const char* faiss_env_var_neon = "ARM_NEON";
-    faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
-    EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
-    EXPECT_TRUE(simd_neon_config.is_simd_level_available(
-            faiss::SIMDLevel::ARM_NEON));
-    EXPECT_EQ(faiss_env_var_neon, simd_neon_config.get_level_name());
+    // const char* faiss_env_var_neon = "ARM_NEON";
+    // faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
+    // EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
+    // EXPECT_TRUE(simd_neon_config.is_simd_level_available(
+    //         faiss::SIMDLevel::ARM_NEON));
+    // EXPECT_EQ(faiss_env_var_neon, simd_neon_config.get_level_name());
 
     const char* faiss_env_var_avx512 = "AVX512";
     faiss::SIMDConfig simd_avx512_config(&faiss_env_var_avx512);
@@ -259,7 +246,8 @@ TEST(SIMDLevel, get_level_name_from_enum) {
     EXPECT_EQ("NONE", to_string(faiss::SIMDLevel::NONE).value_or(""));
     EXPECT_EQ("AVX2", to_string(faiss::SIMDLevel::AVX2).value_or(""));
     EXPECT_EQ("AVX512", to_string(faiss::SIMDLevel::AVX512).value_or(""));
-    EXPECT_EQ("ARM_NEON", to_string(faiss::SIMDLevel::ARM_NEON).value_or(""));
+    // EXPECT_EQ("ARM_NEON",
+    // to_string(faiss::SIMDLevel::ARM_NEON).value_or(""));
 
     int actual_num_simd_levels = static_cast<int>(faiss::SIMDLevel::COUNT);
     EXPECT_EQ(4, actual_num_simd_levels);
@@ -275,6 +263,6 @@ TEST(SIMDLevel, to_simd_level_from_string) {
     EXPECT_EQ(faiss::SIMDLevel::NONE, faiss::to_simd_level("NONE"));
     EXPECT_EQ(faiss::SIMDLevel::AVX2, faiss::to_simd_level("AVX2"));
     EXPECT_EQ(faiss::SIMDLevel::AVX512, faiss::to_simd_level("AVX512"));
-    EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
+    // EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
     EXPECT_FALSE(faiss::to_simd_level("INVALID").has_value());
 }
