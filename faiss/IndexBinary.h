@@ -86,17 +86,12 @@ struct IndexBinary {
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const void* xids,
-            NumericType xids_type) {
-        if (numeric_type == NumericType::UInt8 &&
-            xids_type == NumericType::Int64) {
-            add_with_ids(
-                    n,
-                    static_cast<const uint8_t*>(x),
-                    static_cast<const idx_t*>(xids));
+            const idx_t* xids) {
+        if (numeric_type == NumericType::UInt8) {
+            add_with_ids(n, static_cast<const uint8_t*>(x), xids);
         } else {
             FAISS_THROW_MSG(
-                    "IndexBinary::add_with_ids: unsupported numeric type or xids type");
+                    "IndexBinary::add_with_ids: unsupported numeric type");
         }
     };
 
@@ -122,20 +117,17 @@ struct IndexBinary {
             NumericType numeric_type,
             idx_t k,
             int32_t* distances,
-            void* labels,
-            NumericType labels_type,
+            idx_t* labels,
             const SearchParameters* params = nullptr) const {
-        if (numeric_type == NumericType::UInt8 &&
-            labels_type == NumericType::Int64) {
+        if (numeric_type == NumericType::UInt8) {
             search(n,
                    static_cast<const uint8_t*>(x),
                    k,
                    distances,
-                   static_cast<idx_t*>(labels),
+                   labels,
                    params);
         } else {
-            FAISS_THROW_MSG(
-                    "IndexBinary::search: unsupported numeric type or label type");
+            FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
         }
     };
 

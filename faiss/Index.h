@@ -13,7 +13,6 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
 
-#include <cstdint>
 #include <cstdio>
 #include <sstream>
 
@@ -60,16 +59,12 @@ struct DistanceComputer;
 enum NumericType {
     Float32,
     Float16,
-    Int64,
     UInt8,
     Int8,
-    NONE, // corresponding to nullptr
 };
 
 inline size_t get_numeric_type_size(NumericType numeric_type) {
     switch (numeric_type) {
-        case NumericType::Int64:
-            return 8;
         case NumericType::Float32:
             return 4;
         case NumericType::Float16:
@@ -77,11 +72,9 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
         case NumericType::UInt8:
         case NumericType::Int8:
             return 1;
-        case NumericType::NONE:
-            return 0;
         default:
             FAISS_THROW_MSG(
-                    "Unknown Numeric Type. Only supports Float32, Float16, Int64, UInt8, Int8");
+                    "Unknown Numeric Type. Only supports Float32, Float16");
     }
 }
 
@@ -176,17 +169,11 @@ struct Index {
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const void* xids,
-            NumericType xids_type) {
-        if (numeric_type == NumericType::Float32 &&
-            xids_type == NumericType::Int64) {
-            add_with_ids(
-                    n,
-                    static_cast<const float*>(x),
-                    static_cast<const idx_t*>(xids));
+            const idx_t* xids) {
+        if (numeric_type == NumericType::Float32) {
+            add_with_ids(n, static_cast<const float*>(x), xids);
         } else {
-            FAISS_THROW_MSG(
-                    "Index::add_with_ids: unsupported numeric type or xids type");
+            FAISS_THROW_MSG("Index::add_with_ids: unsupported numeric type");
         }
     }
 
@@ -215,20 +202,17 @@ struct Index {
             NumericType numeric_type,
             idx_t k,
             float* distances,
-            void* labels,
-            NumericType labels_type,
+            idx_t* labels,
             const SearchParameters* params = nullptr) const {
-        if (numeric_type == NumericType::Float32 &&
-            labels_type == NumericType::Int64) {
+        if (numeric_type == NumericType::Float32) {
             search(n,
                    static_cast<const float*>(x),
                    k,
                    distances,
-                   static_cast<idx_t*>(labels),
+                   labels,
                    params);
         } else {
-            FAISS_THROW_MSG(
-                    "Index::search: unsupported numeric type or label type");
+            FAISS_THROW_MSG("Index::search: unsupported numeric type");
         }
     }
 

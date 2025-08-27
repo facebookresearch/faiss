@@ -35,8 +35,7 @@ struct IndexIDMapTemplate : IndexT {
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const void* xids,
-            NumericType xids_type) override;
+            const idx_t* xids) override;
 
     /// this will fail. Use add_with_ids
     void add(idx_t n, const component_t* x) override;
@@ -55,8 +54,7 @@ struct IndexIDMapTemplate : IndexT {
             NumericType numeric_type,
             idx_t k,
             distance_t* distances,
-            void* labels,
-            NumericType labels_type,
+            idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
     void train(idx_t n, const component_t* x) override;
@@ -110,8 +108,7 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const void* xids,
-            NumericType xids_type) override;
+            const idx_t* xids) override;
 
     size_t remove_ids(const IDSelector& sel) override;
 
