@@ -899,7 +899,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         // we only know the number of bytes at the very end.
         // One solution would be to write a footer and read it in index_read(),
         // but since the file ends anyway after index_write() is done, we just
-        // assume EOF means end of binary SVS blobl.
+        // assume EOF means end of binary SVS blob.
 
         uint32_t h;
         auto* lvq = dynamic_cast<const IndexSVSVamanaLVQ*>(svs);
