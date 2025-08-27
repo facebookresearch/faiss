@@ -156,7 +156,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
     uint8_t qb = 0;
 
-    RaBitInvertedListScanner(
+    explicit RaBitInvertedListScanner(
             const IndexIVFRaBitQ& ivf_rabitq_in,
             bool store_pairs = false,
             const IDSelector* sel = nullptr,
