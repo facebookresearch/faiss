@@ -278,8 +278,7 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
                 faiss::NumericType::Float16,
                 opt.k,
                 testDistance.data(),
-                testIndices.data(),
-                faiss::NumericType::Int64);
+                testIndices.data());
 
         auto refDistanceDev = faiss::gpu::toDeviceTemporary(
                 gpuRes.get(),
@@ -836,8 +835,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
                 faiss::NumericType::Float16,
                 opt.k,
                 copyTestDistance.data(),
-                copyTestIndices.data(),
-                faiss::NumericType::Int64);
+                copyTestIndices.data());
 
         faiss::gpu::DeviceTensor<float, 2, true> testDistance(
                 gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
@@ -849,8 +847,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
                 faiss::NumericType::Float16,
                 opt.k,
                 testDistance.data(),
-                testIndices.data(),
-                faiss::NumericType::Int64);
+                testIndices.data());
 
         // test quality of searches
         auto raft_handle = gpuRes->getRaftHandleCurrentDevice();

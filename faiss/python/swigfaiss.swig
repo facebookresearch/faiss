@@ -1221,10 +1221,6 @@ faiss::idx_t* cast_integer_to_idx_t_ptr (int64_t x) {
     return (faiss::idx_t*)x;
 }
 
-int64_t* cast_integer_to_int64_ptr (int64_t x) {
-    return (int64_t*)x;
-}
-
 int * cast_integer_to_int_ptr (int64_t x) {
     return (int*)x;
 }
