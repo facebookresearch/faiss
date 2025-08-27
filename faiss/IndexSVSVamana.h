@@ -46,6 +46,8 @@ struct IndexSVSVamana : Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    size_t remove_ids(const IDSelector& sel) override;
+
     void reset() override;
 
     /* Serialization and deserialization helpers */
@@ -54,6 +56,7 @@ struct IndexSVSVamana : Index {
 
     /* The actual SVS implementation */
     svs::DynamicVamana* impl{nullptr};
+    size_t ntotal_soft_deleted{0};
 
     /* Initializes the implementation, using the provided data */
     virtual void init_impl(idx_t n, const float* x);

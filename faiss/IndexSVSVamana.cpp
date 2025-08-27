@@ -11,6 +11,7 @@
 #include <svs/orchestrators/dynamic_vamana.h>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/IDSelector.h>
 
 namespace faiss {
 
@@ -58,6 +59,7 @@ void IndexSVSVamana::reset() {
         impl = nullptr;
     }
     ntotal = 0;
+    ntotal_soft_deleted = 0;
 }
 
 void IndexSVSVamana::search(
@@ -85,7 +87,37 @@ void IndexSVSVamana::search(
     impl->search(results, queries, sp);
 }
 
+size_t IndexSVSVamana::remove_ids(const IDSelector& sel) {
+    std::vector<size_t> ids;
+    for (idx_t i = 0; i < ntotal; ++i) {
+        if (sel.is_member(i)) {
+            ids.emplace_back(i);
+        }
+    }
+
+    // SVS deletion is a soft deletion, meaning the corresponding vectors are
+    // marked as deleted but still present in both the dataset and the graph,
+    // and will be navigated through during search.
+    // Actual cleanup happens once a large enough number of soft deleted vectors
+    // are collected.
+    impl->delete_points(ids);
+    ntotal -= ids.size();
+    ntotal_soft_deleted += ids.size();
+
+    const float cleanup_threshold = .5f;
+    if (ntotal == 0 ||
+        (float)ntotal_soft_deleted / ntotal > cleanup_threshold) {
+        impl->consolidate();
+        impl->compact();
+        ntotal_soft_deleted = 0;
+    }
+    return ids.size();
+}
+
 void IndexSVSVamana::init_impl(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(!impl);
+    FAISS_THROW_IF_NOT(ntotal == 0);
+
     std::vector<size_t> labels(n);
     auto data = svs::data::SimpleData<float>(n, d);
     auto threadpool = svs::threads::ThreadPoolHandle(
@@ -97,10 +129,10 @@ void IndexSVSVamana::init_impl(idx_t n, const float* x) {
             [&](auto is, auto SVS_UNUSED(tid)) {
                 for (auto i : is) {
                     data.set_datum(i, std::span<const float>(x + i * d, d));
-                    labels[i] = ntotal + i;
+                    labels[i] = i;
                 }
             });
-    ntotal += n;
+    ntotal = n;
 
     svs::index::vamana::VamanaBuildParameters build_parameters{
             alpha,
