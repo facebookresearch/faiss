@@ -49,7 +49,9 @@ struct SVSTempDirectory {
     SVSTempDirectory();
     ~SVSTempDirectory();
 
+    /* Write files written by SVS to a stream owned by FAISS for index_write */
     void write_files_to_stream(std::ostream& out) const;
+    /* Write a stream owned by FAISS to SVS-compatible files for index_read */
     void write_stream_to_files(std::istream& in) const;
 };
 

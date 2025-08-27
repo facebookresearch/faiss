@@ -142,14 +142,15 @@ void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
         read_exact(in, &file_size, sizeof(file_size));
 
         std::filesystem::path base;
-        if (dir_name == "config")
+        if (dir_name == "config") {
             base = config;
-        else if (dir_name == "graph")
+        } else if (dir_name == "graph") {
             base = graph;
-        else if (dir_name == "data")
+        } else if (dir_name == "data") {
             base = data;
-        else
+        } else {
             FAISS_THROW_IF_NOT_MSG(false, "Unknown SVS subdirectory name");
+        }
 
         std::filesystem::path full_path = base / filename;
         std::ofstream out(full_path, std::ios::binary);
