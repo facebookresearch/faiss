@@ -368,10 +368,10 @@
         </inbodydescription>
         <location file="faiss/IndexBinary.h" line="84" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a0e1b525affd1551edf6c884337ae438c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa1b1c73b6be7f77950dca5ff3a129ae7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::IndexBinary::add_with_ids_ex</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type, const void *xids, NumericType xids_type)</argsstring>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, const idx_t *xids)</argsstring>
         <name>add_with_ids_ex</name>
         <qualifiedname>faiss::IndexBinary::add_with_ids_ex</qualifiedname>
         <param>
@@ -387,12 +387,8 @@
           <declname>numeric_type</declname>
         </param>
         <param>
-          <type>const void *</type>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>xids</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>xids_type</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -400,7 +396,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="85" column="18" bodyfile="faiss/IndexBinary.h" bodystart="85" bodyend="101"/>
+        <location file="faiss/IndexBinary.h" line="85" column="18" bodyfile="faiss/IndexBinary.h" bodystart="85" bodyend="96"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -475,12 +471,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="112" column="18"/>
+        <location file="faiss/IndexBinary.h" line="107" column="18"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a896bc31641f7a7d442c9c39d4a75c4ea" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a697b79b91e14d76f00ae343d08609662" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::IndexBinary::search_ex</definition>
-        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, int32_t *distances, void *labels, NumericType labels_type, const SearchParameters *params=nullptr) const</argsstring>
+        <argsstring>(idx_t n, const void *x, NumericType numeric_type, idx_t k, int32_t *distances, idx_t *labels, const SearchParameters *params=nullptr) const</argsstring>
         <name>search_ex</name>
         <qualifiedname>faiss::IndexBinary::search_ex</qualifiedname>
         <param>
@@ -504,12 +500,8 @@
           <declname>distances</declname>
         </param>
         <param>
-          <type>void *</type>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>labels</declname>
-        </param>
-        <param>
-          <type>NumericType</type>
-          <declname>labels_type</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
@@ -522,7 +514,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="119" column="18" bodyfile="faiss/IndexBinary.h" bodystart="119" bodyend="140"/>
+        <location file="faiss/IndexBinary.h" line="114" column="18" bodyfile="faiss/IndexBinary.h" bodystart="114" bodyend="132"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a7d8f56aff2b732ce74fbc0f09af45e63" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -589,7 +581,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="156" column="18"/>
+        <location file="faiss/IndexBinary.h" line="148" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -639,7 +631,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="170" column="10"/>
+        <location file="faiss/IndexBinary.h" line="162" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a5ea7dee38e40f66b86d892bab2b6b80e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -660,7 +652,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="177" column="20"/>
+        <location file="faiss/IndexBinary.h" line="169" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1ad4938acd1d31afd49c81fbb5211121c3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -705,7 +697,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="185" column="18"/>
+        <location file="faiss/IndexBinary.h" line="177" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1afbeb7aa476a119b17cbfdb87e9de91e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -743,7 +735,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="192" column="18"/>
+        <location file="faiss/IndexBinary.h" line="184" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -799,7 +791,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="202" column="18"/>
+        <location file="faiss/IndexBinary.h" line="194" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa22c24398be85229e338b15ea9a0e3f1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -814,7 +806,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="212" column="10"/>
+        <location file="faiss/IndexBinary.h" line="204" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1ab148fd07d1066eea71123640c764b377" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -839,7 +831,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="218" column="18"/>
+        <location file="faiss/IndexBinary.h" line="210" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -859,7 +851,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="223" column="18"/>
+        <location file="faiss/IndexBinary.h" line="215" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -874,7 +866,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="227" column="20"/>
+        <location file="faiss/IndexBinary.h" line="219" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -901,7 +893,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinary.h" line="230" column="18"/>
+        <location file="faiss/IndexBinary.h" line="222" column="18"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="protected-func">
@@ -1196,7 +1188,7 @@
       <member refid="structfaiss_1_1IndexBinary_1a82123e0426b5ca631c644ddd35d159e7" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>add_ex</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>add_sa_codes</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a33c74f55b919bf39138bb2ba60bbaafc" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1IndexBinary_1a0e1b525affd1551edf6c884337ae438c" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>add_with_ids_ex</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1aa1b1c73b6be7f77950dca5ff3a129ae7" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>add_with_ids_ex</name></member>
       <member refid="structfaiss_1_1IndexBinary_1aa706d8807d29c91e0a148553a8202bc9" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>assign</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ac40092ea58d563632bacecf2ea5707dd" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>cagraConfig_</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>check_compatible_for_merge</name></member>
@@ -1227,7 +1219,7 @@
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ab55c347db8bdb5ae0fa61805220b603f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1ad155e375a04e1500f84ffe45a7b98586" prot="public" virt="pure-virtual" ambiguityscope="faiss::IndexBinary::"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1IndexBinary_1a896bc31641f7a7d442c9c39d4a75c4ea" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search_ex</name></member>
+      <member refid="structfaiss_1_1IndexBinary_1a697b79b91e14d76f00ae343d08609662" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>search_ex</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a33fb89fd722f072ba9b9cd633309a878" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>searchFromCpuPaged_</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a5d23bf6a7ae58efc6bd3a94ec51859ba" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>searchImpl_</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1a7b7674f8b7dd7e7e724861a77ac39f25" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexBinaryCagra</scope><name>searchNonPaged_</name></member>
