@@ -10,6 +10,7 @@ import faiss
 from faiss.contrib import datasets, evaluation
 import numpy as np
 
+
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")

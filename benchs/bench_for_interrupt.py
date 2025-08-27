@@ -14,6 +14,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
+
 def aa(*args, **kwargs):
     group.add_argument(*args, **kwargs)
 

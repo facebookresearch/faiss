@@ -23,6 +23,7 @@ def eval_recalls(name, I, gt, times):
     s += "time: %.4f s (± %.4f)" % (np.mean(times), np.std(times))
     print(s)
 
+
 def eval_inters(name, I, gt, times):
     k = I.shape[1]
     s = "%-40s inter" % name
@@ -167,6 +168,7 @@ def main():
 ###############################################################
 # SCANN
 ###############################################################
+
 
 def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
     import scann

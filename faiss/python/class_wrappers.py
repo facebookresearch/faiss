@@ -34,11 +34,13 @@ from faiss.loader import (
 # because it is unclear how the conversion should occur: with a view
 # (= cast) or conversion?
 
+
 def _check_dtype_uint8(codes):
     if codes.dtype != 'uint8':
         raise TypeError("Input argument %s must be ndarray of dtype "
                         " uint8, but found %s" % ("codes", codes.dtype))
     return np.ascontiguousarray(codes)
+
 
 def _numeric_to_str(numeric_type):
     if numeric_type == faiss.Float32:
@@ -66,6 +68,7 @@ def _np_dtype_to_faiss_type(dtype):
         return faiss.UInt8
     else:
         raise ValueError("given numpy dtype should be either np.int64, np.float32, np.float16, np.int8, or np.uint8 to convert to faiss numeric types")
+
 
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
@@ -1379,6 +1382,7 @@ def handle_Linear(the_class):
 ######################################################
 # Syntatic sugar for QINCo and QINCoStep
 ######################################################
+
 
 def handle_QINCoStep(the_class):
     the_class.original_init = the_class.__init__
