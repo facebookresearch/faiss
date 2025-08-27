@@ -13,6 +13,7 @@ from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptor
 
 logging.basicConfig(level=logging.INFO)
 
+
 def factory_factory(d):
     return [
         ("SQ4", None, 256 * (2 ** 10), None),
@@ -77,6 +78,7 @@ def factory_factory(d):
         if d % sub == 0
     ]
 
+
 def run_local(rp):
     bio, d, tablename, distance_metric = rp
     if tablename == "contriever":
@@ -119,6 +121,7 @@ def run_local(rp):
     )
     benchmark.set_io(bio)
     benchmark.benchmark(result_file="result.json", train=True, reconstruct=False, knn=False, range=False)
+
 
 def run(bio, d, tablename, distance_metric):
     bio.launch_jobs(run_local, [(bio, d, tablename, distance_metric)], local=True)

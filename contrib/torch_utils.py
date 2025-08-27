@@ -56,6 +56,7 @@ def swig_ptr_from_FloatTensor(x):
     return faiss.cast_integer_to_float_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
+
 def swig_ptr_from_BFloat16Tensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
@@ -82,6 +83,7 @@ def swig_ptr_from_IndicesTensor(x):
 ##################################################################
 # utilities
 ##################################################################
+
 
 @contextlib.contextmanager
 def using_stream(res, pytorch_stream=None):
