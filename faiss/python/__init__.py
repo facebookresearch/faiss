@@ -220,8 +220,6 @@ add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
 
-add_ref_in_constructor(IndexIVFRaBitQ, 0)
-
 if "SVS" in get_compile_options():
     add_ref_in_constructor(IndexSVSVamana, 0)
     add_ref_in_constructor(IndexSVSFlat, 0)
