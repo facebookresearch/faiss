@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="131" column="23" bodyfile="faiss/IndexIDMap.h" bodystart="131" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="134" column="23" bodyfile="faiss/IndexIDMap.h" bodystart="134" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IDSelectorTranslated_1ac00f1cfc1cf23af49d6a800dba84619f" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="132" column="22" bodyfile="faiss/IndexIDMap.h" bodystart="132" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="135" column="22" bodyfile="faiss/IndexIDMap.h" bodystart="135" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="134" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="134" bodyend="137"/>
+        <location file="faiss/IndexIDMap.h" line="137" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="137" bodyend="140"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorTranslated_1a076dbe63e9178b37a8e6bc0f96a1db09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="139" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="139" bodyend="140"/>
+        <location file="faiss/IndexIDMap.h" line="142" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="142" bodyend="143"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorTranslated_1a479b6807c2f46db70aa8393090b8c2c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="142" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="142" bodyend="143"/>
+        <location file="faiss/IndexIDMap.h" line="145" column="5" bodyfile="faiss/IndexIDMap.h" bodystart="145" bodyend="146"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorTranslated_1ab5638224c8cda6f29a683b1876b65051" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>bool</type>
@@ -117,7 +117,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="145" column="10" bodyfile="faiss/IndexIDMap.h" bodystart="145" bodyend="147"/>
+        <location file="faiss/IndexIDMap.h" line="148" column="10" bodyfile="faiss/IndexIDMap.h" bodystart="148" bodyend="150"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -151,7 +151,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIDMap.h" line="130" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="130" bodyend="148"/>
+    <location file="faiss/IndexIDMap.h" line="133" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="133" bodyend="151"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IDSelectorTranslated_1ab1ecd99ec40c20f014758b3d8b9e5bc8" prot="public" virt="non-virtual"><scope>faiss::IDSelectorTranslated</scope><name>id_map</name></member>
       <member refid="structfaiss_1_1IDSelectorTranslated_1a1712a842f521227b38a176e0c835fb7b" prot="public" virt="non-virtual"><scope>faiss::IDSelectorTranslated</scope><name>IDSelectorTranslated</name></member>

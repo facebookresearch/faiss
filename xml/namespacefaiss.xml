@@ -310,6 +310,13 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa3c83298f130d9ce246b5cb79e326bade" prot="public">
+          <name>Int64</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa28587803fff68768664d9bebd946579d" prot="public">
           <name>UInt8</name>
           <briefdescription>
@@ -324,13 +331,20 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa1e51e6f1f122ad04fb3fcc57937673ac" prot="public">
+          <name>NONE</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="59" column="1" bodyfile="faiss/Index.h" bodystart="59" bodyend="64"/>
+        <location file="faiss/Index.h" line="60" column="1" bodyfile="faiss/Index.h" bodystart="60" bodyend="67"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1afd12191c638da74760ff397cf319752c" prot="public" static="no" strong="no">
         <type></type>
@@ -449,7 +463,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="88" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="90" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="90" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -463,7 +477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="89" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="89" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="91" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="91" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -477,7 +491,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="126" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="129" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="129" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1abb449fb7eb62ff35c48165c965621d10" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMap2Template" kindref="compound">IndexIDMap2Template</ref>&lt; <ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> &gt;</type>
@@ -491,7 +505,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIDMap.h" line="127" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="127" bodyend="-1"/>
+        <location file="faiss/IndexIDMap.h" line="130" column="1" bodyfile="faiss/IndexIDMap.h" bodystart="130" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a0423615e86d00dda03ae73c199c705af" prot="public" static="no">
         <type><ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">SearchParametersIVF</ref></type>
@@ -3365,7 +3379,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="66" column="15" bodyfile="faiss/Index.h" bodystart="66" bodyend="79"/>
+        <location file="faiss/Index.h" line="69" column="15" bodyfile="faiss/Index.h" bodystart="69" bodyend="86"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
