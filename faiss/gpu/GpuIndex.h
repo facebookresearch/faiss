@@ -87,7 +87,8 @@ class GpuIndex : public faiss::Index {
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* xids) override;
+            const void* ids,
+            NumericType ids_type) override;
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
@@ -109,7 +110,8 @@ class GpuIndex : public faiss::Index {
             NumericType numeric_type,
             idx_t k,
             float* distances,
-            idx_t* labels,
+            void* labels,
+            NumericType labels_type,
             const SearchParameters* params = nullptr) const override;
 
     /// `x`, `distances` and `labels` and `recons` can be resident on the CPU or
