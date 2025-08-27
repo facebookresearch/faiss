@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
