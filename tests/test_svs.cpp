@@ -6,8 +6,8 @@
  */
 
 #include <faiss/Index.h>
-#include <faiss/IndexSVSVamana.h>
 #include <faiss/IndexSVSFlat.h>
+#include <faiss/IndexSVSVamana.h>
 #include <faiss/IndexSVSVamanaLVQ.h>
 #include <faiss/IndexSVSVamanaLeanVec.h>
 #include <faiss/index_io.h>
@@ -79,7 +79,9 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
         ASSERT_NE(lvq_loaded, nullptr);
         EXPECT_EQ(lvq_loaded->lvq_level, index.lvq_level);
     }
-    if constexpr (std::is_same_v<std::decay_t<T>, faiss::IndexSVSVamanaLeanVec>) {
+    if constexpr (std::is_same_v<
+                          std::decay_t<T>,
+                          faiss::IndexSVSVamanaLeanVec>) {
         auto* lvq_loaded = dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
         ASSERT_NE(lvq_loaded, nullptr);
         EXPECT_EQ(lvq_loaded->leanvec_level, index.leanvec_level);
@@ -89,49 +91,49 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVS) {
-    faiss::IndexSVSVamana index{d};
+    faiss::IndexSVSVamana index{d, 64ul};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x0) {
-    faiss::IndexSVSVamanaLVQ index{d};
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x0;
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x4) {
-    faiss::IndexSVSVamanaLVQ index{d};
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x4;
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x8) {
-    faiss::IndexSVSVamanaLVQ index{d};
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x8;
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x4) {
     faiss::IndexSVSVamanaLeanVec index{
-            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x8) {
     faiss::IndexSVSVamanaLeanVec index{
-            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x8};
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x8};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec8x8) {
     faiss::IndexSVSVamanaLeanVec index{
-            d, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_8x8};
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec8x8};
     write_and_read_index(index, test_data, n);
 }
 
 TEST_F(SVSIOTest, LeanVecThrowsWithoutTraining) {
     faiss::IndexSVSVamanaLeanVec index{
-            64, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec_4x4};
+            64, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
     ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
 }
 
