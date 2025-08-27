@@ -1454,6 +1454,16 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
         idxhnsw->storage = read_index_binary(f, io_flags);
         idxhnsw->own_fields = true;
         idx = idxhnsw;
+    } else if (h == fourcc("IBHc")) {
+        IndexBinaryHNSWCagra* idxhnsw = new IndexBinaryHNSWCagra();
+        read_index_binary_header(idxhnsw, f);
+        READ1(idxhnsw->keep_max_size_level0);
+        READ1(idxhnsw->base_level_only);
+        READ1(idxhnsw->num_base_level_search_entrypoints);
+        read_HNSW(&idxhnsw->hnsw, f);
+        idxhnsw->storage = read_index_binary(f, io_flags);
+        idxhnsw->own_fields = true;
+        idx = idxhnsw;
     } else if (h == fourcc("IBMp") || h == fourcc("IBM2")) {
         bool is_map2 = h == fourcc("IBM2");
         IndexBinaryIDMap* idxmap =

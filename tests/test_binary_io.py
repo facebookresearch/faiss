@@ -13,6 +13,7 @@ import faiss
 import os
 import tempfile
 
+
 def make_binary_dataset(d, nb, nt, nq):
     assert d % 8 == 0
     x = np.random.randint(256, size=(nb + nq + nt, int(d / 8))).astype('uint8')

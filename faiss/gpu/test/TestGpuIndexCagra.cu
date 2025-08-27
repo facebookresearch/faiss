@@ -234,7 +234,7 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train(
+        gpuIndex.train_ex(
                 opt.numTrain,
                 static_cast<void*>(trainVecs_half.data()),
                 faiss::NumericType::Float16);
@@ -272,13 +272,14 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
         for (size_t i = 0; i < queryVecs.size(); ++i) {
             queryVecs_half[i] = __float2half(queryVecs[i]);
         }
-        gpuIndex.search(
+        gpuIndex.search_ex(
                 opt.numQuery,
                 queryVecs_half.data(),
                 faiss::NumericType::Float16,
                 opt.k,
                 testDistance.data(),
-                testIndices.data());
+                testIndices.data(),
+                faiss::NumericType::Int64);
 
         auto refDistanceDev = faiss::gpu::toDeviceTemporary(
                 gpuRes.get(),
@@ -527,7 +528,7 @@ void copyToTestFP16(
         }
 
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train(
+        gpuIndex.train_ex(
                 opt.numTrain,
                 static_cast<void*>(trainVecs_half.data()),
                 faiss::NumericType::Float16);
@@ -782,7 +783,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
 
         // convert to gpu index
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex, faiss::NumericType::Float16);
+        copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -803,7 +804,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train(
+        gpuIndex.train_ex(
                 opt.numTrain,
                 static_cast<void*>(trainVecs_half.data()),
                 faiss::NumericType::Float16);
@@ -829,25 +830,27 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
                 gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
         faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> copyTestIndices(
                 gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
-        copiedGpuIndex.search(
+        copiedGpuIndex.search_ex(
                 opt.numQuery,
                 queryVecs_half.data(),
                 faiss::NumericType::Float16,
                 opt.k,
                 copyTestDistance.data(),
-                copyTestIndices.data());
+                copyTestIndices.data(),
+                faiss::NumericType::Int64);
 
         faiss::gpu::DeviceTensor<float, 2, true> testDistance(
                 gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
         faiss::gpu::DeviceTensor<faiss::idx_t, 2, true> testIndices(
                 gpuRes.get(), devAlloc, {opt.numQuery, opt.k});
-        gpuIndex.search(
+        gpuIndex.search_ex(
                 opt.numQuery,
                 queryVecs_half.data(),
                 faiss::NumericType::Float16,
                 opt.k,
                 testDistance.data(),
-                testIndices.data());
+                testIndices.data(),
+                faiss::NumericType::Int64);
 
         // test quality of searches
         auto raft_handle = gpuRes->getRaftHandleCurrentDevice();

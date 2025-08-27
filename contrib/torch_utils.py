@@ -56,6 +56,7 @@ def swig_ptr_from_FloatTensor(x):
     return faiss.cast_integer_to_float_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
+
 def swig_ptr_from_BFloat16Tensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
@@ -79,9 +80,19 @@ def swig_ptr_from_IndicesTensor(x):
     return faiss.cast_integer_to_idx_t_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 8)
 
+
+def swig_ptr_from_Int64Tensor(x):
+    """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
+    assert x.is_contiguous()
+    assert x.dtype == torch.int64, 'dtype=%s' % x.dtype
+    return faiss.cast_integer_to_int64_ptr(
+        x.untyped_storage().data_ptr() + x.storage_offset() * 8)
+
+
 ##################################################################
 # utilities
 ##################################################################
+
 
 @contextlib.contextmanager
 def using_stream(res, pytorch_stream=None):
@@ -152,12 +163,12 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_c(n, x_ptr, numeric_type)
+                self.add_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.add_c(n, x_ptr, numeric_type)
+            self.add_ex(n, x_ptr, numeric_type)
 
-    def torch_replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
+    def torch_replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32, ids_type = faiss.Int64):
         if type(x) is np.ndarray:
             # forward to faiss __init__.py base method
             return self.add_with_ids_numpy(x, ids)
@@ -174,17 +185,20 @@ def handle_torch_Index(the_class):
 
         assert type(ids) is torch.Tensor
         assert ids.shape == (n, ), 'not same number of vectors as ids'
-        ids_ptr = swig_ptr_from_IndicesTensor(ids)
+        if ids_type == faiss.Int64:
+            ids_ptr = swig_ptr_from_Int64Tensor(ids)
+        else:
+            raise ValueError("ids type for add_with_ids must be faiss.Int64")
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
+                self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr, ids_type)
         else:
             # CPU torch
-            self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
+            self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr, ids_type)
 
     def torch_replacement_assign(self, x, k, labels=None):
         if type(x) is np.ndarray:
@@ -235,10 +249,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.train_c(n, x_ptr, numeric_type)
+                self.train_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.train_c(n, x_ptr, numeric_type)
+            self.train_ex(n, x_ptr, numeric_type)
 
     def search_methods_common(x, k, D, I, numeric_type=faiss.Float32):
         n, d = x.shape
@@ -258,12 +272,18 @@ def handle_torch_Index(the_class):
 
         if I is None:
             I = torch.empty(n, k, device=x.device, dtype=torch.int64)
+            I_ptr = swig_ptr_from_Int64Tensor(I)
+            I_type = faiss.Int64
         else:
             assert type(I) is torch.Tensor
             assert I.shape == (n, k)
-        I_ptr = swig_ptr_from_IndicesTensor(I)
+            if I.dtype == torch.int64:
+                I_ptr = swig_ptr_from_Int64Tensor(I)
+                I_type = faiss.Int64
+            else:
+                raise ValueError("labels for search should be int64 type")
 
-        return x_ptr, D_ptr, I_ptr, D, I
+        return x_ptr, D_ptr, I_ptr, D, I, I_type
 
     def torch_replacement_search(self, x, k, D=None, I=None, numeric_type=faiss.Float32):
         if type(x) is np.ndarray:
@@ -274,17 +294,17 @@ def handle_torch_Index(the_class):
         n, d = x.shape
         assert d == self.d
 
-        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
+        x_ptr, D_ptr, I_ptr, D, I, I_type = search_methods_common(x, k, D, I)
 
         if x.is_cuda:
             assert hasattr(self, 'getDevice'), 'GPU tensor on CPU index not allowed'
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+                self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr, I_type)
         else:
             # CPU torch
-            self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+            self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr, I_type)
 
         return D, I
 
@@ -297,7 +317,7 @@ def handle_torch_Index(the_class):
         n, d = x.shape
         assert d == self.d
 
-        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
+        x_ptr, D_ptr, I_ptr, D, I, _ = search_methods_common(x, k, D, I)
 
         if R is None:
             R = torch.empty(n, k, d, device=x.device, dtype=torch.float32)
@@ -327,7 +347,7 @@ def handle_torch_Index(the_class):
         n, d = x.shape
         assert d == self.d
 
-        x_ptr, D_ptr, I_ptr, D, I = search_methods_common(x, k, D, I)
+        x_ptr, D_ptr, I_ptr, D, I, _ = search_methods_common(x, k, D, I)
 
         assert Iq.shape == (n, self.nprobe)
         Iq = Iq.contiguous()

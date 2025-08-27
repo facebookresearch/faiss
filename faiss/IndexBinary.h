@@ -10,9 +10,6 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <sstream>
-#include <string>
-#include <typeinfo>
 
 #include <faiss/Index.h>
 
@@ -55,7 +52,7 @@ struct IndexBinary {
      * @param x      training vecors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
-    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             train(n, static_cast<const uint8_t*>(x));
         } else {
@@ -69,7 +66,7 @@ struct IndexBinary {
      * @param x      input matrix, size n * d / 8
      */
     virtual void add(idx_t n, const uint8_t* x) = 0;
-    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             add(n, static_cast<const uint8_t*>(x));
         } else {
@@ -85,16 +82,21 @@ struct IndexBinary {
      * @param xids if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const uint8_t* x, const idx_t* xids);
-    virtual void add_with_ids(
+    virtual void add_with_ids_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* xids) {
-        if (numeric_type == NumericType::UInt8) {
-            add_with_ids(n, static_cast<const uint8_t*>(x), xids);
+            const void* xids,
+            NumericType xids_type) {
+        if (numeric_type == NumericType::UInt8 &&
+            xids_type == NumericType::Int64) {
+            add_with_ids(
+                    n,
+                    static_cast<const uint8_t*>(x),
+                    static_cast<const idx_t*>(xids));
         } else {
             FAISS_THROW_MSG(
-                    "IndexBinary::add_with_ids: unsupported numeric type");
+                    "IndexBinary::add_with_ids: unsupported numeric type or xids type");
         }
     };
 
@@ -114,23 +116,26 @@ struct IndexBinary {
             int32_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
-    virtual void search(
+    virtual void search_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
             idx_t k,
             int32_t* distances,
-            idx_t* labels,
+            void* labels,
+            NumericType labels_type,
             const SearchParameters* params = nullptr) const {
-        if (numeric_type == NumericType::UInt8) {
+        if (numeric_type == NumericType::UInt8 &&
+            labels_type == NumericType::Int64) {
             search(n,
                    static_cast<const uint8_t*>(x),
                    k,
                    distances,
-                   labels,
+                   static_cast<idx_t*>(labels),
                    params);
         } else {
-            FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
+            FAISS_THROW_MSG(
+                    "IndexBinary::search: unsupported numeric type or label type");
         }
     };
 

@@ -6,19 +6,19 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.04, is available on Linux (x86-64 only) for CUDA 11.8 and 12.4.
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.08, is available on Linux (x86-64 only) for CUDA 12.4.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.11.0
+$ conda install -c pytorch faiss-cpu=1.12.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.11.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.12.0
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.11.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.12.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,7 +34,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.11.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.12.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
@@ -145,7 +145,7 @@ Several options can be passed to CMake, among which:
   optimization options (enables `-O3` on gcc for instance),
   - `-DFAISS_OPT_LEVEL=avx2` in order to enable the required compiler flags to
   generate code using optimized SIMD/Vector instructions. Possible values are below:
-    - On x86-64, `generic`, `avx2`, 'avx512', and `avx512_spr` (for avx512 features available since Intel(R) Sapphire Rapids), by increasing order of optimization,
+    - On x86-64, `generic`, `avx2`, `avx512`, and `avx512_spr` (for avx512 features available since Intel(R) Sapphire Rapids), by increasing order of optimization,
     - On aarch64, `generic` and `sve`, by increasing order of optimization,
   - `-DFAISS_USE_LTO=ON` in order to enable [Link-Time Optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (default is `OFF`, possible values are `ON` and `OFF`).
 - BLAS-related options:

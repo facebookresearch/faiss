@@ -13,13 +13,12 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
 
+#include <cstdint>
 #include <cstdio>
 #include <sstream>
-#include <string>
-#include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 11
+#define FAISS_VERSION_MINOR 12
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
@@ -61,12 +60,16 @@ struct DistanceComputer;
 enum NumericType {
     Float32,
     Float16,
+    Int64,
     UInt8,
     Int8,
+    NONE, // corresponding to nullptr
 };
 
 inline size_t get_numeric_type_size(NumericType numeric_type) {
     switch (numeric_type) {
+        case NumericType::Int64:
+            return 8;
         case NumericType::Float32:
             return 4;
         case NumericType::Float16:
@@ -74,9 +77,11 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
         case NumericType::UInt8:
         case NumericType::Int8:
             return 1;
+        case NumericType::NONE:
+            return 0;
         default:
             FAISS_THROW_MSG(
-                    "Unknown Numeric Type. Only supports Float32, Float16");
+                    "Unknown Numeric Type. Only supports Float32, Float16, Int64, UInt8, Int8");
     }
 }
 
@@ -131,7 +136,7 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
-    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             train(n, static_cast<const float*>(x));
         } else {
@@ -149,7 +154,7 @@ struct Index {
      */
     virtual void add(idx_t n, const float* x) = 0;
 
-    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             add(n, static_cast<const float*>(x));
         } else {
@@ -167,15 +172,21 @@ struct Index {
      * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
-    virtual void add_with_ids(
+    virtual void add_with_ids_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* xids) {
-        if (numeric_type == NumericType::Float32) {
-            add_with_ids(n, static_cast<const float*>(x), xids);
+            const void* xids,
+            NumericType xids_type) {
+        if (numeric_type == NumericType::Float32 &&
+            xids_type == NumericType::Int64) {
+            add_with_ids(
+                    n,
+                    static_cast<const float*>(x),
+                    static_cast<const idx_t*>(xids));
         } else {
-            FAISS_THROW_MSG("Index::add_with_ids: unsupported numeric type");
+            FAISS_THROW_MSG(
+                    "Index::add_with_ids: unsupported numeric type or xids type");
         }
     }
 
@@ -198,23 +209,26 @@ struct Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
 
-    virtual void search(
+    virtual void search_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
             idx_t k,
             float* distances,
-            idx_t* labels,
+            void* labels,
+            NumericType labels_type,
             const SearchParameters* params = nullptr) const {
-        if (numeric_type == NumericType::Float32) {
+        if (numeric_type == NumericType::Float32 &&
+            labels_type == NumericType::Int64) {
             search(n,
                    static_cast<const float*>(x),
                    k,
                    distances,
-                   labels,
+                   static_cast<idx_t*>(labels),
                    params);
         } else {
-            FAISS_THROW_MSG("Index::search: unsupported numeric type");
+            FAISS_THROW_MSG(
+                    "Index::search: unsupported numeric type or label type");
         }
     }
 

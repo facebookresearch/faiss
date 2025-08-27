@@ -77,17 +77,18 @@ class GpuIndex : public faiss::Index {
     /// as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add(idx_t, const float* x) override;
-    void add(idx_t, const void* x, NumericType numeric_type) override;
+    void add_ex(idx_t, const void* x, NumericType numeric_type) override;
 
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_
     void add_with_ids(idx_t n, const float* x, const idx_t* ids) override;
-    void add_with_ids(
+    void add_with_ids_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* xids) override;
+            const void* ids,
+            NumericType ids_type) override;
 
     /// `x` and `labels` can be resident on the CPU or any GPU; copies are
     /// performed as needed
@@ -103,13 +104,14 @@ class GpuIndex : public faiss::Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
-    void search(
+    void search_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
             idx_t k,
             float* distances,
-            idx_t* labels,
+            void* labels,
+            NumericType labels_type,
             const SearchParameters* params = nullptr) const override;
 
     /// `x`, `distances` and `labels` and `recons` can be resident on the CPU or
@@ -139,9 +141,9 @@ class GpuIndex : public faiss::Index {
    protected:
     /// Copy what we need from the CPU equivalent
     void copyFrom(const faiss::Index* index);
-    void copyFrom(const faiss::Index* index, NumericType numeric_type) {
+    void copyFrom_ex(const faiss::Index* index, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
-            copyFrom(index, NumericType::Float32);
+            copyFrom(index);
         } else {
             FAISS_THROW_MSG("GpuIndex::copyFrom: unsupported numeric type");
         }
@@ -149,9 +151,9 @@ class GpuIndex : public faiss::Index {
 
     /// Copy what we have to the CPU equivalent
     void copyTo(faiss::Index* index) const;
-    void copyTo(const faiss::Index* index, NumericType numeric_type) {
+    void copyTo_ex(faiss::Index* index, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
-            copyTo(index, NumericType::Float32);
+            copyTo(index);
         } else {
             FAISS_THROW_MSG("GpuIndex::copyTo: unsupported numeric type");
         }
@@ -165,7 +167,7 @@ class GpuIndex : public faiss::Index {
     /// All data is guaranteed to be resident on our device
     virtual void addImpl_(idx_t n, const float* x, const idx_t* ids) = 0;
 
-    virtual void addImpl_(
+    virtual void addImpl_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -187,7 +189,7 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
-    virtual void searchImpl_(
+    virtual void searchImpl_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -212,7 +214,7 @@ class GpuIndex : public faiss::Index {
     /// Handles paged adds if the add set is too large, passes to
     /// addImpl_ to actually perform the add for the current page
     void addPaged_(idx_t n, const float* x, const idx_t* ids);
-    void addPaged_(
+    void addPaged_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -220,7 +222,7 @@ class GpuIndex : public faiss::Index {
 
     /// Calls addImpl_ for a single page of GPU-resident data
     void addPage_(idx_t n, const float* x, const idx_t* ids);
-    void addPage_(
+    void addPage_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -235,7 +237,7 @@ class GpuIndex : public faiss::Index {
             idx_t* outIndicesData,
             const SearchParameters* params) const;
 
-    void searchNonPaged_(
+    void searchNonPaged_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -253,7 +255,7 @@ class GpuIndex : public faiss::Index {
             float* outDistancesData,
             idx_t* outIndicesData,
             const SearchParameters* params) const;
-    void searchFromCpuPaged_(
+    void searchFromCpuPaged_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,

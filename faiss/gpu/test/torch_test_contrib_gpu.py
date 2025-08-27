@@ -20,8 +20,10 @@ def to_column_major_torch(x):
         # was default setting before memory_format was introduced
         return x.t().clone().t()
 
+
 def to_column_major_numpy(x):
     return x.T.copy().T
+
 
 class TestTorchUtilsGPU(unittest.TestCase):
     # tests add, search
@@ -255,6 +257,7 @@ class TestTorchUtilsGPU(unittest.TestCase):
     def test_sa_encode_decode(self):
         # This is not currently implemented on GPU indices
         return
+
 
 class TestTorchUtilsKnnGpu(unittest.TestCase):
     def test_knn_gpu(self, use_cuvs=False):

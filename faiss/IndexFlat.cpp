@@ -56,17 +56,6 @@ void IndexFlat::search(
     }
 }
 
-void IndexFlat::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Index::search(n, x, numeric_type, k, distances, labels, params);
-}
-
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -416,10 +405,6 @@ void IndexFlat1D::add(idx_t n, const float* x) {
     }
 }
 
-void IndexFlat1D::add(idx_t n, const void* x, NumericType numeric_type) {
-    Index::add(n, x, numeric_type);
-}
-
 void IndexFlat1D::reset() {
     IndexFlatL2::reset();
     perm.clear();
@@ -534,16 +519,4 @@ void IndexFlat1D::search(
     done:;
     }
 }
-
-void IndexFlat1D::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Index::search(n, x, numeric_type, k, distances, labels, params);
-}
-
 } // namespace faiss

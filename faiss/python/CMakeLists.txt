@@ -86,35 +86,20 @@ if(TARGET faiss)
     list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
-  if(FAISS_ENABLE_ROCM)
-    foreach(h ${FAISS_GPU_HEADERS})
-      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-    endforeach()
-  else()
-    foreach(h ${FAISS_GPU_HEADERS})
-      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-    endforeach()
-  endif()
+  foreach(h ${FAISS_GPU_HEADERS})
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+  endforeach()
 else()
   find_package(faiss REQUIRED)
 endif()
@@ -294,7 +279,7 @@ target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
-  COMPONENTS Development NumPy
+  COMPONENTS Development.Module NumPy
 )
 
 add_library(faiss_python_callbacks EXCLUDE_FROM_ALL

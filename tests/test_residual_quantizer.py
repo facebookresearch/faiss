@@ -12,6 +12,8 @@ from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
 ###########################################################
+
+
 # Reference implementation of encoding with beam search
 ###########################################################
 
@@ -540,6 +542,7 @@ class TestIndexResidualQuantizer(unittest.TestCase):
 ###########################################################
 # As a coarse quantizer
 ###########################################################
+
 
 class TestIVFResidualCoarseQuantizer(unittest.TestCase):
 

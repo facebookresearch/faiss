@@ -17,6 +17,7 @@ from faiss.contrib import datasets
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
+
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
@@ -183,6 +184,8 @@ def reference_accu(codes, LUT):
 
 
 # disabled because the function to write to mem is not implemented currently
+
+
 class ThisIsNotATestLoop5:    # (unittest.TestCase):
 
     def do_loop5_kernel(self, nq, bb):

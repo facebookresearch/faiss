@@ -419,13 +419,6 @@ void AdditiveCoarseQuantizer::add(idx_t, const float*) {
     FAISS_THROW_MSG("not applicable");
 }
 
-void AdditiveCoarseQuantizer::add(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type) {
-    Index::add(n, x, numeric_type);
-};
-
 void AdditiveCoarseQuantizer::reconstruct(idx_t key, float* recons) const {
     aq->decode_64bit(key, recons);
 }
@@ -461,13 +454,6 @@ void AdditiveCoarseQuantizer::train(idx_t n, const float* x) {
     }
 }
 
-void AdditiveCoarseQuantizer::train(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type) {
-    Index::train(n, x, numeric_type);
-}
-
 void AdditiveCoarseQuantizer::search(
         idx_t n,
         const float* x,
@@ -484,17 +470,6 @@ void AdditiveCoarseQuantizer::search(
         FAISS_THROW_IF_NOT(centroid_norms.size() == ntotal);
         aq->knn_centroids_L2(n, x, k, distances, labels, centroid_norms.data());
     }
-}
-
-void AdditiveCoarseQuantizer::search(
-        idx_t n,
-        const void* x,
-        NumericType numeric_type,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    Index::search(n, x, numeric_type, k, distances, labels, params);
 }
 
 /**************************************************************************************

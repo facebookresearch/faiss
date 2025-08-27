@@ -9,9 +9,7 @@
 
 #include <faiss/Index2Layer.h>
 
-#include <cassert>
 #include <cinttypes>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 
