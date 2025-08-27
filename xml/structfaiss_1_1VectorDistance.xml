@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="28" column="5" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="30" column="5" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="33" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="21" column="12" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="21" bodyend="-1"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="23" column="12" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1ab79751e034e79559d9585cf68af061a3" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="22" column="11" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="24" column="11" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="24" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-attrib">
@@ -69,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="23" column="27" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="25" column="27" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="25" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="25" column="18"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="27" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a407dedbd401cfd90eb673fcc39e82b9d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -115,7 +115,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="35" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="35" bodyend="39"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="37" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="37" bodyend="41"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a896326422abd4f2c051a1acdd2609cce" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="42" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="42" bodyend="46"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="44" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="44" bodyend="48"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a58f56c4301d83efb4128141d2a2d2434" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -159,7 +159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="49" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="49" bodyend="53"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="51" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="51" bodyend="55"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a35661cd45b48a052438bb114d07302bb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -181,7 +181,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="56" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="56" bodyend="67"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="58" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="58" bodyend="69"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a50c11a08383240edec8041eb5c8e1d56" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -203,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="70" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="70" bodyend="79"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="72" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="72" bodyend="81"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a61f5efc242a32963a943474513ba949d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -225,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="82" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="82" bodyend="91"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="84" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="84" bodyend="93"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ab49171beb2af4d96617a22f507381518" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -247,7 +247,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="94" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="94" bodyend="104"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="96" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="96" bodyend="106"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ac839930aa4b3c1db70146b54212385d6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -269,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="107" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="107" bodyend="119"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="109" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="109" bodyend="121"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1abcb39e66cd757963c21107996bad3dad" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -291,7 +291,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="122" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="122" bodyend="133"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="124" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="124" bodyend="135"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a1523b33f2aa08df81f83f43eee34d862" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -313,7 +313,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="136" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="136" bodyend="153"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="138" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="138" bodyend="155"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a88aef585bc77a6654095aabc7171e75e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -335,14 +335,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="156" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="156" bodyend="187"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="158" column="29" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="158" bodyend="189"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/extra_distances-inl.h" line="20" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="20" bodyend="32"/>
+    <location file="faiss/utils/extra_distances-inl.h" line="22" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="22" bodyend="34"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorDistance_1a61c9d5400239ae177d94be5e119c3fe0" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>C</name></member>
       <member refid="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>d</name></member>

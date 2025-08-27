@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="202" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="10" bodyend="19"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="202" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="12" bodyend="21"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PQEncoderGeneric_1a237511a10f2c5d7593536e68682b8754" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="204" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="21" bodyend="38"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="204" column="10" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="23" bodyend="40"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PQEncoderGeneric_1a14a3d221ad9ed9df704c3c0b7074869b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ProductQuantizer.h" line="206" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="40" bodyend="44"/>
+        <location file="faiss/impl/ProductQuantizer.h" line="206" column="5" bodyfile="faiss/impl/ProductQuantizer-inl.h" bodystart="42" bodyend="46"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

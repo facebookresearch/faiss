@@ -6220,7 +6220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="197" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="197" bodyend="224"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="199" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="199" bodyend="226"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
