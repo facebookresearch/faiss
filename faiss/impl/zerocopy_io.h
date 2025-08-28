@@ -20,7 +20,7 @@ struct ZeroCopyIOReader : public faiss::IOReader {
     size_t total_ = 0;
 
     ZeroCopyIOReader(const uint8_t* data, size_t size);
-    ~ZeroCopyIOReader();
+    ~ZeroCopyIOReader() override;
 
     void reset();
     size_t get_data_view(void** ptr, size_t size, size_t nitems);
