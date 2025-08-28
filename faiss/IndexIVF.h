@@ -497,12 +497,12 @@ struct InvertedListScanner {
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
-    /** scan a set of codes, compute distances to current query and
+    /** scan a set of codes, compute distances to current query, and
      * update heap of results if necessary. Default implementation
      * calls distance_to_code.
      *
-     * @param n      number of codes to scan
-     * @param codes  codes to scan (n * code_size)
+     * @param n          number of codes to scan
+     * @param codes      codes to scan (n * code_size)
      * @param ids        corresponding ids (ignored if store_pairs)
      * @param distances  heap distances (size k)
      * @param labels     heap labels (size k)
@@ -516,6 +516,28 @@ struct InvertedListScanner {
             float* distances,
             idx_t* labels,
             size_t k) const;
+
+    /** scan a set of code blocks, compute distances to current query, and
+     * update heap of results if necessary. There is no default implementation,
+     * as it only applies for packed codes like in PQFastScan.
+     *
+     * @param ntotal       number of codes to scan
+     * @param code_blocks  code blocks to scan
+     * @param ids          corresponding ids (ignored if store_pairs)
+     * @param distances    heap distances (size k)
+     * @param labels       heap labels (size k)
+     * @param k            heap size
+     * @return number of heap updates performed
+     */
+    virtual size_t scan_code_blocks(
+            size_t ntotal,
+            const uint8_t* code_blocks,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            size_t k) const {
+        FAISS_THROW_MSG("not implemented");
+    };
 
     // same as scan_codes, using an iterator
     virtual size_t iterate_codes(

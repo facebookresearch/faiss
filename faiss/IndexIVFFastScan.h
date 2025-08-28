@@ -104,6 +104,40 @@ struct IndexIVFFastScan : IndexIVF {
         const idx_t* ids = nullptr;
     };
 
+    struct CoarseQuantizedWithBuffer : CoarseQuantized {
+        explicit CoarseQuantizedWithBuffer(const CoarseQuantized& cq)
+                : CoarseQuantized(cq) {}
+
+        ~CoarseQuantizedWithBuffer() {
+            printf("hello\n");
+        }
+
+        bool done() const {
+            return ids != nullptr;
+        }
+
+        std::vector<idx_t> ids_buffer;
+        std::vector<float> dis_buffer;
+
+        void quantize(
+                const Index* quantizer,
+                idx_t n,
+                const float* x,
+                const SearchParameters* quantizer_params) {
+            dis_buffer.resize(nprobe * n);
+            ids_buffer.resize(nprobe * n);
+            quantizer->search(
+                    n,
+                    x,
+                    nprobe,
+                    dis_buffer.data(),
+                    ids_buffer.data(),
+                    quantizer_params);
+            dis = dis_buffer.data();
+            ids = ids_buffer.data();
+        }
+    };
+
     virtual void compute_LUT(
             size_t n,
             const float* x,
@@ -147,6 +181,16 @@ struct IndexIVFFastScan : IndexIVF {
             const SearchParameters* params = nullptr) const override;
 
     // internal search funcs
+    SIMDResultHandlerToFloat* make_knn_handler(
+            bool is_max,
+            int impl,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            uint16_t* io_simd_dis = nullptr,
+            int64_t* io_simd_ids = nullptr) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
