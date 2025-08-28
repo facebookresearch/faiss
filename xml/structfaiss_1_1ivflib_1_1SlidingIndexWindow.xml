@@ -81,7 +81,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1a6347809123313ca945defdc7ddcd1465" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ivflib::SlidingIndexWindow::SlidingIndexWindow</definition>
         <argsstring>(Index *index)</argsstring>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IVFlib.h" line="103" column="5"/>
+        <location file="faiss/IVFlib.h" line="103" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ivflib_1_1SlidingIndexWindow_1accf1c7b8de188b74de0d6827beceac7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

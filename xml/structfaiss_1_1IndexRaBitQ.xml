@@ -182,7 +182,7 @@
         </inbodydescription>
         <location file="faiss/IndexRaBitQ.h" line="29" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1ab853191032e293b2522c9308d502a086" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1ab853191032e293b2522c9308d502a086" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexRaBitQ::IndexRaBitQ</definition>
         <argsstring>(idx_t d, MetricType metric=METRIC_L2)</argsstring>
@@ -203,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="31" column="5"/>
+        <location file="faiss/IndexRaBitQ.h" line="31" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a6a8dab5dc77eaa55726a4d97dea9ea3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>

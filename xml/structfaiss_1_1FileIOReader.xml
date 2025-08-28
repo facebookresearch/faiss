@@ -50,7 +50,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1afe31b806e5d08f8306bcaeccea8d1533" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1afe31b806e5d08f8306bcaeccea8d1533" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOReader::FileIOReader</definition>
         <argsstring>(FILE *rf)</argsstring>
@@ -66,9 +66,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/io.h" line="68" column="5"/>
+        <location file="faiss/impl/io.h" line="68" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1a261ba851e6fc12bf452c1ca9f10dd001" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOReader_1a261ba851e6fc12bf452c1ca9f10dd001" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOReader::FileIOReader</definition>
         <argsstring>(const char *fname)</argsstring>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/io.h" line="70" column="5"/>
+        <location file="faiss/impl/io.h" line="70" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FileIOReader_1a0e55df8c460124aae00ebe7e142b1360" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>

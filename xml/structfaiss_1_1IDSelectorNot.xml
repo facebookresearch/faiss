@@ -21,7 +21,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1ae4401ab33ff734901c147585ca4ef450" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1ae4401ab33ff734901c147585ca4ef450" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorNot::IDSelectorNot</definition>
         <argsstring>(const IDSelector *sel)</argsstring>
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/IDSelector.h" line="119" column="5" bodyfile="faiss/impl/IDSelector.h" bodystart="119" bodyend="119"/>
+        <location file="faiss/impl/IDSelector.h" line="119" column="14" bodyfile="faiss/impl/IDSelector.h" bodystart="119" bodyend="119"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>bool</type>

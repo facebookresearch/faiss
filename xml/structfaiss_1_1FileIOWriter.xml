@@ -50,7 +50,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1a04edda07f635072eb02f5ade60a826cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1a04edda07f635072eb02f5ade60a826cc" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOWriter::FileIOWriter</definition>
         <argsstring>(FILE *wf)</argsstring>
@@ -66,9 +66,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/io.h" line="83" column="5"/>
+        <location file="faiss/impl/io.h" line="83" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1aa9918cbd4b4ff6b9d8603e58c4b9da7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1aa9918cbd4b4ff6b9d8603e58c4b9da7c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::FileIOWriter::FileIOWriter</definition>
         <argsstring>(const char *fname)</argsstring>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/io.h" line="85" column="5"/>
+        <location file="faiss/impl/io.h" line="85" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FileIOWriter_1a7bf3a41d7f92cc20656cb99d902cdc57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>

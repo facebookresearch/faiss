@@ -199,7 +199,7 @@
         </inbodydescription>
         <location file="faiss/impl/maybe_owned_vector.h" line="53" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aedacf52f62070b5574c0585695fb2dff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1aedacf52f62070b5574c0585695fb2dff" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::MaybeOwnedVector&lt; T &gt;::MaybeOwnedVector</definition>
         <argsstring>(const size_t initial_size)</argsstring>
@@ -215,7 +215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/maybe_owned_vector.h" line="54" column="5" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="54" bodyend="60"/>
+        <location file="faiss/impl/maybe_owned_vector.h" line="54" column="14" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="54" bodyend="60"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MaybeOwnedVector_1ac78978ea8620e5d18f593264b18ae9be" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>

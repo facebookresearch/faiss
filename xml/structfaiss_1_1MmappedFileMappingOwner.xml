@@ -20,7 +20,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1MmappedFileMappingOwner_1a884835c986567dd751fb314320c12bcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1MmappedFileMappingOwner_1a884835c986567dd751fb314320c12bcc" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::MmappedFileMappingOwner::MmappedFileMappingOwner</definition>
         <argsstring>(const std::string &amp;filename)</argsstring>
@@ -36,9 +36,9 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="21" column="5"/>
+        <location file="faiss/impl/mapped_io.h" line="21" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1MmappedFileMappingOwner_1ab60802109baced65a1c396308682dc75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1MmappedFileMappingOwner_1ab60802109baced65a1c396308682dc75" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::MmappedFileMappingOwner::MmappedFileMappingOwner</definition>
         <argsstring>(FILE *f)</argsstring>
@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="22" column="5"/>
+        <location file="faiss/impl/mapped_io.h" line="22" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MmappedFileMappingOwner_1a3302aff829adb5dca13fc0031e98e2fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>

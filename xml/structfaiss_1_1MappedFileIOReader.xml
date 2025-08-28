@@ -49,7 +49,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a6ecfc75a3943252a8ea632adee949208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a6ecfc75a3943252a8ea632adee949208" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::MappedFileIOReader::MappedFileIOReader</definition>
         <argsstring>(const std::shared_ptr&lt; MmappedFileMappingOwner &gt; &amp;owner)</argsstring>
@@ -65,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="40" column="5"/>
+        <location file="faiss/impl/mapped_io.h" line="40" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a84447096d23cc9f28f4e080292a153d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="43" column="12"/>
+        <location file="faiss/impl/mapped_io.h" line="44" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1a438a2b94829fd3fbb920285b4cca6a55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -118,7 +118,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="46" column="12"/>
+        <location file="faiss/impl/mapped_io.h" line="47" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MappedFileIOReader_1aff04a89bcf51948728d8bc0946fcab15" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -133,7 +133,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/mapped_io.h" line="48" column="9"/>
+        <location file="faiss/impl/mapped_io.h" line="49" column="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -164,7 +164,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/mapped_io.h" line="35" column="1" bodyfile="faiss/impl/mapped_io.h" bodystart="35" bodyend="49"/>
+    <location file="faiss/impl/mapped_io.h" line="35" column="1" bodyfile="faiss/impl/mapped_io.h" bodystart="35" bodyend="50"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MappedFileIOReader_1aff04a89bcf51948728d8bc0946fcab15" prot="public" virt="virtual"><scope>faiss::MappedFileIOReader</scope><name>filedescriptor</name></member>
       <member refid="structfaiss_1_1MappedFileIOReader_1a6ecfc75a3943252a8ea632adee949208" prot="public" virt="non-virtual"><scope>faiss::MappedFileIOReader</scope><name>MappedFileIOReader</name></member>
