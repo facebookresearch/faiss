@@ -155,15 +155,18 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     std::unique_ptr<FlatCodesDistanceComputer> dc;
 
     uint8_t qb = 0;
+    bool centered = false;
 
     explicit RaBitInvertedListScanner(
             const IndexIVFRaBitQ& ivf_rabitq_in,
             bool store_pairs = false,
             const IDSelector* sel = nullptr,
-            uint8_t qb_in = 0)
+            uint8_t qb_in = 0,
+            bool centered = false)
             : InvertedListScanner(store_pairs, sel),
               ivf_rabitq{ivf_rabitq_in},
-              qb{qb_in} {
+              qb{qb_in},
+              centered(centered) {
         keep_max = is_similarity_metric(ivf_rabitq.metric_type);
         code_size = ivf_rabitq.code_size;
     }
@@ -196,7 +199,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             // both query_vector and centroid are available!
             // set up DistanceComputer
             dc.reset(ivf_rabitq.rabitq.get_distance_computer(
-                    qb, reconstructed_centroid.data()));
+                    qb, reconstructed_centroid.data(), centered));
 
             dc->set_query(query_vector.data());
         }
@@ -208,12 +211,15 @@ InvertedListScanner* IndexIVFRaBitQ::get_InvertedListScanner(
         const IDSelector* sel,
         const IVFSearchParameters* search_params_in) const {
     uint8_t used_qb = qb;
+    bool centered = false;
     if (auto params = dynamic_cast<const IVFRaBitQSearchParameters*>(
                 search_params_in)) {
         used_qb = params->qb;
+        centered = params->centered;
     }
 
-    return new RaBitInvertedListScanner(*this, store_pairs, sel, used_qb);
+    return new RaBitInvertedListScanner(
+            *this, store_pairs, sel, used_qb, centered);
 }
 
 void IndexIVFRaBitQ::reconstruct_from_offset(
@@ -278,7 +284,8 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
     float distance = 0;
 
     std::unique_ptr<FlatCodesDistanceComputer> dc(
-            parent->rabitq.get_distance_computer(parent->qb, centroid.data()));
+            parent->rabitq.get_distance_computer(
+                    parent->qb, centroid.data(), /*centered=*/false));
     dc->set_query(q);
     distance = dc->distance_to_code(code);
 
