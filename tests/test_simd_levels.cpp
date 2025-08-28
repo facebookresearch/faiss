@@ -210,13 +210,13 @@ TEST(SIMDConfig, successful_avx512bw_execution_on_x86arch) {
 #endif // __x86_64__
 
 TEST(SIMDConfig, override_simd_level) {
-    // const char* faiss_env_var_neon = "ARM_NEON";
-    // faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
-    // EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
+    const char* faiss_env_var_neon = "ARM_NEON";
+    faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
+    EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
 
-    // EXPECT_EQ(simd_neon_config.supported_simd_levels().size(), 2);
-    // EXPECT_TRUE(simd_neon_config.is_simd_level_available(
-    //         faiss::SIMDLevel::ARM_NEON));
+    EXPECT_EQ(simd_neon_config.supported_simd_levels().size(), 2);
+    EXPECT_TRUE(simd_neon_config.is_simd_level_available(
+            faiss::SIMDLevel::ARM_NEON));
 
     const char* faiss_env_var_avx512 = "AVX512";
     faiss::SIMDConfig simd_avx512_config(&faiss_env_var_avx512);
@@ -227,12 +227,12 @@ TEST(SIMDConfig, override_simd_level) {
 }
 
 TEST(SIMDConfig, simd_config_get_level_name) {
-    // const char* faiss_env_var_neon = "ARM_NEON";
-    // faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
-    // EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
-    // EXPECT_TRUE(simd_neon_config.is_simd_level_available(
-    //         faiss::SIMDLevel::ARM_NEON));
-    // EXPECT_EQ(faiss_env_var_neon, simd_neon_config.get_level_name());
+    const char* faiss_env_var_neon = "ARM_NEON";
+    faiss::SIMDConfig simd_neon_config(&faiss_env_var_neon);
+    EXPECT_EQ(simd_neon_config.level, faiss::SIMDLevel::ARM_NEON);
+    EXPECT_TRUE(simd_neon_config.is_simd_level_available(
+            faiss::SIMDLevel::ARM_NEON));
+    EXPECT_EQ(faiss_env_var_neon, simd_neon_config.get_level_name());
 
     const char* faiss_env_var_avx512 = "AVX512";
     faiss::SIMDConfig simd_avx512_config(&faiss_env_var_avx512);
@@ -246,11 +246,10 @@ TEST(SIMDLevel, get_level_name_from_enum) {
     EXPECT_EQ("NONE", to_string(faiss::SIMDLevel::NONE).value_or(""));
     EXPECT_EQ("AVX2", to_string(faiss::SIMDLevel::AVX2).value_or(""));
     EXPECT_EQ("AVX512", to_string(faiss::SIMDLevel::AVX512).value_or(""));
-    // EXPECT_EQ("ARM_NEON",
-    // to_string(faiss::SIMDLevel::ARM_NEON).value_or(""));
+    EXPECT_EQ("ARM_NEON", to_string(faiss::SIMDLevel::ARM_NEON).value_or(""));
 
     int actual_num_simd_levels = static_cast<int>(faiss::SIMDLevel::COUNT);
-    EXPECT_EQ(4, actual_num_simd_levels);
+    EXPECT_EQ(5, actual_num_simd_levels);
     // Check that all SIMD levels have a name (except for COUNT which is not a
     // real SIMD level)
     for (int i = 0; i < actual_num_simd_levels - 1; ++i) {
@@ -263,6 +262,6 @@ TEST(SIMDLevel, to_simd_level_from_string) {
     EXPECT_EQ(faiss::SIMDLevel::NONE, faiss::to_simd_level("NONE"));
     EXPECT_EQ(faiss::SIMDLevel::AVX2, faiss::to_simd_level("AVX2"));
     EXPECT_EQ(faiss::SIMDLevel::AVX512, faiss::to_simd_level("AVX512"));
-    // EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
+    EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
     EXPECT_FALSE(faiss::to_simd_level("INVALID").has_value());
 }

@@ -13,8 +13,8 @@
 #include <immintrin.h>
 
 #include <faiss/impl/platform_macros.h>
-
 #include <faiss/utils/simd_impl/simdlib_avx2.h>
+#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 
@@ -94,7 +94,7 @@ struct simd512bit<SIMDLevel::AVX512> {
 
 /// vector of 32 elements in uint16
 template <>
-struct simd32uint16<> : simd512bit<SIMDLevel::AVX512> {
+struct simd32uint16<SIMDLevel::AVX512> : simd512bit<SIMDLevel::AVX512> {
     using simd32uint16N = simd32uint16<SIMDLevel::AVX512>;
     simd32uint16() {}
 

@@ -225,17 +225,15 @@ typename C::T partition_fuzzy_median3(
 
 namespace simd_partitioning {
 
-using simd16uint16 = simd16uint16<SIMDLevel::NONE>;
-using simd32uint8 = simd32uint8<SIMDLevel::NONE>;
-
+template <SIMDLevel SL>
 void find_minimax(
         const uint16_t* vals,
         size_t n,
         uint16_t& smin,
         uint16_t& smax) {
-    simd16uint16 vmin(0xffff), vmax(0);
+    simd16uint16<SL> vmin(0xffff), vmax(0);
     for (size_t i = 0; i + 15 < n; i += 16) {
-        simd16uint16 v(vals + i);
+        simd16uint16<SL> v(vals + i);
         vmin.accu_min(v);
         vmax.accu_max(v);
     }
@@ -259,8 +257,8 @@ void find_minimax(
 }
 
 // max func differentiates between CMin and CMax (keep lowest or largest)
-template <class C>
-simd16uint16 max_func(simd16uint16 v, simd16uint16 thr16) {
+template <class C, SIMDLevel SL>
+simd16uint16<SL> max_func(simd16uint16<SL> v, simd16uint16<SL> thr16) {
     constexpr bool is_max = C::is_max;
     if (is_max) {
         return max(v, thr16);
@@ -269,7 +267,7 @@ simd16uint16 max_func(simd16uint16 v, simd16uint16 thr16) {
     }
 }
 
-template <class C>
+template <class C, SIMDLevel SL>
 void count_lt_and_eq(
         const uint16_t* vals,
         int n,
@@ -277,16 +275,16 @@ void count_lt_and_eq(
         size_t& n_lt,
         size_t& n_eq) {
     n_lt = n_eq = 0;
-    simd16uint16 thr16(thresh);
+    simd16uint16<SL> thr16(thresh);
 
     size_t n1 = n / 16;
 
     for (size_t i = 0; i < n1; i++) {
-        simd16uint16 v(vals);
+        simd16uint16<SL> v(vals);
         vals += 16;
-        simd16uint16 eqmask = (v == thr16);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
+        simd16uint16<SL> eqmask = (v == thr16);
+        simd16uint16<SL> max2 = max_func<C>(v, thr16);
+        simd16uint16<SL> gemask = (v == max2);
         uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
         int i_eq = __builtin_popcount(bits & 0x00ff00ff);
         int i_ge = __builtin_popcount(bits) - i_eq;
@@ -306,13 +304,15 @@ void count_lt_and_eq(
 
 /* compress separated values and ids table, keeping all values < thresh and at
  * most n_eq equal values */
-template <class C>
+template <class C, SIMDLevel SL>
 int simd_compress_array(
         uint16_t* vals,
         typename C::TI* ids,
         size_t n,
         uint16_t thresh,
         int n_eq) {
+    using simd16uint16 = simd16uint16<SL>;
+    using simd32uint8 = simd32uint8<SL>;
     simd16uint16 thr16(thresh);
     simd16uint16 mixmask(0xff00);
 
@@ -402,7 +402,7 @@ static uint64_t get_cy() {
 
 #define IFV if (false)
 
-template <class C>
+template <class C, SIMDLevel SL>
 uint16_t simd_partition_fuzzy_with_bounds(
         uint16_t* vals,
         typename C::TI* ids,
@@ -444,7 +444,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
     for (int it = 0; it < 200; it++) {
         // while(s0 + 1 < s1) {
         thresh = (s0 + s1) / 2;
-        count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
+        count_lt_and_eq<C, SL>(vals, n, thresh, n_lt, n_eq);
 
         IFV printf(
                 "   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
@@ -499,7 +499,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
         assert(n_eq_1 <= n_eq);
     }
 
-    size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);
+    size_t wp = simd_compress_array<C, SL>(vals, ids, n, thresh, n_eq_1);
 
     IFV printf("wp=%ld\n", wp);
     assert(wp == q);
@@ -688,7 +688,7 @@ uint16_t simd_partition_fuzzy_with_bounds_histogram(
     return thresh;
 }
 
-template <class C>
+template <class C, SIMDLevel SL>
 uint16_t simd_partition_fuzzy(
         uint16_t* vals,
         typename C::TI* ids,
@@ -699,14 +699,14 @@ uint16_t simd_partition_fuzzy(
     assert(is_aligned_pointer(vals));
 
     uint16_t s0i, s1i;
-    find_minimax(vals, n, s0i, s1i);
+    find_minimax<SL>(vals, n, s0i, s1i);
     // QSelect_stats.t0 += get_cy() - t0;
 
-    return simd_partition_fuzzy_with_bounds<C>(
+    return simd_partition_fuzzy_with_bounds<C, SL>(
             vals, ids, n, q_min, q_max, q_out, s0i, s1i);
 }
 
-template <class C>
+template <class C, SIMDLevel SL>
 uint16_t simd_partition(
         uint16_t* vals,
         typename C::TI* ids,
@@ -722,13 +722,13 @@ uint16_t simd_partition(
     }
 
     uint16_t s0i, s1i;
-    find_minimax(vals, n, s0i, s1i);
+    find_minimax<SL>(vals, n, s0i, s1i);
 
-    return simd_partition_fuzzy_with_bounds<C>(
+    return simd_partition_fuzzy_with_bounds<C, SL>(
             vals, ids, n, q, q, nullptr, s0i, s1i);
 }
 
-template <class C>
+template <class C, SIMDLevel SL>
 uint16_t simd_partition_with_bounds(
         uint16_t* vals,
         typename C::TI* ids,
@@ -736,7 +736,7 @@ uint16_t simd_partition_with_bounds(
         size_t q,
         uint16_t s0i,
         uint16_t s1i) {
-    return simd_partition_fuzzy_with_bounds<C>(
+    return simd_partition_fuzzy_with_bounds<C, SL>(
             vals, ids, n, q, q, nullptr, s0i, s1i);
 }
 
@@ -754,13 +754,24 @@ typename C::T partition_fuzzy(
         size_t q_min,
         size_t q_max,
         size_t* q_out) {
-#ifdef __AVX2__
-    constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
-    if (is_uint16 && is_aligned_pointer(vals)) {
-        return simd_partitioning::simd_partition_fuzzy<C>(
+    // manual dispatch here, so we can check if C::T is uint16_t.
+
+#if defined(__AVX2__)
+    if (std::is_same<typename C::T, uint16_t>::value &&
+        SIMDConfig::level == SIMDLevel::AVX2 && is_aligned_pointer(vals)) {
+        return simd_partitioning::simd_partition_fuzzy<C, SIMDLevel::AVX2>(
                 (uint16_t*)vals, ids, n, q_min, q_max, q_out);
     }
 #endif
+
+#if defined(__aarch64__)
+    if (std::is_same<typename C::T, uint16_t>::value &&
+        SIMDConfig::level == SIMDLevel::ARM_NEON && is_aligned_pointer(vals)) {
+        return simd_partitioning::simd_partition_fuzzy<C, SIMDLevel::ARM_NEON>(
+                (uint16_t*)vals, ids, n, q_min, q_max, q_out);
+    }
+#endif
+
     return partitioning::partition_fuzzy_median3<C>(
             vals, ids, n, q_min, q_max, q_out);
 }
@@ -818,283 +829,19 @@ template uint16_t partition_fuzzy<CMax<uint16_t, int>>(
 /******************************************************************
  * Histogram subroutines
  ******************************************************************/
-
-#if defined(__AVX2__) || defined(__aarch64__)
-/// FIXME when MSB of uint16 is set
-// this code does not compile properly with GCC 7.4.0
-
 namespace {
 
-/************************************************************
- * 8 bins
- ************************************************************/
-
-simd32uint8 accu4to8(simd16uint16 a4) {
-    simd16uint16 mask4(0x0f0f);
-
-    simd16uint16 a8_0 = a4 & mask4;
-    simd16uint16 a8_1 = (a4 >> 4) & mask4;
-
-    return simd32uint8(hadd(a8_0, a8_1));
-}
-
-simd16uint16 accu8to16(simd32uint8 a8) {
-    simd16uint16 mask8(0x00ff);
-
-    simd16uint16 a8_0 = simd16uint16(a8) & mask8;
-    simd16uint16 a8_1 = (simd16uint16(a8) >> 8) & mask8;
-
-    return hadd(a8_0, a8_1);
-}
-
-static const simd32uint8 shifts = simd32uint8::create<
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64>();
-
-// 2-bit accumulator: we can add only up to 3 elements
-// on output we return 2*4-bit results
-// preproc returns either an index in 0..7 or 0xffff
-// that yields a 0 when used in the table look-up
-template <int N, class Preproc>
-void compute_accu2(
-        const uint16_t*& data,
-        Preproc& pp,
-        simd16uint16& a4lo,
-        simd16uint16& a4hi) {
-    simd16uint16 mask2(0x3333);
-    simd16uint16 a2((uint16_t)0); // 2-bit accu
-    for (int j = 0; j < N; j++) {
-        simd16uint16 v(data);
-        data += 16;
-        v = pp(v);
-        // 0x800 -> force second half of table
-        simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
-        a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
-    }
-    a4lo += a2 & mask2;
-    a4hi += (a2 >> 2) & mask2;
-}
-
-template <class Preproc>
-simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
-    assert(n_in % 16 == 0);
-    int n = n_in / 16;
-
-    simd32uint8 a8lo(0);
-    simd32uint8 a8hi(0);
-
-    for (int i0 = 0; i0 < n; i0 += 15) {
-        simd16uint16 a4lo(0); // 4-bit accus
-        simd16uint16 a4hi(0);
-
-        int i1 = std::min(i0 + 15, n);
-        int i;
-        for (i = i0; i + 2 < i1; i += 3) {
-            compute_accu2<3>(data, pp, a4lo, a4hi); // adds 3 max
-        }
-        switch (i1 - i) {
-            case 2:
-                compute_accu2<2>(data, pp, a4lo, a4hi);
-                break;
-            case 1:
-                compute_accu2<1>(data, pp, a4lo, a4hi);
-                break;
-        }
-
-        a8lo += accu4to8(a4lo);
-        a8hi += accu4to8(a4hi);
-    }
-
-    // move to 16-bit accu
-    simd16uint16 a16lo = accu8to16(a8lo);
-    simd16uint16 a16hi = accu8to16(a8hi);
-
-    simd16uint16 a16 = hadd(a16lo, a16hi);
-
-    // the 2 lanes must still be combined
-    return a16;
-}
-
-/************************************************************
- * 16 bins
- ************************************************************/
-
-static const simd32uint8 shifts2 = simd32uint8::create<
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128>();
-
-simd32uint8 shiftr_16(simd32uint8 x, int n) {
-    return simd32uint8(simd16uint16(x) >> n);
-}
-
-// 2-bit accumulator: we can add only up to 3 elements
-// on output we return 2*4-bit results
-template <int N, class Preproc>
-void compute_accu2_16(
-        const uint16_t*& data,
-        Preproc pp,
-        simd32uint8& a4_0,
-        simd32uint8& a4_1,
-        simd32uint8& a4_2,
-        simd32uint8& a4_3) {
-    simd32uint8 mask1(0x55);
-    simd32uint8 a2_0; // 2-bit accu
-    simd32uint8 a2_1; // 2-bit accu
-    a2_0.clear();
-    a2_1.clear();
-
-    for (int j = 0; j < N; j++) {
-        simd16uint16 v(data);
-        data += 16;
-        v = pp(v);
-
-        simd16uint16 idx = v | (v << 8);
-        simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
-        // contains 0s for out-of-bounds elements
-
-        simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
-        lt8 = lt8 ^ simd16uint16(0xff00);
-
-        a1 = a1 & lt8;
-
-        a2_0 += a1 & mask1;
-        a2_1 += shiftr_16(a1, 1) & mask1;
-    }
-    simd32uint8 mask2(0x33);
-
-    a4_0 += a2_0 & mask2;
-    a4_1 += a2_1 & mask2;
-    a4_2 += shiftr_16(a2_0, 2) & mask2;
-    a4_3 += shiftr_16(a2_1, 2) & mask2;
-}
-
-simd32uint8 accu4to8_2(simd32uint8 a4_0, simd32uint8 a4_1) {
-    simd32uint8 mask4(0x0f);
-
-    simd16uint16 a8_0 = combine2x2(
-            (simd16uint16)(a4_0 & mask4),
-            (simd16uint16)(shiftr_16(a4_0, 4) & mask4));
-
-    simd16uint16 a8_1 = combine2x2(
-            (simd16uint16)(a4_1 & mask4),
-            (simd16uint16)(shiftr_16(a4_1, 4) & mask4));
-
-    return simd32uint8(hadd(a8_0, a8_1));
-}
-
-template <class Preproc>
-simd16uint16 histogram_16(const uint16_t* data, Preproc pp, size_t n_in) {
-    assert(n_in % 16 == 0);
-    int n = n_in / 16;
-
-    simd32uint8 a8lo((uint8_t)0);
-    simd32uint8 a8hi((uint8_t)0);
-
-    for (int i0 = 0; i0 < n; i0 += 7) {
-        simd32uint8 a4_0(0); // 0, 4, 8, 12
-        simd32uint8 a4_1(0); // 1, 5, 9, 13
-        simd32uint8 a4_2(0); // 2, 6, 10, 14
-        simd32uint8 a4_3(0); // 3, 7, 11, 15
-
-        int i1 = std::min(i0 + 7, n);
-        int i;
-        for (i = i0; i + 2 < i1; i += 3) {
-            compute_accu2_16<3>(data, pp, a4_0, a4_1, a4_2, a4_3);
-        }
-        switch (i1 - i) {
-            case 2:
-                compute_accu2_16<2>(data, pp, a4_0, a4_1, a4_2, a4_3);
-                break;
-            case 1:
-                compute_accu2_16<1>(data, pp, a4_0, a4_1, a4_2, a4_3);
-                break;
-        }
-
-        a8lo += accu4to8_2(a4_0, a4_1);
-        a8hi += accu4to8_2(a4_2, a4_3);
-    }
-
-    // move to 16-bit accu
-    simd16uint16 a16lo = accu8to16(a8lo);
-    simd16uint16 a16hi = accu8to16(a8hi);
-
-    simd16uint16 a16 = hadd(a16lo, a16hi);
-
-    a16 = simd16uint16{simd8uint32{a16}.unzip()};
-
-    return a16;
-}
-
+template <SIMDLevel SL>
 struct PreprocNOP {
-    simd16uint16 operator()(simd16uint16 x) {
+    simd16uint16<SL> operator()(simd16uint16<SL> x) {
         return x;
     }
 };
 
-template <int shift, int nbin>
+template <SIMDLevel SL, int shift, int nbin>
 struct PreprocMinShift {
-    simd16uint16 min16;
-    simd16uint16 max16;
+    simd16uint16<SL> min16;
+    simd16uint16<SL> max16;
 
     explicit PreprocMinShift(uint16_t min) {
         min16.set1(min);
@@ -1103,45 +850,255 @@ struct PreprocMinShift {
         max16.set1(vmax); // vmax inclusive
     }
 
-    simd16uint16 operator()(simd16uint16 x) {
+    simd16uint16<SL> operator()(simd16uint16<SL> x) {
         x = x - min16;
         simd16uint16 mask = (x == max(x, max16)) - (x == max16);
         return (x >> shift) | mask;
     }
 };
 
-/* unbounded versions of the functions */
+/************************************************************
+ * 8 bins
+ ************************************************************/
 
-void simd_histogram_8_unbounded(const uint16_t* data, int n, int* hist) {
-    PreprocNOP pp;
-    simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
+template <SIMDLevel SL>
+struct SIMDHistogram {
+    // in fact all methods are static
 
-    ALIGNED(32) uint16_t a16_tab[16];
-    a16.store(a16_tab);
+    using simd32uint8 = simd32uint8<SL>;
+    using simd16uint16 = simd16uint16<SL>;
 
-    for (int i = 0; i < 8; i++) {
-        hist[i] = a16_tab[i] + a16_tab[i + 8];
+    simd32uint8 accu4to8(simd16uint16 a4) {
+        simd16uint16 mask4(0x0f0f);
+
+        simd16uint16 a8_0 = a4 & mask4;
+        simd16uint16 a8_1 = (a4 >> 4) & mask4;
+
+        return simd32uint8(hadd(a8_0, a8_1));
     }
 
-    for (int i = (n & ~15); i < n; i++) {
-        hist[data[i]]++;
-    }
-}
+    simd16uint16 accu8to16(simd32uint8 a8) {
+        simd16uint16 mask8(0x00ff);
 
-void simd_histogram_16_unbounded(const uint16_t* data, int n, int* hist) {
-    simd16uint16 a16 = histogram_16(data, PreprocNOP(), (n & ~15));
+        simd16uint16 a8_0 = simd16uint16(a8) & mask8;
+        simd16uint16 a8_1 = (simd16uint16(a8) >> 8) & mask8;
 
-    ALIGNED(32) uint16_t a16_tab[16];
-    a16.store(a16_tab);
-
-    for (int i = 0; i < 16; i++) {
-        hist[i] = a16_tab[i];
+        return hadd(a8_0, a8_1);
     }
 
-    for (int i = (n & ~15); i < n; i++) {
-        hist[data[i]]++;
+    // 2-bit accumulator: we can add only up to 3 elements
+    // on output we return 2*4-bit results
+    // preproc returns either an index in 0..7 or 0xffff
+    // that yields a 0 when used in the table look-up
+    template <int N, class Preproc>
+    void compute_accu2(
+            const uint16_t*& data,
+            Preproc& pp,
+            simd16uint16& a4lo,
+            simd16uint16& a4hi) {
+        simd16uint16 mask2(0x3333);
+        simd16uint16 a2((uint16_t)0); // 2-bit accu
+        // clang-format off
+        const simd32uint8 shifts = simd32uint8::template create<
+            1, 16,  0,  0,     4, 64,  0,  0,
+            0,  0,  1, 16,     0,  0,  4, 64,
+            1, 16,  0,  0,     4, 64,  0,  0,
+            0,  0,  1, 16,     0,  0,  4, 64>();
+        // clang-format on
+        for (int j = 0; j < N; j++) {
+            simd16uint16 v(data);
+            data += 16;
+            v = pp(v);
+            // 0x800 -> force second half of table
+            simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
+            a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
+        }
+        a4lo += a2 & mask2;
+        a4hi += (a2 >> 2) & mask2;
     }
-}
+
+    template <class Preproc>
+    simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
+        assert(n_in % 16 == 0);
+        int n = n_in / 16;
+
+        simd32uint8 a8lo(0);
+        simd32uint8 a8hi(0);
+
+        for (int i0 = 0; i0 < n; i0 += 15) {
+            simd16uint16 a4lo(0); // 4-bit accus
+            simd16uint16 a4hi(0);
+
+            int i1 = std::min(i0 + 15, n);
+            int i;
+            for (i = i0; i + 2 < i1; i += 3) {
+                compute_accu2<3>(data, pp, a4lo, a4hi); // adds 3 max
+            }
+            switch (i1 - i) {
+                case 2:
+                    compute_accu2<2>(data, pp, a4lo, a4hi);
+                    break;
+                case 1:
+                    compute_accu2<1>(data, pp, a4lo, a4hi);
+                    break;
+            }
+
+            a8lo += accu4to8(a4lo);
+            a8hi += accu4to8(a4hi);
+        }
+
+        // move to 16-bit accu
+        simd16uint16 a16lo = accu8to16(a8lo);
+        simd16uint16 a16hi = accu8to16(a8hi);
+
+        simd16uint16 a16 = hadd(a16lo, a16hi);
+
+        // the 2 lanes must still be combined
+        return a16;
+    }
+
+    simd32uint8 shiftr_16(simd32uint8 x, int n) {
+        return simd32uint8(simd16uint16(x) >> n);
+    }
+
+    // 2-bit accumulator: we can add only up to 3 elements
+    // on output we return 2*4-bit results
+    template <int N, class Preproc>
+    void compute_accu2_16(
+            const uint16_t*& data,
+            Preproc pp,
+            simd32uint8& a4_0,
+            simd32uint8& a4_1,
+            simd32uint8& a4_2,
+            simd32uint8& a4_3) {
+        simd32uint8 mask1(0x55);
+        simd32uint8 a2_0; // 2-bit accu
+        simd32uint8 a2_1; // 2-bit accu
+        // clang-format off
+        const simd32uint8 shifts2 = simd32uint8::template create<
+                1, 2, 4, 8, 16, 32, 64, 128,
+                1, 2, 4, 8, 16, 32, 64, 128,
+                1, 2, 4, 8, 16, 32, 64, 128,
+                1, 2, 4, 8, 16, 32, 64, 128>();
+        // clang-format on
+        a2_0.clear();
+        a2_1.clear();
+
+        for (int j = 0; j < N; j++) {
+            simd16uint16 v(data);
+            data += 16;
+            v = pp(v);
+
+            simd16uint16 idx = v | (v << 8);
+            simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
+            // contains 0s for out-of-bounds elements
+
+            simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
+            lt8 = lt8 ^ simd16uint16(0xff00);
+
+            a1 = a1 & lt8;
+
+            a2_0 += a1 & mask1;
+            a2_1 += shiftr_16(a1, 1) & mask1;
+        }
+        simd32uint8 mask2(0x33);
+
+        a4_0 += a2_0 & mask2;
+        a4_1 += a2_1 & mask2;
+        a4_2 += shiftr_16(a2_0, 2) & mask2;
+        a4_3 += shiftr_16(a2_1, 2) & mask2;
+    }
+
+    simd32uint8 accu4to8_2(simd32uint8 a4_0, simd32uint8 a4_1) {
+        simd32uint8 mask4(0x0f);
+
+        simd16uint16 a8_0 = combine2x2(
+                (simd16uint16)(a4_0 & mask4),
+                (simd16uint16)(shiftr_16(a4_0, 4) & mask4));
+
+        simd16uint16 a8_1 = combine2x2(
+                (simd16uint16)(a4_1 & mask4),
+                (simd16uint16)(shiftr_16(a4_1, 4) & mask4));
+
+        return simd32uint8(hadd(a8_0, a8_1));
+    }
+
+    template <class Preproc>
+    simd16uint16 histogram_16(const uint16_t* data, Preproc pp, size_t n_in) {
+        assert(n_in % 16 == 0);
+        int n = n_in / 16;
+
+        simd32uint8 a8lo((uint8_t)0);
+        simd32uint8 a8hi((uint8_t)0);
+
+        for (int i0 = 0; i0 < n; i0 += 7) {
+            simd32uint8 a4_0(0); // 0, 4, 8, 12
+            simd32uint8 a4_1(0); // 1, 5, 9, 13
+            simd32uint8 a4_2(0); // 2, 6, 10, 14
+            simd32uint8 a4_3(0); // 3, 7, 11, 15
+
+            int i1 = std::min(i0 + 7, n);
+            int i;
+            for (i = i0; i + 2 < i1; i += 3) {
+                compute_accu2_16<3>(data, pp, a4_0, a4_1, a4_2, a4_3);
+            }
+            switch (i1 - i) {
+                case 2:
+                    compute_accu2_16<2>(data, pp, a4_0, a4_1, a4_2, a4_3);
+                    break;
+                case 1:
+                    compute_accu2_16<1>(data, pp, a4_0, a4_1, a4_2, a4_3);
+                    break;
+            }
+
+            a8lo += accu4to8_2(a4_0, a4_1);
+            a8hi += accu4to8_2(a4_2, a4_3);
+        }
+
+        // move to 16-bit accu
+        simd16uint16 a16lo = accu8to16(a8lo);
+        simd16uint16 a16hi = accu8to16(a8hi);
+
+        simd16uint16 a16 = hadd(a16lo, a16hi);
+
+        a16 = simd16uint16{simd8uint32{a16}.unzip()};
+
+        return a16;
+    }
+
+    /* unbounded versions of the functions */
+
+    void simd_histogram_8_unbounded(const uint16_t* data, int n, int* hist) {
+        PreprocNOP<SL> pp;
+        simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
+
+        ALIGNED(32) uint16_t a16_tab[16];
+        a16.store(a16_tab);
+
+        for (int i = 0; i < 8; i++) {
+            hist[i] = a16_tab[i] + a16_tab[i + 8];
+        }
+
+        for (int i = (n & ~15); i < n; i++) {
+            hist[data[i]]++;
+        }
+    }
+
+    void simd_histogram_16_unbounded(const uint16_t* data, int n, int* hist) {
+        simd16uint16 a16 = histogram_16(data, PreprocNOP<SL>(), (n & ~15));
+
+        ALIGNED(32) uint16_t a16_tab[16];
+        a16.store(a16_tab);
+
+        for (int i = 0; i < 16; i++) {
+            hist[i] = a16_tab[i];
+        }
+
+        for (int i = (n & ~15); i < n; i++) {
+            hist[data[i]]++;
+        }
+    }
+}; // struct Histogram16
 
 } // anonymous namespace
 
@@ -1149,22 +1106,24 @@ void simd_histogram_16_unbounded(const uint16_t* data, int n, int* hist) {
  * Driver routines
  ************************************************************/
 
+template <SIMDLevel SL>
 void simd_histogram_8(
         const uint16_t* data,
         int n,
         uint16_t min,
         int shift,
         int* hist) {
+    SIMDHistogram<SL> h;
     if (shift < 0) {
-        simd_histogram_8_unbounded(data, n, hist);
+        h.simd_histogram_8_unbounded(data, n, hist);
         return;
     }
 
-    simd16uint16 a16;
+    simd16uint16<SL> a16;
 
-#define DISPATCH(s)                                                     \
-    case s:                                                             \
-        a16 = histogram_8(data, PreprocMinShift<s, 8>(min), (n & ~15)); \
+#define DISPATCH(s)                                                           \
+    case s:                                                                   \
+        a16 = h.histogram_8(data, PreprocMinShift<SL, s, 8>(min), (n & ~15)); \
         break
 
     switch (shift) {
@@ -1196,33 +1155,35 @@ void simd_histogram_8(
 
     // complete with remaining bins
     for (int i = (n & ~15); i < n; i++) {
-        if (data[i] < min) {
+        if (data[i] < min)
             continue;
-        }
         uint16_t v = data[i] - min;
         v >>= shift;
-        if (v < 8) {
+        if (v < 8)
             hist[v]++;
-        }
     }
 }
 
+template <SIMDLevel SL>
 void simd_histogram_16(
         const uint16_t* data,
         int n,
         uint16_t min,
         int shift,
         int* hist) {
+    SIMDHistogram<SL> h;
+
     if (shift < 0) {
-        simd_histogram_16_unbounded(data, n, hist);
+        h.simd_histogram_16_unbounded(data, n, hist);
         return;
     }
 
-    simd16uint16 a16;
+    simd16uint16<SL> a16;
 
-#define DISPATCH(s)                                                       \
-    case s:                                                               \
-        a16 = histogram_16(data, PreprocMinShift<s, 16>(min), (n & ~15)); \
+#define DISPATCH(s)                                                \
+    case s:                                                        \
+        a16 = h.histogram_16(                                      \
+                data, PreprocMinShift<SL, s, 16>(min), (n & ~15)); \
         break
 
     switch (shift) {
@@ -1252,21 +1213,16 @@ void simd_histogram_16(
     }
 
     for (int i = (n & ~15); i < n; i++) {
-        if (data[i] < min) {
+        if (data[i] < min)
             continue;
-        }
         uint16_t v = data[i] - min;
         v >>= shift;
-        if (v < 16) {
+        if (v < 16)
             hist[v]++;
-        }
     }
 }
 
-// no AVX2
-#else
-
-void simd_histogram_16(
+void histogram_16_ref(
         const uint16_t* data,
         int n,
         uint16_t min,
@@ -1299,7 +1255,7 @@ void simd_histogram_16(
     }
 }
 
-void simd_histogram_8(
+void histogram_8_ref(
         const uint16_t* data,
         int n,
         uint16_t min,
@@ -1322,7 +1278,52 @@ void simd_histogram_8(
     }
 }
 
+void simd_histogram_8(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist) {
+#if defined(__AVX2__)
+    if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return simd_histogram_8<SIMDLevel::AVX2>(data, n, min, shift, hist);
+    }
 #endif
+
+#if defined(__aarch64__)
+    if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+        return simd_histogram_8<SIMDLevel::ARM_NEON>(data, n, min, shift, hist);
+    }
+#endif
+
+    return histogram_8_ref(data, n, min, shift, hist);
+}
+
+void simd_histogram_16(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist) {
+#if defined(__AVX2__)
+    if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return simd_histogram_16<SIMDLevel::AVX2>(data, n, min, shift, hist);
+    }
+#endif
+
+#if defined(__aarch64__)
+    if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+        return simd_histogram_16<SIMDLevel::ARM_NEON>(
+                data, n, min, shift, hist);
+    }
+#endif
+
+    return histogram_16_ref(data, n, min, shift, hist);
+}
+
+/************************************************************
+ * Parititon stats
+ ************************************************************/
 
 void PartitionStats::reset() {
     memset(this, 0, sizeof(*this));
