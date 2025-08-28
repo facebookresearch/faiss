@@ -17,7 +17,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -456,7 +456,7 @@ void ResidualQuantizer::compute_codes_add_centroids(
                     cent,
                     pool0);
         } else if (use_beam_LUT == 1) {
-            compute_codes_add_centroids_mp_lut1(
+            compute_codes_add_centroids_mp_lut1<SIMDLevel::NONE>(
                     *this,
                     x + i0 * d,
                     codes_out + i0 * code_size,
@@ -500,7 +500,8 @@ void ResidualQuantizer::refine_beam_LUT(
         int32_t* out_codes,
         float* out_distances) const {
     RefineBeamLUTMemoryPool pool;
-    refine_beam_LUT_mp(
+
+    refine_beam_LUT_mp<SIMDLevel::NONE>(
             *this,
             n,
             query_norms,

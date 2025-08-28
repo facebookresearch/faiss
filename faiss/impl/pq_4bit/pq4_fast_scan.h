@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/simd_levels.h>
 
 /** PQ4 SIMD packing and accumulation functions
  *
@@ -24,8 +25,49 @@
 
 namespace faiss {
 
-struct NormTableScaler;
-struct SIMDResultHandler;
+/* Result handler that will return float resutls eventually */
+struct PQ4CodeScanner {
+    size_t nq;     // number of queries
+    size_t ntotal; // ignore excess elements after ntotal
+
+    bool disable = false; // for benchmarking
+    int norm_scale = -1;  // do the codes include 2x4 bits of scale?
+
+    /// these fields are used for the IVF variants (with_id_map=true)
+    const idx_t* id_map = nullptr; // map offset in invlist to vector id
+    const int* q_map = nullptr;    // map q to global query
+    const uint16_t* dbias =
+            nullptr; // table of biases to add to each query (for IVF L2 search)
+    const float* normalizers = nullptr; // size 2 * nq, to convert to float
+
+    PQ4CodeScanner(size_t nq, size_t ntotal) : nq(nq), ntotal(ntotal) {}
+
+    virtual void accumulate_loop(
+            int nq,
+            size_t nb,
+            int bbs,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT) = 0;
+
+    virtual void accumulate_loop_qbs(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT) = 0;
+
+    virtual void begin(const float* norms) {
+        normalizers = norms;
+    }
+
+    // called at end of search to convert int16 distances to float, before
+    // normalizers are deallocated
+    virtual void end() {
+        normalizers = nullptr;
+    }
+    virtual ~PQ4CodeScanner() {}
+};
 
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
@@ -110,26 +152,6 @@ struct CodePackerPQ4 : CodePacker {
  */
 void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
 
-/** Loop over database elements and accumulate results into result handler
- *
- * @param nq      number of queries
- * @param nb      number of database elements
- * @param bbs     size of database blocks (multiple of 32)
- * @param nsq     number of sub-quantizers (muliple of 2)
- * @param codes   packed codes array
- * @param LUT     packed look-up table
- * @param scaler  scaler to scale the encoded norm
- */
-void pq4_accumulate_loop(
-        int nq,
-        size_t nb,
-        int bbs,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        SIMDResultHandler& res,
-        const NormTableScaler* scaler);
-
 /* qbs versions, supported only for bbs=32.
  *
  * The kernel function runs the kernel for *several* query blocks
@@ -170,25 +192,6 @@ int pq4_pack_LUT_qbs_q_map(
         const int* q_map,
         uint8_t* dest);
 
-/** Run accumulation loop.
- *
- * @param qbs     4-bit encoded number of queries
- * @param nb      number of database codes (mutliple of bbs)
- * @param nsq     number of sub-quantizers
- * @param codes   encoded database vectors (packed)
- * @param LUT     look-up table (packed)
- * @param res     call-back for the resutls
- * @param scaler  scaler to scale the encoded norm
- */
-void pq4_accumulate_loop_qbs(
-        int qbs,
-        size_t nb,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        SIMDResultHandler& res,
-        const NormTableScaler* scaler = nullptr);
-
 /** Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler
  *  and DummyScaler
  *
@@ -206,5 +209,49 @@ void accumulate_to_mem(
         const uint8_t* codes,
         const uint8_t* LUT,
         uint16_t* accu);
+
+PQ4CodeScanner* pq4_make_flat_knn_handler(
+        bool is_max,
+        bool use_reservoir,
+        idx_t nq,
+        idx_t k,
+        idx_t ntotal,
+        float* distances,
+        idx_t* labels,
+        int norm_scale,
+        const float* normalizers = nullptr,
+        bool disable = false);
+
+struct IDSelector;
+
+PQ4CodeScanner* pq4_make_ivf_knn_handler(
+        bool is_max,
+        bool use_reservoir,
+        idx_t nq,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        int norm_scale,
+        const IDSelector* sel);
+
+struct RangeSearchResult;
+
+PQ4CodeScanner* pq4_make_ivf_range_handler(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        int norm_scale,
+        const IDSelector* sel);
+
+struct RangeSearchPartialResult;
+
+PQ4CodeScanner* pq4_make_ivf_partial_range_handler(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        idx_t i0,
+        idx_t i1,
+        int norm_scale,
+        const IDSelector* sel);
 
 } // namespace faiss
