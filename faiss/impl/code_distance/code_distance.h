@@ -9,6 +9,10 @@
 
 #include <faiss/impl/platform_macros.h>
 
+#include <faiss/utils/simd_levels.h>
+
+#include <faiss/impl/ProductQuantizer.h>
+
 // This directory contains functions to compute a distance
 // from a given PQ code to a query vector, given that the
 // distances to a query vector for pq.M codebooks are precomputed.
@@ -24,163 +28,76 @@
 // why the names of the functions for custom implementations
 // have this _generic or _avx2 suffix.
 
-#ifdef __AVX2__
-
-#include <faiss/impl/code_distance/code_distance-avx2.h>
-
 namespace faiss {
 
-template <typename PQDecoderT>
-inline float distance_single_code(
-        // number of subquantizers
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // the code
-        const uint8_t* code) {
-    return distance_single_code_avx2<PQDecoderT>(M, nbits, sim_table, code);
-}
+// definiton and default implementation
+template <typename PQDecoderT, SIMDLevel>
+struct PQCodeDistance {
+    using PQDecoder = PQDecoderT;
 
-template <typename PQDecoderT>
-inline void distance_four_codes(
-        // number of subquantizers
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // codes
-        const uint8_t* __restrict code0,
-        const uint8_t* __restrict code1,
-        const uint8_t* __restrict code2,
-        const uint8_t* __restrict code3,
-        // computed distances
-        float& result0,
-        float& result1,
-        float& result2,
-        float& result3) {
-    distance_four_codes_avx2<PQDecoderT>(
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
-}
+    /// Returns the distance to a single code.
+    static float distance_single_code(
+            // number of subquantizers
+            const size_t M,
+            // number of bits per quantization index
+            const size_t nbits,
+            // precomputed distances, layout (M, ksub)
+            const float* sim_table,
+            // the code
+            const uint8_t* code) {
+        PQDecoderT decoder(code, nbits);
+        const size_t ksub = 1 << nbits;
 
-} // namespace faiss
+        const float* tab = sim_table;
+        float result = 0;
 
-#elif defined(__ARM_FEATURE_SVE)
+        for (size_t m = 0; m < M; m++) {
+            result += tab[decoder.decode()];
+            tab += ksub;
+        }
 
-#include <faiss/impl/code_distance/code_distance-sve.h>
+        return result;
+    }
 
-namespace faiss {
+    /// Combines 4 operations of distance_single_code()
+    /// General-purpose version.
+    static void distance_four_codes(
+            // number of subquantizers
+            const size_t M,
+            // number of bits per quantization index
+            const size_t nbits,
+            // precomputed distances, layout (M, ksub)
+            const float* sim_table,
+            // codes
+            const uint8_t* __restrict code0,
+            const uint8_t* __restrict code1,
+            const uint8_t* __restrict code2,
+            const uint8_t* __restrict code3,
+            // computed distances
+            float& result0,
+            float& result1,
+            float& result2,
+            float& result3) {
+        PQDecoderT decoder0(code0, nbits);
+        PQDecoderT decoder1(code1, nbits);
+        PQDecoderT decoder2(code2, nbits);
+        PQDecoderT decoder3(code3, nbits);
+        const size_t ksub = 1 << nbits;
 
-template <typename PQDecoderT>
-inline float distance_single_code(
-        // the product quantizer
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // the code
-        const uint8_t* code) {
-    return distance_single_code_sve<PQDecoderT>(M, nbits, sim_table, code);
-}
+        const float* tab = sim_table;
+        result0 = 0;
+        result1 = 0;
+        result2 = 0;
+        result3 = 0;
 
-template <typename PQDecoderT>
-inline void distance_four_codes(
-        // the product quantizer
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // codes
-        const uint8_t* __restrict code0,
-        const uint8_t* __restrict code1,
-        const uint8_t* __restrict code2,
-        const uint8_t* __restrict code3,
-        // computed distances
-        float& result0,
-        float& result1,
-        float& result2,
-        float& result3) {
-    distance_four_codes_sve<PQDecoderT>(
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
-}
+        for (size_t m = 0; m < M; m++) {
+            result0 += tab[decoder0.decode()];
+            result1 += tab[decoder1.decode()];
+            result2 += tab[decoder2.decode()];
+            result3 += tab[decoder3.decode()];
+            tab += ksub;
+        }
+    }
+};
 
 } // namespace faiss
-
-#else
-
-#include <faiss/impl/code_distance/code_distance-generic.h>
-
-namespace faiss {
-
-template <typename PQDecoderT>
-inline float distance_single_code(
-        // number of subquantizers
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // the code
-        const uint8_t* code) {
-    return distance_single_code_generic<PQDecoderT>(M, nbits, sim_table, code);
-}
-
-template <typename PQDecoderT>
-inline void distance_four_codes(
-        // number of subquantizers
-        const size_t M,
-        // number of bits per quantization index
-        const size_t nbits,
-        // precomputed distances, layout (M, ksub)
-        const float* sim_table,
-        // codes
-        const uint8_t* __restrict code0,
-        const uint8_t* __restrict code1,
-        const uint8_t* __restrict code2,
-        const uint8_t* __restrict code3,
-        // computed distances
-        float& result0,
-        float& result1,
-        float& result2,
-        float& result3) {
-    distance_four_codes_generic<PQDecoderT>(
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
-}
-
-} // namespace faiss
-
-#endif
