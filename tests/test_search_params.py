@@ -8,7 +8,6 @@ import numpy as np
 import faiss
 import unittest
 import sys
-import gc
 
 from faiss.contrib import datasets
 from faiss.contrib.evaluation import sort_range_res_2, check_ref_range_results
