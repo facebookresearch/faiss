@@ -86,10 +86,10 @@
         </inbodydescription>
         <location file="faiss/impl/zerocopy_io.h" line="22" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1ZeroCopyIOReader_1a222793eb7a8743c81b211eba6fa065e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ZeroCopyIOReader_1a06fb240949b8fa342cc99e67ae30cd49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZeroCopyIOReader::~ZeroCopyIOReader</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~ZeroCopyIOReader</name>
         <qualifiedname>faiss::ZeroCopyIOReader::~ZeroCopyIOReader</qualifiedname>
         <briefdescription>
@@ -223,7 +223,7 @@
       <member refid="structfaiss_1_1ZeroCopyIOReader_1ae3197724359d9ac37f65ad730a8870c8" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>total_</name></member>
       <member refid="structfaiss_1_1ZeroCopyIOReader_1aec85721a739ad0bd8c242f37f0b25f33" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>ZeroCopyIOReader</name></member>
       <member refid="structfaiss_1_1IOReader_1a46de47cde1c687dfa10015386f627b8f" prot="public" virt="virtual"><scope>faiss::ZeroCopyIOReader</scope><name>~IOReader</name></member>
-      <member refid="structfaiss_1_1ZeroCopyIOReader_1a222793eb7a8743c81b211eba6fa065e2" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>~ZeroCopyIOReader</name></member>
+      <member refid="structfaiss_1_1ZeroCopyIOReader_1a06fb240949b8fa342cc99e67ae30cd49" prot="public" virt="non-virtual"><scope>faiss::ZeroCopyIOReader</scope><name>~ZeroCopyIOReader</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

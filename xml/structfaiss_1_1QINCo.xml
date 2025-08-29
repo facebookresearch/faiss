@@ -194,10 +194,10 @@
         </inbodydescription>
         <location file="faiss/utils/NeuralNet.h" line="142" column="23"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1QINCo_1a309aeeda34fc54c41061603d89fbc10b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1QINCo_1ad4adf1c6883717f642e50203ec2beda8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual faiss::QINCo::~QINCo</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~QINCo</name>
         <qualifiedname>faiss::QINCo::~QINCo</qualifiedname>
         <briefdescription>
@@ -259,7 +259,7 @@
       <member refid="structfaiss_1_1QINCo_1a4542c765bad0b90648edde4767d72580" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>QINCo</name></member>
       <member refid="structfaiss_1_1QINCo_1ac69a89d773eff0bda446b57cd24164c8" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>steps</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1a36ab5714e1db84b4cdd3a625102299ba" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~NeuralNetCodec</name></member>
-      <member refid="structfaiss_1_1QINCo_1a309aeeda34fc54c41061603d89fbc10b" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~QINCo</name></member>
+      <member refid="structfaiss_1_1QINCo_1ad4adf1c6883717f642e50203ec2beda8" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~QINCo</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

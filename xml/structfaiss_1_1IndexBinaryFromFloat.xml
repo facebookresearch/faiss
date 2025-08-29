@@ -166,10 +166,10 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryFromFloat.h" line="33" column="14"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinaryFromFloat_1a80717d1f8ef7291733a1307b7c2621ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinaryFromFloat_1a102c6009da59d1c5005dada149e95411" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexBinaryFromFloat::~IndexBinaryFromFloat</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~IndexBinaryFromFloat</name>
         <qualifiedname>faiss::IndexBinaryFromFloat::~IndexBinaryFromFloat</qualifiedname>
         <briefdescription>
@@ -989,7 +989,7 @@
       <member refid="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" prot="public" virt="virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a9d2ee94e3bb4cbb82bf01d04b909f2d8" prot="public" virt="virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>~IndexBinary</name></member>
-      <member refid="structfaiss_1_1IndexBinaryFromFloat_1a80717d1f8ef7291733a1307b7c2621ba" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>~IndexBinaryFromFloat</name></member>
+      <member refid="structfaiss_1_1IndexBinaryFromFloat_1a102c6009da59d1c5005dada149e95411" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryFromFloat</scope><name>~IndexBinaryFromFloat</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

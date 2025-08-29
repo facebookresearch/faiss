@@ -89,7 +89,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a6224c75b472ef7b2113c78665eee3604" kind="function"><name>knn_centroids_inner_product</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a506a17e599f7b6fd98074867da0af6cd" kind="function"><name>compute_centroid_norms</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3fe455f9e50561dccad93982658bbefd" kind="function"><name>knn_centroids_L2</name></member>
-    <member refid="structfaiss_1_1AdditiveQuantizer_1aaf69ae45bab0489b5c17be8be949bd31" kind="function"><name>~AdditiveQuantizer</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a1a5d116e148ef705f695f0fd9a14b81d" kind="function"><name>~AdditiveQuantizer</name></member>
     <member refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9" kind="function"><name>train</name></member>
   </compound>
   <compound refid="structfaiss_1_1AlignedTable" kind="struct"><name>faiss::AlignedTable</name>
@@ -701,7 +701,7 @@
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" kind="function"><name>FlatCodesDistanceComputer</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11" kind="function"><name>distance_to_code</name></member>
-    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a00da5c3be00c8cb13df7312fd99ccf02" kind="function"><name>~FlatCodesDistanceComputer</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" kind="function"><name>~FlatCodesDistanceComputer</name></member>
     <member refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" kind="function"><name>set_query</name></member>
     <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" kind="function"><name>distances_batch_4</name></member>
     <member refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7" kind="function"><name>symmetric_dis</name></member>
@@ -2214,7 +2214,7 @@
     <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
     <member refid="structfaiss_1_1Index2Layer_1aea5864830ea5711c1f9e92fc4768f203" kind="function"><name>Index2Layer</name></member>
     <member refid="structfaiss_1_1Index2Layer_1a665a1d9562e040bb0281c2d0f5625d93" kind="function"><name>Index2Layer</name></member>
-    <member refid="structfaiss_1_1Index2Layer_1ac07e1ce0fa75888ad0a46091c59ed14a" kind="function"><name>~Index2Layer</name></member>
+    <member refid="structfaiss_1_1Index2Layer_1af9661bb7cb7378243fdc44c7deecf121" kind="function"><name>~Index2Layer</name></member>
     <member refid="structfaiss_1_1Index2Layer_1a48cbf519590313f1c6a3dc89c8d0678c" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1Index2Layer_1ac1d721d2bc0ec334b731ddab9e0f1160" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f" kind="function"><name>get_distance_computer</name></member>
@@ -2464,7 +2464,7 @@
     <member refid="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1IndexBinaryFromFloat_1a97e57ab922eee2a54691d76a082dc524" kind="function"><name>IndexBinaryFromFloat</name></member>
     <member refid="structfaiss_1_1IndexBinaryFromFloat_1acec0f2bd11dc4b8f84a4c65c58c99dbc" kind="function"><name>IndexBinaryFromFloat</name></member>
-    <member refid="structfaiss_1_1IndexBinaryFromFloat_1a80717d1f8ef7291733a1307b7c2621ba" kind="function"><name>~IndexBinaryFromFloat</name></member>
+    <member refid="structfaiss_1_1IndexBinaryFromFloat_1a102c6009da59d1c5005dada149e95411" kind="function"><name>~IndexBinaryFromFloat</name></member>
     <member refid="structfaiss_1_1IndexBinaryFromFloat_1ac4f01196a335a9b2433e5c16396c1fd7" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexBinaryFromFloat_1a487be675843e3146ee15bef3ee004a85" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexBinaryFromFloat_1a6c563fb3242d765abdc7974157e02bb6" kind="function"><name>search</name></member>
@@ -2687,7 +2687,7 @@
     <member refid="structfaiss_1_1IndexBinary_1a344529c829717012b530ef9c13b145b7" kind="variable"><name>metric_type</name></member>
     <member refid="structfaiss_1_1IndexBinaryMultiHash_1a7fa50f739680538e1fdc17dab5baf94e" kind="function"><name>IndexBinaryMultiHash</name></member>
     <member refid="structfaiss_1_1IndexBinaryMultiHash_1a15dc57bf03c30a08e60000ad18c38c8f" kind="function"><name>IndexBinaryMultiHash</name></member>
-    <member refid="structfaiss_1_1IndexBinaryMultiHash_1aedb563ff7a46d7d76872a3c9f5678c4e" kind="function"><name>~IndexBinaryMultiHash</name></member>
+    <member refid="structfaiss_1_1IndexBinaryMultiHash_1ae7273d13eedce947165f79ba55db02ea" kind="function"><name>~IndexBinaryMultiHash</name></member>
     <member refid="structfaiss_1_1IndexBinaryMultiHash_1a00d897dd26ce53cdc826d116e97c8b7f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexBinaryMultiHash_1a454cb87dd8ee1ce95f7aa02d9f7c0a21" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexBinaryMultiHash_1af77a28b7a9e427208362ef2ad1c0dbe0" kind="function"><name>range_search</name></member>
@@ -5458,7 +5458,7 @@
     <member refid="structfaiss_1_1IndexNeuralNetCodec_1ab8fc8d69687d1c8055016045405e7691" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexNeuralNetCodec_1a90a9e0e680a9734bf24b029e4218a43c" kind="function"><name>sa_encode</name></member>
     <member refid="structfaiss_1_1IndexNeuralNetCodec_1a959a2734dcc70267ac5b900fbe0d7825" kind="function"><name>sa_decode</name></member>
-    <member refid="structfaiss_1_1IndexNeuralNetCodec_1a67a9abae55d8f17bffd2e627a83a3cdf" kind="function"><name>~IndexNeuralNetCodec</name></member>
+    <member refid="structfaiss_1_1IndexNeuralNetCodec_1a4a5df06c856db377e8b1287d323dd97b" kind="function"><name>~IndexNeuralNetCodec</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1afedfd72f57bcbc7d3a94fda7cb90c88b" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a166582b8b10fc86e77ce8c48854496f8" kind="function"><name>reconstruct_n</name></member>
@@ -7428,7 +7428,7 @@
     <member refid="structfaiss_1_1NegativeDistanceComputer_1a9098b773e2a5cf64a616de0f3b94f3de" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c" kind="function"><name>distances_batch_4</name></member>
     <member refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" kind="function"><name>symmetric_dis</name></member>
-    <member refid="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" kind="function"><name>~NegativeDistanceComputer</name></member>
+    <member refid="structfaiss_1_1NegativeDistanceComputer_1a8d90290dd08d1357443a83d7435863e4" kind="function"><name>~NegativeDistanceComputer</name></member>
   </compound>
   <compound refid="structfaiss_1_1nndescent_1_1Neighbor" kind="struct"><name>faiss::nndescent::Neighbor</name>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1adce5680f1e46d4aab85d672fd8bb2d3c" kind="variable"><name>id</name></member>
@@ -7886,7 +7886,7 @@
     <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a8b43e4ba2aae2bdd06994025976e762b" kind="function"><name>ProductAdditiveQuantizer</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a0bba62bd60cf4a8885f157b598616a6a" kind="function"><name>ProductAdditiveQuantizer</name></member>
-    <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a97b9aa972feb4b2f0033a5953cb7b73e" kind="function"><name>~ProductAdditiveQuantizer</name></member>
+    <member refid="structfaiss_1_1ProductAdditiveQuantizer_1aa2a718ef4a406f8c1b00e447bcb23177" kind="function"><name>~ProductAdditiveQuantizer</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a565e42dfd7fedd64903903b0e2c45cea" kind="function"><name>init</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1aae278a802b6965b86b9412b121c224bf" kind="function"><name>subquantizer</name></member>
     <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843" kind="function"><name>train</name></member>
@@ -8174,7 +8174,7 @@
     <member refid="structfaiss_1_1QINCo_1a4465ca5adeae3fde2f9d0733fca323d2" kind="function"><name>get_step</name></member>
     <member refid="structfaiss_1_1QINCo_1ab414b534e68ed382680065fe5eaf05bb" kind="function"><name>decode</name></member>
     <member refid="structfaiss_1_1QINCo_1aeb42b4ded979a726a15fad6ef8725042" kind="function"><name>encode</name></member>
-    <member refid="structfaiss_1_1QINCo_1a309aeeda34fc54c41061603d89fbc10b" kind="function"><name>~QINCo</name></member>
+    <member refid="structfaiss_1_1QINCo_1ad4adf1c6883717f642e50203ec2beda8" kind="function"><name>~QINCo</name></member>
   </compound>
   <compound refid="structfaiss_1_1QINCoStep" kind="struct"><name>faiss::QINCoStep</name>
     <member refid="structfaiss_1_1QINCoStep_1a074f69ff7a7a012b6161dcff3f438253" kind="variable"><name>d</name></member>
@@ -9884,7 +9884,7 @@
     <member refid="structfaiss_1_1ZeroCopyIOReader_1ae3197724359d9ac37f65ad730a8870c8" kind="variable"><name>total_</name></member>
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1aec85721a739ad0bd8c242f37f0b25f33" kind="function"><name>ZeroCopyIOReader</name></member>
-    <member refid="structfaiss_1_1ZeroCopyIOReader_1a222793eb7a8743c81b211eba6fa065e2" kind="function"><name>~ZeroCopyIOReader</name></member>
+    <member refid="structfaiss_1_1ZeroCopyIOReader_1a06fb240949b8fa342cc99e67ae30cd49" kind="function"><name>~ZeroCopyIOReader</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a25f05b80188e4b36bab9bff76f9eae01" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a0e633f49e1b4cfb32daffc3904cdf2a7" kind="function"><name>get_data_view</name></member>
     <member refid="structfaiss_1_1ZeroCopyIOReader_1a51c2b32ab4e44ee1b1b4e3279f0bc9b6" kind="function"><name>operator()</name></member>

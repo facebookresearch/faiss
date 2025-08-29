@@ -353,10 +353,10 @@
         </inbodydescription>
         <location file="faiss/IndexNeuralNetCodec.h" line="30" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNeuralNetCodec_1a67a9abae55d8f17bffd2e627a83a3cdf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexNeuralNetCodec_1a4a5df06c856db377e8b1287d323dd97b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexNeuralNetCodec::~IndexNeuralNetCodec</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~IndexNeuralNetCodec</name>
         <qualifiedname>faiss::IndexNeuralNetCodec::~IndexNeuralNetCodec</qualifiedname>
         <briefdescription>
@@ -1492,7 +1492,7 @@
       <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexNeuralNetCodec</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexNeuralNetCodec</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexNeuralNetCodec</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1IndexNeuralNetCodec_1a67a9abae55d8f17bffd2e627a83a3cdf" prot="public" virt="non-virtual"><scope>faiss::IndexNeuralNetCodec</scope><name>~IndexNeuralNetCodec</name></member>
+      <member refid="structfaiss_1_1IndexNeuralNetCodec_1a4a5df06c856db377e8b1287d323dd97b" prot="public" virt="non-virtual"><scope>faiss::IndexNeuralNetCodec</scope><name>~IndexNeuralNetCodec</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

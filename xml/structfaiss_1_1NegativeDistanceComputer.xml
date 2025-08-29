@@ -151,10 +151,10 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="99" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="99" bodyend="101"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a8d90290dd08d1357443a83d7435863e4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual faiss::NegativeDistanceComputer::~NegativeDistanceComputer</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~NegativeDistanceComputer</name>
         <qualifiedname>faiss::NegativeDistanceComputer::~NegativeDistanceComputer</qualifiedname>
         <briefdescription>
@@ -206,7 +206,7 @@
       <member refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>set_query</name></member>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>symmetric_dis</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>~DistanceComputer</name></member>
-      <member refid="structfaiss_1_1NegativeDistanceComputer_1acc590083b5f4688b76e1d3cf472de293" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>~NegativeDistanceComputer</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a8d90290dd08d1357443a83d7435863e4" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>~NegativeDistanceComputer</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

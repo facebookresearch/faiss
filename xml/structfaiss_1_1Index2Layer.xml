@@ -236,10 +236,10 @@
         </inbodydescription>
         <location file="faiss/Index2Layer.h" line="49" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index2Layer_1ac07e1ce0fa75888ad0a46091c59ed14a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Index2Layer_1af9661bb7cb7378243fdc44c7deecf121" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::Index2Layer::~Index2Layer</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~Index2Layer</name>
         <qualifiedname>faiss::Index2Layer::~Index2Layer</qualifiedname>
         <briefdescription>
@@ -1569,7 +1569,7 @@
       <member refid="structfaiss_1_1Index2Layer_1a4dd6c2d0452188f0596d922ed64fcb55" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>transfer_to_IVFPQ</name></member>
       <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::Index2Layer</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1Index2Layer_1ac07e1ce0fa75888ad0a46091c59ed14a" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>~Index2Layer</name></member>
+      <member refid="structfaiss_1_1Index2Layer_1af9661bb7cb7378243fdc44c7deecf121" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>~Index2Layer</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

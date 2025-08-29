@@ -111,10 +111,10 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="126" column="19"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a00da5c3be00c8cb13df7312fd99ccf02" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
         <definition>virtual faiss::FlatCodesDistanceComputer::~FlatCodesDistanceComputer</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~FlatCodesDistanceComputer</name>
         <qualifiedname>faiss::FlatCodesDistanceComputer::~FlatCodesDistanceComputer</qualifiedname>
         <briefdescription>
@@ -264,7 +264,7 @@
       <member refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" virt="pure-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>set_query</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7" prot="public" virt="pure-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>symmetric_dis</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>~DistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a00da5c3be00c8cb13df7312fd99ccf02" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>~FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>~FlatCodesDistanceComputer</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

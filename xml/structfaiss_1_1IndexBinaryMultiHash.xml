@@ -274,10 +274,10 @@
         </inbodydescription>
         <location file="faiss/IndexBinaryHash.h" line="100" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexBinaryMultiHash_1aedb563ff7a46d7d76872a3c9f5678c4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexBinaryMultiHash_1ae7273d13eedce947165f79ba55db02ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexBinaryMultiHash::~IndexBinaryMultiHash</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~IndexBinaryMultiHash</name>
         <qualifiedname>faiss::IndexBinaryMultiHash::~IndexBinaryMultiHash</qualifiedname>
         <briefdescription>
@@ -1094,7 +1094,7 @@
       <member refid="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" prot="public" virt="virtual"><scope>faiss::IndexBinaryMultiHash</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryMultiHash</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a9d2ee94e3bb4cbb82bf01d04b909f2d8" prot="public" virt="virtual"><scope>faiss::IndexBinaryMultiHash</scope><name>~IndexBinary</name></member>
-      <member refid="structfaiss_1_1IndexBinaryMultiHash_1aedb563ff7a46d7d76872a3c9f5678c4e" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryMultiHash</scope><name>~IndexBinaryMultiHash</name></member>
+      <member refid="structfaiss_1_1IndexBinaryMultiHash_1ae7273d13eedce947165f79ba55db02ea" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryMultiHash</scope><name>~IndexBinaryMultiHash</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

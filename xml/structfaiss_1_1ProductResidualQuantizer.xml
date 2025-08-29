@@ -1420,8 +1420,8 @@
       <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a3549e6bbf833c66f15ec9e6de13f3843" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>train</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1abef163b7b94ef867c727ab3344853637" prot="public" virt="non-virtual"><scope>faiss::ProductResidualQuantizer</scope><name>train_norm</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" prot="public" virt="non-virtual"><scope>faiss::ProductResidualQuantizer</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1AdditiveQuantizer_1aaf69ae45bab0489b5c17be8be949bd31" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>~AdditiveQuantizer</name></member>
-      <member refid="structfaiss_1_1ProductAdditiveQuantizer_1a97b9aa972feb4b2f0033a5953cb7b73e" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>~ProductAdditiveQuantizer</name></member>
+      <member refid="structfaiss_1_1AdditiveQuantizer_1a1a5d116e148ef705f695f0fd9a14b81d" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>~AdditiveQuantizer</name></member>
+      <member refid="structfaiss_1_1ProductAdditiveQuantizer_1aa2a718ef4a406f8c1b00e447bcb23177" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>~ProductAdditiveQuantizer</name></member>
       <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::ProductResidualQuantizer</scope><name>~Quantizer</name></member>
     </listofallmembers>
   </compounddef>

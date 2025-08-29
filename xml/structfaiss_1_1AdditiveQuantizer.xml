@@ -1082,10 +1082,10 @@
         </inbodydescription>
         <location file="faiss/impl/AdditiveQuantizer.h" line="207" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1aaf69ae45bab0489b5c17be8be949bd31" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1AdditiveQuantizer_1a1a5d116e148ef705f695f0fd9a14b81d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type></type>
         <definition>virtual faiss::AdditiveQuantizer::~AdditiveQuantizer</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>~AdditiveQuantizer</name>
         <qualifiedname>faiss::AdditiveQuantizer::~AdditiveQuantizer</qualifiedname>
         <briefdescription>
@@ -1288,7 +1288,7 @@
       <member refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9" prot="public" virt="pure-virtual"><scope>faiss::AdditiveQuantizer</scope><name>train</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1abef163b7b94ef867c727ab3344853637" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>train_norm</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1AdditiveQuantizer_1aaf69ae45bab0489b5c17be8be949bd31" prot="public" virt="virtual"><scope>faiss::AdditiveQuantizer</scope><name>~AdditiveQuantizer</name></member>
+      <member refid="structfaiss_1_1AdditiveQuantizer_1a1a5d116e148ef705f695f0fd9a14b81d" prot="public" virt="virtual"><scope>faiss::AdditiveQuantizer</scope><name>~AdditiveQuantizer</name></member>
       <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::AdditiveQuantizer</scope><name>~Quantizer</name></member>
     </listofallmembers>
   </compounddef>

@@ -1754,7 +1754,7 @@
       <member refid="structfaiss_1_1ResidualQuantizer_1a9d167678afe137a3c71439fa3cc3ea03" prot="public" virt="non-virtual"><scope>faiss::ResidualQuantizer</scope><name>train_type_t</name></member>
       <member refid="structfaiss_1_1ResidualQuantizer_1acd4c6a23a96bf055337de4a5d8addcca" prot="public" virt="non-virtual"><scope>faiss::ResidualQuantizer</scope><name>use_beam_LUT</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a4774f0efe877d34c5c98c2bef4ae1912" prot="public" virt="non-virtual"><scope>faiss::ResidualQuantizer</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1AdditiveQuantizer_1aaf69ae45bab0489b5c17be8be949bd31" prot="public" virt="virtual"><scope>faiss::ResidualQuantizer</scope><name>~AdditiveQuantizer</name></member>
+      <member refid="structfaiss_1_1AdditiveQuantizer_1a1a5d116e148ef705f695f0fd9a14b81d" prot="public" virt="virtual"><scope>faiss::ResidualQuantizer</scope><name>~AdditiveQuantizer</name></member>
       <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::ResidualQuantizer</scope><name>~Quantizer</name></member>
     </listofallmembers>
   </compounddef>

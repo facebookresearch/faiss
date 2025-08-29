@@ -316,7 +316,7 @@
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryMultiHash" kindref="compound">IndexBinaryMultiHash</ref>();</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryMultiHash" kindref="compound">~IndexBinaryMultiHash</ref>();</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IndexBinaryMultiHash" kindref="compound">~IndexBinaryMultiHash</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight></codeline>
 <codeline lineno="104" refid="structfaiss_1_1IndexBinaryMultiHash_1a00d897dd26ce53cdc826d116e97c8b7f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexBinaryMultiHash_1a00d897dd26ce53cdc826d116e97c8b7f" kindref="member">reset</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight></codeline>
