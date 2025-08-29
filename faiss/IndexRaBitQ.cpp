@@ -55,7 +55,7 @@ void IndexRaBitQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
     FlatCodesDistanceComputer* dc =
-            rabitq.get_distance_computer(qb, center.data());
+            rabitq.get_distance_computer(qb, center.data(), centered);
     dc->code_size = rabitq.code_size;
     dc->codes = codes.data();
     return dc;
@@ -64,7 +64,7 @@ FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
 FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
         const uint8_t qb) const {
     FlatCodesDistanceComputer* dc =
-            rabitq.get_distance_computer(qb, center.data());
+            rabitq.get_distance_computer(qb, center.data(), centered);
     dc->code_size = rabitq.code_size;
     dc->codes = codes.data();
     return dc;

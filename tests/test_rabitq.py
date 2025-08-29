@@ -271,6 +271,7 @@ class TestRaBitQ(unittest.TestCase):
         ref_rbq.add(ds.get_database())
 
         index_rbq = faiss.IndexRaBitQ(ds.d, faiss.METRIC_L2)
+        index_rbq.centered = False  # TODO: Update reference implementation to add centering.
         index_rbq.qb = 8
         index_rbq.train(ds.get_train())
         index_rbq.add(ds.get_database())

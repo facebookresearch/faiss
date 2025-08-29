@@ -143,15 +143,15 @@ inline __m256i get_lookup_256() {
 /**
  * Performs lookup-based popcount on AVX512 registers.
  *
- * @param v_and Input vector to count bits in
+ * @param v Input vector to count bits in
  * @return Vector with popcount results
  */
-inline __m512i popcount_lookup_avx512(__m512i v_and) {
+inline __m512i popcount_lookup_avx512(__m512i v) {
     const __m512i lookup = get_lookup_512();
     const __m512i low_mask = _mm512_set1_epi8(0x0f);
 
-    const __m512i lo = _mm512_and_si512(v_and, low_mask);
-    const __m512i hi = _mm512_and_si512(_mm512_srli_epi16(v_and, 4), low_mask);
+    const __m512i lo = _mm512_and_si512(v, low_mask);
+    const __m512i hi = _mm512_and_si512(_mm512_srli_epi16(v, 4), low_mask);
     const __m512i popcnt1 = _mm512_shuffle_epi8(lookup, lo);
     const __m512i popcnt2 = _mm512_shuffle_epi8(lookup, hi);
     return _mm512_add_epi8(popcnt1, popcnt2);
@@ -161,15 +161,15 @@ inline __m512i popcount_lookup_avx512(__m512i v_and) {
 /**
  * Performs lookup-based popcount on AVX2 registers.
  *
- * @param v_and Input vector to count bits in
+ * @param v Input vector to count bits in
  * @return Vector with popcount results
  */
-inline __m256i popcount_lookup_avx2(__m256i v_and) {
+inline __m256i popcount_lookup_avx2(__m256i v) {
     const __m256i lookup = get_lookup_256();
     const __m256i low_mask = _mm256_set1_epi8(0x0f);
 
-    const __m256i lo = _mm256_and_si256(v_and, low_mask);
-    const __m256i hi = _mm256_and_si256(_mm256_srli_epi16(v_and, 4), low_mask);
+    const __m256i lo = _mm256_and_si256(v, low_mask);
+    const __m256i hi = _mm256_and_si256(_mm256_srli_epi16(v, 4), low_mask);
     const __m256i popcnt1 = _mm256_shuffle_epi8(lookup, lo);
     const __m256i popcnt2 = _mm256_shuffle_epi8(lookup, hi);
     return _mm256_add_epi8(popcnt1, popcnt2);
@@ -187,9 +187,9 @@ inline __m256i popcount_lookup_avx2(__m256i v_and) {
  * @param binary_data    Pointer to binary data
  * @param d              Dimension
  * @param qb             Number of quantization bits
- * @return               Dot product result as float
+ * @return               Unsigned integer dot product
  */
-inline float rabitq_dp_popcnt_avx512(
+inline uint64_t rabitq_dp_popcnt_avx512(
         const uint8_t* query,
         const uint8_t* binary_data,
         size_t d,
@@ -260,13 +260,149 @@ inline float rabitq_dp_popcnt_avx512(
         }
     }
 
-    int sum_64le = 0;
+    uint64_t sum_64le = 0;
     sum_64le += _mm_extract_epi32(sum_128, 0);
     sum_64le += _mm_extract_epi32(sum_128, 1);
     sum_64le += _mm_extract_epi32(sum_128, 2);
     sum_64le += _mm_extract_epi32(sum_128, 3);
 
-    return static_cast<float>(sum_64le);
+    return sum_64le;
+}
+
+inline uint64_t rabitq_popcnt_avx512(const uint8_t* binary_data, size_t d) {
+    __m512i sum_512 = _mm512_setzero_si512();
+
+    // const size_t di_8b = (d + 7) / 8;
+
+    const size_t d_512 = (d / 512) * 512;
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    for (size_t i = 0; i < d_512; i += 512) {
+        __m512i v_x = _mm512_loadu_si512((const __m512i*)(binary_data + i / 8));
+        __m512i v_popcnt = _mm512_popcnt_epi32(v_x);
+        sum_512 = _mm512_add_epi32(sum_512, v_popcnt);
+    }
+
+    __m256i sum_256 = _mm256_add_epi32(
+            _mm512_extracti32x8_epi32(sum_512, 0),
+            _mm512_extracti32x8_epi32(sum_512, 1));
+
+    if (d_256 != d_512) {
+        __m256i v_x =
+                _mm256_loadu_si256((const __m256i*)(binary_data + d_512 / 8));
+        __m256i v_popcnt = _mm256_popcnt_epi32(v_x);
+        sum_256 = _mm256_add_epi32(sum_256, v_popcnt);
+    }
+
+    __m128i sum_128 = _mm_add_epi32(
+            _mm256_extracti32x4_epi32(sum_256, 0),
+            _mm256_extracti32x4_epi32(sum_256, 1));
+
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+        __m128i v_popcnt = _mm_popcnt_epi32(v_x);
+        sum_128 = _mm_add_epi32(sum_128, v_popcnt);
+    }
+
+    if (d != d_128) {
+        const size_t leftovers = d - d_128;
+        const __mmask16 mask = (1 << ((leftovers + 7) / 8)) - 1;
+
+        __m128i v_x = _mm_maskz_loadu_epi8(
+                mask, (const __m128i*)(binary_data + d_128 / 8));
+        __m128i v_popcnt = _mm_popcnt_epi32(v_x);
+        sum_128 = _mm_add_epi32(sum_128, v_popcnt);
+    }
+
+    uint64_t sum_64le = 0;
+    sum_64le += _mm_extract_epi32(sum_128, 0);
+    sum_64le += _mm_extract_epi32(sum_128, 1);
+    sum_64le += _mm_extract_epi32(sum_128, 2);
+    sum_64le += _mm_extract_epi32(sum_128, 3);
+
+    return sum_64le;
+}
+
+inline int64_t rabitq_int_dot_popcnt_avx512(
+        const uint8_t* query,
+        const uint8_t* binary_data,
+        size_t d,
+        size_t qb) {
+    __m512i sum_512 = _mm512_setzero_si512();
+
+    const size_t di_8b = (d + 7) / 8;
+
+    const size_t d_512 = (d / 512) * 512;
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    for (size_t i = 0; i < d_512; i += 512) {
+        __m512i v_x = _mm512_loadu_si512((const __m512i*)(binary_data + i / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m512i v_q = _mm512_loadu_si512(
+                    (const __m512i*)(query + j * di_8b + i / 8));
+            __m512i v_xor = _mm512_xor_si512(v_q, v_x);
+            __m512i v_popcnt = _mm512_popcnt_epi32(v_xor);
+            sum_512 = _mm512_add_epi32(sum_512, _mm512_slli_epi32(v_popcnt, j));
+        }
+    }
+
+    __m256i sum_256 = _mm256_add_epi32(
+            _mm512_extracti32x8_epi32(sum_512, 0),
+            _mm512_extracti32x8_epi32(sum_512, 1));
+
+    if (d_256 != d_512) {
+        __m256i v_x =
+                _mm256_loadu_si256((const __m256i*)(binary_data + d_512 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m256i v_q = _mm256_loadu_si256(
+                    (const __m256i*)(query + j * di_8b + d_512 / 8));
+            __m256i v_xor = _mm256_xor_si256(v_q, v_x);
+            __m256i v_popcnt = _mm256_popcnt_epi32(v_xor);
+            sum_256 = _mm256_add_epi32(sum_256, _mm256_slli_epi32(v_popcnt, j));
+        }
+    }
+
+    __m128i sum_128 = _mm_add_epi32(
+            _mm256_extracti32x4_epi32(sum_256, 0),
+            _mm256_extracti32x4_epi32(sum_256, 1));
+
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * di_8b + d_256 / 8));
+            __m128i v_xor = _mm_xor_si128(v_q, v_x);
+            __m128i v_popcnt = _mm_popcnt_epi32(v_xor);
+            sum_128 = _mm_add_epi32(sum_128, _mm_slli_epi32(v_popcnt, j));
+        }
+    }
+
+    if (d != d_128) {
+        const size_t leftovers = d - d_128;
+        const __mmask16 mask = (1 << ((leftovers + 7) / 8)) - 1;
+
+        __m128i v_x = _mm_maskz_loadu_epi8(
+                mask, (const __m128i*)(binary_data + d_128 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m128i v_q = _mm_maskz_loadu_epi8(
+                    mask, (const __m128i*)(query + j * di_8b + d_128 / 8));
+            __m128i v_xor = _mm_xor_si128(v_q, v_x);
+            __m128i v_popcnt = _mm_popcnt_epi32(v_xor);
+            sum_128 = _mm_add_epi32(sum_128, _mm_slli_epi32(v_popcnt, j));
+        }
+    }
+
+    uint64_t sum_64le = 0;
+    sum_64le += _mm_extract_epi32(sum_128, 0);
+    sum_64le += _mm_extract_epi32(sum_128, 1);
+    sum_64le += _mm_extract_epi32(sum_128, 2);
+    sum_64le += _mm_extract_epi32(sum_128, 3);
+
+    return int32_t(((1 << qb) - 1) * d) - sum_64le * 2;
 }
 #endif
 
@@ -279,9 +415,9 @@ inline float rabitq_dp_popcnt_avx512(
  * @param binary_data    Pointer to binary data
  * @param d              Dimension
  * @param qb             Number of quantization bits
- * @return               Dot product result as float
+ * @return               Unsigned integer dot product
  */
-inline float rabitq_dp_popcnt_avx512_fallback(
+inline uint64_t rabitq_dp_popcnt_avx512_fallback(
         const uint8_t* query,
         const uint8_t* binary_data,
         size_t d,
@@ -394,7 +530,211 @@ inline float rabitq_dp_popcnt_avx512_fallback(
     // Add leftovers
     sum += sum_leftover;
 
-    return static_cast<float>(sum);
+    return sum;
+}
+inline int64_t rabitq_int_dot_popcnt_avx512_fallback(
+        const uint8_t* query,
+        const uint8_t* binary_data,
+        size_t d,
+        size_t qb) {
+    const size_t di_8b = (d + 7) / 8;
+    const size_t d_512 = (d / 512) * 512;
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    // Use the lookup-based popcount helper function
+
+    __m512i sum_512 = _mm512_setzero_si512();
+
+    // Process 512 bits (64 bytes) at a time using lookup-based popcount
+    for (size_t i = 0; i < d_512; i += 512) {
+        __m512i v_x = _mm512_loadu_si512((const __m512i*)(binary_data + i / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m512i v_q = _mm512_loadu_si512(
+                    (const __m512i*)(query + j * di_8b + i / 8));
+            __m512i v_xor = _mm512_xor_si512(v_q, v_x);
+
+            // Use the popcount_lookup_avx512 helper function
+            __m512i v_popcnt = popcount_lookup_avx512(v_xor);
+
+            // Sum bytes to 32-bit integers
+            __m512i v_sad = _mm512_sad_epu8(v_popcnt, _mm512_setzero_si512());
+
+            // Shift by j and add to sum
+            __m512i v_shifted = _mm512_slli_epi64(v_sad, j);
+            sum_512 = _mm512_add_epi64(sum_512, v_shifted);
+        }
+    }
+
+    // Handle 256-bit section if needed
+    __m256i sum_256 = _mm256_setzero_si256();
+    if (d_256 != d_512) {
+        __m256i v_x =
+                _mm256_loadu_si256((const __m256i*)(binary_data + d_512 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m256i v_q = _mm256_loadu_si256(
+                    (const __m256i*)(query + j * di_8b + d_512 / 8));
+            __m256i v_xor = _mm256_xor_si256(v_q, v_x);
+
+            // Use the popcount_lookup_avx2 helper function
+            __m256i v_popcnt = popcount_lookup_avx2(v_xor);
+
+            // Sum bytes to 64-bit integers
+            __m256i v_sad = _mm256_sad_epu8(v_popcnt, _mm256_setzero_si256());
+
+            // Shift by j and add to sum
+            __m256i v_shifted = _mm256_slli_epi64(v_sad, j);
+            sum_256 = _mm256_add_epi64(sum_256, v_shifted);
+        }
+    }
+
+    // Handle 128-bit section and leftovers
+    __m128i sum_128 = _mm_setzero_si128();
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * di_8b + d_256 / 8));
+            __m128i v_xor = _mm_xor_si128(v_q, v_x);
+
+            // Scalar popcount for each 64-bit lane
+            uint64_t lane0 = _mm_extract_epi64(v_xor, 0);
+            uint64_t lane1 = _mm_extract_epi64(v_xor, 1);
+            uint64_t pop0 = __builtin_popcountll(lane0) << j;
+            uint64_t pop1 = __builtin_popcountll(lane1) << j;
+            sum_128 = _mm_add_epi64(sum_128, _mm_set_epi64x(pop1, pop0));
+        }
+    }
+
+    // Handle remaining bytes (less than 16)
+    uint64_t sum_leftover = 0;
+    size_t d_leftover = d - d_128;
+    if (d_leftover > 0) {
+        for (size_t j = 0; j < qb; j++) {
+            for (size_t k = 0; k < (d_leftover + 7) / 8; ++k) {
+                uint8_t qv = query[j * di_8b + d_128 / 8 + k];
+                uint8_t yv = binary_data[d_128 / 8 + k];
+                sum_leftover += (__builtin_popcount(qv ^ yv) << j);
+            }
+        }
+    }
+
+    // Horizontal sum of all lanes
+    uint64_t sum = 0;
+
+    // Sum from 512-bit registers
+    alignas(64) uint64_t lanes512[8];
+    _mm512_store_si512((__m512i*)lanes512, sum_512);
+    for (int i = 0; i < 8; ++i) {
+        sum += lanes512[i];
+    }
+
+    // Sum from 256-bit registers
+    alignas(32) uint64_t lanes256[4];
+    _mm256_store_si256((__m256i*)lanes256, sum_256);
+    for (int i = 0; i < 4; ++i) {
+        sum += lanes256[i];
+    }
+
+    // Sum from 128-bit registers
+    alignas(16) uint64_t lanes128[2];
+    _mm_store_si128((__m128i*)lanes128, sum_128);
+    sum += lanes128[0] + lanes128[1];
+
+    // Add leftovers
+    sum += sum_leftover;
+
+    return int32_t(((1 << qb) - 1) * d) - sum * 2;
+}
+inline uint64_t rabitq_popcnt_avx512_fallback(
+        const uint8_t* binary_data,
+        size_t d) {
+    // const size_t di_8b = (d + 7) / 8;
+    const size_t d_512 = (d / 512) * 512;
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    // Use the lookup-based popcount helper function
+
+    __m512i sum_512 = _mm512_setzero_si512();
+
+    // Process 512 bits (64 bytes) at a time using lookup-based popcount
+    for (size_t i = 0; i < d_512; i += 512) {
+        __m512i v_x = _mm512_loadu_si512((const __m512i*)(binary_data + i / 8));
+        // Use the popcount_lookup_avx512 helper function
+        __m512i v_popcnt = popcount_lookup_avx512(v_x);
+        // Sum bytes to 32-bit integers
+        __m512i v_sad = _mm512_sad_epu8(v_popcnt, _mm512_setzero_si512());
+        sum_512 = _mm512_add_epi64(sum_512, v_sad);
+    }
+
+    // Handle 256-bit section if needed
+    __m256i sum_256 = _mm256_setzero_si256();
+    if (d_256 != d_512) {
+        __m256i v_x =
+                _mm256_loadu_si256((const __m256i*)(binary_data + d_512 / 8));
+
+        // Use the popcount_lookup_avx2 helper function
+        __m256i v_popcnt = popcount_lookup_avx2(v_x);
+
+        // Sum bytes to 64-bit integers
+        __m256i v_sad = _mm256_sad_epu8(v_popcnt, _mm256_setzero_si256());
+
+        // Shift by j and add to sum
+        sum_256 = _mm256_add_epi64(sum_256, v_sad);
+    }
+
+    // Handle 128-bit section and leftovers
+    __m128i sum_128 = _mm_setzero_si128();
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+
+        // Scalar popcount for each 64-bit lane
+        uint64_t lane0 = _mm_extract_epi64(v_x, 0);
+        uint64_t lane1 = _mm_extract_epi64(v_x, 1);
+        uint64_t pop0 = __builtin_popcountll(lane0);
+        uint64_t pop1 = __builtin_popcountll(lane1);
+        sum_128 = _mm_add_epi64(sum_128, _mm_set_epi64x(pop1, pop0));
+    }
+
+    // Handle remaining bytes (less than 16)
+    uint64_t sum_leftover = 0;
+    size_t d_leftover = d - d_128;
+    if (d_leftover > 0) {
+        for (size_t k = 0; k < (d_leftover + 7) / 8; ++k) {
+            uint8_t yv = binary_data[d_128 / 8 + k];
+            sum_leftover += __builtin_popcount(yv);
+        }
+    }
+
+    // Horizontal sum of all lanes
+    uint64_t sum = 0;
+
+    // Sum from 512-bit registers
+    alignas(64) uint64_t lanes512[8];
+    _mm512_store_si512((__m512i*)lanes512, sum_512);
+    for (int i = 0; i < 8; ++i) {
+        sum += lanes512[i];
+    }
+
+    // Sum from 256-bit registers
+    alignas(32) uint64_t lanes256[4];
+    _mm256_store_si256((__m256i*)lanes256, sum_256);
+    for (int i = 0; i < 4; ++i) {
+        sum += lanes256[i];
+    }
+
+    // Sum from 128-bit registers
+    alignas(16) uint64_t lanes128[2];
+    _mm_store_si128((__m128i*)lanes128, sum_128);
+    sum += lanes128[0] + lanes128[1];
+
+    // Add leftovers
+    sum += sum_leftover;
+
+    return sum;
 }
 #endif
 
@@ -408,10 +748,10 @@ inline float rabitq_dp_popcnt_avx512_fallback(
  * @param binary_data    Pointer to binary data
  * @param d              Dimension
  * @param qb             Number of quantization bits
- * @return               Dot product result as float
+ * @return               Unsigned integer dot product
  */
 
-inline float rabitq_dp_popcnt_avx2(
+inline uint64_t rabitq_dp_popcnt_avx2(
         const uint8_t* query,
         const uint8_t* binary_data,
         size_t d,
@@ -488,7 +828,160 @@ inline float rabitq_dp_popcnt_avx2(
     // leftovers
     sum += sum_leftover;
 
-    return static_cast<float>(sum);
+    return sum;
+}
+
+/**
+ * Compute dot product between query and binary data using popcount operations,
+ * but interpreting each bit as having a significance of +1 or -1 instead of 1
+ * and 0. The resulting dot product is signed.
+ *
+ * @param query          Pointer to rearranged rotated query data
+ * @param binary_data    Pointer to binary data
+ * @param d              Dimension
+ * @param qb             Number of quantization bits
+ * @return               Signed integer dot product
+ */
+inline int64_t rabitq_int_dot_popcnt_avx2(
+        const uint8_t* query,
+        const uint8_t* binary_data,
+        size_t d,
+        size_t qb) {
+    const size_t di_8b = (d + 7) / 8;
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    // Use the lookup-based popcount helper function
+
+    __m256i sum_256 = _mm256_setzero_si256();
+
+    // Process 256 bits (32 bytes) at a time using lookup-based popcount
+    for (size_t i = 0; i < d_256; i += 256) {
+        __m256i v_x = _mm256_loadu_si256((const __m256i*)(binary_data + i / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m256i v_q = _mm256_loadu_si256(
+                    (const __m256i*)(query + j * di_8b + i / 8));
+            __m256i v_xor = _mm256_xor_si256(v_q, v_x);
+
+            // Use the popcount_lookup_avx2 helper function
+            __m256i v_popcnt = popcount_lookup_avx2(v_xor);
+
+            // Convert byte counts to 64-bit lanes and shift by j
+            __m256i v_sad = _mm256_sad_epu8(v_popcnt, _mm256_setzero_si256());
+            __m256i v_shifted = _mm256_slli_epi64(v_sad, static_cast<int>(j));
+            sum_256 = _mm256_add_epi64(sum_256, v_shifted);
+        }
+    }
+
+    // Handle leftovers with 128-bit SIMD
+    __m128i sum_128 = _mm_setzero_si128();
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+        for (size_t j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * di_8b + d_256 / 8));
+            __m128i v_xor = _mm_xor_si128(v_q, v_x);
+            // Scalar popcount for each 64-bit lane
+            uint64_t lane0 = _mm_extract_epi64(v_xor, 0);
+            uint64_t lane1 = _mm_extract_epi64(v_xor, 1);
+            uint64_t pop0 = __builtin_popcountll(lane0) << j;
+            uint64_t pop1 = __builtin_popcountll(lane1) << j;
+            sum_128 = _mm_add_epi64(sum_128, _mm_set_epi64x(pop1, pop0));
+        }
+    }
+
+    // Handle remaining bytes (less than 16)
+    uint64_t sum_leftover = 0;
+    size_t d_leftover = d - d_128;
+    if (d_leftover > 0) {
+        for (size_t j = 0; j < qb; j++) {
+            for (size_t k = 0; k < (d_leftover + 7) / 8; ++k) {
+                uint8_t qv = query[j * di_8b + d_128 / 8 + k];
+                uint8_t yv = binary_data[d_128 / 8 + k];
+                sum_leftover += (__builtin_popcount(qv ^ yv) << j);
+            }
+        }
+    }
+
+    // Horizontal sum of all lanes
+    uint64_t sum = 0;
+    // sum_256: 4 lanes of 64 bits
+    alignas(32) uint64_t lanes[4];
+    _mm256_store_si256((__m256i*)lanes, sum_256);
+    for (int i = 0; i < 4; ++i) {
+        sum += lanes[i];
+    }
+    // sum_128: 2 lanes of 64 bits
+    alignas(16) uint64_t lanes128[2];
+    _mm_store_si128((__m128i*)lanes128, sum_128);
+    sum += lanes128[0] + lanes128[1];
+    // leftovers
+    sum += sum_leftover;
+
+    int64_t dot = int64_t(((1 << qb) - 1) * d) - int64_t(sum * 2);
+    return dot;
+}
+
+inline uint64_t rabitq_popcnt_avx2(const uint8_t* binary_data, size_t d) {
+    const size_t d_256 = (d / 256) * 256;
+    const size_t d_128 = (d / 128) * 128;
+
+    // Use the lookup-based popcount helper function
+
+    __m256i sum_256 = _mm256_setzero_si256();
+
+    // Process 256 bits (32 bytes) at a time using lookup-based popcount
+    for (size_t i = 0; i < d_256; i += 256) {
+        __m256i v_x = _mm256_loadu_si256((const __m256i*)(binary_data + i / 8));
+
+        // Use the popcount_lookup_avx2 helper function
+        __m256i v_popcnt = popcount_lookup_avx2(v_x);
+
+        // Convert byte counts to 64-bit lanes and shift by j
+        __m256i v_sad = _mm256_sad_epu8(v_popcnt, _mm256_setzero_si256());
+        sum_256 = _mm256_add_epi64(sum_256, v_sad);
+    }
+
+    // Handle leftovers with 128-bit SIMD
+    __m128i sum_128 = _mm_setzero_si128();
+    if (d_128 != d_256) {
+        __m128i v_x =
+                _mm_loadu_si128((const __m128i*)(binary_data + d_256 / 8));
+        // Scalar popcount for each 64-bit lane
+        uint64_t lane0 = _mm_extract_epi64(v_x, 0);
+        uint64_t lane1 = _mm_extract_epi64(v_x, 1);
+        uint64_t pop0 = __builtin_popcountll(lane0);
+        uint64_t pop1 = __builtin_popcountll(lane1);
+        sum_128 = _mm_add_epi64(sum_128, _mm_set_epi64x(pop1, pop0));
+    }
+
+    // Handle remaining bytes (less than 16)
+    uint64_t sum_leftover = 0;
+    size_t d_leftover = d - d_128;
+    if (d_leftover > 0) {
+        for (size_t k = 0; k < (d_leftover + 7) / 8; ++k) {
+            uint8_t yv = binary_data[d_128 / 8 + k];
+            sum_leftover += __builtin_popcount(yv);
+        }
+    }
+
+    // Horizontal sum of all lanes
+    uint64_t sum = 0;
+    // sum_256: 4 lanes of 64 bits
+    alignas(32) uint64_t lanes[4];
+    _mm256_store_si256((__m256i*)lanes, sum_256);
+    for (int i = 0; i < 4; ++i) {
+        sum += lanes[i];
+    }
+    // sum_128: 2 lanes of 64 bits
+    alignas(16) uint64_t lanes128[2];
+    _mm_store_si128((__m128i*)lanes128, sum_128);
+    sum += lanes128[0] + lanes128[1];
+    // leftovers
+    sum += sum_leftover;
+
+    return sum;
 }
 #endif
 
@@ -499,9 +992,9 @@ inline float rabitq_dp_popcnt_avx2(
  * @param binary_data    Pointer to binary data
  * @param d              Dimension
  * @param qb             Number of quantization bits
- * @return               Dot product result as float
+ * @return               Unsigned integer dot product
  */
-inline float rabitq_dp_popcnt(
+inline uint64_t rabitq_dp_popcnt(
         const uint8_t* query,
         const uint8_t* binary_data,
         size_t d,
@@ -516,7 +1009,7 @@ inline float rabitq_dp_popcnt(
     const size_t di_8b = (d + 7) / 8;
     const size_t di_64b = (di_8b / 8) * 8;
 
-    uint64_t dot_qo = 0;
+    int64_t dot_qo = 0;
     for (size_t j = 0; j < qb; j++) {
         const uint8_t* query_j = query + j * di_8b;
 
@@ -538,7 +1031,75 @@ inline float rabitq_dp_popcnt(
         dot_qo += (count_dot << j);
     }
 
-    return static_cast<float>(dot_qo);
+    return dot_qo;
+#endif
+}
+inline uint64_t rabitq_popcnt(const uint8_t* binary_data, size_t d) {
+#if defined(__AVX512F__) && defined(__AVX512VPOPCNTDQ__)
+    return rabitq_popcnt_avx512(binary_data, d);
+#elif defined(__AVX512F__)
+    return rabitq_popcnt_avx512_fallback(binary_data, d);
+#elif defined(__AVX2__)
+    return rabitq_popcnt_avx2(binary_data, d);
+#else
+    const size_t di_8b = (d + 7) / 8;
+    const size_t di_64b = (di_8b / 8) * 8;
+
+    uint64_t sum = 0;
+    // process 64-bit popcounts
+    for (size_t i = 0; i < di_64b; i += 8) {
+        const auto yv = *(const uint64_t*)(binary_data + i);
+        sum += __builtin_popcountll(yv);
+    }
+
+    // process leftovers
+    for (size_t i = di_64b; i < di_8b; i++) {
+        const auto yv = *(binary_data + i);
+        sum += __builtin_popcount(yv);
+    }
+
+    return sum;
+#endif
+}
+
+inline int64_t rabitq_int_dot_popcnt(
+        const uint8_t* query,
+        const uint8_t* binary_data,
+        size_t d,
+        size_t qb) {
+#if defined(__AVX512F__) && defined(__AVX512VPOPCNTDQ__)
+    return rabitq_int_dot_popcnt_avx512(query, binary_data, d, qb);
+#elif defined(__AVX512F__)
+    return rabitq_int_dot_popcnt_avx512_fallback(query, binary_data, d, qb);
+#elif defined(__AVX2__)
+    return rabitq_int_dot_popcnt_avx2(query, binary_data, d, qb);
+#else
+    const size_t di_8b = (d + 7) / 8;
+    const size_t di_64b = (di_8b / 8) * 8;
+
+    uint64_t sum = 0;
+    for (size_t j = 0; j < qb; j++) {
+        const uint8_t* query_j = query + j * di_8b;
+
+        // process 64-bit popcounts
+        int32_t count_dot = 0;
+        for (size_t i = 0; i < di_64b; i += 8) {
+            const auto qv = *(const uint64_t*)(query_j + i);
+            const auto yv = *(const uint64_t*)(binary_data + i);
+            count_dot += __builtin_popcountll(qv ^ yv);
+        }
+
+        // process leftovers
+        for (size_t i = di_64b; i < di_8b; i++) {
+            const auto qv = *(query_j + i);
+            const auto yv = *(binary_data + i);
+            count_dot += __builtin_popcount(qv ^ yv);
+        }
+
+        sum += count_dot << j;
+    }
+
+    return int64_t(((1 << qb) - 1) * d) - int64_t(2 * sum);
 #endif
 }
 
