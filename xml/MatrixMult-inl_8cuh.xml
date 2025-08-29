@@ -31,19 +31,26 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>((hipblasVersionMajor<sp/>==<sp/>2<sp/>&amp;&amp;<sp/>defined(HIPBLAS_V2))<sp/>||<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>hipblasVersionMajor<sp/>&gt;=<sp/>3)</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>hipDataTypeCompat<sp/>=<sp/>hipDataType;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>hipDataTypeCompat<sp/>=<sp/>hipblasDatatype_t;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>GetCudaType&lt;float&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipblasDatatype_t<sp/>Type<sp/>=<sp/>HIPBLAS_R_32F;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipDataTypeCompat<sp/>Type<sp/>=<sp/>HIPBLAS_R_32F;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>GetCudaType&lt;half&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipblasDatatype_t<sp/>Type<sp/>=<sp/>HIPBLAS_R_16F;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipDataTypeCompat<sp/>Type<sp/>=<sp/>HIPBLAS_R_16F;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">template<sp/>&lt;&gt;</highlight></codeline>
 <codeline><highlight class="normal">struct<sp/>GetCudaType&lt;__hip_bfloat16&gt;<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipblasDatatype_t<sp/>Type<sp/>=<sp/>HIPBLAS_R_16B;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>hipDataTypeCompat<sp/>Type<sp/>=<sp/>HIPBLAS_R_16B;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
@@ -85,6 +92,13 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>cBT<sp/>=<sp/>GetCudaType&lt;BT&gt;::Type;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>((hipblasVersionMajor<sp/>==<sp/>2<sp/>&amp;&amp;<sp/>defined(HIPBLAS_V2))<sp/>||<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>hipblasVersionMajor<sp/>&gt;=<sp/>3)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>computeType<sp/>=<sp/>HIPBLAS_COMPUTE_32F;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>computeType<sp/>=<sp/>HIPBLAS_R_32F;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>hipblasGemmEx(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>handle,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>transa,</highlight></codeline>
@@ -103,7 +117,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>C,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HIPBLAS_R_32F,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ldc,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HIPBLAS_R_32F,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeType,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HIPBLAS_GEMM_DEFAULT);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline></codeline>
@@ -186,6 +200,13 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Always<sp/>accumulate<sp/>in<sp/>f32</highlight></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>((hipblasVersionMajor<sp/>==<sp/>2<sp/>&amp;&amp;<sp/>defined(HIPBLAS_V2))<sp/>||<sp/>\</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>hipblasVersionMajor<sp/>&gt;=<sp/>3)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>computeType<sp/>=<sp/>HIPBLAS_COMPUTE_32F;</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>auto<sp/>computeType<sp/>=<sp/>HIPBLAS_R_32F;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>hipblasGemmStridedBatchedEx(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>handle,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>transa,</highlight></codeline>
@@ -208,7 +229,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ldc,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>strideC,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>batchCount,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HIPBLAS_R_32F,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computeType,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HIPBLAS_GEMM_DEFAULT);</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>cublasGemmStridedBatchedEx(</highlight></codeline>
