@@ -10,11 +10,15 @@ from faiss.contrib import rpc
 import combined_index
 import argparse
 
+from multiprocessing.pool import ThreadPool
+import faiss
+import numpy as np
 
 
 ############################################################
 # Server implementation
 ############################################################
+
 
 class MyServer(rpc.Server):
     """ Assign version that can be exposed via RPC """
@@ -56,6 +60,7 @@ def main():
         args.port, report_to_file=when_ready,
         v6=not args.ipv4)
 
+
 if __name__ == '__main__':
     main()
 
@@ -63,11 +68,6 @@ if __name__ == '__main__':
 ############################################################
 # Client implementation
 ############################################################
-
-from multiprocessing.pool import ThreadPool
-import faiss
-import numpy as np
-
 
 
 class ResultHeap:
@@ -109,7 +109,6 @@ def distribute_weights(weights, nbin):
         assign[i] = b
         bins[b] += weights[i]
     return bins, assign
-
 
 
 class SplitPerListIndex:
@@ -177,7 +176,7 @@ class SplitPerListIndex:
             t0 = time.time()
             Di, Ii = sub_index.ivf_search_preassigned(
                 xqo, list_nos_i, coarse_dis, k)
-            #print(list_nos_i, Ii)
+            # print(list_nos_i, Ii)
             if self.verbose:
                 print('client %d: %.3f s' % (i, time.time() - t0))
             return Di, Ii
@@ -185,7 +184,7 @@ class SplitPerListIndex:
         rh = ResultHeap(x.shape[0], k)
 
         for Di, Ii in self.pool.imap(do_query, range(self.ni)):
-            #print("ADD", Ii, rh.I)
+            # print("ADD", Ii, rh.I)
             rh.add_batch_result(Di, Ii, 0)
         rh.finalize()
         return rh.D, rh.I
