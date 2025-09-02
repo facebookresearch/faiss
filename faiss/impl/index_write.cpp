@@ -1006,9 +1006,20 @@ void write_index_binary(const IndexBinary* idx, IOWriter* f) {
     } else if (
             const IndexBinaryHNSW* idxhnsw =
                     dynamic_cast<const IndexBinaryHNSW*>(idx)) {
-        uint32_t h = fourcc("IBHf");
+        // Determine which type of binary HNSW index this is
+        uint32_t h = dynamic_cast<const IndexBinaryHNSWCagra*>(idx)
+                ? fourcc("IBHc")
+                : fourcc("IBHf");
         WRITE1(h);
         write_index_binary_header(idxhnsw, f);
+
+        if (h == fourcc("IBHc")) {
+            auto idxcagra = dynamic_cast<const IndexBinaryHNSWCagra*>(idxhnsw);
+            WRITE1(idxcagra->keep_max_size_level0);
+            WRITE1(idxcagra->base_level_only);
+            WRITE1(idxcagra->num_base_level_search_entrypoints);
+        }
+
         write_HNSW(&idxhnsw->hnsw, f);
         write_index_binary(idxhnsw->storage, f);
     } else if (

@@ -43,6 +43,7 @@ class PartitionTests:
 def pointer_to_minus1():
     return np.array([-1], dtype='int64').view("uint64")
 
+
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
@@ -61,7 +62,7 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
         vals_orig = vals.copy()
 
         sp = faiss.swig_ptr
-        if type(q) == int:
+        if isinstance(q, int):
             faiss.CMax_float_partition_fuzzy(
                 sp(vals), sp(ids), n,
                 q, q, None
@@ -110,7 +111,7 @@ class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
         vals[:] = mirval - vals
 
         sp = faiss.swig_ptr
-        if type(q) == int:
+        if isinstance(q, int):
             faiss.CMin_float_partition_fuzzy(
                 sp(vals), sp(ids), n,
                 q, q, None
@@ -157,7 +158,7 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
         tab_a = faiss.AlignedTableUint16()
         faiss.copy_array_to_AlignedTable(vals, tab_a)
 
-        if type(q) == int:
+        if isinstance(q, int):
             faiss.CMax_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
         else:
@@ -204,7 +205,7 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
         vals_inv = (65535 - vals).astype('uint16')
         faiss.copy_array_to_AlignedTable(vals_inv, tab_a)
 
-        if type(q) == int:
+        if isinstance(q, int):
             faiss.CMin_uint16_partition_fuzzy(
                 tab_a.get(), sp(ids), n, q, q, None)
         else:

@@ -56,6 +56,7 @@ def swig_ptr_from_FloatTensor(x):
     return faiss.cast_integer_to_float_ptr(
         x.untyped_storage().data_ptr() + x.storage_offset() * 4)
 
+
 def swig_ptr_from_BFloat16Tensor(x):
     """ gets a Faiss SWIG pointer from a pytorch tensor (on CPU or GPU) """
     assert x.is_contiguous()
@@ -82,6 +83,7 @@ def swig_ptr_from_IndicesTensor(x):
 ##################################################################
 # utilities
 ##################################################################
+
 
 @contextlib.contextmanager
 def using_stream(res, pytorch_stream=None):
@@ -152,10 +154,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_c(n, x_ptr, numeric_type)
+                self.add_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.add_c(n, x_ptr, numeric_type)
+            self.add_ex(n, x_ptr, numeric_type)
 
     def torch_replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         if type(x) is np.ndarray:
@@ -181,10 +183,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
+                self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
         else:
             # CPU torch
-            self.add_with_ids_c(n, x_ptr, numeric_type, ids_ptr)
+            self.add_with_ids_ex(n, x_ptr, numeric_type, ids_ptr)
 
     def torch_replacement_assign(self, x, k, labels=None):
         if type(x) is np.ndarray:
@@ -235,10 +237,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.train_c(n, x_ptr, numeric_type)
+                self.train_ex(n, x_ptr, numeric_type)
         else:
             # CPU torch
-            self.train_c(n, x_ptr, numeric_type)
+            self.train_ex(n, x_ptr, numeric_type)
 
     def search_methods_common(x, k, D, I, numeric_type=faiss.Float32):
         n, d = x.shape
@@ -281,10 +283,10 @@ def handle_torch_Index(the_class):
 
             # On the GPU, use proper stream ordering
             with using_stream(self.getResources()):
-                self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+                self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
         else:
             # CPU torch
-            self.search_c(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
+            self.search_ex(n, x_ptr, numeric_type, k, D_ptr, I_ptr)
 
         return D, I
 

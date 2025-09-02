@@ -46,7 +46,7 @@ struct ProductAdditiveQuantizer : AdditiveQuantizer {
 
     ProductAdditiveQuantizer();
 
-    virtual ~ProductAdditiveQuantizer();
+    virtual ~ProductAdditiveQuantizer() override;
 
     void init(
             size_t d,

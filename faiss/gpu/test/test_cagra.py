@@ -10,9 +10,12 @@ import faiss
 from faiss.contrib import datasets, evaluation
 import numpy as np
 
+
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
+
+
 class TestComputeGT(unittest.TestCase):
 
     def do_compute_GT(self, metric, numeric_type):
@@ -81,6 +84,8 @@ class TestComputeGT(unittest.TestCase):
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
+
+
 class TestInterop(unittest.TestCase):
 
     def do_interop(self, metric, numeric_type):
@@ -144,6 +149,8 @@ class TestInterop(unittest.TestCase):
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
+
+
 class TestIDMapCagra(unittest.TestCase):
 
     def do_IDMapCagra(self, metric, numeric_type):

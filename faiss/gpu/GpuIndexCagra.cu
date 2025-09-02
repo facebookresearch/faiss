@@ -42,7 +42,7 @@ GpuIndexCagra::GpuIndexCagra(
     this->is_trained = false;
 }
 
-void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
+void GpuIndexCagra::train_ex(idx_t n, const void* x, NumericType numeric_type) {
     numeric_type_ = numeric_type;
     bool index_is_initialized = !std::holds_alternative<std::monostate>(index_);
 
@@ -151,15 +151,15 @@ void GpuIndexCagra::train(idx_t n, const void* x, NumericType numeric_type) {
 }
 
 void GpuIndexCagra::train(idx_t n, const float* x) {
-    train(n, static_cast<const void*>(x), NumericType::Float32);
+    train_ex(n, static_cast<const void*>(x), NumericType::Float32);
 }
 
-void GpuIndexCagra::add(idx_t n, const void* x, NumericType numeric_type) {
-    train(n, x, numeric_type);
+void GpuIndexCagra::add_ex(idx_t n, const void* x, NumericType numeric_type) {
+    train_ex(n, x, numeric_type);
 }
 
 void GpuIndexCagra::add(idx_t n, const float* x) {
-    add(n, x, NumericType::Float32);
+    add_ex(n, x, NumericType::Float32);
 }
 
 bool GpuIndexCagra::addImplRequiresIDs_() const {
@@ -170,15 +170,15 @@ void GpuIndexCagra::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     FAISS_THROW_MSG("adding vectors is not supported by GpuIndexCagra.");
 };
 
-void GpuIndexCagra::addImpl_(
+void GpuIndexCagra::addImpl_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
         const idx_t* ids) {
-    GpuIndex::addImpl_(n, x, numeric_type, ids);
+    GpuIndex::addImpl_ex_(n, x, numeric_type, ids);
 }
 
-void GpuIndexCagra::searchImpl_(
+void GpuIndexCagra::searchImpl_ex_(
         idx_t n,
         const void* x,
         NumericType numeric_type,
@@ -289,7 +289,7 @@ void GpuIndexCagra::searchImpl_(
         float* distances,
         idx_t* labels,
         const SearchParameters* search_params) const {
-    searchImpl_(
+    searchImpl_ex_(
             n,
             static_cast<const void*>(x),
             NumericType::Float32,
@@ -299,7 +299,7 @@ void GpuIndexCagra::searchImpl_(
             search_params);
 }
 
-void GpuIndexCagra::copyFrom(
+void GpuIndexCagra::copyFrom_ex(
         const faiss::IndexHNSWCagra* index,
         NumericType numeric_type) {
     FAISS_ASSERT(index);
@@ -386,7 +386,7 @@ void GpuIndexCagra::copyFrom(
 }
 
 void GpuIndexCagra::copyFrom(const faiss::IndexHNSWCagra* index) {
-    copyFrom(index, NumericType::Float32);
+    copyFrom_ex(index, NumericType::Float32);
 }
 
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
@@ -536,19 +536,29 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
                     "Only base level copy is supported for Int8 types in GpuIndexCagra::copyTo");
         } else {
             index->hnsw.prepare_level_tab(n_train, false);
-            // applying encoding logic of Quantizer8bitDirectSigned
-            uint8_t* encoded_train_dataset = new uint8_t[n_train * index->d];
-            for (int i = 0; i < n_train * index->d; i++) {
-                encoded_train_dataset[i] = train_dataset[i] + 128;
+            // Directly update train_dataset with encoding of
+            // Quantizer8bitDirectSigned
+            for (int64_t i = 0; i < ((int64_t)n_train) * index->d; ++i) {
+                train_dataset[i] = static_cast<uint8_t>(
+                        static_cast<int>(train_dataset[i]) + 128);
             }
+
             index->storage->add_sa_codes(
-                    n_train, encoded_train_dataset, nullptr);
-            delete[] encoded_train_dataset;
+                    n_train,
+                    reinterpret_cast<uint8_t*>(train_dataset),
+                    nullptr);
+
             index->ntotal = n_train;
         }
 
         if (allocation) {
             delete[] train_dataset;
+        } else {
+            // Recover after appending
+            for (int64_t i = 0; i < ((int64_t)n_train) * index->d; ++i) {
+                train_dataset[i] = static_cast<int8_t>(
+                        static_cast<int>(train_dataset[i]) - 128);
+            }
         }
     }
 

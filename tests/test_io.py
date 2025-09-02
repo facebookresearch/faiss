@@ -452,6 +452,7 @@ class Test_IO_IndexIVFSpectralHash(unittest.TestCase):
             if os.path.exists(fname):
                 os.unlink(fname)
 
+
 class TestIVFPQRead(unittest.TestCase):
     def test_reader(self):
         d, n = 32, 1000

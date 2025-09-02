@@ -10,9 +10,6 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <sstream>
-#include <string>
-#include <typeinfo>
 
 #include <faiss/Index.h>
 
@@ -55,7 +52,7 @@ struct IndexBinary {
      * @param x      training vecors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
-    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             train(n, static_cast<const uint8_t*>(x));
         } else {
@@ -69,7 +66,7 @@ struct IndexBinary {
      * @param x      input matrix, size n * d / 8
      */
     virtual void add(idx_t n, const uint8_t* x) = 0;
-    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::UInt8) {
             add(n, static_cast<const uint8_t*>(x));
         } else {
@@ -85,7 +82,7 @@ struct IndexBinary {
      * @param xids if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const uint8_t* x, const idx_t* xids);
-    virtual void add_with_ids(
+    virtual void add_with_ids_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -114,7 +111,7 @@ struct IndexBinary {
             int32_t* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
-    virtual void search(
+    virtual void search_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,

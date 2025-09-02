@@ -18,8 +18,8 @@ namespace faiss {
 
 // holds a memory-mapped region over a file
 struct MmappedFileMappingOwner : public MaybeOwnedVectorOwner {
-    MmappedFileMappingOwner(const std::string& filename);
-    MmappedFileMappingOwner(FILE* f);
+    explicit MmappedFileMappingOwner(const std::string& filename);
+    explicit MmappedFileMappingOwner(FILE* f);
     ~MmappedFileMappingOwner();
 
     void* data() const;
@@ -37,7 +37,8 @@ struct MappedFileIOReader : IOReader {
 
     size_t pos = 0;
 
-    MappedFileIOReader(const std::shared_ptr<MmappedFileMappingOwner>& owner);
+    explicit MappedFileIOReader(
+            const std::shared_ptr<MmappedFileMappingOwner>& owner);
 
     // perform a copy
     size_t operator()(void* ptr, size_t size, size_t nitems) override;

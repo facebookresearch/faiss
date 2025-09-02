@@ -123,10 +123,12 @@ if not os.path.isdir(cacheroot):
 # we mem-map the biggest files to avoid having them in memory all at
 # once
 
+
 def mmap_fvecs(fname):
     x = np.memmap(fname, dtype='int32', mode='r')
     d = x[0]
     return x.view('float32').reshape(-1, d + 1)[:, 1:]
+
 
 def mmap_bvecs(fname):
     x = np.memmap(fname, dtype='uint8', mode='r')
@@ -559,6 +561,7 @@ def compute_populated_index(preproc):
         gpu_index = None
 
     return gpu_index, indexall
+
 
 def compute_populated_index_2(preproc):
 
