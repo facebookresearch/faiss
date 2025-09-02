@@ -210,19 +210,24 @@ class TestSVSAdapterLVQ4x8(TestSVSAdapter):
         idx.lvq_level = faiss.LVQ4x8
         return idx
 
-# class TestSVSAdapterFlat(TestSVSAdapter):
-    # """Repeat all tests for SVSFlat variant"""
-    # target_class = faiss.IndexSVSFlat
+class TestSVSAdapterFlat(TestSVSAdapter):
+    """Repeat all tests for SVSFlat variant"""
+    target_class = faiss.IndexSVSFlat
 
-    # def _create_instance(self):
-        # return faiss.IndexSVSFlat(self.d)
+    def _create_instance(self):
+        return faiss.IndexSVSFlat(self.d)
 
-    # @unittest.expectedFailure
-    # def test_svs_batch_operations(self):
-        # # TODO
-        # # This test is expected to fail for IndexSVSFlat as it doesn't support batch operations yet
-        # super().test_svs_batch_operations()
+    @unittest.expectedFailure
+    def test_svs_add_search_remove_interface(self):
+        # TODO
+        # This test is expected to fail for IndexSVSFlat as it doesn't support deletions yet
+        super().test_svs_add_search_remove_interface()
 
+    @unittest.expectedFailure
+    def test_svs_batch_operations(self):
+        # TODO
+        # This test is expected to fail for IndexSVSFlat as it doesn't support batch operations yet
+        super().test_svs_batch_operations()
 
 
 class TestSVSVamanaParameters(unittest.TestCase):
