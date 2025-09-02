@@ -1731,9 +1731,8 @@ void runPQScanMultiPassPrecomputed( // (query id)(probe id)
 
     if (queryTileSize * maxListLengthSet >
         (size_t)std::numeric_limits<int>::max()) {
-        queryTileSize =
-                (int)((size_t)std::numeric_limits<int>::max() /
-                      maxListLengthSet);
+        queryTileSize = (int)((size_t)std::numeric_limits<int>::max() /
+                              maxListLengthSet);
         std::max(queryTileSize, kMinQueryTileSize);
     }
 
@@ -1932,9 +1931,8 @@ void runPQScanMultiPassPrecomputed( // (query id)(probe id)
 
     if (queryTileSize * maxListLengthSet >
         (size_t)std::numeric_limits<int>::max()) {
-        queryTileSize =
-                (int)((size_t)std::numeric_limits<int>::max() /
-                      maxListLengthSet);
+        queryTileSize = (int)((size_t)std::numeric_limits<int>::max() /
+                              maxListLengthSet);
         std::max(queryTileSize, kMinQueryTileSize);
     }
 

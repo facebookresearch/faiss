@@ -16,7 +16,8 @@
 namespace faiss {
 namespace gpu {
 
-// Update start offset of each inverted list in the structure with continuous memory
+// Update start offset of each inverted list in the structure with continuous
+// memory
 __global__ void imiUpdateStartOffsets(
         Tensor<unsigned int, 1, true> listStartOffsets,
         Tensor<unsigned int, 1, true> newlistStartOffsets) {
