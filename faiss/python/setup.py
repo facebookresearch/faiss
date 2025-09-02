@@ -9,7 +9,7 @@ import os
 import platform
 import shutil
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
