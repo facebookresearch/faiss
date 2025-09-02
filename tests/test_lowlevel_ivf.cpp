@@ -22,6 +22,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
+#include <faiss/utils/distances.h>
 
 using namespace faiss;
 
@@ -111,6 +112,23 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
     index_ivf->quantizer->assign(nb, xbt, list_nos.data());
     index_ivf->encode_vectors(nb, xbt, list_nos.data(), codes.data());
 
+    /** Test independent decoding
+     *
+     * Encode and decode twice on each vector and compare the first time decoded
+     * vector and second time decoded vector (test decoding consistency only due
+     * to data loss during encode and decode).
+     */
+    std::vector<float> decoded(nb * dt);
+    std::vector<uint8_t> codes2(codes);
+    std::vector<float> decoded2(nb * dt);
+    index_ivf->decode_vectors(
+            nb, codes.data(), list_nos.data(), decoded.data());
+    index_ivf->encode_vectors(nb, xbt, list_nos.data(), codes2.data());
+    index_ivf->decode_vectors(
+            nb, codes2.data(), list_nos.data(), decoded2.data());
+    EXPECT_LT(
+            faiss::fvec_L2sqr(decoded.data(), decoded2.data(), nb * dt), 1e-5);
+
     // compare with normal IVF addition
 
     const InvertedLists* il = index_ivf->invlists;
@@ -168,8 +186,9 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
 
         for (int j = 0; j < nprobe; j++) {
             int list_no = q_lists[i * nprobe + j];
-            if (list_no < 0)
+            if (list_no < 0) {
                 continue;
+            }
             scanner->set_list(list_no, q_dis[i * nprobe + j]);
 
             // here we get the inverted lists from the InvertedLists
@@ -188,8 +207,9 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
                 // the distance function works
                 for (int jj = 0; jj < k; jj++) {
                     int vno = I[jj];
-                    if (vno < 0)
+                    if (vno < 0) {
                         break; // heap is not full yet
+                    }
 
                     // we have the codes from the addition test
                     float computed_D = scanner->distance_to_code(
@@ -246,6 +266,14 @@ TEST(TestLowLevelIVF, IVFPQL2) {
 
 TEST(TestLowLevelIVF, IVFPQIP) {
     test_lowlevel_access("IVF32,PQ4np", METRIC_INNER_PRODUCT);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQ) {
+    test_lowlevel_access("IVF32,RaBitQ", METRIC_L2);
+}
+
+TEST(TestLowLevelIVF, IVFRQ) {
+    test_lowlevel_access("IVF32,RQ16x8", METRIC_L2);
 }
 
 /*************************************************************
@@ -330,8 +358,9 @@ void test_lowlevel_access_binary(const char* index_key) {
 
         for (int j = 0; j < nprobe; j++) {
             int list_no = q_lists[i * nprobe + j];
-            if (list_no < 0)
+            if (list_no < 0) {
                 continue;
+            }
             scanner->set_list(list_no, q_dis[i * nprobe + j]);
 
             // here we get the inverted lists from the InvertedLists
@@ -350,8 +379,9 @@ void test_lowlevel_access_binary(const char* index_key) {
                 // the distance function works
                 for (int jj = 0; jj < k; jj++) {
                     int vno = I[jj];
-                    if (vno < 0)
+                    if (vno < 0) {
                         break; // heap is not full yet
+                    }
 
                     // we have the codes from the addition test
                     float computed_D = scanner->distance_to_code(
@@ -374,8 +404,9 @@ void test_lowlevel_access_binary(const char* index_key) {
             if (D[j] < D_ref[i * k + k - 1]) {
                 int j2 = 0;
                 while (j2 < k) {
-                    if (I[j] == I_ref[i * k + j2])
+                    if (I[j] == I_ref[i * k + j2]) {
                         break;
+                    }
                     j2++;
                 }
                 EXPECT_LT(j2, k); // it was found
@@ -481,8 +512,9 @@ void test_threaded_search(const char* index_key, MetricType metric) {
 
             for (int j = rank; j < nprobe; j += nproc) {
                 int list_no = q_lists[i * nprobe + j];
-                if (list_no < 0)
+                if (list_no < 0) {
                     continue;
+                }
                 scanner->set_list(list_no, q_dis[i * nprobe + j]);
 
                 scanner->scan_codes(
@@ -506,8 +538,9 @@ void test_threaded_search(const char* index_key, MetricType metric) {
         // join threads, merge heaps
         for (int rank = 0; rank < nproc; rank++) {
             threads[rank].join();
-            if (rank == 0)
+            if (rank == 0) {
                 continue; // nothing to merge
+            }
             // merge into first result
             if (metric == METRIC_L2) {
                 maxheap_addn(

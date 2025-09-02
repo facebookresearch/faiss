@@ -295,8 +295,9 @@ static void verifyIndex2LevelDecoder(
                         1,
                         encodedData.data() + pointIdx * codeSize,
                         tempFaiss.data());
-                for (uint64_t j = 0; j < d; j++)
+                for (uint64_t j = 0; j < d; j++) {
                     outputFaiss[i * d + j] += weight * tempFaiss[j];
+                }
             }
         }
         const double timeFaiss = swFaiss.elapsed();

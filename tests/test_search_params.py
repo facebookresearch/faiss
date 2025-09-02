@@ -358,6 +358,7 @@ class TestSelector(unittest.TestCase):
     def test_BinaryFlat_no_heap(self):
         self.do_test_id_selector("BinaryFlat", use_heap=False)
 
+
 class TestSearchParams(unittest.TestCase):
 
     def do_test_with_param(

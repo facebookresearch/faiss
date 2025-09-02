@@ -16,6 +16,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/gpu/impl/IVFBase.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
+#include "GpuIndexIVF.h"
 
 namespace faiss {
 namespace gpu {

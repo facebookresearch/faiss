@@ -15,11 +15,9 @@
 
 #include <cstdio>
 #include <sstream>
-#include <string>
-#include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 11
+#define FAISS_VERSION_MINOR 12
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
@@ -61,6 +59,8 @@ struct DistanceComputer;
 enum NumericType {
     Float32,
     Float16,
+    UInt8,
+    Int8,
 };
 
 inline size_t get_numeric_type_size(NumericType numeric_type) {
@@ -69,6 +69,9 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
             return 4;
         case NumericType::Float16:
             return 2;
+        case NumericType::UInt8:
+        case NumericType::Int8:
+            return 1;
         default:
             FAISS_THROW_MSG(
                     "Unknown Numeric Type. Only supports Float32, Float16");
@@ -126,7 +129,7 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
-    virtual void train(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             train(n, static_cast<const float*>(x));
         } else {
@@ -144,7 +147,7 @@ struct Index {
      */
     virtual void add(idx_t n, const float* x) = 0;
 
-    virtual void add(idx_t n, const void* x, NumericType numeric_type) {
+    virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {
             add(n, static_cast<const float*>(x));
         } else {
@@ -162,7 +165,7 @@ struct Index {
      * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
-    virtual void add_with_ids(
+    virtual void add_with_ids_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -193,7 +196,7 @@ struct Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
 
-    virtual void search(
+    virtual void search_ex(
             idx_t n,
             const void* x,
             NumericType numeric_type,

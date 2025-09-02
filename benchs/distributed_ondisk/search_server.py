@@ -16,7 +16,6 @@ import argparse
 # Server implementation
 ############################################################
 
-
 class MyServer(rpc.Server):
     """ Assign version that can be exposed via RPC """
     def __init__(self, s, index):
@@ -25,6 +24,7 @@ class MyServer(rpc.Server):
 
     def __getattr__(self, f):
         return getattr(self.index, f)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -96,6 +96,7 @@ class ResultHeap:
 
     def finalize(self):
         self.heaps.reorder()
+
 
 def distribute_weights(weights, nbin):
     """ assign a set of weights to a smaller set of bins to balance them """

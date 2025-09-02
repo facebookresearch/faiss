@@ -11,7 +11,6 @@
 
 #include <cinttypes>
 #include <cstdio>
-#include <memory>
 #include <unordered_set>
 
 #include <faiss/utils/hamming.h>

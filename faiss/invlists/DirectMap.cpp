@@ -85,8 +85,9 @@ idx_t DirectMap::get(idx_t key) const {
 }
 
 void DirectMap::add_single_id(idx_t id, idx_t list_no, size_t offset) {
-    if (type == NoMap)
+    if (type == NoMap) {
         return;
+    }
 
     if (type == Array) {
         assert(id == array.size());

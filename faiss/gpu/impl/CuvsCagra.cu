@@ -179,6 +179,8 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
         cuvs::neighbors::cagra::graph_build_params::ivf_pq_params
                 graph_build_params;
         graph_build_params.build_params = ivf_pq_params_.value();
+        graph_build_params.build_params.metric =
+                metricFaissToCuvs(metric_, false);
         graph_build_params.search_params = ivf_pq_search_params_.value();
         graph_build_params.refinement_rate = refine_rate_.value();
         index_params_.graph_build_params = graph_build_params;
@@ -191,6 +193,7 @@ void CuvsCagra<data_t>::train(idx_t n, const data_t* x) {
         cuvs::neighbors::cagra::graph_build_params::nn_descent_params
                 graph_build_params(index_params_.intermediate_graph_degree);
         graph_build_params.max_iterations = nn_descent_niter_;
+        graph_build_params.metric = metricFaissToCuvs(metric_, false);
         index_params_.graph_build_params = graph_build_params;
     }
 
@@ -335,5 +338,6 @@ const data_t* CuvsCagra<data_t>::get_training_dataset() const {
 
 template class CuvsCagra<float>;
 template class CuvsCagra<half>;
+template class CuvsCagra<int8_t>;
 } // namespace gpu
 } // namespace faiss

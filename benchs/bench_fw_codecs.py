@@ -3,16 +3,16 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import logging
 import argparse
+import logging
 import os
 
 from faiss.benchs.bench_fw.benchmark import Benchmark
 from faiss.benchs.bench_fw.benchmark_io import BenchmarkIO
 from faiss.benchs.bench_fw.descriptors import DatasetDescriptor, IndexDescriptorClassic
-from faiss.benchs.bench_fw.index import IndexFromFactory
 
 logging.basicConfig(level=logging.INFO)
+
 
 def factory_factory(d):
     return [
@@ -78,6 +78,7 @@ def factory_factory(d):
         if d % sub == 0
     ]
 
+
 def run_local(rp):
     bio, d, tablename, distance_metric = rp
     if tablename == "contriever":
@@ -120,6 +121,7 @@ def run_local(rp):
     )
     benchmark.set_io(bio)
     benchmark.benchmark(result_file="result.json", train=True, reconstruct=False, knn=False, range=False)
+
 
 def run(bio, d, tablename, distance_metric):
     bio.launch_jobs(run_local, [(bio, d, tablename, distance_metric)], local=True)

@@ -26,37 +26,9 @@ import faiss
 
 from faiss.contrib import evaluation
 
-
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")
-class TestComputeGT(unittest.TestCase):
-
-    def do_compute_GT(self):
-        d = 64 * 8
-        k = 12
-        flat_index = faiss.IndexBinaryFlat(d)
-        xb = np.random.randint(
-            low=0, high=256, size=(1000000, d // 8), dtype=np.uint8)
-        flat_index.add(xb)
-        queries = np.random.randint(
-            low=0, high=256, size=(1000, d // 8), dtype=np.uint8)
-        Dref, Iref = flat_index.search(queries, k)
-
-        res = faiss.StandardGpuResources()
-
-        index = faiss.GpuIndexBinaryCagra(res, d)
-        index.train(xb)
-        Dnew, Inew = index.search(queries, k)
-
-        evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
-
-    def test_compute_GT(self):
-        self.do_compute_GT()
-
-
-@unittest.skip(
-    "Disabled until Faiss supports cuVS 12.8 in CI.")
 class TestInterop(unittest.TestCase):
 
     def do_interop(self):
@@ -88,3 +60,78 @@ class TestInterop(unittest.TestCase):
 
     def test_interop(self):
         self.do_interop()
+
+
+@unittest.skipIf(
+    "CUVS" not in faiss.get_compile_options(),
+    "only if cuVS is compiled in")
+class TestComputeGT(unittest.TestCase):
+
+    def do_compute_GT(self, build_algo=None):
+        d = 64 * 8
+        k = 12
+        flat_index = faiss.IndexBinaryFlat(d)
+        xb = np.random.randint(
+            low=0, high=256, size=(1000000, d // 8), dtype=np.uint8)
+        flat_index.add(xb)
+        queries = np.random.randint(
+            low=0, high=256, size=(1000, d // 8), dtype=np.uint8)
+        Dref, Iref = flat_index.search(queries, k)
+
+        res = faiss.StandardGpuResources()
+
+        # Configure the index with specified build algorithm
+        config = faiss.GpuIndexCagraConfig()
+        if build_algo is not None:
+            config.build_algo = build_algo
+            if build_algo == faiss.graph_build_algo_NN_DESCENT:
+                config.nn_descent_niter = 20
+
+        index = faiss.GpuIndexBinaryCagra(res, d, config)
+        index.train(xb)
+        Dnew, Inew = index.search(queries, k)
+
+        evaluation.check_ref_knn_with_draws(Dref, Iref, Dnew, Inew, k)
+
+    def test_compute_GT_nn_descent(self):
+        self.do_compute_GT(faiss.graph_build_algo_NN_DESCENT)
+
+    def test_compute_GT_iterative_search(self):
+        self.do_compute_GT(faiss.graph_build_algo_ITERATIVE_SEARCH)
+
+
+@unittest.skipIf(
+    "CUVS" not in faiss.get_compile_options(),
+    "only if cuVS is compiled in")
+class TestIndexBinaryIDMap(unittest.TestCase):
+    """Test IndexBinaryIDMap functionality with GpuIndexBinaryCagra"""
+
+    def test_add_with_ids(self):
+        d = 128 * 8
+        k = 10
+        n = 100000
+
+        res = faiss.StandardGpuResources()
+
+        # Create GpuIndexBinaryCagra with IDMap
+        index_gpu = faiss.GpuIndexBinaryCagra(res, d)
+        index_idmap = faiss.IndexBinaryIDMap(index_gpu)
+
+        xb = np.random.randint(
+            low=0, high=256, size=(n, d // 8), dtype=np.uint8)
+        ids = np.arange(1000000, 1000000 + n).astype(np.int64)
+
+        index_idmap.add_with_ids(xb, ids)
+
+        nq = 1000
+        xq = np.random.randint(
+            low=0, high=256, size=(nq, d // 8), dtype=np.uint8)
+        D, I = index_idmap.search(xq, k)
+
+        self.assertTrue(np.all(I >= 1000000))
+        self.assertTrue(np.all(I < 1000000 + n))
+
+        D_exact, I_exact = index_idmap.search(xb[:10], 1)
+        expected_ids = ids[:10].reshape(-1, 1)
+        np.testing.assert_array_equal(I_exact, expected_ids)
+        np.testing.assert_array_equal(D_exact, np.zeros((10, 1)))

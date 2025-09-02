@@ -32,7 +32,7 @@ struct IndexBinaryFromFloat : IndexBinary {
 
     explicit IndexBinaryFromFloat(Index* index);
 
-    ~IndexBinaryFromFloat();
+    ~IndexBinaryFromFloat() override;
 
     void add(idx_t n, const uint8_t* x) override;
 

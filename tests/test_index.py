@@ -10,19 +10,18 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import unittest
 import faiss
-import tempfile
-import os
 import re
-import warnings
 
 from common_faiss_tests import get_dataset, get_dataset_2
 from faiss.contrib.evaluation import check_ref_knn_with_draws
+
 
 class TestModuleInterface(unittest.TestCase):
 
     def test_version_attribute(self):
         assert hasattr(faiss, '__version__')
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
+
 
 class TestIndexFlat(unittest.TestCase):
 
@@ -624,6 +623,7 @@ class TestShardReplicas(unittest.TestCase):
         index.remove_replica(index1)
         self.assertEqual(index.ntotal, 0)
 
+
 class TestReconsException(unittest.TestCase):
 
     def test_recons_exception(self):
@@ -646,7 +646,7 @@ class TestReconsException(unittest.TestCase):
             index.reconstruct, 100001
         )
 
-    def test_reconstuct_after_add(self):
+    def test_reconstruct_after_add(self):
         index = faiss.index_factory(10, 'IVF5,SQfp16')
         index.train(faiss.randn((100, 10), 123))
         index.add(faiss.randn((100, 10), 345))
@@ -656,6 +656,26 @@ class TestReconsException(unittest.TestCase):
         # should not raise an exception
         index.reconstruct(5)
         index.reconstruct(150)
+
+    def test_reconstruct_larger_ntotal(self):
+        vect_dim = 5
+        n_vectors = 10
+
+        # Create the dataset
+        data = np.random.randint(100, size=(n_vectors, vect_dim))
+
+        # Build index
+        index = faiss.IndexFlatL2(vect_dim)
+        index.add(data)
+
+        # Reconstruct < ntotal (10) without an issue
+        index.reconstruct(9)
+
+        # Reconstruct >= ntotal (10), assert exception raise
+        self.assertRaises(
+            RuntimeError,
+            index.reconstruct, 10
+        )
 
 
 class TestReconsHash(unittest.TestCase):

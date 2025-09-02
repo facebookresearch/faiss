@@ -40,9 +40,15 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         int dim,
         idx_t intermediate_graph_degree,
         idx_t graph_degree,
+        faiss::cagra_build_algo graph_build_algo,
+        size_t nn_descent_niter,
         bool store_dataset,
         IndicesOptions indicesOptions)
-        : resources_(resources), dim_(dim), store_dataset_(store_dataset) {
+        : resources_(resources),
+          dim_(dim),
+          graph_build_algo_(graph_build_algo),
+          nn_descent_niter_(nn_descent_niter),
+          store_dataset_(store_dataset) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
@@ -52,6 +58,13 @@ BinaryCuvsCagra::BinaryCuvsCagra(
     index_params_.attach_dataset_on_build = store_dataset;
 
     index_params_.metric = cuvs::distance::DistanceType::BitwiseHamming;
+
+    // default to NN_DESCENT if IVF_PQ is set
+    if (graph_build_algo == faiss::cagra_build_algo::IVF_PQ) {
+        fprintf(stderr,
+                "WARNING: IVF_PQ is not supported for binary CAGRA. "
+                "Defaulting to NN_DESCENT\n");
+    }
 
     reset();
 }
@@ -126,18 +139,26 @@ BinaryCuvsCagra::BinaryCuvsCagra(
 }
 
 void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
-    std::cout << "dim" << dim_ << std::endl;
     storage_ = x;
     n_ = n;
 
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
 
-    // BitwiseHamming metric only supports CAGRA iterative search as the graph
-    // building algorithm
-    cuvs::neighbors::cagra::graph_build_params::iterative_search_params
-            graph_build_params;
-    index_params_.graph_build_params = graph_build_params;
+    // IVF-PQ is not supported as the graph building algorithm
+    if (graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT ||
+        graph_build_algo_ == faiss::cagra_build_algo::IVF_PQ) {
+        cuvs::neighbors::cagra::graph_build_params::nn_descent_params
+                graph_build_params(index_params_.intermediate_graph_degree);
+        graph_build_params.max_iterations = nn_descent_niter_;
+        graph_build_params.metric =
+                cuvs::distance::DistanceType::BitwiseHamming;
+        index_params_.graph_build_params = graph_build_params;
+    } else {
+        cuvs::neighbors::cagra::graph_build_params::iterative_search_params
+                graph_build_params;
+        index_params_.graph_build_params = graph_build_params;
+    }
 
     if (getDeviceForAddress(x) >= 0) {
         auto dataset = raft::make_device_matrix_view<const uint8_t, int64_t>(

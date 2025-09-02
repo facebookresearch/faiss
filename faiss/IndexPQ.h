@@ -153,6 +153,7 @@ struct MultiIndexQuantizer : Index {
 
     /// add and reset will crash at runtime
     void add(idx_t n, const float* x) override;
+
     void reset() override;
 
     MultiIndexQuantizer() {}

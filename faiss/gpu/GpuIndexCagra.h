@@ -44,7 +44,9 @@ enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
     /// Use NN-Descent to build all-neighbors knn graph
-    NN_DESCENT
+    NN_DESCENT,
+    /// Use iterative search to build knn graph
+    ITERATIVE_SEARCH
 };
 
 /// A type for specifying how PQ codebooks are created.
@@ -256,7 +258,7 @@ struct GpuIndexCagra : public GpuIndex {
     /// the base dataset. Use this function when you want to add vectors with
     /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
     void add(idx_t n, const float* x) override;
-    void add(idx_t n, const void* x, NumericType numeric_type) override;
+    void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
@@ -264,12 +266,14 @@ struct GpuIndexCagra : public GpuIndex {
     /// of vectors (without IDs) to the index. There is no external quantizer to
     /// be trained here.
     void train(idx_t n, const float* x) override;
-    void train(idx_t n, const void* x, NumericType numeric_type) override;
+    void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
     void copyFrom(const faiss::IndexHNSWCagra* index);
-    void copyFrom(const faiss::IndexHNSWCagra* index, NumericType numeric_type);
+    void copyFrom_ex(
+            const faiss::IndexHNSWCagra* index,
+            NumericType numeric_type);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
@@ -285,6 +289,11 @@ struct GpuIndexCagra : public GpuIndex {
     bool addImplRequiresIDs_() const override;
 
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -294,7 +303,7 @@ struct GpuIndexCagra : public GpuIndex {
             float* distances,
             idx_t* labels,
             const SearchParameters* search_params) const override;
-    void searchImpl_(
+    void searchImpl_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
@@ -312,7 +321,8 @@ struct GpuIndexCagra : public GpuIndex {
     std::variant<
             std::monostate,
             std::shared_ptr<CuvsCagra<float>>,
-            std::shared_ptr<CuvsCagra<half>>>
+            std::shared_ptr<CuvsCagra<half>>,
+            std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
 };
 

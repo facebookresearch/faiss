@@ -15,6 +15,7 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexFlat.h>
 #if defined USE_NVIDIA_CUVS
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexHNSW.h>
 #endif
 #include <faiss/IndexIVF.h>
@@ -96,7 +97,7 @@ Index* ToCPUCloner::clone_Index(const Index* index) {
 #if defined USE_NVIDIA_CUVS
     else if (auto icg = dynamic_cast<const GpuIndexCagra*>(index)) {
         IndexHNSWCagra* res = new IndexHNSWCagra();
-        if (icg->get_numeric_type() == faiss::NumericType::Float16) {
+        if (icg->get_numeric_type() != faiss::NumericType::Float32) {
             res->base_level_only = true;
         }
         icg->copyTo(res);
@@ -261,7 +262,7 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.device = device;
         GpuIndexCagra* res =
                 new GpuIndexCagra(provider, icg->d, icg->metric_type, config);
-        res->copyFrom(icg, icg->get_numeric_type());
+        res->copyFrom_ex(icg, icg->get_numeric_type());
         return res;
     }
 #endif
@@ -315,14 +316,16 @@ void ToGpuClonerMultiple::copy_ivf_shard(
         idx_t i0 = i * index_ivf->ntotal / n;
         idx_t i1 = (i + 1) * index_ivf->ntotal / n;
 
-        if (verbose)
+        if (verbose) {
             printf("IndexShards shard %ld indices %ld:%ld\n", i, i0, i1);
+        }
         index_ivf->copy_subset_to(
                 *idx2, InvertedLists::SUBSET_TYPE_ID_RANGE, i0, i1);
         FAISS_ASSERT(idx2->ntotal == i1 - i0);
     } else if (shard_type == 1) {
-        if (verbose)
+        if (verbose) {
             printf("IndexShards shard %ld select modulo %ld = %ld\n", i, n, i);
+        }
         index_ivf->copy_subset_to(
                 *idx2, InvertedLists::SUBSET_TYPE_ID_MOD, n, i);
     } else if (shard_type == 4) {
@@ -555,7 +558,7 @@ faiss::IndexBinary* index_binary_gpu_to_cpu(
     }
 #if defined USE_NVIDIA_CUVS
     else if (auto ii = dynamic_cast<const GpuIndexBinaryCagra*>(gpu_index)) {
-        IndexBinaryHNSW* ret = new IndexBinaryHNSW();
+        IndexBinaryHNSWCagra* ret = new IndexBinaryHNSWCagra();
         ii->copyTo(ret);
         return ret;
     }
@@ -576,7 +579,8 @@ faiss::IndexBinary* index_binary_cpu_to_gpu(
         return new GpuIndexBinaryFlat(provider, ii, config);
     }
 #if defined USE_NVIDIA_CUVS
-    else if (auto ii = dynamic_cast<const faiss::IndexBinaryHNSW*>(index)) {
+    else if (
+            auto ii = dynamic_cast<const faiss::IndexBinaryHNSWCagra*>(index)) {
         GpuIndexCagraConfig config;
         config.device = device;
         GpuIndexBinaryCagra* res =

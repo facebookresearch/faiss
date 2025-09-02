@@ -11,9 +11,6 @@
 #define FAISS_INDEX_IO_H
 
 #include <cstdio>
-#include <string>
-#include <typeinfo>
-#include <vector>
 
 /** I/O functions can read/write to a filename, a file handle or to an
  * object that abstracts the medium.
