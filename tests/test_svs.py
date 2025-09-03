@@ -39,8 +39,8 @@ class TestSVSAdapter(unittest.TestCase):
         index_ip.metric_type = faiss.METRIC_INNER_PRODUCT
         self.assertEqual(index_ip.metric_type, faiss.METRIC_INNER_PRODUCT)
 
-    def test_svs_add_search_interface(self):
-        """Test FAISS add/search interface compatibility"""
+    def test_svs_add_search_remove_interface(self):
+        """Test FAISS add/search/remove_ids interface compatibility"""
         index = self._create_instance()
 
         # Test add interface
@@ -55,9 +55,26 @@ class TestSVSAdapter(unittest.TestCase):
         self.assertTrue(np.all(I >= 0))
         self.assertTrue(np.all(I < self.nb))
 
+        # Test remove
+        ids = np.arange(index.ntotal)
+        toremove = np.ascontiguousarray(ids[0:200:3])
+        sel = faiss.IDSelectorArray(50, faiss.swig_ptr(toremove[:50]))
+        nremove = index.remove_ids(sel)
+        nremove += index.remove_ids(toremove[50:])
+
+        self.assertEqual(nremove, len(toremove))
+        self.assertEqual(index.ntotal_soft_deleted, len(toremove))
+
+        # remove more to trigger cleanup
+        toremove = np.ascontiguousarray(ids[200:800])
+        nremove = index.remove_ids(toremove)
+        self.assertEqual(nremove, len(toremove))
+        self.assertEqual(index.ntotal_soft_deleted, 0)
+
         # Test reset
         index.reset()
         self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal_soft_deleted, 0)
 
     def test_svs_metric_types(self):
         """Test different metric types are handled correctly"""
@@ -141,6 +158,28 @@ class TestSVSAdapter(unittest.TestCase):
         D, _ = index.search(self.xq, 4)
         self.assertEqual(D.shape, (self.nq, 4))
 
+class TestSVSFactory(unittest.TestCase):
+    """Test that SVS factory works correctly"""
+
+    def test_svs_factory(self):
+        index = faiss.index_factory(32, "SVS,Vamana64")
+        self.assertEqual(index.d, 32)
+        self.assertEqual(index.graph_max_degree, 64)
+        self.assertEqual(index.metric_type, faiss.METRIC_L2)
+        self.assertEqual(index.ntotal_soft_deleted, 0)
+
+        index = faiss.index_factory(16, "SVS,Vamana32,LVQ4x8")
+        self.assertEqual(index.d, 16)
+        self.assertEqual(index.graph_max_degree, 32)
+        self.assertEqual(index.lvq_level, faiss.LVQ4x8)
+
+        index = faiss.index_factory(128, "SVS,Vamana48,LeanVec4x4_64")
+        self.assertEqual(index.d, 128)
+        self.assertEqual(index.graph_max_degree, 48)
+        self.assertEqual(index.leanvec_level, faiss.LeanVec4x4)
+        self.assertEqual(index.leanvec_d, 64)
+
+
 
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x0 variant"""
@@ -179,11 +218,16 @@ class TestSVSAdapterFlat(TestSVSAdapter):
         return faiss.IndexSVSFlat(self.d)
 
     @unittest.expectedFailure
+    def test_svs_add_search_remove_interface(self):
+        # TODO
+        # This test is expected to fail for IndexSVSFlat as it doesn't support deletions yet
+        super().test_svs_add_search_remove_interface()
+
+    @unittest.expectedFailure
     def test_svs_batch_operations(self):
         # TODO
         # This test is expected to fail for IndexSVSFlat as it doesn't support batch operations yet
         super().test_svs_batch_operations()
-
 
 
 class TestSVSVamanaParameters(unittest.TestCase):
