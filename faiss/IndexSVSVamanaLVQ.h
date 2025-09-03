@@ -30,7 +30,8 @@ struct IndexSVSVamanaLVQ : IndexSVSVamana {
             LVQDataset<4, 4, svs::Dynamic, strategy_type_4, blocked_alloc_type>;
     using storage_type_4x8 = svs::quantization::lvq::
             LVQDataset<4, 8, svs::Dynamic, strategy_type_4, blocked_alloc_type>;
-    using storage_type_sq = svs::quantization::scalar::SQDataset<std::int8_t, svs::Dynamic, blocked_alloc_type_sq>;
+    using storage_type_sq = svs::quantization::scalar::
+            SQDataset<std::int8_t, svs::Dynamic, blocked_alloc_type_sq>;
 
     IndexSVSVamanaLVQ() = default;
     IndexSVSVamanaLVQ(

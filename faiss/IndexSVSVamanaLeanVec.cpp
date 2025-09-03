@@ -9,10 +9,10 @@
 
 #include <variant>
 
-#include <svs/cpuid.h>
 #include <svs/core/medioid.h>
-#include <svs/orchestrators/dynamic_vamana.h>
+#include <svs/cpuid.h>
 #include <svs/extensions/vamana/scalar.h>
+#include <svs/orchestrators/dynamic_vamana.h>
 
 #include <faiss/impl/FaissAssert.h>
 
@@ -71,7 +71,7 @@ void IndexSVSVamanaLeanVec::init_impl(idx_t n, const float* x) {
             storage_type_sq>
             compressed_data;
 
-    if(svs::detail::intel_enabled()) {
+    if (svs::detail::intel_enabled()) {
         switch (leanvec_level) {
             case LeanVecLevel::LeanVec4x4:
                 compressed_data = storage_type_4x4::reduce(
@@ -103,9 +103,9 @@ void IndexSVSVamanaLeanVec::init_impl(idx_t n, const float* x) {
             default:
                 FAISS_ASSERT(!"not supported SVS LeanVec level");
         }
-    }
-    else {
-        compressed_data = storage_type_sq::compress(data, threadpool, blocked_alloc_type_sq{});
+    } else {
+        compressed_data = storage_type_sq::compress(
+                data, threadpool, blocked_alloc_type_sq{});
     }
 
     svs::threads::parallel_for(
@@ -186,13 +186,14 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
 
     std::visit(
             [&](auto&& svs_distance) {
-                if(svs::detail::intel_enabled()) {
+                if (svs::detail::intel_enabled()) {
                     switch (leanvec_level) {
                         case LeanVecLevel::LeanVec4x4:
                             impl = new svs::DynamicVamana(
                                     svs::DynamicVamana::assemble<float>(
                                             tmp.config.string(),
-                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::GraphLoader(
+                                                    tmp.graph.string()),
                                             svs::lib::load_from_disk<
                                                     storage_type_4x4>(
                                                     tmp.data.string()),
@@ -203,7 +204,8 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
                             impl = new svs::DynamicVamana(
                                     svs::DynamicVamana::assemble<float>(
                                             tmp.config.string(),
-                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::GraphLoader(
+                                                    tmp.graph.string()),
                                             svs::lib::load_from_disk<
                                                     storage_type_4x8>(
                                                     tmp.data.string()),
@@ -214,7 +216,8 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
                             impl = new svs::DynamicVamana(
                                     svs::DynamicVamana::assemble<float>(
                                             tmp.config.string(),
-                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::GraphLoader(
+                                                    tmp.graph.string()),
                                             svs::lib::load_from_disk<
                                                     storage_type_8x8>(
                                                     tmp.data.string()),
@@ -224,14 +227,12 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
                         default:
                             FAISS_ASSERT(!"not supported SVS LeanVec level");
                     }
-                }
-                else {
+                } else {
                     impl = new svs::DynamicVamana(
                             svs::DynamicVamana::assemble<float>(
                                     tmp.config.string(),
                                     svs::GraphLoader(tmp.graph.string()),
-                                    svs::lib::load_from_disk<
-                                            storage_type_sq>(
+                                    svs::lib::load_from_disk<storage_type_sq>(
                                             tmp.data.string()),
                                     svs_distance,
                                     std::move(threadpool)));

@@ -40,7 +40,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             svs::Dynamic,
             svs::Dynamic,
             blocked_alloc_type>;
-    using storage_type_sq = svs::quantization::scalar::SQDataset<std::int8_t, svs::Dynamic, blocked_alloc_type_sq>;
+    using storage_type_sq = svs::quantization::scalar::
+            SQDataset<std::int8_t, svs::Dynamic, blocked_alloc_type_sq>;
 
     IndexSVSVamanaLeanVec() = default;
 
