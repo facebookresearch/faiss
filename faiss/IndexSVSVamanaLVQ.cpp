@@ -9,7 +9,10 @@
 
 #include <variant>
 
+#include <svs/cpuid.h>
 #include <svs/orchestrators/dynamic_vamana.h>
+#include <svs/extensions/vamana/scalar.h>
+
 namespace faiss {
 
 IndexSVSVamanaLVQ::IndexSVSVamanaLVQ(
@@ -31,24 +34,30 @@ void IndexSVSVamanaLVQ::init_impl(idx_t n, const float* x) {
             std::monostate,
             storage_type_4x0,
             storage_type_4x4,
-            storage_type_4x8>
+            storage_type_4x8,
+            storage_type_sq>
             compressed_data;
 
-    switch (lvq_level) {
-        case LVQLevel::LVQ4x0:
-            compressed_data = storage_type_4x0::compress(
-                    data, threadpool, 0, blocked_alloc_type{});
-            break;
-        case LVQLevel::LVQ4x4:
-            compressed_data = storage_type_4x4::compress(
-                    data, threadpool, 0, blocked_alloc_type{});
-            break;
-        case LVQLevel::LVQ4x8:
-            compressed_data = storage_type_4x8::compress(
-                    data, threadpool, 0, blocked_alloc_type{});
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS LVQ level");
+    if(svs::detail::intel_enabled()) {
+        switch (lvq_level) {
+            case LVQLevel::LVQ4x0:
+                compressed_data = storage_type_4x0::compress(
+                        data, threadpool, 0, blocked_alloc_type{});
+                break;
+            case LVQLevel::LVQ4x4:
+                compressed_data = storage_type_4x4::compress(
+                        data, threadpool, 0, blocked_alloc_type{});
+                break;
+            case LVQLevel::LVQ4x8:
+                compressed_data = storage_type_4x8::compress(
+                        data, threadpool, 0, blocked_alloc_type{});
+                break;
+            default:
+                FAISS_ASSERT(!"not supported SVS LVQ level");
+        }
+    }
+    else {
+        compressed_data = storage_type_sq::compress(data, threadpool, blocked_alloc_type_sq{});
     }
 
     svs::threads::parallel_for(
@@ -129,42 +138,55 @@ void IndexSVSVamanaLVQ::deserialize_impl(std::istream& in) {
 
     std::visit(
             [&](auto&& svs_distance) {
-                switch (lvq_level) {
-                    case LVQLevel::LVQ4x0:
-                        impl = new svs::DynamicVamana(
-                                svs::DynamicVamana::assemble<float>(
-                                        tmp.config.string(),
-                                        svs::GraphLoader(tmp.graph.string()),
-                                        svs::lib::load_from_disk<
-                                                storage_type_4x0>(
-                                                tmp.data.string()),
-                                        svs_distance,
-                                        std::move(threadpool)));
-                        break;
-                    case LVQLevel::LVQ4x4:
-                        impl = new svs::DynamicVamana(
-                                svs::DynamicVamana::assemble<float>(
-                                        tmp.config.string(),
-                                        svs::GraphLoader(tmp.graph.string()),
-                                        svs::lib::load_from_disk<
-                                                storage_type_4x4>(
-                                                tmp.data.string()),
-                                        svs_distance,
-                                        std::move(threadpool)));
-                        break;
-                    case LVQLevel::LVQ4x8:
-                        impl = new svs::DynamicVamana(
-                                svs::DynamicVamana::assemble<float>(
-                                        tmp.config.string(),
-                                        svs::GraphLoader(tmp.graph.string()),
-                                        svs::lib::load_from_disk<
-                                                storage_type_4x8>(
-                                                tmp.data.string()),
-                                        svs_distance,
-                                        std::move(threadpool)));
-                        break;
-                    default:
-                        FAISS_ASSERT(!"not supported SVS LVQ level");
+                if(svs::detail::intel_enabled()) {
+                    switch (lvq_level) {
+                        case LVQLevel::LVQ4x0:
+                            impl = new svs::DynamicVamana(
+                                    svs::DynamicVamana::assemble<float>(
+                                            tmp.config.string(),
+                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::lib::load_from_disk<
+                                                    storage_type_4x0>(
+                                                    tmp.data.string()),
+                                            svs_distance,
+                                            std::move(threadpool)));
+                            break;
+                        case LVQLevel::LVQ4x4:
+                            impl = new svs::DynamicVamana(
+                                    svs::DynamicVamana::assemble<float>(
+                                            tmp.config.string(),
+                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::lib::load_from_disk<
+                                                    storage_type_4x4>(
+                                                    tmp.data.string()),
+                                            svs_distance,
+                                            std::move(threadpool)));
+                            break;
+                        case LVQLevel::LVQ4x8:
+                            impl = new svs::DynamicVamana(
+                                    svs::DynamicVamana::assemble<float>(
+                                            tmp.config.string(),
+                                            svs::GraphLoader(tmp.graph.string()),
+                                            svs::lib::load_from_disk<
+                                                    storage_type_4x8>(
+                                                    tmp.data.string()),
+                                            svs_distance,
+                                            std::move(threadpool)));
+                            break;
+                        default:
+                            FAISS_ASSERT(!"not supported SVS LVQ level");
+                    }
+                }
+                else {
+                    impl = new svs::DynamicVamana(
+                            svs::DynamicVamana::assemble<float>(
+                                    tmp.config.string(),
+                                    svs::GraphLoader(tmp.graph.string()),
+                                    svs::lib::load_from_disk<
+                                            storage_type_sq>(
+                                            tmp.data.string()),
+                                    svs_distance,
+                                    std::move(threadpool)));
                 }
             },
             svs_distance);
