@@ -10,14 +10,37 @@ Tests for the implementation of Local Search Quantizer
 import numpy as np
 import platform
 
-import faiss
 import unittest
+from absl.testing import parameterized
 
+import faiss
 from faiss.contrib import datasets
+
 
 faiss.omp_set_num_threads(4)
 
 sp = faiss.swig_ptr
+simd_config = faiss.SIMDConfig()
+
+
+def get_supported_simd_levels():
+    supported_levels = []
+    # max_expected_simd_levels - refers to max possible number of simd levels
+    # supported by the platform.
+    max_expected_simd_levels = 20
+    for simd_level in range(max_expected_simd_levels):
+        if simd_config.is_simd_level_available(simd_level):
+            supported_levels.append(simd_level)
+    return supported_levels
+
+
+def get_test_simd_level_parameters():
+    simd_levels = get_supported_simd_levels()
+    parameters = []
+    for simd_level in simd_levels:
+        value = (f"simd_level_{simd_level}", simd_level)
+        parameters.append(value)
+    return parameters
 
 
 def construct_sparse_matrix(codes, K):
@@ -118,7 +141,6 @@ def icm_encode_ref(x, codebooks, codes):
 
 
 class TestComponents(unittest.TestCase):
-
     def test_decode(self):
         """Test LSQ decode"""
         d = 16
@@ -505,7 +527,7 @@ class TestIndexIVFLocalSearchQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(I, I2)
 
 
-class TestProductLocalSearchQuantizer(unittest.TestCase):
+class TestProductLocalSearchQuantizer(parameterized.TestCase):
 
     def test_codec(self):
         """check that the error is in the same ballpark as PQ."""
@@ -548,8 +570,10 @@ class TestProductLocalSearchQuantizer(unittest.TestCase):
 
         self.assertEqual(err_plsq, err_lsq)
 
-    def test_lut(self):
+    @parameterized.named_parameters(get_test_simd_level_parameters())
+    def test_lut(self, simd_level):
         """test compute_LUT function"""
+        simd_config.set_level(simd_level)
         ds = datasets.SyntheticDataset(16, 1000, 0, 100)
 
         xt = ds.get_train()
