@@ -585,6 +585,7 @@ Index* parse_svs_datatype(
 
     // TODO: support SQ8, Float16
     // TODO: support LVQ and LeanVec on Flat, IVF
+    // TODO: support LeanVec OOD
     if (datatype_string.empty()) {
         if (index_type == "Vamana")
             return new IndexSVSVamana(d, std::stoul(arg_string), mt);
@@ -630,12 +631,12 @@ Index* parse_svs_datatype(
 
 Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
     std::smatch sm;
-    if (re_match(code_string, "Flat([,_].*)?", sm)) {
+    if (re_match(code_string, "Flat(,.+)?", sm)) {
         std::string datatype_string =
                 sm[1].length() > 0 ? sm[1].str().substr(1) : "";
         return parse_svs_datatype("Flat", "", datatype_string, d, mt);
     }
-    if (re_match(code_string, "Vamana([0-9]+)([,_].*)?", sm)) {
+    if (re_match(code_string, "Vamana([0-9]+)(,.+)?", sm)) {
         Index* index{nullptr};
         std::string degree_string = sm[1].str();
         std::string datatype_string =
@@ -643,7 +644,7 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
         return parse_svs_datatype(
                 "Vamana", degree_string, datatype_string, d, mt);
     }
-    if (re_match(code_string, "IVF([0-9]+)([,_].*)?", sm)) {
+    if (re_match(code_string, "IVF([0-9]+)(,.+)?", sm)) {
         FAISS_ASSERT(!"Unspported SVS index type");
         // std::string datatype_string =
         // sm[1].length() > 0 ? sm[1].str().substr(1) : "";
@@ -940,8 +941,8 @@ std::unique_ptr<Index> index_factory_sub(
     }
 
 #ifdef FAISS_ENABLE_SVS
-    if (re_match(description, "SVS([,_].*)", sm)) {
-        std::string code_string = sm[1].str().substr(1);
+    if (re_match(description, "SVS(.+)", sm)) {
+        std::string code_string = sm[1].str();
         if (verbose) {
             printf("parsing SVS string %s code_string=%s",
                    description.c_str(),

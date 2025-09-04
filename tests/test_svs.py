@@ -162,18 +162,21 @@ class TestSVSFactory(unittest.TestCase):
     """Test that SVS factory works correctly"""
 
     def test_svs_factory(self):
-        index = faiss.index_factory(32, "SVS,Vamana64")
+        index = faiss.index_factory(32, "SVSFlat")
+        self.assertEqual(index.d, 32)
+
+        index = faiss.index_factory(32, "SVSVamana64")
         self.assertEqual(index.d, 32)
         self.assertEqual(index.graph_max_degree, 64)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
         self.assertEqual(index.ntotal_soft_deleted, 0)
 
-        index = faiss.index_factory(16, "SVS,Vamana32,LVQ4x8")
+        index = faiss.index_factory(16, "SVSVamana32,LVQ4x8")
         self.assertEqual(index.d, 16)
         self.assertEqual(index.graph_max_degree, 32)
         self.assertEqual(index.lvq_level, faiss.LVQ4x8)
 
-        index = faiss.index_factory(128, "SVS,Vamana48,LeanVec4x4_64")
+        index = faiss.index_factory(128, "SVSVamana48,LeanVec4x4_64")
         self.assertEqual(index.d, 128)
         self.assertEqual(index.graph_max_degree, 48)
         self.assertEqual(index.leanvec_level, faiss.LeanVec4x4)
