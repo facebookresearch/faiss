@@ -10,6 +10,7 @@
 #include <faiss/IndexSVSVamana.h>
 
 #include <svs/extensions/vamana/leanvec.h>
+#include <svs/quantization/scalar/scalar.h>
 
 namespace faiss {
 
@@ -18,6 +19,9 @@ enum LeanVecLevel { LeanVec4x4, LeanVec4x8, LeanVec8x8 };
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     using blocked_alloc_type =
             svs::data::Blocked<svs::lib::Allocator<std::byte>>;
+    using blocked_alloc_type_sq =
+            svs::data::Blocked<svs::lib::Allocator<std::int8_t>>;
+
     using storage_type_4x4 = svs::leanvec::LeanDataset<
             svs::leanvec::UsingLVQ<4>,
             svs::leanvec::UsingLVQ<4>,
@@ -36,6 +40,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             svs::Dynamic,
             svs::Dynamic,
             blocked_alloc_type>;
+    using storage_type_sq = svs::quantization::scalar::
+            SQDataset<std::int8_t, svs::Dynamic, blocked_alloc_type_sq>;
 
     IndexSVSVamanaLeanVec() = default;
 
