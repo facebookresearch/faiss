@@ -21,20 +21,20 @@
 
 #elif defined(__AVX2__)
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/utils/simd_impl/simdlib_avx2.h>
 
 #elif defined(__aarch64__)
 
-#include <faiss/utils/simdlib_neon.h>
+#include <faiss/utils/simd_impl/simdlib_neon.h>
 
 #elif defined(__PPC64__)
 
-#include <faiss/utils/simdlib_ppc64.h>
+#include <faiss/utils/simd_impl/simdlib_ppc64.h>
 
 #else
 
 // emulated = all operations are implemented as scalars
-#include <faiss/utils/simdlib_emulated.h>
+#include <faiss/utils/simd_impl/simdlib_emulated.h>
 
 // FIXME: make a SSE version
 // is this ever going to happen? We will probably rather implement AVX512
