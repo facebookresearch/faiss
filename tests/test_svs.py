@@ -170,6 +170,7 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.graph_max_degree, 64)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
         self.assertEqual(index.ntotal_soft_deleted, 0)
+        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.FP32)
 
         index = faiss.index_factory(16, "SVSVamana32,LVQ4x8")
         self.assertEqual(index.d, 16)
@@ -182,7 +183,34 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.leanvec_level, faiss.LeanVec4x4)
         self.assertEqual(index.leanvec_d, 64)
 
+        index = faiss.index_factory(256, "SVSVamana16,FP16")
+        self.assertEqual(index.d, 256)
+        self.assertEqual(index.graph_max_degree, 16)
+        self.assertEqual(index.metric_type, faiss.METRIC_L2)
+        self.assertEqual(index.ntotal_soft_deleted, 0)
+        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.FP16)
 
+        index = faiss.index_factory(512, "SVSVamana24,SQ8")
+        self.assertEqual(index.d, 512)
+        self.assertEqual(index.graph_max_degree, 24)
+        self.assertEqual(index.metric_type, faiss.METRIC_L2)
+        self.assertEqual(index.ntotal_soft_deleted, 0)
+        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.SQI8)
+
+
+class TestSVSAdapterFP16(TestSVSAdapter):
+    """Repeat all tests for SVS Float16 variant"""
+    def _create_instance(self):
+        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx.storage_kind = faiss.IndexSVSVamana.FP16
+        return idx
+
+class TestSVSAdapterSQI8(TestSVSAdapter):
+    """Repeat all tests for SVS SQ int8 variant"""
+    def _create_instance(self):
+        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx.storage_kind = faiss.IndexSVSVamana.SQI8
+        return idx
 
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x0 variant"""
@@ -327,6 +355,20 @@ class TestSVSVamanaParameters(unittest.TestCase):
         np.testing.assert_array_equal(I_before, I_after)
         np.testing.assert_allclose(D_before, D_after, rtol=1e-6)
 
+
+class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
+    """Repeat Vamana parameter tests for SVS Float16 variant"""
+    def _create_instance(self):
+        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx.storage_kind = faiss.IndexSVSVamana.FP16
+        return idx
+
+class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
+    """Repeat Vamana parameter tests for SVS SQ int8 variant"""
+    def _create_instance(self):
+        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx.storage_kind = faiss.IndexSVSVamana.SQI8
+        return idx
 
 class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x0 variant"""

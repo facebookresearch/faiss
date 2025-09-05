@@ -95,6 +95,24 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVS) {
     write_and_read_index(index, test_data, n);
 }
 
+TEST_F(SVSIOTest, WriteAndReadIndexSVSFP16) {
+    faiss::IndexSVSVamana index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            faiss::IndexSVSVamana::StorageKind::FP16};
+    write_and_read_index(index, test_data, n);
+}
+
+TEST_F(SVSIOTest, WriteAndReadIndexSVSSQI8) {
+    faiss::IndexSVSVamana index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            faiss::IndexSVSVamana::StorageKind::SQI8};
+    write_and_read_index(index, test_data, n);
+}
+
 TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x0) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x0;

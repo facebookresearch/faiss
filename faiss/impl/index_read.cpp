@@ -1272,6 +1272,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->max_candidate_pool_size);
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
+        READ1(svs->storage_kind);
         if (h == fourcc("ILVQ")) {
             READ1(dynamic_cast<IndexSVSVamanaLVQ*>(svs)->lvq_level);
         }

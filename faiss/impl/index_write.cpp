@@ -922,6 +922,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->max_candidate_pool_size);
         WRITE1(svs->prune_to);
         WRITE1(svs->use_full_search_history);
+        WRITE1(svs->storage_kind);
         if (lvq != nullptr) {
             WRITE1(lvq->lvq_level);
         }

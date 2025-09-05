@@ -595,6 +595,30 @@ Index* parse_svs_datatype(
         // if(index_type == "IVF") return new IndexSVSIVF(d,
         // std::stoul(arg_string), mt);
     }
+    if (re_match(datatype_string, "FP16", sm)) {
+        if (index_type == "Vamana")
+            return new IndexSVSVamana(
+                    d,
+                    std::stoul(arg_string),
+                    mt,
+                    IndexSVSVamana::StorageKind::FP16);
+        FAISS_ASSERT(!"Unspported SVS index type for Float16");
+        // if(index_type == "Flat") return new IndexSVSFlatFP16(d, mt);
+        // if(index_type == "IVF") return new IndexSVSIVFFP16(d,
+        // std::stoul(arg_string), mt);
+    }
+    if (re_match(datatype_string, "SQ8", sm)) {
+        if (index_type == "Vamana")
+            return new IndexSVSVamana(
+                    d,
+                    std::stoul(arg_string),
+                    mt,
+                    IndexSVSVamana::StorageKind::SQI8);
+        FAISS_ASSERT(!"Unspported SVS index type for SQ8");
+        // if(index_type == "Flat") return new IndexSVSFlatFP16(d, mt);
+        // if(index_type == "IVF") return new IndexSVSIVFFP16(d,
+        // std::stoul(arg_string), mt);
+    }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana")
             return new IndexSVSVamanaLVQ(

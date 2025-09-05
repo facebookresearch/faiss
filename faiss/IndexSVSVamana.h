@@ -30,9 +30,15 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
+    enum StorageKind {
+        FP32,
+        FP16,
+        SQI8
+    } storage_kind = StorageKind::FP32;
+
     IndexSVSVamana();
 
-    IndexSVSVamana(idx_t d, size_t degree, MetricType metric = METRIC_L2);
+    IndexSVSVamana(idx_t d, size_t degree, MetricType metric = METRIC_L2, StorageKind storage = StorageKind::FP32);
 
     virtual ~IndexSVSVamana() override;
 

@@ -8,17 +8,161 @@
 #include <faiss/IndexSVSVamana.h>
 
 #include <svs/core/data.h>
+#include <svs/extensions/vamana/scalar.h>
 #include <svs/orchestrators/dynamic_vamana.h>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
 
 namespace faiss {
+namespace {
+std::variant<svs::DistanceIP, svs::DistanceL2> get_svs_distance(
+        faiss::MetricType metric) {
+    switch (metric) {
+        case METRIC_INNER_PRODUCT:
+            return svs::DistanceIP();
+        case METRIC_L2:
+            return svs::DistanceL2();
+        default:
+            FAISS_ASSERT(!"not supported SVS distance");
+    }
+}
+
+std::variant<float, svs::Float16, std::int8_t> get_storage_variant(
+        IndexSVSVamana::StorageKind kind) {
+    switch (kind) {
+        case IndexSVSVamana::StorageKind::FP32:
+            return float{};
+        case IndexSVSVamana::StorageKind::FP16:
+            return svs::Float16{};
+        case IndexSVSVamana::StorageKind::SQI8:
+            return std::int8_t{};
+        default:
+            FAISS_ASSERT(!"not supported SVS storage kind");
+    }
+}
+
+svs::index::vamana::VamanaBuildParameters get_build_parameters(
+        const IndexSVSVamana& index) {
+    return svs::index::vamana::VamanaBuildParameters{
+            index.alpha,
+            index.graph_max_degree,
+            index.construction_window_size,
+            index.max_candidate_pool_size,
+            index.prune_to,
+            index.use_full_search_history};
+}
+
+template <
+        typename T,
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
+        svs::data::ImmutableMemoryDataset Dataset,
+        svs::threads::ThreadPool Pool>
+    requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
+svs::data::SimpleData<T, svs::Dynamic, Alloc> make_storage(
+        const Dataset& data,
+        Pool& pool) {
+    svs::data::SimpleData<T, svs::Dynamic, Alloc> result(
+            data.size(), data.dimensions(), Alloc{});
+    svs::threads::parallel_for(
+            pool,
+            svs::threads::StaticPartition(result.size()),
+            [&](auto is, auto SVS_UNUSED(tid)) {
+                for (auto i : is) {
+                    result.set_datum(i, data.get_datum(i));
+                }
+            });
+    return result;
+}
+
+template <
+        typename T,
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
+        svs::data::ImmutableMemoryDataset Dataset,
+        svs::threads::ThreadPool Pool>
+    requires std::is_integral_v<T>
+svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc> make_storage(
+        const Dataset& data,
+        Pool& pool) {
+    return svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>::
+            compress(data, pool, Alloc{});
+}
+
+template <typename ElementType>
+svs::DynamicVamana* init_impl_t(
+        IndexSVSVamana* index,
+        faiss::MetricType metric,
+        idx_t n,
+        const float* x) {
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
+
+    auto data = make_storage<ElementType>(
+            svs::data::ConstSimpleDataView<float>(x, n, index->d), threadpool);
+
+    std::vector<size_t> labels(data.size());
+    std::iota(labels.begin(), labels.end(), 0);
+
+    return std::visit(
+            [&](auto&& distance) {
+                return new svs::DynamicVamana(
+                        svs::DynamicVamana::build<float>(
+                                std::move(get_build_parameters(*index)),
+                                std::move(data),
+                                std::move(labels),
+                                std::move(distance),
+                                std::move(threadpool)));
+            },
+            get_svs_distance(metric));
+}
+
+template <
+        typename T,
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
+    requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
+svs::VectorDataLoader<T> get_loader(const std::filesystem::path& path) {
+    return svs::VectorDataLoader<T>(path);
+}
+
+template <
+        typename T,
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
+    requires std::is_integral_v<T>
+auto get_loader(const std::filesystem::path& path) {
+    using storage_type =
+            svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
+    return svs::lib::load_from_disk<storage_type>(path);
+}
+
+template <typename ElementType>
+svs::DynamicVamana* deserialize_impl_t(
+        const svs_io::SVSTempDirectory& tmp,
+        faiss::MetricType metric) {
+    auto threadpool = svs::threads::ThreadPoolHandle(
+            svs::threads::OMPThreadPool(omp_get_max_threads()));
+
+    return std::visit(
+            [&](auto&& distance) {
+                return new svs::DynamicVamana(
+                        svs::DynamicVamana::assemble<float>(
+                                tmp.config,
+                                svs::GraphLoader(tmp.graph.string()),
+                                get_loader<ElementType>(tmp.data),
+                                std::move(distance),
+                                std::move(threadpool)));
+            },
+            get_svs_distance(metric));
+}
+} // namespace
 
 IndexSVSVamana::IndexSVSVamana() : Index{} {}
 
-IndexSVSVamana::IndexSVSVamana(idx_t d, size_t degree, MetricType metric)
-        : Index(d, metric), graph_max_degree{degree} {
+IndexSVSVamana::IndexSVSVamana(
+        idx_t d,
+        size_t degree,
+        MetricType metric,
+        StorageKind storage)
+        : Index(d, metric), graph_max_degree{degree}, storage_kind{storage} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 }
@@ -118,50 +262,13 @@ void IndexSVSVamana::init_impl(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(!impl);
     FAISS_THROW_IF_NOT(ntotal == 0);
 
-    std::vector<size_t> labels(n);
-    auto data = svs::data::SimpleData<float>(n, d);
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-
-    svs::threads::parallel_for(
-            threadpool,
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    data.set_datum(i, std::span<const float>(x + i * d, d));
-                    labels[i] = i;
-                }
-            });
     ntotal = n;
-
-    svs::index::vamana::VamanaBuildParameters build_parameters{
-            alpha,
-            graph_max_degree,
-            construction_window_size,
-            max_candidate_pool_size,
-            prune_to,
-            use_full_search_history};
-
-    switch (metric_type) {
-        case METRIC_INNER_PRODUCT:
-            impl = new svs::DynamicVamana(svs::DynamicVamana::build<float>(
-                    std::move(build_parameters),
-                    std::move(data),
-                    std::move(labels),
-                    svs::DistanceIP(),
-                    std::move(threadpool)));
-            break;
-        case METRIC_L2:
-            impl = new svs::DynamicVamana(svs::DynamicVamana::build<float>(
-                    std::move(build_parameters),
-                    std::move(data),
-                    std::move(labels),
-                    svs::DistanceL2(),
-                    std::move(threadpool)));
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS distance");
-    }
+    impl = std::visit(
+            [&](auto element) {
+                using ElementType = std::decay_t<decltype(element)>;
+                return init_impl_t<ElementType>(this, metric_type, n, x);
+            },
+            get_storage_variant(storage_kind));
 }
 
 void IndexSVSVamana::serialize_impl(std::ostream& out) const {
@@ -181,29 +288,12 @@ void IndexSVSVamana::deserialize_impl(std::istream& in) {
     // Write stream to files that can be read by DynamicVamana::assemble()
     svs_io::SVSTempDirectory tmp;
     tmp.write_stream_to_files(in);
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-
-    switch (metric_type) {
-        case METRIC_INNER_PRODUCT:
-            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
-                    tmp.config.string(),
-                    svs::GraphLoader(tmp.graph.string()),
-                    svs::VectorDataLoader<float>(tmp.data.string()),
-                    svs::distance::DistanceIP(),
-                    std::move(threadpool)));
-            break;
-        case METRIC_L2:
-            impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<float>(
-                    tmp.config.string(),
-                    svs::GraphLoader(tmp.graph.string()),
-                    svs::VectorDataLoader<float>(tmp.data.string()),
-                    svs::distance::DistanceL2(),
-                    std::move(threadpool)));
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS distance");
-    }
+    impl = std::visit(
+            [&](auto element) {
+                using ElementType = std::decay_t<decltype(element)>;
+                return deserialize_impl_t<ElementType>(tmp, metric_type);
+            },
+            get_storage_variant(storage_kind));
 }
 
 } // namespace faiss
