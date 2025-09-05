@@ -20,6 +20,7 @@
 #include <faiss/IVFlib.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/distances.h>
@@ -74,6 +75,17 @@ std::vector<idx_t> search_index(Index* index, const float* xq) {
 /*************************************************************
  * Test functions for a given index type
  *************************************************************/
+
+void test_get_InvertedListScanner(
+        IndexIVF* index_ivf,
+        const IndexPreTransform* index_pt,
+        std::vector<uint8_t> codes,
+        std::unique_ptr<InvertedListScanner> scanner,
+        std::vector<float> xq,
+        std::vector<idx_t> ref_I,
+        MetricType metric,
+        bool distance_to_code_supported = true,
+        bool should_reorder = true);
 
 void test_lowlevel_access(const char* index_key, MetricType metric) {
     std::unique_ptr<Index> index = make_trained_index(index_key, metric);
@@ -154,6 +166,20 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
     auto xq = make_data(nq);
     auto ref_I = search_index(index.get(), xq.data());
 
+    test_get_InvertedListScanner(
+            index_ivf, index_pt, codes, nullptr, xq, ref_I, metric);
+}
+
+void test_get_InvertedListScanner(
+        IndexIVF* index_ivf,
+        const IndexPreTransform* index_pt,
+        std::vector<uint8_t> codes,
+        std::unique_ptr<InvertedListScanner> scanner,
+        std::vector<float> xq,
+        std::vector<idx_t> ref_I,
+        MetricType metric,
+        bool distance_to_code_supported,
+        bool should_reorder) {
     // handle preprocessing
     const float* xqt = xq.data();
     std::unique_ptr<float[]> del_xqt;
@@ -167,22 +193,24 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
 
     // quantize the queries to get the inverted list ids to visit.
     int nprobe = index_ivf->nprobe;
+    const InvertedLists* il = index_ivf->invlists;
 
     std::vector<idx_t> q_lists(nq * nprobe);
     std::vector<float> q_dis(nq * nprobe);
 
     index_ivf->quantizer->search(nq, xqt, nprobe, q_dis.data(), q_lists.data());
 
-    // object that does the scanning and distance computations.
-    std::unique_ptr<InvertedListScanner> scanner(
-            index_ivf->get_InvertedListScanner());
-
+    if (scanner == nullptr) {
+        // standard flow
+        scanner = std::unique_ptr<InvertedListScanner>(
+                index_ivf->get_InvertedListScanner());
+    }
     for (int i = 0; i < nq; i++) {
         std::vector<idx_t> I(k, -1);
         float default_dis = metric == METRIC_L2 ? HUGE_VAL : -HUGE_VAL;
         std::vector<float> D(k, default_dis);
 
-        scanner->set_query(xqt + i * dt);
+        scanner->set_query(xqt + i * index_ivf->d);
 
         for (int j = 0; j < nprobe; j++) {
             int list_no = q_lists[i * nprobe + j];
@@ -202,7 +230,7 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
                     I.data(),
                     k);
 
-            if (j == 0) {
+            if (distance_to_code_supported && j == 0) {
                 // all results so far come from list_no, so let's check if
                 // the distance function works
                 for (int jj = 0; jj < k; jj++) {
@@ -220,11 +248,13 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
             }
         }
 
-        // re-order heap
-        if (metric == METRIC_L2) {
-            maxheap_reorder(k, D.data(), I.data());
-        } else {
-            minheap_reorder(k, D.data(), I.data());
+        if (should_reorder) {
+            // re-order heap
+            if (metric == METRIC_L2) {
+                maxheap_reorder(k, D.data(), I.data());
+            } else {
+                minheap_reorder(k, D.data(), I.data());
+            }
         }
 
         // check that we have the same results as the reference search
@@ -232,6 +262,47 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
             EXPECT_EQ(I[j], ref_I[i * k + j]);
         }
     }
+}
+
+void test_ivfpqfs_scanner(
+        MetricType metric,
+        IVFSearchParameters* params,
+        int* nprobe = nullptr,
+        bool by_residual = false) {
+    std::unique_ptr<Index> index = make_trained_index("IVF32,PQ4x4fs", metric);
+    IndexIVFPQFastScan* index_ivf = static_cast<IndexIVFPQFastScan*>(
+            ivflib::extract_index_ivf(index.get()));
+    if (nprobe != nullptr) {
+        index_ivf->nprobe = *nprobe;
+    }
+    index_ivf->by_residual = by_residual;
+    // implem_10 also processes one query at a time, so compare with that.
+    index_ivf->implem = 10;
+    auto xb = make_data(nb);
+    index_ivf->add(nb, xb.data());
+    // Initialize scanner with context in params so heap results can persist
+    // across multiple inverted list scans. This is needed because we cannot
+    // convert float distances directly to the uint16_t distances used in block
+    // scoring.
+    auto scanner = std::unique_ptr<InvertedListScanner>(
+            index_ivf->get_InvertedListScanner(true, nullptr, params));
+
+    // ref data
+    auto xq = make_data(nq);
+    auto ref_I = search_index(index_ivf, xq.data());
+
+    // distance_to_code_supported = false because codes are intermixed.
+    // should_reorder = false because the scanner already reorders it.
+    test_get_InvertedListScanner(
+            index_ivf,
+            nullptr,
+            {},
+            std::move(scanner),
+            xq,
+            ref_I,
+            metric,
+            false,
+            false);
 }
 
 } // anonymous namespace
@@ -274,6 +345,40 @@ TEST(TestLowLevelIVF, IVFRaBitQ) {
 
 TEST(TestLowLevelIVF, IVFRQ) {
     test_lowlevel_access("IVF32,RQ16x8", METRIC_L2);
+}
+
+IVFSearchParameters create_ivfpqfs_params(IVFPQFastScanScannerContext& ctx) {
+    IVFSearchParameters params;
+    ctx.max_heap_size = k;
+    params.inverted_list_context = static_cast<void*>(&ctx);
+    return params;
+}
+
+TEST(TestLowLevelIVF, IVFPQFSL2) {
+    IVFPQFastScanScannerContext ctx{};
+    auto params = create_ivfpqfs_params(ctx);
+    test_ivfpqfs_scanner(METRIC_L2, &params);
+}
+
+TEST(TestLowLevelIVF, IVFPQFSIP) {
+    IVFPQFastScanScannerContext ctx{};
+    auto params = create_ivfpqfs_params(ctx);
+    test_ivfpqfs_scanner(METRIC_INNER_PRODUCT, &params);
+}
+
+TEST(TestLowLevelIVF, IVFPQFS_null_params) {
+    IVFPQFastScanScannerContext ctx{};
+    auto params = create_ivfpqfs_params(ctx);
+    int nprobe_for_single_list = 1;
+    // Confirms flow works on a single list when we don't specify any params.
+    test_ivfpqfs_scanner(METRIC_L2, nullptr, &nprobe_for_single_list);
+}
+
+TEST(TestLowLevelIVF, IVFPQFS_by_residual) {
+    IVFPQFastScanScannerContext ctx{};
+    auto params = create_ivfpqfs_params(ctx);
+    int nprobe_for_single_list = 1;
+    test_ivfpqfs_scanner(METRIC_L2, &params, &nprobe_for_single_list, true);
 }
 
 /*************************************************************
