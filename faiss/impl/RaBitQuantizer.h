@@ -72,7 +72,8 @@ struct RaBitQuantizer : Quantizer {
     // specify qb > 0 to have SQ qb-bits query
     FlatCodesDistanceComputer* get_distance_computer(
             uint8_t qb,
-            const float* centroid_in = nullptr) const;
+            const float* centroid_in = nullptr,
+            bool centered = false) const;
 };
 
 } // namespace faiss
