@@ -39,7 +39,7 @@ runs:
         conda update -y -q conda
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
+        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2" scipy=1.14 pytest=7.4 gflags=2.2
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then

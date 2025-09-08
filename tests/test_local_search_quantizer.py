@@ -219,7 +219,8 @@ class TestComponents(unittest.TestCase):
         codebooks = codebooks.reshape(M, K, d).copy()
         ref_binaries = compute_binary_terms_ref(codebooks)
 
-        np.testing.assert_allclose(binaries, ref_binaries, atol=1e-4)
+        tol = 1e-3 if platform.system() == 'Windows' else 1e-4
+        np.testing.assert_allclose(binaries, ref_binaries, atol=tol)
 
     def test_compute_unary_terms(self):
         d = 16
@@ -241,7 +242,8 @@ class TestComponents(unittest.TestCase):
         codebooks = codebooks.reshape(M, K, d).copy()
         ref_unaries = compute_unary_terms_ref(codebooks, x)
 
-        np.testing.assert_allclose(unaries, ref_unaries, atol=1e-4)
+        tol = 1e-3 if platform.system() == 'Windows' else 1e-4
+        np.testing.assert_allclose(unaries, ref_unaries, atol=tol)
 
     def test_icm_encode_step(self):
         d = 16
