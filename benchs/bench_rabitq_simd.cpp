@@ -37,7 +37,7 @@ void bench_rabitq_generic(benchmark::State& state, auto distFn) {
     for (auto _ : state) {
         ++r;
         for (size_t i = 0; i < n; ++i) {
-            sum += distFn(q.data(), x.data() + i * size, d, qb);
+            sum += distFn(q.data(), x.data() + i * size, size, qb);
         }
         benchmark::DoNotOptimize(sum);
     }
@@ -45,41 +45,29 @@ void bench_rabitq_generic(benchmark::State& state, auto distFn) {
     state.SetBytesProcessed(r * x.size());
 }
 
-uint64_t rabitq_simple_popcnt(const uint8_t* data, size_t size) {
-    uint64_t sum = 0;
-    size_t i = 0;
-    for (; i + 8 <= size; i += 8) {
-        const auto yv = *(const uint64_t*)(data + i);
-        sum += __builtin_popcountll(yv);
-    }
-    for (; i < size; ++i) {
-        const auto yv = *(data + i);
-        sum += __builtin_popcount(yv);
-    }
-    return sum;
-}
-
 void bench_rabitq_sum(benchmark::State& state) {
     bench_rabitq_generic(
             state,
-            [](const uint8_t* /*q*/, const uint8_t* x, size_t d, size_t /* qb*/)
-                    -> int64_t { return rabitq_simple_popcnt(x, d); });
+            [](const uint8_t*, const uint8_t* x, size_t size, size_t)
+                    -> int64_t { return rabitq::popcount(x, size); });
 }
 
 void bench_rabitq_and_dot_product(benchmark::State& state) {
     bench_rabitq_generic(
             state,
-            [](const uint8_t* q, const uint8_t* x, size_t d, size_t qb)
-                    -> int64_t { return rabitq_dp_popcnt(q, x, d, qb); });
+            [](const uint8_t* q, const uint8_t* x, size_t size, size_t qb)
+                    -> int64_t {
+                return rabitq::bitwise_and_dot_product(q, x, size, qb);
+            });
 }
 
 void bench_rabitq_and_dot_product_with_sum(benchmark::State& state) {
     bench_rabitq_generic(
             state,
-            [](const uint8_t* q, const uint8_t* x, size_t d, size_t qb)
+            [](const uint8_t* q, const uint8_t* x, size_t size, size_t qb)
                     -> int64_t {
-                auto sum_q = rabitq_simple_popcnt(x, d);
-                auto dp = rabitq_dp_popcnt(q, x, d, qb);
+                auto sum_q = rabitq::popcount(x, size);
+                auto dp = rabitq::bitwise_and_dot_product(q, x, size, qb);
                 // Synthetic operation using both inputs for benchmarking.
                 return sum_q + dp;
             });
