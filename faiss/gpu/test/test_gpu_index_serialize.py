@@ -7,6 +7,7 @@ import unittest
 import numpy as np
 import faiss
 
+
 def make_t(num, d):
     rs = np.random.RandomState(123)
     return rs.rand(num, d).astype('float32')

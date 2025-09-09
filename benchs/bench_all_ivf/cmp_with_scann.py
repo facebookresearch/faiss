@@ -23,6 +23,7 @@ def eval_recalls(name, I, gt, times):
     s += "time: %.4f s (± %.4f)" % (np.mean(times), np.std(times))
     print(s)
 
+
 def eval_inters(name, I, gt, times):
     k = I.shape[1]
     s = "%-40s inter" % name
@@ -54,7 +55,8 @@ def main():
     aa('--download', default=False, action="store_true")
     aa('--lib', default='faiss', help='library to use (faiss or scann)')
     aa('--thenscann', default=False, action="store_true")
-    aa('--base_dir', default='/checkpoint/matthijs/faiss_improvements/cmp_ivf_scan_2')
+    aa('--base_dir',
+       default='/checkpoint/matthijs/faiss_improvements/cmp_ivf_scan_2')
 
     group = parser.add_argument_group('searching')
     aa('--k', default=10, type=int, help='nb of nearest neighbors')
@@ -82,11 +84,11 @@ def main():
         print(ds)
         # store for SCANN
         os.system(f"rm -rf {cache_dir}; mkdir -p {cache_dir}")
-        tosave = dict(
-            xb = ds.get_database(),
-            xq = ds.get_queries(),
-            gt = ds.get_groundtruth()
-        )
+        tosave = {
+            "xb": ds.get_database(),
+            "xq": ds.get_queries(),
+            "gt": ds.get_groundtruth(),
+        }
         for name, v in tosave.items():
             fname = cache_dir + "/" + name + ".npy"
             print("save", fname)
@@ -136,13 +138,15 @@ def main():
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher = scann_ops_pybind.load_searcher(scann_dir)
         else:
-            searcher = scann_make_index(xb, name1_to_name2[distance_measure], scann_dir, 0)
+            searcher = scann_make_index(
+                xb, name1_to_name2[distance_measure], scann_dir, 0)
 
         scann_dir = cache_dir + "/scann1.1.1_serialized_reorder"
         if os.path.exists(scann_dir + "/scann_config.pb"):
             searcher_reo = scann_ops_pybind.load_searcher(scann_dir)
         else:
-            searcher_reo = scann_make_index(xb, name1_to_name2[distance_measure], scann_dir, 100)
+            searcher_reo = scann_make_index(
+                xb, name1_to_name2[distance_measure], scann_dir, 100)
 
         scann_eval_search(
             searcher, searcher_reo,
@@ -168,6 +172,7 @@ def main():
 # SCANN
 ###############################################################
 
+
 def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
     import scann
 
@@ -178,8 +183,10 @@ def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
     else:
         thr = 0
     k = 10
-    sb = scann.scann_ops_pybind.builder(xb, k, distance_measure)
-    sb = sb.tree(num_leaves=2000, num_leaves_to_search=100, training_sample_size=250000)
+    sb = scann.scann_ops_pybind.builder(
+        xb, k, distance_measure)
+    sb = sb.tree(
+        num_leaves=2000, num_leaves_to_search=100, training_sample_size=250000)
     sb = sb.score_ah(2, anisotropic_quantization_threshold=thr)
 
     if reorder_k > 0:
@@ -195,6 +202,7 @@ def scann_make_index(xb, distance_measure, scann_dir, reorder_k):
     # os.mkdir(scann_dir)
     searcher.serialize(scann_dir)
     return searcher
+
 
 def scann_eval_search(
         searcher, searcher_reo,
@@ -233,8 +241,6 @@ def scann_eval_search(
                 eval_inters(header, I, gt, times)
 
 
-
-
 ###############################################################
 # Faiss
 ###############################################################
@@ -258,6 +264,7 @@ def faiss_make_index(xb, metric_type, fname):
     faiss.write_index(index, fname)
 
     return index
+
 
 def faiss_eval_search(
             index, xq, xb, nprobe_tab, pre_reorder_k_tab,

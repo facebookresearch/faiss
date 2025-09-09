@@ -90,22 +90,38 @@ args = sys.argv[1:]
 
 while args:
     a = args.pop(0)
-    if a == '-h': usage()
-    elif a == '-ngpu':      ngpu = int(args.pop(0))
-    elif a == '-R':         replicas = int(args.pop(0))
-    elif a == '-noptables': use_precomputed_tables = False
-    elif a == '-abs':       add_batch_size = int(args.pop(0))
-    elif a == '-qbs':       query_batch_size = int(args.pop(0))
-    elif a == '-nnn':       nnn = int(args.pop(0))
-    elif a == '-tempmem':   tempmem = int(args.pop(0))
-    elif a == '-nocache':   use_cache = False
-    elif a == '-knngraph':  knngraph = True
-    elif a == '-altadd':    altadd = True
-    elif a == '-float16':   use_float16 = True
-    elif a == '-nprobe':    nprobes = [int(x) for x in args.pop(0).split(',')]
-    elif a == '-max_add':   max_add = int(args.pop(0))
-    elif not dbname:        dbname = a
-    elif not index_key:     index_key = a
+    if a == '-h':
+        usage()
+    elif a == '-ngpu':
+        ngpu = int(args.pop(0))
+    elif a == '-R':
+        replicas = int(args.pop(0))
+    elif a == '-noptables':
+        use_precomputed_tables = False
+    elif a == '-abs':
+        add_batch_size = int(args.pop(0))
+    elif a == '-qbs':
+        query_batch_size = int(args.pop(0))
+    elif a == '-nnn':
+        nnn = int(args.pop(0))
+    elif a == '-tempmem':
+        tempmem = int(args.pop(0))
+    elif a == '-nocache':
+        use_cache = False
+    elif a == '-knngraph':
+        knngraph = True
+    elif a == '-altadd':
+        altadd = True
+    elif a == '-float16':
+        use_float16 = True
+    elif a == '-nprobe':
+        nprobes = [int(x) for x in args.pop(0).split(',')]
+    elif a == '-max_add':
+        max_add = int(args.pop(0))
+    elif not dbname:
+        dbname = a
+    elif not index_key:
+        index_key = a
     else:
         print("argument %s unknown" % a, file=sys.stderr)
         sys.exit(1)
@@ -123,10 +139,12 @@ if not os.path.isdir(cacheroot):
 # we mem-map the biggest files to avoid having them in memory all at
 # once
 
+
 def mmap_fvecs(fname):
     x = np.memmap(fname, dtype='int32', mode='r')
     d = x[0]
     return x.view('float32').reshape(-1, d + 1)[:, 1:]
+
 
 def mmap_bvecs(fname):
     x = np.memmap(fname, dtype='uint8', mode='r')
@@ -237,7 +255,6 @@ print("sizes: B %s Q %s T %s gt %s" % (
     gt_I.shape if gt_I is not None else None))
 
 
-
 #################################################################
 # Parse index_key and set cache files
 #
@@ -303,7 +320,7 @@ print("preparing resources for %d GPUs" % ngpu)
 
 gpu_resources = []
 
-for i in range(ngpu):
+for _ in range(ngpu):
     res = faiss.StandardGpuResources()
     if tempmem >= 0:
         res.setTempMemory(tempmem)
@@ -560,6 +577,7 @@ def compute_populated_index(preproc):
 
     return gpu_index, indexall
 
+
 def compute_populated_index_2(preproc):
 
     indexall = prepare_trained_index(preproc)
@@ -605,7 +623,6 @@ def compute_populated_index_2(preproc):
     return None, indexall
 
 
-
 def get_populated_index(preproc):
 
     if not index_cachefile or not os.path.exists(index_cachefile):
@@ -641,7 +658,7 @@ def get_populated_index(preproc):
             index = gpu_index
 
     else:
-        del gpu_index # We override the GPU index
+        del gpu_index  # We override the GPU index
 
         print("Copy CPU index to %d sharded GPU indexes" % replicas)
 
@@ -716,8 +733,9 @@ def eval_dataset(index, preproc):
             print("  probe=%-3d: %.3f s" % (nprobe, t1 - t0), end=' ')
             gtc = gt_I[:, :1]
             nq = xq.shape[0]
-            for rank in 1, 10, 100:
-                if rank > nnn: continue
+            for rank in (1, 10, 100):
+                if rank > nnn:
+                    continue
                 nok = (I[:, :rank] == gtc).sum()
                 print("1-R@%d: %.4f" % (rank, nok / float(nq)), end=' ')
             print()

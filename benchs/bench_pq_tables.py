@@ -11,12 +11,12 @@ import faiss
 
 os.system("grep -m1 'model name' < /proc/cpuinfo")
 
+
 def format_tab(x):
     return "\n".join("\t".join("%g" % xi for xi in row) for row in x)
 
 
 def run_bench(d, dsub, nbit=8, metric=None):
-
     M = d // dsub
     pq = faiss.ProductQuantizer(d, M, nbit)
     pq.train(faiss.randn((max(1000, pq.ksub * 50), d), 123))

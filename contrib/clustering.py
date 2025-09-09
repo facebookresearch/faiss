@@ -18,8 +18,10 @@ try:
 except ImportError:
     print("scipy not accessible, Python k-means will not work")
 
+
 def print_nop(*arg, **kwargs):
     pass
+
 
 def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **args):
     """

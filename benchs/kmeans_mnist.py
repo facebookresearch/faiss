@@ -18,6 +18,7 @@ ngpu = int(sys.argv[2])
 
 # Load Leon's file format
 
+
 def load_mnist(fname):
     print("load", fname)
     f = open(fname)

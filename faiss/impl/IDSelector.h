@@ -116,7 +116,7 @@ struct IDSelectorBitmap : IDSelector {
 /** reverts the membership test of another selector */
 struct IDSelectorNot : IDSelector {
     const IDSelector* sel;
-    IDSelectorNot(const IDSelector* sel) : sel(sel) {}
+    explicit IDSelectorNot(const IDSelector* sel) : sel(sel) {}
     bool is_member(idx_t id) const final {
         return !sel->is_member(id);
     }

@@ -198,7 +198,7 @@ struct AQInvertedListScanner : InvertedListScanner {
         }
     }
 
-    ~AQInvertedListScanner() = default;
+    ~AQInvertedListScanner() override = default;
 };
 
 template <bool is_IP>

@@ -29,7 +29,7 @@ struct IndexNeuralNetCodec : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* codes) const override;
     void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
 
-    ~IndexNeuralNetCodec() {}
+    ~IndexNeuralNetCodec() override {}
 };
 
 struct IndexQINCo : IndexNeuralNetCodec {

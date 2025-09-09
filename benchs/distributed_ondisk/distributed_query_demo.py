@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-import os
-import faiss
 import numpy as np
 import time
 import rpc
@@ -43,10 +41,12 @@ sindex.set_parallel_mode(1)
 sindex.set_prefetch_nthread(0)
 sindex.set_omp_num_threads(64)
 
+
 def ivecs_read(fname):
     a = np.fromfile(fname, dtype='int32')
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:].copy()
+
 
 def fvecs_read(fname):
     return ivecs_read(fname).view('float32')

@@ -9,10 +9,12 @@ import faiss
 import argparse
 from multiprocessing.pool import ThreadPool
 
+
 def ivecs_mmap(fname):
     a = np.memmap(fname, dtype='int32', mode='r')
     d = a[0]
     return a.reshape(-1, d + 1)[:, 1:]
+
 
 def fvecs_mmap(fname):
     return ivecs_mmap(fname).view('float32')
@@ -55,6 +57,7 @@ def rate_limited_iter(l):
 
 deep1bdir = "/datasets01_101/simsearch/041218/deep1b/"
 workdir = "/checkpoint/matthijs/ondisk_distributed/"
+
 
 def main():
     parser = argparse.ArgumentParser(

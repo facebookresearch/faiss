@@ -212,7 +212,7 @@ struct AdditiveQuantizer : Quantizer {
             idx_t* labels,
             const float* centroid_norms) const;
 
-    virtual ~AdditiveQuantizer();
+    virtual ~AdditiveQuantizer() override;
 };
 
 } // namespace faiss

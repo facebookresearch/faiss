@@ -100,7 +100,7 @@ struct SlidingIndexWindow {
     std::vector<std::vector<size_t>> sizes;
 
     /// index should be initially empty and trained
-    SlidingIndexWindow(Index* index);
+    explicit SlidingIndexWindow(Index* index);
 
     /** Add one index to the current index and remove the oldest one.
      *

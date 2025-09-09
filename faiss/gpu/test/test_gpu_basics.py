@@ -257,6 +257,7 @@ class TestGpuRef(unittest.TestCase):
 
         index.train(training_data)
 
+
 def make_t(num, d, clamp=False, seed=None):
     rs = None
     if seed is None:

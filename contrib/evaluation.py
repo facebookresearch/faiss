@@ -13,6 +13,7 @@ from multiprocessing.pool import ThreadPool
 ###############################################################
 # Simple functions to evaluate knn results
 
+
 def knn_intersection_measure(I1, I2):
     """ computes the intersection measure of two result tables
     """
@@ -26,6 +27,7 @@ def knn_intersection_measure(I1, I2):
 
 ###############################################################
 # Range search results can be compared with Precision-Recall
+
 
 def filter_range_results(lims, D, I, thresh):
     """ select a set of results """
@@ -122,6 +124,7 @@ def counts_to_PR(ngt, nres, ninter, mode="overall"):
 
     else:
         raise AssertionError()
+
 
 def sort_range_res_2(lims, D, I):
     """ sort 2 arrays using the first as key """

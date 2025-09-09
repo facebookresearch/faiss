@@ -99,7 +99,7 @@ struct IndexBinaryMultiHash : IndexBinary {
 
     IndexBinaryMultiHash();
 
-    ~IndexBinaryMultiHash();
+    ~IndexBinaryMultiHash() override;
 
     void reset() override;
 

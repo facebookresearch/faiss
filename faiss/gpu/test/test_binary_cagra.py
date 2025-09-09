@@ -26,6 +26,7 @@ import faiss
 
 from faiss.contrib import evaluation
 
+
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
     "only if cuVS is compiled in")

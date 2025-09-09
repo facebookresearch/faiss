@@ -51,7 +51,7 @@ struct MaybeOwnedVector {
     size_t c_size = 0;
 
     MaybeOwnedVector() = default;
-    MaybeOwnedVector(const size_t initial_size) {
+    explicit MaybeOwnedVector(const size_t initial_size) {
         is_owned = true;
 
         owned_data.resize(initial_size);

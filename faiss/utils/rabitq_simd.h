@@ -26,6 +26,7 @@ namespace faiss {
  *
  * @return Lookup table as __m512i register
  */
+#if defined(__AVX512F__)
 inline __m512i get_lookup_512() {
     return _mm512_set_epi8(
             /* f */ 4,
@@ -93,7 +94,8 @@ inline __m512i get_lookup_512() {
             /* 1 */ 1,
             /* 0 */ 0);
 }
-
+#endif
+#if defined(__AVX2__)
 /**
  * Returns the lookup table for AVX2 popcount operations.
  * This table is used for lookup-based popcount implementation.
@@ -135,7 +137,9 @@ inline __m256i get_lookup_256() {
             /* e */ 3,
             /* f */ 4);
 }
+#endif
 
+#if defined(__AVX512F__)
 /**
  * Performs lookup-based popcount on AVX512 registers.
  *
@@ -152,7 +156,8 @@ inline __m512i popcount_lookup_avx512(__m512i v_and) {
     const __m512i popcnt2 = _mm512_shuffle_epi8(lookup, hi);
     return _mm512_add_epi8(popcnt1, popcnt2);
 }
-
+#endif
+#if defined(__AVX2__)
 /**
  * Performs lookup-based popcount on AVX2 registers.
  *
@@ -169,6 +174,7 @@ inline __m256i popcount_lookup_avx2(__m256i v_and) {
     const __m256i popcnt2 = _mm256_shuffle_epi8(lookup, hi);
     return _mm256_add_epi8(popcnt1, popcnt2);
 }
+#endif
 #endif
 
 #if defined(__AVX512F__) && defined(__AVX512VPOPCNTDQ__)

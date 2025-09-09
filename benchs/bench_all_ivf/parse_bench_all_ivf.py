@@ -153,6 +153,7 @@ def collect_results_for(db='deep1M', prefix="autotune."):
 
     return allres, allstats
 
+
 def extract_pareto_optimal(allres, keys, recall_idx=0, times_idx=3):
     bigtab = []
     for i, k in enumerate(keys):
@@ -182,6 +183,7 @@ def extract_pareto_optimal(allres, keys, recall_idx=0, times_idx=3):
     ops = bigtab_sorted[:, selection]
 
     return selected_keys, ops
+
 
 def plot_subset(
     allres, allstats, selected_methods, recall_idx, times_idx=3,

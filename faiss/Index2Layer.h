@@ -47,7 +47,7 @@ struct Index2Layer : IndexFlatCodes {
             MetricType metric = METRIC_L2);
 
     Index2Layer();
-    ~Index2Layer();
+    ~Index2Layer() override;
 
     void train(idx_t n, const float* x) override;
 

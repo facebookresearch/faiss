@@ -71,6 +71,7 @@ def bigann(bio):
         benchmark.set_io(bio)
         benchmark.benchmark(f"result{scale}.json", local=False, train=True, reconstruct=False, knn=True, range=False)
 
+
 def ssnpp(bio):
     benchmark = Benchmark(
         num_threads=32,

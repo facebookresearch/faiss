@@ -151,6 +151,7 @@ def verify_with_draws(testcase, Dref, Iref, Dnew, Inew):
             mask = Dref[i, :] == dis
             testcase.assertEqual(set(Iref[i, mask]), set(Inew[i, mask]))
 
+
 def three_metrics(Dref, Iref, Dnew, Inew):
     nq = Iref.shape[0]
     recall_at_1 = (Iref[:, 0] == Inew[:, 0]).sum() / nq
@@ -547,7 +548,7 @@ class TestTraining(unittest.TestCase):
 
 
 class TestReconstruct(unittest.TestCase):
-    """ test reconstruct and sa_encode / sa_decode 
+    """ test reconstruct and sa_encode / sa_decode
     (also for a few additive quantizer variants) """
 
     def do_test(self, by_residual=False):
@@ -576,7 +577,7 @@ class TestReconstruct(unittest.TestCase):
         index.reconstruct_orig_invlists()
         assert index.orig_invlists.compute_ntotal() == index.ntotal
 
-        # compare with non fast-scan index 
+        # compare with non fast-scan index
         index2 = faiss.IndexIVFPQ(
             index.quantizer, d, 50, d // 2, 4, metric)
         index2.by_residual = by_residual
