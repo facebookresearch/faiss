@@ -9,6 +9,7 @@
 
 #include <climits>
 #include <cmath>
+#include <cstdint>
 
 #include <limits>
 

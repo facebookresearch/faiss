@@ -16,6 +16,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -164,6 +165,15 @@ FAISS_API extern int index_ivfpq_add_core_o_bs;
  * @param precomputed_table precomputed table to initialize
  */
 
+void initialize_IVFPQ_precomputed_table(
+        int& use_precomputed_table,
+        const Index* quantizer,
+        const ProductQuantizer& pq,
+        AlignedTable<float>& precomputed_table,
+        bool by_residual,
+        bool verbose);
+
+template <SIMDLevel SL>
 void initialize_IVFPQ_precomputed_table(
         int& use_precomputed_table,
         const Index* quantizer,
