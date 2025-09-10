@@ -329,49 +329,17 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
              metric_type == MetricType::METRIC_INNER_PRODUCT));
 
     // split the code into parts
+    size_t size = (d + 7) / 8;
     const uint8_t* binary_data = code;
-    const FactorsData* fac =
-            reinterpret_cast<const FactorsData*>(code + (d + 7) / 8);
+    const FactorsData* fac = reinterpret_cast<const FactorsData*>(code + size);
 
-    // // this is the baseline code
-    // //
-    // // compute <q,o> using integers
-    // size_t dot_qo = 0;
-    // for (size_t i = 0; i < d; i++) {
-    //     // extract i-th bit
-    //     const uint8_t masker = (1 << (i % 8));
-    //     const uint8_t bit = ((binary_data[i / 8] & masker) == masker) ? 1 :
-    //     0;
-    //
-    //     // accumulate dp
-    //     dot_qo += bit * rotated_qq[i];
-    // }
-
-    // this is the scheme for popcount
-    const size_t di_8b = (d + 7) / 8;
-    const size_t di_64b = (di_8b / 8) * 8;
-
-    // Use the optimized popcount function from rabitq_simd.h
-    float dot_qo =
-            rabitq_dp_popcnt(rearranged_rotated_qq.data(), binary_data, d, qb);
+    // See RaBitDistanceComputerNotQ::distance_to_code() for baseline code.
+    float dot_qo = rabitq::bitwise_and_dot_product(
+            rearranged_rotated_qq.data(), binary_data, size, qb);
 
     // It was a willful decision (after the discussion) to not to pre-cache
-    //   the sum of all bits, just in order to reduce the overhead per vector.
-    uint64_t sum_q = 0;
-    {
-        // process 64-bit popcounts
-        for (size_t i = 0; i < di_64b; i += 8) {
-            const auto yv = *(const uint64_t*)(binary_data + i);
-            sum_q += __builtin_popcountll(yv);
-        }
-
-        // process leftovers
-        for (size_t i = di_64b; i < di_8b; i++) {
-            const auto yv = *(binary_data + i);
-            sum_q += __builtin_popcount(yv);
-        }
-    }
-
+    // the sum of all bits, just in order to reduce the overhead per vector.
+    auto sum_q = rabitq::popcount(binary_data, size);
     float final_dot = 0;
     // dot-product itself
     final_dot += query_fac.c1 * dot_qo;
