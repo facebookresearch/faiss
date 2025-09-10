@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="26" column="20" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="26" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="27" column="20" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQ_1aba60d4c6fbf6b82f98b56a5f0052c5a5" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="30" column="13" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="31" column="13" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -397,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="32" column="5"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="33" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a0f28f30d842890f4d5f3232e69e87b19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -411,7 +411,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="39" column="5"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="40" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a685fe60a5ee46e4561b7d00fdd8bd243" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -440,7 +440,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="41" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="42" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a022d55b7cf5f0ac348e0fc81dec8ec84" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -503,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="43" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="44" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1ad52a73c3c2875d7d69de940b5c1fed66" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -561,7 +561,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="50" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="51" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a957cc531cd61d0431eae2f2c10129802" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -608,7 +608,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="56" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1ae53b30d0de4d9a4802a4dc4c197ec0da" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -637,7 +637,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="63" column="25"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="64" column="25"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a5ac77948c911d71310ab837a9a0fdd91" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -666,7 +666,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="68" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="69" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1a79ceddd914b81c8fa67c6d27e4a3dc12" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -720,7 +720,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="71" column="10"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="72" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -737,7 +737,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQ.h" line="74" column="22"/>
+        <location file="faiss/IndexIVFRaBitQ.h" line="75" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -2416,7 +2416,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQ.h" line="25" column="1" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="25" bodyend="75"/>
+    <location file="faiss/IndexIVFRaBitQ.h" line="26" column="1" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="26" bodyend="76"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVFRaBitQ_1a957cc531cd61d0431eae2f2c10129802" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>add_core</name></member>

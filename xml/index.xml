@@ -6233,6 +6233,7 @@
     <member refid="structfaiss_1_1IndexRaBitQ_1ac4730061f008c69460cf48392003b7ec" kind="variable"><name>rabitq</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1ae6c638ba940ec8bbd69e3899163a320e" kind="variable"><name>center</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1a76e288958a09608edeca94f8977749f6" kind="variable"><name>qb</name></member>
+    <member refid="structfaiss_1_1IndexRaBitQ_1a0ff25b269d629644e6a073d40bfa1c4e" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1aaa9908ecda5555337ca29bd0727153e9" kind="variable"><name>codes</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
@@ -6247,7 +6248,7 @@
     <member refid="structfaiss_1_1IndexRaBitQ_1afbcc303ffecc074f1665af171f692054" kind="function"><name>sa_encode</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1a65ebc38abdff6a6fd9df63fecc775fa9" kind="function"><name>sa_decode</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1a4631ebaf645ef681120397fa23cfc053" kind="function"><name>get_FlatCodesDistanceComputer</name></member>
-    <member refid="structfaiss_1_1IndexRaBitQ_1a2e9ac8abc4e1523bf8de4d7367a29d45" kind="function"><name>get_quantized_distance_computer</name></member>
+    <member refid="structfaiss_1_1IndexRaBitQ_1a82d6015b15a8f796fc3fd830fe81f066" kind="function"><name>get_quantized_distance_computer</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1aee785bb6cceb835ad73483f4fa831b42" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexRaBitQ_1a97da3c2d6eeba361a5af60a6a07e62e9" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" kind="function"><name>add</name></member>
@@ -7025,6 +7026,7 @@
   </compound>
   <compound refid="structfaiss_1_1IVFRaBitQSearchParameters" kind="struct"><name>faiss::IVFRaBitQSearchParameters</name>
     <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1ab74a8949016b84fa05db0b41fc152e08" kind="variable"><name>qb</name></member>
+    <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1a101f65638646412ec24910ca86d12088" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" kind="variable"><name>nprobe</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" kind="variable"><name>max_codes</name></member>
     <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" kind="variable"><name>quantizer_params</name></member>
@@ -8200,6 +8202,7 @@
   </compound>
   <compound refid="structfaiss_1_1RaBitQSearchParameters" kind="struct"><name>faiss::RaBitQSearchParameters</name>
     <member refid="structfaiss_1_1RaBitQSearchParameters_1a78be39f298ece447149a52debd8e0e79" kind="variable"><name>qb</name></member>
+    <member refid="structfaiss_1_1RaBitQSearchParameters_1aa187665aa973c9e45f756b75629f7a85" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
   </compound>
   <compound refid="structfaiss_1_1RaBitQuantizer" kind="struct"><name>faiss::RaBitQuantizer</name>
@@ -8213,7 +8216,7 @@
     <member refid="structfaiss_1_1RaBitQuantizer_1aee80494414b88ac1ccf8aa3aeb1bca0d" kind="function"><name>compute_codes_core</name></member>
     <member refid="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267" kind="function"><name>decode</name></member>
     <member refid="structfaiss_1_1RaBitQuantizer_1a3157fded0bb1a02ad828cd88f4d53b96" kind="function"><name>decode_core</name></member>
-    <member refid="structfaiss_1_1RaBitQuantizer_1a2365cee249242f496e3759c7d28da80e" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1RaBitQuantizer_1a01f7106109911320206aec408159c537" kind="function"><name>get_distance_computer</name></member>
   </compound>
   <compound refid="structfaiss_1_1RandomGenerator" kind="struct"><name>faiss::RandomGenerator</name>
     <member refid="structfaiss_1_1RandomGenerator_1a1cb04ff503cdcdac5977274b8a2591d8" kind="variable"><name>mt</name></member>
@@ -10226,7 +10229,6 @@
     <member refid="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" kind="function"><name>partition</name></member>
     <member refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" kind="function"><name>simd_histogram_8</name></member>
     <member refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" kind="function"><name>simd_histogram_16</name></member>
-    <member refid="namespacefaiss_1a147211a9b3ab1ef2bda1a6296803d4d0" kind="function"><name>rabitq_dp_popcnt</name></member>
     <member refid="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" kind="function"><name>float_rand</name></member>
     <member refid="namespacefaiss_1aa149aec8f65085773f664bb7b5884743" kind="function"><name>float_randn</name></member>
     <member refid="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8" kind="function"><name>int64_rand</name></member>
@@ -10520,6 +10522,11 @@
     <member refid="namespacefaiss_1_1quantize__lut_1a352d817a7e7c95c57c2cce10b77e3248" kind="function"><name>quantize_LUT_and_bias</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1aa7e6fdcb7243e623e4b160308f761ac4" kind="function"><name>aq_quantize_LUT_and_bias</name></member>
     <member refid="namespacefaiss_1_1quantize__lut_1ab93e886d01cd9809d0c7ae3b7203f92a" kind="function"><name>aq_estimate_norm_scale</name></member>
+  </compound>
+  <compound refid="namespacefaiss_1_1rabitq" kind="namespace"><name>faiss::rabitq</name>
+    <member refid="rabitq__simd_8h_1ad2e5c4c6149b0e481d68ef593b81ad8d" kind="function"><name>bitwise_and_dot_product</name></member>
+    <member refid="rabitq__simd_8h_1ac5ea8dd8e109c02092e213e74fd139b4" kind="function"><name>bitwise_xor_dot_product</name></member>
+    <member refid="rabitq__simd_8h_1ae550e84d71139760b85f38dcf3b10145" kind="function"><name>popcount</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rq__encode__steps" kind="namespace"><name>faiss::rq_encode_steps</name>
     <member refid="residual__quantizer__encode__steps_8h_1a8f562c038b63180c6cb8c11bd900dd5c" kind="function"><name>refine_beam_mp</name></member>

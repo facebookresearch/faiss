@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="20" column="20" bodyfile="faiss/IndexRaBitQ.h" bodystart="20" bodyend="-1"/>
+        <location file="faiss/IndexRaBitQ.h" line="21" column="20" bodyfile="faiss/IndexRaBitQ.h" bodystart="21" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRaBitQ_1ae6c638ba940ec8bbd69e3899163a320e" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="23" column="17" bodyfile="faiss/IndexRaBitQ.h" bodystart="23" bodyend="-1"/>
+        <location file="faiss/IndexRaBitQ.h" line="24" column="17" bodyfile="faiss/IndexRaBitQ.h" bodystart="24" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexRaBitQ_1a76e288958a09608edeca94f8977749f6" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -45,7 +45,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="27" column="13" bodyfile="faiss/IndexRaBitQ.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/IndexRaBitQ.h" line="28" column="13" bodyfile="faiss/IndexRaBitQ.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexRaBitQ_1a0ff25b269d629644e6a073d40bfa1c4e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IndexRaBitQ::centered</definition>
+        <argsstring></argsstring>
+        <name>centered</name>
+        <qualifiedname>faiss::IndexRaBitQ::centered</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQ.h" line="31" column="10" bodyfile="faiss/IndexRaBitQ.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -180,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="29" column="5"/>
+        <location file="faiss/IndexRaBitQ.h" line="33" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1ab853191032e293b2522c9308d502a086" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -203,7 +218,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="31" column="14"/>
+        <location file="faiss/IndexRaBitQ.h" line="35" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a6a8dab5dc77eaa55726a4d97dea9ea3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -245,7 +260,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="33" column="10"/>
+        <location file="faiss/IndexRaBitQ.h" line="37" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1afbcc303ffecc074f1665af171f692054" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -299,7 +314,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="35" column="10"/>
+        <location file="faiss/IndexRaBitQ.h" line="39" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a65ebc38abdff6a6fd9df63fecc775fa9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -353,7 +368,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="36" column="10"/>
+        <location file="faiss/IndexRaBitQ.h" line="40" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a4631ebaf645ef681120397fa23cfc053" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -370,17 +385,21 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="40" column="31"/>
+        <location file="faiss/IndexRaBitQ.h" line="44" column="31"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a2e9ac8abc4e1523bf8de4d7367a29d45" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a82d6015b15a8f796fc3fd830fe81f066" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
         <definition>FlatCodesDistanceComputer * faiss::IndexRaBitQ::get_quantized_distance_computer</definition>
-        <argsstring>(const uint8_t qb_in) const</argsstring>
+        <argsstring>(const uint8_t qb_in, bool centered) const</argsstring>
         <name>get_quantized_distance_computer</name>
         <qualifiedname>faiss::IndexRaBitQ::get_quantized_distance_computer</qualifiedname>
         <param>
           <type>const uint8_t</type>
           <declname>qb_in</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>centered</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -388,7 +407,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="44" column="31"/>
+        <location file="faiss/IndexRaBitQ.h" line="48" column="31"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1aee785bb6cceb835ad73483f4fa831b42" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -429,7 +448,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="49" column="10"/>
+        <location file="faiss/IndexRaBitQ.h" line="54" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexRaBitQ_1a97da3c2d6eeba361a5af60a6a07e62e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -501,7 +520,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="57" column="10"/>
+        <location file="faiss/IndexRaBitQ.h" line="62" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1440,7 +1459,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexRaBitQ.h" line="19" column="1" bodyfile="faiss/IndexRaBitQ.h" bodystart="19" bodyend="63"/>
+    <location file="faiss/IndexRaBitQ.h" line="20" column="1" bodyfile="faiss/IndexRaBitQ.h" bodystart="20" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlatCodes_1a65334d3e1a47f07729eb44b39b849611" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>add_ex</name></member>
@@ -1449,6 +1468,7 @@
       <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>add_with_ids_ex</name></member>
       <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>assign</name></member>
       <member refid="structfaiss_1_1IndexRaBitQ_1ae6c638ba940ec8bbd69e3899163a320e" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>center</name></member>
+      <member refid="structfaiss_1_1IndexRaBitQ_1a0ff25b269d629644e6a073d40bfa1c4e" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>centered</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>check_compatible_for_merge</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aaa9908ecda5555337ca29bd0727153e9" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>codes</name></member>
@@ -1460,7 +1480,7 @@
       <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexRaBitQ_1a4631ebaf645ef681120397fa23cfc053" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>get_FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1IndexRaBitQ_1a2e9ac8abc4e1523bf8de4d7367a29d45" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>get_quantized_distance_computer</name></member>
+      <member refid="structfaiss_1_1IndexRaBitQ_1a82d6015b15a8f796fc3fd830fe81f066" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>get_quantized_distance_computer</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>IndexFlatCodes</name></member>

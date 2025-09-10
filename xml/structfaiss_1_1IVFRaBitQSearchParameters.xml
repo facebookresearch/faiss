@@ -19,6 +19,21 @@
         </inbodydescription>
         <location file="faiss/IndexIVFRaBitQ.h" line="21" column="13" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="21" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IVFRaBitQSearchParameters_1a101f65638646412ec24910ca86d12088" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::IVFRaBitQSearchParameters::centered</definition>
+        <argsstring></argsstring>
+        <name>centered</name>
+        <qualifiedname>faiss::IVFRaBitQSearchParameters::centered</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFRaBitQ.h" line="22" column="10" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" static="no" mutable="no">
         <type>size_t</type>
         <definition>size_t faiss::SearchParametersIVF::nprobe</definition>
@@ -149,8 +164,9 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQ.h" line="20" column="1" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="20" bodyend="22"/>
+    <location file="faiss/IndexIVFRaBitQ.h" line="20" column="1" bodyfile="faiss/IndexIVFRaBitQ.h" bodystart="20" bodyend="23"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1a101f65638646412ec24910ca86d12088" prot="public" virt="non-virtual"><scope>faiss::IVFRaBitQSearchParameters</scope><name>centered</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" virt="non-virtual"><scope>faiss::IVFRaBitQSearchParameters</scope><name>inverted_list_context</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" virt="non-virtual"><scope>faiss::IVFRaBitQSearchParameters</scope><name>max_codes</name></member>
       <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" prot="public" virt="non-virtual"><scope>faiss::IVFRaBitQSearchParameters</scope><name>nprobe</name></member>

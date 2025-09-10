@@ -276,10 +276,10 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQuantizer.h" line="64" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a2365cee249242f496e3759c7d28da80e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a01f7106109911320206aec408159c537" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
         <definition>FlatCodesDistanceComputer * faiss::RaBitQuantizer::get_distance_computer</definition>
-        <argsstring>(uint8_t qb, const float *centroid_in=nullptr) const</argsstring>
+        <argsstring>(uint8_t qb, const float *centroid_in=nullptr, bool centered=false) const</argsstring>
         <name>get_distance_computer</name>
         <qualifiedname>faiss::RaBitQuantizer::get_distance_computer</qualifiedname>
         <param>
@@ -290,6 +290,11 @@
           <type>const float *</type>
           <declname>centroid_in</declname>
           <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>centered</declname>
+          <defval>false</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -328,7 +333,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/RaBitQuantizer.h" line="24" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="24" bodyend="76"/>
+    <location file="faiss/impl/RaBitQuantizer.h" line="24" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="24" bodyend="77"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RaBitQuantizer_1a20997370b2bffaf0ae8ec79cec16bbb0" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>centroid</name></member>
       <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>code_size</name></member>
@@ -337,7 +342,7 @@
       <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>d</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>decode</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1a3157fded0bb1a02ad828cd88f4d53b96" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>decode_core</name></member>
-      <member refid="structfaiss_1_1RaBitQuantizer_1a2365cee249242f496e3759c7d28da80e" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1RaBitQuantizer_1a01f7106109911320206aec408159c537" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1ac5bbf60e15a32d80ee98b52db5e2e13f" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1a01c3617328434712979aa160f4b56787" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>RaBitQuantizer</name></member>
