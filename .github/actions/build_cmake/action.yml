@@ -92,17 +92,16 @@ runs:
         wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
 
         # Add rocm repository
-       rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
-       sudo mkdir -p /etc/apt/keyrings
-       wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
-       EXPECTED_SHA256="F5ACA6D0AEF577B5C616C3B4CB9399BA0F62C1E0"
-       echo "${EXPECTED_SHA256}  /tmp/rocm.gpg.key" | sha256sum -c -
-       gpg --dearmor < /tmp/rocm.gpg.key | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-       sudo chmod 0644 /etc/apt/keyrings/rocm.gpg
-       rm /tmp/rocm.gpg.key
-      echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-      sudo apt-get -qq update >/dev/null
-      sudo apt-get -qq install -y \
+               rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
+        echo "F5ACA6D0AEF577B5C616C3B4CB9399BA0F62C1E0  /tmp/rocm.gpg.key" | sha256sum -c -
+        gpg --dearmor < /tmp/rocm.gpg.key | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
+
 
             "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
             "rocm-libs${ROCM_VERSION}" >/dev/null
