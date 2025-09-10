@@ -19,6 +19,7 @@ namespace faiss {
 
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
     uint8_t qb = 0;
+    bool centered = false;
 };
 
 // * by_residual is true, just by design

@@ -17,6 +17,11 @@ def random_rotation(d, seed=123):
     return Q
 
 
+# Exercise SIMD codepaths, maintain multiple of 16.
+TEST_DIM = 512 * 2 + 256 + 128 + 64 + 16  # 1488
+TEST_N = 4096
+
+
 # based on https://gist.github.com/mdouze/0b2386c31d7fb8b20ae04f3fcbbf4d9d
 class ReferenceRabitQ:
     """Exact translation of the paper
@@ -175,53 +180,67 @@ class ReferenceIVFRabitQ:
 
 class TestRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
-        ds = datasets.SyntheticDataset(128, 4096, 4096, 100)
+        ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 100)
         k = 10
-
-        # PQ 8-to-1
-        index_pq = faiss.IndexPQ(ds.d, 16, 8, metric_type)
-        index_pq.train(ds.get_train())
-        index_pq.add(ds.get_database())
-        _, I_pq = index_pq.search(ds.get_queries(), k)
-
-        index_rbq = faiss.IndexRaBitQ(ds.d, metric_type)
-        index_rbq.train(ds.get_train())
-        index_rbq.add(ds.get_database())
-        _, I_rbq = index_rbq.search(ds.get_queries(), k)
-
-        # try quantized query
-        rbq_params = faiss.RaBitQSearchParameters(qb=8)
-        _, I_rbq_q8 = index_rbq.search(ds.get_queries(), k, params=rbq_params)
-
-        rbq_params = faiss.RaBitQSearchParameters(qb=4)
-        _, I_rbq_q4 = index_rbq.search(ds.get_queries(), k, params=rbq_params)
 
         index_flat = faiss.IndexFlat(ds.d, metric_type)
         index_flat.train(ds.get_train())
         index_flat.add(ds.get_database())
         _, I_f = index_flat.search(ds.get_queries(), k)
 
-        # ensure that RaBitQ and PQ are relatively close
-        eval_pq = faiss.eval_intersection(I_pq[:, :k], I_f[:, :k])
-        eval_pq /= ds.nq * k
-        eval_rbq = faiss.eval_intersection(I_rbq[:, :k], I_f[:, :k])
-        eval_rbq /= ds.nq * k
-        eval_rbq_q8 = faiss.eval_intersection(I_rbq_q8[:, :k], I_f[:, :k])
-        eval_rbq_q8 /= ds.nq * k
-        eval_rbq_q4 = faiss.eval_intersection(I_rbq_q4[:, :k], I_f[:, :k])
-        eval_rbq_q4 /= ds.nq * k
+        def eval_I(I):
+            return faiss.eval_intersection(I, I_f) / I_f.ravel().shape[0]
 
-        print(
-            f"PQ is {eval_pq}, "
-            f"RaBitQ is {eval_rbq}, "
-            f"q8 RaBitQ is {eval_rbq_q8}, "
-            f"q4 RaBitQ is {eval_rbq_q4}"
-        )
+        print()
 
-        np.testing.assert_(abs(eval_pq - eval_rbq) < 0.05)
-        np.testing.assert_(abs(eval_pq - eval_rbq_q8) < 0.05)
-        np.testing.assert_(abs(eval_pq - eval_rbq_q4) < 0.05)
-        np.testing.assert_(eval_pq > 0.55)
+        for random_rotate in [False, True]:
+
+            # PQ{D/4}x4fs, also 1 bit per query dimension
+            index_pq = faiss.IndexPQFastScan(ds.d, ds.d // 4, 4, metric_type)
+            # Share a single quantizer (much faster, minimal recall change)
+            index_pq.pq.train_type = faiss.ProductQuantizer.Train_shared
+            if random_rotate:
+                # wrap with random rotations
+                rrot = faiss.RandomRotationMatrix(ds.d, ds.d)
+                rrot.init(123)
+
+                index_pq = faiss.IndexPreTransform(rrot, index_pq)
+            index_pq.train(ds.get_train())
+            index_pq.add(ds.get_database())
+
+            D_pq, I_pq = index_pq.search(ds.get_queries(), k)
+            loss_pq = 1 - eval_I(I_pq)
+            print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
+            np.testing.assert_(loss_pq < 0.25, f"{loss_pq}")
+
+            index_rbq = faiss.IndexRaBitQ(ds.d, metric_type)
+            if random_rotate:
+                # wrap with random rotations
+                rrot = faiss.RandomRotationMatrix(ds.d, ds.d)
+                rrot.init(123)
+
+                index_rbq = faiss.IndexPreTransform(rrot, index_rbq)
+            index_rbq.train(ds.get_train())
+            index_rbq.add(ds.get_database())
+
+            def test(params):
+                _, I_rbq = index_rbq.search(ds.get_queries(), k, params=params)
+
+                # ensure that RaBitQ and PQ are relatively close
+                loss_rbq = 1 - eval_I(I_rbq)
+                ratio_threshold = 2 ** (1 / qb)
+                print(
+                    f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
+                    f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
+                    f" < {ratio_threshold=:.2f}"
+                )
+
+                np.testing.assert_(loss_rbq < loss_pq * ratio_threshold)
+
+            for qb in [1, 2, 3, 4, 8]:
+                print()
+                for centered in [False, True]:
+                    test(faiss.RaBitQSearchParameters(qb=qb, centered=centered))
 
     def test_comparison_vs_pq_L2(self):
         self.do_comparison_vs_pq_test(faiss.METRIC_L2)
@@ -230,7 +249,7 @@ class TestRaBitQ(unittest.TestCase):
         self.do_comparison_vs_pq_test(faiss.METRIC_INNER_PRODUCT)
 
     def test_comparison_vs_ref_L2_rrot(self, rrot_seed=123):
-        ds = datasets.SyntheticDataset(128, 4096, 4096, 1)
+        ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 1)
 
         ref_rbq = ReferenceRabitQ(ds.d, Bq=8)
         ref_rbq.train(ds.get_train(), random_rotation(ds.d, rrot_seed))
@@ -264,7 +283,7 @@ class TestRaBitQ(unittest.TestCase):
         np.testing.assert_(corr > 0.9)
 
     def test_comparison_vs_ref_L2(self):
-        ds = datasets.SyntheticDataset(128, 4096, 4096, 1)
+        ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 1)
 
         ref_rbq = ReferenceRabitQ(ds.d, Bq=8)
         ref_rbq.train(ds.get_train(), np.identity(ds.d))
@@ -276,6 +295,7 @@ class TestRaBitQ(unittest.TestCase):
         index_rbq.add(ds.get_database())
 
         ref_dis = ref_rbq.distances(ds.get_queries())
+        mean_dist = ref_dis.mean()
 
         dc = index_rbq.get_distance_computer()
         xq = ds.get_queries()
@@ -283,8 +303,10 @@ class TestRaBitQ(unittest.TestCase):
         dc.set_query(faiss.swig_ptr(xq[0]))
         for j in range(ds.nb):
             upd_dis = dc(j)
-            # print(f"{j} {ref_dis[0][j]} {upd_dis}")
-            np.testing.assert_(abs(ref_dis[0][j] - upd_dis) < 0.001)
+            np.testing.assert_(
+                abs(ref_dis[0][j] - upd_dis) < mean_dist * 0.00001,
+                f"{j} {ref_dis[0][j]} {upd_dis}",
+            )
 
     def do_test_serde(self, description):
         ds = datasets.SyntheticDataset(32, 1000, 100, 20)
@@ -308,8 +330,98 @@ class TestRaBitQ(unittest.TestCase):
 
 
 class TestIVFRaBitQ(unittest.TestCase):
+    def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
+        nlist = 64
+        nprobe = 8
+        nq = 1000
+        ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, nq)
+        k = 10
+
+        d = ds.d
+        xb = ds.get_database()
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        quantizer = faiss.IndexFlat(d, metric_type)
+        index_flat = faiss.IndexIVFFlat(quantizer, d, nlist, metric_type)
+        index_flat.train(xt)
+        index_flat.add(xb)
+        D_f, I_f = index_flat.search(
+            xq, k, params=faiss.IVFSearchParameters(nprobe=nprobe)
+        )
+
+        def eval_I(I):
+            return faiss.eval_intersection(I, I_f) / I_f.ravel().shape[0]
+
+        print()
+
+        for random_rotate in [False, True]:
+            quantizer = faiss.IndexFlat(d, metric_type)
+            index_rbq = faiss.IndexIVFRaBitQ(quantizer, d, nlist, metric_type)
+            if random_rotate:
+                # wrap with random rotations
+                rrot = faiss.RandomRotationMatrix(d, d)
+                rrot.init(123)
+
+                index_rbq = faiss.IndexPreTransform(rrot, index_rbq)
+            index_rbq.train(xt)
+            index_rbq.add(xb)
+
+            # PQ{D/4}x4fs, also 1 bit per query dimension,
+            # reusing quantizer from index_rbq.
+            index_pq = faiss.IndexIVFPQFastScan(
+                quantizer, d, nlist, d // 4, 4, metric_type
+            )
+            # Share a single quantizer (much faster, minimal recall change)
+            index_pq.pq.train_type = faiss.ProductQuantizer.Train_shared
+            if random_rotate:
+                # wrap with random rotations
+                rrot = faiss.RandomRotationMatrix(d, d)
+                rrot.init(123)
+
+                index_pq = faiss.IndexPreTransform(rrot, index_pq)
+            index_pq.train(xt)
+            index_pq.add(xb)
+
+            D_pq, I_pq = index_pq.search(
+                xq, k, params=faiss.IVFPQSearchParameters(nprobe=nprobe)
+            )
+            loss_pq = 1 - eval_I(I_pq)
+
+            print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
+            np.testing.assert_(loss_pq < 0.25, f"{loss_pq}")
+
+            def test(params):
+                D_rbq, I_rbq = index_rbq.search(xq, k, params=params)
+
+                # ensure that RaBitQ and PQ are relatively close
+                loss_rbq = 1 - eval_I(I_rbq)
+                ratio_threshold = 2 ** (1 / qb)
+                print(
+                    f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
+                    f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
+                    f" < {ratio_threshold=:.2f}"
+                )
+
+                np.testing.assert_(loss_rbq < loss_pq * ratio_threshold)
+
+            for qb in [1, 2, 3, 4, 8]:
+                print()
+                for centered in [False, True]:
+                    test(
+                        faiss.IVFRaBitQSearchParameters(
+                            nprobe=nprobe, qb=qb, centered=centered
+                        )
+                    )
+
+    def test_comparison_vs_pq_L2(self):
+        self.do_comparison_vs_pq_test(faiss.METRIC_L2)
+
+    def test_comparison_vs_pq_IP(self):
+        self.do_comparison_vs_pq_test(faiss.METRIC_INNER_PRODUCT)
+
     def test_comparison_vs_ref_L2(self):
-        ds = datasets.SyntheticDataset(128, 4096, 4096, 100)
+        ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 100)
 
         k = 10
         nlist = 200
@@ -318,9 +430,7 @@ class TestIVFRaBitQ(unittest.TestCase):
         ref_rbq.add(ds.get_database())
 
         index_flat = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
-        index_rbq = faiss.IndexIVFRaBitQ(
-            index_flat, ds.d, nlist, faiss.METRIC_L2
-        )
+        index_rbq = faiss.IndexIVFRaBitQ(index_flat, ds.d, nlist, faiss.METRIC_L2)
         index_rbq.qb = 4
         index_rbq.train(ds.get_train())
         index_rbq.add(ds.get_database())
@@ -358,9 +468,7 @@ class TestIVFRaBitQ(unittest.TestCase):
         ref_rbq.add(ds.get_database())
 
         index_flat = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
-        index_rbq = faiss.IndexIVFRaBitQ(
-            index_flat, ds.d, nlist, faiss.METRIC_L2
-        )
+        index_rbq = faiss.IndexIVFRaBitQ(index_flat, ds.d, nlist, faiss.METRIC_L2)
         index_rbq.qb = 4
 
         # wrap with random rotations
