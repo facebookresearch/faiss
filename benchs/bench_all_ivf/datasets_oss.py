@@ -17,6 +17,7 @@ print("path:", faiss_datasets.__file__)
 
 faiss_datasets.dataset_basedir = '/checkpoint/matthijs/simsearch/'
 
+
 def sanitize(x):
     return np.ascontiguousarray(x, dtype='float32')
 
@@ -24,6 +25,7 @@ def sanitize(x):
 #################################################################
 # Dataset
 #################################################################
+
 
 class DatasetCentroids(faiss_datasets.Dataset):
 

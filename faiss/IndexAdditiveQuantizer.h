@@ -181,6 +181,7 @@ struct AdditiveCoarseQuantizer : Index {
             const SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
+
     void train(idx_t n, const float* x) override;
 
     /// N/A

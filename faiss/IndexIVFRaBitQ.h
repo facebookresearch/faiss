@@ -19,6 +19,7 @@ namespace faiss {
 
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
     uint8_t qb = 0;
+    bool centered = false;
 };
 
 // * by_residual is true, just by design
@@ -33,7 +34,8 @@ struct IndexIVFRaBitQ : IndexIVF {
             Index* quantizer,
             const size_t d,
             const size_t nlist,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     IndexIVFRaBitQ();
 
@@ -45,6 +47,12 @@ struct IndexIVFRaBitQ : IndexIVF {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listnos = false) const override;
+
+    void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const override;
 
     void add_core(
             idx_t n,

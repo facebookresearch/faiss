@@ -43,11 +43,13 @@ size_t VectorIOWriter::operator()(const void* ptr, size_t size, size_t nitems) {
 }
 
 size_t VectorIOReader::operator()(void* ptr, size_t size, size_t nitems) {
-    if (rp >= data.size())
+    if (rp >= data.size()) {
         return 0;
+    }
     size_t nremain = (data.size() - rp) / size;
-    if (nremain < nitems)
+    if (nremain < nitems) {
         nitems = nremain;
+    }
     if (size * nitems > 0) {
         memcpy(ptr, &data[rp], size * nitems);
         rp += size * nitems;
@@ -143,8 +145,9 @@ BufferedIOReader::BufferedIOReader(IOReader* reader, size_t bsz)
 
 size_t BufferedIOReader::operator()(void* ptr, size_t unitsize, size_t nitems) {
     size_t size = unitsize * nitems;
-    if (size == 0)
+    if (size == 0) {
         return 0;
+    }
     char* dst = (char*)ptr;
     size_t nb;
 
@@ -189,8 +192,9 @@ size_t BufferedIOWriter::operator()(
         size_t unitsize,
         size_t nitems) {
     size_t size = unitsize * nitems;
-    if (size == 0)
+    if (size == 0) {
         return 0;
+    }
     const char* src = (const char*)ptr;
     size_t nb;
 
@@ -260,7 +264,7 @@ std::string fourcc_inv(uint32_t x) {
 std::string fourcc_inv_printable(uint32_t x) {
     char cstr[5];
     fourcc_inv(x, cstr);
-    std::string str = "";
+    std::string str;
     for (int i = 0; i < 4; i++) {
         uint8_t c = cstr[i];
         if (32 <= c && c < 127) {

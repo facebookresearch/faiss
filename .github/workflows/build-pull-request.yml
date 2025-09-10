@@ -146,7 +146,7 @@ jobs:
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
     needs: linux-x86_64-cmake
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v4

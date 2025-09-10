@@ -60,19 +60,22 @@ void Level1Quantizer::train_q1(
         MetricType metric_type) {
     size_t d = quantizer->d;
     if (quantizer->is_trained && (quantizer->ntotal == nlist)) {
-        if (verbose)
+        if (verbose) {
             printf("IVF quantizer does not need training.\n");
+        }
     } else if (quantizer_trains_alone == 1) {
-        if (verbose)
+        if (verbose) {
             printf("IVF quantizer trains alone...\n");
+        }
         quantizer->verbose = verbose;
         quantizer->train(n, x);
         FAISS_THROW_IF_NOT_MSG(
                 quantizer->ntotal == nlist,
                 "nlist not consistent with quantizer size");
     } else if (quantizer_trains_alone == 0) {
-        if (verbose)
+        if (verbose) {
             printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
+        }
 
         Clustering clus(d, nlist, cp);
         quantizer->reset();
@@ -158,11 +161,14 @@ IndexIVF::IndexIVF(
         size_t d,
         size_t nlist,
         size_t code_size,
-        MetricType metric)
+        MetricType metric,
+        bool own_invlists)
         : Index(d, metric),
           IndexIVFInterface(quantizer, nlist),
-          invlists(new ArrayInvertedLists(nlist, code_size)),
-          own_invlists(true),
+          invlists(
+                  own_invlists ? new ArrayInvertedLists(nlist, code_size)
+                               : nullptr),
+          own_invlists(own_invlists),
           code_size(code_size) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
     is_trained = quantizer->is_trained && (quantizer->ntotal == nlist);
@@ -230,8 +236,9 @@ void IndexIVF::add_core(
     size_t nadd = 0, nminus1 = 0;
 
     for (size_t i = 0; i < n; i++) {
-        if (coarse_idx[i] < 0)
+        if (coarse_idx[i] < 0) {
             nminus1++;
+        }
     }
 
     std::unique_ptr<uint8_t[]> flat_codes(new uint8_t[n * code_size]);
@@ -466,8 +473,9 @@ void IndexIVF::search_preassigned(
         // initialize + reorder a result heap
 
         auto init_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
+            if (!do_heap_init) {
                 return;
+            }
             if (metric_type == METRIC_INNER_PRODUCT) {
                 heap_heapify<HeapForIP>(k, simi, idxi);
             } else {
@@ -487,8 +495,9 @@ void IndexIVF::search_preassigned(
         };
 
         auto reorder_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
+            if (!do_heap_init) {
                 return;
+            }
             if (metric_type == METRIC_INNER_PRODUCT) {
                 heap_reorder<HeapForIP>(k, simi, idxi);
             } else {
@@ -804,8 +813,9 @@ void IndexIVF::range_search_preassigned(
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
             idx_t key = keys[i * nprobe + ik]; /* select the list  */
-            if (key < 0)
+            if (key < 0) {
                 return;
+            }
             FAISS_THROW_IF_NOT_FMT(
                     key < (idx_t)nlist,
                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
@@ -954,6 +964,14 @@ bool IndexIVF::check_ids_sorted() const {
         }
     }
     return nflip == 0;
+}
+
+void IndexIVF::decode_vectors(
+        idx_t /*n*/,
+        const uint8_t* /*codes*/,
+        const idx_t* /*list_nos*/,
+        float* /*x*/) const {
+    FAISS_THROW_MSG("decode_vectors not implemented");
 }
 
 /* standalone codec interface */

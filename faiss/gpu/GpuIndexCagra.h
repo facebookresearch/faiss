@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright (c) 2024, NVIDIA CORPORATION.
+ * Copyright (c) 2024-2025, NVIDIA CORPORATION.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@
 #include <faiss/gpu/GpuIndex.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 
+#include <variant>
+#include "faiss/Index.h"
+
 namespace faiss {
 struct IndexHNSWCagra;
 }
@@ -34,13 +37,16 @@ struct IndexHNSWCagra;
 namespace faiss {
 namespace gpu {
 
+template <typename data_t>
 class CuvsCagra;
 
 enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
     /// Use NN-Descent to build all-neighbors knn graph
-    NN_DESCENT
+    NN_DESCENT,
+    /// Use iterative search to build knn graph
+    ITERATIVE_SEARCH
 };
 
 /// A type for specifying how PQ codebooks are created.
@@ -116,7 +122,6 @@ struct IVFPQBuildCagraConfig {
     /// the algorithm always allocates the minimum amount of memory required to
     /// store the given number of records. Set this flag to `true` if you prefer
     /// to use as little GPU memory for the database as possible.
-
     bool conservative_memory_allocation = false;
 };
 
@@ -177,6 +182,9 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
     std::shared_ptr<IVFPQSearchCagraConfig> ivf_pq_search_params{nullptr};
     float refine_rate = 2.0f;
     bool store_dataset = true;
+
+    /// Whether to use MST optimization to guarantee graph connectivity.
+    bool guarantee_connectivity = false;
 };
 
 enum class search_algo {
@@ -250,6 +258,7 @@ struct GpuIndexCagra : public GpuIndex {
     /// the base dataset. Use this function when you want to add vectors with
     /// ids. Ref: https://github.com/facebookresearch/faiss/issues/4107
     void add(idx_t n, const float* x) override;
+    void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Trains CAGRA based on the given vector data.
     /// NB: The use of the train function here is to build the CAGRA graph on
@@ -257,10 +266,14 @@ struct GpuIndexCagra : public GpuIndex {
     /// of vectors (without IDs) to the index. There is no external quantizer to
     /// be trained here.
     void train(idx_t n, const float* x) override;
+    void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     /// Initialize ourselves from the given CPU index; will overwrite
     /// all data in ourselves
     void copyFrom(const faiss::IndexHNSWCagra* index);
+    void copyFrom_ex(
+            const faiss::IndexHNSWCagra* index,
+            NumericType numeric_type);
 
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
@@ -270,10 +283,17 @@ struct GpuIndexCagra : public GpuIndex {
 
     std::vector<idx_t> get_knngraph() const;
 
+    faiss::NumericType get_numeric_type() const;
+
    protected:
     bool addImplRequiresIDs_() const override;
 
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+    void addImpl_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(
@@ -283,12 +303,27 @@ struct GpuIndexCagra : public GpuIndex {
             float* distances,
             idx_t* labels,
             const SearchParameters* search_params) const override;
+    void searchImpl_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            int k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* search_params) const override;
 
     /// Our configuration options
     const GpuIndexCagraConfig cagraConfig_;
 
+    faiss::NumericType numeric_type_;
+
     /// Instance that we own; contains the inverted lists
-    std::shared_ptr<CuvsCagra> index_;
+    std::variant<
+            std::monostate,
+            std::shared_ptr<CuvsCagra<float>>,
+            std::shared_ptr<CuvsCagra<half>>,
+            std::shared_ptr<CuvsCagra<int8_t>>>
+            index_;
 };
 
 } // namespace gpu

@@ -11,13 +11,13 @@
 #define FAISS_INDEX_H
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
+
 #include <cstdio>
 #include <sstream>
-#include <string>
-#include <typeinfo>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 11
+#define FAISS_VERSION_MINOR 12
 #define FAISS_VERSION_PATCH 0
 
 // Macro to combine the version components into a single string
@@ -55,6 +55,28 @@ namespace faiss {
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+
+enum NumericType {
+    Float32,
+    Float16,
+    UInt8,
+    Int8,
+};
+
+inline size_t get_numeric_type_size(NumericType numeric_type) {
+    switch (numeric_type) {
+        case NumericType::Float32:
+            return 4;
+        case NumericType::Float16:
+            return 2;
+        case NumericType::UInt8:
+        case NumericType::Int8:
+            return 1;
+        default:
+            FAISS_THROW_MSG(
+                    "Unknown Numeric Type. Only supports Float32, Float16");
+    }
+}
 
 /** Parent class for the optional search paramenters.
  *
@@ -107,6 +129,14 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
+    virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
+        if (numeric_type == NumericType::Float32) {
+            train(n, static_cast<const float*>(x));
+        } else {
+            FAISS_THROW_MSG("Index::train: unsupported numeric type");
+        }
+    }
+
     /** Add n vectors of dimension d to the index.
      *
      * Vectors are implicitly assigned labels ntotal .. ntotal + n - 1
@@ -116,6 +146,14 @@ struct Index {
      * @param x      input matrix, size n * d
      */
     virtual void add(idx_t n, const float* x) = 0;
+
+    virtual void add_ex(idx_t n, const void* x, NumericType numeric_type) {
+        if (numeric_type == NumericType::Float32) {
+            add(n, static_cast<const float*>(x));
+        } else {
+            FAISS_THROW_MSG("Index::add: unsupported numeric type");
+        }
+    }
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -127,6 +165,17 @@ struct Index {
      * @param xids      if non-null, ids to store for the vectors (size n)
      */
     virtual void add_with_ids(idx_t n, const float* x, const idx_t* xids);
+    virtual void add_with_ids_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* xids) {
+        if (numeric_type == NumericType::Float32) {
+            add_with_ids(n, static_cast<const float*>(x), xids);
+        } else {
+            FAISS_THROW_MSG("Index::add_with_ids: unsupported numeric type");
+        }
+    }
 
     /** query n vectors of dimension d to the index.
      *
@@ -146,6 +195,26 @@ struct Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const = 0;
+
+    virtual void search_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const {
+        if (numeric_type == NumericType::Float32) {
+            search(n,
+                   static_cast<const float*>(x),
+                   k,
+                   distances,
+                   labels,
+                   params);
+        } else {
+            FAISS_THROW_MSG("Index::search: unsupported numeric type");
+        }
+    }
 
     /** query n vectors of dimension d to the index.
      *

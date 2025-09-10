@@ -27,8 +27,15 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
         size_t d,
         size_t nlist,
         int nbit,
-        float period)
-        : IndexIVF(quantizer, d, nlist, (nbit + 7) / 8, METRIC_L2),
+        float period,
+        bool own_invlists)
+        : IndexIVF(
+                  quantizer,
+                  d,
+                  nlist,
+                  (nbit + 7) / 8,
+                  METRIC_L2,
+                  own_invlists),
           nbit(nbit),
           period(period) {
     RandomRotationMatrix* rr = new RandomRotationMatrix(d, nbit);

@@ -50,6 +50,8 @@ faiss_gpu_test(TestGpuResidualQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.${GPU_EXT_PREFIX})
 faiss_gpu_test(TestGpuSelect.${GPU_EXT_PREFIX})
 if(FAISS_ENABLE_CUVS)
+  faiss_gpu_test(TestGpuFilterConvert.cu)
+  faiss_gpu_test(TestGpuIndexBinaryCagra.cu)
   faiss_gpu_test(TestGpuIndexCagra.cu)
 endif()
 

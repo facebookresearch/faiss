@@ -39,8 +39,9 @@ void Clustering::post_process_centroids() {
     }
 
     if (int_centroids) {
-        for (size_t i = 0; i < centroids.size(); i++)
+        for (size_t i = 0; i < centroids.size(); i++) {
             centroids[i] = roundf(centroids[i]);
+        }
     }
 }
 
@@ -530,8 +531,9 @@ void Clustering::train_encoded(
             InterruptCallback::check();
         }
 
-        if (verbose)
+        if (verbose) {
             printf("\n");
+        }
         if (nredo > 1) {
             if ((lower_is_better && obj < best_obj) ||
                 (!lower_is_better && obj > best_obj)) {

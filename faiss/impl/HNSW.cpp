@@ -15,8 +15,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/prefetch.h>
 
-#include <faiss/impl/platform_macros.h>
-
 #ifdef __AVX2__
 #include <immintrin.h>
 
@@ -78,8 +76,9 @@ void HNSW::set_default_probas(int M, float levelMult) {
     cum_nneighbor_per_level.push_back(0);
     for (int level = 0;; level++) {
         float proba = exp(-level / levelMult) * (1 - exp(-1 / levelMult));
-        if (proba < 1e-9)
+        if (proba < 1e-9) {
             break;
+        }
         assign_probas.push_back(proba);
         nn += level == 0 ? M * 2 : M;
         cum_nneighbor_per_level.push_back(nn);
@@ -120,8 +119,9 @@ void HNSW::print_neighbor_stats(int level) const {
             neighbor_range(i, level, &begin, &end);
             std::unordered_set<int> neighset;
             for (size_t j = begin; j < end; j++) {
-                if (neighbors[j] < 0)
+                if (neighbors[j] < 0) {
                     break;
+                }
                 neighset.insert(neighbors[j]);
             }
             int n_neigh = neighset.size();
@@ -129,15 +129,17 @@ void HNSW::print_neighbor_stats(int level) const {
             int n_reciprocal = 0;
             for (size_t j = begin; j < end; j++) {
                 storage_idx_t i2 = neighbors[j];
-                if (i2 < 0)
+                if (i2 < 0) {
                     break;
+                }
                 FAISS_ASSERT(i2 != i);
                 size_t begin2, end2;
                 neighbor_range(i2, level, &begin2, &end2);
                 for (size_t j2 = begin2; j2 < end2; j2++) {
                     storage_idx_t i3 = neighbors[j2];
-                    if (i3 < 0)
+                    if (i3 < 0) {
                         break;
+                    }
                     if (i3 == i) {
                         n_reciprocal++;
                         continue;
@@ -178,8 +180,9 @@ void HNSW::fill_with_random_links(size_t n) {
         }
         printf("linking %zd elements in level %d\n", elts.size(), level);
 
-        if (elts.size() == 1)
+        if (elts.size() == 1) {
             continue;
+        }
 
         for (int ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
@@ -213,8 +216,9 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
     int max_level_2 = 0;
     for (int i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
-        if (pt_level > max_level_2)
+        if (pt_level > max_level_2) {
             max_level_2 = pt_level;
+        }
         offsets.push_back(offsets.back() + cum_nb_neighbors(pt_level + 1));
     }
     neighbors.resize(offsets.back(), -1);
@@ -319,8 +323,9 @@ void add_link(
         // there is enough room, find a slot to add it
         size_t i = end;
         while (i > begin) {
-            if (hnsw.neighbors[i - 1] != -1)
+            if (hnsw.neighbors[i - 1] != -1) {
                 break;
+            }
             i--;
         }
         hnsw.neighbors[i] = dest;
@@ -397,10 +402,12 @@ void search_neighbors_to_add(
             // a reference version
             for (size_t i = begin; i < end; i++) {
                 storage_idx_t nodeId = hnsw.neighbors[i];
-                if (nodeId < 0)
+                if (nodeId < 0) {
                     break;
-                if (vt.get(nodeId))
+                }
+                if (vt.get(nodeId)) {
                     continue;
+                }
                 vt.set(nodeId);
 
                 float dis = qdis(nodeId);
@@ -436,8 +443,9 @@ void search_neighbors_to_add(
 
             for (size_t j = begin; j < end; j++) {
                 storage_idx_t nodeId = hnsw.neighbors[j];
-                if (nodeId < 0)
+                if (nodeId < 0) {
                     break;
+                }
                 if (vt.get(nodeId)) {
                     continue;
                 }
@@ -647,8 +655,9 @@ int search_from_candidates(
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            if (v1 < 0) {
                 break;
+            }
 
             prefetch_L2(vt.visited.data() + v1);
             jmax += 1;
@@ -761,8 +770,9 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         size_t jmax = begin;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            if (v1 < 0) {
                 break;
+            }
 
             prefetch_L2(vt->visited.data() + v1);
             jmax += 1;
@@ -864,8 +874,9 @@ HNSWStats greedy_update_nearest(
 
         for (size_t j = begin; j < end; j++) {
             storage_idx_t v = hnsw.neighbors[j];
-            if (v < 0)
+            if (v < 0) {
                 break;
+            }
             ndis += 1;
 
             buffered_ids[n_buffered] = v;
@@ -1013,11 +1024,13 @@ void HNSW::search_level_0(
         for (int j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
-            if (cj < 0)
+            if (cj < 0) {
                 break;
+            }
 
-            if (vt.get(cj))
+            if (vt.get(cj)) {
                 continue;
+            }
 
             int candidates_size = std::max(efSearch, k);
             MinimaxHeap candidates(candidates_size);
@@ -1044,8 +1057,9 @@ void HNSW::search_level_0(
         for (int j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
-            if (cj < 0)
+            if (cj < 0) {
                 break;
+            }
             candidates.push(cj, nearest_d[j]);
         }
 
@@ -1093,8 +1107,9 @@ void HNSW::permute_entries(const idx_t* map) {
 
 void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
     if (k == n) {
-        if (v >= dis[0])
+        if (v >= dis[0]) {
             return;
+        }
         if (ids[0] != -1) {
             --nvalid;
         }

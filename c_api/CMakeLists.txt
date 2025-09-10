@@ -22,6 +22,7 @@ set(FAISS_C_SRC
   IndexReplicas_c.cpp
   Index_c.cpp
   IndexBinary_c.cpp
+  IndexBinaryIVF_c.cpp
   IndexScalarQuantizer_c.cpp
   MetaIndexes_c.cpp
   clone_index_c.cpp
@@ -159,9 +160,5 @@ add_executable(example_c EXCLUDE_FROM_ALL example_c.c)
 target_link_libraries(example_c PRIVATE faiss_c)
 
 if(FAISS_ENABLE_GPU)
-  if(FAISS_ENABLE_ROCM)
-    add_subdirectory(gpu-rocm)
-  else ()
-    add_subdirectory(gpu)
-  endif()
+  add_subdirectory(gpu)
 endif()

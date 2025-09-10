@@ -8,7 +8,6 @@ import numpy as np
 import faiss
 import unittest
 import sys
-import gc
 
 from faiss.contrib import datasets
 from faiss.contrib.evaluation import sort_range_res_2, check_ref_range_results
@@ -357,6 +356,7 @@ class TestSelector(unittest.TestCase):
 
     def test_BinaryFlat_no_heap(self):
         self.do_test_id_selector("BinaryFlat", use_heap=False)
+
 
 class TestSearchParams(unittest.TestCase):
 

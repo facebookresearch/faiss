@@ -47,7 +47,7 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 project(faiss
-  VERSION 1.11.0
+  VERSION 1.12.0
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
@@ -60,6 +60,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
+option(FAISS_GPU_STATIC "Link GPU libraries statically." OFF)
 option(FAISS_ENABLE_CUVS "Enable cuVS for GPU indexes." OFF)
 option(FAISS_ENABLE_ROCM "Enable ROCm for GPU indexes." OFF)
 option(FAISS_ENABLE_MKL "Enable MKL." ON)
@@ -90,11 +91,7 @@ if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
 add_subdirectory(faiss)
 
 if(FAISS_ENABLE_GPU)
-  if(FAISS_ENABLE_ROCM)
-    add_subdirectory(faiss/gpu-rocm)
-  else()
-    add_subdirectory(faiss/gpu)
-  endif()
+  add_subdirectory(faiss/gpu)
 endif()
 
 if(FAISS_ENABLE_PYTHON)
@@ -118,7 +115,7 @@ if(BUILD_TESTING)
   add_subdirectory(perf_tests)
   if(FAISS_ENABLE_GPU)
     if(FAISS_ENABLE_ROCM)
-      add_subdirectory(faiss/gpu-rocm/test)
+      add_subdirectory(faiss/gpu/test)
     else()
       add_subdirectory(faiss/gpu/test)
     endif()

@@ -155,14 +155,18 @@ void pairwise_extra_distances(
         int64_t ldq,
         int64_t ldb,
         int64_t ldd) {
-    if (nq == 0 || nb == 0)
+    if (nq == 0 || nb == 0) {
         return;
-    if (ldq == -1)
+    }
+    if (ldq == -1) {
         ldq = d;
-    if (ldb == -1)
+    }
+    if (ldb == -1) {
         ldb = d;
-    if (ldd == -1)
+    }
+    if (ldd == -1) {
         ldd = nb;
+    }
 
     Run_pairwise_extra_distances run;
     dispatch_VectorDistance(

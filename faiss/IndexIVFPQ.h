@@ -56,7 +56,8 @@ struct IndexIVFPQ : IndexIVF {
             size_t nlist,
             size_t M,
             size_t nbits_per_idx,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void encode_vectors(
             idx_t n,
@@ -64,6 +65,12 @@ struct IndexIVFPQ : IndexIVF {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listnos = false) const override;
+
+    void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* listnos,
+            float* x) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 

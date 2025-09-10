@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 # Important: filenames end with . without extension (npy, codec, index),
 # when writing files, you are required to filename + "npy" etc.
 
+
 @dataclass
 class IndexDescriptorClassic:
     bucket: Optional[str] = None
@@ -50,6 +51,7 @@ class IndexDescriptorClassic:
 
     def __hash__(self):
         return hash(str(self))
+
 
 @dataclass
 class DatasetDescriptor:
@@ -87,6 +89,11 @@ class DatasetDescriptor:
     embedding_column_key: Optional[Any] = None
 
     embedding_id_column: Optional[str] = None
+
+    # only used when previous_assignment_table is set
+    # this represents the centroid id that the embedding was mapped to
+    # in a previous clustering job
+    centroid_id_column: Optional[str] = None
 
     # filters on the dataset where each filter is a
     # string rep of a filter expression
@@ -170,6 +177,7 @@ class DatasetDescriptor:
         else:
             t = io.read_json(meta_filename)["k_means_time"]
         return kmeans_vectors, t, None
+
 
 @dataclass
 class IndexBaseDescriptor:
@@ -290,6 +298,7 @@ class CodecDescriptor(IndexBaseDescriptor):
         return CodecDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
 
 
+
 @dataclass
 class IndexDescriptor(IndexBaseDescriptor):
     codec_desc: Optional[CodecDescriptor] = None
@@ -322,6 +331,7 @@ class IndexDescriptor(IndexBaseDescriptor):
         if hasattr(benchmark_io, "bucket"):
             return IndexDescriptor(desc_name=self.get_name(), bucket=benchmark_io.bucket, path=self.get_path(benchmark_io), d=self.d, metric=self.metric)
         return IndexDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
+
 
 @dataclass
 class KnnDescriptor(IndexBaseDescriptor):

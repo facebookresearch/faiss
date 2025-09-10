@@ -41,21 +41,25 @@ void GpuParameterSpace::initialize(const Index* index) {
         return;
     }
     if (DC(IndexReplicas)) {
-        if (ix->count() == 0)
+        if (ix->count() == 0) {
             return;
+        }
         index = ix->at(0);
     }
     if (DC(IndexShards)) {
-        if (ix->count() == 0)
+        if (ix->count() == 0) {
             return;
+        }
         index = ix->at(0);
     }
     if (DC(GpuIndexIVF)) {
         ParameterRange& pr = add_range("nprobe");
         for (int i = 0; i < 12; i++) {
             size_t nprobe = 1 << i;
-            if (nprobe >= ix->getNumLists() || nprobe > getMaxKSelection())
+            if (nprobe >= ix->getNumLists() ||
+                nprobe > getMaxKSelection(false)) {
                 break;
+            }
             pr.values.push_back(nprobe);
         }
 
@@ -79,8 +83,9 @@ void GpuParameterSpace::set_index_parameter(
         const std::string& name,
         double val) const {
     if (DC(IndexReplicas)) {
-        for (int i = 0; i < ix->count(); i++)
+        for (int i = 0; i < ix->count(); i++) {
             set_index_parameter(ix->at(i), name, val);
+        }
         return;
     }
     if (name == "nprobe") {

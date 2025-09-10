@@ -210,7 +210,8 @@ struct IndexIVF : Index, IndexIVFInterface {
             size_t d,
             size_t nlist,
             size_t code_size,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void reset() override;
 
@@ -252,6 +253,20 @@ struct IndexIVF : Index, IndexIVFInterface {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listno = false) const = 0;
+
+    /** Decodes a set of vectors as they would appear in a given set of inverted
+     * lists (inverse of encode_vectors)
+     *
+     * @param codes      input codes, size n * code_size
+     * @param x          output decoded vectors
+     * @param list_nos   input listnos, size n
+     *
+     */
+    virtual void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const;
 
     /** Add vectors that are computed with the standalone codec
      *

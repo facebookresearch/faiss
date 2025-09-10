@@ -20,26 +20,8 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-  linux-x86_64-GPU-CUDA-11-4-4-nightly:
-    name: Linux x86_64 GPU nightlies (CUDA 11.4.4)
-    runs-on: 4-core-ubuntu-gpu-t4
-    env:
-      CUDA_ARCHS: "60-real;61-real;62-real;70-real;72-real;75-real;80;86-real"
-      FAISS_FLATTEN_CONDA_INCLUDES: "1"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
-        with:
-          label: nightly
-          cuda: "11.4.4"
-  linux-x86_64-GPU-CUVS-CUDA11-8-0-nightly:
-    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 11.8.0)
+  linux-x86_64-GPU-CUDA-12-4-nightly:
+    name: Linux x86_64 GPU nightlies (CUDA 12.4.0)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -54,25 +36,7 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-          cuvs: "ON"
-          cuda: "11.8.0"
-  linux-x86_64-GPU-CUDA-12-1-1-nightly:
-    name: Linux x86_64 GPU nightlies (CUDA 12.1.1)
-    runs-on: 4-core-ubuntu-gpu-t4
-    env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
-        with:
-          label: nightly
-          cuda: "12.1.1"
+          cuda: "12.4.0"
   linux-x86_64-GPU-CUVS-CUDA12-4-0-nightly:
     name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 12.4.0)
     runs-on: 4-core-ubuntu-gpu-t4
@@ -93,7 +57,7 @@ jobs:
           cuda: "12.4.0"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout
         uses: actions/checkout@v4

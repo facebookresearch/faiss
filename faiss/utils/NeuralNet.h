@@ -141,7 +141,7 @@ struct QINCo : NeuralNetCodec {
 
     nn::Int32Tensor2D encode(const nn::Tensor2D& x) const override;
 
-    virtual ~QINCo() {}
+    virtual ~QINCo() override {}
 };
 
 } // namespace faiss

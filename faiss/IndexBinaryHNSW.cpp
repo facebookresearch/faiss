@@ -26,6 +26,8 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
+#include <random>
+
 namespace faiss {
 
 /**************************************************************
@@ -98,7 +100,9 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1; pt_level >= 0; pt_level--) {
+        for (int pt_level = hist.size() - 1;
+             pt_level >= int(!index_hnsw.init_level0);
+             pt_level--) {
             int i0 = i1 - hist[pt_level];
 
             if (verbose) {
@@ -125,7 +129,13 @@ void hnsw_add_vertices(
                     dis->set_query(
                             (float*)(x + (pt_id - n0) * index_hnsw.code_size));
 
-                    hnsw.add_with_locks(*dis, pt_level, pt_id, locks, vt);
+                    hnsw.add_with_locks(
+                            *dis,
+                            pt_level,
+                            pt_id,
+                            locks,
+                            vt,
+                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
                     if (prev_display >= 0 && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
@@ -136,14 +146,19 @@ void hnsw_add_vertices(
             }
             i1 = i0;
         }
-        FAISS_ASSERT(i1 == 0);
+        if (index_hnsw.init_level0) {
+            FAISS_ASSERT(i1 == 0);
+        } else {
+            FAISS_ASSERT((i1 - hist[0]) == 0);
+        }
     }
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++)
+    for (int i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
+    }
 }
 
 } // anonymous namespace
@@ -294,6 +309,105 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     FAISS_ASSERT(flat_storage != nullptr);
     BuildDistanceComputer bd;
     return dispatch_HammingComputer(code_size, bd, flat_storage);
+}
+
+/**************************************************************
+ * IndexBinaryHNSWCagra implementation
+ **************************************************************/
+
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {
+    storage = nullptr;
+}
+
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M)
+        : IndexBinaryHNSW(d, M) {
+    init_level0 = true;
+    keep_max_size_level0 = true;
+}
+
+void IndexBinaryHNSWCagra::add(idx_t n, const uint8_t* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !base_level_only,
+            "Cannot add vectors when base_level_only is set to True");
+
+    IndexBinaryHNSW::add(n, x);
+}
+
+void IndexBinaryHNSWCagra::search(
+        idx_t n,
+        const uint8_t* x,
+        idx_t k,
+        int32_t* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (!base_level_only) {
+        IndexBinaryHNSW::search(n, x, k, distances, labels, params);
+    } else {
+        float* distances_f = (float*)distances;
+
+        using RH = HeapBlockResultHandler<HNSW::C>;
+        RH bres(n, distances_f, labels, k);
+
+        std::vector<storage_idx_t> nearest(n);
+        std::vector<float> nearest_d(n);
+
+#pragma omp parallel for
+        for (idx_t i = 0; i < n; i++) {
+            std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+            dis->set_query((float*)(x + i * code_size));
+
+            nearest[i] = -1;
+            nearest_d[i] = std::numeric_limits<float>::max();
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<idx_t> distrib(0, this->ntotal - 1);
+
+            for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+                auto idx = distrib(gen);
+                float distance = (*dis)(idx);
+
+                if (distance < nearest_d[i]) {
+                    nearest[i] = idx;
+                    nearest_d[i] = distance;
+                }
+            }
+            FAISS_THROW_IF_NOT_MSG(
+                    nearest[i] >= 0, "Could not find a valid entrypoint.");
+        }
+
+#pragma omp parallel
+        {
+            VisitedTable vt(ntotal);
+            std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+            HNSWStats search_stats;
+            RH::SingleResultHandler res(bres);
+
+#pragma omp for
+            for (idx_t i = 0; i < n; i++) {
+                res.begin(i);
+                dis->set_query((float*)(x + i * code_size));
+
+                hnsw.search_level_0(
+                        *dis,
+                        res,
+                        1,
+                        &nearest[i],
+                        &nearest_d[i],
+                        1, // search_type
+                        search_stats,
+                        vt,
+                        params);
+
+                res.end();
+            }
+        }
+
+#pragma omp parallel for
+        for (int i = 0; i < n * k; ++i) {
+            distances[i] = std::round(distances_f[i]);
+        }
+    }
 }
 
 } // namespace faiss

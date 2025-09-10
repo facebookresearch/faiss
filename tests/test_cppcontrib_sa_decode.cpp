@@ -16,9 +16,7 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPQ.h>
-#include <faiss/impl/io.h>
 #include <faiss/index_factory.h>
-#include <faiss/index_io.h>
 
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/cppcontrib/SaDecodeKernels.h>
@@ -134,13 +132,15 @@ void verifyIndex2LevelDecoder(
                 tmpContrib.data());
 
         // compare
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(tmpFaiss[j], tmpContrib[j]);
+        }
 
         // save for the further comparison
         const float weight = u(rng);
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             outputFaiss[j] += weight * tmpFaiss[j];
+        }
     }
 
     // test contrib::accum, 1 sample per iteration
@@ -340,13 +340,15 @@ void verifyMinMaxIndex2LevelDecoder(
                 tmpContrib.data());
 
         // compare
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(tmpFaiss[j], tmpContrib[j]);
+        }
 
         // save for the further comparison
         const float weight = u(rng);
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             outputFaiss[j] += weight * tmpFaiss[j];
+        }
     }
 
     // test contrib::accum, 1 sample per iteration.
@@ -580,13 +582,15 @@ void verifyIndexPQDecoder(
                 tmpContrib.data());
 
         // compare
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(tmpFaiss[j], tmpContrib[j]);
+        }
 
         // save for the further comparison
         const float weight = u(rng);
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             outputFaiss[j] += weight * tmpFaiss[j];
+        }
     }
 
     // test contrib::accum, 1 sample per iteration
@@ -769,13 +773,15 @@ void verifyMinMaxIndexPQDecoder(
                 tmpContrib.data());
 
         // compare
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             ASSERT_FLOAT_EQ(tmpFaiss[j], tmpContrib[j]);
+        }
 
         // save for the further comparison
         const float weight = u(rng);
-        for (size_t j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++) {
             outputFaiss[j] += weight * tmpFaiss[j];
+        }
     }
 
     // test contrib::accum, 1 sample per iteration.

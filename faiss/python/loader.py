@@ -8,9 +8,8 @@ import subprocess
 import logging
 import os
 
+from packaging.version import Version
 
-def Version(v):
-    return [int(x) for x in v.split('.')]
 
 def supported_instruction_sets():
     """
@@ -40,13 +39,20 @@ def supported_instruction_sets():
         if Version(numpy.__version__) >= Version("2.0"):
             return False
         # platform-dependent legacy fallback using numpy.distutils.cpuinfo
-        import numpy.distutils.cpuinfo
-        return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
+        try:
+            import numpy.distutils.cpuinfo
+            return "sve" in numpy.distutils.cpuinfo.cpu.info[0].get('Features', "").split()
+        except ImportError:
+            # check if SVE is supported by checking the auxval
+            # using values defined as:
+            # #define AT_HWCAP 16
+            # #define HWCAP_SVE  (1 << 22)
+            return bool(__import__('ctypes').CDLL(None).getauxval(16) & (1<<22))
 
     import numpy
     if Version(numpy.__version__) >= Version("1.19"):
         # use private API as next-best thing until numpy/numpy#18058 is solved
-        from numpy.core._multiarray_umath import __cpu_features__
+        from numpy._core._multiarray_umath import __cpu_features__
         # __cpu_features__ is a dictionary with CPU features
         # as keys, and True / False as values
         supported = {k for k, v in __cpu_features__.items() if v}
