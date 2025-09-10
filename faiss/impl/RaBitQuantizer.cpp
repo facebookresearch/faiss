@@ -32,6 +32,8 @@ struct QueryFactorsData {
 
     float qr_to_c_L2sqr = 0;
     float qr_norm_L2sqr = 0;
+
+    float int_dot_scale = 1;
 };
 
 static size_t get_code_size(const size_t d) {
@@ -310,6 +312,7 @@ struct RaBitDistanceComputerQ : RaBitDistanceComputer {
 
     // the number of bits for SQ quantization of the query (qb > 0)
     uint8_t qb = 8;
+    bool centered = false;
     // the smallest value divisible by 8 that is not smaller than dim
     size_t popcount_aligned_dim = 0;
 
@@ -333,20 +336,30 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
     const uint8_t* binary_data = code;
     const FactorsData* fac = reinterpret_cast<const FactorsData*>(code + size);
 
-    // See RaBitDistanceComputerNotQ::distance_to_code() for baseline code.
-    float dot_qo = rabitq::bitwise_and_dot_product(
-            rearranged_rotated_qq.data(), binary_data, size, qb);
-
-    // It was a willful decision (after the discussion) to not to pre-cache
-    // the sum of all bits, just in order to reduce the overhead per vector.
-    auto sum_q = rabitq::popcount(binary_data, size);
+    // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
     float final_dot = 0;
-    // dot-product itself
-    final_dot += query_fac.c1 * dot_qo;
-    // normalizer coefficients
-    final_dot += query_fac.c2 * sum_q;
-    // normalizer coefficients
-    final_dot -= query_fac.c34;
+    if (centered) {
+        int64_t int_dot = ((1 << qb) - 1) * d;
+        int_dot -= 2 *
+                rabitq::bitwise_xor_dot_product(
+                           rearranged_rotated_qq.data(), binary_data, size, qb);
+        final_dot += int_dot * query_fac.int_dot_scale;
+    } else {
+        // See RaBitDistanceComputerNotQ::distance_to_code() for baseline code.
+        auto dot_qo = rabitq::bitwise_and_dot_product(
+                rearranged_rotated_qq.data(), binary_data, size, qb);
+
+        // It was a willful decision (after the discussion) to not to pre-cache
+        // the sum of all bits, just in order to reduce the overhead per vector.
+        // process 64-bit popcounts
+        auto sum_q = rabitq::popcount(binary_data, size);
+        // dot-product itself
+        final_dot += query_fac.c1 * dot_qo;
+        // normalizer coefficients
+        final_dot += query_fac.c2 * sum_q;
+        // normalizer coefficients
+        final_dot -= query_fac.c34;
+    }
 
     // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
     const float or_c_l2sqr = fac->or_minus_c_l2sqr;
@@ -370,11 +383,30 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
     }
 }
 
+namespace {
+
+// Ideal quantizer radii for quantizers of 1..8 bits, optimized to minimize L2
+// reconstruction error.
+const float z_max_by_qb[8] = {
+        0.79688, // qb = 1.
+        1.49375,
+        2.05078,
+        2.50938,
+        2.91250,
+        3.26406,
+        3.59844,
+        3.91016, // qb = 8.
+};
+
+} // namespace
+
 void RaBitDistanceComputerQ::set_query(const float* x) {
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||
              metric_type == MetricType::METRIC_INNER_PRODUCT));
+    FAISS_THROW_IF_NOT(qb <= 8);
+    FAISS_THROW_IF_NOT(qb > 0);
 
     // compute the distance from the query to the centroid
     if (centroid != nullptr) {
@@ -398,26 +430,36 @@ void RaBitDistanceComputerQ::set_query(const float* x) {
     // quantize the query. compute min and max
     float v_min = std::numeric_limits<float>::max();
     float v_max = std::numeric_limits<float>::lowest();
-    for (size_t i = 0; i < d; i++) {
-        const float v_q = rotated_q[i];
-        v_min = std::min(v_min, v_q);
-        v_max = std::max(v_max, v_q);
+    if (centered) {
+        float z_max = z_max_by_qb[qb - 1];
+        float v_radius = z_max * std::sqrt(query_fac.qr_to_c_L2sqr / d);
+        v_min = -v_radius;
+        v_max = v_radius;
+    } else {
+        for (size_t i = 0; i < d; i++) {
+            const float v_q = rotated_q[i];
+            v_min = std::min(v_min, v_q);
+            v_max = std::max(v_max, v_q);
+        }
     }
 
-    const float pow_2_qb = 1 << qb;
-
-    const float delta = (v_max - v_min) / (pow_2_qb - 1);
+    const uint8_t max_code = (1 << qb) - 1;
+    const float delta = (v_max - v_min) / max_code;
     const float inv_delta = 1.0f / delta;
 
     size_t sum_qq = 0;
+    int64_t sum2_signed_odd_int = 0;
     for (int32_t i = 0; i < d; i++) {
         const float v_q = rotated_q[i];
-
         // a default non-randomized SQ
-        const int v_qq = std::round((v_q - v_min) * inv_delta);
-
-        rotated_qq[i] = std::min(255, std::max(0, v_qq));
+        const uint8_t v_qq = std::clamp<float>(
+                std::round((v_q - v_min) * inv_delta), 0, max_code);
+        rotated_qq[i] = v_qq;
         sum_qq += v_qq;
+        if (centered) {
+            int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
+            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
+        }
     }
 
     // rearrange the query vector
@@ -438,6 +480,8 @@ void RaBitDistanceComputerQ::set_query(const float* x) {
     query_fac.c1 = 2 * delta * inv_d;
     query_fac.c2 = 2 * v_min * inv_d;
     query_fac.c34 = inv_d * (delta * sum_qq + d * v_min);
+    query_fac.int_dot_scale =
+            std::sqrt(query_fac.qr_to_c_L2sqr / (sum2_signed_odd_int * d));
 
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         // precompute if needed
@@ -447,7 +491,8 @@ void RaBitDistanceComputerQ::set_query(const float* x) {
 
 FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
         uint8_t qb,
-        const float* centroid_in) const {
+        const float* centroid_in,
+        bool centered) const {
     if (qb == 0) {
         auto dc = std::make_unique<RaBitDistanceComputerNotQ>();
         dc->metric_type = metric_type;
@@ -461,6 +506,7 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
         dc->d = d;
         dc->centroid = centroid_in;
         dc->qb = qb;
+        dc->centered = centered;
 
         return dc.release();
     }

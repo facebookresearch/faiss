@@ -61,6 +61,15 @@ void bench_rabitq_and_dot_product(benchmark::State& state) {
             });
 }
 
+void bench_rabitq_xor_dot_product(benchmark::State& state) {
+    bench_rabitq_generic(
+            state,
+            [](const uint8_t* q, const uint8_t* x, size_t size, size_t qb)
+                    -> int64_t {
+                return rabitq::bitwise_xor_dot_product(q, x, size, qb);
+            });
+}
+
 void bench_rabitq_and_dot_product_with_sum(benchmark::State& state) {
     bench_rabitq_generic(
             state,
@@ -78,6 +87,9 @@ const std::vector<int64_t> dims{64, 100, 256, 512, 1000, 1024, 3072};
 
 BENCHMARK(bench_rabitq_sum)->ArgsProduct({{0}, dims})->ArgNames({"qb", "d"});
 BENCHMARK(bench_rabitq_and_dot_product)
+        ->ArgsProduct({qbs, dims})
+        ->ArgNames({"qb", "d"});
+BENCHMARK(bench_rabitq_xor_dot_product)
         ->ArgsProduct({qbs, dims})
         ->ArgNames({"qb", "d"});
 BENCHMARK(bench_rabitq_and_dot_product_with_sum)

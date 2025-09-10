@@ -293,6 +293,89 @@ inline uint64_t bitwise_and_dot_product(
     return sum;
 }
 
+/**
+ * Compute dot product between query and binary data using popcount operations.
+ *
+ * @param query          Pointer to rearranged rotated query data
+ * @param data    Pointer to binary data
+ * @param d              Dimension
+ * @param qb             Number of quantization bits
+ * @return               Unsigned integer dot product
+ */
+inline uint64_t bitwise_xor_dot_product(
+        const uint8_t* query,
+        const uint8_t* data,
+        size_t size,
+        size_t qb) {
+    uint64_t sum = 0;
+    size_t offset = 0;
+#if defined(__AVX512F__)
+    // Handle 512-bit chunks.
+    if (size_t step = 512 / 8; offset + step <= size) {
+        __m512i sum_512 = _mm512_setzero_si512();
+        for (; offset + step <= size; offset += step) {
+            __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
+            for (int j = 0; j < qb; j++) {
+                __m512i v_q = _mm512_loadu_si512(
+                        (const __m512i*)(query + j * size + offset));
+                __m512i v_xor = _mm512_xor_si512(v_q, v_x);
+                __m512i v_popcnt = popcount_512(v_xor);
+                __m512i v_shifted = _mm512_slli_epi64(v_popcnt, j);
+                sum_512 = _mm512_add_epi64(sum_512, v_shifted);
+            }
+        }
+        sum += _mm512_reduce_add_epi64(sum_512);
+    }
+#endif
+#if defined(__AVX2__)
+    if (size_t step = 256 / 8; offset + step <= size) {
+        __m256i sum_256 = _mm256_setzero_si256();
+        for (; offset + step <= size; offset += step) {
+            __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
+            for (int j = 0; j < qb; j++) {
+                __m256i v_q = _mm256_loadu_si256(
+                        (const __m256i*)(query + j * size + offset));
+                __m256i v_xor = _mm256_xor_si256(v_q, v_x);
+                __m256i v_popcnt = popcount_256(v_xor);
+                __m256i v_shifted = _mm256_slli_epi64(v_popcnt, j);
+                sum_256 = _mm256_add_epi64(sum_256, v_shifted);
+            }
+        }
+        sum += reduce_add_256(sum_256);
+    }
+#endif
+#if defined(__SSE4_1__)
+    __m128i sum_128 = _mm_setzero_si128();
+    for (size_t step = 128 / 8; offset + step <= size; offset += step) {
+        __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
+        for (int j = 0; j < qb; j++) {
+            __m128i v_q = _mm_loadu_si128(
+                    (const __m128i*)(query + j * size + offset));
+            __m128i v_xor = _mm_xor_si128(v_q, v_x);
+            __m128i v_popcnt = popcount_128(v_xor);
+            __m128i v_shifted = _mm_slli_epi64(v_popcnt, j);
+            sum_128 = _mm_add_epi64(sum_128, v_shifted);
+        }
+    }
+    sum += reduce_add_128(sum_128);
+#endif
+    for (size_t step = 64 / 8; offset + step <= size; offset += step) {
+        const auto yv = *(const uint64_t*)(data + offset);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(const uint64_t*)(query + j * size + offset);
+            sum += __builtin_popcountll(qv ^ yv) << j;
+        }
+    }
+    for (; offset < size; ++offset) {
+        const auto yv = *(data + offset);
+        for (int j = 0; j < qb; j++) {
+            const auto qv = *(query + j * size + offset);
+            sum += __builtin_popcount(qv ^ yv) << j;
+        }
+    }
+    return sum;
+}
+
 inline uint64_t popcount(const uint8_t* data, size_t size) {
     uint64_t sum = 0;
     size_t offset = 0;

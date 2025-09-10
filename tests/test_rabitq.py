@@ -223,20 +223,24 @@ class TestRaBitQ(unittest.TestCase):
             index_rbq.train(ds.get_train())
             index_rbq.add(ds.get_database())
 
-            for qb in [1, 2, 3, 4, 8]:
-                params = faiss.RaBitQSearchParameters(qb=qb)
+            def test(params):
                 _, I_rbq = index_rbq.search(ds.get_queries(), k, params=params)
 
                 # ensure that RaBitQ and PQ are relatively close
                 loss_rbq = 1 - eval_I(I_rbq)
                 ratio_threshold = 2 ** (1 / qb)
                 print(
-                    f"{random_rotate=:1}, {params.qb=}: "
+                    f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
                     f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
                     f" < {ratio_threshold=:.2f}"
                 )
 
                 np.testing.assert_(loss_rbq < loss_pq * ratio_threshold)
+
+            for qb in [1, 2, 3, 4, 8]:
+                print()
+                for centered in [False, True]:
+                    test(faiss.RaBitQSearchParameters(qb=qb, centered=centered))
 
     def test_comparison_vs_pq_L2(self):
         self.do_comparison_vs_pq_test(faiss.METRIC_L2)
@@ -387,20 +391,28 @@ class TestIVFRaBitQ(unittest.TestCase):
             print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
             np.testing.assert_(loss_pq < 0.25, f"{loss_pq}")
 
-            for qb in [1, 2, 3, 4, 8]:
-                params = faiss.IVFRaBitQSearchParameters(nprobe=nprobe, qb=qb)
+            def test(params):
                 D_rbq, I_rbq = index_rbq.search(xq, k, params=params)
 
                 # ensure that RaBitQ and PQ are relatively close
                 loss_rbq = 1 - eval_I(I_rbq)
                 ratio_threshold = 2 ** (1 / qb)
                 print(
-                    f"{random_rotate=:1}, {params.qb=}: "
+                    f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
                     f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
                     f" < {ratio_threshold=:.2f}"
                 )
 
                 np.testing.assert_(loss_rbq < loss_pq * ratio_threshold)
+
+            for qb in [1, 2, 3, 4, 8]:
+                print()
+                for centered in [False, True]:
+                    test(
+                        faiss.IVFRaBitQSearchParameters(
+                            nprobe=nprobe, qb=qb, centered=centered
+                        )
+                    )
 
     def test_comparison_vs_pq_L2(self):
         self.do_comparison_vs_pq_test(faiss.METRIC_L2)
