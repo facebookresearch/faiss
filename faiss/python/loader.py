@@ -150,7 +150,11 @@ if has_SVE and not loaded:
         loaded = False
 
 if not loaded:
-    # we import * so that the symbol X can be accessed as faiss.X
-    logger.info("Loading faiss.")
-    from .swigfaiss import *
-    logger.info("Successfully loaded faiss.")
+    try:
+        # we import * so that the symbol X can be accessed as faiss.X
+        logger.info("Loading faiss.")
+        from .swigfaiss import *
+        logger.info("Successfully loaded faiss.")
+    except ModuleNotFoundError as e:
+        logger.error(f"No module named 'faiss.swigfaiss' found. You must set the correct FAISS_OPT_LEVEL value when executing cmake.")
+        sys.exit(1)
