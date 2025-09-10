@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
-#ifdef __ARM_FEATURE_SVE
+#ifdef __aarch64__
+#ifndef __ARM_FEATURE_SVE
+#error "this should be compiled with SVE"
+#endif
+#endif
 
 #include <arm_sve.h>
 
@@ -15,7 +17,7 @@
 #include <type_traits>
 
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/code_distance/code_distance-generic.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 
 namespace faiss {
 
@@ -435,5 +437,3 @@ distance_four_codes_sve(
 }
 
 } // namespace faiss
-
-#endif
