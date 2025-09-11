@@ -52,6 +52,13 @@ struct IndexSVSVamana : Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
     size_t remove_ids(const IDSelector& sel) override;
 
     void reset() override;

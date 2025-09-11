@@ -12,6 +12,7 @@
 #include <svs/orchestrators/dynamic_vamana.h>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
 
 namespace faiss {
@@ -217,18 +218,139 @@ void IndexSVSVamana::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
-    auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
+    // TODO: use params for SVS search parameters
+    auto sp = impl->get_search_parameters();
+    sp.buffer_config({search_window_size, search_buffer_capacity});
+
+    // Simple search
+    if (params == nullptr || params->sel == nullptr) {
+        auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
+
+        // TODO: faiss use int64_t as label whereas SVS uses size_t?
+        auto results = svs::QueryResultView<size_t>{
+                svs::MatrixView<size_t>{
+                        svs::make_dims(n, k),
+                        static_cast<size_t*>(static_cast<void*>(labels))},
+                svs::MatrixView<float>{svs::make_dims(n, k), distances}};
+        impl->search(results, queries, sp);
+        return;
+    }
+
+    // Selective search with IDSelector
+    auto old_sp = impl->get_search_parameters();
+    impl->set_search_parameters(sp);
+    // TODO: parallelize over queries
+    for (size_t i = 0; i < n; ++i) {
+        // For every query
+        auto query = std::span(x + i * d, d);
+        auto lblp = std::span(labels + i * k, k);
+        auto distp = std::span(distances + i * k, k);
+
+        auto iterator = impl->batch_iterator(query);
+        idx_t found = 0;
+        do {
+            iterator.next(k);
+            for (auto& neighbor : iterator.results()) {
+                if (params->sel->is_member(neighbor.id())) {
+                    distp[found] = neighbor.distance();
+                    lblp[found] = neighbor.id();
+                    found++;
+                    if (found == k) {
+                        break;
+                    }
+                }
+            }
+        } while (!iterator.done() && found < k);
+        // Pad with -1s
+        for (; found < k; ++found) {
+            distp[found] = -1;
+            lblp[found] = -1;
+        }
+    }
+    impl->set_search_parameters(old_sp);
+}
+
+void IndexSVSVamana::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT(impl);
+    FAISS_THROW_IF_NOT(radius > 0);
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(result->nq == n);
 
     // TODO: use params for SVS search parameters
     auto sp = impl->get_search_parameters();
     sp.buffer_config({search_window_size, search_buffer_capacity});
-    // TODO: faiss use int64_t as label whereas SVS uses size_t?
-    auto results = svs::QueryResultView<size_t>{
-            svs::MatrixView<size_t>{
-                    svs::make_dims(n, k),
-                    static_cast<size_t*>(static_cast<void*>(labels))},
-            svs::MatrixView<float>{svs::make_dims(n, k), distances}};
-    impl->search(results, queries, sp);
+    auto old_sp = impl->get_search_parameters();
+    impl->set_search_parameters(sp);
+
+    // Prepare output buffers
+    std::vector<std::vector<svs::Neighbor<size_t>>> all_results(n);
+    for (auto& res : all_results) {
+        res.reserve(search_buffer_capacity); // Reserve space for elements
+    }
+
+    auto sel = params != nullptr ? params->sel : nullptr;
+
+    // TODO: parallelize over queries
+    for (size_t q = 0; q < n; ++q) {
+        // For every query
+        auto query = std::span(x + q * d, d);
+
+        auto iterator = impl->batch_iterator(query);
+        iterator.next(search_window_size);
+
+        while (iterator.results().size() > 0) {
+            bool stop_searching = false;
+            for (auto& neighbor : iterator.results()) {
+                if (neighbor.distance() <= radius) {
+                    // Selective search with IDSelector
+                    if (sel == nullptr || sel->is_member(neighbor.id())) {
+                        all_results[q].push_back(neighbor);
+                    }
+                } else {
+                    // Since results are ordered by distance, we can stop
+                    // processing
+                    stop_searching = true;
+                    // TODO: continue current batch or break here?
+                    // break;
+                }
+            }
+            if (stop_searching) {
+                break;
+            }
+            iterator.next(search_window_size);
+        }
+    }
+
+    // RangeSearchResult .ctor() allows unallocated lims
+    result->nq = n;
+    if (result->lims == nullptr) {
+        result->lims = new size_t[result->nq + 1];
+    }
+
+    std::transform(
+            all_results.begin(),
+            all_results.end(),
+            result->lims,
+            [](const auto& res) { return res.size(); });
+
+    result->do_allocation();
+
+    for (size_t q = 0; q < n; ++q) {
+        size_t ofs = result->lims[q];
+        for (const auto& [id, distance] : all_results[q]) {
+            result->labels[ofs] = id;
+            result->distances[ofs] = distance;
+            ofs++;
+        }
+    }
+
+    impl->set_search_parameters(old_sp);
+    return;
 }
 
 size_t IndexSVSVamana::remove_ids(const IDSelector& sel) {
