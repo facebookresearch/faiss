@@ -103,12 +103,19 @@ runs:
             "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
 
 
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
-            "rocm-libs${ROCM_VERSION}" >/dev/null
+     - name: Pin BLAS/LAPACK versions
+      run: |
+        conda install -y \
+          "libblas=3.9.0=35_*" \
+          "libcblas=3.9.0=35_*" \
+          "liblapack=3.9.0=35_*"
 
         # Fake presence of MI200-class accelerators
         echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
 
+        # Cleanup
+           
+      
         # Cleanup
         sudo apt-get -qq autoclean >/dev/null
         sudo apt-get -qq clean >/dev/null
