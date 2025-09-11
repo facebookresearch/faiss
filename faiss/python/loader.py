@@ -7,6 +7,7 @@ import platform
 import subprocess
 import logging
 import os
+import sys
 
 from packaging.version import Version
 
@@ -156,5 +157,6 @@ if not loaded:
         from .swigfaiss import *
         logger.info("Successfully loaded faiss.")
     except ModuleNotFoundError as e:
-        logger.error(f"No module named 'faiss.swigfaiss' found. You must set the correct FAISS_OPT_LEVEL value when executing cmake.")
+        logger.error(f"No module named 'faiss.swigfaiss' found. You must set the correct FAISS_OPT_LEVEL value when executing 'cmake'."
+                 + " Also, you need to build the correct SWIG wrapper for this error to not occur.")
         sys.exit(1)
