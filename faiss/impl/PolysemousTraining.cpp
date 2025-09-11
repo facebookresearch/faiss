@@ -191,7 +191,23 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     std::vector<double> target_dis; // wanted distances (size n^2)
     std::vector<double> weights;    // weights for each distance (size n^2)
 
-#ifdef __AVX512VPOPCNTDQ__
+#if defined(__AVX512F__) && defined(__AVX512DQ__)
+
+    static inline __m512i popcnt_u64(__m512i xor_v) {
+        uint64_t t_xor[8];
+        _mm512_storeu_si512(t_xor, xor_v);
+
+        t_xor[0] = _mm_popcnt_u64(t_xor[0]);
+        t_xor[1] = _mm_popcnt_u64(t_xor[1]);
+        t_xor[2] = _mm_popcnt_u64(t_xor[2]);
+        t_xor[3] = _mm_popcnt_u64(t_xor[3]);
+        t_xor[4] = _mm_popcnt_u64(t_xor[4]);
+        t_xor[5] = _mm_popcnt_u64(t_xor[5]);
+        t_xor[6] = _mm_popcnt_u64(t_xor[6]);
+        t_xor[7] = _mm_popcnt_u64(t_xor[7]);
+
+        return _mm512_loadu_si512(t_xor);
+    }
 
     double compute_cost(const int* perm) const override {
         double total_cost = 0.0;
@@ -217,7 +233,11 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
                 const __m512i xor_res =
                         _mm512_xor_si512(perm_i_vec, perm_j_vec_i64);
+#ifdef __AVX512VPOPCNTDQ__
                 const __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
+#else
+                const __m512i popcnt_res = popcnt_u64(xor_res);
+#endif
                 const __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
 
                 const __m512d diff = _mm512_sub_pd(wanted_vec, actual_vec);
@@ -256,9 +276,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                 __m256i perm_j_vec_i32 =
                         _mm256_loadu_si256((__m256i const*)&perm[j]);
                 __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
-
-                __m512d actual_vec = _mm512_cvtepi64_pd(_mm512_popcnt_epi64(
-                        _mm512_xor_si512(v_perm_i_old, perm_j_vec)));
+                __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
+#ifdef __AVX512VPOPCNTDQ__
+                __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
+#else
+                __m512i popcnt_res = popcnt_u64(xor_res);
+#endif
+                __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
                 term_old = _mm512_mul_pd(term_old, term_old);
                 delta_cost_vec =
@@ -277,8 +301,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                 perm_new_j_vec = _mm512_mask_blend_epi64(
                         mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
 
-                __m512d new_actual_vec = _mm512_cvtepi64_pd(_mm512_popcnt_epi64(
-                        _mm512_xor_si512(v_perm_i_new, perm_new_j_vec)));
+                xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
+#ifdef __AVX512VPOPCNTDQ__
+                popcnt_res = _mm512_popcnt_epi64(xor_res);
+#else
+                popcnt_res = popcnt_u64(xor_res);
+#endif
+                __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
                 term_new = _mm512_mul_pd(term_new, term_new);
                 delta_cost_vec =
@@ -313,8 +342,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                         _mm256_loadu_si256((__m256i const*)&perm[j]);
                 __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
 
-                __m512d actual_vec = _mm512_cvtepi64_pd(_mm512_popcnt_epi64(
-                        _mm512_xor_si512(v_perm_i_old, perm_j_vec)));
+                __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
+#ifdef __AVX512VPOPCNTDQ__
+                __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
+#else
+                __m512i popcnt_res = popcnt_u64(xor_res);
+#endif
+                __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
                 term_old = _mm512_mul_pd(term_old, term_old);
                 delta_cost_vec =
@@ -333,8 +367,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                 perm_new_j_vec = _mm512_mask_blend_epi64(
                         mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
 
-                __m512d new_actual_vec = _mm512_cvtepi64_pd(_mm512_popcnt_epi64(
-                        _mm512_xor_si512(v_perm_i_new, perm_new_j_vec)));
+                xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
+#ifdef __AVX512VPOPCNTDQ__
+                popcnt_res = _mm512_popcnt_epi64(xor_res);
+#else
+                popcnt_res = popcnt_u64(xor_res);
+#endif
+                __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
                 term_new = _mm512_mul_pd(term_new, term_new);
                 delta_cost_vec =
@@ -503,7 +542,7 @@ double ReproduceDistancesObjective::get_source_dis(int i, int j) const {
     return source_dis[i * n + j];
 }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__) && defined(__AVX512VL__)
 
 double ReproduceDistancesObjective::compute_cost(const int* perm) const {
     double total_cost = 0.0;
