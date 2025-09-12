@@ -193,20 +193,24 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
 #if defined(__AVX512F__) && defined(__AVX512DQ__)
 
-    static inline __m512i popcnt_u64(__m512i xor_v) {
-        uint64_t t_xor[8];
-        _mm512_storeu_si512(t_xor, xor_v);
+    static inline __m512i popcnt_512(__m512i v) {
+#ifdef __AVX512VPOPCNTDQ__
+         return _mm512_popcnt_epi64(v);
+#else
+        const __m128i nibble_popcount = _mm_setr_epi8(
+            0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+        const __m512i lookup = _mm512_broadcast_i32x4(nibble_popcount);
 
-        t_xor[0] = _mm_popcnt_u64(t_xor[0]);
-        t_xor[1] = _mm_popcnt_u64(t_xor[1]);
-        t_xor[2] = _mm_popcnt_u64(t_xor[2]);
-        t_xor[3] = _mm_popcnt_u64(t_xor[3]);
-        t_xor[4] = _mm_popcnt_u64(t_xor[4]);
-        t_xor[5] = _mm_popcnt_u64(t_xor[5]);
-        t_xor[6] = _mm_popcnt_u64(t_xor[6]);
-        t_xor[7] = _mm_popcnt_u64(t_xor[7]);
+        const __m512i low_mask = _mm512_set1_epi8(0x0f);
+        const __m512i lo = _mm512_and_si512(v, low_mask);
+        const __m512i hi = _mm512_and_si512(_mm512_srli_epi16(v, 4), low_mask);
+        
+        const __m512i popcnt_lo = _mm512_shuffle_epi8(lookup, lo);
+        const __m512i popcnt_hi = _mm512_shuffle_epi8(lookup, hi);
+        const __m512i popcnt_bytes = _mm512_add_epi8(popcnt_lo, popcnt_hi);
 
-        return _mm512_loadu_si512(t_xor);
+        return _mm512_sad_epu8(popcnt_bytes, _mm512_setzero_si512());
+#endif
     }
 
     double compute_cost(const int* perm) const override {
@@ -233,11 +237,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
                 const __m512i xor_res =
                         _mm512_xor_si512(perm_i_vec, perm_j_vec_i64);
-#ifdef __AVX512VPOPCNTDQ__
-                const __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
-#else
-                const __m512i popcnt_res = popcnt_u64(xor_res);
-#endif
+                const __m512i popcnt_res = popcnt_512(xor_res);
                 const __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
 
                 const __m512d diff = _mm512_sub_pd(wanted_vec, actual_vec);
@@ -260,13 +260,14 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
     double cost_update(const int* perm, int iw, int jw) const override {
         double delta_cost_scalar = 0;
+        const __m512i v_indices_base = _mm512_setr_epi64(0, 1, 2, 3, 4, 5, 6, 7);
         __m512d delta_cost_vec = _mm512_setzero_pd();
 
         // Process row iw
         {
             const int base_row_offset = iw * n;
-            __m512i v_perm_i_old = _mm512_set1_epi64(perm[iw]);
-            __m512i v_perm_i_new = _mm512_set1_epi64(perm[jw]);
+            const __m512i v_perm_i_old = _mm512_set1_epi64(perm[iw]);
+            const __m512i v_perm_i_new = _mm512_set1_epi64(perm[jw]);
             int j = 0;
             for (; j <= n - 8; j += 8) {
                 __m512d wanted_vec =
@@ -277,19 +278,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                         _mm256_loadu_si256((__m256i const*)&perm[j]);
                 __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
                 __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
-#ifdef __AVX512VPOPCNTDQ__
-                __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
-#else
-                __m512i popcnt_res = popcnt_u64(xor_res);
-#endif
+                __m512i popcnt_res = popcnt_512(xor_res);
                 __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
                 term_old = _mm512_mul_pd(term_old, term_old);
                 delta_cost_vec =
                         _mm512_fnmadd_pd(w_vec, term_old, delta_cost_vec);
 
-                const __m512i v_indices_base =
-                        _mm512_setr_epi64(0, 1, 2, 3, 4, 5, 6, 7);
                 __m512i j_indices =
                         _mm512_add_epi64(_mm512_set1_epi64(j), v_indices_base);
                 __mmask8 mask_iw = _mm512_cmpeq_epi64_mask(
@@ -302,11 +297,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                         mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
 
                 xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
-#ifdef __AVX512VPOPCNTDQ__
-                popcnt_res = _mm512_popcnt_epi64(xor_res);
-#else
-                popcnt_res = popcnt_u64(xor_res);
-#endif
+                popcnt_res = popcnt_512(xor_res);
                 __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
                 term_new = _mm512_mul_pd(term_new, term_new);
@@ -330,8 +321,8 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         // Process row jw
         {
             const int base_row_offset = jw * n;
-            __m512i v_perm_i_old = _mm512_set1_epi64(perm[jw]);
-            __m512i v_perm_i_new = _mm512_set1_epi64(perm[iw]);
+            const __m512i v_perm_i_old = _mm512_set1_epi64(perm[jw]);
+            const __m512i v_perm_i_new = _mm512_set1_epi64(perm[iw]);
             int j = 0;
             for (; j <= n - 8; j += 8) {
                 __m512d wanted_vec =
@@ -343,19 +334,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                 __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
 
                 __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
-#ifdef __AVX512VPOPCNTDQ__
-                __m512i popcnt_res = _mm512_popcnt_epi64(xor_res);
-#else
-                __m512i popcnt_res = popcnt_u64(xor_res);
-#endif
+                __m512i popcnt_res = popcnt_512(xor_res);
                 __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
                 term_old = _mm512_mul_pd(term_old, term_old);
                 delta_cost_vec =
                         _mm512_fnmadd_pd(w_vec, term_old, delta_cost_vec);
 
-                const __m512i v_indices_base =
-                        _mm512_setr_epi64(0, 1, 2, 3, 4, 5, 6, 7);
                 __m512i j_indices =
                         _mm512_add_epi64(_mm512_set1_epi64(j), v_indices_base);
                 __mmask8 mask_iw = _mm512_cmpeq_epi64_mask(
@@ -368,11 +353,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                         mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
 
                 xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
-#ifdef __AVX512VPOPCNTDQ__
-                popcnt_res = _mm512_popcnt_epi64(xor_res);
-#else
-                popcnt_res = popcnt_u64(xor_res);
-#endif
+                popcnt_res = popcnt_512(xor_res);
                 __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
                 __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
                 term_new = _mm512_mul_pd(term_new, term_new);
