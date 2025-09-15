@@ -287,13 +287,18 @@ void IndexSVSVamana::range_search(
     auto old_sp = impl->get_search_parameters();
     impl->set_search_parameters(sp);
 
+    // TODO: clarify if there is the reason to use ResultHandler abstraction
     // Prepare output buffers
     std::vector<std::vector<svs::Neighbor<size_t>>> all_results(n);
     for (auto& res : all_results) {
         res.reserve(search_buffer_capacity); // Reserve space for elements
     }
-
     auto sel = params != nullptr ? params->sel : nullptr;
+
+    std::function<bool(float,float)> cmp = std::greater<float>{};
+    if (is_similarity_metric(metric_type)) {
+        cmp = std::less<float>{};
+    }
 
     // TODO: parallelize over queries
     for (size_t q = 0; q < n; ++q) {
@@ -306,7 +311,7 @@ void IndexSVSVamana::range_search(
         while (iterator.results().size() > 0) {
             bool stop_searching = false;
             for (auto& neighbor : iterator.results()) {
-                if (neighbor.distance() <= radius) {
+                if (cmp(radius, neighbor.distance())) {
                     // Selective search with IDSelector
                     if (sel == nullptr || sel->is_member(neighbor.id())) {
                         all_results[q].push_back(neighbor);
