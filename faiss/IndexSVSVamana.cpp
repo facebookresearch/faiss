@@ -156,6 +156,32 @@ svs::DynamicVamana* deserialize_impl_t(
 }
 } // namespace
 
+namespace {
+svs::index::vamana::VamanaSearchParameters make_search_parameters(
+        const IndexSVSVamana* idx,
+        const SearchParameters* params) {
+    FAISS_THROW_IF_NOT(idx);
+    FAISS_THROW_IF_NOT(idx->impl);
+
+    auto search_window_size = idx->search_window_size;
+    auto search_buffer_capacity = idx->search_buffer_capacity;
+
+    if (params != nullptr) {
+        auto* svs_params =
+                dynamic_cast<const SearchParametersSVSVamana*>(params);
+        if (svs_params != nullptr) {
+            if (svs_params->search_window_size > 0)
+                search_window_size = svs_params->search_window_size;
+            if (svs_params->search_buffer_capacity > 0)
+                search_buffer_capacity = svs_params->search_buffer_capacity;
+        }
+    }
+
+    return idx->impl->get_search_parameters().buffer_config(
+            {search_window_size, search_buffer_capacity});
+}
+} // namespace
+
 IndexSVSVamana::IndexSVSVamana() : Index{} {}
 
 IndexSVSVamana::IndexSVSVamana(
@@ -218,9 +244,7 @@ void IndexSVSVamana::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
-    // TODO: use params for SVS search parameters
-    auto sp = impl->get_search_parameters();
-    sp.buffer_config({search_window_size, search_buffer_capacity});
+    auto sp = make_search_parameters(this, params);
 
     // Simple search
     if (params == nullptr || params->sel == nullptr) {
@@ -281,9 +305,7 @@ void IndexSVSVamana::range_search(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(result->nq == n);
 
-    // TODO: use params for SVS search parameters
-    auto sp = impl->get_search_parameters();
-    sp.buffer_config({search_window_size, search_buffer_capacity});
+    auto sp = make_search_parameters(this, params);
     auto old_sp = impl->get_search_parameters();
     impl->set_search_parameters(sp);
 
@@ -295,7 +317,7 @@ void IndexSVSVamana::range_search(
     }
     auto sel = params != nullptr ? params->sel : nullptr;
 
-    std::function<bool(float,float)> cmp = std::greater<float>{};
+    std::function<bool(float, float)> cmp = std::greater<float>{};
     if (is_similarity_metric(metric_type)) {
         cmp = std::less<float>{};
     }

@@ -20,6 +20,11 @@ class DynamicVamana;
 
 namespace faiss {
 
+struct SearchParametersSVSVamana : public SearchParameters {
+    size_t search_window_size = 0;
+    size_t search_buffer_capacity = 0;
+};
+
 struct IndexSVSVamana : Index {
     size_t graph_max_degree;
     size_t prune_to;
