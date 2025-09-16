@@ -79,6 +79,89 @@ class TestSVSAdapter(unittest.TestCase):
         self.assertEqual(index.ntotal, 0)
         self.assertEqual(index.ntotal_soft_deleted, 0)
 
+    def test_svs_search_selected(self):
+        """Test FAISS search with IDSelector interface compatibility"""
+        index = self._create_instance()
+
+        # Test add interface
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+
+        # Create selector to select a subset of ids
+        min = self.nb // 5
+        max = self.nb * 4 // 5
+        sel = faiss.IDSelectorRange(min, max)  # select ids in [100, 200)
+        params = faiss.SearchParameters(sel=sel)
+
+        # Test search interface
+        k = 10
+        D, I = index.search(self.xq, k, params=params)
+        self.assertEqual(D.shape, (self.nq, k))
+        self.assertEqual(I.shape, (self.nq, k))
+        self.assertTrue(np.all(I >= min))
+        self.assertTrue(np.all(I < max))
+
+    def test_svs_range_search(self):
+        """Test FAISS range_search interface compatibility"""
+        index = self._create_instance()
+
+        # Test add interface
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+
+        # Test search interface
+        range = 0.1
+        lims, D, I = index.range_search(self.xq, range)
+        self.assertEqual(D.shape, I.shape)
+        self.assertTrue(np.all(D <= range))
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(I < self.nb))
+
+    def test_svs_range_search_ip(self):
+        """Test FAISS range_search interface compatibility"""
+        index = self._create_instance()
+        index.metric_type = faiss.METRIC_INNER_PRODUCT
+        index.alpha = 0.95
+
+        # Test add interface
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+
+        # Test search interface
+        range = 10
+        lims, D, I = index.range_search(self.xq, range)
+        self.assertEqual(D.shape, I.shape)
+        self.assertTrue(np.all(D >= range))
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(I < self.nb))
+
+    def test_svs_range_search_selected(self):
+        """Test FAISS add/search/remove_ids interface compatibility"""
+        index = self._create_instance()
+
+        # Test add interface
+        index.add(self.xb)
+        self.assertEqual(index.ntotal, self.nb)
+
+        # Create selector to select a subset of ids
+        min = self.nb // 5
+        max = self.nb * 4 // 5
+        sel = faiss.IDSelectorRange(min, max)  # select ids in [100, 200)
+        params = faiss.SearchParameters(sel=sel)
+
+        # Test search interface
+        radius = 0.1
+        lims, D, I = index.range_search(self.xq, radius, params=params)
+        self.assertEqual(D.shape, I.shape)
+        self.assertTrue(np.all(D <= radius))
+        self.assertTrue(np.all(I >= min))
+        self.assertTrue(np.all(I < max))
+
+        # Test reset
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.ntotal_soft_deleted, 0)
+
     def test_svs_metric_types(self):
         """Test different metric types are handled correctly"""
         # L2 metric
@@ -251,6 +334,22 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 
     def _create_instance(self):
         return faiss.IndexSVSFlat(self.d)
+
+    @unittest.expectedFailure
+    def test_svs_search_selected(self):
+        return super().test_svs_search_selected()
+
+    @unittest.expectedFailure
+    def test_svs_range_search(self):
+        return super().test_svs_range_search()
+
+    @unittest.expectedFailure
+    def test_svs_range_search_ip(self):
+        return super().test_svs_range_search_ip()
+
+    @unittest.expectedFailure
+    def test_svs_range_search_selected(self):
+        return super().test_svs_range_search_selected()
 
     @unittest.expectedFailure
     def test_svs_add_search_remove_interface(self):
