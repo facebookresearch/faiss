@@ -312,8 +312,11 @@ void IndexSVSVamana::range_search(
     // TODO: clarify if there is the reason to use ResultHandler abstraction
     // Prepare output buffers
     std::vector<std::vector<svs::Neighbor<size_t>>> all_results(n);
+    // Reserve space for allocation to avoid multiple reallocations
+    // Use search_buffer_capacity as a heuristic
+    const auto result_capacity = sp.buffer_config_.get_total_capacity();
     for (auto& res : all_results) {
-        res.reserve(search_buffer_capacity); // Reserve space for elements
+        res.reserve(result_capacity);
     }
     auto sel = params != nullptr ? params->sel : nullptr;
 
@@ -322,13 +325,16 @@ void IndexSVSVamana::range_search(
         cmp = std::less<float>{};
     }
 
+    // Set iterator batch size to search window size
+    auto batch_size = sp.buffer_config_.get_search_window_size();
+
     // TODO: parallelize over queries
     for (size_t q = 0; q < n; ++q) {
         // For every query
         auto query = std::span(x + q * d, d);
 
         auto iterator = impl->batch_iterator(query);
-        iterator.next(search_window_size);
+        iterator.next(batch_size);
 
         while (iterator.results().size() > 0) {
             bool stop_searching = false;
