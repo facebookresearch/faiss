@@ -263,34 +263,45 @@ void IndexSVSVamana::search(
     // Selective search with IDSelector
     auto old_sp = impl->get_search_parameters();
     impl->set_search_parameters(sp);
-    // TODO: parallelize over queries
-    for (size_t i = 0; i < n; ++i) {
-        // For every query
-        auto query = std::span(x + i * d, d);
-        auto lblp = std::span(labels + i * k, k);
-        auto distp = std::span(distances + i * k, k);
 
-        auto iterator = impl->batch_iterator(query);
-        idx_t found = 0;
-        do {
-            iterator.next(k);
-            for (auto& neighbor : iterator.results()) {
-                if (params->sel->is_member(neighbor.id())) {
-                    distp[found] = neighbor.distance();
-                    lblp[found] = neighbor.id();
-                    found++;
-                    if (found == k) {
-                        break;
+    auto search_closure = [&](const auto& range, uint64_t SVS_UNUSED(tid)) {
+        for (auto i : range) {
+            // For every query
+            auto query = std::span(x + i * d, d);
+            auto lblp = std::span(labels + i * k, k);
+            auto distp = std::span(distances + i * k, k);
+
+            auto iterator = impl->batch_iterator(query);
+            idx_t found = 0;
+            do {
+                iterator.next(k);
+                for (auto& neighbor : iterator.results()) {
+                    if (params->sel->is_member(neighbor.id())) {
+                        distp[found] = neighbor.distance();
+                        lblp[found] = neighbor.id();
+                        found++;
+                        if (found == k) {
+                            break;
+                        }
                     }
                 }
+            } while (!iterator.done() && found < k);
+            // Pad with -1s
+            for (; found < k; ++found) {
+                distp[found] = -1;
+                lblp[found] = -1;
             }
-        } while (!iterator.done() && found < k);
-        // Pad with -1s
-        for (; found < k; ++found) {
-            distp[found] = -1;
-            lblp[found] = -1;
         }
-    }
+    };
+
+    // Do not use Thread Pool from index because SVS TP calls are blocking
+    // and may be blocked by nested calls
+    auto threadpool = svs::threads::OMPThreadPool(
+            std::min(n, idx_t(omp_get_max_threads())));
+
+    svs::threads::parallel_for(
+            threadpool, svs::threads::StaticPartition{n}, search_closure);
+
     impl->set_search_parameters(old_sp);
 }
 
@@ -328,36 +339,45 @@ void IndexSVSVamana::range_search(
     // Set iterator batch size to search window size
     auto batch_size = sp.buffer_config_.get_search_window_size();
 
-    // TODO: parallelize over queries
-    for (size_t q = 0; q < n; ++q) {
-        // For every query
-        auto query = std::span(x + q * d, d);
+    auto range_search_closure = [&](const auto& range,
+                                    uint64_t SVS_UNUSED(tid)) {
+        for (auto i : range) {
+            // For every query
+            auto query = std::span(x + i * d, d);
 
-        auto iterator = impl->batch_iterator(query);
-        iterator.next(batch_size);
+            auto iterator = impl->batch_iterator(query);
+            iterator.next(batch_size);
 
-        while (iterator.results().size() > 0) {
-            bool stop_searching = false;
-            for (auto& neighbor : iterator.results()) {
-                if (cmp(radius, neighbor.distance())) {
-                    // Selective search with IDSelector
-                    if (sel == nullptr || sel->is_member(neighbor.id())) {
-                        all_results[q].push_back(neighbor);
+            while (iterator.results().size() > 0) {
+                bool stop_searching = false;
+                for (auto& neighbor : iterator.results()) {
+                    if (cmp(radius, neighbor.distance())) {
+                        // Selective search with IDSelector
+                        if (sel == nullptr || sel->is_member(neighbor.id())) {
+                            all_results[i].push_back(neighbor);
+                        }
+                    } else {
+                        // Since results are ordered by distance, we can stop
+                        // processing
+                        stop_searching = true;
+                        // TODO: continue current batch or break here?
+                        // break;
                     }
-                } else {
-                    // Since results are ordered by distance, we can stop
-                    // processing
-                    stop_searching = true;
-                    // TODO: continue current batch or break here?
-                    // break;
                 }
+                if (stop_searching) {
+                    break;
+                }
+                iterator.next(search_window_size);
             }
-            if (stop_searching) {
-                break;
-            }
-            iterator.next(search_window_size);
         }
-    }
+    };
+
+    // Do not use TP from index 'cause it may be blocked by nested calls
+    auto threadpool = svs::threads::OMPThreadPool(
+            std::min(n, idx_t(omp_get_max_threads())));
+
+    svs::threads::parallel_for(
+            threadpool, svs::threads::StaticPartition{n}, range_search_closure);
 
     // RangeSearchResult .ctor() allows unallocated lims
     result->nq = n;
