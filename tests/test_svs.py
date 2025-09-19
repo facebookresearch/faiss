@@ -7,7 +7,11 @@ import numpy as np
 import unittest
 import faiss
 
+_SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
+_SKIP_REASON = "SVS support not compiled in"
 
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapter(unittest.TestCase):
     """Test the FAISS-SVS adapter layer integration"""
 
@@ -152,6 +156,7 @@ class TestSVSAdapter(unittest.TestCase):
         D, _ = index.search(self.xq, 4)
         self.assertEqual(D.shape, (self.nq, 4))
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSFactory(unittest.TestCase):
     """Test that SVS factory works correctly"""
 
@@ -192,6 +197,7 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.SQI8)
 
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
     def _create_instance(self):
@@ -199,6 +205,7 @@ class TestSVSAdapterFP16(TestSVSAdapter):
         idx.storage_kind = faiss.IndexSVSVamana.FP16
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterSQI8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
     def _create_instance(self):
@@ -206,6 +213,7 @@ class TestSVSAdapterSQI8(TestSVSAdapter):
         idx.storage_kind = faiss.IndexSVSVamana.SQI8
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x0 variant"""
 
@@ -216,6 +224,7 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
         idx.lvq_level = faiss.LVQ4x0
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterLVQ4x4(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x4 variant"""
 
@@ -226,6 +235,7 @@ class TestSVSAdapterLVQ4x4(TestSVSAdapter):
         idx.lvq_level = faiss.LVQ4x4
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterLVQ4x8(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x8 variant"""
     target_class = faiss.IndexSVSVamanaLVQ
@@ -255,6 +265,7 @@ class TestSVSAdapterFlat(TestSVSAdapter):
         super().test_svs_batch_operations()
 
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParameters(unittest.TestCase):
     """Test Vamana-specific parameter forwarding and persistence for SVS Vamana variants"""
 
@@ -348,6 +359,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         np.testing.assert_allclose(D_before, D_after, rtol=1e-6)
 
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
     def _create_instance(self):
@@ -355,6 +367,7 @@ class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
         idx.storage_kind = faiss.IndexSVSVamana.FP16
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
     def _create_instance(self):
@@ -362,6 +375,7 @@ class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
         idx.storage_kind = faiss.IndexSVSVamana.SQI8
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x0 variant"""
 
@@ -372,6 +386,7 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
         idx.lvq_level = faiss.LVQ4x0
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x4 variant"""
 
@@ -382,6 +397,7 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
         idx.lvq_level = faiss.LVQ4x4
         return idx
 
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x8 variant"""
 
