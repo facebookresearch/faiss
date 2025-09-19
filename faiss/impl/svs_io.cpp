@@ -85,6 +85,32 @@ static inline void read_exact(std::istream& in, void* p, size_t n) {
 }
 
 void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
+    // First pass: compute total number of bytes that will be written AFTER
+    // the length prefix itself. The format per file is:
+    // [uint64_t dir_len][dir_name bytes]
+    // [uint64_t file_len][file_name bytes]
+    // [uint64_t file_size][file bytes]
+    // We sum these for all files in the (config, graph, data) subdirectories.
+
+    uint64_t total_bytes = 0;
+    for (const auto& dir : {config, graph, data}) {
+        const std::string dir_name = dir.filename().string();
+        const uint64_t dir_len = dir_name.size();
+        for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+            const std::string filename = entry.path().filename().string();
+            const uint64_t file_len = filename.size();
+            const uint64_t file_size = std::filesystem::file_size(entry.path());
+
+            total_bytes += sizeof(uint64_t) + dir_len;  // dir_len + dir_name
+            total_bytes += sizeof(uint64_t) + file_len; // file_len + filename
+            total_bytes +=
+                    sizeof(uint64_t) + file_size; // file_size + file contents
+        }
+    }
+
+    // Write the length prefix (number of bytes that follow).
+    out.write(reinterpret_cast<const char*>(&total_bytes), sizeof(total_bytes));
+
     for (const auto& dir : {config, graph, data}) {
         const std::string dir_name = dir.filename().string();
         for (const auto& entry : std::filesystem::directory_iterator(dir)) {
@@ -117,29 +143,39 @@ void SVSTempDirectory::write_files_to_stream(std::ostream& out) const {
 void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
     constexpr size_t BUFSZ = 1 << 20; // 1 MiB
     std::vector<char> buf(BUFSZ);
+    // Read the prefixed total byte count produced by write_files_to_stream.
+    uint64_t total_bytes = 0;
+    read_exact(in, &total_bytes, sizeof(total_bytes));
 
-    for (;;) {
+    uint64_t consumed = 0; // number of payload bytes consumed so far
+
+    while (consumed < total_bytes) {
+        // Each record begins with dir_len
         uint64_t dir_len = 0;
-
-        // Try to read next record. If we're at clean EOF (no bytes), stop.
-        in.read(reinterpret_cast<char*>(&dir_len), sizeof(dir_len));
-        if (!in) {
-            // No bytes read? clean EOF. Partial? error.
-            if (in.eof() && in.gcount() == 0)
-                return;
-            FAISS_THROW_IF_NOT_MSG(false, "Corrupt stream: partial header");
-        }
+        read_exact(in, &dir_len, sizeof(dir_len));
+        consumed += sizeof(dir_len);
 
         std::string dir_name(dir_len, '\0');
         read_exact(in, dir_name.data(), dir_len);
+        consumed += dir_len;
 
         uint64_t file_len = 0;
         read_exact(in, &file_len, sizeof(file_len));
+        consumed += sizeof(file_len);
         std::string filename(file_len, '\0');
         read_exact(in, filename.data(), file_len);
+        consumed += file_len;
 
         uint64_t file_size = 0;
         read_exact(in, &file_size, sizeof(file_size));
+        consumed += sizeof(file_size);
+
+        // Bounds check before allocating / reading file contents
+        if (consumed + file_size > total_bytes) {
+            FAISS_THROW_IF_NOT_MSG(
+                    false,
+                    "Corrupt stream: declared file_size exceeds remaining bytes");
+        }
 
         std::filesystem::path base;
         if (dir_name == "config") {
@@ -156,7 +192,6 @@ void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
         std::ofstream out(full_path, std::ios::binary);
         FAISS_THROW_IF_NOT_MSG(out, "Failed to open temp SVS file for writing");
 
-        // Stream body in chunks
         uint64_t remaining = file_size;
         while (remaining > 0) {
             size_t want = size_t(std::min<uint64_t>(remaining, buf.size()));
@@ -164,6 +199,7 @@ void SVSTempDirectory::write_stream_to_files(std::istream& in) const {
             out.write(buf.data(), want);
             FAISS_THROW_IF_NOT_MSG(out, "Short write to temp SVS file");
             remaining -= want;
+            consumed += want;
         }
     }
 }
