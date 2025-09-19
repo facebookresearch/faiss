@@ -1,0 +1,15 @@
+{
+  "extends": ["config:base"],
+  "automerge": false,                    // prevent auto-merging
+  "baseBranches": ["main"],              // your main branch
+  "schedule": ["after 00:00 on every day"],  // daily at midnight UTC
+  "prCreation": "not-pending",           // create PRs immediately
+  "labels": ["dependencies", "renovate"], // optional
+  "commitMessageTopic": "{{depName}}",
+  "packageRules": [
+    {
+      "updateTypes": ["minor", "patch"],
+      "automerge": false
+    }
+  ]
+}
