@@ -1,10 +1,10 @@
-name: Update Doxygen
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'faiss/**'
+# DISABLED - name: Update Doxygen
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'faiss/**'
 jobs:
   doxygen:
     runs-on: ubuntu-latest

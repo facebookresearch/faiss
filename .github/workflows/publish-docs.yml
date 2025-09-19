@@ -1,14 +1,14 @@
-name: Publish Docs
-on:
-  page_build:
-    branches:
-      - gh-pages
-    paths-ignore:
-      - 'docs/**'
-  workflow_run:
-    workflows: [update-doxygen]
-    types:
-      - completed
+# DISABLED - name: Publish Docs
+# on:
+#   page_build:
+#     branches:
+#       - gh-pages
+#     paths-ignore:
+#       - 'docs/**'
+#   workflow_run:
+#     workflows: [update-doxygen]
+#     types:
+#       - completed
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
