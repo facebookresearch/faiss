@@ -221,7 +221,40 @@ def handle_NSG(the_class):
 
 def handle_Index(the_class):
 
-    def replacement_add(self, x, numeric_type = faiss.Float32):
+    def replacement_setattr(self, name, value):
+        # Prevent silent failures when setting attributes that don't exist
+        # as described in GitHub issue 3766
+
+        # Allow SWIG internal attributes that are essential for object
+        # functionality
+        if name in ['this', 'thisown']:
+            return original_setattr(self, name, value)
+
+        # Allow internal Faiss attributes used during construction/operation
+        if name in ['referenced_objects']:
+            return original_setattr(self, name, value)
+
+        # Check if the attribute already exists (valid attribute)
+        try:
+            # Check if it exists on the instance or class
+            if hasattr(self, name) or hasattr(self.__class__, name):
+                return original_setattr(self, name, value)
+        except (AttributeError, TypeError, SystemError):
+            # During object construction, hasattr might fail, so be permissive
+            return original_setattr(self, name, value)
+
+        # If we reach here, the attribute doesn't exist on the object
+        # This is the core issue: SWIG classes silently accept unknown
+        # attributes
+        # We should generally block this to prevent silent failures
+
+        # Block unknown attributes to prevent silent failures
+        # This is the general solution that doesn't rely on hardcoded names
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'."
+        )
+
+    def replacement_add(self, x, numeric_type=faiss.Float32):
         """Adds vectors to the index.
         The index must be trained before vectors can be added to it.
         The vectors are implicitly numbered in sequence. When `n` vectors are
@@ -316,7 +349,7 @@ def handle_Index(the_class):
             self.train_c(n, swig_ptr(x))
         else:
             self.train_ex(n, swig_ptr(x), numeric_type)
-        
+
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None, numeric_type = faiss.Float32):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -839,6 +872,13 @@ def handle_Index(the_class):
     replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes)
     replace_method(the_class, 'permute_entries', replacement_permute_entries,
                    ignore_missing=True)
+
+    # Store the original __setattr__ method
+    original_setattr = (the_class.__setattr__ if
+                        hasattr(the_class, '__setattr__')
+                        else object.__setattr__)
+
+    the_class.__setattr__ = replacement_setattr
 
     # get/set state for pickle
     # the data is serialized to std::vector -> numpy array -> python bytes
