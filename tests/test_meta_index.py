@@ -85,17 +85,30 @@ class Shards(unittest.TestCase):
         ref_index.add(xb)
         _Dref, Iref = ref_index.search(xq, k)
 
-        shard_index = faiss.IndexShards(d)
+        # Create both threaded and non-threaded shard indexes
+        shard_index_nonthreaded = faiss.IndexShards(
+            d, False)  # explicitly non-threaded
+        shard_index_threaded = faiss.IndexShards(
+            d, True)  # explicitly threaded
         shard_index_2 = faiss.IndexShards(d, True, False)
 
         ni = 3
+        # Populate both indexes with the same data
         for i in range(ni):
             i0 = int(i * nb / ni)
             i1 = int((i + 1) * nb / ni)
-            index = faiss.IndexFlatL2(d)
-            index.add(xb[i0:i1])
-            shard_index.add_shard(index)
 
+            # Add to non-threaded index
+            index_nt = faiss.IndexFlatL2(d)
+            index_nt.add(xb[i0:i1])
+            shard_index_nonthreaded.add_shard(index_nt)
+
+            # Add to threaded index
+            index_t = faiss.IndexFlatL2(d)
+            index_t.add(xb[i0:i1])
+            shard_index_threaded.add_shard(index_t)
+
+            # Add to shard_index_2 for the original test logic
             index_2 = faiss.IndexFlatL2(d)
             irm = faiss.IndexIDMap(index_2)
             shard_index_2.add_shard(irm)
@@ -110,12 +123,14 @@ class Shards(unittest.TestCase):
             if with_threads:
                 remember_nt = faiss.omp_get_max_threads()
                 faiss.omp_set_num_threads(1)
-                shard_index.threaded = True
+                # Use the threaded index
+                test_index = shard_index_threaded
             else:
-                shard_index.threaded = False
+                # Use the non-threaded index
+                test_index = shard_index_nonthreaded
 
             if test_no != 2:
-                _D, I = shard_index.search(xq, k)
+                _D, I = test_index.search(xq, k)
             else:
                 _D, I = shard_index_2.search(xq, k)
 
