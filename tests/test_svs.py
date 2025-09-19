@@ -5,7 +5,6 @@
 
 import numpy as np
 import unittest
-import tempfile
 import faiss
 
 
@@ -100,10 +99,7 @@ class TestSVSAdapter(unittest.TestCase):
         index.add(self.xb)
         D_before, I_before = index.search(self.xq, 4)
 
-        with tempfile.NamedTemporaryFile() as f:
-            faiss.write_index(index, f.name)
-            loaded = faiss.read_index(f.name)
-
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
         # Verify adapter layer preserves type and parameters
         self.assertIsInstance(loaded, self.target_class)
         self.assertEqual(loaded.d, self.d)
@@ -135,9 +131,7 @@ class TestSVSAdapter(unittest.TestCase):
         index.add(self.xb[:100])  # Smaller dataset for speed
 
         # Test round-trip serialization preserves exact type
-        with tempfile.NamedTemporaryFile() as f:
-            faiss.write_index(index, f.name)
-            loaded = faiss.read_index(f.name)
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
 
         # Verify exact type preservation (fourcc working correctly)
         self.assertEqual(type(loaded), self.target_class)
@@ -334,9 +328,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         index.add(self.xb)
 
         # Serialize and deserialize
-        with tempfile.NamedTemporaryFile() as f:
-            faiss.write_index(index, f.name)
-            loaded = faiss.read_index(f.name)
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
 
         # Verify all parameters are preserved
         self.assertIsInstance(loaded, self.target_class)
