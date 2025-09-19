@@ -1,7 +1,7 @@
-name: Nightly
-on:
-  schedule:
-    - cron:  '10 6 * * *'
+# DISABLED - name: Nightly
+# on:
+#   schedule:
+#     - cron:  '10 6 * * *'
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU

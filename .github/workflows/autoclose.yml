@@ -1,7 +1,7 @@
-name: Close Inactive Issues
-on:
-  schedule:
-    - cron: "30 1 * * *"
+# DISABLED - name: Close Inactive Issues
+# on:
+#   schedule:
+#     - cron: "30 1 * * *"
 
 jobs:
   close-issues:
