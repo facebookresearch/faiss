@@ -892,14 +892,14 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     else if (
             const IndexSVSVamana* svs =
                     dynamic_cast<const IndexSVSVamana*>(idx)) {
-        // The SVS implementation will write its contents to three directories,
-        // which we will read back here for writing to the actual output file.
-        // To avoid a full copy of the index in memory, we stream chunks.
-        // This means we cannot write the output blob size in the header, as
-        // we only know the number of bytes at the very end.
-        // One solution would be to write a footer and read it in index_read(),
-        // but since the file ends anyway after index_write() is done, we just
-        // assume EOF means end of binary SVS blob.
+        // SVS provides its own I/O routines, but it will write its output into
+        // three separate files.
+        // To match the behavior in faiss, we provide some logic in svs_io.h.
+        // In this namespace we provide a WriterStreambuf class that takes the
+        // contents of the SVS directories and streams them into the provided
+        // IOWriter f.
+        // This allows us to avoid in-memory copies, at the cost of temporarily
+        // utilizing additional disk space.
 
         uint32_t h;
         auto* lvq = dynamic_cast<const IndexSVSVamanaLVQ*>(svs);
@@ -931,11 +931,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(lean->leanvec_level);
         }
 
-        // payload (stream to file)
+        // Wrap SVS I/O and stream to IOWriter
         faiss::BufferedIOWriter bwr(f);
         faiss::svs_io::WriterStreambuf wbuf(&bwr);
         std::ostream os(&wbuf);
-
         svs->serialize_impl(os);
         os.flush();
     } else if (
@@ -944,11 +943,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(idx, f);
 
-        // payload (stream to file)
+        // Wrap SVS I/O and stream to IOWriter
         faiss::BufferedIOWriter bwr(f);
         faiss::svs_io::WriterStreambuf wbuf(&bwr);
         std::ostream os(&wbuf);
-
         svs->serialize_impl(os);
         os.flush();
     }
