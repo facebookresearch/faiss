@@ -1,0 +1,19 @@
+name: "Renovate"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # once a day at midnight UTC
+  workflow_dispatch:      # allows manual run from Actions tab
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@v36
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
