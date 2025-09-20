@@ -2,8 +2,8 @@ name: "Renovate"
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # once a day at midnight UTC
-  workflow_dispatch:      # allows manual run from Actions tab
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   renovate:
@@ -11,10 +11,13 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Renovate
         uses: renovatebot/github-action@v43.0.12
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repositories: ${{ github.repository }}
+          configurationFile: renovate.json
+        env:
+          LOG_LEVEL: debug
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
