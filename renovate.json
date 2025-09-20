@@ -2,7 +2,6 @@
   "extends": ["config:base"],
   "automerge": false,
   "baseBranches": ["main"],
-  "schedule": ["on sunday before 6:00am"],
   "prCreation": "not-pending",
   "labels": ["dependencies", "renovate"],
   "commitMessageTopic": "{{depName}}",
