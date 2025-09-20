@@ -17,3 +17,4 @@ jobs:
         uses: renovatebot/github-action@v43.0.12
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          repositories: ${{ github.repository }}

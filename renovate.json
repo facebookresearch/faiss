@@ -1,15 +1,16 @@
 {
   "extends": ["config:base"],
-  "automerge": false,                    // prevent auto-merging
-  "baseBranches": ["main"],              // your main branch
-  "schedule": ["after 00:00 on every day"],  // daily at midnight UTC
-  "prCreation": "not-pending",           // create PRs immediately
-  "labels": ["dependencies", "renovate"], // optional
+  "automerge": false,
+  "baseBranches": ["main"],
+  "schedule": ["after 00:00 on every day"],
+  "prCreation": "not-pending",
+  "labels": ["dependencies", "renovate"],
   "commitMessageTopic": "{{depName}}",
   "packageRules": [
     {
       "updateTypes": ["minor", "patch"],
       "automerge": false
     }
-  ]
+  ],
+  "forkProcessing": "enabled"
 }
