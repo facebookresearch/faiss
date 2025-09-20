@@ -1,13 +1,13 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "automerge": false,
-  "baseBranches": ["main"],
+  "baseBranchPatterns": ["main"],
   "prCreation": "not-pending",
   "labels": ["dependencies", "renovate"],
   "commitMessageTopic": "{{depName}}",
   "packageRules": [
     {
-      "updateTypes": ["minor", "patch"],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": false
     }
   ],
