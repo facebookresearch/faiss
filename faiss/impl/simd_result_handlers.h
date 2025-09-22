@@ -318,8 +318,14 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
     std::vector<TI> iids;
     float* dis;
     int64_t* ids;
+    // io_simd_dis and io_simd_ids are used in IVFPQFastScanScanner for
+    // sequential scans.
+    uint16_t* io_simd_dis;
+    TI* io_simd_ids;
 
-    int64_t k; // number of results to keep
+    size_t k; // number of results to keep
+
+    size_t nup = 0; // number of heap updates
 
     HeapHandler(
             size_t nq,
@@ -327,14 +333,30 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
             int64_t k,
             float* dis,
             int64_t* ids,
-            const IDSelector* sel_in)
+            const IDSelector* sel_in,
+            uint16_t* io_simd_dis = nullptr,
+            TI* io_simd_ids = nullptr)
             : RHC(nq, ntotal, sel_in),
               idis(nq * k),
               iids(nq * k),
               dis(dis),
               ids(ids),
+              io_simd_dis(io_simd_dis),
+              io_simd_ids(io_simd_ids),
               k(k) {
-        heap_heapify<C>(k * nq, idis.data(), iids.data());
+        if (io_simd_ids != nullptr) {
+            idis.assign(io_simd_dis, io_simd_dis + nq * k);
+            iids.assign(io_simd_ids, io_simd_ids + nq * k);
+            heap_heapify<C>(
+                    k * nq,
+                    idis.data(),
+                    iids.data(),
+                    idis.data(),
+                    iids.data(),
+                    k * nq);
+        } else {
+            heap_heapify<C>(k * nq, idis.data(), iids.data());
+        }
     }
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
@@ -372,6 +394,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                     if (C::cmp(heap_dis[0], dis_2)) {
                         heap_replace_top<C>(
                                 k, heap_dis, heap_ids, dis_2, real_idx);
+                        nup++;
                     }
                 }
             }
@@ -384,6 +407,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 if (C::cmp(heap_dis[0], dis_2)) {
                     int64_t idx = this->adjust_id(b, j);
                     heap_replace_top<C>(k, heap_dis, heap_ids, dis_2, idx);
+                    nup++;
                 }
             }
         }
@@ -406,6 +430,14 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 heap_dis[j] = heap_dis_in[j] * one_a + b;
                 heap_ids[j] = heap_ids_in[j];
             }
+        }
+        if (this->io_simd_dis != nullptr) {
+            memcpy(this->io_simd_dis,
+                   idis.data(),
+                   this->nq * k * sizeof(uint16_t));
+        }
+        if (this->io_simd_ids != nullptr) {
+            memcpy(this->io_simd_ids, iids.data(), this->nq * k * sizeof(TI));
         }
     }
 };

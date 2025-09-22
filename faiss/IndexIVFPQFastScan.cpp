@@ -213,7 +213,7 @@ void IndexIVFPQFastScan::compute_LUT(
         AlignedTable<float>& biases) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
-    size_t nprobe = this->nprobe;
+    size_t nprobe = cq.nprobe;
 
     if (by_residual) {
         if (metric_type == METRIC_L2) {
@@ -290,6 +290,151 @@ void IndexIVFPQFastScan::compute_LUT(
             FAISS_THROW_FMT("metric %d not supported", metric_type);
         }
     }
+}
+
+/*********************************************************
+ * InvertedListScanner for IVFPQFS
+ *********************************************************/
+
+namespace {
+
+struct IVFPQFastScanScanner : InvertedListScanner {
+    const IVFPQFastScanScannerContext* ivf_context;
+    const IndexIVFPQFastScan& index;
+    std::vector<uint16_t> io_simd_dis;
+    std::vector<int64_t> io_simd_ids;
+
+    IVFPQFastScanScanner(
+            const IndexIVFPQFastScan& index,
+            bool store_pairs,
+            const IDSelector* sel,
+            const IVFSearchParameters* params)
+            : InvertedListScanner(store_pairs, sel), index(index) {
+        this->ivf_context = params == nullptr
+                ? nullptr
+                : static_cast<IVFPQFastScanScannerContext*>(
+                          params->inverted_list_context);
+    }
+
+    const float* xi{};
+    void set_query(const float* query) override {
+        this->xi = query;
+        uint16_t default_dis = this->index.metric_type == METRIC_L2
+                ? std::numeric_limits<uint16_t>::max()
+                : std::numeric_limits<uint16_t>::min();
+        io_simd_dis.clear();
+        io_simd_ids.clear();
+        if (this->ivf_context != nullptr) {
+            io_simd_dis.resize(this->ivf_context->max_heap_size, default_dis);
+            io_simd_ids.resize(this->ivf_context->max_heap_size, -1);
+        }
+    }
+
+    void set_list(idx_t list_no, float /* coarse_dis */) override {
+        this->list_no = list_no;
+    }
+
+    float distance_to_code(const uint8_t* /* code */) const override {
+        // It's not really possible to implement a distance_to_code since codes
+        // for 32 database vectors are intermixed.
+        FAISS_THROW_MSG("not implemented");
+    }
+
+    // Based on IVFFastScan search_implem_10, since it also deals with 1 query
+    // at a time.
+    size_t scan_codes(
+            size_t ntotal,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            size_t k) const override {
+        const idx_t n = 1; // 1 query at a time.
+
+        AlignedTable<uint8_t> dis_tables;
+        AlignedTable<uint16_t> biases;
+        std::unique_ptr<float[]> normalizers(new float[2 * n]);
+
+        IndexIVFFastScan::CoarseQuantized cq{};
+        cq.nprobe = this->index.nprobe;
+        IndexIVFFastScan::CoarseQuantizedWithBuffer cqwb(cq);
+        if (this->index.by_residual) {
+            cqwb.quantize(index.quantizer, n, xi, nullptr);
+            index.invlists->prefetch_lists(cqwb.ids, n * cqwb.nprobe);
+            cq = cqwb;
+        }
+        bool is_max = !is_similarity_metric(index.metric_type);
+        int impl = 10;
+
+        std::unique_ptr<SIMDResultHandlerToFloat> handler(
+                index.make_knn_handler(
+                        is_max,
+                        impl,
+                        n,
+                        k,
+                        distances,
+                        labels,
+                        sel,
+                        const_cast<uint16_t*>(this->io_simd_dis.data()),
+                        const_cast<int64_t*>(this->io_simd_ids.data())));
+
+        index.compute_LUT_uint8(
+                1,
+                xi,
+                this->index.by_residual ? cqwb : cq,
+                dis_tables,
+                biases,
+                normalizers.get());
+
+        // This does not quite match search_implem_10, but it is fine because
+        // the scanner operates on a single query at a time, and this value is
+        // used as the query index.
+        int qmap1[1] = {0};
+
+        // handler created and passed in.
+        handler->q_map = qmap1;
+        handler->begin(index.skip & 16 ? nullptr : normalizers.get());
+
+        if (biases.get()) {
+            handler->dbias = biases.get();
+        }
+
+        handler->ntotal = ntotal;
+        handler->id_map = ids;
+
+        const uint8_t* LUT = dis_tables.get();
+
+        pq4_accumulate_loop(
+                1,
+                roundup(ntotal, index.bbs),
+                index.bbs,
+                static_cast<int>(index.M2),
+                codes,
+                LUT,
+                *handler,
+                nullptr);
+
+        handler->end();
+
+        if (is_max) {
+            auto hh = dynamic_cast<HeapHandler<CMax<uint16_t, int64_t>, true>*>(
+                    handler.get());
+            return hh->nup;
+        } else {
+            auto hh = dynamic_cast<HeapHandler<CMin<uint16_t, int64_t>, true>*>(
+                    handler.get());
+            return hh->nup;
+        }
+    }
+};
+
+} // anonymous namespace
+
+InvertedListScanner* IndexIVFPQFastScan::get_InvertedListScanner(
+        bool store_pairs,
+        const IDSelector* sel,
+        const IVFSearchParameters* params) const {
+    return new IVFPQFastScanScanner(*this, store_pairs, sel, params);
 }
 
 } // namespace faiss
