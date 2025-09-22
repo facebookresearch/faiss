@@ -105,7 +105,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/utils/simdlib.h>
-#include <faiss/impl/simd_result_handlers.h>
+// #include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -163,7 +163,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
-#include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
@@ -323,6 +323,9 @@ namespace std {
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
+
+%ignore faiss::SIMDConfig::level_names;
+%include <faiss/utils/simd_levels.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -494,7 +497,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/Quantizer.h>
 %include  <faiss/impl/ProductQuantizer.h>
 %include  <faiss/impl/AdditiveQuantizer.h>
-%include  <faiss/impl/residual_quantizer_encode_steps.h>
+%include  <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
@@ -569,9 +572,9 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexPQFastScan.h>
 
 // NOTE(matthijs) let's not go into wrapping simdlib
-struct faiss::simd16uint16 {};
+// struct faiss::simd16uint16 {};
 
-%include  <faiss/impl/simd_result_handlers.h>
+// %include  <faiss/impl/pq_4bit/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -788,7 +791,6 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
-    DOWNCAST ( IndexBinaryHNSWCagra )
     DOWNCAST ( IndexBinaryHNSW )
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )

@@ -210,7 +210,8 @@ void hammings_knn_hc(
                 CMax<hamdis_t, int64_t>,                                     \
                 NB,                                                          \
                 BD,                                                          \
-                HammingComputer>::                                           \
+                HammingComputer,                                             \
+                SIMDLevel::NONE>::                                           \
                 addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_, sel);           \
         break;
 

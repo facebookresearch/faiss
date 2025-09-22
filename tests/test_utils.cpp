@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <faiss/Index.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
 TEST(TestUtils, get_version) {

@@ -7,9 +7,9 @@
 
 #include <faiss/utils/distances_fused/distances_fused.h>
 
-#include <faiss/impl/platform_macros.h> // NOLINT
+#include <faiss/impl/platform_macros.h>
 
-#include <faiss/utils/distances_fused/avx512.h> // NOLINT
+#include <faiss/utils/distances_fused/avx512.h>
 #include <faiss/utils/distances_fused/simdlib_based.h>
 
 namespace faiss {
@@ -30,9 +30,14 @@ bool exhaustive_L2sqr_fused_cmax(
 #ifdef __AVX512F__
     // avx512 kernel
     return exhaustive_L2sqr_fused_cmax_AVX512(x, y, d, nx, ny, res, y_norms);
-#elif defined(__AVX2__) || defined(__aarch64__)
-    // avx2 or arm neon kernel
-    return exhaustive_L2sqr_fused_cmax_simdlib(x, y, d, nx, ny, res, y_norms);
+#elif defined(__AVX2__)
+    // avx2 kernel
+    return exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::AVX2>(
+            x, y, d, nx, ny, res, y_norms);
+#elif defined(__aarch64__)
+    // arm kernel
+    return exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::ARM_NEON>(
+            x, y, d, nx, ny, res, y_norms);
 #else
     // not supported, please use a general-purpose kernel
     return false;
