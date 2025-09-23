@@ -154,17 +154,14 @@ svs::DynamicVamana* deserialize_impl_t(
             },
             get_svs_distance(metric));
 }
-} // namespace
 
-namespace {
 svs::index::vamana::VamanaSearchParameters make_search_parameters(
-        const IndexSVSVamana* idx,
+        const IndexSVSVamana& index,
         const SearchParameters* params) {
-    FAISS_THROW_IF_NOT(idx);
-    FAISS_THROW_IF_NOT(idx->impl);
+    FAISS_THROW_IF_NOT(index.impl);
 
-    auto search_window_size = idx->search_window_size;
-    auto search_buffer_capacity = idx->search_buffer_capacity;
+    auto search_window_size = index.search_window_size;
+    auto search_buffer_capacity = index.search_buffer_capacity;
 
     if (params != nullptr) {
         auto* svs_params =
@@ -177,7 +174,7 @@ svs::index::vamana::VamanaSearchParameters make_search_parameters(
         }
     }
 
-    return idx->impl->get_search_parameters().buffer_config(
+    return index.impl->get_search_parameters().buffer_config(
             {search_window_size, search_buffer_capacity});
 }
 } // namespace
@@ -244,7 +241,7 @@ void IndexSVSVamana::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
-    auto sp = make_search_parameters(this, params);
+    auto sp = make_search_parameters(*this, params);
 
     // Simple search
     if (params == nullptr || params->sel == nullptr) {
@@ -316,11 +313,15 @@ void IndexSVSVamana::range_search(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(result->nq == n);
 
-    auto sp = make_search_parameters(this, params);
+    auto sp = make_search_parameters(*this, params);
     auto old_sp = impl->get_search_parameters();
     impl->set_search_parameters(sp);
 
-    // TODO: clarify if there is the reason to use ResultHandler abstraction
+    // Using ResultHandler makes no sense due to it's complexity, overhead and
+    // missed features; e.g. add_result() does not indicate whether result added
+    // or not - we have to manually manage threshold comparison and id
+    // selection.
+
     // Prepare output buffers
     std::vector<std::vector<svs::Neighbor<size_t>>> all_results(n);
     // Reserve space for allocation to avoid multiple reallocations
@@ -329,11 +330,17 @@ void IndexSVSVamana::range_search(
     for (auto& res : all_results) {
         res.reserve(result_capacity);
     }
-    auto sel = params != nullptr ? params->sel : nullptr;
 
-    std::function<bool(float, float)> cmp = std::greater<float>{};
-    if (is_similarity_metric(metric_type)) {
-        cmp = std::less<float>{};
+    std::function<bool(float, float)> compare = std::visit(
+            [](auto&& dist) {
+                return std::function<bool(float, float)>{
+                        svs::distance::comparator(dist)};
+            },
+            get_svs_distance(metric_type));
+
+    std::function<bool(size_t)> select = [](size_t) { return true; };
+    if (params != nullptr && params->sel != nullptr) {
+        select = [&](size_t id) { return params->sel->is_member(id); };
     }
 
     // Set iterator batch size to search window size
@@ -346,29 +353,26 @@ void IndexSVSVamana::range_search(
             auto query = std::span(x + i * d, d);
 
             auto iterator = impl->batch_iterator(query);
-            iterator.next(batch_size);
+            bool in_range = true;
 
-            while (iterator.results().size() > 0) {
-                bool stop_searching = false;
+            do {
+                iterator.next(batch_size);
                 for (auto& neighbor : iterator.results()) {
-                    if (cmp(radius, neighbor.distance())) {
+                    // SVS comparator functor returns true if the first distance
+                    // is 'closer' than the second one
+                    in_range = compare(neighbor.distance(), radius);
+                    if (in_range) {
                         // Selective search with IDSelector
-                        if (sel == nullptr || sel->is_member(neighbor.id())) {
+                        if (select(neighbor.id())) {
                             all_results[i].push_back(neighbor);
                         }
                     } else {
-                        // Since results are ordered by distance, we can stop
-                        // processing
-                        stop_searching = true;
-                        // TODO: continue current batch or break here?
-                        // break;
+                        // Since iterator.results() are ordered by distance, we
+                        // can stop processing
+                        break;
                     }
                 }
-                if (stop_searching) {
-                    break;
-                }
-                iterator.next(search_window_size);
-            }
+            } while (in_range && !iterator.done());
         }
     };
 
@@ -380,7 +384,6 @@ void IndexSVSVamana::range_search(
             threadpool, svs::threads::StaticPartition{n}, range_search_closure);
 
     // RangeSearchResult .ctor() allows unallocated lims
-    result->nq = n;
     if (result->lims == nullptr) {
         result->lims = new size_t[result->nq + 1];
     }
