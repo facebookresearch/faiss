@@ -163,15 +163,12 @@ svs::index::vamana::VamanaSearchParameters make_search_parameters(
     auto search_window_size = index.search_window_size;
     auto search_buffer_capacity = index.search_buffer_capacity;
 
-    if (params != nullptr) {
-        auto* svs_params =
-                dynamic_cast<const SearchParametersSVSVamana*>(params);
-        if (svs_params != nullptr) {
-            if (svs_params->search_window_size > 0)
-                search_window_size = svs_params->search_window_size;
-            if (svs_params->search_buffer_capacity > 0)
-                search_buffer_capacity = svs_params->search_buffer_capacity;
-        }
+    if (auto svs_params =
+                dynamic_cast<const SearchParametersSVSVamana*>(params)) {
+        if (svs_params->search_window_size > 0)
+            search_window_size = svs_params->search_window_size;
+        if (svs_params->search_buffer_capacity > 0)
+            search_buffer_capacity = svs_params->search_buffer_capacity;
     }
 
     return index.impl->get_search_parameters().buffer_config(
@@ -265,8 +262,8 @@ void IndexSVSVamana::search(
         for (auto i : range) {
             // For every query
             auto query = std::span(x + i * d, d);
-            auto lblp = std::span(labels + i * k, k);
-            auto distp = std::span(distances + i * k, k);
+            auto curr_distances = std::span(distances + i * k, k);
+            auto curr_labels = std::span(labels + i * k, k);
 
             auto iterator = impl->batch_iterator(query);
             idx_t found = 0;
@@ -274,19 +271,19 @@ void IndexSVSVamana::search(
                 iterator.next(k);
                 for (auto& neighbor : iterator.results()) {
                     if (params->sel->is_member(neighbor.id())) {
-                        distp[found] = neighbor.distance();
-                        lblp[found] = neighbor.id();
+                        curr_distances[found] = neighbor.distance();
+                        curr_labels[found] = neighbor.id();
                         found++;
                         if (found == k) {
                             break;
                         }
                     }
                 }
-            } while (!iterator.done() && found < k);
+            } while (found < k && !iterator.done());
             // Pad with -1s
             for (; found < k; ++found) {
-                distp[found] = -1;
-                lblp[found] = -1;
+                curr_distances[found] = -1;
+                curr_labels[found] = -1;
             }
         }
     };
