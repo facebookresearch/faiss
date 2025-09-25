@@ -804,7 +804,7 @@ void IcmEncoder::encode(
 }
 
 double LSQTimer::get(const std::string& name) {
-    if (t.count(name) == 0) {
+    if (!t.contains(name)) {
         return 0.0;
     } else {
         return t[name];
@@ -812,7 +812,7 @@ double LSQTimer::get(const std::string& name) {
 }
 
 void LSQTimer::add(const std::string& name, double delta) {
-    if (t.count(name) == 0) {
+    if (!t.contains(name)) {
         t[name] = delta;
     } else {
         t[name] += delta;
