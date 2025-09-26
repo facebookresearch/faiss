@@ -10994,10 +10994,6 @@
   </compound>
   <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
   </compound>
-  <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-  </compound>
-  <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-  </compound>
   <compound refid="generic_8h" kind="file"><name>generic.h</name>
   </compound>
   <compound refid="mode_8h" kind="file"><name>mode.h</name>
@@ -11038,6 +11034,10 @@
   <compound refid="hamming-inl_8h" kind="file"><name>hamming-inl.h</name>
   </compound>
   <compound refid="hamming_8h" kind="file"><name>hamming.h</name>
+  </compound>
+  <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
+  </compound>
+  <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
   </compound>
   <compound refid="avx512-inl_8h" kind="file"><name>avx512-inl.h</name>
   </compound>
