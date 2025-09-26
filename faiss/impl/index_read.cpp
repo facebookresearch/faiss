@@ -45,6 +45,12 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/IndexSVSFlat.h>
+#include <faiss/IndexSVSVamana.h>
+#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/IndexSVSVamanaLeanVec.h>
+#endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
@@ -1242,7 +1248,57 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
-    } else {
+    }
+#ifdef FAISS_ENABLE_SVS
+    else if (
+            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
+        // Vamana
+        IndexSVSVamana* svs;
+        if (h == fourcc("ILVQ")) {
+            svs = new IndexSVSVamanaLVQ(); // Vamana LVQ
+        } else if (h == fourcc("ISVL")) {
+            svs = new IndexSVSVamanaLeanVec(); // Vamana LeanVec
+        } else if (h == fourcc("ISVD")) {
+            svs = new IndexSVSVamana(); // public SVS datatypes including fp32,
+                                        // fp16, and SQ8
+        }
+
+        read_index_header(svs, f);
+        READ1(svs->graph_max_degree);
+        READ1(svs->alpha);
+        READ1(svs->search_window_size);
+        READ1(svs->search_buffer_capacity);
+        READ1(svs->construction_window_size);
+        READ1(svs->max_candidate_pool_size);
+        READ1(svs->prune_to);
+        READ1(svs->use_full_search_history);
+        READ1(svs->storage_kind);
+        if (h == fourcc("ILVQ")) {
+            READ1(dynamic_cast<IndexSVSVamanaLVQ*>(svs)->lvq_level);
+        }
+        if (h == fourcc("ISVL")) {
+            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_d);
+            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
+        }
+
+        faiss::BufferedIOReader br(f);
+        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        std::istream is(&rbuf);
+        svs->deserialize_impl(is);
+        idx = svs;
+    } else if (h == fourcc("ISVF")) {
+        // SVS Flat
+        IndexSVSFlat* svs = new IndexSVSFlat();
+        read_index_header(svs, f);
+
+        faiss::BufferedIOReader br(f);
+        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        std::istream is(&rbuf);
+        svs->deserialize_impl(is);
+        idx = svs;
+    }
+#endif // FAISS_ENABLE_SVS
+    else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",
                 h,
