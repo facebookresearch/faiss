@@ -97,24 +97,6 @@ TEST_F(SVS, WriteAndReadIndexSVS) {
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSFP16) {
-    faiss::IndexSVSVamana index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            faiss::IndexSVSVamana::StorageKind::FP16};
-    write_and_read_index(index, test_data, n);
-}
-
-TEST_F(SVS, WriteAndReadIndexSVSSQI8) {
-    faiss::IndexSVSVamana index{
-            d,
-            64ul,
-            faiss::METRIC_L2,
-            faiss::IndexSVSVamana::StorageKind::SQI8};
-    write_and_read_index(index, test_data, n);
-}
-
 TEST_F(SVS, WriteAndReadIndexSVSFP16) {
     faiss::IndexSVSVamana index{
             d,
@@ -201,6 +183,35 @@ TEST_F(SVS, WriteAndReadIndexSVSFlat) {
     delete loaded;
 }
 
+// Test search with IDSelector filtering
+TEST_F(SVS, SearchWithIDSelector) {
+    faiss::IndexSVSVamana index{d, 64ul};
+    index.add(n, test_data.data());
+
+    const int nq = 8;                   // number of queries
+    const float* xq = test_data.data(); // reuse first nq vectors as queries
+    const int k = 10;
+
+    size_t min_id = n / 5;     // inclusive
+    size_t max_id = n * 4 / 5; // exclusive
+    faiss::IDSelectorRange selector(min_id, max_id);
+
+    faiss::SearchParameters params; // generic search parameters with selector
+    params.sel = &selector;
+
+    std::vector<float> distances(nq * k);
+    std::vector<faiss::idx_t> labels(nq * k);
+
+    ASSERT_NO_THROW(
+            index.search(nq, xq, k, distances.data(), labels.data(), &params));
+
+    // All returned labels must fall inside the selected range
+    for (int i = 0; i < nq * k; ++i) {
+        EXPECT_GE(labels[i], (faiss::idx_t)min_id);
+        EXPECT_LT(labels[i], (faiss::idx_t)max_id);
+    }
+}
+
 // Basic functional test for range_search and parameter override helper
 TEST_F(SVS, RangeSearchFunctional) {
     faiss::IndexSVSVamana index{d, 64ul};
@@ -221,35 +232,19 @@ TEST_F(SVS, RangeSearchFunctional) {
     faiss::SearchParametersSVSVamana params;
     params.search_window_size = 15;
     params.search_buffer_capacity = 20;
-    faiss::RangeSearchResult res_params(nq);
-    ASSERT_NO_THROW(index.range_search(nq, xq, 1.0f, &res_params));
-}
 
-// Test search with IDSelector filtering
-TEST_F(SVS, SearchWithIDSelectorRange) {
-    faiss::IndexSVSVamana index{d, 64ul};
-    index.add(n, test_data.data());
-
-    const int nq = 8; // number of queries
-    const float* xq = test_data.data(); // reuse first nq vectors as queries
-    const int k = 10;
-
-    size_t min_id = n / 5;          // inclusive
-    size_t max_id = n * 4 / 5;      // exclusive
+    // Provide IDSelector to ensure branch coverage (non-null params->sel)
+    size_t min_id = n / 5;     // inclusive
+    size_t max_id = n * 4 / 5; // exclusive
     faiss::IDSelectorRange selector(min_id, max_id);
-
-    faiss::SearchParameters params; // generic search parameters with selector
     params.sel = &selector;
 
-    std::vector<float> distances(nq * k);
-    std::vector<faiss::idx_t> labels(nq * k);
-
-    ASSERT_NO_THROW(index.search(
-            nq, xq, k, distances.data(), labels.data(), &params));
+    faiss::RangeSearchResult res_params(nq);
+    ASSERT_NO_THROW(index.range_search(nq, xq, 1.0f, &res_params, &params));
 
     // All returned labels must fall inside the selected range
-    for (int i = 0; i < nq * k; ++i) {
-        EXPECT_GE(labels[i], (faiss::idx_t)min_id);
-        EXPECT_LT(labels[i], (faiss::idx_t)max_id);
+    for (size_t i = 0; i < res_params.lims[nq]; ++i) {
+        EXPECT_GE(res_params.labels[i], (faiss::idx_t)min_id);
+        EXPECT_LT(res_params.labels[i], (faiss::idx_t)max_id);
     }
 }

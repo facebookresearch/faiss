@@ -288,8 +288,6 @@ void IndexSVSVamana::search(
         }
     };
 
-    // Do not use Thread Pool from index because SVS TP calls are blocking
-    // and may be blocked by nested calls
     auto threadpool = svs::threads::OMPThreadPool(
             std::min(n, idx_t(omp_get_max_threads())));
 
@@ -373,7 +371,6 @@ void IndexSVSVamana::range_search(
         }
     };
 
-    // Do not use TP from index 'cause it may be blocked by nested calls
     auto threadpool = svs::threads::OMPThreadPool(
             std::min(n, idx_t(omp_get_max_threads())));
 
