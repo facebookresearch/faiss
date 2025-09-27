@@ -66,7 +66,7 @@ struct LockLevels {
 
     void lock_1(int no) {
         pthread_mutex_lock(&mutex1);
-        while (level3_in_use || level1_holders.count(no) > 0) {
+        while (level3_in_use || level1_holders.contains(no)) {
             pthread_cond_wait(&level1_cv, &mutex1);
         }
         level1_holders.insert(no);
@@ -75,7 +75,7 @@ struct LockLevels {
 
     void unlock_1(int no) {
         pthread_mutex_lock(&mutex1);
-        assert(level1_holders.count(no) == 1);
+        assert(level1_holders.contains(no));
         level1_holders.erase(no);
         if (level3_in_use) { // a writer is waiting
             pthread_cond_signal(&level3_cv);
