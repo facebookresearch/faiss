@@ -75,7 +75,7 @@
 
 #define FAISS_THROW_FMT(FMT, ...)                              \
     do {                                                       \
-        std::string __s;                                       \
+        ::std::string __s;                                     \
         int __size = snprintf(nullptr, 0, FMT, __VA_ARGS__);   \
         __s.resize(__size + 1);                                \
         snprintf(&__s[0], __s.size(), FMT, __VA_ARGS__);       \
