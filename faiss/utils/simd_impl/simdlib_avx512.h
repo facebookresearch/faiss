@@ -14,7 +14,7 @@
 
 #include <faiss/impl/platform_macros.h>
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/utils/simd_impl/simdlib_avx2.h>
 
 namespace faiss {
 
@@ -290,6 +290,49 @@ struct simd64uint8 : simd512bit {
         ALIGNED(64) uint8_t tab[64];
         store(tab);
         return tab[i];
+    }
+};
+
+struct simd16float32 : simd512bit {
+    simd16float32() {}
+
+    explicit simd16float32(simd512bit x) : simd512bit(x) {}
+
+    explicit simd16float32(__m512 x) : simd512bit(x) {}
+
+    explicit simd16float32(float x) : simd512bit(_mm512_set1_ps(x)) {}
+
+    explicit simd16float32(const float* x)
+            : simd16float32(_mm512_loadu_ps(x)) {}
+
+    simd16float32 operator*(simd16float32 other) const {
+        return simd16float32(_mm512_mul_ps(f, other.f));
+    }
+
+    simd16float32 operator+(simd16float32 other) const {
+        return simd16float32(_mm512_add_ps(f, other.f));
+    }
+
+    simd16float32 operator-(simd16float32 other) const {
+        return simd16float32(_mm512_sub_ps(f, other.f));
+    }
+
+    simd16float32& operator+=(const simd16float32& other) {
+        f = _mm512_add_ps(f, other.f);
+        return *this;
+    }
+
+    std::string tostring() const {
+        float tab[16];
+        storeu((void*)tab);
+        char res[1000];
+        char* ptr = res;
+        for (int i = 0; i < 16; i++) {
+            ptr += sprintf(ptr, "%g,", tab[i]);
+        }
+        // strip last ,
+        ptr[-1] = 0;
+        return std::string(res);
     }
 };
 
