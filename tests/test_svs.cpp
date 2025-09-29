@@ -10,6 +10,8 @@
 #include <faiss/IndexSVSVamana.h>
 #include <faiss/IndexSVSVamanaLVQ.h>
 #include <faiss/IndexSVSVamanaLeanVec.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/index_io.h>
 #include <gtest/gtest.h>
 #include <type_traits>
@@ -20,7 +22,7 @@ namespace {
 pthread_mutex_t temp_file_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Test fixture class to manage shared test data
-class SVSIOTest : public ::testing::Test {
+class SVS : public ::testing::Test {
    protected:
     static void SetUpTestSuite() {
         // Generate test data once for all tests
@@ -41,7 +43,7 @@ class SVSIOTest : public ::testing::Test {
 };
 
 // Define static members
-std::vector<float> SVSIOTest::test_data;
+std::vector<float> SVS::test_data;
 } // namespace
 
 template <typename T>
@@ -90,12 +92,12 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     delete loaded;
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVS) {
+TEST_F(SVS, WriteAndReadIndexSVS) {
     faiss::IndexSVSVamana index{d, 64ul};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSFP16) {
+TEST_F(SVS, WriteAndReadIndexSVSFP16) {
     faiss::IndexSVSVamana index{
             d,
             64ul,
@@ -104,7 +106,7 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVSFP16) {
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSSQI8) {
+TEST_F(SVS, WriteAndReadIndexSVSSQI8) {
     faiss::IndexSVSVamana index{
             d,
             64ul,
@@ -113,49 +115,49 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVSSQI8) {
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x0) {
+TEST_F(SVS, WriteAndReadIndexSVSLVQ4x0) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x0;
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x4) {
+TEST_F(SVS, WriteAndReadIndexSVSLVQ4x4) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x4;
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSLVQ4x8) {
+TEST_F(SVS, WriteAndReadIndexSVSLVQ4x8) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.lvq_level = faiss::LVQLevel::LVQ4x8;
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x4) {
+TEST_F(SVS, WriteAndReadIndexSVSVamanaLeanVec4x4) {
     faiss::IndexSVSVamanaLeanVec index{
             d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec4x8) {
+TEST_F(SVS, WriteAndReadIndexSVSVamanaLeanVec4x8) {
     faiss::IndexSVSVamanaLeanVec index{
             d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x8};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSVamanaLeanVec8x8) {
+TEST_F(SVS, WriteAndReadIndexSVSVamanaLeanVec8x8) {
     faiss::IndexSVSVamanaLeanVec index{
             d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec8x8};
     write_and_read_index(index, test_data, n);
 }
 
-TEST_F(SVSIOTest, LeanVecThrowsWithoutTraining) {
+TEST_F(SVS, LeanVecThrowsWithoutTraining) {
     faiss::IndexSVSVamanaLeanVec index{
             64, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
     ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
 }
 
-TEST_F(SVSIOTest, WriteAndReadIndexSVSFlat) {
+TEST_F(SVS, WriteAndReadIndexSVSFlat) {
     faiss::IndexSVSFlat index{d};
     index.add(n, test_data.data());
 
@@ -179,4 +181,70 @@ TEST_F(SVSIOTest, WriteAndReadIndexSVSFlat) {
     EXPECT_EQ(loaded->metric_type, index.metric_type);
 
     delete loaded;
+}
+
+// Test search with IDSelector filtering
+TEST_F(SVS, SearchWithIDSelector) {
+    faiss::IndexSVSVamana index{d, 64ul};
+    index.add(n, test_data.data());
+
+    const int nq = 8;                   // number of queries
+    const float* xq = test_data.data(); // reuse first nq vectors as queries
+    const int k = 10;
+
+    size_t min_id = n / 5;     // inclusive
+    size_t max_id = n * 4 / 5; // exclusive
+    faiss::IDSelectorRange selector(min_id, max_id);
+
+    faiss::SearchParameters params; // generic search parameters with selector
+    params.sel = &selector;
+
+    std::vector<float> distances(nq * k);
+    std::vector<faiss::idx_t> labels(nq * k);
+
+    ASSERT_NO_THROW(
+            index.search(nq, xq, k, distances.data(), labels.data(), &params));
+
+    // All returned labels must fall inside the selected range
+    for (int i = 0; i < nq * k; ++i) {
+        EXPECT_GE(labels[i], (faiss::idx_t)min_id);
+        EXPECT_LT(labels[i], (faiss::idx_t)max_id);
+    }
+}
+
+// Basic functional test for range_search and parameter override helper
+TEST_F(SVS, RangeSearchFunctional) {
+    faiss::IndexSVSVamana index{d, 64ul};
+    index.add(n, test_data.data());
+    const int nq = 5;
+    const float* xq = test_data.data();
+
+    // Small radius
+    faiss::RangeSearchResult res_small(nq);
+    ASSERT_NO_THROW(index.range_search(nq, xq, 0.05f, &res_small));
+
+    // Larger radius to exercise loop continuation
+    faiss::RangeSearchResult res_big(nq);
+    ASSERT_NO_THROW(index.range_search(nq, xq, 5.0f, &res_big));
+    EXPECT_GE(res_big.lims[nq], res_small.lims[nq]);
+
+    // Provide custom params to ensure branch coverage (non-null params)
+    faiss::SearchParametersSVSVamana params;
+    params.search_window_size = 15;
+    params.search_buffer_capacity = 20;
+
+    // Provide IDSelector to ensure branch coverage (non-null params->sel)
+    size_t min_id = n / 5;     // inclusive
+    size_t max_id = n * 4 / 5; // exclusive
+    faiss::IDSelectorRange selector(min_id, max_id);
+    params.sel = &selector;
+
+    faiss::RangeSearchResult res_params(nq);
+    ASSERT_NO_THROW(index.range_search(nq, xq, 1.0f, &res_params, &params));
+
+    // All returned labels must fall inside the selected range
+    for (size_t i = 0; i < res_params.lims[nq]; ++i) {
+        EXPECT_GE(res_params.labels[i], (faiss::idx_t)min_id);
+        EXPECT_LT(res_params.labels[i], (faiss::idx_t)max_id);
+    }
 }

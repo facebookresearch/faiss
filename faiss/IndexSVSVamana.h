@@ -20,6 +20,11 @@ class DynamicVamana;
 
 namespace faiss {
 
+struct SearchParametersSVSVamana : public SearchParameters {
+    size_t search_window_size = 0;
+    size_t search_buffer_capacity = 0;
+};
+
 struct IndexSVSVamana : Index {
     size_t graph_max_degree;
     size_t prune_to;
@@ -50,6 +55,13 @@ struct IndexSVSVamana : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
     size_t remove_ids(const IDSelector& sel) override;
