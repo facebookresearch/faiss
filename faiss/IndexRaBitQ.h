@@ -14,6 +14,7 @@ namespace faiss {
 
 struct RaBitQSearchParameters : SearchParameters {
     uint8_t qb = 0;
+    bool centered = false;
 };
 
 struct IndexRaBitQ : IndexFlatCodes {
@@ -26,9 +27,12 @@ struct IndexRaBitQ : IndexFlatCodes {
     // use '0' to disable quantization and use raw fp32 values.
     uint8_t qb = 0;
 
+    // quantize the query with a zero-centered scalar quantizer.
+    bool centered = false;
+
     IndexRaBitQ();
 
-    IndexRaBitQ(idx_t d, MetricType metric = METRIC_L2);
+    explicit IndexRaBitQ(idx_t d, MetricType metric = METRIC_L2);
 
     void train(idx_t n, const float* x) override;
 
@@ -42,7 +46,8 @@ struct IndexRaBitQ : IndexFlatCodes {
     // returns a quantized-to-qb bits DC if qb_in > 0
     // returns a default fp32-based DC if qb_in == 0
     FlatCodesDistanceComputer* get_quantized_distance_computer(
-            const uint8_t qb_in) const;
+            const uint8_t qb_in,
+            bool centered) const;
 
     // Don't rely on sa_decode(), bcz it is good for IP, but not for L2.
     //   As a result, use get_FlatCodesDistanceComputer() for the search.

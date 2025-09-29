@@ -11,7 +11,8 @@ import faiss.contrib.torch_utils
 import torch
 
 # the kmeans can produce both torch and numpy centroids
-from faiss.contrib.clustering import kmeans
+from faiss.contrib.clustering import kmeans  # noqa: F401 some libraries import kmeans from here
+
 
 
 class DatasetAssign:

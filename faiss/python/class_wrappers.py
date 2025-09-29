@@ -49,26 +49,8 @@ def _numeric_to_str(numeric_type):
         return 'float16'
     elif numeric_type == faiss.Int8:
         return 'int8'
-    elif numeric_type == faiss.Int64:
-        return 'int64'
     else:
-        raise ValueError("numeric type must be either faiss.Float32, faiss.Float16, faiss.Int8, or faiss.Int64")
-
-
-def _np_dtype_to_faiss_type(dtype):
-    if dtype == np.int64:
-        return faiss.Int64
-    elif dtype == np.float32:
-        return faiss.Float32
-    elif dtype == np.float16:
-        return faiss.Float16
-    elif dtype == np.int8:
-        return faiss.Int8
-    elif dtype == np.uint8:
-        return faiss.UInt8
-    else:
-        raise ValueError("given numpy dtype should be either np.int64, np.float32, np.float16, np.int8, or np.uint8 to convert to faiss numeric types")
-
+        raise ValueError("numeric type must be either faiss.Float32, faiss.Float16, or faiss.Int8")
 
 
 def replace_method(the_class, name, replacement, ignore_missing=False):
@@ -239,7 +221,40 @@ def handle_NSG(the_class):
 
 def handle_Index(the_class):
 
-    def replacement_add(self, x, numeric_type = faiss.Float32):
+    def replacement_setattr(self, name, value):
+        # Prevent silent failures when setting attributes that don't exist
+        # as described in GitHub issue 3766
+
+        # Allow SWIG internal attributes that are essential for object
+        # functionality
+        if name in ['this', 'thisown']:
+            return original_setattr(self, name, value)
+
+        # Allow internal Faiss attributes used during construction/operation
+        if name in ['referenced_objects']:
+            return original_setattr(self, name, value)
+
+        # Check if the attribute already exists (valid attribute)
+        try:
+            # Check if it exists on the instance or class
+            if hasattr(self, name) or hasattr(self.__class__, name):
+                return original_setattr(self, name, value)
+        except (AttributeError, TypeError, SystemError):
+            # During object construction, hasattr might fail, so be permissive
+            return original_setattr(self, name, value)
+
+        # If we reach here, the attribute doesn't exist on the object
+        # This is the core issue: SWIG classes silently accept unknown
+        # attributes
+        # We should generally block this to prevent silent failures
+
+        # Block unknown attributes to prevent silent failures
+        # This is the general solution that doesn't rely on hardcoded names
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'."
+        )
+
+    def replacement_add(self, x, numeric_type=faiss.Float32):
         """Adds vectors to the index.
         The index must be trained before vectors can be added to it.
         The vectors are implicitly numbered in sequence. When `n` vectors are
@@ -260,7 +275,7 @@ def handle_Index(the_class):
         else:
             self.add_ex(n, swig_ptr(x), numeric_type)
 
-    def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32, ids_type = faiss.Int64):
+    def replacement_add_with_ids(self, x, ids, numeric_type = faiss.Float32):
         """Adds vectors with arbitrary ids to the index (not all indexes support this).
         The index must be trained before vectors can be added to it.
         Vector `i` is stored in `x[i]` and has id `ids[i]`.
@@ -278,9 +293,11 @@ def handle_Index(the_class):
         assert d == self.d
         assert ids.shape == (n, ), 'not same nb of vectors as ids'
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
-        ids = np.ascontiguousarray(ids, dtype=_numeric_to_str(ids_type))
-        
-        self.add_with_ids_ex(n, swig_ptr(x), numeric_type, swig_ptr(ids), ids_type)
+        ids = np.ascontiguousarray(ids, dtype='int64')
+        if numeric_type == faiss.Float32:
+            self.add_with_ids_c(n, swig_ptr(x), swig_ptr(ids))
+        else:
+            self.add_with_ids_ex(n, swig_ptr(x), numeric_type, swig_ptr(ids))
 
 
     def replacement_assign(self, x, k, labels=None):
@@ -332,7 +349,7 @@ def handle_Index(the_class):
             self.train_c(n, swig_ptr(x))
         else:
             self.train_ex(n, swig_ptr(x), numeric_type)
-        
+
 
     def replacement_search(self, x, k, *, params=None, D=None, I=None, numeric_type = faiss.Float32):
         """Find the k nearest neighbors of the set of vectors x in the index.
@@ -374,12 +391,13 @@ def handle_Index(the_class):
 
         if I is None:
             I = np.empty((n, k), dtype=np.int64)
-            labels_type = faiss.Int64   # if I is not given, default to int64 types
         else:
             assert I.shape == (n, k)
-            labels_type = _np_dtype_to_faiss_type(I.dtype)
 
-        self.search_ex(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), labels_type, params)
+        if numeric_type == faiss.Float32:
+            self.search_c(n, swig_ptr(x), k, swig_ptr(D), swig_ptr(I), params)
+        else:
+            self.search_ex(n, swig_ptr(x), numeric_type, k, swig_ptr(D), swig_ptr(I), params)
         return D, I
 
     def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
@@ -854,6 +872,13 @@ def handle_Index(the_class):
     replace_method(the_class, 'add_sa_codes', replacement_add_sa_codes)
     replace_method(the_class, 'permute_entries', replacement_permute_entries,
                    ignore_missing=True)
+
+    # Store the original __setattr__ method
+    original_setattr = (the_class.__setattr__ if
+                        hasattr(the_class, '__setattr__')
+                        else object.__setattr__)
+
+    the_class.__setattr__ = replacement_setattr
 
     # get/set state for pickle
     # the data is serialized to std::vector -> numpy array -> python bytes

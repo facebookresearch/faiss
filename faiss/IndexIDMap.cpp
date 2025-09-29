@@ -12,7 +12,6 @@
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
-#include "Index.h"
 #include "faiss/Index.h"
 
 #include <faiss/impl/AuxIndexStructures.h>
@@ -109,14 +108,10 @@ void IndexIDMapTemplate<IndexT>::add_with_ids_ex(
         idx_t n,
         const void* x,
         NumericType numeric_type,
-        const void* xids,
-        NumericType xids_type) {
-    FAISS_THROW_IF_NOT_MSG(
-            xids_type == NumericType::Int64,
-            "IndexIDMapTemplate::add_with_ids_ex only supports int64 as xids type");
+        const idx_t* xids) {
     index->add_ex(n, x, numeric_type);
     for (idx_t i = 0; i < n; i++) {
-        id_map.push_back(static_cast<const idx_t*>(xids)[i]);
+        id_map.push_back(xids[i]);
     }
     this->ntotal = index->ntotal;
 }
@@ -130,8 +125,7 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
             n,
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
-            static_cast<const void*>(xids),
-            NumericType::Int64);
+            xids);
 }
 
 template <typename IndexT>
@@ -179,8 +173,7 @@ void IndexIDMapTemplate<IndexT>::search_ex(
         NumericType numeric_type,
         idx_t k,
         typename IndexT::distance_t* distances,
-        void* labels,
-        NumericType labels_type,
+        idx_t* labels,
         const SearchParameters* params) const {
     IDSelectorTranslated this_idtrans(this->id_map, nullptr);
     ScopedSelChange sel_change;
@@ -201,13 +194,8 @@ void IndexIDMapTemplate<IndexT>::search_ex(
             sel_change.set(params_non_const, &this_idtrans);
         }
     }
-    index->search_ex(
-            n, x, numeric_type, k, distances, labels, labels_type, params);
-
-    FAISS_THROW_IF_NOT_MSG(
-            labels_type == NumericType::Int64,
-            "IndexIDMapTemplate::search_ex only supports int64 as labels type");
-    idx_t* li = static_cast<idx_t*>(labels);
+    index->search_ex(n, x, numeric_type, k, distances, labels, params);
+    idx_t* li = labels;
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; i++) {
         li[i] = li[i] < 0 ? li[i] : id_map[li[i]];
@@ -228,8 +216,7 @@ void IndexIDMapTemplate<IndexT>::search(
             component_t_to_numeric<typename IndexT::component_t>(),
             k,
             distances,
-            static_cast<void*>(labels),
-            NumericType::Int64,
+            labels,
             params);
 }
 
@@ -319,11 +306,9 @@ void IndexIDMap2Template<IndexT>::add_with_ids_ex(
         idx_t n,
         const void* x,
         NumericType numeric_type,
-        const void* xids,
-        NumericType xids_type) {
+        const idx_t* xids) {
     size_t prev_ntotal = this->ntotal;
-    IndexIDMapTemplate<IndexT>::add_with_ids_ex(
-            n, x, numeric_type, xids, xids_type);
+    IndexIDMapTemplate<IndexT>::add_with_ids_ex(n, x, numeric_type, xids);
     for (size_t i = prev_ntotal; i < this->ntotal; i++) {
         rev_map[this->id_map[i]] = i;
     }
@@ -338,8 +323,7 @@ void IndexIDMap2Template<IndexT>::add_with_ids(
             n,
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
-            static_cast<const void*>(xids),
-            NumericType::Int64);
+            xids);
 }
 
 template <typename IndexT>

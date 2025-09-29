@@ -9,7 +9,7 @@ import os
 import platform
 import shutil
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 # make the faiss python package dir
 shutil.rmtree("faiss", ignore_errors=True)
@@ -43,18 +43,19 @@ found_faiss_example_external_module_lib = os.path.exists(
     faiss_example_external_module_lib
 )
 
-assert (
-    found_swigfaiss_generic
-    or found_swigfaiss_avx2
-    or found_swigfaiss_avx512
-    or found_swigfaiss_avx512_spr
-    or found_swigfaiss_sve
-    or found_faiss_example_external_module_lib
-), (
-    f"Could not find {swigfaiss_generic_lib} or "
-    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
-    f"Faiss may not be compiled yet."
-)
+if(platform.system() != "AIX"):
+    assert (
+        found_swigfaiss_generic
+        or found_swigfaiss_avx2
+        or found_swigfaiss_avx512
+        or found_swigfaiss_avx512_spr
+        or found_swigfaiss_sve
+        or found_faiss_example_external_module_lib
+    ), (
+        f"Could not find {swigfaiss_generic_lib} or "
+        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
+        f"Faiss may not be compiled yet."
+    )
 
 if found_swigfaiss_generic:
     print(f"Copying {swigfaiss_generic_lib}")
