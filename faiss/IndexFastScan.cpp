@@ -19,6 +19,7 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/hamming.h>
 
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/quantize_lut.h>
@@ -163,11 +164,23 @@ void estimators_from_tables_generic(
         size_t k,
         typename C::T* heap_dis,
         int64_t* heap_ids,
-        const NormTableScaler* scaler) {
+        const NormTableScaler* scaler,
+        const QueryFactorsData* query_factors = nullptr) {
     using accu_t = typename C::T;
 
+    // Check if this is RaBitQ for specialized distance computation
+    const IndexRaBitQFastScan* rabitq_index =
+            dynamic_cast<const IndexRaBitQFastScan*>(&index);
+
+    // For RaBitQ, we need to use the original code size from the
+    // RaBitQuantizer, not the FastScan code size
+    size_t actual_code_size = index.code_size;
+    if (rabitq_index) {
+        actual_code_size = rabitq_index->rabitq.code_size;
+    }
+
     for (size_t j = 0; j < ncodes; ++j) {
-        BitstringReader bsr(codes + j * index.code_size, index.code_size);
+        BitstringReader bsr(codes + j * actual_code_size, actual_code_size);
         accu_t dis = 0;
         const dis_t* dt = dis_table;
         int nscale = scaler ? scaler->nscale : 0;
@@ -184,6 +197,38 @@ void estimators_from_tables_generic(
                 dis += scaler->scale_one(dt[c]);
                 dt += index.ksub;
             }
+        }
+
+        // Apply RaBitQ-specific distance correction if needed
+        if (rabitq_index && query_factors) {
+            const auto& db_factors = rabitq_index->factors_storage[j];
+            accu_t adjusted_distance;
+
+            if (rabitq_index->centered) {
+                // For centered mode: dis contains XOR contribution
+                int64_t int_dot =
+                        ((1 << rabitq_index->qb) - 1) * rabitq_index->d;
+                int_dot -= 2 * static_cast<int64_t>(dis);
+
+                adjusted_distance = query_factors->qr_to_c_L2sqr +
+                        db_factors.or_minus_c_l2sqr -
+                        2 * db_factors.dp_multiplier * int_dot *
+                                query_factors->int_dot_scale;
+            } else {
+                // For non-centered mode: apply traditional formula
+                adjusted_distance = -2 * db_factors.dp_multiplier *
+                                (dis - query_factors->c34) +
+                        query_factors->qr_to_c_L2sqr +
+                        db_factors.or_minus_c_l2sqr;
+            }
+
+            // Apply inner product correction if needed
+            if (query_factors->qr_norm_L2sqr != 0.0f) {
+                adjusted_distance = -0.5f *
+                        (adjusted_distance - query_factors->qr_norm_L2sqr);
+            }
+
+            dis = adjusted_distance;
         }
 
         if (C::cmp(heap_dis[0], dis)) {
@@ -223,10 +268,11 @@ void IndexFastScan::compute_quantized_LUT(
         idx_t n,
         const float* x,
         uint8_t* lut,
-        float* normalizers) const {
+        float* normalizers,
+        idx_t query_offset) const {
     size_t dim12 = ksub * M;
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    compute_float_LUT(dis_tables.get(), n, x);
+    compute_float_LUT(dis_tables.get(), n, x, query_offset);
 
     for (uint64_t i = 0; i < n; i++) {
         round_uint8_per_column(
@@ -308,15 +354,17 @@ void IndexFastScan::search_dispatch_implem(
         FAISS_THROW_MSG("not implemented");
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes != nullptr);
-        search_implem_234<Cfloat>(n, x, k, distances, labels, scaler);
+        search_implem_234<Cfloat>(n, x, k, distances, labels, scaler, 0);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
         int nt = std::min(omp_get_max_threads(), int(n));
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
-                search_implem_12<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_12<C>(
+                        n, x, k, distances, labels, impl, scaler, 0);
             } else {
-                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_14<C>(
+                        n, x, k, distances, labels, impl, scaler, 0);
             }
         } else {
             // explicitly slice over threads
@@ -324,14 +372,29 @@ void IndexFastScan::search_dispatch_implem(
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
+
                 float* dis_i = distances + i0 * k;
                 idx_t* lab_i = labels + i0 * k;
                 if (impl == 12 || impl == 13) {
                     search_implem_12<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            scaler,
+                            i0);
                 } else {
                     search_implem_14<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            scaler,
+                            i0);
                 }
             }
         }
@@ -347,18 +410,23 @@ void IndexFastScan::search_implem_234(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const NormTableScaler* scaler) const {
+        const NormTableScaler* scaler,
+        idx_t query_offset) const {
     FAISS_THROW_IF_NOT(implem == 2 || implem == 3 || implem == 4);
+
+    const IndexRaBitQFastScan* rabitq_index =
+            dynamic_cast<const IndexRaBitQFastScan*>(this);
 
     const size_t dim12 = ksub * M;
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    compute_float_LUT(dis_tables.get(), n, x);
+    compute_float_LUT(dis_tables.get(), n, x, query_offset);
 
     std::vector<float> normalizers(n * 2);
-
-    if (implem == 2) {
-        // default float
-    } else if (implem == 3 || implem == 4) {
+    if ((implem == 3 || implem == 4) && !rabitq_index) {
+        // Only apply quantization for non-RaBitQ indexes
+        // For RaBitQ, implementations 3 and 4 behave identically to
+        // implementation 2 due to incompatibility between quantization and
+        // RaBitQ's specialized distance formula
         for (uint64_t i = 0; i < n; i++) {
             round_uint8_per_column(
                     dis_tables.get() + i * dim12,
@@ -376,6 +444,14 @@ void IndexFastScan::search_implem_234(
 
         heap_heapify<Cfloat>(k, heap_dis, heap_ids);
 
+        // For RaBitQ, pass query factors to enable specialized distance
+        // computation
+        const QueryFactorsData* query_factors = nullptr;
+        if (rabitq_index) {
+            query_factors =
+                    &rabitq_index->query_factors_storage[query_offset + i];
+        }
+
         estimators_from_tables_generic<Cfloat>(
                 *this,
                 orig_codes,
@@ -384,14 +460,17 @@ void IndexFastScan::search_implem_234(
                 k,
                 heap_dis,
                 heap_ids,
-                scaler);
+                scaler,
+                query_factors);
 
         heap_reorder<Cfloat>(k, heap_dis, heap_ids);
 
-        if (implem == 4) {
+        // For implementation 4, apply normalizers to undo quantization
+        // but skip this for RaBitQ since RaBitQ distance correction already
+        // produces correct final distances
+        if (implem == 4 && !rabitq_index) {
             float a = normalizers[2 * i];
             float b = normalizers[2 * i + 1];
-
             for (int j = 0; j < k; j++) {
                 heap_dis[j] = heap_dis[j] / a + b;
             }
@@ -407,7 +486,8 @@ void IndexFastScan::search_implem_12(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
+        const NormTableScaler* scaler,
+        idx_t query_offset) const {
     using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs == 32);
 
@@ -423,7 +503,8 @@ void IndexFastScan::search_implem_12(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    scaler,
+                    query_offset + i0);
         }
         return;
     }
@@ -436,7 +517,11 @@ void IndexFastScan::search_implem_12(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n,
+                x,
+                quantized_dis_tables.get(),
+                normalizers.get(),
+                query_offset);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
@@ -454,25 +539,55 @@ void IndexFastScan::search_implem_12(
             pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
+    // Check if this is an IndexRaBitQFastScan to use RaBitQHeapHandler
+    const IndexRaBitQFastScan* rabitq_index =
+            dynamic_cast<const IndexRaBitQFastScan*>(this);
 
-    if (skip & 4) {
-        // pass
+    if (rabitq_index != nullptr) {
+        // Use RaBitQHeapHandler for RaBitQ (direct processing, no
+        // post-processing needed)
+        RaBitQHeapHandler<C> rabitq_handler(
+                rabitq_index, n, k, distances, labels, query_offset);
+        rabitq_handler.begin(normalizers.get());
+
+        if (!(skip & 4)) {
+            pq4_accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    rabitq_handler,
+                    scaler);
+        }
+
+        if (!(skip & 8)) {
+            // Results already processed directly in handler - just
+            // finalize heaps
+            rabitq_handler.end();
+        }
     } else {
-        pq4_accumulate_loop_qbs(
-                qbs,
-                ntotal2,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                scaler);
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        // Use regular handler for non-RaBitQ indexes
+        std::unique_ptr<RH> handler(
+                make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (skip & 4) {
+            // pass
+        } else {
+            pq4_accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    scaler);
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 
@@ -486,7 +601,8 @@ void IndexFastScan::search_implem_14(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
+        const NormTableScaler* scaler,
+        idx_t query_offset) const {
     using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
@@ -503,7 +619,8 @@ void IndexFastScan::search_implem_14(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    scaler,
+                    query_offset + i0);
         }
         return;
     }
@@ -516,32 +633,67 @@ void IndexFastScan::search_implem_14(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n,
+                x,
+                quantized_dis_tables.get(),
+                normalizers.get(),
+                query_offset);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
+    // Check if this is an IndexRaBitQFastScan to use RaBitQHeapHandler
+    const IndexRaBitQFastScan* rabitq_index =
+            dynamic_cast<const IndexRaBitQFastScan*>(this);
 
-    if (skip & 4) {
-        // pass
+    if (rabitq_index != nullptr) {
+        // Use RaBitQHeapHandler for RaBitQ (direct processing, no
+        // post-processing needed)
+        RaBitQHeapHandler<C> rabitq_handler(
+                rabitq_index, n, k, distances, labels, query_offset);
+        rabitq_handler.begin(normalizers.get());
+
+        if (!(skip & 4)) {
+            pq4_accumulate_loop(
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    rabitq_handler,
+                    scaler);
+        }
+
+        if (!(skip & 8)) {
+            // Results already processed directly in handler - just
+            // finalize heaps
+            rabitq_handler.end();
+        }
     } else {
-        pq4_accumulate_loop(
-                n,
-                ntotal2,
-                bbs,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                scaler);
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        // Use regular handler for non-RaBitQ indexes
+        std::unique_ptr<RH> handler(
+                make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (skip & 4) {
+            // pass
+        } else {
+            pq4_accumulate_loop(
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    scaler);
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 

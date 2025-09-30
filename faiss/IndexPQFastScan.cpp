@@ -53,8 +53,11 @@ void IndexPQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
     pq.compute_codes(x, codes, n);
 }
 
-void IndexPQFastScan::compute_float_LUT(float* lut, idx_t n, const float* x)
-        const {
+void IndexPQFastScan::compute_float_LUT(
+        float* lut,
+        idx_t n,
+        const float* x,
+        idx_t query_offset) const {
     if (metric_type == METRIC_L2) {
         pq.compute_distance_tables(n, x, lut);
     } else {
