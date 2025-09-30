@@ -965,7 +965,7 @@ std::unique_ptr<Index> index_factory_sub(
     }
 
 #ifdef FAISS_ENABLE_SVS
-    if (re_match(description, "SVS(.+)", sm)) {
+    if (re_match(description, "SVS((?:Flat|Vamana|IVF).*)", sm)) {
         std::string code_string = sm[1].str();
         if (verbose) {
             printf("parsing SVS string %s code_string=%s",

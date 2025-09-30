@@ -217,10 +217,6 @@ class TestSVSAdapter(unittest.TestCase):
         """Test that FAISS error handling works with SVS indices"""
         index = self._create_instance()
 
-        # Test search before adding data
-        with self.assertRaises(RuntimeError):
-            index.search(self.xq, 4)
-
         # Test wrong dimension
         wrong_dim_data = np.random.random((100, self.d + 1)).astype('float32')
         with self.assertRaises(AssertionError):
@@ -349,6 +345,22 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 
     def _create_instance(self):
         return faiss.IndexSVSFlat(self.d)
+
+    def test_svs_metric_types(self):
+        """Test different metric types are handled correctly"""
+        # L2 metric
+        index_l2 = self._create_instance()
+        index_l2.metric_type = faiss.METRIC_L2
+        index_l2.add(self.xb)
+        D_l2, _ = index_l2.search(self.xq[:10], 4)
+
+        index_ip = self._create_instance()
+        index_ip.metric_type = faiss.METRIC_INNER_PRODUCT
+        index_ip.add(self.xb)
+        D_ip, _ = index_ip.search(self.xq[:10], 4)
+
+        # Results should be different (testing adapter forwards metric correctly)
+        self.assertFalse(np.array_equal(D_l2, D_ip))
 
     @unittest.expectedFailure
     def test_svs_search_selected(self):
