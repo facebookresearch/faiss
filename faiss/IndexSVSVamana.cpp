@@ -74,10 +74,10 @@ template <
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
         svs::data::ImmutableMemoryDataset Dataset,
         svs::threads::ThreadPool Pool>
-    requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-svs::data::SimpleData<T, svs::Dynamic, Alloc> make_storage(
-        const Dataset& data,
-        Pool& pool) {
+requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
+        svs::data::SimpleData<T, svs::Dynamic, Alloc> make_storage(
+                const Dataset& data,
+                Pool& pool) {
     svs::data::SimpleData<T, svs::Dynamic, Alloc> result(
             data.size(), data.dimensions(), Alloc{});
     svs::threads::parallel_for(
@@ -96,10 +96,9 @@ template <
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
         svs::data::ImmutableMemoryDataset Dataset,
         svs::threads::ThreadPool Pool>
-    requires std::is_integral_v<T>
-svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc> make_storage(
-        const Dataset& data,
-        Pool& pool) {
+requires std::is_integral_v<T> svs::quantization::scalar::
+        SQDataset<T, svs::Dynamic, Alloc>
+        make_storage(const Dataset& data, Pool& pool) {
     return svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>::
             compress(data, pool, Alloc{});
 }
@@ -121,13 +120,12 @@ svs::DynamicVamana* init_impl_t(
 
     return std::visit(
             [&](auto&& distance) {
-                return new svs::DynamicVamana(
-                        svs::DynamicVamana::build<float>(
-                                std::move(get_build_parameters(*index)),
-                                std::move(data),
-                                std::move(labels),
-                                std::move(distance),
-                                std::move(threadpool)));
+                return new svs::DynamicVamana(svs::DynamicVamana::build<float>(
+                        std::move(get_build_parameters(*index)),
+                        std::move(data),
+                        std::move(labels),
+                        std::move(distance),
+                        std::move(threadpool)));
             },
             get_svs_distance(metric));
 }
@@ -135,15 +133,15 @@ svs::DynamicVamana* init_impl_t(
 template <
         typename T,
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-    requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-svs::VectorDataLoader<T> get_loader(const std::filesystem::path& path) {
+requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
+        svs::VectorDataLoader<T> get_loader(const std::filesystem::path& path) {
     return svs::VectorDataLoader<T>(path);
 }
 
 template <
         typename T,
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-    requires std::is_integral_v<T>
+requires std::is_integral_v<T>
 auto get_loader(const std::filesystem::path& path) {
     using storage_type =
             svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
@@ -219,14 +217,7 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
     // construct sequential labels
     std::vector<size_t> labels(n);
 
-    svs::threads::parallel_for(
-            impl->get_threadpool_handle(),
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    labels[i] = ntotal + i;
-                }
-            });
+    std::iota(labels.begin(), labels.end(), ntotal);
     ntotal += n;
 
     auto data = svs::data::ConstSimpleDataView<float>(x, n, d);
@@ -249,7 +240,13 @@ void IndexSVSVamana::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT(impl);
+    if (!impl) {
+        for (idx_t i = 0; i < n; ++i) {
+            distances[i] = std::numeric_limits<float>::infinity();
+            labels[i] = -1;
+        }
+        return;
+    }
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
