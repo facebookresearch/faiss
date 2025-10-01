@@ -91,7 +91,8 @@ runs:
         mkdir --parents --mode=0755 /etc/apt/keyrings
         wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
 
-        # Add rocm repository
+      - name: Add rocm repository
+       run: |
                rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
         sudo mkdir -p /etc/apt/keyrings
         wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
