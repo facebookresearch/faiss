@@ -7012,6 +7012,7 @@
     <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" kind="variable"><name>lut_dtype</name></member>
     <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1aab0245d43c5cf89c287552e7f94c5756" kind="variable"><name>internal_distance_dtype</name></member>
     <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae421be4a8bc931d42a0962912f703683" kind="variable"><name>preferred_shmem_carveout</name></member>
+    <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1a8d6c1f716385e8590571f32339a14080" kind="variable"><name>max_internal_batch_size</name></member>
   </compound>
   <compound refid="structfaiss_1_1IVFPQSearchParameters" kind="struct"><name>faiss::IVFPQSearchParameters</name>
     <member refid="structfaiss_1_1IVFPQSearchParameters_1a5537033b0fe6cf3ef8334a16de7a47d5" kind="variable"><name>scan_table_threshold</name></member>
