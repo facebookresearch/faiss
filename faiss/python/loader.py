@@ -7,6 +7,7 @@ import platform
 import subprocess
 import logging
 import os
+import sys
 
 from packaging.version import Version
 
@@ -150,7 +151,48 @@ if has_SVE and not loaded:
         loaded = False
 
 if not loaded:
-    # we import * so that the symbol X can be accessed as faiss.X
-    logger.info("Loading faiss.")
-    from .swigfaiss import *
-    logger.info("Successfully loaded faiss.")
+    try:
+        # we import * so that the symbol X can be accessed as faiss.X
+        logger.info("Loading faiss.")
+        from .swigfaiss import *
+        logger.info("Successfully loaded faiss.")
+    except ModuleNotFoundError:
+        formatted_ins_sets = ", ".join(supported_instruction_sets())
+
+        message = (
+            f"No module named 'faiss.swigfaiss' found. To fix this, you must "
+            f"do both of the following:\n"
+            f"A) Set the correct FAISS_OPT_LEVEL value when executing "
+            f"'cmake'.\n"
+            f"B) Build the correct SWIG wrapper.\n\n"
+
+            f"These are the supported instruction sets on your system:\n"
+            f"{formatted_ins_sets}\n"
+            f"- If 'AVX512_SPR' (case insensitive) is supported on your "
+            f"system, you can set the FAISS_OPT_LEVEL=avx512_spr "
+            f"to build the SWIG wrapper with 'AVX512-SPR' support.\n"
+            f"You will have to build the 'swigfaiss_avx512_spr' "
+            f"target in this case.\n"
+            f"- If 'AVX512' (case insensitive) is supported on your system, "
+            f"you can set the FAISS_OPT_LEVEL=avx512 to build the SWIG wrapper "
+            f"with 'AVX512' support.\n"
+            f"You will have to build the 'swigfaiss_avx512' target in this "
+            f"case.\n"
+            f"- If 'AVX2' (case sensitive) is supported on your system, you "
+            f"can set the FAISS_OPT_LEVEL=AVX2 to build the SWIG wrapper "
+            f"with 'AVX2' support.\n"
+            f"You will have to build the 'swigfaiss_avx2' target in this "
+            f"case.\n"
+            f"- If 'SVE' (case sensitive) is supported on your system, you can "
+            f"set the FAISS_OPT_LEVEL=SVE to build the SWIG wrapper with "
+            f"'SVE' support.\n"
+            f"You will have to build the 'swigfaiss_sve' target in this "
+            f"case.\n"
+            f"- If none of the above instruction sets are supported on your "
+            f"system, you can execute 'cmake' without setting the "
+            f"FAISS_OPT_LEVEL variable and build the 'swigfaiss' target."
+        )
+
+        logger.error(message)
+
+        sys.exit(1)
