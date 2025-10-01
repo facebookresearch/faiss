@@ -157,22 +157,38 @@ if not loaded:
         from .swigfaiss import *
         logger.info("Successfully loaded faiss.")
     except ModuleNotFoundError as e:
-        logger.error(f"No module named 'faiss.swigfaiss' found. You must set the correct FAISS_OPT_LEVEL value when executing 'cmake'."
-                 + " Also, you need to build the correct SWIG wrapper for this error to not occur.\n"
-                 + "Following are the supported instruction sets on your system:\n\n" + ", ".join(supported_instruction_sets()) + "\n\n"
-                 + "- If 'AVX512_SPR' (case insensitive) is supported on your system, you can set the FAISS_OPT_LEVEL=avx512_spr to build the SWIG wrapper with 'AVX512-SPR' support."
-                 + " You will have to build the 'swigfaiss_avx512_spr' target in this case.\n"
-                 + "- If 'AVX512' (case insensitive) is supported on your system, you can set the FAISS_OPT_LEVEL=avx512 to build the SWIG wrapper with 'AVX512' support."
-                 + " You will have to build the 'swigfaiss_avx512' target in this case.\n"
-                 + "- If 'AVX2' (case sensitive) is supported on your system, you can set the FAISS_OPT_LEVEL=AVX2 to build the SWIG wrapper with 'AVX2' support."
-                 + " You will have to build the 'swigfaiss_avx2' target in this case.\n"
-                 + "- If 'SVE' (case sensitive) is supported on your system, you can set the FAISS_OPT_LEVEL=SVE to build the SWIG wrapper with 'SVE' support."
-                 + " You will have to build the 'swigfaiss_sve' target in this case.\n"
-                 + "- If none of the above instruction sets are supported on your system, you can execute 'cmake' without setting the FAISS_OPT_LEVEL variable"
-                 + " and build the 'swigfaiss' target.\n\n"
-                 + "After doing the above, setting the FAISS_OPT_LEVEL environment variable to the chosen instruction set, so that the python interpreter picks it, would help,"
-                 + " as it would prevent the code from trying to import the wrong SWIG wrapper. This is not necessary, as there are exception catch blocks in place, incase the"
-                 + " line to import the wrong SWIG wrapper is executed. Even if the FAISS_OPT_LEVEL environment variable is not set, the correct SWIG wrapper will be imported, possibly"
-                 + " after unsuccessful imports of a few incorrect SWIG wrappers.")
+        formatted_ins_sets = ", ".join(supported_instruction_sets())
+
+        message = (
+            f"No module named 'faiss.swigfaiss' found. To fix this, you must "
+            f"do both of the following:\n"
+            f"A) Set the correct FAISS_OPT_LEVEL value when executing 'cmake'.\n"
+            f"B) Build the correct SWIG wrapper.\n\n"
+
+            f"These are the supported instruction sets on your system:\n"
+            f"{formatted_ins_sets}\n"
+            f"- If 'AVX512_SPR' (case insensitive) is supported on your system, "
+            f"you can set the FAISS_OPT_LEVEL=avx512_spr "
+            f"to build the SWIG wrapper with 'AVX512-SPR' support.\n"
+            f"You will have to build the 'swigfaiss_avx512_spr' "
+            f"target in this case.\n"
+            f"- If 'AVX512' (case insensitive) is supported on your system, "
+            f"you can set the FAISS_OPT_LEVEL=avx512 to build the SWIG wrapper "
+            f"with 'AVX512' support.\n"
+            f"You will have to build the 'swigfaiss_avx512' target in this case.\n"
+            f"- If 'AVX2' (case sensitive) is supported on your system, you can "
+            f"set the FAISS_OPT_LEVEL=AVX2 to build the SWIG wrapper "
+            f"with 'AVX2' support.\n"
+            f"You will have to build the 'swigfaiss_avx2' target in this case.\n"
+            f"- If 'SVE' (case sensitive) is supported on your system, you can "
+            f"set the FAISS_OPT_LEVEL=SVE to build the SWIG wrapper with "
+            f"'SVE' support.\n"
+            f"You will have to build the 'swigfaiss_sve' target in this case.\n"
+            f"- If none of the above instruction sets are supported on your "
+            f"system, you can execute 'cmake' without setting the "
+            f"FAISS_OPT_LEVEL variable and build the 'swigfaiss' target."
+        )
+
+        logger.error(message)
 
         sys.exit(1)
