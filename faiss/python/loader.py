@@ -156,8 +156,7 @@ if not loaded:
         logger.info("Loading faiss.")
         from .swigfaiss import *
         logger.info("Successfully loaded faiss.")
-    except ModuleNotFoundError as e:
-        except ModuleNotFoundError:
+    except ModuleNotFoundError:
         formatted_ins_sets = ", ".join(supported_instruction_sets())
 
         message = (
@@ -175,8 +174,8 @@ if not loaded:
             f"You will have to build the 'swigfaiss_avx512_spr' "
             f"target in this case.\n"
             f"- If 'AVX512' (case insensitive) is supported on your system, "
-            f"you can set the FAISS_OPT_LEVEL=avx512 to build the SWIG "
-            f"wrapper with 'AVX512' support.\n"
+            f"you can set the FAISS_OPT_LEVEL=avx512 to build the SWIG wrapper "
+            f"with 'AVX512' support.\n"
             f"You will have to build the 'swigfaiss_avx512' target in this "
             f"case.\n"
             f"- If 'AVX2' (case sensitive) is supported on your system, you "
@@ -184,8 +183,8 @@ if not loaded:
             f"with 'AVX2' support.\n"
             f"You will have to build the 'swigfaiss_avx2' target in this "
             f"case.\n"
-            f"- If 'SVE' (case sensitive) is supported on your system, you "
-            f"can set the FAISS_OPT_LEVEL=SVE to build the SWIG wrapper with "
+            f"- If 'SVE' (case sensitive) is supported on your system, you can "
+            f"set the FAISS_OPT_LEVEL=SVE to build the SWIG wrapper with "
             f"'SVE' support.\n"
             f"You will have to build the 'swigfaiss_sve' target in this "
             f"case.\n"
