@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <faiss/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamana.h>
 
 #include <svs/core/data.h>
 #include <svs/extensions/vamana/scalar.h>

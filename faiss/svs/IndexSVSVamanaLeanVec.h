@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <faiss/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamana.h>
 
 #include <svs/extensions/vamana/leanvec.h>
 #include <svs/quantization/scalar/scalar.h>

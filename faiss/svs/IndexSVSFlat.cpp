@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <faiss/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSFlat.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <svs/core/data.h>
@@ -66,7 +66,6 @@ void IndexSVSFlat::search(
 
     auto results =
             svs::QueryResult<size_t>{queries.size(), static_cast<size_t>(k)};
-    // TODO: Tuable Flat parameters
     impl->search(results.view(), queries, {});
 
     svs::threads::parallel_for(

@@ -362,6 +362,7 @@ class TestSVSAdapterFlat(TestSVSAdapter):
         # Results should be different (testing adapter forwards metric correctly)
         self.assertFalse(np.array_equal(D_l2, D_ip))
 
+    # The fowlloing tests are expected to fail for IndexSVSFlat as it doesn't support yet
     @unittest.expectedFailure
     def test_svs_search_selected(self):
         return super().test_svs_search_selected()
@@ -380,14 +381,10 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 
     @unittest.expectedFailure
     def test_svs_add_search_remove_interface(self):
-        # TODO
-        # This test is expected to fail for IndexSVSFlat as it doesn't support deletions yet
         super().test_svs_add_search_remove_interface()
 
     @unittest.expectedFailure
     def test_svs_batch_operations(self):
-        # TODO
-        # This test is expected to fail for IndexSVSFlat as it doesn't support batch operations yet
         super().test_svs_batch_operations()
 
 

@@ -195,10 +195,10 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFRaBitQ.h>
 
 #ifdef FAISS_ENABLE_SVS
-#include <faiss/IndexSVSVamana.h>
-#include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSVamanaLVQ.h>
-#include <faiss/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
 
 %}
@@ -645,10 +645,10 @@ struct faiss::simd16uint16 {};
 %ignore faiss::svs_io::WriterStreambuf;
 %ignore faiss::svs_io::SVSTempDirectory;
 
-%include  <faiss/IndexSVSVamana.h>
-%include  <faiss/IndexSVSFlat.h>
-%include  <faiss/IndexSVSVamanaLVQ.h>
-%include  <faiss/IndexSVSVamanaLeanVec.h>
+%include  <faiss/svs/IndexSVSVamana.h>
+%include  <faiss/svs/IndexSVSFlat.h>
+%include  <faiss/svs/IndexSVSVamanaLVQ.h>
+%include  <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
