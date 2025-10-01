@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <random>
 
-#include <faiss/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
 
 using idx_t = faiss::idx_t;
 

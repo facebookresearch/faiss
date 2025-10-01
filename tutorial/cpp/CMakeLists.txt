@@ -31,15 +31,10 @@ add_executable(9-RefineComparison EXCLUDE_FROM_ALL 9-RefineComparison.cpp)
 target_link_libraries(9-RefineComparison PRIVATE faiss)
 
 if(FAISS_ENABLE_SVS)
-  add_executable(10-SVS-Vamana EXCLUDE_FROM_ALL 10-SVS-Vamana.cpp)
-  target_link_libraries(10-SVS-Vamana PRIVATE faiss)
 
-  add_executable(11-SVS-Vamana-LVQ EXCLUDE_FROM_ALL 11-SVS-Vamana-LVQ.cpp)
-  target_link_libraries(11-SVS-Vamana-LVQ PRIVATE faiss)
+  add_executable(10-SVS-Vamana-LVQ EXCLUDE_FROM_ALL 10-SVS-Vamana-LVQ.cpp)
+  target_link_libraries(10-SVS-Vamana-LVQ PRIVATE faiss)
 
-  add_executable(12-SVS-Vamana-LeanVec EXCLUDE_FROM_ALL 12-SVS-Vamana-LeanVec.cpp)
-  target_link_libraries(12-SVS-Vamana-LeanVec PRIVATE faiss)
-
-  add_executable(13-tmp-svscomp EXCLUDE_FROM_ALL 13-tmp-svscomp.cpp)
-  target_link_libraries(13-tmp-svscomp PRIVATE faiss)
+  add_executable(11-SVS-Vamana-LeanVec EXCLUDE_FROM_ALL 11-SVS-Vamana-LeanVec.cpp)
+  target_link_libraries(11-SVS-Vamana-LeanVec PRIVATE faiss)
 endif()

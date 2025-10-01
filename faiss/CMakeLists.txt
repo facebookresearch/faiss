@@ -102,10 +102,10 @@ set(FAISS_SRC
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_SRC
-    IndexSVSFlat.cpp
-    IndexSVSVamana.cpp
-    IndexSVSVamanaLVQ.cpp
-    IndexSVSVamanaLeanVec.cpp
+    svs/IndexSVSFlat.cpp
+    svs/IndexSVSVamana.cpp
+    svs/IndexSVSVamanaLVQ.cpp
+    svs/IndexSVSVamanaLeanVec.cpp
     impl/svs_io.cpp
   )
 endif()
@@ -253,10 +253,10 @@ set(FAISS_HEADERS
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_HEADERS
-    IndexSVSFlat.h
-    IndexSVSVamana.h
-    IndexSVSVamanaLVQ.h
-    IndexSVSVamanaLeanVec.h
+    svs/IndexSVSFlat.h
+    svs/IndexSVSVamana.h
+    svs/IndexSVSVamanaLVQ.h
+    svs/IndexSVSVamanaLeanVec.h
   )
 endif()
 

@@ -21,10 +21,10 @@
  */
 
 #include <faiss/Index.h>
-#include <faiss/IndexSVSFlat.h>
-#include <faiss/IndexSVSVamana.h>
-#include <faiss/IndexSVSVamanaLVQ.h>
-#include <faiss/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/index_io.h>
