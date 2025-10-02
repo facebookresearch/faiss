@@ -153,7 +153,8 @@ void IndexAdditiveQuantizerFastScan::compute_codes(
 void IndexAdditiveQuantizerFastScan::compute_float_LUT(
         float* lut,
         idx_t n,
-        const float* x) const {
+        const float* x,
+        idx_t) const {
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->compute_LUT(n, x, lut, 1.0f);
     } else {
