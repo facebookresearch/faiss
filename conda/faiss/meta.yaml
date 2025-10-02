@@ -43,33 +43,33 @@ outputs:
         - cmake >=3.24.0
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl-devel =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl-devel =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl-devel >=2023.2.0  # [x86_64 and not win]
-        - mkl-devel =2023.1.0  # [x86_64 and win]
+        - mkl-devel =2024.2.2  # [x86_64 and not win]
+        - mkl-devel =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
       host:
         - python {{ python }}
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.30 # [not x86_64]
       run:
         - python {{ python }}
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
         - openblas =0.3.30 # [not x86_64]
@@ -99,51 +99,51 @@ outputs:
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
       host:
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - {{ pin_subpackage('libfaiss', exact=True) }}
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
       run:
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - scipy
-        - pytorch <2.5
-        {% if PY_VER == '3.9' or PY_VER == '3.10' or PY_VER == '3.11' %}
-        - mkl =2023.0  # [x86_64]
+        - pytorch-cpu >=2.7
+        {% if PY_VER == '3.10' or PY_VER == '3.11' %}
+        - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
         {% elif PY_VER == '3.12' %}
-        - mkl >=2023.2.0  # [x86_64 and not win]
-        - mkl =2023.1.0  # [x86_64 and win]
+        - mkl =2024.2.2  # [x86_64 and not win]
+        - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
       commands:
