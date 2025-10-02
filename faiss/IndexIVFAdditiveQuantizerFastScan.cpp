@@ -383,7 +383,8 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases) const {
+        AlignedTable<float>& biases,
+        idx_t) const {
     const size_t dim12 = ksub * M;
     const size_t ip_dim12 = aq->M * ksub;
     const size_t nprobe = cq.nprobe;
