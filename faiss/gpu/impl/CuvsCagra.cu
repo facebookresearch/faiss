@@ -31,6 +31,9 @@
 #include <raft/core/device_resources.hpp>
 #include <raft/core/resource/thrust_policy.hpp>
 
+#include <thrust/copy.h>
+#include <thrust/device_ptr.h>
+
 namespace faiss {
 namespace gpu {
 
