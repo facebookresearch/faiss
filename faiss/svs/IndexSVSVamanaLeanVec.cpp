@@ -181,9 +181,6 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 
-    // Write stream to files that can be read by DynamicVamana::assemble()
-    svs_io::SVSTempDirectory tmp;
-    tmp.write_stream_to_files(in);
     auto threadpool = svs::threads::ThreadPoolHandle(
             svs::threads::OMPThreadPool(omp_get_max_threads()));
 
@@ -205,52 +202,38 @@ void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
                     switch (leanvec_level) {
                         case LeanVecLevel::LeanVec4x4:
                             impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::assemble<float>(
-                                            tmp.config.string(),
-                                            svs::GraphLoader(
-                                                    tmp.graph.string()),
-                                            svs::lib::load_from_disk<
-                                                    storage_type_4x4>(
-                                                    tmp.data.string()),
-                                            svs_distance,
-                                            std::move(threadpool)));
+                                    svs::DynamicVamana::
+                                            assemble<float, storage_type_4x4>(
+                                                    in,
+                                                    svs_distance,
+                                                    std::move(threadpool)));
                             break;
                         case LeanVecLevel::LeanVec4x8:
                             impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::assemble<float>(
-                                            tmp.config.string(),
-                                            svs::GraphLoader(
-                                                    tmp.graph.string()),
-                                            svs::lib::load_from_disk<
-                                                    storage_type_4x8>(
-                                                    tmp.data.string()),
-                                            svs_distance,
-                                            std::move(threadpool)));
+                                    svs::DynamicVamana::
+                                            assemble<float, storage_type_4x8>(
+                                                    in,
+                                                    svs_distance,
+                                                    std::move(threadpool)));
                             break;
                         case LeanVecLevel::LeanVec8x8:
                             impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::assemble<float>(
-                                            tmp.config.string(),
-                                            svs::GraphLoader(
-                                                    tmp.graph.string()),
-                                            svs::lib::load_from_disk<
-                                                    storage_type_8x8>(
-                                                    tmp.data.string()),
-                                            svs_distance,
-                                            std::move(threadpool)));
+                                    svs::DynamicVamana::
+                                            assemble<float, storage_type_8x8>(
+                                                    in,
+                                                    svs_distance,
+                                                    std::move(threadpool)));
                             break;
                         default:
                             FAISS_ASSERT(!"not supported SVS LeanVec level");
                     }
                 } else {
                     impl = new svs::DynamicVamana(
-                            svs::DynamicVamana::assemble<float>(
-                                    tmp.config.string(),
-                                    svs::GraphLoader(tmp.graph.string()),
-                                    svs::lib::load_from_disk<storage_type_sq>(
-                                            tmp.data.string()),
-                                    svs_distance,
-                                    std::move(threadpool)));
+                            svs::DynamicVamana::
+                                    assemble<float, storage_type_sq>(
+                                            in,
+                                            svs_distance,
+                                            std::move(threadpool)));
                 }
             },
             svs_distance);
