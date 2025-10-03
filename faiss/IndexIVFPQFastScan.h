@@ -81,6 +81,17 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
             AlignedTable<float>& biases) const override;
+
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs,
+            const IDSelector* sel,
+            const IVFSearchParameters* params) const override;
+};
+
+struct IVFPQFastScanScannerContext {
+    // Max heap size that will be used over the duration of this Scanner.
+    // Set to k. This scanner assumes only one value of k will be used.
+    size_t heap_size = 0;
 };
 
 } // namespace faiss

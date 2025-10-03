@@ -46,7 +46,7 @@ struct SIMDResultHandler {
     virtual ~SIMDResultHandler() {}
 };
 
-/* Result handler that will return float resutls eventually */
+/* Result handler that will return float results eventually */
 struct SIMDResultHandlerToFloat : SIMDResultHandler {
     size_t nq;     // number of queries
     size_t ntotal; // ignore excess elements after ntotal
@@ -69,6 +69,12 @@ struct SIMDResultHandlerToFloat : SIMDResultHandler {
     // normalizers are deallocated
     virtual void end() {
         normalizers = nullptr;
+    }
+
+    // Number of updates made to the underlying data structure.
+    // For example: number of heap updates.
+    virtual size_t num_updates() {
+        return 0;
     }
 };
 
@@ -318,8 +324,8 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
     std::vector<TI> iids;
     float* dis;
     int64_t* ids;
-
-    int64_t k; // number of results to keep
+    size_t k;       // number of results to keep
+    size_t nup = 0; // number of heap updates
 
     HeapHandler(
             size_t nq,
@@ -372,6 +378,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                     if (C::cmp(heap_dis[0], dis_2)) {
                         heap_replace_top<C>(
                                 k, heap_dis, heap_ids, dis_2, real_idx);
+                        nup++;
                     }
                 }
             }
@@ -384,6 +391,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 if (C::cmp(heap_dis[0], dis_2)) {
                     int64_t idx = this->adjust_id(b, j);
                     heap_replace_top<C>(k, heap_dis, heap_ids, dis_2, idx);
+                    nup++;
                 }
             }
         }
@@ -407,6 +415,10 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 heap_ids[j] = heap_ids_in[j];
             }
         }
+    }
+
+    size_t num_updates() override {
+        return nup;
     }
 };
 
