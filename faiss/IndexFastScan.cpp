@@ -7,7 +7,6 @@
 
 #include <faiss/IndexFastScan.h>
 
-#include <cassert>
 #include <climits>
 #include <memory>
 
@@ -193,40 +192,58 @@ void estimators_from_tables_generic(
     }
 }
 
-template <class C>
-ResultHandlerCompare<C, false>* make_knn_handler(
+} // anonymous namespace
+
+using namespace quantize_lut;
+
+// Default implementation of make_knn_handler with centralized fallback logic
+void* IndexFastScan::make_knn_handler(
+        bool is_max,
         int impl,
         idx_t n,
         idx_t k,
         size_t ntotal,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel = nullptr) {
-    using HeapHC = HeapHandler<C, false>;
-    using ReservoirHC = ReservoirHandler<C, false>;
-    using SingleResultHC = SingleResultHandler<C, false>;
+        const IDSelector* sel,
+        idx_t) const {
+    // Create default handlers based on k and impl
+    if (is_max) {
+        using HeapHC = HeapHandler<CMax<uint16_t, int>, false>;
+        using ReservoirHC = ReservoirHandler<CMax<uint16_t, int>, false>;
+        using SingleResultHC = SingleResultHandler<CMax<uint16_t, int>, false>;
 
-    if (k == 1) {
-        return new SingleResultHC(n, ntotal, distances, labels, sel);
-    } else if (impl % 2 == 0) {
-        return new HeapHC(n, ntotal, k, distances, labels, sel);
-    } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
+        if (k == 1) {
+            return new SingleResultHC(n, ntotal, distances, labels, sel);
+        } else if (impl % 2 == 0) {
+            return new HeapHC(n, ntotal, k, distances, labels, sel);
+        } else {
+            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
+        }
+    } else {
+        using HeapHC = HeapHandler<CMin<uint16_t, int>, false>;
+        using ReservoirHC = ReservoirHandler<CMin<uint16_t, int>, false>;
+        using SingleResultHC = SingleResultHandler<CMin<uint16_t, int>, false>;
+
+        if (k == 1) {
+            return new SingleResultHC(n, ntotal, distances, labels, sel);
+        } else if (impl % 2 == 0) {
+            return new HeapHC(n, ntotal, k, distances, labels, sel);
+        } else {
+            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
+        }
     }
 }
-
-} // anonymous namespace
-
-using namespace quantize_lut;
 
 void IndexFastScan::compute_quantized_LUT(
         idx_t n,
         const float* x,
         uint8_t* lut,
-        float* normalizers) const {
+        float* normalizers,
+        idx_t query_offset) const {
     size_t dim12 = ksub * M;
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    compute_float_LUT(dis_tables.get(), n, x);
+    compute_float_LUT(dis_tables.get(), n, x, query_offset);
 
     for (uint64_t i = 0; i < n; i++) {
         round_uint8_per_column(
@@ -314,9 +331,11 @@ void IndexFastScan::search_dispatch_implem(
         int nt = std::min(omp_get_max_threads(), int(n));
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
-                search_implem_12<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_12<C>(
+                        n, x, k, distances, labels, impl, scaler, 0);
             } else {
-                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_14<C>(
+                        n, x, k, distances, labels, impl, scaler, 0);
             }
         } else {
             // explicitly slice over threads
@@ -324,14 +343,29 @@ void IndexFastScan::search_dispatch_implem(
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
+
                 float* dis_i = distances + i0 * k;
                 idx_t* lab_i = labels + i0 * k;
                 if (impl == 12 || impl == 13) {
                     search_implem_12<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            scaler,
+                            i0);
                 } else {
                     search_implem_14<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            scaler,
+                            i0);
                 }
             }
         }
@@ -407,7 +441,8 @@ void IndexFastScan::search_implem_12(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
+        const NormTableScaler* scaler,
+        idx_t query_offset) const {
     using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs == 32);
 
@@ -423,7 +458,8 @@ void IndexFastScan::search_implem_12(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    scaler,
+                    query_offset + i0);
         }
         return;
     }
@@ -436,7 +472,11 @@ void IndexFastScan::search_implem_12(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n,
+                x,
+                quantized_dis_tables.get(),
+                normalizers.get(),
+                query_offset);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
@@ -454,8 +494,17 @@ void IndexFastScan::search_implem_12(
             pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+    std::unique_ptr<RH> handler(static_cast<RH*>(make_knn_handler(
+            C::is_max,
+            impl,
+            n,
+            k,
+            ntotal,
+            distances,
+            labels,
+            nullptr,
+            query_offset)));
+
     handler->disable = bool(skip & 2);
     handler->normalizers = normalizers.get();
 
@@ -486,7 +535,8 @@ void IndexFastScan::search_implem_14(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
+        const NormTableScaler* scaler,
+        idx_t query_offset) const {
     using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
@@ -503,7 +553,8 @@ void IndexFastScan::search_implem_14(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    scaler,
+                    query_offset + i0);
         }
         return;
     }
@@ -516,14 +567,26 @@ void IndexFastScan::search_implem_14(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n,
+                x,
+                quantized_dis_tables.get(),
+                normalizers.get(),
+                query_offset);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
+    std::unique_ptr<RH> handler(static_cast<RH*>(make_knn_handler(
+            C::is_max,
+            impl,
+            n,
+            k,
+            ntotal,
+            distances,
+            labels,
+            nullptr,
+            query_offset)));
     handler->disable = bool(skip & 2);
     handler->normalizers = normalizers.get();
 
