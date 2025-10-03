@@ -191,7 +191,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 
 %}
@@ -610,7 +612,9 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
+%include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
 
 %ignore faiss::BufferList::Buffer;
@@ -704,6 +708,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexRaBitQFastScan )
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFIndependentQuantizer)
