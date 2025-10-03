@@ -82,6 +82,28 @@ typename Consumer::T dispatch_HammingComputer(
 #undef DISPATCH_HC
 }
 
+// A version of the above that uses perfect forwarding of arguments
+template <class Consumer, class... Types>
+typename Consumer::T dispatch_HammingComputer_perfect_forward(
+        int code_size,
+        Consumer& consumer,
+        Types&&... args) {
+    switch (code_size) {
+#define DISPATCH_HC(CODE_SIZE) \
+    case CODE_SIZE:            \
+        return consumer.template f<HammingComputer##CODE_SIZE>(args...);
+        DISPATCH_HC(4);
+        DISPATCH_HC(8);
+        DISPATCH_HC(16);
+        DISPATCH_HC(20);
+        DISPATCH_HC(32);
+        DISPATCH_HC(64);
+        default:
+            return consumer.template f<HammingComputerDefault>(args...);
+    }
+#undef DISPATCH_HC
+}
+
 } // namespace faiss
 
 #endif
