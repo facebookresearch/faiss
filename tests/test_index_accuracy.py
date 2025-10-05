@@ -549,16 +549,20 @@ class TestPQFlavors(unittest.TestCase):
                 index = faiss.IndexIVFPQ(quantizer, d, nlist, 8, 2)
             index.train(xt)
             index.add(xb)
-            index.npobe = 16
+            index.nprobe = 16
 
             D, I = index.search(xq, 10)
             ninter[v] = faiss.eval_intersection(I, gt_I)
         # this should be the case but we don't observe
         # that... Probavly too few test points
         #  assert ninter['2x8'] > ninter['8x2']
-        # ref numbers on 2019-11-02
-        assert abs(ninter["2x8"] - 458) < 4
-        assert abs(ninter["8x2"] - 465) < 4
+        # ref numbers updated on 2025-01-19 after fixing nprobe typo
+        # (was 'npobe')
+        # Old values were 458/465 based on broken test with default nprobe
+        # New values reflect proper nprobe=16 configuration with much better
+        # search quality
+        assert abs(ninter["2x8"] - 929) < 4
+        assert abs(ninter["8x2"] - 960) < 4
 
 
 class TestFlat1D(unittest.TestCase):
@@ -642,7 +646,7 @@ class OPQRelativeAccuracy(unittest.TestCase):
         index_ivfpq = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
         index_ivfpq.nprobe = 20
         opq_matrix = faiss.OPQMatrix(d, M)
-        opq_matrix.niter = 10
+        opq_matrix.niter = 12
         index = faiss.IndexPreTransform(opq_matrix, index_ivfpq)
 
         res = ev.launch("O+IVFPQ", index)

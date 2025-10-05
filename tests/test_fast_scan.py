@@ -523,7 +523,6 @@ class TestAQFastScan(unittest.TestCase):
         index = faiss.index_factory(d, 'RQ8x4' + st, metric_type)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.IndexAdditiveQuantizerFastScan(index)

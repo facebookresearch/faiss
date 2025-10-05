@@ -166,6 +166,10 @@ struct IVFPQSearchCagraConfig {
     /// negative effects on the search performance if tweaked incorrectly.
 
     double preferred_shmem_carveout = 1.0;
+
+    /// Set the internal batch size to improve GPU utilization at the cost of
+    /// larger memory footprint.
+    uint32_t max_internal_batch_size = 4096;
 };
 
 struct GpuIndexCagraConfig : public GpuIndexConfig {
