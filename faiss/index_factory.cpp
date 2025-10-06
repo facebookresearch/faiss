@@ -49,6 +49,9 @@
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexIDMap.h>
+#include <algorithm>
+#include <cctype>
 #include <string>
 
 namespace faiss {
@@ -934,32 +937,69 @@ IndexBinary* index_binary_factory(
         bool own_invlists) {
     IndexBinary* index = nullptr;
 
+    // Handle IDMap2 and IDMap wrappers (prefix or suffix)
+    std::string desc_str(description);
+    // Remove whitespace
+    desc_str.erase(
+            std::remove_if(desc_str.begin(), desc_str.end(), ::isspace),
+            desc_str.end());
+
+    // Check for IDMap2 or IDMap as prefix
+    if (desc_str.rfind("IDMap2,", 0) == 0 && desc_str.size() > 7) {
+        std::string sub_desc = desc_str.substr(7);
+        IndexBinary* sub_index = index_binary_factory(
+                d, sub_desc.c_str(), own_invlists);
+        return new IndexBinaryIDMap2(sub_index);
+    }
+    if (desc_str.rfind("IDMap,", 0) == 0 && desc_str.size() > 6) {
+        std::string sub_desc = desc_str.substr(6);
+        IndexBinary* sub_index = index_binary_factory(
+                d, sub_desc.c_str(), own_invlists);
+        return new IndexBinaryIDMap(sub_index);
+    }
+    // Check for IDMap2 or IDMap as suffix
+    if (desc_str.size() > 7 &&
+        desc_str.compare(desc_str.size() - 7, 7, ",IDMap2") == 0) {
+        std::string sub_desc = desc_str.substr(0, desc_str.size() - 7);
+        IndexBinary* sub_index = index_binary_factory(
+                d, sub_desc.c_str(), own_invlists);
+        return new IndexBinaryIDMap2(sub_index);
+    }
+    if (desc_str.size() > 6 &&
+        desc_str.compare(desc_str.size() - 6, 6, ",IDMap") == 0) {
+        std::string sub_desc = desc_str.substr(0, desc_str.size() - 6);
+        IndexBinary* sub_index = index_binary_factory(
+                d, sub_desc.c_str(), own_invlists);
+        return new IndexBinaryIDMap(sub_index);
+    }
+
     int ncentroids = -1;
     int M, nhash, b;
+    const char* desc_cstr = desc_str.c_str();
 
-    if (sscanf(description, "BIVF%d_HNSW%d", &ncentroids, &M) == 2) {
+    if (sscanf(desc_cstr, "BIVF%d_HNSW%d", &ncentroids, &M) == 2) {
         IndexBinaryIVF* index_ivf = new IndexBinaryIVF(
                 new IndexBinaryHNSW(d, M), d, ncentroids, own_invlists);
         index_ivf->own_fields = true;
         index = index_ivf;
 
-    } else if (sscanf(description, "BIVF%d", &ncentroids) == 1) {
+    } else if (sscanf(desc_cstr, "BIVF%d", &ncentroids) == 1) {
         IndexBinaryIVF* index_ivf = new IndexBinaryIVF(
                 new IndexBinaryFlat(d), d, ncentroids, own_invlists);
         index_ivf->own_fields = true;
         index = index_ivf;
 
-    } else if (sscanf(description, "BHNSW%d", &M) == 1) {
+    } else if (sscanf(desc_cstr, "BHNSW%d", &M) == 1) {
         IndexBinaryHNSW* index_hnsw = new IndexBinaryHNSW(d, M);
         index = index_hnsw;
 
-    } else if (sscanf(description, "BHash%dx%d", &nhash, &b) == 2) {
+    } else if (sscanf(desc_cstr, "BHash%dx%d", &nhash, &b) == 2) {
         index = new IndexBinaryMultiHash(d, nhash, b);
 
-    } else if (sscanf(description, "BHash%d", &b) == 1) {
+    } else if (sscanf(desc_cstr, "BHash%d", &b) == 1) {
         index = new IndexBinaryHash(d, b);
 
-    } else if (std::string(description) == "BFlat") {
+    } else if (desc_str == "BFlat") {
         index = new IndexBinaryFlat(d);
 
     } else {
