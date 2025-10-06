@@ -22,7 +22,10 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
-ext = ".pyd" if platform.system() == "Windows" else ".so"
+if(platform.system() != "AIX"):
+    ext = ".pyd" if platform.system() == "Windows" else ".so"
+else:
+    ext = ".a"
 prefix = "Release/" * (platform.system() == "Windows")
 
 swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
@@ -118,7 +121,7 @@ setup(
     install_requires=["numpy", "packaging"],
     packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
     package_data={
-        "faiss": ["*.so", "*.pyd"],
+        "faiss": ["*.so", "*.pyd","*.a"],
     },
     zip_safe=False,
 )
