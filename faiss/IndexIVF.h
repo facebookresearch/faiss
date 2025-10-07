@@ -494,6 +494,17 @@ struct InvertedListScanner {
     /// following codes come from this inverted list
     virtual void set_list(idx_t list_no, float coarse_dis) = 0;
 
+    /// TODO(Alexis): Legacy bloat below.
+    virtual inline bool add_result(
+            float dis,
+            idx_t idx,
+            float threshold,
+            idx_t* heap_ids,
+            float* heap_dis,
+            size_t k) const {
+        return false;
+    }
+
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 

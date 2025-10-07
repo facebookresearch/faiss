@@ -720,6 +720,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFProductResidualQuantizerFastScan )
     DOWNCAST ( IndexIVFProductLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexIVFFlatPanorama )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
