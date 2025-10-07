@@ -27,7 +27,7 @@ def read_fvecs(filename, limit=None):
         return np.array(vectors, dtype=np.float32)
 
 def benchmark_index(index, xb, xq, k, name):
-    """Benchmark an index and return results."""
+    """Benchmark an index and return resu lts."""
     print(f"\n{'='*50}")
     print(f"Benchmarking {name}")
     print(f"{'='*50}")
