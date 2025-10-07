@@ -646,7 +646,7 @@ class OPQRelativeAccuracy(unittest.TestCase):
         index_ivfpq = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
         index_ivfpq.nprobe = 20
         opq_matrix = faiss.OPQMatrix(d, M)
-        opq_matrix.niter = 10
+        opq_matrix.niter = 12
         index = faiss.IndexPreTransform(opq_matrix, index_ivfpq)
 
         res = ev.launch("O+IVFPQ", index)

@@ -43,7 +43,7 @@ runs:
       run: |
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        conda install -y -q "conda!=24.11.0"
+        conda install -y -q "conda!=24.11.0,<=25.07"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
         conda list --show-channel-urls
     - name: Enable anaconda uploads
