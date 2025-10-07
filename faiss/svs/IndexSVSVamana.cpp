@@ -132,44 +132,33 @@ svs::DynamicVamana* init_impl_t(
 
 template <
         typename T,
-        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-        svs::VectorDataLoader<T> get_loader(const std::filesystem::path& path) {
-    return svs::VectorDataLoader<T>(path);
-}
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
+        typename Enabler = void>
+struct storage_type;
 
-template <
-        typename T,
-        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_integral_v<T>
-auto get_loader(const std::filesystem::path& path) {
-    using storage_type =
-            svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
-    return svs::lib::load_from_disk<storage_type>(path);
-}
-
-template <
-        typename T,
-        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-struct storage_type {
+template <typename T, typename Alloc>
+struct storage_type<
+        T,
+        Alloc,
+        std::enable_if_t<
+                std::is_floating_point_v<T> ||
+                std::is_same_v<T, svs::Float16>>> {
     using type = svs::data::SimpleData<T, svs::Dynamic, Alloc>;
 };
 
-template <
-        typename T,
-        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_integral_v<T>
-struct storage_type {
+template <typename T, typename Alloc>
+struct storage_type<T, Alloc, std::enable_if_t<std::is_integral_v<T>>> {
     using type = svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
 };
 
-using template <typename T, typename Alloc>
-storage_type_t = typename storage_type<T, Alloc>::type;
+template <
+        typename T,
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
+using storage_type_t = typename storage_type<T, Alloc>::type;
 
 template <typename ElementType>
 svs::DynamicVamana* deserialize_impl_t(
-        const std::istream& stream,
+        std::istream& stream,
         faiss::MetricType metric) {
     auto threadpool = svs::threads::ThreadPoolHandle(
             svs::threads::OMPThreadPool(omp_get_max_threads()));
