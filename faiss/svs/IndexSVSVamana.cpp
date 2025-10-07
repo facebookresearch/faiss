@@ -132,25 +132,33 @@ svs::DynamicVamana* init_impl_t(
 
 template <
         typename T,
-        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-        svs::VectorDataLoader<T> get_loader(const std::filesystem::path& path) {
-    return svs::VectorDataLoader<T>(path);
-}
+        typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
+        typename Enabler = void>
+struct storage_type;
+
+template <typename T, typename Alloc>
+struct storage_type<
+        T,
+        Alloc,
+        std::enable_if_t<
+                std::is_floating_point_v<T> ||
+                std::is_same_v<T, svs::Float16>>> {
+    using type = svs::data::SimpleData<T, svs::Dynamic, Alloc>;
+};
+
+template <typename T, typename Alloc>
+struct storage_type<T, Alloc, std::enable_if_t<std::is_integral_v<T>>> {
+    using type = svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
+};
 
 template <
         typename T,
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>>
-requires std::is_integral_v<T>
-auto get_loader(const std::filesystem::path& path) {
-    using storage_type =
-            svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>;
-    return svs::lib::load_from_disk<storage_type>(path);
-}
+using storage_type_t = typename storage_type<T, Alloc>::type;
 
 template <typename ElementType>
 svs::DynamicVamana* deserialize_impl_t(
-        const svs_io::SVSTempDirectory& tmp,
+        std::istream& stream,
         faiss::MetricType metric) {
     auto threadpool = svs::threads::ThreadPoolHandle(
             svs::threads::OMPThreadPool(omp_get_max_threads()));
@@ -158,12 +166,11 @@ svs::DynamicVamana* deserialize_impl_t(
     return std::visit(
             [&](auto&& distance) {
                 return new svs::DynamicVamana(
-                        svs::DynamicVamana::assemble<float>(
-                                tmp.config,
-                                svs::GraphLoader(tmp.graph.string()),
-                                get_loader<ElementType>(tmp.data),
-                                std::move(distance),
-                                std::move(threadpool)));
+                        svs::DynamicVamana::
+                                assemble<float, storage_type_t<ElementType>>(
+                                        stream,
+                                        std::move(distance),
+                                        std::move(threadpool)));
             },
             get_svs_distance(metric));
 }
@@ -459,23 +466,17 @@ void IndexSVSVamana::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
-    // Write index to temporary files and concatenate the contents
-    svs_io::SVSTempDirectory tmp;
-    impl->save(tmp.config, tmp.graph, tmp.data);
-    tmp.write_files_to_stream(out);
+    impl->save(out);
 }
 
 void IndexSVSVamana::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 
-    // Write stream to files that can be read by DynamicVamana::assemble()
-    svs_io::SVSTempDirectory tmp;
-    tmp.write_stream_to_files(in);
     impl = std::visit(
             [&](auto element) {
                 using ElementType = std::decay_t<decltype(element)>;
-                return deserialize_impl_t<ElementType>(tmp, metric_type);
+                return deserialize_impl_t<ElementType>(in, metric_type);
             },
             get_storage_variant(storage_kind));
 }

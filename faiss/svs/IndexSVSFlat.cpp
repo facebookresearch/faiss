@@ -114,35 +114,27 @@ void IndexSVSFlat::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
-    // Write index to temporary files and concatenate the contents
-    svs_io::SVSTempDirectory tmp;
-    impl->save(tmp.data);
-    tmp.write_files_to_stream(out);
+    impl->save(out);
 }
 
 void IndexSVSFlat::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(
             impl, "Cannot deserialize: SVS index already initialized.");
 
-    // Write stream to files that can be read by Flat::assemble()
-    svs_io::SVSTempDirectory tmp;
-    tmp.write_stream_to_files(in);
-
     auto threadpool = svs::threads::ThreadPoolHandle(
             svs::threads::OMPThreadPool(omp_get_max_threads()));
+    using storage_type = typename svs::VectorDataLoader<float>::return_type;
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = new svs::Flat(svs::Flat::assemble<float>(
-                    svs::VectorDataLoader<float>(tmp.data.string()),
-                    svs::DistanceIP(),
-                    std::move(threadpool)));
+            impl = new svs::Flat(
+                    svs::Flat::assemble<float, storage_type>(
+                            in, svs::DistanceIP(), std::move(threadpool)));
             break;
         case METRIC_L2:
-            impl = new svs::Flat(svs::Flat::assemble<float>(
-                    svs::VectorDataLoader<float>(tmp.data.string()),
-                    svs::DistanceL2(),
-                    std::move(threadpool)));
+            impl = new svs::Flat(
+                    svs::Flat::assemble<float, storage_type>(
+                            in, svs::DistanceL2(), std::move(threadpool)));
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");

@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include <filesystem>
 #include <iostream>
 #include <streambuf>
 #include <vector>
@@ -52,22 +51,6 @@ struct ReaderStreambuf : std::streambuf {
 
    protected:
     int_type underflow() override;
-};
-
-/* temporary directory for SVS indices that tries to always clean up */
-struct SVSTempDirectory {
-    std::filesystem::path root;
-    std::filesystem::path config;
-    std::filesystem::path graph;
-    std::filesystem::path data;
-
-    SVSTempDirectory();
-    ~SVSTempDirectory();
-
-    /* Write files written by SVS to a stream owned by FAISS for index_write */
-    void write_files_to_stream(std::ostream& out) const;
-    /* Write a stream owned by FAISS to SVS-compatible files for index_read */
-    void write_stream_to_files(std::istream& in) const;
 };
 
 } // namespace svs_io
