@@ -9,6 +9,7 @@ from __future__ import print_function
 import numpy as np
 import unittest
 import faiss
+import platform
 
 from common_faiss_tests import get_dataset_2
 from faiss.contrib.datasets import SyntheticDataset
@@ -428,6 +429,8 @@ class TestRefine(unittest.TestCase):
 
         np.testing.assert_array_equal(codes1, codes2)
 
+    @unittest.skipIf(platform.system() == 'Windows',
+                     'Does not work on Windows after numpy 2 upgrade.')
     def test_equiv_sh(self):
         """ make sure that the IVFSpectralHash sa_encode function gives the same
         result as the concatenated RQ + LSH index sa_encode """

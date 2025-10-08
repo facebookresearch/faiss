@@ -101,20 +101,20 @@ outputs:
         - mkl =2023.0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - mkl =2023.0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - scipy
-        - pytorch <2.5
+        - pytorch >=2.7
         - pytorch-cuda {{ cuda_constraints }}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
