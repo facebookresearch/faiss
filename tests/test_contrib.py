@@ -612,7 +612,11 @@ class TestBigBatchSearch(unittest.TestCase):
 
     def test_Flat(self):
         self.do_test("IVF64,Flat")
-
+    
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_Flat_IP(self):
         self.do_test("IVF64,Flat", metric=faiss.METRIC_INNER_PRODUCT)
 
