@@ -74,10 +74,10 @@ template <
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
         svs::data::ImmutableMemoryDataset Dataset,
         svs::threads::ThreadPool Pool>
-requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
-        svs::data::SimpleData<T, svs::Dynamic, Alloc> make_storage(
-                const Dataset& data,
-                Pool& pool) {
+    requires std::is_floating_point_v<T> || std::is_same_v<T, svs::Float16>
+svs::data::SimpleData<T, svs::Dynamic, Alloc> make_storage(
+        const Dataset& data,
+        Pool& pool) {
     svs::data::SimpleData<T, svs::Dynamic, Alloc> result(
             data.size(), data.dimensions(), Alloc{});
     svs::threads::parallel_for(
@@ -96,9 +96,10 @@ template <
         typename Alloc = svs::data::Blocked<svs::lib::Allocator<T>>,
         svs::data::ImmutableMemoryDataset Dataset,
         svs::threads::ThreadPool Pool>
-requires std::is_integral_v<T> svs::quantization::scalar::
-        SQDataset<T, svs::Dynamic, Alloc>
-        make_storage(const Dataset& data, Pool& pool) {
+    requires std::is_integral_v<T>
+svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc> make_storage(
+        const Dataset& data,
+        Pool& pool) {
     return svs::quantization::scalar::SQDataset<T, svs::Dynamic, Alloc>::
             compress(data, pool, Alloc{});
 }
@@ -165,12 +166,10 @@ svs::DynamicVamana* deserialize_impl_t(
 
     return std::visit(
             [&](auto&& distance) {
-                return new svs::DynamicVamana(
-                        svs::DynamicVamana::
-                                assemble<float, storage_type_t<ElementType>>(
-                                        stream,
-                                        std::move(distance),
-                                        std::move(threadpool)));
+                return new svs::DynamicVamana(svs::DynamicVamana::assemble<
+                                              float,
+                                              storage_type_t<ElementType>>(
+                        stream, std::move(distance), std::move(threadpool)));
             },
             get_svs_distance(metric));
 }
