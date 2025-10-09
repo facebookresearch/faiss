@@ -5,9 +5,8 @@
 
 import unittest
 
-import faiss
 import numpy as np
-
+import faiss
 from faiss.contrib import datasets
 
 
@@ -223,12 +222,11 @@ class TestRaBitQ(unittest.TestCase):
             index_rbq.train(ds.get_train())
             index_rbq.add(ds.get_database())
 
-            def test(params):
+            def test(params, ratio_threshold):
                 _, I_rbq = index_rbq.search(ds.get_queries(), k, params=params)
 
                 # ensure that RaBitQ and PQ are relatively close
                 loss_rbq = 1 - eval_I(I_rbq)
-                ratio_threshold = 2 ** (1 / qb)
                 print(
                     f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
                     f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
@@ -240,7 +238,11 @@ class TestRaBitQ(unittest.TestCase):
             for qb in [1, 2, 3, 4, 8]:
                 print()
                 for centered in [False, True]:
-                    test(faiss.RaBitQSearchParameters(qb=qb, centered=centered))
+                    params = faiss.RaBitQSearchParameters(
+                        qb=qb, centered=centered
+                    )
+                    ratio_threshold = 2 ** (1 / qb)
+                    test(params, ratio_threshold)
 
     def test_comparison_vs_pq_L2(self):
         self.do_comparison_vs_pq_test(faiss.METRIC_L2)
@@ -391,12 +393,11 @@ class TestIVFRaBitQ(unittest.TestCase):
             print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
             np.testing.assert_(loss_pq < 0.25, f"{loss_pq}")
 
-            def test(params):
+            def test(params, ratio_threshold):
                 D_rbq, I_rbq = index_rbq.search(xq, k, params=params)
 
                 # ensure that RaBitQ and PQ are relatively close
                 loss_rbq = 1 - eval_I(I_rbq)
-                ratio_threshold = 2 ** (1 / qb)
                 print(
                     f"{random_rotate=:1}, {params.qb=}, {params.centered=:1}: "
                     f"{loss_rbq=:5.3f} = loss_pq * {loss_rbq / loss_pq:5.3f}"
@@ -408,11 +409,11 @@ class TestIVFRaBitQ(unittest.TestCase):
             for qb in [1, 2, 3, 4, 8]:
                 print()
                 for centered in [False, True]:
-                    test(
-                        faiss.IVFRaBitQSearchParameters(
-                            nprobe=nprobe, qb=qb, centered=centered
-                        )
+                    params = faiss.IVFRaBitQSearchParameters(
+                        nprobe=nprobe, qb=qb, centered=centered
                     )
+                    ratio_threshold = 2 ** (1 / qb)
+                    test(params, ratio_threshold)
 
     def test_comparison_vs_pq_L2(self):
         self.do_comparison_vs_pq_test(faiss.METRIC_L2)
@@ -522,6 +523,298 @@ class TestIVFRaBitQ(unittest.TestCase):
 
     def test_serde_ivfrabitq(self):
         self.do_test_serde("IVF16,RaBitQ")
+
+
+class TestRaBitQFastScan(unittest.TestCase):
+    def do_comparison_vs_rabitq_test(
+        self, metric_type=faiss.METRIC_L2, bbs=32
+    ):
+        """Test IndexRaBitQFastScan produces similar results to IndexRaBitQ"""
+        ds = datasets.SyntheticDataset(128, 4096, 4096, 100)
+        k = 10
+
+        # IndexRaBitQ baseline
+        index_rbq = faiss.IndexRaBitQ(ds.d, metric_type)
+        index_rbq.train(ds.get_train())
+        index_rbq.add(ds.get_database())
+        _, I_rbq = index_rbq.search(ds.get_queries(), k)
+
+        # IndexRaBitQFastScan
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, metric_type, bbs)
+        index_rbq_fs.train(ds.get_train())
+        index_rbq_fs.add(ds.get_database())
+        _, I_rbq_fs = index_rbq_fs.search(ds.get_queries(), k)
+
+        index_flat = faiss.IndexFlat(ds.d, metric_type)
+        index_flat.train(ds.get_train())
+        index_flat.add(ds.get_database())
+        _, I_f = index_flat.search(ds.get_queries(), k)
+
+        # Evaluate against ground truth
+        eval_rbq = faiss.eval_intersection(I_rbq[:, :k], I_f[:, :k])
+        eval_rbq /= ds.nq * k
+        eval_rbq_fs = faiss.eval_intersection(I_rbq_fs[:, :k], I_f[:, :k])
+        eval_rbq_fs /= ds.nq * k
+
+        print(
+            f"RaBitQ baseline is {eval_rbq}, "
+            f"RaBitQFastScan is {eval_rbq_fs}"
+        )
+
+        # FastScan should be similar to baseline
+        np.testing.assert_(abs(eval_rbq - eval_rbq_fs) < 0.05)
+
+    def test_comparison_vs_rabitq_L2(self):
+        self.do_comparison_vs_rabitq_test(faiss.METRIC_L2)
+
+    def test_comparison_vs_rabitq_IP(self):
+        self.do_comparison_vs_rabitq_test(faiss.METRIC_INNER_PRODUCT)
+
+    def test_encode_decode_consistency(self):
+        """Test that encoding and decoding operations are consistent"""
+        ds = datasets.SyntheticDataset(128, 1000, 0, 0)  # No queries/db needed
+
+        # Test with IndexRaBitQFastScan
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+
+        # Test encode/decode on a subset of training data
+        test_vectors = ds.get_train()[:100]
+
+        # Add vectors to index (this computes both codes and factors)
+        index_rbq_fs.add(test_vectors)
+
+        # Extract codes for decoding test
+        # Note: In FastScan, codes are stored in packed format for SIMD
+        # operations
+        # We need to create temporary codes using compute_codes for testing
+        codes = np.empty(
+            (len(test_vectors), index_rbq_fs.code_size), dtype=np.uint8
+        )
+        index_rbq_fs.compute_codes(
+            faiss.swig_ptr(codes),
+            len(test_vectors),
+            faiss.swig_ptr(test_vectors)
+        )
+
+        # Now sa_decode should work because factors were computed in add()
+        decoded_fs = index_rbq_fs.sa_decode(codes)
+
+        # Check reconstruction error for FastScan
+        distances_fs = np.sum((test_vectors - decoded_fs) ** 2, axis=1)
+        avg_distance_fs = np.mean(distances_fs)
+        print(f"Average FastScan reconstruction error: {avg_distance_fs}")
+
+        # Compare with original IndexRaBitQ on the SAME dataset
+        index_rbq = faiss.IndexRaBitQ(ds.d, faiss.METRIC_L2)
+        index_rbq.train(ds.get_train())
+
+        # Encode with original RaBitQ (correct API - returns encoded array)
+        codes_orig = index_rbq.sa_encode(test_vectors)
+
+        # Decode with original RaBitQ
+        decoded_orig = index_rbq.sa_decode(codes_orig)
+
+        # Check reconstruction error for original
+        distances_orig = np.sum((test_vectors - decoded_orig) ** 2, axis=1)
+        avg_distance_orig = np.mean(distances_orig)
+        print(
+            f"Average original RaBitQ reconstruction error: "
+            f"{avg_distance_orig}"
+        )
+
+        # Print comparison
+        print(
+            f"Error difference (FastScan - Original): "
+            f"{avg_distance_fs - avg_distance_orig}"
+        )
+
+        # FastScan should have similar reconstruction error to original RaBitQ
+        np.testing.assert_(
+            abs(avg_distance_fs - avg_distance_orig) < 0.01
+        )  # Should be nearly identical
+
+    def test_query_quantization_bits(self):
+        """Test different query quantization bit settings"""
+        ds = datasets.SyntheticDataset(64, 2000, 2000, 50)
+        k = 10
+
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+        index_rbq_fs.add(ds.get_database())
+
+        # Test different qb values
+        results = {}
+        for qb in [4, 6, 8]:
+            index_rbq_fs.qb = qb
+            _, I = index_rbq_fs.search(ds.get_queries(), k)
+            results[qb] = I
+
+        # All should produce reasonable results
+        index_flat = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
+        index_flat.train(ds.get_train())
+        index_flat.add(ds.get_database())
+        _, I_f = index_flat.search(ds.get_queries(), k)
+
+        for qb in [4, 6, 8]:
+            eval_qb = faiss.eval_intersection(results[qb][:, :k], I_f[:, :k])
+            eval_qb /= ds.nq * k
+            print(f"Query quantization qb={qb} recall: {eval_qb}")
+            np.testing.assert_(eval_qb > 0.4)  # Should be reasonable
+
+    def test_small_dataset(self):
+        """Test on a small dataset to ensure basic functionality"""
+        d = 32
+        n = 100
+        nq = 10
+
+        rs = np.random.RandomState(123)
+        xb = rs.rand(n, d).astype(np.float32)
+        xq = rs.rand(nq, d).astype(np.float32)
+
+        index_rbq_fs = faiss.IndexRaBitQFastScan(d, faiss.METRIC_L2)
+        index_rbq_fs.train(xb)
+        index_rbq_fs.add(xb)
+
+        k = 5
+        distances, labels = index_rbq_fs.search(xq, k)
+
+        # Check output shapes and validity
+        np.testing.assert_equal(distances.shape, (nq, k))
+        np.testing.assert_equal(labels.shape, (nq, k))
+
+        # Check that labels are valid indices
+        np.testing.assert_(np.all(labels >= 0))
+        np.testing.assert_(np.all(labels < n))
+
+        # Check that distances are non-negative (for L2)
+        np.testing.assert_(np.all(distances >= 0))
+
+        # Quick recall check against exact search
+        index_flat = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index_flat.train(xb)
+        index_flat.add(xb)
+        _, I_f = index_flat.search(xq, k)
+
+        # Evaluate recall
+        recall = faiss.eval_intersection(labels[:, :k], I_f[:, :k])
+        recall /= (nq * k)
+        print(f"Small dataset recall: {recall:.3f}")
+        np.testing.assert_(
+            recall > 0.4
+        )  # Should be reasonable for small dataset
+
+    def test_comparison_vs_pq_fastscan(self):
+        """Compare RaBitQFastScan to PQFastScan as a performance baseline"""
+        ds = datasets.SyntheticDataset(128, 4096, 4096, 100)
+        k = 10
+
+        # PQFastScan baseline
+        index_pq_fs = faiss.IndexPQFastScan(ds.d, 16, 4, faiss.METRIC_L2)
+        index_pq_fs.train(ds.get_train())
+        index_pq_fs.add(ds.get_database())
+        _, I_pq_fs = index_pq_fs.search(ds.get_queries(), k)
+
+        # RaBitQFastScan
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+        index_rbq_fs.add(ds.get_database())
+        _, I_rbq_fs = index_rbq_fs.search(ds.get_queries(), k)
+
+        index_flat = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
+        index_flat.train(ds.get_train())
+        index_flat.add(ds.get_database())
+        _, I_f = index_flat.search(ds.get_queries(), k)
+
+        # Evaluate both against ground truth
+        eval_pq_fs = faiss.eval_intersection(I_pq_fs[:, :k], I_f[:, :k])
+        eval_pq_fs /= ds.nq * k
+        eval_rbq_fs = faiss.eval_intersection(I_rbq_fs[:, :k], I_f[:, :k])
+        eval_rbq_fs /= ds.nq * k
+
+        print(
+            f"PQFastScan is {eval_pq_fs}, "
+            f"RaBitQFastScan is {eval_rbq_fs}"
+        )
+
+        # RaBitQFastScan should have reasonable performance similar to regular
+        # RaBitQ
+        np.testing.assert_(eval_rbq_fs > 0.55)
+
+    def test_serialization(self):
+        """Test serialization and deserialization of RaBitQFastScan"""
+        ds = datasets.SyntheticDataset(64, 1000, 100, 20)
+
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+        index_rbq_fs.add(ds.get_database())
+
+        Dref, Iref = index_rbq_fs.search(ds.get_queries(), 10)
+
+        # Serialize and deserialize
+        b = faiss.serialize_index(index_rbq_fs)
+        index2 = faiss.deserialize_index(b)
+
+        Dnew, Inew = index2.search(ds.get_queries(), 10)
+
+        # Results should be identical
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
+
+    def test_memory_management(self):
+        """Test that memory is managed correctly during operations"""
+        ds = datasets.SyntheticDataset(128, 2000, 2000, 50)
+
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+
+        # Add data in chunks to test memory management
+        chunk_size = 500
+        for i in range(0, ds.nb, chunk_size):
+            end_idx = min(i + chunk_size, ds.nb)
+            chunk_data = ds.get_database()[i:end_idx]
+            index_rbq_fs.add(chunk_data)
+
+        # Verify total count
+        np.testing.assert_equal(index_rbq_fs.ntotal, ds.nb)
+
+        # Test search still works
+        _, I = index_rbq_fs.search(ds.get_queries(), 5)
+        np.testing.assert_equal(I.shape, (ds.nq, 5))
+
+    def test_invalid_parameters(self):
+        """Test proper error handling for invalid parameters"""
+        # Invalid dimension
+        with np.testing.assert_raises(Exception):
+            faiss.IndexRaBitQFastScan(0, faiss.METRIC_L2)
+
+        # Invalid metric (should only support L2 and IP)
+        try:
+            faiss.IndexRaBitQFastScan(64, faiss.METRIC_Lp)
+            np.testing.assert_(
+                False, "Should have raised exception for invalid metric"
+            )
+        except RuntimeError:
+            pass  # Expected
+
+    def test_thread_safety(self):
+        """Test that parallel operations work correctly"""
+        ds = datasets.SyntheticDataset(64, 2000, 2000, 100)
+
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, faiss.METRIC_L2)
+        index_rbq_fs.train(ds.get_train())
+        index_rbq_fs.add(ds.get_database())
+
+        # Search with multiple threads (implicitly tested through OpenMP)
+        k = 10
+        distances, labels = index_rbq_fs.search(ds.get_queries(), k)
+
+        # Basic sanity checks
+        np.testing.assert_equal(distances.shape, (ds.nq, k))
+        np.testing.assert_equal(labels.shape, (ds.nq, k))
+        np.testing.assert_(np.all(distances >= 0))
+        np.testing.assert_(np.all(labels >= 0))
+        np.testing.assert_(np.all(labels < ds.nb))
 
 
 class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
