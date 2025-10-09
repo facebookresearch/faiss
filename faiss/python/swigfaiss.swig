@@ -194,6 +194,13 @@ typedef uint64_t size_t;
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexIVFRaBitQ.h>
 
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
+
 %}
 
 /********************************************************
@@ -632,6 +639,18 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/utils/approx_topk/mode.h>
 
+#ifdef FAISS_ENABLE_SVS
+/* Hide SVS I/O helpers */
+%ignore faiss::svs_io::ReaderStreambuf;
+%ignore faiss::svs_io::WriterStreambuf;
+%ignore faiss::svs_io::SVSTempDirectory;
+
+%include  <faiss/svs/IndexSVSVamana.h>
+%include  <faiss/svs/IndexSVSFlat.h>
+%include  <faiss/svs/IndexSVSVamanaLVQ.h>
+%include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif // FAISS_ENABLE_SVS
+
 #ifdef GPU_WRAPPER
 
 // quiet SWIG warnings
@@ -758,6 +777,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+#ifdef FAISS_ENABLE_SVS
+    DOWNCAST ( IndexSVSFlat )
+    DOWNCAST ( IndexSVSVamanaLeanVec )
+    DOWNCAST ( IndexSVSVamanaLVQ )
+    DOWNCAST ( IndexSVSVamana )
+#endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

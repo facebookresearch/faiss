@@ -100,6 +100,16 @@ set(FAISS_SRC
   utils/distances_fused/simdlib_based.cpp
 )
 
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_SRC
+    svs/IndexSVSFlat.cpp
+    svs/IndexSVSVamana.cpp
+    svs/IndexSVSVamanaLVQ.cpp
+    svs/IndexSVSVamanaLeanVec.cpp
+    impl/svs_io.cpp
+  )
+endif()
+
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
@@ -241,6 +251,15 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
 )
 
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_HEADERS
+    svs/IndexSVSFlat.h
+    svs/IndexSVSVamana.h
+    svs/IndexSVSVamanaLVQ.h
+    svs/IndexSVSVamanaLeanVec.h
+  )
+endif()
+
 if(NOT WIN32)
   list(APPEND FAISS_SRC invlists/OnDiskInvertedLists.cpp)
   list(APPEND FAISS_HEADERS invlists/OnDiskInvertedLists.h)
@@ -320,6 +339,25 @@ if(NOT WIN32)
   endif()
 endif()
 
+if(FAISS_ENABLE_SVS)
+  include(FetchContent)
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-shared-library-1.0.0-NIGHTLY-20251007.tar.gz")
+  FetchContent_Declare(
+      svs
+      URL "${SVS_URL}"
+  )
+  FetchContent_MakeAvailable(svs)
+  list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
+  find_package(svs REQUIRED)
+  target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
+
+  target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx2 PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx512 PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss_sve PUBLIC svs::svs svs::svs_shared_library)
+endif()
+
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -335,6 +373,23 @@ target_include_directories(faiss_avx512_spr PUBLIC
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_sve PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+if(FAISS_ENABLE_SVS)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx2 PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx512 PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_avx512_spr PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+  # Handle `#include <svs/foo.h>`.
+  target_include_directories(faiss_sve PUBLIC
+    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
+endif()
 
 set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve PROPERTIES
   POSITION_INDEPENDENT_CODE ON
@@ -347,6 +402,14 @@ if(WIN32)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
+endif()
+
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS)
 endif()
 
 if(WIN32)
