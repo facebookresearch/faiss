@@ -127,14 +127,12 @@ void IndexSVSFlat::deserialize_impl(std::istream& in) {
 
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
-            impl = new svs::Flat(
-                    svs::Flat::assemble<float, storage_type>(
-                            in, svs::DistanceIP(), std::move(threadpool)));
+            impl = new svs::Flat(svs::Flat::assemble<float, storage_type>(
+                    in, svs::DistanceIP(), std::move(threadpool)));
             break;
         case METRIC_L2:
-            impl = new svs::Flat(
-                    svs::Flat::assemble<float, storage_type>(
-                            in, svs::DistanceL2(), std::move(threadpool)));
+            impl = new svs::Flat(svs::Flat::assemble<float, storage_type>(
+                    in, svs::DistanceL2(), std::move(threadpool)));
             break;
         default:
             FAISS_ASSERT(!"not supported SVS distance");

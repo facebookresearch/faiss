@@ -165,12 +165,10 @@ svs::DynamicVamana* deserialize_impl_t(
 
     return std::visit(
             [&](auto&& distance) {
-                return new svs::DynamicVamana(
-                        svs::DynamicVamana::
-                                assemble<float, storage_type_t<ElementType>>(
-                                        stream,
-                                        std::move(distance),
-                                        std::move(threadpool)));
+                return new svs::DynamicVamana(svs::DynamicVamana::assemble<
+                                              float,
+                                              storage_type_t<ElementType>>(
+                        stream, std::move(distance), std::move(threadpool)));
             },
             get_svs_distance(metric));
 }

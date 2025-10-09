@@ -181,12 +181,10 @@ void IndexSVSVamanaLVQ::deserialize_impl(std::istream& in) {
                             FAISS_ASSERT(!"not supported SVS LVQ level");
                     }
                 } else {
-                    impl = new svs::DynamicVamana(
-                            svs::DynamicVamana::
-                                    assemble<float, storage_type_sq>(
-                                            in,
-                                            svs_distance,
-                                            std::move(threadpool)));
+                    impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<
+                                                  float,
+                                                  storage_type_sq>(
+                            in, svs_distance, std::move(threadpool)));
                 }
             },
             svs_distance);
