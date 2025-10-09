@@ -947,29 +947,29 @@ IndexBinary* index_binary_factory(
     // Check for IDMap2 or IDMap as prefix
     if (desc_str.rfind("IDMap2,", 0) == 0 && desc_str.size() > 7) {
         std::string sub_desc = desc_str.substr(7);
-        IndexBinary* sub_index = index_binary_factory(
-                d, sub_desc.c_str(), own_invlists);
+        IndexBinary* sub_index =
+                index_binary_factory(d, sub_desc.c_str(), own_invlists);
         return new IndexBinaryIDMap2(sub_index);
     }
     if (desc_str.rfind("IDMap,", 0) == 0 && desc_str.size() > 6) {
         std::string sub_desc = desc_str.substr(6);
-        IndexBinary* sub_index = index_binary_factory(
-                d, sub_desc.c_str(), own_invlists);
+        IndexBinary* sub_index =
+                index_binary_factory(d, sub_desc.c_str(), own_invlists);
         return new IndexBinaryIDMap(sub_index);
     }
     // Check for IDMap2 or IDMap as suffix
     if (desc_str.size() > 7 &&
         desc_str.compare(desc_str.size() - 7, 7, ",IDMap2") == 0) {
         std::string sub_desc = desc_str.substr(0, desc_str.size() - 7);
-        IndexBinary* sub_index = index_binary_factory(
-                d, sub_desc.c_str(), own_invlists);
+        IndexBinary* sub_index =
+                index_binary_factory(d, sub_desc.c_str(), own_invlists);
         return new IndexBinaryIDMap2(sub_index);
     }
     if (desc_str.size() > 6 &&
         desc_str.compare(desc_str.size() - 6, 6, ",IDMap") == 0) {
         std::string sub_desc = desc_str.substr(0, desc_str.size() - 6);
-        IndexBinary* sub_index = index_binary_factory(
-                d, sub_desc.c_str(), own_invlists);
+        IndexBinary* sub_index =
+                index_binary_factory(d, sub_desc.c_str(), own_invlists);
         return new IndexBinaryIDMap(sub_index);
     }
 
