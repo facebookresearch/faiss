@@ -29,6 +29,7 @@ set(FAISS_SRC
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
   IndexIVFRaBitQ.cpp
+  IndexIVFRaBitQFastScan.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexNNDescent.cpp
@@ -129,6 +130,7 @@ set(FAISS_HEADERS
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
   IndexIVFRaBitQ.h
+  IndexIVFRaBitQFastScan.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexNeuralNetCodec.h

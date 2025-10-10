@@ -20,62 +20,63 @@ using rabitq_utils::QueryFactorsData;
 /// Processor for handling RaBitQ query factors during fast scan
 /// Specialized for QueryFactorsData - the only type ever used in practice
 /// Thread safety: Multiple threads may safely call methods simultaneously
-/// as long as they access different query_id values. Designed for parallel
-/// access patterns where each thread processes a distinct range of queries.
+/// as long as they access different indices. Designed for parallel access
+/// patterns where each thread processes a distinct range of indices.
 struct QueryFactorsProcessor {
    private:
     // Query factors data storage - owned by this processor
     std::vector<QueryFactorsData> query_factors_storage;
-    size_t num_queries;
 
-    /// Validate query access bounds
-    /// @param query_id The query ID to validate
-    /// @throws FaissException if query_id is out of range or processor
+    /// Validate access bounds
+    /// @param index The index to validate
+    /// @throws FaissException if index is out of range or processor
     /// uninitialized
-    void validate_access(size_t query_id) const {
+    void validate_access(size_t index) const {
         FAISS_THROW_IF_NOT_MSG(
                 !query_factors_storage.empty(),
                 "QueryFactorsProcessor: processor not initialized");
         FAISS_THROW_IF_NOT_MSG(
-                query_id < num_queries,
-                "QueryFactorsProcessor: query_id out of range");
+                index < query_factors_storage.size(),
+                "QueryFactorsProcessor: index out of range");
     }
 
    public:
-    /// Constructor optimized for QueryFactorsData (the only type ever used)
-    /// @param n_queries Number of queries in the batch
-    explicit QueryFactorsProcessor(size_t n_queries) : num_queries(n_queries) {
+    /// Constructor for query factors storage
+    /// @param storage_size Number of storage slots needed (for IVF: n_queries *
+    /// n_lists)
+    explicit QueryFactorsProcessor(size_t storage_size) {
         FAISS_THROW_IF_NOT_MSG(
-                n_queries > 0,
-                "QueryFactorsProcessor: n_queries must be positive");
+                storage_size > 0,
+                "QueryFactorsProcessor: storage_size must be positive");
 
         // Direct allocation - no overflow risk with QueryFactorsData size
-        query_factors_storage.resize(n_queries);
+        query_factors_storage.resize(storage_size);
     }
 
     /// Default constructor (no query factors)
-    QueryFactorsProcessor() : num_queries(0) {}
+    QueryFactorsProcessor() = default;
 
-    /// Get query factors for a specific query
-    /// @param query_id The ID of the query (0-based index)
+    /// Get query factors for a specific index
+    /// @param index The storage index (user computes: query_id for 1D, query_id
+    /// * nlist + list_id for IVF)
     /// @return Const reference to query factors data
-    /// @throws FaissException if query_id is out of range or processor
+    /// @throws FaissException if index is out of range or processor
     /// uninitialized
-    const QueryFactorsData& get_query_factors(size_t query_id) const {
-        validate_access(query_id);
-        return query_factors_storage[query_id];
+    const QueryFactorsData& get_query_factors(size_t index) const {
+        validate_access(index);
+        return query_factors_storage[index];
     }
 
-    /// Set query factors for a specific query
-    /// @param query_id The ID of the query (0-based index)
+    /// Set query factors for a specific index
+    /// @param index The storage index (user computes: query_id for 1D, query_id
+    /// * nlist + list_id for IVF)
     /// @param factors The query factors data to store
-    /// @throws FaissException if query_id is out of range or processor
+    /// @throws FaissException if index is out of range or processor
     /// uninitialized
-    /// @note Thread Safety: Safe for concurrent access with different query_id
-    /// values
-    void set_query_factors(size_t query_id, const QueryFactorsData& factors) {
-        validate_access(query_id);
-        query_factors_storage[query_id] = factors;
+    /// @note Thread Safety: Safe for concurrent access with different indices
+    void set_query_factors(size_t index, const QueryFactorsData& factors) {
+        validate_access(index);
+        query_factors_storage[index] = factors;
     }
 
     /// Check if query factors are available
@@ -84,10 +85,10 @@ struct QueryFactorsProcessor {
         return !query_factors_storage.empty();
     }
 
-    /// Get the number of queries for which factors are available
-    /// @return Number of queries with available factors
-    size_t get_num_queries() const noexcept {
-        return num_queries;
+    /// Get the total storage size
+    /// @return Number of storage slots available
+    size_t size() const noexcept {
+        return query_factors_storage.size();
     }
 };
 
