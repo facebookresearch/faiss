@@ -563,14 +563,8 @@ InvertedListScanner* get_InvertedListScanner1(
         const IndexIVFFlatPanorama* ivf,
         bool store_pairs,
         const IDSelector* sel) {
-    if (ivf->metric_type == METRIC_INNER_PRODUCT) {
-        // TODO: Implement inner product
-        FAISS_THROW_MSG("inner product not supported");
-        return new IVFFlatScannerPanorama<
-                METRIC_INNER_PRODUCT,
-                CMin<float, int64_t>,
-                use_sel>(ivf->d, store_pairs, sel);
-    } else if (ivf->metric_type == METRIC_L2) {
+    // TODO: Implement inner product
+    if (ivf->metric_type == METRIC_L2) {
         return new IVFFlatScannerPanorama<
                 METRIC_L2,
                 CMax<float, int64_t>,
