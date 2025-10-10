@@ -22,7 +22,7 @@ namespace faiss {
  * encoded, the code array just contains the raw float entries.
  */
 struct IndexIVFFlat : IndexIVF {
-  IndexIVFFlat(
+    IndexIVFFlat(
             Index* quantizer,
             size_t d,
             size_t nlist_,

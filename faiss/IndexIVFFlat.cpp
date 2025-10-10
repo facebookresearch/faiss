@@ -541,16 +541,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         return dis;
     }
 
-    // Find ID in heap and return index, or k if not found
-    inline size_t find_in_heap(idx_t id, idx_t* heap_ids, size_t k) const {
-        for (size_t i = 0; i < k; i++) {
-            if (heap_ids[i] == id) {
-                return i;
-            }
-        }
-        return k; // not found
-    }
-
     /// add one result for query i
     inline bool add_result(
             float dis,
@@ -574,6 +564,8 @@ InvertedListScanner* get_InvertedListScanner1(
         bool store_pairs,
         const IDSelector* sel) {
     if (ivf->metric_type == METRIC_INNER_PRODUCT) {
+        // TODO: Implement inner product
+        FAISS_THROW_MSG("inner product not supported");
         return new IVFFlatScannerPanorama<
                 METRIC_INNER_PRODUCT,
                 CMin<float, int64_t>,
@@ -673,8 +665,8 @@ void IndexIVFFlatPanorama::add(idx_t n, const float* x) {
                 suffix_sums[d] = 0.0f;
 
                 for (int j = d - 1; j >= 0; j--) {
-                    float squaredVal = vector[j] * vector[j];
-                    suffix_sums[j] = suffix_sums[j + 1] + squaredVal;
+                    float squared_val = vector[j] * vector[j];
+                    suffix_sums[j] = suffix_sums[j + 1] + squared_val;
                 }
 
                 // Extract level sums and take square root
@@ -769,7 +761,7 @@ void IndexIVFFlatPanorama::search_preassigned(
         max_num_codes = std::max(max_num_codes, invlists->list_size(i));
     }
 
-    std::vector<float> suffixSums(d + 1);
+    std::vector<float> suffix_sums(d + 1);
     std::vector<float> query_cum_norms(n_levels + 1);
     std::vector<float> query(d);
     std::vector<float> exact_distances(std::min(max_num_codes, batch_size));
@@ -974,20 +966,20 @@ void IndexIVFFlatPanorama::search_preassigned(
                     continue;
                 }
 
-                suffixSums[d] = 0.0f;
+                suffix_sums[d] = 0.0f;
 
                 const float* query = x + i * d;
 
                 for (int j = d - 1; j >= 0; --j) {
-                    float squaredVal = query[j] * query[j];
-                    suffixSums[j] = suffixSums[j + 1] + squaredVal;
+                    float squared_val = query[j] * query[j];
+                    suffix_sums[j] = suffix_sums[j + 1] + squared_val;
                 }
 
                 // Extract level sums and take square root
                 for (int level_idx = 0; level_idx < n_levels; level_idx++) {
-                    int startIdx = level_idx * level_width;
-                    if (startIdx < d) {
-                        query_cum_norms[level_idx] = sqrt(suffixSums[startIdx]);
+                    int start_idx = level_idx * level_width;
+                    if (start_idx < d) {
+                        query_cum_norms[level_idx] = sqrt(suffix_sums[start_idx]);
                     } else {
                         query_cum_norms[level_idx] = 0.0f;
                     }
