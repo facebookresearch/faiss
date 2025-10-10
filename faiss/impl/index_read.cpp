@@ -34,6 +34,7 @@
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -43,6 +44,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -1224,6 +1226,27 @@ Index* read_index(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = imm;
+    } else if (h == fourcc("Irfs")) {
+        IndexRaBitQFastScan* idxqfs = new IndexRaBitQFastScan();
+        read_index_header(idxqfs, f);
+        read_RaBitQuantizer(&idxqfs->rabitq, f);
+        READVECTOR(idxqfs->center);
+        READ1(idxqfs->qb);
+        READVECTOR(idxqfs->factors_storage);
+        READ1(idxqfs->bbs);
+        READ1(idxqfs->ntotal2);
+        READ1(idxqfs->M2);
+        READ1(idxqfs->code_size);
+
+        // Need to initialize the FastScan base class fields
+        const size_t M_fastscan = (idxqfs->d + 3) / 4;
+        constexpr size_t nbits_fastscan = 4;
+        idxqfs->M = M_fastscan;
+        idxqfs->nbits = nbits_fastscan;
+        idxqfs->ksub = (1 << nbits_fastscan);
+
+        READVECTOR(idxqfs->codes);
+        idx = idxqfs;
     } else if (h == fourcc("Ixrq")) {
         IndexRaBitQ* idxq = new IndexRaBitQ();
         read_index_header(idxq, f);
@@ -1242,6 +1265,30 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrq->qb);
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
+    } else if (h == fourcc("Iwrf")) {
+        IndexIVFRaBitQFastScan* ivrqfs = new IndexIVFRaBitQFastScan();
+        read_ivf_header(ivrqfs, f);
+        read_RaBitQuantizer(&ivrqfs->rabitq, f);
+        READ1(ivrqfs->by_residual);
+        READ1(ivrqfs->code_size);
+        READ1(ivrqfs->bbs);
+        READ1(ivrqfs->qbs2);
+        READ1(ivrqfs->M2);
+        READ1(ivrqfs->implem);
+        READ1(ivrqfs->qb);
+        READ1(ivrqfs->centered);
+        READVECTOR(ivrqfs->factors_storage);
+
+        // Initialize FastScan base class fields
+        const size_t M_fastscan = (ivrqfs->d + 3) / 4;
+        constexpr size_t nbits_fastscan = 4;
+        ivrqfs->M = M_fastscan;
+        ivrqfs->nbits = nbits_fastscan;
+        ivrqfs->ksub = (1 << nbits_fastscan);
+
+        read_InvertedLists(ivrqfs, f, io_flags);
+        ivrqfs->init_code_packer();
+        idx = ivrqfs;
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

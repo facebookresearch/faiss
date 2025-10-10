@@ -210,7 +210,9 @@ void IndexIVFPQFastScan::compute_LUT(
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases) const {
+        AlignedTable<float>& biases,
+        idx_t,
+        const ProcessingContext&) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
     size_t nprobe = this->nprobe;
