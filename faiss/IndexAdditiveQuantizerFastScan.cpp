@@ -13,6 +13,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/LookupTableScaler.h>
+#include <faiss/impl/ProcessingContext.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/utils/quantize_lut.h>
@@ -153,7 +154,9 @@ void IndexAdditiveQuantizerFastScan::compute_codes(
 void IndexAdditiveQuantizerFastScan::compute_float_LUT(
         float* lut,
         idx_t n,
-        const float* x) const {
+        const float* x,
+        idx_t,
+        const ProcessingContext&) const {
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->compute_LUT(n, x, lut, 1.0f);
     } else {
@@ -200,10 +203,12 @@ void IndexAdditiveQuantizerFastScan::search(
     }
 
     NormTableScaler scaler(norm_scale);
+    ProcessingContext context;
+    context.norm_scaler = &scaler;
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<true>(n, x, k, distances, labels, context);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<false>(n, x, k, distances, labels, context);
     }
 }
 

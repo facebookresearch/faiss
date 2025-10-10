@@ -41,6 +41,7 @@ set(FAISS_SRC
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
   IndexRaBitQ.cpp
+  IndexRaBitQFastScan.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
   IndexRowwiseMinMax.cpp
@@ -63,6 +64,7 @@ set(FAISS_SRC
   impl/ProductQuantizer.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
+  impl/RaBitQUtils.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
@@ -141,6 +143,7 @@ set(FAISS_HEADERS
   IndexRefine.h
   IndexReplicas.h
   IndexRaBitQ.h
+  IndexRaBitQFastScan.h
   IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
@@ -163,6 +166,8 @@ set(FAISS_HEADERS
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
   impl/LookupTableScaler.h
+  impl/ProcessingContext.h
+  impl/QueryFactorsProcessor.h
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
@@ -171,6 +176,7 @@ set(FAISS_HEADERS
   impl/ProductQuantizer.h
   impl/Quantizer.h
   impl/RaBitQuantizer.h
+  impl/RaBitQUtils.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
