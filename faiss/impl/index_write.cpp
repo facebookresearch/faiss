@@ -41,6 +41,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -861,6 +862,21 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(imm_2, f);
         write_index(imm_2->index, f);
+    } else if (
+            const IndexRaBitQFastScan* idxqfs =
+                    dynamic_cast<const IndexRaBitQFastScan*>(idx)) {
+        uint32_t h = fourcc("Irfs");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_RaBitQuantizer(&idxqfs->rabitq, f);
+        WRITEVECTOR(idxqfs->center);
+        WRITE1(idxqfs->qb);
+        WRITEVECTOR(idxqfs->factors_storage);
+        WRITE1(idxqfs->bbs);
+        WRITE1(idxqfs->ntotal2);
+        WRITE1(idxqfs->M2);
+        WRITE1(idxqfs->code_size);
+        WRITEVECTOR(idxqfs->codes);
     } else if (
             const IndexRaBitQ* idxq = dynamic_cast<const IndexRaBitQ*>(idx)) {
         uint32_t h = fourcc("Ixrq");
