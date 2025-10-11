@@ -379,7 +379,8 @@ ResultHandlerCompare<C, true>* make_knn_handler_fixC(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel) {
+        const IDSelector* sel,
+        const float* normalizers) {
     using HeapHC = HeapHandler<C, true>;
     using ReservoirHC = ReservoirHandler<C, true>;
     using SingleResultHC = SingleResultHandler<C, true>;
@@ -387,63 +388,16 @@ ResultHandlerCompare<C, true>* make_knn_handler_fixC(
     if (k == 1) {
         return new SingleResultHC(n, 0, distances, labels, sel);
     } else if (impl % 2 == 0) {
-        return new HeapHC(n, 0, k, distances, labels, sel);
+        return new HeapHC(n, 0, k, distances, labels, sel, normalizers);
     } else /* if (impl % 2 == 1) */ {
         return new ReservoirHC(n, 0, k, 2 * k, distances, labels, sel);
     }
 }
 
-SIMDResultHandlerToFloat* make_knn_handler(
-        bool is_max,
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel) {
-    if (is_max) {
-        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel);
-    } else {
-        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel);
-    }
-}
-
 using CoarseQuantized = IndexIVFFastScan::CoarseQuantized;
 
-struct CoarseQuantizedWithBuffer : CoarseQuantized {
-    explicit CoarseQuantizedWithBuffer(const CoarseQuantized& cq)
-            : CoarseQuantized(cq) {}
-
-    bool done() const {
-        return ids != nullptr;
-    }
-
-    std::vector<idx_t> ids_buffer;
-    std::vector<float> dis_buffer;
-
-    void quantize(
-            const Index* quantizer,
-            idx_t n,
-            const float* x,
-            const SearchParameters* quantizer_params) {
-        dis_buffer.resize(nprobe * n);
-        ids_buffer.resize(nprobe * n);
-        quantizer->search(
-                n,
-                x,
-                nprobe,
-                dis_buffer.data(),
-                ids_buffer.data(),
-                quantizer_params);
-        dis = dis_buffer.data();
-        ids = ids_buffer.data();
-    }
-};
-
-struct CoarseQuantizedSlice : CoarseQuantizedWithBuffer {
-    size_t i0, i1;
+struct CoarseQuantizedSlice : IndexIVFFastScan::CoarseQuantizedWithBuffer {
+    const size_t i0, i1;
     CoarseQuantizedSlice(const CoarseQuantized& cq, size_t i0, size_t i1)
             : CoarseQuantizedWithBuffer(cq), i0(i0), i1(i1) {
         if (done()) {
@@ -485,6 +439,24 @@ int compute_search_nslice(
 }
 
 } // namespace
+
+SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
+        bool is_max,
+        int impl,
+        idx_t n,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        const float* normalizers) const {
+    if (is_max) {
+        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
+                impl, n, k, distances, labels, sel, normalizers);
+    } else {
+        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
+                impl, n, k, distances, labels, sel, normalizers);
+    }
+}
 
 void IndexIVFFastScan::search_dispatch_implem(
         idx_t n,
