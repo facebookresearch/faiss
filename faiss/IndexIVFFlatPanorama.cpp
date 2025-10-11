@@ -11,9 +11,7 @@
 
 #include <omp.h>
 
-#include <cinttypes>
 #include <cstdio>
-#include <numeric>
 
 #include <faiss/IndexFlat.h>
 
@@ -49,56 +47,6 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // IndexIVF first, with own_invlists set to false.
     this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, n_levels);
     this->own_invlists = own_invlists;
-}
-
-// TODO(Alexis): Take into account the level-oriented storage.
-void IndexIVFFlatPanorama::encode_vectors(
-        idx_t n,
-        const float* x,
-        const idx_t* list_nos,
-        uint8_t* codes,
-        bool include_listnos) const {
-    FAISS_THROW_IF_NOT(!by_residual);
-    if (!include_listnos) {
-        memcpy(codes, x, code_size * n);
-    } else {
-        size_t coarse_size = coarse_code_size();
-        for (size_t i = 0; i < n; i++) {
-            int64_t list_no = list_nos[i];
-            uint8_t* code = codes + i * (code_size + coarse_size);
-            const float* xi = x + i * d;
-            if (list_no >= 0) {
-                encode_listno(list_no, code);
-                memcpy(code + coarse_size, xi, code_size);
-            } else {
-                memset(code, 0, code_size + coarse_size);
-            }
-        }
-    }
-}
-
-// TODO(Alexis): Take into account the level-oriented storage.
-void IndexIVFFlatPanorama::decode_vectors(
-        idx_t n,
-        const uint8_t* codes,
-        const idx_t* /*listnos*/,
-        float* x) const {
-    for (size_t i = 0; i < n; i++) {
-        const uint8_t* code = codes + i * code_size;
-        float* xi = x + i * d;
-        memcpy(xi, code, code_size);
-    }
-}
-
-// TODO(Alexis): idk what this is yet.
-void IndexIVFFlatPanorama::sa_decode(idx_t n, const uint8_t* bytes, float* x)
-        const {
-    size_t coarse_size = coarse_code_size();
-    for (size_t i = 0; i < n; i++) {
-        const uint8_t* code = bytes + i * (code_size + coarse_size);
-        float* xi = x + i * d;
-        memcpy(xi, code + coarse_size, code_size);
-    }
 }
 
 namespace {

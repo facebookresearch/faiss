@@ -27,19 +27,6 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
             bool own_invlists = true,
             int n_levels = 1);
 
-    void encode_vectors(
-            idx_t n,
-            const float* x,
-            const idx_t* list_nos,
-            uint8_t* codes,
-            bool include_listnos = false) const override;
-
-    void decode_vectors(
-            idx_t n,
-            const uint8_t* codes,
-            const idx_t* list_nos,
-            float* x) const override;
-
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
             const IDSelector* sel,
@@ -47,8 +34,6 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
 
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
-
-    void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
    private:
     const size_t n_levels;
