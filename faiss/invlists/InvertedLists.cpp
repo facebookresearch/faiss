@@ -346,6 +346,155 @@ void ArrayInvertedLists::permute_invlists(const idx_t* map) {
 
 ArrayInvertedLists::~ArrayInvertedLists() {}
 
+/***********************************************
+ * ArrayInvertedListsPanorama implementation
+ **********************************************/
+
+ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
+        size_t nlist,
+        size_t code_size,
+        size_t n_levels)
+        : ArrayInvertedLists(nlist, code_size), n_levels(n_levels) {
+    FAISS_THROW_IF_NOT(n_levels > 0);
+    FAISS_THROW_IF_NOT(code_size % sizeof(float) == 0);
+    cum_sums.resize(nlist);
+}
+
+const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
+    assert(list_no < nlist);
+    return cum_sums[list_no].data();
+}
+
+size_t ArrayInvertedListsPanorama::add_entries(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code) {
+    assert(list_no < nlist);
+    size_t o = ids[list_no].size();
+
+    ids[list_no].resize(o + n_entry);
+    memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
+
+    codes[list_no].resize((o + n_entry) * code_size);
+    cum_sums[list_no].resize((o + n_entry) * (n_levels + 1));
+
+    copy_codes_to_level_layout(list_no, o, n_entry, code);
+    compute_cumulative_sums(list_no, o, n_entry, code);
+
+    return o;
+}
+
+void ArrayInvertedListsPanorama::update_entries(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code) {
+    assert(list_no < nlist);
+    assert(n_entry + offset <= ids[list_no].size());
+
+    memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
+    copy_codes_to_level_layout(list_no, offset, n_entry, code);
+    compute_cumulative_sums(list_no, offset, n_entry, code);
+}
+
+void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
+    ids[list_no].resize(new_size);
+    codes[list_no].resize(new_size * code_size);
+    cum_sums[list_no].resize(new_size * (n_levels + 1));
+}
+
+void ArrayInvertedListsPanorama::compute_cumulative_sums(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const uint8_t* code) {
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
+    const size_t d = code_size / sizeof(float);
+    const size_t level_width = d / n_levels;
+
+    std::vector<float> suffix_sums(d + 1);
+
+    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
+        size_t current_pos = offset + entry_idx;
+        size_t batch_no = current_pos / kBatchSize;
+        size_t pos_in_batch = current_pos % kBatchSize;
+
+        const float* vector = vectors + entry_idx * d;
+
+        // Compute suffix sums of squared values.
+        suffix_sums[d] = 0.0f;
+        for (int j = d - 1; j >= 0; j--) {
+            float squared_val = vector[j] * vector[j];
+            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+        }
+
+        // Store cumulative sums in batch-oriented layout.
+        size_t cumsum_batch_offset = batch_no * kBatchSize * (n_levels + 1);
+        float* cumsum_base = cum_sums[list_no].data();
+
+        for (size_t level = 0; level < n_levels; level++) {
+            size_t start_idx = level * level_width;
+            size_t cumsum_offset =
+                    cumsum_batch_offset + level * kBatchSize + pos_in_batch;
+            if (start_idx < d) {
+                cumsum_base[cumsum_offset] = sqrt(suffix_sums[start_idx]);
+            } else {
+                cumsum_base[cumsum_offset] = 0.0f;
+            }
+        }
+
+        // Last level sum is always 0.
+        size_t cumsum_offset =
+                cumsum_batch_offset + n_levels * kBatchSize + pos_in_batch;
+        cumsum_base[cumsum_offset] = 0.0f;
+    }
+}
+
+// Helper method to copy codes into level-oriented batch layout at a given
+// offset in the list.
+void ArrayInvertedListsPanorama::copy_codes_to_level_layout(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const uint8_t* code) {
+    uint8_t* codes_base = codes[list_no].data();
+    const size_t level_code_size = code_size / n_levels;
+
+    size_t current_pos = offset;
+    for (size_t entry_idx = 0; entry_idx < n_entry;) {
+        // Determine which batch we're in and position within that batch.
+        size_t batch_no = current_pos / kBatchSize;
+        size_t pos_in_batch = current_pos % kBatchSize;
+        size_t entries_in_this_batch =
+                std::min(n_entry - entry_idx, kBatchSize - pos_in_batch);
+
+        // Copy entries into level-oriented layout for this batch.
+        size_t batch_offset = batch_no * kBatchSize * code_size;
+        for (size_t level = 0; level < n_levels; level++) {
+            size_t level_offset = level * level_code_size * kBatchSize;
+            size_t start_byte = level * level_code_size;
+            size_t end_byte = std::min(start_byte + level_code_size, code_size);
+            size_t copy_size = end_byte - start_byte;
+
+            for (size_t i = 0; i < entries_in_this_batch; i++) {
+                const uint8_t* src =
+                        code + (entry_idx + i) * code_size + start_byte;
+                uint8_t* dest = codes_base + batch_offset + level_offset +
+                        (pos_in_batch + i) * level_code_size;
+
+                memcpy(dest, src, copy_size);
+            }
+        }
+
+        entry_idx += entries_in_this_batch;
+        current_pos += entries_in_this_batch;
+    }
+}
+
 /*****************************************************************
  * Meta-inverted list implementations
  *****************************************************************/

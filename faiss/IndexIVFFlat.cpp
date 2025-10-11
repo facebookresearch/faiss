@@ -508,532 +508,541 @@ void IndexIVFFlatDedup::reconstruct_from_offset(int64_t, int64_t, float*)
     FAISS_THROW_MSG("not implemented");
 }
 
-// TODO(Alexis): Legacy bloat below.
-namespace {
-
-static uint64_t total_active = 0;
-static uint64_t total_points = 0;
-
-template <MetricType metric, class C, bool use_sel>
-struct IVFFlatScannerPanorama : InvertedListScanner {
-    size_t d;
-
-    IVFFlatScannerPanorama(size_t d, bool store_pairs, const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), d(d) {
-        keep_max = is_similarity_metric(metric);
-        code_size = d * sizeof(float);
-    }
-
-    const float* xi;
-    void set_query(const float* query) override {
-        this->xi = query;
-    }
-
-    void set_list(idx_t list_no, float /* coarse_dis */) override {
-        this->list_no = list_no;
-    }
-
-    float distance_to_code(const uint8_t* code) const override {
-        const float* yj = (float*)code;
-        float dis = metric == METRIC_INNER_PRODUCT
-                ? fvec_inner_product(xi, yj, d)
-                : fvec_L2sqr(xi, yj, d);
-        return dis;
-    }
-
-    /// add one result for query i
-    inline bool add_result(
-            float dis,
-            idx_t idx,
-            float threshold,
-            idx_t* heap_ids,
-            float* heap_dis,
-            size_t k) const {
-        if (C::cmp(threshold, dis)) {
-            heap_replace_top<C>(k, heap_dis, heap_ids, dis, idx);
-            threshold = heap_dis[0];
-            return true;
-        }
-        return false;
-    }
-};
-
-template <bool use_sel>
-InvertedListScanner* get_InvertedListScanner1(
-        const IndexIVFFlatPanorama* ivf,
-        bool store_pairs,
-        const IDSelector* sel) {
-    // TODO: Implement inner product
-    if (ivf->metric_type == METRIC_L2) {
-        return new IVFFlatScannerPanorama<
-                METRIC_L2,
-                CMax<float, int64_t>,
-                use_sel>(ivf->d, store_pairs, sel);
-    } else {
-        FAISS_THROW_MSG("metric type not supported");
-    }
-}
-
-} // anonymous namespace
-
-void IndexIVFFlatPanorama::add(idx_t n, const float* x) {
-    FAISS_ASSERT(!added);
-    FAISS_ASSERT(d % n_levels == 0);
-    added = true;
-
-    IndexIVFFlat::add(n, x);
-
-    size_t new_n = 0;
-    size_t total_batches = 0;
-    n_batches = new size_t[nlist];
-
-    column_offsets = new size_t[nlist];
-    for (size_t i = 0; i < nlist; i++) {
-        column_offsets[i] = new_n;
-        new_n += invlists->list_size(i) * d;
-    }
-
-    column_storage = new float[d * n];
-    column_storage_offsets = new float*[nlist];
-
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
-        size_t list_size = invlists->list_size(list_no);
-        n_batches[list_no] = (list_size + batch_size - 1) / batch_size;
-        size_t col_offset = column_offsets[list_no];
-        column_storage_offsets[list_no] = column_storage + col_offset;
-
-        for (size_t batch_no = 0; batch_no < n_batches[list_no]; batch_no++) {
-            size_t curr_batch_size =
-                    std::min(list_size - batch_no * batch_size, batch_size);
-
-            size_t batch_offset = batch_no * batch_size * d;
-            size_t idx_offset = batch_no * batch_size;
-
-            for (size_t level = 0; level < n_levels; level++) {
-                size_t level_offset = level * level_width * curr_batch_size;
-
-                for (size_t point_idx = 0; point_idx < curr_batch_size;
-                     point_idx++) {
-                    float* dest = column_storage + batch_offset + col_offset +
-                            level_offset + point_idx * level_width;
-                    const float* point = (float*)invlists->get_single_code(
-                            list_no, idx_offset + point_idx);
-                    size_t start_idx = level * level_width;
-                    size_t end_idx =
-                            std::min(start_idx + level_width, (size_t)d);
-                    size_t copy_size = end_idx - start_idx;
-                    memcpy(dest, point + start_idx, copy_size * sizeof(float));
-                }
-            }
-        }
-    }
-
-    cum_sums = new float[(n_levels + 1) * n];
-    cum_sum_offsets = new size_t[nlist];
-
-    size_t cum_size = 0;
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
-        cum_sum_offsets[list_no] = cum_size;
-        cum_size += invlists->list_size(list_no) * (n_levels + 1);
-    }
-
-    std::vector<float> vector(d);
-
-    for (size_t list_no = 0; list_no < nlist; list_no++) {
-        const idx_t* idx = invlists->get_ids(list_no);
-        size_t list_size = invlists->list_size(list_no);
-
-        for (size_t batch_no = 0; batch_no < n_batches[list_no]; batch_no++) {
-            size_t curr_batch_size =
-                    std::min(list_size - batch_no * batch_size, batch_size);
-            size_t batch_offset = batch_no * batch_size * (n_levels + 1);
-            size_t index_offset = batch_no * batch_size;
-
-            for (size_t point = 0; point < curr_batch_size; point++) {
-                float init_exact_distance = 0.0f;
-
-                reconstruct_from_offset(
-                        list_no, point + index_offset, vector.data());
-
-                std::vector<float> suffix_sums(d + 1);
-                suffix_sums[d] = 0.0f;
-
-                for (int j = d - 1; j >= 0; j--) {
-                    float squared_val = vector[j] * vector[j];
-                    suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-                }
-
-                // Extract level sums and take square root
-                for (int level = 0; level < n_levels; level++) {
-                    int start_idx = level * level_width;
-                    size_t offset = cum_sum_offsets[list_no] + batch_offset +
-                            level * curr_batch_size + point;
-                    if (start_idx < d) {
-                        cum_sums[offset] = sqrt(suffix_sums[start_idx]);
-                    } else {
-                        cum_sums[offset] = 0.0f;
-                    }
-                }
-
-                // Last level sum
-                size_t offset = cum_sum_offsets[list_no] + batch_offset +
-                        n_levels * curr_batch_size + point;
-                cum_sums[offset] = 0.0f;
-            }
-        }
-    }
-}
-
-void IndexIVFFlatPanorama::search_preassigned(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        const idx_t* keys, // which clusters
-        const float* coarse_dis,
-        float* distances,
-        idx_t* labels,
-        bool store_pairs,
-        const IVFSearchParameters* params,
-        IndexIVFStats* ivf_stats) const {
-    FAISS_THROW_IF_NOT(k > 0);
-
-    idx_t nprobe = params ? params->nprobe : this->nprobe;
-    nprobe = std::min((idx_t)nlist, nprobe);
-    FAISS_THROW_IF_NOT(nprobe > 0);
-
-    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
-    idx_t max_codes = params ? params->max_codes : this->max_codes;
-    IDSelector* sel = params ? params->sel : nullptr;
-    const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
-    if (selr) {
-        if (selr->assume_sorted) {
-            sel = nullptr; // use special IDSelectorRange processing
-        } else {
-            selr = nullptr; // use generic processing
-        }
-    }
-
-    FAISS_THROW_IF_NOT_MSG(
-            !(sel && store_pairs),
-            "selector and store_pairs cannot be combined");
-
-    FAISS_THROW_IF_NOT_MSG(
-            !invlists->use_iterator || (max_codes == 0 && store_pairs == false),
-            "iterable inverted lists don't support max_codes and store_pairs");
-
-    size_t nlistv = 0, ndis = 0;
-
-    using HeapForIP = CMin<float, idx_t>;
-    using HeapForL2 = CMax<float, idx_t>;
-
-    bool interrupt = false;
-    std::mutex exception_mutex;
-    std::string exception_string;
-
-    int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
-    bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
-
-    FAISS_THROW_IF_NOT_MSG(
-            max_codes == 0 || pmode == 0 || pmode == 3,
-            "max_codes supported only for parallel_mode = 0 or 3");
-
-    if (max_codes == 0) {
-        max_codes = unlimited_list_size;
-    }
-
-    [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
-            (pmode == 0           ? false
-                     : pmode == 3 ? n > 1
-                     : pmode == 1 ? nprobe > 1
-                                  : nprobe * n > 1);
-
-    void* inverted_list_context =
-            params ? params->inverted_list_context : nullptr;
-
-    size_t max_num_codes = 0;
-    for (size_t i = 0; i < nlist; i++) {
-        max_num_codes = std::max(max_num_codes, invlists->list_size(i));
-    }
-
-    std::vector<float> suffix_sums(d + 1);
-    std::vector<float> query_cum_norms(n_levels + 1);
-    std::vector<float> query(d);
-    std::vector<float> exact_distances(std::min(max_num_codes, batch_size));
-    std::vector<uint32_t> indices(std::min(max_num_codes, batch_size));
-
-#pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis)
-    {
-        std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs, sel, params));
-
-        /*****************************************************
-         * Depending on parallel_mode, there are two possible ways
-         * to organize the search. Here we define local functions
-         * that are in common between the two
-         ******************************************************/
-
-        // initialize + reorder a result heap
-
-        auto init_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
-                return;
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_heapify<HeapForIP>(k, simi, idxi);
-            } else {
-                heap_heapify<HeapForL2>(k, simi, idxi);
-            }
-        };
-
-        auto add_local_results = [&](const float* local_dis,
-                                     const idx_t* local_idx,
-                                     float* simi,
-                                     idx_t* idxi) {
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_addn<HeapForIP>(k, simi, idxi, local_dis, local_idx, k);
-            } else {
-                heap_addn<HeapForL2>(k, simi, idxi, local_dis, local_idx, k);
-            }
-        };
-
-        auto reorder_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init)
-                return;
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_reorder<HeapForIP>(k, simi, idxi);
-            } else {
-                heap_reorder<HeapForL2>(k, simi, idxi);
-            }
-        };
-
-        // single list scan using the current scanner (with query
-        // set porperly) and storing results in simi and idxi
-        auto scan_one_list = [&](const float* query,
-                                 size_t list_no,
-                                 const float* cum_sums,
-                                 const float* query_cum_norms,
-                                 float* exact_distances,
-                                 idx_t cluster_id,
-                                 float* simi,
-                                 idx_t* idxi,
-                                 idx_t list_size_max,
-                                 std::vector<uint32_t>& indices) {
-            if (cluster_id < 0) {
-                return (size_t)0;
-            }
-            FAISS_THROW_IF_NOT_FMT(
-                    cluster_id < (idx_t)nlist,
-                    "Invalid key=%" PRId64 " nlist=%zd\n",
-                    cluster_id,
-                    nlist);
-
-            if (invlists->is_empty(cluster_id, inverted_list_context)) {
-                return (size_t)0;
-            }
-
-            scanner->set_list(cluster_id, 0);
-
-            nlistv++;
-
-            try {
-                FAISS_ASSERT(!invlists->use_iterator);
-                size_t list_size = invlists->list_size(cluster_id);
-                if (list_size > list_size_max) {
-                    list_size = list_size_max;
-                }
-
-                std::unique_ptr<InvertedLists::ScopedIds> sids;
-                const idx_t* ids = nullptr;
-
-                if (!store_pairs) {
-                    sids = std::make_unique<InvertedLists::ScopedIds>(
-                            invlists, cluster_id);
-                    ids = sids->get();
-                }
-
-                if (selr) { // IDSelectorRange
-                    // restrict search to a section of the inverted list
-                    size_t jmin, jmax;
-                    selr->find_sorted_ids_bounds(list_size, ids, &jmin, &jmax);
-                    list_size = jmax - jmin;
-                    if (list_size == 0) {
-                        return (size_t)0;
-                    }
-                    ids += jmin;
-                }
-
-                idx_t index_offset = 0;
-                size_t batch_offset = 0;
-                size_t batch_incr = batch_size * d;
-
-                for (size_t batch_no = 0; batch_no < n_batches[cluster_id];
-                     batch_no++) {
-                    size_t curr_batch_size =
-                            std::min(list_size - index_offset, batch_size);
-
-                    total_points += curr_batch_size;
-                    std::iota(
-                            indices.begin(),
-                            indices.begin() + curr_batch_size,
-                            0);
-
-                    // Initialize with the first cum sums of each point.
-                    for (size_t idx = 0; idx < curr_batch_size; idx++) {
-                        float squared_root = cum_sums[idx];
-                        exact_distances[idx] = squared_root * squared_root;
-                    }
-
-                    // offset by +1
-                    cum_sums += curr_batch_size;
-
-                    const float* storage =
-                            column_storage_offsets[cluster_id] + batch_offset;
-
-                    size_t start_dim = 0;
-                    size_t num_active = curr_batch_size;
-
-                    for (size_t level = 0; level < n_levels; level++) {
-                        float query_cum_norm = query_cum_norms[level + 1];
-
-                        size_t next_active = 0;
-                        total_active += num_active;
-                        for (size_t j = 0; j < num_active; j++) {
-                            int64_t idx = indices[j];
-                            const float* yj = storage + level_width * idx;
-
-                            float dot_product = fvec_inner_product(
-                                    query + start_dim, yj, level_width);
-
-                            float cum_sum = cum_sums[idx];
-                            float cauchy_schwarz_bound =
-                                    2.0f * cum_sum * query_cum_norm;
-
-                            exact_distances[idx] -= 2.0f * dot_product;
-                            float new_exact = exact_distances[idx];
-
-                            float lower_bound =
-                                    new_exact - cauchy_schwarz_bound * epsilon;
-
-                            indices[next_active] = idx;
-                            next_active += simi[0] > lower_bound;
-                        }
-
-                        cum_sums += curr_batch_size;
-                        start_dim += level_width;
-                        num_active = next_active;
-                        storage += level_width * curr_batch_size;
-                    }
-
-                    for (size_t j = 0; j < num_active; j++) {
-                        int64_t idx = indices[j];
-                        scanner->add_result(
-                                exact_distances[idx],
-                                ids[idx + index_offset],
-                                simi[0],
-                                idxi,
-                                simi,
-                                k);
-                    }
-
-                    index_offset += curr_batch_size;
-                    batch_offset += batch_incr;
-                }
-
-                return list_size;
-            } catch (const std::exception& e) {
-                std::lock_guard<std::mutex> lock(exception_mutex);
-                exception_string =
-                        demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
-                interrupt = true;
-                return size_t(0);
-            }
-        };
-
-        /****************************************************
-         * Actual loops
-         ****************************************************/
-
-        FAISS_ASSERT(pmode == 0);
-        if (pmode == 0) {
-#pragma omp for
-            for (idx_t i = 0; i < n; i++) {
-                if (interrupt) {
-                    continue;
-                }
-
-                suffix_sums[d] = 0.0f;
-
-                const float* query = x + i * d;
-
-                for (int j = d - 1; j >= 0; --j) {
-                    float squared_val = query[j] * query[j];
-                    suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-                }
-
-                // Extract level sums and take square root
-                for (int level_idx = 0; level_idx < n_levels; level_idx++) {
-                    int start_idx = level_idx * level_width;
-                    if (start_idx < d) {
-                        query_cum_norms[level_idx] = sqrt(suffix_sums[start_idx]);
-                    } else {
-                        query_cum_norms[level_idx] = 0.0f;
-                    }
-                }
-                query_cum_norms[n_levels] = 0.0f;
-
-                scanner->set_query(x + i * d);
-
-                float* simi = distances + i * k;
-                idx_t* idxi = labels + i * k;
-
-                init_result(simi, idxi);
-
-                idx_t nscan = 0;
-
-                for (size_t list_no = 0; list_no < nprobe; list_no++) {
-                    idx_t cluster_id = keys[i * nprobe + list_no];
-
-                    size_t cum_sum_offset = cum_sum_offsets[cluster_id];
-                    const float* cum_sumss = cum_sums + cum_sum_offset;
-
-                    nscan += scan_one_list(
-                            x + i * d,
-                            list_no,
-                            cum_sumss,
-                            query_cum_norms.data(),
-                            exact_distances.data(),
-                            cluster_id,
-                            simi,
-                            idxi,
-                            max_codes - nscan,
-                            indices);
-                }
-
-                ndis += nscan;
-                reorder_result(simi, idxi);
-
-                if (InterruptCallback::is_interrupted()) {
-                    interrupt = true;
-                }
-            }
-        }
-    }
-    if (interrupt) {
-        if (!exception_string.empty()) {
-            FAISS_THROW_FMT(
-                    "search interrupted with: %s", exception_string.c_str());
-        } else {
-            FAISS_THROW_MSG("computation interrupted");
-        }
-    }
-
-    if (ivf_stats == nullptr) {
-        ivf_stats = &indexIVF_stats;
-    }
-    ivf_stats->nq += n;
-    ivf_stats->nlist += nlistv;
-    ivf_stats->ndis += ndis;
-
-    printf("avg_level: %f\n", (float)total_active / (total_points * n_levels));
-}
+// TODO(Alexis): Keeping old impl for reference. Delete this later.
+// namespace {
+
+// static uint64_t total_active = 0;
+// static uint64_t total_points = 0;
+
+// template <MetricType metric, class C, bool use_sel>
+// struct IVFFlatScannerPanorama : InvertedListScanner {
+//     size_t d;
+
+//     IVFFlatScannerPanorama(size_t d, bool store_pairs, const IDSelector* sel)
+//             : InvertedListScanner(store_pairs, sel), d(d) {
+//         keep_max = is_similarity_metric(metric);
+//         code_size = d * sizeof(float);
+//     }
+
+//     const float* xi;
+//     void set_query(const float* query) override {
+//         this->xi = query;
+//     }
+
+//     void set_list(idx_t list_no, float /* coarse_dis */) override {
+//         this->list_no = list_no;
+//     }
+
+//     float distance_to_code(const uint8_t* code) const override {
+//         const float* yj = (float*)code;
+//         float dis = metric == METRIC_INNER_PRODUCT
+//                 ? fvec_inner_product(xi, yj, d)
+//                 : fvec_L2sqr(xi, yj, d);
+//         return dis;
+//     }
+
+//     /// add one result for query i
+//     inline bool add_result(
+//             float dis,
+//             idx_t idx,
+//             float threshold,
+//             idx_t* heap_ids,
+//             float* heap_dis,
+//             size_t k) const {
+//         if (C::cmp(threshold, dis)) {
+//             heap_replace_top<C>(k, heap_dis, heap_ids, dis, idx);
+//             threshold = heap_dis[0];
+//             return true;
+//         }
+//         return false;
+//     }
+// };
+
+// template <bool use_sel>
+// InvertedListScanner* get_InvertedListScanner1(
+//         const IndexIVFFlatPanorama* ivf,
+//         bool store_pairs,
+//         const IDSelector* sel) {
+//     // TODO: Implement inner product
+//     if (ivf->metric_type == METRIC_L2) {
+//         return new IVFFlatScannerPanorama<
+//                 METRIC_L2,
+//                 CMax<float, int64_t>,
+//                 use_sel>(ivf->d, store_pairs, sel);
+//     } else {
+//         FAISS_THROW_MSG("metric type not supported");
+//     }
+// }
+
+// } // anonymous namespace
+
+// void IndexIVFFlatPanorama::add(idx_t n, const float* x) {
+//     FAISS_ASSERT(!added);
+//     FAISS_ASSERT(d % n_levels == 0);
+//     added = true;
+
+//     IndexIVFFlat::add(n, x);
+
+//     size_t new_n = 0;
+//     size_t total_batches = 0;
+//     n_batches = new size_t[nlist];
+
+//     column_offsets = new size_t[nlist];
+//     for (size_t i = 0; i < nlist; i++) {
+//         column_offsets[i] = new_n;
+//         new_n += invlists->list_size(i) * d;
+//     }
+
+//     column_storage = new float[d * n];
+//     column_storage_offsets = new float*[nlist];
+
+//     for (size_t list_no = 0; list_no < nlist; list_no++) {
+//         size_t list_size = invlists->list_size(list_no);
+//         n_batches[list_no] = (list_size + batch_size - 1) / batch_size;
+//         size_t col_offset = column_offsets[list_no];
+//         column_storage_offsets[list_no] = column_storage + col_offset;
+
+//         for (size_t batch_no = 0; batch_no < n_batches[list_no]; batch_no++)
+//         {
+//             size_t curr_batch_size =
+//                     std::min(list_size - batch_no * batch_size, batch_size);
+
+//             size_t batch_offset = batch_no * batch_size * d;
+//             size_t idx_offset = batch_no * batch_size;
+
+//             for (size_t level = 0; level < n_levels; level++) {
+//                 size_t level_offset = level * level_width * curr_batch_size;
+
+//                 for (size_t point_idx = 0; point_idx < curr_batch_size;
+//                      point_idx++) {
+//                     float* dest = column_storage + batch_offset + col_offset
+//                     +
+//                             level_offset + point_idx * level_width;
+//                     const float* point = (float*)invlists->get_single_code(
+//                             list_no, idx_offset + point_idx);
+//                     size_t start_idx = level * level_width;
+//                     size_t end_idx =
+//                             std::min(start_idx + level_width, (size_t)d);
+//                     size_t copy_size = end_idx - start_idx;
+//                     memcpy(dest, point + start_idx, copy_size *
+//                     sizeof(float));
+//                 }
+//             }
+//         }
+//     }
+
+//     cum_sums = new float[(n_levels + 1) * n];
+//     cum_sum_offsets = new size_t[nlist];
+
+//     size_t cum_size = 0;
+//     for (size_t list_no = 0; list_no < nlist; list_no++) {
+//         cum_sum_offsets[list_no] = cum_size;
+//         cum_size += invlists->list_size(list_no) * (n_levels + 1);
+//     }
+
+//     std::vector<float> vector(d);
+
+//     for (size_t list_no = 0; list_no < nlist; list_no++) {
+//         const idx_t* idx = invlists->get_ids(list_no);
+//         size_t list_size = invlists->list_size(list_no);
+
+//         for (size_t batch_no = 0; batch_no < n_batches[list_no]; batch_no++)
+//         {
+//             size_t curr_batch_size =
+//                     std::min(list_size - batch_no * batch_size, batch_size);
+//             size_t batch_offset = batch_no * batch_size * (n_levels + 1);
+//             size_t index_offset = batch_no * batch_size;
+
+//             for (size_t point = 0; point < curr_batch_size; point++) {
+//                 float init_exact_distance = 0.0f;
+
+//                 reconstruct_from_offset(
+//                         list_no, point + index_offset, vector.data());
+
+//                 std::vector<float> suffix_sums(d + 1);
+//                 suffix_sums[d] = 0.0f;
+
+//                 for (int j = d - 1; j >= 0; j--) {
+//                     float squared_val = vector[j] * vector[j];
+//                     suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+//                 }
+
+//                 // Extract level sums and take square root
+//                 for (int level = 0; level < n_levels; level++) {
+//                     int start_idx = level * level_width;
+//                     size_t offset = cum_sum_offsets[list_no] + batch_offset +
+//                             level * curr_batch_size + point;
+//                     if (start_idx < d) {
+//                         cum_sums[offset] = sqrt(suffix_sums[start_idx]);
+//                     } else {
+//                         cum_sums[offset] = 0.0f;
+//                     }
+//                 }
+
+//                 // Last level sum
+//                 size_t offset = cum_sum_offsets[list_no] + batch_offset +
+//                         n_levels * curr_batch_size + point;
+//                 cum_sums[offset] = 0.0f;
+//             }
+//         }
+//     }
+// }
+
+// void IndexIVFFlatPanorama::search_preassigned(
+//         idx_t n,
+//         const float* x,
+//         idx_t k,
+//         const idx_t* keys, // which clusters
+//         const float* coarse_dis,
+//         float* distances,
+//         idx_t* labels,
+//         bool store_pairs,
+//         const IVFSearchParameters* params,
+//         IndexIVFStats* ivf_stats) const {
+//     FAISS_THROW_IF_NOT(k > 0);
+
+//     idx_t nprobe = params ? params->nprobe : this->nprobe;
+//     nprobe = std::min((idx_t)nlist, nprobe);
+//     FAISS_THROW_IF_NOT(nprobe > 0);
+
+//     const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
+//     idx_t max_codes = params ? params->max_codes : this->max_codes;
+//     IDSelector* sel = params ? params->sel : nullptr;
+//     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
+//     if (selr) {
+//         if (selr->assume_sorted) {
+//             sel = nullptr; // use special IDSelectorRange processing
+//         } else {
+//             selr = nullptr; // use generic processing
+//         }
+//     }
+
+//     FAISS_THROW_IF_NOT_MSG(
+//             !(sel && store_pairs),
+//             "selector and store_pairs cannot be combined");
+
+//     FAISS_THROW_IF_NOT_MSG(
+//             !invlists->use_iterator || (max_codes == 0 && store_pairs ==
+//             false), "iterable inverted lists don't support max_codes and
+//             store_pairs");
+
+//     size_t nlistv = 0, ndis = 0;
+
+//     using HeapForIP = CMin<float, idx_t>;
+//     using HeapForL2 = CMax<float, idx_t>;
+
+//     bool interrupt = false;
+//     std::mutex exception_mutex;
+//     std::string exception_string;
+
+//     int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
+//     bool do_heap_init = !(this->parallel_mode & PARALLEL_MODE_NO_HEAP_INIT);
+
+//     FAISS_THROW_IF_NOT_MSG(
+//             max_codes == 0 || pmode == 0 || pmode == 3,
+//             "max_codes supported only for parallel_mode = 0 or 3");
+
+//     if (max_codes == 0) {
+//         max_codes = unlimited_list_size;
+//     }
+
+//     [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
+//             (pmode == 0           ? false
+//                      : pmode == 3 ? n > 1
+//                      : pmode == 1 ? nprobe > 1
+//                                   : nprobe * n > 1);
+
+//     void* inverted_list_context =
+//             params ? params->inverted_list_context : nullptr;
+
+//     size_t max_num_codes = 0;
+//     for (size_t i = 0; i < nlist; i++) {
+//         max_num_codes = std::max(max_num_codes, invlists->list_size(i));
+//     }
+
+//     std::vector<float> suffix_sums(d + 1);
+//     std::vector<float> query_cum_norms(n_levels + 1);
+//     std::vector<float> query(d);
+//     std::vector<float> exact_distances(std::min(max_num_codes, batch_size));
+//     std::vector<uint32_t> indices(std::min(max_num_codes, batch_size));
+
+// #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis)
+//     {
+//         std::unique_ptr<InvertedListScanner> scanner(
+//                 get_InvertedListScanner(store_pairs, sel, params));
+
+//         /*****************************************************
+//          * Depending on parallel_mode, there are two possible ways
+//          * to organize the search. Here we define local functions
+//          * that are in common between the two
+//          ******************************************************/
+
+//         // initialize + reorder a result heap
+
+//         auto init_result = [&](float* simi, idx_t* idxi) {
+//             if (!do_heap_init)
+//                 return;
+//             if (metric_type == METRIC_INNER_PRODUCT) {
+//                 heap_heapify<HeapForIP>(k, simi, idxi);
+//             } else {
+//                 heap_heapify<HeapForL2>(k, simi, idxi);
+//             }
+//         };
+
+//         auto add_local_results = [&](const float* local_dis,
+//                                      const idx_t* local_idx,
+//                                      float* simi,
+//                                      idx_t* idxi) {
+//             if (metric_type == METRIC_INNER_PRODUCT) {
+//                 heap_addn<HeapForIP>(k, simi, idxi, local_dis, local_idx, k);
+//             } else {
+//                 heap_addn<HeapForL2>(k, simi, idxi, local_dis, local_idx, k);
+//             }
+//         };
+
+//         auto reorder_result = [&](float* simi, idx_t* idxi) {
+//             if (!do_heap_init)
+//                 return;
+//             if (metric_type == METRIC_INNER_PRODUCT) {
+//                 heap_reorder<HeapForIP>(k, simi, idxi);
+//             } else {
+//                 heap_reorder<HeapForL2>(k, simi, idxi);
+//             }
+//         };
+
+//         // single list scan using the current scanner (with query
+//         // set porperly) and storing results in simi and idxi
+//         auto scan_one_list = [&](const float* query,
+//                                  size_t list_no,
+//                                  const float* cum_sums,
+//                                  const float* query_cum_norms,
+//                                  float* exact_distances,
+//                                  idx_t cluster_id,
+//                                  float* simi,
+//                                  idx_t* idxi,
+//                                  idx_t list_size_max,
+//                                  std::vector<uint32_t>& indices) {
+//             if (cluster_id < 0) {
+//                 return (size_t)0;
+//             }
+//             FAISS_THROW_IF_NOT_FMT(
+//                     cluster_id < (idx_t)nlist,
+//                     "Invalid key=%" PRId64 " nlist=%zd\n",
+//                     cluster_id,
+//                     nlist);
+
+//             if (invlists->is_empty(cluster_id, inverted_list_context)) {
+//                 return (size_t)0;
+//             }
+
+//             scanner->set_list(cluster_id, 0);
+
+//             nlistv++;
+
+//             try {
+//                 FAISS_ASSERT(!invlists->use_iterator);
+//                 size_t list_size = invlists->list_size(cluster_id);
+//                 if (list_size > list_size_max) {
+//                     list_size = list_size_max;
+//                 }
+
+//                 std::unique_ptr<InvertedLists::ScopedIds> sids;
+//                 const idx_t* ids = nullptr;
+
+//                 if (!store_pairs) {
+//                     sids = std::make_unique<InvertedLists::ScopedIds>(
+//                             invlists, cluster_id);
+//                     ids = sids->get();
+//                 }
+
+//                 if (selr) { // IDSelectorRange
+//                     // restrict search to a section of the inverted list
+//                     size_t jmin, jmax;
+//                     selr->find_sorted_ids_bounds(list_size, ids, &jmin,
+//                     &jmax); list_size = jmax - jmin; if (list_size == 0) {
+//                         return (size_t)0;
+//                     }
+//                     ids += jmin;
+//                 }
+
+//                 idx_t index_offset = 0;
+//                 size_t batch_offset = 0;
+//                 size_t batch_incr = batch_size * d;
+
+//                 for (size_t batch_no = 0; batch_no < n_batches[cluster_id];
+//                      batch_no++) {
+//                     size_t curr_batch_size =
+//                             std::min(list_size - index_offset, batch_size);
+
+//                     total_points += curr_batch_size;
+//                     std::iota(
+//                             indices.begin(),
+//                             indices.begin() + curr_batch_size,
+//                             0);
+
+//                     // Initialize with the first cum sums of each point.
+//                     for (size_t idx = 0; idx < curr_batch_size; idx++) {
+//                         float squared_root = cum_sums[idx];
+//                         exact_distances[idx] = squared_root * squared_root;
+//                     }
+
+//                     // offset by +1
+//                     cum_sums += curr_batch_size;
+
+//                     const float* storage =
+//                             column_storage_offsets[cluster_id] +
+//                             batch_offset;
+
+//                     size_t start_dim = 0;
+//                     size_t num_active = curr_batch_size;
+
+//                     for (size_t level = 0; level < n_levels; level++) {
+//                         float query_cum_norm = query_cum_norms[level + 1];
+
+//                         size_t next_active = 0;
+//                         total_active += num_active;
+//                         for (size_t j = 0; j < num_active; j++) {
+//                             int64_t idx = indices[j];
+//                             const float* yj = storage + level_width * idx;
+
+//                             float dot_product = fvec_inner_product(
+//                                     query + start_dim, yj, level_width);
+
+//                             float cum_sum = cum_sums[idx];
+//                             float cauchy_schwarz_bound =
+//                                     2.0f * cum_sum * query_cum_norm;
+
+//                             exact_distances[idx] -= 2.0f * dot_product;
+//                             float new_exact = exact_distances[idx];
+
+//                             float lower_bound =
+//                                     new_exact - cauchy_schwarz_bound *
+//                                     epsilon;
+
+//                             indices[next_active] = idx;
+//                             next_active += simi[0] > lower_bound;
+//                         }
+
+//                         cum_sums += curr_batch_size;
+//                         start_dim += level_width;
+//                         num_active = next_active;
+//                         storage += level_width * curr_batch_size;
+//                     }
+
+//                     for (size_t j = 0; j < num_active; j++) {
+//                         int64_t idx = indices[j];
+//                         scanner->add_result(
+//                                 exact_distances[idx],
+//                                 ids[idx + index_offset],
+//                                 simi[0],
+//                                 idxi,
+//                                 simi,
+//                                 k);
+//                     }
+
+//                     index_offset += curr_batch_size;
+//                     batch_offset += batch_incr;
+//                 }
+
+//                 return list_size;
+//             } catch (const std::exception& e) {
+//                 std::lock_guard<std::mutex> lock(exception_mutex);
+//                 exception_string =
+//                         demangle_cpp_symbol(typeid(e).name()) + "  " +
+//                         e.what();
+//                 interrupt = true;
+//                 return size_t(0);
+//             }
+//         };
+
+//         /****************************************************
+//          * Actual loops
+//          ****************************************************/
+
+//         FAISS_ASSERT(pmode == 0);
+//         if (pmode == 0) {
+// #pragma omp for
+//             for (idx_t i = 0; i < n; i++) {
+//                 if (interrupt) {
+//                     continue;
+//                 }
+
+//                 suffix_sums[d] = 0.0f;
+
+//                 const float* query = x + i * d;
+
+//                 for (int j = d - 1; j >= 0; --j) {
+//                     float squared_val = query[j] * query[j];
+//                     suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+//                 }
+
+//                 // Extract level sums and take square root
+//                 for (int level_idx = 0; level_idx < n_levels; level_idx++) {
+//                     int start_idx = level_idx * level_width;
+//                     if (start_idx < d) {
+//                         query_cum_norms[level_idx] =
+//                         sqrt(suffix_sums[start_idx]);
+//                     } else {
+//                         query_cum_norms[level_idx] = 0.0f;
+//                     }
+//                 }
+//                 query_cum_norms[n_levels] = 0.0f;
+
+//                 scanner->set_query(x + i * d);
+
+//                 float* simi = distances + i * k;
+//                 idx_t* idxi = labels + i * k;
+
+//                 init_result(simi, idxi);
+
+//                 idx_t nscan = 0;
+
+//                 for (size_t list_no = 0; list_no < nprobe; list_no++) {
+//                     idx_t cluster_id = keys[i * nprobe + list_no];
+
+//                     size_t cum_sum_offset = cum_sum_offsets[cluster_id];
+//                     const float* cum_sumss = cum_sums + cum_sum_offset;
+
+//                     nscan += scan_one_list(
+//                             x + i * d,
+//                             list_no,
+//                             cum_sumss,
+//                             query_cum_norms.data(),
+//                             exact_distances.data(),
+//                             cluster_id,
+//                             simi,
+//                             idxi,
+//                             max_codes - nscan,
+//                             indices);
+//                 }
+
+//                 ndis += nscan;
+//                 reorder_result(simi, idxi);
+
+//                 if (InterruptCallback::is_interrupted()) {
+//                     interrupt = true;
+//                 }
+//             }
+//         }
+//     }
+//     if (interrupt) {
+//         if (!exception_string.empty()) {
+//             FAISS_THROW_FMT(
+//                     "search interrupted with: %s", exception_string.c_str());
+//         } else {
+//             FAISS_THROW_MSG("computation interrupted");
+//         }
+//     }
+
+//     if (ivf_stats == nullptr) {
+//         ivf_stats = &indexIVF_stats;
+//     }
+//     ivf_stats->nq += n;
+//     ivf_stats->nlist += nlistv;
+//     ivf_stats->ndis += ndis;
+
+//     printf("avg_level: %f\n", (float)total_active / (total_points *
+//     n_levels));
+// }
 
 } // namespace faiss

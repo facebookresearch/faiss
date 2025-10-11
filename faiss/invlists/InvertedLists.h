@@ -276,6 +276,51 @@ struct ArrayInvertedLists : InvertedLists {
     ~ArrayInvertedLists() override;
 };
 
+// level-oriented storage as defined in the IVFFlat section of Panorama
+// (https://www.arxiv.org/pdf/2510.00566).
+struct ArrayInvertedListsPanorama : ArrayInvertedLists {
+    static constexpr size_t kBatchSize = 128;
+    std::vector<MaybeOwnedVector<float>> cum_sums;
+    size_t n_levels;
+
+    ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
+
+    const float* get_cum_sums(size_t list_no) const;
+
+    size_t add_entries(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void update_entries(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void resize(size_t list_no, size_t new_size) override;
+
+   private:
+    // Helper method to copy codes into level-oriented batch layout at a given
+    // offset in the list.
+    void copy_codes_to_level_layout(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code);
+
+    // Helper method to compute the cumulative sums of the codes.
+    // The cumsums also follow the level-oriented batch layout to minimize the
+    // number of random memory accesses.
+    void compute_cumulative_sums(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code);
+};
+
 /*****************************************************************
  * Meta-inverted lists
  *

@@ -113,65 +113,6 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
     IndexIVFFlatDedup() {}
 };
 
-/** Inverted file with stored vectors. Here the inverted file
- * pre-selects the vectors to be searched, but they are not otherwise
- * encoded, the code array just contains the raw float entries.
- */
-struct IndexIVFFlatPanorama : IndexIVFFlat {
-    const int n_levels;
-    float* column_storage;
-    float** column_storage_offsets;
-
-    mutable size_t total_points = 0;
-    mutable size_t total_active = 0;
-
-    size_t* column_offsets;
-    float* cum_sums;
-    size_t* cum_sum_offsets;
-
-    bool added;
-    size_t level_width;
-    float epsilon;
-
-    size_t* n_batches;
-    const size_t batch_size;
-
-    void search_preassigned(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            const idx_t* keys,
-            const float* coarse_dis,
-            float* distances,
-            idx_t* labels,
-            bool store_pairs = false,
-            const IVFSearchParameters* params = nullptr,
-            IndexIVFStats* ivf_stats = nullptr) const override;
-
-    IndexIVFFlatPanorama(
-            Index* quantizer,
-            size_t d,
-            size_t nlist_,
-            int n_levels,
-            float epsilon,
-            size_t batch_size = 128,
-            MetricType = METRIC_L2,
-            bool own_invlists = true)
-            : IndexIVFFlat(quantizer, d, nlist_, METRIC_L2, own_invlists),
-              n_levels(n_levels),
-              added(false),
-              level_width(d / n_levels),
-              epsilon(epsilon),
-              batch_size(batch_size) {}
-
-    void add(idx_t n, const float* x) override;
-
-    InvertedListScanner* get_InvertedListScanner(
-            bool store_pairs,
-            const IDSelector* sel,
-            const IVFSearchParameters* params) const override;
-};
-
 } // namespace faiss
 
 #endif
