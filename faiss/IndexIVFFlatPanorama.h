@@ -40,9 +40,9 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
             Index* quantizer,
             size_t d,
             size_t nlist_,
+            int n_levels,
             MetricType = METRIC_L2,
-            bool own_invlists = true,
-            int n_levels = 1);
+            bool own_invlists = true);
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,

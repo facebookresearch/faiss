@@ -29,9 +29,9 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
         Index* quantizer,
         size_t d,
         size_t nlist,
+        int n_levels,
         MetricType metric,
-        bool own_invlists,
-        int n_levels)
+        bool own_invlists)
         : IndexIVFFlat(quantizer, d, nlist, metric, false), n_levels(n_levels) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
