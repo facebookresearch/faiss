@@ -100,9 +100,9 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         this->list_no = list_no;
     }
 
-    // This function is unreachable as `IndexIVF` only calls this within
-    // iterators, which are not supported by `IndexIVFFlatPanorama`.
-    // To avoid undefined behavior, we throw an error here.
+    /// This function is unreachable as `IndexIVF` only calls this within
+    /// iterators, which are not supported by `IndexIVFFlatPanorama`.
+    /// To avoid undefined behavior, we throw an error here.
     float distance_to_code(const uint8_t* code) const override {
         FAISS_THROW_MSG(
                 "IndexIVFFlatPanorama does not support distance_to_code");
