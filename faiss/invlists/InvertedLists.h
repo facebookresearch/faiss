@@ -283,10 +283,6 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     std::vector<MaybeOwnedVector<float>> cum_sums;
     size_t n_levels;
 
-    /// Buffer for reconstructing codes in get_single_code.
-    /// Mutable to allow reuse across calls despite const method.
-    mutable std::vector<uint8_t> recons_buffer;
-
     ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
 
     const float* get_cum_sums(size_t list_no) const;
