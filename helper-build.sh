@@ -3,7 +3,7 @@
 # Exit immediately if any command fails
 set -e
 
-# cmake -B build . -DFAISS_OPT_LEVEL=avx512 -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=ON -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
+cmake -B build . -DFAISS_OPT_LEVEL=avx512 -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=ON -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
 
 # Build faiss
 echo "╔══════════════════════════════════════════════════════╗"
