@@ -56,8 +56,6 @@ def main():
     parser.add_argument("--nprobe", type=int, default=8, help="Number of clusters to search")
     parser.add_argument("--k", type=int, default=10, help="Number of neighbors")
     parser.add_argument("--nlevels", type=int, default=8, help="Panorama levels")
-    parser.add_argument("--epsilon", type=float, default=1.0, help="Panorama epsilon")
-    parser.add_argument("--batch-size", type=int, default=128, help="Panorama batch size")
     
     args = parser.parse_args()
     
@@ -90,7 +88,7 @@ def main():
     
     # IVFFlatPanorama
     quantizer2 = faiss.IndexFlatL2(d)
-    index2 = faiss.IndexIVFFlatPanorama(quantizer2, d, args.nlist, args.nlevels, args.epsilon, args.batch_size)
+    index2 = faiss.IndexIVFFlatPanorama(quantizer2, d, args.nlist, args.nlevels)
     index2.train(xb)
     index2.nprobe = args.nprobe
     D2, I2, search_time2 = benchmark_index(index2, xb, xq, args.k, "IVFFlatPanorama")
