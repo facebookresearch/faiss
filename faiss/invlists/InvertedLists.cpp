@@ -380,8 +380,10 @@ size_t ArrayInvertedListsPanorama::add_entries(
     ids[list_no].resize(o + n_entry);
     memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
 
-    codes[list_no].resize((o + n_entry) * code_size);
-    cum_sums[list_no].resize((o + n_entry) * (n_levels + 1));
+    size_t new_size = o + n_entry;
+    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
+    codes[list_no].resize(num_batches * kBatchSize * code_size);
+    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 
     copy_codes_to_level_layout(list_no, o, n_entry, code);
     compute_cumulative_sums(list_no, o, n_entry, code);
@@ -405,8 +407,10 @@ void ArrayInvertedListsPanorama::update_entries(
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
-    codes[list_no].resize(new_size * code_size);
-    cum_sums[list_no].resize(new_size * (n_levels + 1));
+
+    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
+    codes[list_no].resize(num_batches * kBatchSize * code_size);
+    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 }
 
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(

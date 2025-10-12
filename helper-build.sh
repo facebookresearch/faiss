@@ -3,19 +3,7 @@
 # Exit immediately if any command fails
 set -e
 
-echo "╔═════════════════════════════════╗"
-echo "║       Configuring Faiss ...     ║"
-echo "╚═════════════════════════════════╝"
-cmake -B build . \
-    -DFAISS_OPT_LEVEL=avx512 \
-    -DFAISS_ENABLE_GPU=OFF \
-    -DFAISS_ENABLE_PYTHON=ON \
-    -DBUILD_TESTING=OFF \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer -g" \
-    -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer -g" \
-    -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address" \
-    -DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address"
+# cmake -B build . -DFAISS_OPT_LEVEL=avx512 -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=ON -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release
 
 # Build faiss
 echo "╔══════════════════════════════════════════════════════╗"

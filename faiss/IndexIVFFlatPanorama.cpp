@@ -25,10 +25,6 @@
 
 namespace faiss {
 
-/*****************************************
- * IndexIVFFlat implementation
- ******************************************/
-
 IndexIVFFlatPanorama::IndexIVFFlatPanorama(
         Index* quantizer,
         size_t d,
@@ -108,7 +104,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 "IndexIVFFlatPanorama does not support distance_to_code");
     }
 
-    // TODO(Alexis): Implement this!
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
@@ -116,20 +111,114 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             float* simi,
             idx_t* idxi,
             size_t k) const override {
-        const float* list_vecs = (const float*)codes;
         size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
-            const float* yj = list_vecs + vd.d * j;
-            if (use_sel && !sel->is_member(ids[j])) {
+
+        const size_t d = vd.d;
+        const size_t level_width = d / storage->n_levels;
+        const size_t level_code_size = code_size / storage->n_levels;
+        const size_t n_batches =
+                (list_size + storage->kBatchSize - 1) / storage->kBatchSize;
+
+        const uint8_t* codes_base = codes;
+        const float* cum_sums_data = storage->get_cum_sums(list_no);
+
+        std::vector<float> exact_distances(storage->kBatchSize);
+        std::vector<uint32_t> active_indices(storage->kBatchSize);
+
+        // Panorama's IVFFlat core progressive filtering algorithm:
+        // Process vectors in batches for cache efficiency. For each batch:
+        // 1. Apply ID selection filter and initialize distances (||y||^2)
+        // 2. Maintain an "active set" of candidate indices that haven't been
+        //    pruned yet.
+        // 3. For each level, refine distances incrementally and compact the
+        //    active set:
+        //    - Compute dot product for current level: exact_dist -= 2*<x,y>.
+        //    - Use Cauchy-Schwarz bound on remaining levels to get lower bound
+        //    - Prune candidates whose lower bound exceeds k-th best distance.
+        //    - Compact active_indices to remove pruned candidates (branchless)
+        // 4. After all levels, survivors are exact distances; update heap.
+        // This achieves early termination while maintaining SIMD-friendly
+        // sequential access patterns in the level-oriented storage layout.
+        for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+            size_t batch_start = batch_no * storage->kBatchSize;
+            size_t curr_batch_size =
+                    std::min(list_size - batch_start, storage->kBatchSize);
+
+            size_t cumsum_batch_offset =
+                    batch_no * storage->kBatchSize * (storage->n_levels + 1);
+            const float* batch_cum_sums = cum_sums_data + cumsum_batch_offset;
+
+            size_t batch_offset = batch_no * storage->kBatchSize * code_size;
+            const uint8_t* storage_base = codes_base + batch_offset;
+
+            size_t num_active = 0;
+            for (size_t i = 0; i < curr_batch_size; i++) {
+                size_t global_idx = batch_start + i;
+                bool include = !use_sel || sel->is_member(ids[global_idx]);
+
+                active_indices[num_active] = i;
+                float cum_sum = batch_cum_sums[i];
+                exact_distances[i] = cum_sum * cum_sum;
+
+                num_active += include;
+            }
+
+            if (num_active == 0) {
                 continue;
             }
-            float dis = vd(xi, yj);
-            if (C::cmp(simi[0], dis)) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                heap_replace_top<C>(k, simi, idxi, dis, id);
-                nup++;
+
+            const float* level_cum_sums = batch_cum_sums + storage->kBatchSize;
+
+            for (size_t level = 0; level < storage->n_levels; level++) {
+                float query_cum_norm = cum_sums[level + 1];
+
+                size_t level_offset =
+                        level * level_code_size * storage->kBatchSize;
+                const float* level_storage =
+                        (const float*)(storage_base + level_offset);
+
+                size_t next_active = 0;
+                for (size_t i = 0; i < num_active; i++) {
+                    uint32_t idx = active_indices[i];
+                    const float* yj = level_storage + idx * level_width;
+                    const float* query_level = xi + level * level_width;
+
+                    size_t actual_level_width =
+                            std::min(level_width, d - level * level_width);
+                    float dot_product = fvec_inner_product(
+                            query_level, yj, actual_level_width);
+
+                    exact_distances[idx] -= 2.0f * dot_product;
+
+                    float cum_sum = level_cum_sums[idx];
+                    float cauchy_schwarz_bound =
+                            2.0f * cum_sum * query_cum_norm;
+                    float lower_bound =
+                            exact_distances[idx] - cauchy_schwarz_bound;
+
+                    active_indices[next_active] = idx;
+                    next_active += C::cmp(simi[0], lower_bound);
+                }
+
+                num_active = next_active;
+                level_cum_sums += storage->kBatchSize;
+            }
+
+            // Add batch survivors to heap.
+            for (size_t i = 0; i < num_active; i++) {
+                uint32_t idx = active_indices[i];
+                size_t global_idx = batch_start + idx;
+                float dis = exact_distances[idx];
+
+                if (C::cmp(simi[0], dis)) {
+                    int64_t id = store_pairs ? lo_build(list_no, global_idx)
+                                             : ids[global_idx];
+                    heap_replace_top<C>(k, simi, idxi, dis, id);
+                    nup++;
+                }
             }
         }
+
         return nup;
     }
 
