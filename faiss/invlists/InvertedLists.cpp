@@ -357,7 +357,11 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
         : ArrayInvertedLists(nlist, code_size), n_levels(n_levels) {
     FAISS_THROW_IF_NOT(n_levels > 0);
     FAISS_THROW_IF_NOT(code_size % sizeof(float) == 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !use_iterator,
+            "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     cum_sums.resize(nlist);
+    recons_buffer.resize(code_size);
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
@@ -403,6 +407,40 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
     codes[list_no].resize(new_size * code_size);
     cum_sums[list_no].resize(new_size * (n_levels + 1));
+}
+
+const uint8_t* ArrayInvertedListsPanorama::get_single_code(
+        size_t list_no,
+        size_t offset) const {
+    assert(list_no < nlist);
+    assert(offset < ids[list_no].size());
+
+    const size_t level_code_size = code_size / n_levels;
+    const uint8_t* codes_base = codes[list_no].data();
+
+    size_t batch_no = offset / kBatchSize;
+    size_t pos_in_batch = offset % kBatchSize;
+    size_t batch_offset = batch_no * kBatchSize * code_size;
+
+    for (size_t level = 0; level < n_levels; level++) {
+        size_t level_offset = level * level_code_size * kBatchSize;
+        const uint8_t* src = codes_base + batch_offset + level_offset +
+                pos_in_batch * level_code_size;
+        uint8_t* dest = recons_buffer.data() + level * level_code_size;
+        size_t copy_size =
+                std::min(level_code_size, code_size - level * level_code_size);
+        memcpy(dest, src, copy_size);
+    }
+
+    return recons_buffer.data();
+}
+
+InvertedListsIterator* ArrayInvertedListsPanorama::get_iterator(
+        size_t list_no,
+        void* inverted_list_context) const {
+    FAISS_THROW_MSG(
+            "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
+    return nullptr;
 }
 
 void ArrayInvertedListsPanorama::compute_cumulative_sums(

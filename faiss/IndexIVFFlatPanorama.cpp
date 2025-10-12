@@ -51,40 +51,64 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
 
 namespace {
 
-// TODO(Alexis): We should have a reference to the ArrayInvertedListsPanorama
-// here. It does not seem to unreasonable to adapt scan_codes to achieve this?
-// Or perhaps just pass it into the constructor?
-// NEVERMIND: We have access to the `this` reference. This is amazing!
-// We can access the state :-)
 template <typename VectorDistance, bool use_sel>
 struct IVFFlatScannerPanorama : InvertedListScanner {
     VectorDistance vd;
+    const ArrayInvertedListsPanorama* storage;
     using C = typename VectorDistance::C;
 
     IVFFlatScannerPanorama(
             const VectorDistance& vd,
+            const ArrayInvertedListsPanorama* storage,
             bool store_pairs,
             const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), vd(vd) {
+            : InvertedListScanner(store_pairs, sel), vd(vd), storage(storage) {
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
+        cum_sums.resize(storage->n_levels + 1);
     }
 
     const float* xi;
+    std::vector<float> cum_sums;
     void set_query(const float* query) override {
         this->xi = query;
-        // TODO(Alexis): Compute the cumulative sums of the query.
+
+        const size_t d = vd.d;
+        const size_t level_width = d / storage->n_levels;
+
+        std::vector<float> suffix_sums(d + 1);
+        suffix_sums[d] = 0.0f;
+
+        for (int j = d - 1; j >= 0; j--) {
+            float squared_val = query[j] * query[j];
+            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+        }
+
+        for (size_t level = 0; level < storage->n_levels; level++) {
+            size_t start_idx = level * level_width;
+            if (start_idx < d) {
+                cum_sums[level] = sqrt(suffix_sums[start_idx]);
+            } else {
+                cum_sums[level] = 0.0f;
+            }
+        }
+
+        cum_sums[storage->n_levels] = 0.0f;
     }
 
     void set_list(idx_t list_no, float /* coarse_dis */) override {
         this->list_no = list_no;
     }
 
+    // This function is unreachable as `IndexIVF` only calls this within
+    // iterators, which are not supported by `IndexIVFFlatPanorama`.
+    // To avoid undefined behavior, we throw an error here.
     float distance_to_code(const uint8_t* code) const override {
-        const float* yj = (float*)code;
-        return vd(xi, yj);
+        FAISS_THROW_MSG(
+                "IndexIVFFlatPanorama does not support distance_to_code");
     }
 
+    // TODO(Alexis): Implement this!
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
@@ -109,7 +133,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         return nup;
     }
 
-    // TODO(Alexis): We never tested this in Panorama!
+    // TODO(Alexis): Implement this!
     void scan_codes_range(
             size_t list_size,
             const uint8_t* codes,
@@ -134,17 +158,25 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 struct Run_get_InvertedListScanner {
     using T = InvertedListScanner*;
 
-    // TODO(Alexis): See how we dispatch to ivf here!
     template <class VD>
     InvertedListScanner* f(
             VD& vd,
             const IndexIVFFlatPanorama* ivf,
             bool store_pairs,
             const IDSelector* sel) {
+        // Safely cast to ArrayInvertedListsPanorama to access cumulative sums.
+        const ArrayInvertedListsPanorama* storage =
+                dynamic_cast<const ArrayInvertedListsPanorama*>(ivf->invlists);
+        FAISS_THROW_IF_NOT_MSG(
+                storage,
+                "IndexIVFFlatPanorama requires ArrayInvertedListsPanorama");
+
         if (sel) {
-            return new IVFFlatScannerPanorama<VD, true>(vd, store_pairs, sel);
+            return new IVFFlatScannerPanorama<VD, true>(
+                    vd, storage, store_pairs, sel);
         } else {
-            return new IVFFlatScannerPanorama<VD, false>(vd, store_pairs, sel);
+            return new IVFFlatScannerPanorama<VD, false>(
+                    vd, storage, store_pairs, sel);
         }
     }
 };
@@ -158,13 +190,6 @@ InvertedListScanner* IndexIVFFlatPanorama::get_InvertedListScanner(
     Run_get_InvertedListScanner run;
     return dispatch_VectorDistance(
             d, metric_type, metric_arg, run, this, store_pairs, sel);
-}
-
-void IndexIVFFlatPanorama::reconstruct_from_offset(
-        int64_t list_no,
-        int64_t offset,
-        float* recons) const {
-    memcpy(recons, invlists->get_single_code(list_no, offset), code_size);
 }
 
 } // namespace faiss
