@@ -361,7 +361,6 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
             !use_iterator,
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     cum_sums.resize(nlist);
-    recons_buffer.resize(code_size);
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
@@ -413,11 +412,17 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 }
 
+/// @warning For Panorama, the returned pointer is valid only until the
+/// next call to get_single_code() from the same thread. For correctness,
+/// callers should copy data immediately if retention is needed.
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(
         size_t list_no,
         size_t offset) const {
     assert(list_no < nlist);
     assert(offset < ids[list_no].size());
+
+    thread_local std::vector<uint8_t> recons_buffer;
+    recons_buffer.resize(code_size);
 
     const size_t level_code_size = code_size / n_levels;
     const uint8_t* codes_base = codes[list_no].data();
