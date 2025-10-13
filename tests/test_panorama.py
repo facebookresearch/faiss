@@ -21,7 +21,7 @@ import faiss
 
 class TestIndexIVFFlatPanorama(unittest.TestCase):
     """
-    Phase 1 Test Suite for IndexIVFFlatPanorama.
+    Test Suite for IndexIVFFlatPanorama.
     
     These tests verify:
     1. Exact correctness vs IndexIVFFlat
@@ -225,11 +225,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                print(D_regular)
-                print(D_panorama)
-                print(I_regular)
-                print(I_panorama)
 
                 # Results must match
                 np.testing.assert_array_equal(I_regular, I_panorama)
