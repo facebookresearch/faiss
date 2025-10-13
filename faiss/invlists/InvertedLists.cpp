@@ -418,17 +418,13 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 }
 
-/// @warning For Panorama, the returned pointer is valid only until the
-/// next call to get_single_code() from the same thread. For correctness,
-/// callers should copy data immediately if retention is needed.
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(
         size_t list_no,
         size_t offset) const {
     assert(list_no < nlist);
     assert(offset < ids[list_no].size());
 
-    thread_local std::vector<uint8_t> recons_buffer;
-    recons_buffer.resize(code_size);
+    uint8_t* recons_buffer = new uint8_t[code_size];
 
     const uint8_t* codes_base = codes[list_no].data();
 
@@ -440,13 +436,21 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
         size_t level_offset = level * level_width * kBatchSize;
         const uint8_t* src = codes_base + batch_offset + level_offset +
                 pos_in_batch * level_width;
-        uint8_t* dest = recons_buffer.data() + level * level_width;
+        uint8_t* dest = recons_buffer + level * level_width;
         size_t copy_size =
                 std::min(level_width, code_size - level * level_width);
         memcpy(dest, src, copy_size);
     }
 
-    return recons_buffer.data();
+    return recons_buffer;
+}
+
+void ArrayInvertedListsPanorama::release_codes(size_t list_no, const uint8_t* codes) const {
+    // Only delete if it's heap-allocated (from get_single_code).
+    // If it's from get_codes (raw storage), it will be codes[list_no].data()
+    if (codes != this->codes[list_no].data()) {
+        delete[] codes;
+    }
 }
 
 InvertedListsIterator* ArrayInvertedListsPanorama::get_iterator(

@@ -336,4 +336,13 @@ InvertedListScanner* IndexIVFFlatPanorama::get_InvertedListScanner(
             d, metric_type, metric_arg, run, this, store_pairs, sel);
 }
 
+void IndexIVFFlatPanorama::reconstruct_from_offset(
+        int64_t list_no,
+        int64_t offset,
+        float* recons) const {
+    const uint8_t* code = invlists->get_single_code(list_no, offset);
+    memcpy(recons, code, code_size);
+    invlists->release_codes(list_no, code);
+}
+
 } // namespace faiss

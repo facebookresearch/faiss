@@ -313,10 +313,11 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
             void* inverted_list_context = nullptr) const override;
 
     /// Reconstructs a single code from level-oriented storage to flat format.
-    /// Returns pointer to internal buffer - valid until next call to this
-    /// method. Kept for compatibility with `IndexIVF`.
     const uint8_t* get_single_code(size_t list_no, size_t offset)
             const override;
+
+    /// Frees codes returned by `get_single_code`.
+    void release_codes(size_t list_no, const uint8_t* codes) const override;
 
    private:
     /// Helper method to copy codes into level-oriented batch layout at a given
