@@ -36,10 +36,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         """Create and initialize IndexIVFFlat."""
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFFlat(quantizer, d, nlist)
-        # Keep quantizer alive by adding it to referenced_objects
-        if not hasattr(index, 'referenced_objects'):
-            index.referenced_objects = []
-        index.referenced_objects.append(quantizer)
         index.train(xt)
         if make_direct_map:
             index.make_direct_map()
@@ -53,10 +49,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         """Create and initialize IndexIVFFlatPanorama."""
         quantizer = faiss.IndexFlatL2(d)
         index = faiss.IndexIVFFlatPanorama(quantizer, d, nlist, nlevels)
-        # Keep quantizer alive by adding it to referenced_objects
-        if not hasattr(index, 'referenced_objects'):
-            index.referenced_objects = []
-        index.referenced_objects.append(quantizer)
         index.train(xt)
         if make_direct_map:
             index.make_direct_map()

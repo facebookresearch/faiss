@@ -173,6 +173,7 @@ if "GPU" in get_compile_options():
 
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
+add_ref_in_constructor(IndexIVFFlatPanorama, 0)
 add_ref_in_constructor(IndexPreTransform, {2: [0, 1], 1: [0]})
 add_ref_in_method(IndexPreTransform, 'prepend_transform', 0)
 add_ref_in_constructor(IndexIVFPQ, 0)
