@@ -387,7 +387,7 @@ endif()
 # target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
 
 if(FAISS_ENABLE_MKL)
-  find_package(MKL)
+  find_package(MKL REQUIRED)
 endif()
 if(MKL_FOUND)
   target_link_libraries(faiss PRIVATE ${MKL_LIBRARIES})
@@ -410,13 +410,14 @@ else()
   target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
 endif()
 
-install(TARGETS faiss
-  EXPORT faiss-targets
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+# install(TARGETS faiss
+#   EXPORT faiss-targets
+#   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+# )
+
 if(FAISS_OPT_LEVEL STREQUAL "avx2")
   install(TARGETS faiss_avx2
     EXPORT faiss-targets
