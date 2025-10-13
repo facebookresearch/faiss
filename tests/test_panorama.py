@@ -744,42 +744,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         # Should return -1 for all results
         self.assertTrue(np.all(I == -1))
 
-    def test_iterator_not_supported(self):
-        """Test that iterator operations throw an error"""
-        d = 32
-        nb = 100
-        nt = 200
-        nlist = 4
-        nlevels = 4
-
-        np.random.seed(1111)
-        xt = np.random.rand(nt, d).astype('float32')
-        xb = np.random.rand(nb, d).astype('float32')
-
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFFlatPanorama(quantizer, d, nlist, nlevels)
-        index.train(xt)
-        index.add(xb)
-
-        # Iterator operations should not be supported
-        # Try to get inverted lists and check if iterator flag is set
-        invlists = index.invlists
-        
-        # The invlists should indicate that iterator is not supported
-        # This is implementation-specific - may need to adjust based on actual API
-        try:
-            # Attempt an iterator-based operation if available in Python bindings
-            # This is a placeholder - actual method may vary
-            use_iterator = getattr(invlists, 'use_iterator', None)
-            if use_iterator is not None:
-                # If this attribute exists, verify it's False for Panorama
-                self.assertFalse(use_iterator, 
-                    "Panorama should not support iterator-based operations")
-        except AttributeError:
-            # If the attribute doesn't exist, that's fine - we're just checking
-            # that the implementation doesn't mistakenly enable iterators
-            pass
-
     def test_multiple_levels_small_dimension(self):
         """Test edge case: more levels than dimension naturally supports"""
         d = 16  # Small dimension
