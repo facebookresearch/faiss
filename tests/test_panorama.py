@@ -17,6 +17,7 @@ Paper: https://www.arxiv.org/pdf/2510.00566
 import unittest
 import numpy as np
 import faiss
+from faiss.contrib.datasets import SyntheticDataset
 
 
 class TestIndexIVFFlatPanorama(unittest.TestCase):
@@ -26,11 +27,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     
     def generate_data(self, d, nt, nb, nq, seed=42):
         """Generate random training, database, and query vectors."""
-        np.random.seed(seed)
-        xt = np.random.rand(nt, d).astype('float32')
-        xb = np.random.rand(nb, d).astype('float32')
-        xq = np.random.rand(nq, d).astype('float32')
-        return xt, xb, xq
+        ds = SyntheticDataset(d, nt, nb, nq)
+        return ds.get_train(), ds.get_database(), ds.get_queries()
 
     def create_ivf_flat(self, d, nlist, xt, xb=None, nprobe=None, make_direct_map=False):
         """Create and initialize IndexIVFFlat."""
