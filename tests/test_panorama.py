@@ -561,8 +561,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         np.testing.assert_allclose(D_regular_2, D_panorama_2, rtol=1e-5)
 
     def test_very_small_dataset(self):
-        """Test with dataset much smaller than batch size (< 256 vectors)"""
-        test_cases = [10, 50, 100, 200]
+        """Test with dataset smaller than batch size (< 128 vectors)"""
+        test_cases = [10, 50, 100]
         
         for nb in test_cases:
             with self.subTest(nb=nb):
@@ -812,3 +812,55 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         # Results must match even with sparse clusters
         np.testing.assert_array_equal(I_regular, I_panorama)
         np.testing.assert_allclose(D_regular, D_panorama, rtol=1e-5)
+
+    def test_update_vectors(self):
+        """Test update operations (single, batch, and interleaved with search)"""
+        d = 32
+        nb = 400
+        nt = 600
+        nq = 15
+        nlist = 8
+        nlevels = 4
+        k = 5
+
+        np.random.seed(1414)
+        xt = np.random.rand(nt, d).astype('float32')
+        xb = np.random.rand(nb, d).astype('float32')
+        xq = np.random.rand(nq, d).astype('float32')
+
+        # Create both indices with direct_map for updates
+        quantizer1 = faiss.IndexFlatL2(d)
+        index_regular = faiss.IndexIVFFlat(quantizer1, d, nlist)
+        index_regular.train(xt)
+        index_regular.make_direct_map()
+        index_regular.add(xb)
+        index_regular.nprobe = 8
+
+        quantizer2 = faiss.IndexFlatL2(d)
+        index_panorama = faiss.IndexIVFFlatPanorama(quantizer2, d, nlist, nlevels)
+        index_panorama.train(xt)
+        index_panorama.make_direct_map()
+        index_panorama.add(xb)
+        index_panorama.nprobe = 8
+
+        # Test batch update
+        update_ids = np.array([10, 20, 50, 100, 200], dtype=np.int64)
+        xb_new = np.random.rand(len(update_ids), d).astype('float32')
+        index_regular.update_vectors(update_ids, xb_new)
+        index_panorama.update_vectors(update_ids, xb_new)
+
+        D_regular, I_regular = index_regular.search(xq, k)
+        D_panorama, I_panorama = index_panorama.search(xq, k)
+        np.testing.assert_array_equal(I_regular, I_panorama)
+        np.testing.assert_allclose(D_regular, D_panorama, rtol=1e-5)
+
+        # Test interleaved update/search
+        update_ids_2 = np.array([5, 15, 25], dtype=np.int64)
+        xb_new_2 = np.random.rand(len(update_ids_2), d).astype('float32')
+        index_regular.update_vectors(update_ids_2, xb_new_2)
+        index_panorama.update_vectors(update_ids_2, xb_new_2)
+
+        D_regular_2, I_regular_2 = index_regular.search(xq, k)
+        D_panorama_2, I_panorama_2 = index_panorama.search(xq, k)
+        np.testing.assert_array_equal(I_regular_2, I_panorama_2)
+        np.testing.assert_allclose(D_regular_2, D_panorama_2, rtol=1e-5)
