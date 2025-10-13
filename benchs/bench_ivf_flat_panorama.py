@@ -29,7 +29,8 @@ nb, d = xb.shape
 nq, d = xq.shape
 nt, d = xt.shape
 
-k = 1
+k = 10
+gt = gt[:, :k]
 nlevels = 8
 
 
@@ -49,7 +50,7 @@ def eval_recall(index, name, nprobe_val):
     qps = 1000 / speed
 
     corrects = (gt == I).sum()
-    recall = corrects / nq
+    recall = corrects / (nq * k)
     print(
         f'\tnprobe {nprobe_val:3d}, Recall@{k}: '
         f'{recall:.6f}, speed: {speed:.6f} ms/query'
@@ -74,7 +75,7 @@ def eval_and_plot(name, plot=True):
 
     data = []
     print(f"======{name}")
-    for nprobe in 1, 2, 4, 6, 8, 12:
+    for nprobe in 1, 2, 4, 8, 16, 32, 64, 128:
         ivf_index.nprobe = nprobe
         recall, qps = eval_recall(index, name, nprobe)
         data.append((recall, qps))
@@ -84,7 +85,7 @@ def eval_and_plot(name, plot=True):
         plt.plot(data[:, 0], data[:, 1], label=name)  # x - recall, y - qps
 
 
-nlist = 1024
+nlist = 128
 
 plt.figure(figsize=(8, 6), dpi=80)
 
