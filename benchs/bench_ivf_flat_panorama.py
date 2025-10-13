@@ -12,22 +12,12 @@ import matplotlib.pyplot as plt
 
 try:
     from faiss.contrib.datasets_fb import \
-        DatasetSIFT1M
+        DatasetGIST1M
 except ImportError:
     from faiss.contrib.datasets import \
-        DatasetSIFT1M
-# try:
-#     from faiss.contrib.datasets_fb import \
-#         DatasetGIST1M
-# except ImportError:
-#     from faiss.contrib.datasets import \
-#         DatasetGIST1M
+        DatasetGIST1M
 
-
-# ds = DatasetDeep1B(10**6)
-# ds = DatasetBigANN(nb_M=1)
-ds = DatasetSIFT1M()
-# ds = DatasetGIST1M()
+ds = DatasetGIST1M()
 
 xq = ds.get_queries()
 xb = ds.get_database()
@@ -40,7 +30,7 @@ nq, d = xq.shape
 nt, d = xt.shape
 
 k = 1
-nlevels = 4
+nlevels = 8
 
 
 def get_ivf_index(index):
@@ -77,7 +67,6 @@ def eval_and_plot(name, plot=True):
     index.add(xb)
     faiss.write_index(index, index_path)
 
-    # search params
     faiss.omp_set_num_threads(1)
 
     # Get the underlying IVF index for setting nprobe
@@ -97,7 +86,6 @@ def eval_and_plot(name, plot=True):
 
 nlist = 1024
 
-# benchmark
 plt.figure(figsize=(8, 6), dpi=80)
 
 # IVFFlat
@@ -106,7 +94,7 @@ eval_and_plot(f"IVF{nlist},Flat")
 # IVFFlatPanorama (with PCAR transform to concentrate energy in early dimensions)
 eval_and_plot(f"PCAR{d},IVF{nlist},FlatPanorama{nlevels}")
 
-plt.title("Indices on SIFT1M")
+plt.title("Indices on GIST1M")
 plt.xlabel("Recall@1")
 plt.ylabel("QPS")
 plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
