@@ -98,6 +98,7 @@ eval_and_plot(f"PCAR{d},IVF{nlist},FlatPanorama{nlevels}")
 plt.title("Indices on GIST1M")
 plt.xlabel("Recall@1")
 plt.ylabel("QPS")
+plt.yscale('log')
 plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
 plt.savefig("bench_ivf_flat_panorama.png", bbox_inches='tight')
 
