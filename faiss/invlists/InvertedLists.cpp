@@ -354,12 +354,18 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
         size_t nlist,
         size_t code_size,
         size_t n_levels)
-        : ArrayInvertedLists(nlist, code_size), n_levels(n_levels) {
+        : ArrayInvertedLists(nlist, code_size),
+          n_levels(n_levels),
+          level_width(
+                  (((code_size / sizeof(float)) + n_levels - 1) / n_levels) *
+                  sizeof(float)) {
     FAISS_THROW_IF_NOT(n_levels > 0);
     FAISS_THROW_IF_NOT(code_size % sizeof(float) == 0);
     FAISS_THROW_IF_NOT_MSG(
             !use_iterator,
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
+    FAISS_ASSERT(level_width % sizeof(float) == 0);
+
     cum_sums.resize(nlist);
 }
 
@@ -424,7 +430,6 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
     thread_local std::vector<uint8_t> recons_buffer;
     recons_buffer.resize(code_size);
 
-    const size_t level_code_size = code_size / n_levels;
     const uint8_t* codes_base = codes[list_no].data();
 
     size_t batch_no = offset / kBatchSize;
@@ -432,12 +437,12 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
     size_t batch_offset = batch_no * kBatchSize * code_size;
 
     for (size_t level = 0; level < n_levels; level++) {
-        size_t level_offset = level * level_code_size * kBatchSize;
+        size_t level_offset = level * level_width * kBatchSize;
         const uint8_t* src = codes_base + batch_offset + level_offset +
-                pos_in_batch * level_code_size;
-        uint8_t* dest = recons_buffer.data() + level * level_code_size;
+                pos_in_batch * level_width;
+        uint8_t* dest = recons_buffer.data() + level * level_width;
         size_t copy_size =
-                std::min(level_code_size, code_size - level * level_code_size);
+                std::min(level_width, code_size - level * level_width);
         memcpy(dest, src, copy_size);
     }
 
@@ -461,7 +466,6 @@ void ArrayInvertedListsPanorama::compute_cumulative_sums(
     // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
     const float* vectors = reinterpret_cast<const float*>(code);
     const size_t d = code_size / sizeof(float);
-    const size_t level_width = d / n_levels;
 
     std::vector<float> suffix_sums(d + 1);
 
@@ -483,8 +487,9 @@ void ArrayInvertedListsPanorama::compute_cumulative_sums(
         size_t cumsum_batch_offset = batch_no * kBatchSize * (n_levels + 1);
         float* cumsum_base = cum_sums[list_no].data();
 
+        const size_t level_width_floats = level_width / sizeof(float);
         for (size_t level = 0; level < n_levels; level++) {
-            size_t start_idx = level * level_width;
+            size_t start_idx = level * level_width_floats;
             size_t cumsum_offset =
                     cumsum_batch_offset + level * kBatchSize + pos_in_batch;
             if (start_idx < d) {
@@ -509,8 +514,6 @@ void ArrayInvertedListsPanorama::copy_codes_to_level_layout(
         size_t n_entry,
         const uint8_t* code) {
     uint8_t* codes_base = codes[list_no].data();
-    const size_t level_code_size = code_size / n_levels;
-
     size_t current_pos = offset;
     for (size_t entry_idx = 0; entry_idx < n_entry;) {
         // Determine which batch we're in and position within that batch.
@@ -522,16 +525,16 @@ void ArrayInvertedListsPanorama::copy_codes_to_level_layout(
         // Copy entries into level-oriented layout for this batch.
         size_t batch_offset = batch_no * kBatchSize * code_size;
         for (size_t level = 0; level < n_levels; level++) {
-            size_t level_offset = level * level_code_size * kBatchSize;
-            size_t start_byte = level * level_code_size;
-            size_t end_byte = std::min(start_byte + level_code_size, code_size);
-            size_t copy_size = end_byte - start_byte;
+            size_t level_offset = level * level_width * kBatchSize;
+            size_t start_byte = level * level_width;
+            size_t copy_size =
+                    std::min(level_width, code_size - level * level_width);
 
             for (size_t i = 0; i < entries_in_this_batch; i++) {
                 const uint8_t* src =
                         code + (entry_idx + i) * code_size + start_byte;
                 uint8_t* dest = codes_base + batch_offset + level_offset +
-                        (pos_in_batch + i) * level_code_size;
+                        (pos_in_batch + i) * level_width;
 
                 memcpy(dest, src, copy_size);
             }

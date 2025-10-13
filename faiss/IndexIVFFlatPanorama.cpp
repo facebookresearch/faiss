@@ -66,11 +66,12 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
     const float* xi;
     std::vector<float> cum_sums;
+    float q_norm;
     void set_query(const float* query) override {
         this->xi = query;
 
         const size_t d = vd.d;
-        const size_t level_width = d / storage->n_levels;
+        const size_t level_width_floats = storage->level_width / sizeof(float);
 
         std::vector<float> suffix_sums(d + 1);
         suffix_sums[d] = 0.0f;
@@ -81,7 +82,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         }
 
         for (size_t level = 0; level < storage->n_levels; level++) {
-            size_t start_idx = level * level_width;
+            size_t start_idx = level * level_width_floats;
             if (start_idx < d) {
                 cum_sums[level] = sqrt(suffix_sums[start_idx]);
             } else {
@@ -90,6 +91,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         }
 
         cum_sums[storage->n_levels] = 0.0f;
+        q_norm = suffix_sums[0];
     }
 
     void set_list(idx_t list_no, float /* coarse_dis */) override {
@@ -118,8 +120,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             std::vector<uint32_t>& active_indices,
             const idx_t* ids) const {
         const size_t d = vd.d;
-        const size_t level_width = d / storage->n_levels;
-        const size_t level_code_size = code_size / storage->n_levels;
+        const size_t level_width_floats = storage->level_width / sizeof(float);
 
         size_t batch_start = batch_no * storage->kBatchSize;
         size_t curr_batch_size =
@@ -140,7 +141,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
             active_indices[num_active] = i;
             float cum_sum = batch_cum_sums[i];
-            exact_distances[i] = cum_sum * cum_sum;
+            exact_distances[i] = cum_sum * cum_sum + q_norm;
 
             num_active += include;
         }
@@ -155,18 +156,19 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t level = 0; level < storage->n_levels; level++) {
             float query_cum_norm = cum_sums[level + 1];
 
-            size_t level_offset = level * level_code_size * storage->kBatchSize;
+            size_t level_offset =
+                    level * storage->level_width * storage->kBatchSize;
             const float* level_storage =
                     (const float*)(storage_base + level_offset);
 
             size_t next_active = 0;
             for (size_t i = 0; i < num_active; i++) {
                 uint32_t idx = active_indices[i];
-                const float* yj = level_storage + idx * level_width;
-                const float* query_level = xi + level * level_width;
+                const float* yj = level_storage + idx * level_width_floats;
+                const float* query_level = xi + level * level_width_floats;
 
-                size_t actual_level_width =
-                        std::min(level_width, d - level * level_width);
+                size_t actual_level_width = std::min(
+                        level_width_floats, d - level * level_width_floats);
                 float dot_product =
                         fvec_inner_product(query_level, yj, actual_level_width);
 
@@ -207,7 +209,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
         // Panorama's IVFFlat core progressive filtering algorithm:
         // Process vectors in batches for cache efficiency. For each batch:
-        // 1. Apply ID selection filter and initialize distances (||y||^2)
+        // 1. Apply ID selection filter and initialize distances
+        // (||y||^2 + ||x||^2).
         // 2. Maintain an "active set" of candidate indices that haven't been
         //    pruned yet.
         // 3. For each level, refine distances incrementally and compact the

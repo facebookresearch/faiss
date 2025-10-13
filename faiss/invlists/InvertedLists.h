@@ -281,7 +281,8 @@ struct ArrayInvertedLists : InvertedLists {
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     static constexpr size_t kBatchSize = 128;
     std::vector<MaybeOwnedVector<float>> cum_sums;
-    size_t n_levels;
+    const size_t n_levels;
+    const size_t level_width; // in code units
 
     ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
 

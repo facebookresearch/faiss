@@ -8,7 +8,8 @@ Comprehensive test suite for IndexIVFFlatPanorama.
 
 Panorama is an adaptation of IndexIVFFlat that uses level-oriented storage
 and progressive filtering with Cauchy-Schwarz bounds to achieve significant
-speedups (up to 20x) with zero loss in accuracy.
+speedups (up to 20x when combined with PCA or Cayley transforms) with zero 
+loss in accuracy.
 
 Paper: https://www.arxiv.org/pdf/2510.00566
 """
@@ -224,6 +225,11 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
+
+                print(D_regular)
+                print(D_panorama)
+                print(I_regular)
+                print(I_panorama)
 
                 # Results must match
                 np.testing.assert_array_equal(I_regular, I_panorama)
@@ -795,7 +801,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index_regular.train(xt)
         index_regular.add(xb)
         index_regular.nprobe = 4
-
+     
         # Panorama with many levels relative to dimension
         quantizer2 = faiss.IndexFlatL2(d)
         index_panorama = faiss.IndexIVFFlatPanorama(quantizer2, d, nlist, nlevels)
