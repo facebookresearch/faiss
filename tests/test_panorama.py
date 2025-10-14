@@ -56,9 +56,14 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             index.nprobe = nprobe
         return index
 
-    def assert_search_results_equal(self, D_regular, I_regular, D_panorama, I_panorama, rtol=1e-5, atol=1e-7):
+    def assert_search_results_equal(self, D_regular, I_regular, D_panorama, I_panorama, rtol=1e-5, atol=1e-7, otol=1e-3):
         """Assert that search results from two indices match."""
-        np.testing.assert_array_equal(I_regular, I_panorama, err_msg="Labels mismatch")
+        # Allow small tolerance in overlap rate to account for floating-point errors
+        # in distance computations that can affect ordering when distances are nearly equal.
+        overlap_rate = np.mean(I_regular == I_panorama)
+        
+        self.assertGreater(overlap_rate, 1 - otol, 
+                          f"Overlap rate {overlap_rate:.6f} is not > {1-otol:.3f}. ")
         np.testing.assert_allclose(D_regular, D_panorama, rtol=rtol, atol=atol, err_msg="Distances mismatch")
 
     def assert_range_results_equal(self, lims_regular, D_regular, I_regular, lims_panorama, D_panorama, I_panorama, nq):
