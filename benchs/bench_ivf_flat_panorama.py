@@ -9,14 +9,11 @@ import os
 import multiprocessing as mp
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 
 try:
-    from faiss.contrib.datasets_fb import \
-        DatasetGIST1M
+    from faiss.contrib.datasets_fb import DatasetGIST1M
 except ImportError:
-    from faiss.contrib.datasets import \
-        DatasetGIST1M
+    from faiss.contrib.datasets import DatasetGIST1M
 
 ds = DatasetGIST1M()
 
@@ -29,13 +26,6 @@ xt = ds.get_train()
 nb, d = xb.shape
 nq, d = xq.shape
 nt, d = xt.shape
-
-# Apply PCA transform to the data
-xb_mean = xb.mean(axis=0)
-pca = PCA(n_components=d).fit(xb)
-xb_pca = pca.transform(xb - xb_mean)
-xq_pca = pca.transform(xq - xb_mean)
-xt_pca = pca.transform(xt - xb_mean)
 
 k = 10
 gt = gt[:, :k]
@@ -100,8 +90,8 @@ plt.figure(figsize=(8, 6), dpi=80)
 # IVFFlat
 eval_and_plot(f"IVF{nlist},Flat", xb, xq, xt)
 
-# IVFFlatPanorama (with PCAR transform to concentrate energy in early dimensions)
-eval_and_plot(f"IVF{nlist},FlatPanorama{nlevels}", xb_pca, xq_pca, xt_pca)
+# IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
+eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}", xb, xq, xt)
 
 plt.title("Indices on GIST1M")
 plt.xlabel("Recall@{k}")
