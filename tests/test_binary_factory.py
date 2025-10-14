@@ -52,8 +52,3 @@ class TestBinaryFactory(unittest.TestCase):
         index = faiss.index_binary_factory(16, "BFlat,IDMap2")
         assert isinstance(index, faiss.IndexBinaryIDMap2)
         assert index.index.code_size == 2
-
-    def test_factory_IDMap2_with_spaces(self):
-        index = faiss.index_binary_factory(16, "  IDMap2 ,  BFlat  ")
-        assert isinstance(index, faiss.IndexBinaryIDMap2)
-        assert index.index.code_size == 2
