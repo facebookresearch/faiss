@@ -60,6 +60,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         """Assert that search results from two indices match."""
         # Allow small tolerance in overlap rate to account for floating-point errors
         # in distance computations that can affect ordering when distances are nearly equal.
+        # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
         overlap_rate = np.mean(I_regular == I_panorama)
         
         self.assertGreater(overlap_rate, 1 - otol, 
