@@ -191,7 +191,8 @@ void search_single_query(
         size_t& nlist,
         size_t& ndis) {
     Run_search_single_query r;
-    dispatch_HammingComputer(index.code_size, r, &index, &q, &res, &n0, &nlist, &ndis);
+    dispatch_HammingComputer(
+            index.code_size, r, &index, &q, &res, &n0, &nlist, &ndis);
 }
 
 } // anonymous namespace
