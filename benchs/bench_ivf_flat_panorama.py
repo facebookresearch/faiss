@@ -39,7 +39,7 @@ def get_ivf_index(index):
     return index
 
 
-def eval_recall(index, name, nprobe_val, xq):
+def eval_recall(index, name, nprobe_val):
     ivf_index = get_ivf_index(index)
     t0 = time.time()
     _, I = index.search(xq, k=k)
@@ -57,7 +57,7 @@ def eval_recall(index, name, nprobe_val, xq):
     return recall, qps
 
 
-def eval_and_plot(name, xb, xq, xt, plot=True):
+def eval_and_plot(name, plot=True):
     index = faiss.index_factory(d, name)
     index_path = f"indices/{name}.faissindex"
 
@@ -75,7 +75,7 @@ def eval_and_plot(name, xb, xq, xt, plot=True):
     print(f"======{name}")
     for nprobe in 1, 2, 4, 8, 16, 32, 64:
         ivf_index.nprobe = nprobe
-        recall, qps = eval_recall(index, name, nprobe, xq)
+        recall, qps = eval_recall(index, name, nprobe)
         data.append((recall, qps))
 
     if plot:
@@ -88,10 +88,10 @@ nlist = 128
 plt.figure(figsize=(8, 6), dpi=80)
 
 # IVFFlat
-eval_and_plot(f"IVF{nlist},Flat", xb, xq, xt)
+eval_and_plot(f"IVF{nlist},Flat")
 
 # IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
-eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}", xb, xq, xt)
+eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}")
 
 plt.title("Indices on GIST1M")
 plt.xlabel("Recall@{k}")
