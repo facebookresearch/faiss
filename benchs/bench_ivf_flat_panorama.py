@@ -9,6 +9,7 @@ import os
 import multiprocessing as mp
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 try:
     from faiss.contrib.datasets_fb import \
@@ -29,6 +30,13 @@ nb, d = xb.shape
 nq, d = xq.shape
 nt, d = xt.shape
 
+# Apply PCA transform to the data
+xb_mean = xb.mean(axis=0)
+pca = PCA(n_components=d).fit(xb)
+xb_pca = pca.transform(xb - xb_mean)
+xq_pca = pca.transform(xq - xb_mean)
+xt_pca = pca.transform(xt - xb_mean)
+
 k = 10
 gt = gt[:, :k]
 nlevels = 8
@@ -41,7 +49,7 @@ def get_ivf_index(index):
     return index
 
 
-def eval_recall(index, name, nprobe_val):
+def eval_recall(index, name, nprobe_val, xq):
     ivf_index = get_ivf_index(index)
     t0 = time.time()
     _, I = index.search(xq, k=k)
@@ -59,7 +67,7 @@ def eval_recall(index, name, nprobe_val):
     return recall, qps
 
 
-def eval_and_plot(name, plot=True):
+def eval_and_plot(name, xb, xq, xt, plot=True):
     index = faiss.index_factory(d, name)
     index_path = f"indices/{name}.faissindex"
 
@@ -75,9 +83,9 @@ def eval_and_plot(name, plot=True):
 
     data = []
     print(f"======{name}")
-    for nprobe in 1, 2, 4, 8, 16, 32, 64, 128:
+    for nprobe in 1, 2, 4, 8, 16, 32, 64:
         ivf_index.nprobe = nprobe
-        recall, qps = eval_recall(index, name, nprobe)
+        recall, qps = eval_recall(index, name, nprobe, xq)
         data.append((recall, qps))
 
     if plot:
@@ -90,10 +98,10 @@ nlist = 128
 plt.figure(figsize=(8, 6), dpi=80)
 
 # IVFFlat
-eval_and_plot(f"IVF{nlist},Flat")
+eval_and_plot(f"IVF{nlist},Flat", xb, xq, xt)
 
 # IVFFlatPanorama (with PCAR transform to concentrate energy in early dimensions)
-eval_and_plot(f"PCAR{d},IVF{nlist},FlatPanorama{nlevels}")
+eval_and_plot(f"IVF{nlist},FlatPanorama{nlevels}", xb_pca, xq_pca, xt_pca)
 
 plt.title("Indices on GIST1M")
 plt.xlabel("Recall@{k}")
