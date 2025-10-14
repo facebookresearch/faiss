@@ -37,6 +37,8 @@ struct SIMDResultHandler;
  * @param nsq      number of sub-quantizers (=M rounded up to a muliple of 2)
  * @param bbs     size of database blocks (multiple of 32)
  * @param blocks  output array, size nb * nsq / 2.
+ * @param code_stride  optional stride between consecutive codes (0 = use
+default (M + 1) / 2)
  */
 void pq4_pack_codes(
         const uint8_t* codes,
@@ -45,7 +47,8 @@ void pq4_pack_codes(
         size_t nb,
         size_t bbs,
         size_t nsq,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        size_t code_stride = 0);
 
 /** Same as pack_codes but write in a given range of the output,
  * leaving the rest untouched. Assumes allocated entries are 0 on input.
@@ -54,6 +57,8 @@ void pq4_pack_codes(
  * @param i0      first output code to write
  * @param i1      last output code to write
  * @param blocks  output array, size at least ceil(i1 / bbs) * bbs * nsq / 2
+ * @param code_stride  optional stride between consecutive codes (0 = use
+ * default (M + 1) / 2)
  */
 void pq4_pack_codes_range(
         const uint8_t* codes,
@@ -62,7 +67,8 @@ void pq4_pack_codes_range(
         size_t i1,
         size_t bbs,
         size_t nsq,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        size_t code_stride = 0);
 
 /** get a single element from a packed codes table
  *

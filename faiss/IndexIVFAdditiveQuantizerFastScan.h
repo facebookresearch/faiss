@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/impl/AdditiveQuantizer.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
 
