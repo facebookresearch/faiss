@@ -13,6 +13,7 @@
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <includes refid="partitioning_8h" local="no">faiss/utils/partitioning.h</includes>
+    <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <incdepgraph>
       <node id="26">
         <label>faiss/MetricType.h</label>
@@ -265,6 +266,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1SIMDResultHandler" prot="public">faiss::SIMDResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1SIMDResultHandlerToFloat" prot="public">faiss::SIMDResultHandlerToFloat</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" prot="public">faiss::simd_result_handlers::DummyResultHandler</innerclass>

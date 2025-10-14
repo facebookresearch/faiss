@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::rabitq_utils::QueryFactorsData</compoundname>
+    <includes refid="RaBitQUtils_8h" local="no">RaBitQUtils.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a76e317feef2f672682aba86b106c2fce" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::c1</definition>
+        <argsstring></argsstring>
+        <name>c1</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::c1</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="34" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a27af93ddaac7290afbe4d6bd20920b15" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::c2</definition>
+        <argsstring></argsstring>
+        <name>c2</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::c2</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="35" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1aed1a675f6c3299e1610715d295e13039" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::c34</definition>
+        <argsstring></argsstring>
+        <name>c34</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::c34</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="36" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a6b958462b60c7900cbccaf423ff49c9f" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::qr_to_c_L2sqr</definition>
+        <argsstring></argsstring>
+        <name>qr_to_c_L2sqr</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::qr_to_c_L2sqr</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="38" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a550dedff101685cefaa5298cf64c9bce" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::qr_norm_L2sqr</definition>
+        <argsstring></argsstring>
+        <name>qr_norm_L2sqr</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::qr_norm_L2sqr</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="39" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1ac5162712b614a52247f3a77f3601936d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::QueryFactorsData::int_dot_scale</definition>
+        <argsstring></argsstring>
+        <name>int_dot_scale</name>
+        <qualifiedname>faiss::rabitq_utils::QueryFactorsData::int_dot_scale</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="41" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Query-specific factors computed during search for RaBitQ distance computation. Used by both <ref refid="structfaiss_1_1IndexRaBitQ" kindref="compound">IndexRaBitQ</ref> and <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> implementations. </para>
+    </detaileddescription>
+    <location file="faiss/impl/RaBitQUtils.h" line="33" column="1" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="33" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a76e317feef2f672682aba86b106c2fce" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>c1</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a27af93ddaac7290afbe4d6bd20920b15" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>c2</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1aed1a675f6c3299e1610715d295e13039" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>c34</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1ac5162712b614a52247f3a77f3601936d" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>int_dot_scale</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a550dedff101685cefaa5298cf64c9bce" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>qr_norm_L2sqr</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a6b958462b60c7900cbccaf423ff49c9f" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::QueryFactorsData</scope><name>qr_to_c_L2sqr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

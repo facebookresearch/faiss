@@ -1,0 +1,746 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RaBitQHeapHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RaBitQHeapHandler</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false &gt;</basecompoundref>
+    <includes refid="IndexRaBitQFastScan_8h" local="no">IndexRaBitQFastScan.h</includes>
+    <templateparamlist>
+      <param>
+        <type>class C</type>
+      </param>
+      <param>
+        <type>bool</type>
+        <declname>with_id_map</declname>
+        <defname>with_id_map</defname>
+        <defval>false</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1RaBitQHeapHandler_1a8c1c1102d1ac980b28bdb456205119e6" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" kindref="compound">simd_result_handlers::ResultHandlerCompare</ref>&lt; C, with_id_map &gt;</type>
+        <definition>using faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::RHC =  simd_result_handlers::ResultHandlerCompare&lt;C, with_id_map&gt;</definition>
+        <argsstring></argsstring>
+        <name>RHC</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::RHC</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="117" column="5" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1RaBitQHeapHandler_1a033b1fc886561512800fee4a0b7d7101" prot="public" static="no">
+        <type>typename std::conditional&lt; C::is_max, <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt;, <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;::type</type>
+        <definition>using faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::Cfloat =  typename std::conditional&lt; C::is_max, CMax&lt;float, int64_t&gt;, CMin&lt;float, int64_t&gt; &gt;::type</definition>
+        <argsstring></argsstring>
+        <name>Cfloat</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::Cfloat</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="128" column="5" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a68797712fe708c5fcd8de53111ef8ee4" prot="public" static="no">
+        <type>typename C::TI</type>
+        <definition>using faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::TI =  typename C::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::TI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="148" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1a1de397feb925273e44c2aadf56132fe5" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> *</type>
+        <definition>const IndexRaBitQFastScan* faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::rabitq_index</definition>
+        <argsstring></argsstring>
+        <name>rabitq_index</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::rabitq_index</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="120" column="31" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1ae7185f75ec80e58179a6d60972325fc9" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::heap_distances</definition>
+        <argsstring></argsstring>
+        <name>heap_distances</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::heap_distances</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="121" column="11" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1ae22c9c9a1db199fbad2f9054f736c96b" prot="public" static="no" mutable="no">
+        <type>int64_t *</type>
+        <definition>int64_t* faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::heap_labels</definition>
+        <argsstring></argsstring>
+        <name>heap_labels</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::heap_labels</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="122" column="13" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1a51f377e843cc90621fa48d7c9cc12e3b" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::nq</definition>
+        <argsstring></argsstring>
+        <name>nq</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::nq</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="123" column="18" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1a9a050b528d9a6ac075a96e75b76ee492" prot="public" static="no" mutable="no">
+        <type>const size_t</type>
+        <definition>const size_t faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::k</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="123" column="21" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQHeapHandler_1a31c53b2f2cc2475d4ad205a05686de7b" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
+        <definition>const FastScanDistancePostProcessing&amp; faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::context</definition>
+        <argsstring></argsstring>
+        <name>context</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::context</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="125" column="13" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::disable</definition>
+        <argsstring></argsstring>
+        <name>disable</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::disable</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="150" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae405b46f96ddedee11e885b6f48da53c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::i0</definition>
+        <argsstring></argsstring>
+        <name>i0</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::i0</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="152" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ac59281f8df63e80195754e9cb1671bab" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::j0</definition>
+        <argsstring></argsstring>
+        <name>j0</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::j0</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="153" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a2c0d4c4415953e11aee107f85b94272b" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::sel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="155" column="22" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a9c3b4afb6e9d2327c65e7bbfcdc80d76" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::SIMDResultHandlerToFloat::ntotal</definition>
+        <argsstring></argsstring>
+        <name>ntotal</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::ntotal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="52" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1aa0cd900277b35f820861167b221f3b07" prot="public" static="no" mutable="no">
+        <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+        <definition>const idx_t* faiss::SIMDResultHandlerToFloat::id_map</definition>
+        <argsstring></argsstring>
+        <name>id_map</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::id_map</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>these fields are used mainly for the IVF variants (with_id_map=true) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="55" column="17" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a434326ed5aca83b4d48f5c85587b8c48" prot="public" static="no" mutable="no">
+        <type>const int *</type>
+        <definition>const int* faiss::SIMDResultHandlerToFloat::q_map</definition>
+        <argsstring></argsstring>
+        <name>q_map</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::q_map</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="56" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" static="no" mutable="no">
+        <type>const uint16_t *</type>
+        <definition>const uint16_t* faiss::SIMDResultHandlerToFloat::dbias</definition>
+        <argsstring></argsstring>
+        <name>dbias</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::dbias</qualifiedname>
+        <initializer>=
+            nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="57" column="20" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandlerToFloat_1a5cab3c9b7ffdcd62d507147aa99ab4c5" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::SIMDResultHandlerToFloat::normalizers</definition>
+        <argsstring></argsstring>
+        <name>normalizers</name>
+        <qualifiedname>faiss::SIMDResultHandlerToFloat::normalizers</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="59" column="17" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SIMDResultHandler::is_CMax</definition>
+        <argsstring></argsstring>
+        <name>is_CMax</name>
+        <qualifiedname>faiss::SIMDResultHandler::is_CMax</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="31" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::SIMDResultHandler::sizeof_ids</definition>
+        <argsstring></argsstring>
+        <name>sizeof_ids</name>
+        <qualifiedname>faiss::SIMDResultHandler::sizeof_ids</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="32" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::SIMDResultHandler::with_fields</definition>
+        <argsstring></argsstring>
+        <name>with_fields</name>
+        <qualifiedname>faiss::SIMDResultHandler::with_fields</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="33" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1a4cb4096b934f1e7c93ff4e5e65665f6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::RaBitQHeapHandler</definition>
+        <argsstring>(const IndexRaBitQFastScan *index, size_t nq_val, size_t k_val, float *distances, int64_t *labels, const IDSelector *sel_in, const FastScanDistancePostProcessing &amp;context)</argsstring>
+        <name>RaBitQHeapHandler</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::RaBitQHeapHandler</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq_val</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k_val</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel_in</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="133" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1a2bfc47c7f289c816c2c9c5f1b08eb5f1" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::handle</definition>
+        <argsstring>(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final</argsstring>
+        <name>handle</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::handle</qualifiedname>
+        <reimplements refid="structfaiss_1_1SIMDResultHandler_1aa32e37a5068c5e4627b11bc3db6e95d8">handle</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>called when 32 distances are computed and provided in two <ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref>. (q, b) indicate which entry it is in the block. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="142" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1af6a2c2b7897260ebfee378e64cca3cfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::begin</definition>
+        <argsstring>(const float *norms)</argsstring>
+        <name>begin</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::begin</qualifiedname>
+        <reimplements refid="structfaiss_1_1SIMDResultHandlerToFloat_1a74f32a4cce1b9da87de4a2149d8efb44">begin</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>norms</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="144" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1a8ddf7f85288591573e88c4a1d5b0abf5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;::end</definition>
+        <argsstring>()</argsstring>
+        <name>end</name>
+        <qualifiedname>faiss::RaBitQHeapHandler::end</qualifiedname>
+        <reimplements refid="structfaiss_1_1SIMDResultHandlerToFloat_1a707f8e0cbcd9674627d734518ae29fb6">end</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRaBitQFastScan.h" line="146" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7366fd76db0d66840a68bc91da8ba6ea" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::set_block_origin</definition>
+        <argsstring>(size_t i0_in, size_t j0_in) final</argsstring>
+        <name>set_block_origin</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::set_block_origin</qualifiedname>
+        <reimplements refid="structfaiss_1_1SIMDResultHandler_1a37668ebbd0d270cabb0a651bce2063f0">set_block_origin</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j0</declname>
+        </param>
+        <briefdescription>
+<para>set the sub-matrix that is being computed </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="164" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="164" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a06a5cf2fb3b5529b9533ab935b1176e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::adjust_with_origin</definition>
+        <argsstring>(size_t &amp;q, simd16uint16 &amp;d0, simd16uint16 &amp;d1)</argsstring>
+        <name>adjust_with_origin</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::adjust_with_origin</qualifiedname>
+        <param>
+          <type>size_t &amp;</type>
+          <declname>q</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref> &amp;</type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="170" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="170" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7e8b69c9da2beedf65b673b61f1a488b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::adjust_id</definition>
+        <argsstring>(size_t b, size_t j)</argsstring>
+        <name>adjust_id</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::adjust_id</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="185" column="13" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="185" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af034cd3142a4e9bab30aab7c81a5161c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;::get_lt_mask</definition>
+        <argsstring>(uint16_t thr, size_t b, simd16uint16 d0, simd16uint16 d1)</argsstring>
+        <name>get_lt_mask</name>
+        <qualifiedname>faiss::simd_result_handlers::ResultHandlerCompare::get_lt_mask</qualifiedname>
+        <param>
+          <type>uint16_t</type>
+          <declname>thr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
+          <declname>d1</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>return binary mask of elements below thr in (d0, d1) inverse_test returns elements above </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_result_handlers.h" line="195" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="195" bodyend="222"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>SIMD result handler for RaBitQ FastScan that applies distance corrections and maintains heaps directly during SIMD operations.</para>
+<para>This handler processes batches of 32 distance computations from SIMD kernels, applies RaBitQ-specific adjustments (factors and normalizers), and immediately updates result heaps without intermediate storage. This eliminates the need for post-processing and provides significant memory and performance benefits.</para>
+<para>Key optimizations:<itemizedlist>
+<listitem><para>Direct heap integration (no intermediate result storage)</para>
+</listitem><listitem><para>Batch-level computation of normalizers and query factors</para>
+</listitem><listitem><para>Preserves exact mathematical equivalence to original RaBitQ distances <parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>C</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Comparator type (CMin/CMax) for heap operations </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>with_id_map</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether to use id mapping (similar to HeapHandler) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1RaBitQHeapHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
+      <node id="3">
+        <label>faiss::SIMDResultHandlerToFloat</label>
+        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>faiss::AlignedTable&lt; uint8_t &gt;</label>
+        <link refid="structfaiss_1_1AlignedTable"/>
+        <childnode refid="10" relation="usage">
+          <edgelabel>tab</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss::AlignedTableTightAlloc&lt; uint8_t, 32 &gt;</label>
+        <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
+      </node>
+      <node id="13">
+        <label>faiss::FastScanDistancePostProcessing</label>
+        <link refid="structfaiss_1_1FastScanDistancePostProcessing"/>
+        <childnode refid="14" relation="usage">
+          <edgelabel>norm_scaler</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>query_factors</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="8">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="7">
+        <label>faiss::IndexFastScan</label>
+        <link refid="structfaiss_1_1IndexFastScan"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>codes</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::IndexRaBitQFastScan</label>
+        <link refid="structfaiss_1_1IndexRaBitQFastScan"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>rabitq</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>faiss::NormTableScaler</label>
+        <link refid="structfaiss_1_1NormTableScaler"/>
+        <childnode refid="15" relation="usage">
+          <edgelabel>scale_simd</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1RaBitQHeapHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>rabitq_index</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>context</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::RaBitQuantizer</label>
+        <link refid="structfaiss_1_1RaBitQuantizer"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::SIMDResultHandler</label>
+        <link refid="structfaiss_1_1SIMDResultHandler"/>
+      </node>
+      <node id="3">
+        <label>faiss::SIMDResultHandlerToFloat</label>
+        <link refid="structfaiss_1_1SIMDResultHandlerToFloat"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss::rabitq_utils::QueryFactorsData</label>
+        <link refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData"/>
+      </node>
+      <node id="15">
+        <label>faiss::simd16uint16</label>
+        <link refid="structfaiss_1_1simd16uint16"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss::simd256bit</label>
+        <link refid="structfaiss_1_1simd256bit"/>
+      </node>
+      <node id="2">
+        <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/IndexRaBitQFastScan.h" line="115" column="1" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="116" bodyend="147"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7e8b69c9da2beedf65b673b61f1a488b" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>adjust_id</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a06a5cf2fb3b5529b9533ab935b1176e9" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>adjust_with_origin</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1af6a2c2b7897260ebfee378e64cca3cfb" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a033b1fc886561512800fee4a0b7d7101" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>Cfloat</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a31c53b2f2cc2475d4ad205a05686de7b" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>context</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>dbias</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>disable</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a8ddf7f85288591573e88c4a1d5b0abf5" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>end</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af034cd3142a4e9bab30aab7c81a5161c" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>get_lt_mask</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a2bfc47c7f289c816c2c9c5f1b08eb5f1" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>handle</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1ae7185f75ec80e58179a6d60972325fc9" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>heap_distances</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1ae22c9c9a1db199fbad2f9054f736c96b" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>heap_labels</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae405b46f96ddedee11e885b6f48da53c" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>i0</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1aa0cd900277b35f820861167b221f3b07" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>id_map</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>is_CMax</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ac59281f8df63e80195754e9cb1671bab" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>j0</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a9a050b528d9a6ac075a96e75b76ee492" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>k</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a5cab3c9b7ffdcd62d507147aa99ab4c5" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>normalizers</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a51f377e843cc90621fa48d7c9cc12e3b" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>nq</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a9c3b4afb6e9d2327c65e7bbfcdc80d76" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a434326ed5aca83b4d48f5c85587b8c48" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>q_map</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a1de397feb925273e44c2aadf56132fe5" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>rabitq_index</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a4cb4096b934f1e7c93ff4e5e65665f6d" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>RaBitQHeapHandler</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a4c1a9ea8a385153b176f72741524dbbd" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>ResultHandlerCompare</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a8c1c1102d1ac980b28bdb456205119e6" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>RHC</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a2c0d4c4415953e11aee107f85b94272b" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7366fd76db0d66840a68bc91da8ba6ea" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>set_block_origin</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1ae11e305aeb4d8845fe9efe6a7a833ae8" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>SIMDResultHandlerToFloat</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>sizeof_ids</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a68797712fe708c5fcd8de53111ef8ee4" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>with_fields</name></member>
+      <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a73a5afd689882191d8843efe425e7fda" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>~ResultHandlerCompare</name></member>
+      <member refid="structfaiss_1_1SIMDResultHandler_1ad4a58b63990a088da138ee73e76c86f4" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>~SIMDResultHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

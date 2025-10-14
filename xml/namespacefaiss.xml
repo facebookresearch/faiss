@@ -36,6 +36,7 @@
     <innerclass refid="structfaiss_1_1DummyScaler" prot="public">faiss::DummyScaler</innerclass>
     <innerclass refid="structfaiss_1_1EnumeratedVectors" prot="public">faiss::EnumeratedVectors</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
+    <innerclass refid="structfaiss_1_1FastScanDistancePostProcessing" prot="public">faiss::FastScanDistancePostProcessing</innerclass>
     <innerclass refid="structfaiss_1_1FastScanStats" prot="public">faiss::FastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1FileIOReader" prot="public">faiss::FileIOReader</innerclass>
     <innerclass refid="structfaiss_1_1FileIOWriter" prot="public">faiss::FileIOWriter</innerclass>
@@ -147,6 +148,7 @@
     <innerclass refid="structfaiss_1_1IndexProductResidualQuantizerFastScan" prot="public">faiss::IndexProductResidualQuantizerFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexQINCo" prot="public">faiss::IndexQINCo</innerclass>
     <innerclass refid="structfaiss_1_1IndexRaBitQ" prot="public">faiss::IndexRaBitQ</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRaBitQFastScan" prot="public">faiss::IndexRaBitQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexRandom" prot="public">faiss::IndexRandom</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
@@ -223,6 +225,7 @@
     <innerclass refid="structfaiss_1_1QINCo" prot="public">faiss::QINCo</innerclass>
     <innerclass refid="structfaiss_1_1QINCoStep" prot="public">faiss::QINCoStep</innerclass>
     <innerclass refid="structfaiss_1_1Quantizer" prot="public">faiss::Quantizer</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQHeapHandler" prot="public">faiss::RaBitQHeapHandler</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQuantizer" prot="public">faiss::RaBitQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
@@ -290,6 +293,7 @@
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rabitq">faiss::rabitq</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
     <sectiondef kind="enum">
@@ -883,7 +887,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="157" column="32" declfile="faiss/IndexFastScan.h" declline="157" declcolumn="32"/>
+        <location file="faiss/IndexFastScan.h" line="257" column="32" declfile="faiss/IndexFastScan.h" declline="257" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
@@ -2164,10 +2168,10 @@
         </inbodydescription>
         <location file="faiss/impl/maybe_owned_vector.h" line="317" column="6" bodyfile="faiss/impl/maybe_owned_vector.h" bodystart="317" bodyend="321"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a96c58ee85ae690c955ed9e9d2b417b09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pq4_pack_codes</definition>
-        <argsstring>(const uint8_t *codes, size_t ntotal, size_t M, size_t nb, size_t bbs, size_t nsq, uint8_t *blocks)</argsstring>
+        <argsstring>(const uint8_t *codes, size_t ntotal, size_t M, size_t nb, size_t bbs, size_t nsq, uint8_t *blocks, size_t code_stride=0)</argsstring>
         <name>pq4_pack_codes</name>
         <qualifiedname>faiss::pq4_pack_codes</qualifiedname>
         <param>
@@ -2197,6 +2201,11 @@
         <param>
           <type>uint8_t *</type>
           <declname>blocks</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_stride</declname>
+          <defval>0</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -2250,17 +2259,25 @@
 <para>output array, size nb * nsq / 2. </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code_stride</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional stride between consecutive codes (0 = use default (M + 1) / 2) </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="41" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="41" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="43" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="43" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a7ed9c5bb3d86d93d4fc4bc6512b926b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a9d620ede35bd6cfb0a9fd8f4cfafb481" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pq4_pack_codes_range</definition>
-        <argsstring>(const uint8_t *codes, size_t M, size_t i0, size_t i1, size_t bbs, size_t nsq, uint8_t *blocks)</argsstring>
+        <argsstring>(const uint8_t *codes, size_t M, size_t i0, size_t i1, size_t bbs, size_t nsq, uint8_t *blocks, size_t code_stride=0)</argsstring>
         <name>pq4_pack_codes_range</name>
         <qualifiedname>faiss::pq4_pack_codes_range</qualifiedname>
         <param>
@@ -2290,6 +2307,11 @@
         <param>
           <type>uint8_t *</type>
           <declname>blocks</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_stride</declname>
+          <defval>0</defval>
         </param>
         <briefdescription>
         </briefdescription>
@@ -2327,12 +2349,20 @@
 <para>output array, size at least ceil(i1 / bbs) * bbs * nsq / 2 </para>
 </parameterdescription>
 </parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>code_stride</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional stride between consecutive codes (0 = use default (M + 1) / 2) </para>
+</parameterdescription>
+</parameteritem>
 </parameterlist>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="58" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="58" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="63" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="63" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint8_t</type>
@@ -2385,7 +2415,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="72" column="9" declfile="faiss/impl/pq4_fast_scan.h" declline="72" declcolumn="9"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="78" column="9" declfile="faiss/impl/pq4_fast_scan.h" declline="78" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2442,7 +2472,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="84" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="84" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="90" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="90" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2507,7 +2537,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="111" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="111" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="117" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="117" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2612,7 +2642,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="123" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="123" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="129" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="129" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a323a06b2cc33d2afa49cd54690134ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2630,7 +2660,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="148" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="148" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="154" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="154" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2649,7 +2679,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="151" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="151" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="157" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="157" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2716,7 +2746,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="162" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="162" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="168" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="168" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2751,7 +2781,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="166" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="166" declcolumn="5"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="172" column="5" declfile="faiss/impl/pq4_fast_scan.h" declline="172" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2853,7 +2883,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="183" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="183" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="189" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="189" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2942,7 +2972,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="202" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="202" declcolumn="6"/>
+        <location file="faiss/impl/pq4_fast_scan.h" line="208" column="6" declfile="faiss/impl/pq4_fast_scan.h" declline="208" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1abd58cb9ccddf108229bd3f2d3f0d2bac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

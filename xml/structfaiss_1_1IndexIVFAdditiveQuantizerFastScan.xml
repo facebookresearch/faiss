@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="37" column="5" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="38" column="5" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -65,7 +65,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="39" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="39" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="40" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="40" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a796db53b1eea3b4aa0430036a7a1dc30" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="41" column="10" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="41" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="42" column="10" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="42" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a37e8dc62e89f3cfc268f74fc43a5a5e9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -95,7 +95,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="42" column="9" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="42" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="43" column="9" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab134f1781f941cdc8d025dd879d7b9b6" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="45" column="12" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="45" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="46" column="12" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a7a5b4bc9d80aea0270de58493c4eb3d4" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -645,7 +645,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="47" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="48" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ae1aafe02dc541509b27409f9b53c957e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -679,7 +679,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="56" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="57" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1af6472b930c49e5297d37a28d719279a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -693,7 +693,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="63" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="64" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a88114160b397addc576426fc61773c42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -707,7 +707,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="65" column="5"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="66" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a746d32b81773a8ae805d7f7215c11f77" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -730,7 +730,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="68" column="14"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="69" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a648b31c6d8c58265289a117f1030a296" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -759,7 +759,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="72" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="73" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1aca35e006da2c5d000279b5346e658491" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -775,7 +775,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="74" column="11"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="75" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a52bb1f435966c96dc41f7a318084ec84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -797,7 +797,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="76" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="77" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a56f6ee1a3f9a44eb88ae3479f070de8e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -834,7 +834,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="80" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1acfb42a2f0780bff4fd1b6f05b4fff3b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -875,7 +875,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="87" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="88" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ae61c39ddcfc53eda6f83fcd8be7d8bb6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>bool</type>
@@ -890,7 +890,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="97" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="98" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a3c6c2d76fa2cdd68ac6d0de7c43e4925" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -925,7 +925,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="99" column="10"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="100" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a35721a1942a7ff74692d73fbb76ec123" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3284,7 +3284,7 @@
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="36" column="1" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="36" bodyend="105"/>
+    <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="37" column="1" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="37" bodyend="106"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizerFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFAdditiveQuantizerFastScan</scope><name>add_core</name></member>

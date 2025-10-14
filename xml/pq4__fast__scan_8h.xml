@@ -86,177 +86,183 @@
 <codeline lineno="37"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(=M<sp/>rounded<sp/>up<sp/>to<sp/>a<sp/>muliple<sp/>of<sp/>2)</highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>database<sp/>blocks<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/>*<sp/>@param<sp/>blocks<sp/><sp/>output<sp/>array,<sp/>size<sp/>nb<sp/>*<sp/>nsq<sp/>/<sp/>2.</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="41" refid="namespacefaiss_1a96c58ee85ae690c955ed9e9d2b417b09" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a96c58ee85ae690c955ed9e9d2b417b09" kindref="member">pq4_pack_codes</ref>(</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>blocks);</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="50"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>pack_codes<sp/>but<sp/>write<sp/>in<sp/>a<sp/>given<sp/>range<sp/>of<sp/>the<sp/>output,</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>leaving<sp/>the<sp/>rest<sp/>untouched.<sp/>Assumes<sp/>allocated<sp/>entries<sp/>are<sp/>0<sp/>on<sp/>input.</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>input<sp/>codes,<sp/>size<sp/>(i1<sp/>-<sp/>i0,<sp/>ceil(M<sp/>/<sp/>2))</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>@param<sp/>i0<sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>output<sp/>code<sp/>to<sp/>write</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>@param<sp/>i1<sp/><sp/><sp/><sp/><sp/><sp/>last<sp/>output<sp/>code<sp/>to<sp/>write</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>@param<sp/>blocks<sp/><sp/>output<sp/>array,<sp/>size<sp/>at<sp/>least<sp/>ceil(i1<sp/>/<sp/>bbs)<sp/>*<sp/>bbs<sp/>*<sp/>nsq<sp/>/<sp/>2</highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="58" refid="namespacefaiss_1a7ed9c5bb3d86d93d4fc4bc6512b926b6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a7ed9c5bb3d86d93d4fc4bc6512b926b6" kindref="member">pq4_pack_codes_range</ref>(</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0,</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1,</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>blocks);</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="67"><highlight class="comment">/**<sp/>get<sp/>a<sp/>single<sp/>element<sp/>from<sp/>a<sp/>packed<sp/>codes<sp/>table</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>@param<sp/>vector_id<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector<sp/>id</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/>*<sp/>@param<sp/>sq<sp/><sp/><sp/><sp/><sp/><sp/><sp/>subquantizer<sp/>(&lt;<sp/>nsq)</highlight></codeline>
-<codeline lineno="71"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72" refid="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" refkind="member"><highlight class="normal">uint8_t<sp/><ref refid="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" kindref="member">pq4_get_packed_element</ref>(</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>data,</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vector_id,</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sq);</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="79"><highlight class="comment">/**<sp/>set<sp/>a<sp/>single<sp/>element<sp/>&quot;code&quot;<sp/>into<sp/>a<sp/>packed<sp/>codes<sp/>table</highlight></codeline>
-<codeline lineno="80"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>@param<sp/>vector_id<sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector<sp/>id</highlight></codeline>
-<codeline lineno="82"><highlight class="comment"><sp/>*<sp/>@param<sp/>sq<sp/><sp/><sp/><sp/><sp/><sp/><sp/>subquantizer<sp/>(&lt;<sp/>nsq)</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84" refid="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" kindref="member">pq4_set_packed_element</ref>(</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>data,</highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>code,</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vector_id,</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sq);</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="92"><highlight class="comment">/**<sp/>CodePacker<sp/>API<sp/>for<sp/>the<sp/>PQ4<sp/>fast-scan<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="93" refid="structfaiss_1_1CodePackerPQ4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1CodePackerPQ4" kindref="compound">CodePackerPQ4</ref><sp/>:<sp/><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref><sp/>{</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq;</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"></highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1CodePackerPQ4" kindref="compound">CodePackerPQ4</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs);</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>pack_1(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>flat_code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,<sp/>uint8_t*<sp/>block)</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>unpack_1(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>block,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,<sp/>uint8_t*<sp/>flat_code)</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="102"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="104"><highlight class="comment">/**<sp/>Pack<sp/>Look-up<sp/>table<sp/>for<sp/>consumption<sp/>by<sp/>the<sp/>kernel.</highlight></codeline>
-<codeline lineno="105"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
-<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
-<codeline lineno="110"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="111" refid="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" kindref="member">pq4_pack_LUT</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,<sp/>uint8_t*<sp/>dest);</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="113"><highlight class="comment">/**<sp/>Loop<sp/>over<sp/>database<sp/>elements<sp/>and<sp/>accumulate<sp/>results<sp/>into<sp/>result<sp/>handler</highlight></codeline>
-<codeline lineno="114"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>elements</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>database<sp/>blocks<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
-<codeline lineno="118"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
-<codeline lineno="121"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="123" refid="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" kindref="member">pq4_accumulate_loop</ref>(</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/>scaler);</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>qbs<sp/>versions,<sp/>supported<sp/>only<sp/>for<sp/>bbs=32.</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="135"><highlight class="comment"><sp/>*<sp/>The<sp/>kernel<sp/>function<sp/>runs<sp/>the<sp/>kernel<sp/>for<sp/>*several*<sp/>query<sp/>blocks</highlight></codeline>
-<codeline lineno="136"><highlight class="comment"><sp/>*<sp/>and<sp/>bbs<sp/>database<sp/>vectors.<sp/>The<sp/>sizes<sp/>of<sp/>the<sp/>blocks<sp/>are<sp/>encoded<sp/>in<sp/>qbs<sp/>as</highlight></codeline>
-<codeline lineno="137"><highlight class="comment"><sp/>*<sp/>base-16<sp/>digits.</highlight></codeline>
-<codeline lineno="138"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="139"><highlight class="comment"><sp/>*<sp/>For<sp/>example,<sp/>qbs<sp/>=<sp/>0x1223<sp/>means<sp/>that<sp/>the<sp/>kernel<sp/>will<sp/>be<sp/>run<sp/>4<sp/>times,<sp/>the</highlight></codeline>
-<codeline lineno="140"><highlight class="comment"><sp/>*<sp/>first<sp/>time<sp/>with<sp/>3<sp/>query<sp/>vectors,<sp/>second<sp/>time<sp/>with<sp/>2<sp/>query<sp/>vectors,<sp/>then<sp/>2</highlight></codeline>
-<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>vectors<sp/>again<sp/>and<sp/>finally<sp/>with<sp/>1<sp/>query<sp/>vector.<sp/>The<sp/>output<sp/>block<sp/>will<sp/>thus<sp/>be</highlight></codeline>
-<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>nq<sp/>=<sp/>3<sp/>+<sp/>2<sp/>+<sp/>2<sp/>+<sp/>1<sp/>=<sp/>6<sp/>queries.<sp/>For<sp/>a<sp/>given<sp/>total<sp/>block<sp/>size,<sp/>the<sp/>optimal</highlight></codeline>
-<codeline lineno="143"><highlight class="comment"><sp/>*<sp/>decomposition<sp/>into<sp/>sub-blocks<sp/>(measured<sp/>empirically)<sp/>is<sp/>given<sp/>by</highlight></codeline>
-<codeline lineno="144"><highlight class="comment"><sp/>*<sp/>preferred_qbs().</highlight></codeline>
-<codeline lineno="145"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="146"><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>compute<sp/>the<sp/>number<sp/>of<sp/>queries<sp/>from<sp/>a<sp/>base-16<sp/>decomposition<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="148"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pq4_qbs_to_nq(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs);</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="150"><highlight class="comment">/**<sp/>return<sp/>the<sp/>preferred<sp/>decomposition<sp/>in<sp/>blocks<sp/>for<sp/>a<sp/>nb<sp/>of<sp/>queries.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="151" refid="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" kindref="member">pq4_preferred_qbs</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq);</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="153"><highlight class="comment">/**<sp/>Pack<sp/>Look-up<sp/>table<sp/>for<sp/>consumption<sp/>by<sp/>the<sp/>kernel.</highlight></codeline>
-<codeline lineno="154"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="155"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>query<sp/>blocks,<sp/>the<sp/>total<sp/>number<sp/>of</highlight></codeline>
-<codeline lineno="156"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queries<sp/>handled<sp/>(nq)<sp/>is<sp/>deduced<sp/>from<sp/>it</highlight></codeline>
-<codeline lineno="157"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
-<codeline lineno="158"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
-<codeline lineno="159"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
-<codeline lineno="160"><highlight class="comment"><sp/>*<sp/>@return<sp/>nq</highlight></codeline>
-<codeline lineno="161"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="162" refid="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" kindref="member">pq4_pack_LUT_qbs</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>fqbs,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,<sp/>uint8_t*<sp/>dest);</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="164"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>pq4_pack_LUT_qbs,<sp/>except<sp/>the<sp/>source<sp/>vectors<sp/>are<sp/>remapped<sp/>with<sp/>q_map</highlight></codeline>
-<codeline lineno="165"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="166" refid="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" kindref="member">pq4_pack_LUT_qbs_q_map</ref>(</highlight></codeline>
-<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs,</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,</highlight></codeline>
-<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>q_map,</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>dest);</highlight></codeline>
-<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="173"><highlight class="comment">/**<sp/>Run<sp/>accumulation<sp/>loop.</highlight></codeline>
-<codeline lineno="174"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="175"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="176"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>codes<sp/>(mutliple<sp/>of<sp/>bbs)</highlight></codeline>
-<codeline lineno="177"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers</highlight></codeline>
-<codeline lineno="178"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>encoded<sp/>database<sp/>vectors<sp/>(packed)</highlight></codeline>
-<codeline lineno="179"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>look-up<sp/>table<sp/>(packed)</highlight></codeline>
-<codeline lineno="180"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/><sp/><sp/><sp/>call-back<sp/>for<sp/>the<sp/>resutls</highlight></codeline>
-<codeline lineno="181"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
-<codeline lineno="182"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="183" refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" kindref="member">pq4_accumulate_loop_qbs</ref>(</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs,</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/>scaler<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="192"><highlight class="comment">/**<sp/>Wrapper<sp/>of<sp/>pq4_accumulate_loop_qbs<sp/>using<sp/>simple<sp/>StoreResultHandler</highlight></codeline>
-<codeline lineno="193"><highlight class="comment"><sp/>*<sp/><sp/>and<sp/>DummyScaler</highlight></codeline>
-<codeline lineno="194"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="195"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="196"><highlight class="comment"><sp/>*<sp/>@param<sp/>ntotal2<sp/>number<sp/>of<sp/>database<sp/>elements<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
-<codeline lineno="197"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
-<codeline lineno="198"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
-<codeline lineno="200"><highlight class="comment"><sp/>*<sp/>@param<sp/>accu<sp/><sp/><sp/><sp/>array<sp/>to<sp/>store<sp/>the<sp/>results</highlight></codeline>
-<codeline lineno="201"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="202" refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" kindref="member">accumulate_to_mem</ref>(</highlight></codeline>
-<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal2,</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t*<sp/>accu);</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"></highlight></codeline>
-<codeline lineno="210"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_stride<sp/><sp/>optional<sp/>stride<sp/>between<sp/>consecutive<sp/>codes<sp/>(0<sp/>=<sp/>use</highlight></codeline>
+<codeline lineno="41"><highlight class="comment">default<sp/>(M<sp/>+<sp/>1)<sp/>/<sp/>2)</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" kindref="member">pq4_pack_codes</ref>(</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>blocks,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_stride<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="53"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>pack_codes<sp/>but<sp/>write<sp/>in<sp/>a<sp/>given<sp/>range<sp/>of<sp/>the<sp/>output,</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>leaving<sp/>the<sp/>rest<sp/>untouched.<sp/>Assumes<sp/>allocated<sp/>entries<sp/>are<sp/>0<sp/>on<sp/>input.</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>input<sp/>codes,<sp/>size<sp/>(i1<sp/>-<sp/>i0,<sp/>ceil(M<sp/>/<sp/>2))</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@param<sp/>i0<sp/><sp/><sp/><sp/><sp/><sp/>first<sp/>output<sp/>code<sp/>to<sp/>write</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>@param<sp/>i1<sp/><sp/><sp/><sp/><sp/><sp/>last<sp/>output<sp/>code<sp/>to<sp/>write</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*<sp/>@param<sp/>blocks<sp/><sp/>output<sp/>array,<sp/>size<sp/>at<sp/>least<sp/>ceil(i1<sp/>/<sp/>bbs)<sp/>*<sp/>bbs<sp/>*<sp/>nsq<sp/>/<sp/>2</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_stride<sp/><sp/>optional<sp/>stride<sp/>between<sp/>consecutive<sp/>codes<sp/>(0<sp/>=<sp/>use</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/>*<sp/>default<sp/>(M<sp/>+<sp/>1)<sp/>/<sp/>2)</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="namespacefaiss_1a9d620ede35bd6cfb0a9fd8f4cfafb481" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a9d620ede35bd6cfb0a9fd8f4cfafb481" kindref="member">pq4_pack_codes_range</ref>(</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i1,</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>blocks,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>code_stride<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="73"><highlight class="comment">/**<sp/>get<sp/>a<sp/>single<sp/>element<sp/>from<sp/>a<sp/>packed<sp/>codes<sp/>table</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/>*<sp/>@param<sp/>vector_id<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector<sp/>id</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/>*<sp/>@param<sp/>sq<sp/><sp/><sp/><sp/><sp/><sp/><sp/>subquantizer<sp/>(&lt;<sp/>nsq)</highlight></codeline>
+<codeline lineno="77"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" refkind="member"><highlight class="normal">uint8_t<sp/><ref refid="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" kindref="member">pq4_get_packed_element</ref>(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>data,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vector_id,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sq);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="85"><highlight class="comment">/**<sp/>set<sp/>a<sp/>single<sp/>element<sp/>&quot;code&quot;<sp/>into<sp/>a<sp/>packed<sp/>codes<sp/>table</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>@param<sp/>vector_id<sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector<sp/>id</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>@param<sp/>sq<sp/><sp/><sp/><sp/><sp/><sp/><sp/>subquantizer<sp/>(&lt;<sp/>nsq)</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" kindref="member">pq4_set_packed_element</ref>(</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>data,</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>code,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vector_id,</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>sq);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="98"><highlight class="comment">/**<sp/>CodePacker<sp/>API<sp/>for<sp/>the<sp/>PQ4<sp/>fast-scan<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="structfaiss_1_1CodePackerPQ4" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1CodePackerPQ4" kindref="compound">CodePackerPQ4</ref><sp/>:<sp/><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref><sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1CodePackerPQ4" kindref="compound">CodePackerPQ4</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>pack_1(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>flat_code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,<sp/>uint8_t*<sp/>block)</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>unpack_1(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>block,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,<sp/>uint8_t*<sp/>flat_code)</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">final</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="110"><highlight class="comment">/**<sp/>Pack<sp/>Look-up<sp/>table<sp/>for<sp/>consumption<sp/>by<sp/>the<sp/>kernel.</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" kindref="member">pq4_pack_LUT</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,<sp/>uint8_t*<sp/>dest);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="119"><highlight class="comment">/**<sp/>Loop<sp/>over<sp/>database<sp/>elements<sp/>and<sp/>accumulate<sp/>results<sp/>into<sp/>result<sp/>handler</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>elements</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>database<sp/>blocks<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" kindref="member">pq4_accumulate_loop</ref>(</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/>scaler);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>qbs<sp/>versions,<sp/>supported<sp/>only<sp/>for<sp/>bbs=32.</highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>The<sp/>kernel<sp/>function<sp/>runs<sp/>the<sp/>kernel<sp/>for<sp/>*several*<sp/>query<sp/>blocks</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>and<sp/>bbs<sp/>database<sp/>vectors.<sp/>The<sp/>sizes<sp/>of<sp/>the<sp/>blocks<sp/>are<sp/>encoded<sp/>in<sp/>qbs<sp/>as</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/>*<sp/>base-16<sp/>digits.</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/>*<sp/>For<sp/>example,<sp/>qbs<sp/>=<sp/>0x1223<sp/>means<sp/>that<sp/>the<sp/>kernel<sp/>will<sp/>be<sp/>run<sp/>4<sp/>times,<sp/>the</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/>*<sp/>first<sp/>time<sp/>with<sp/>3<sp/>query<sp/>vectors,<sp/>second<sp/>time<sp/>with<sp/>2<sp/>query<sp/>vectors,<sp/>then<sp/>2</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/>*<sp/>vectors<sp/>again<sp/>and<sp/>finally<sp/>with<sp/>1<sp/>query<sp/>vector.<sp/>The<sp/>output<sp/>block<sp/>will<sp/>thus<sp/>be</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/>*<sp/>nq<sp/>=<sp/>3<sp/>+<sp/>2<sp/>+<sp/>2<sp/>+<sp/>1<sp/>=<sp/>6<sp/>queries.<sp/>For<sp/>a<sp/>given<sp/>total<sp/>block<sp/>size,<sp/>the<sp/>optimal</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/>*<sp/>decomposition<sp/>into<sp/>sub-blocks<sp/>(measured<sp/>empirically)<sp/>is<sp/>given<sp/>by</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>preferred_qbs().</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>compute<sp/>the<sp/>number<sp/>of<sp/>queries<sp/>from<sp/>a<sp/>base-16<sp/>decomposition<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pq4_qbs_to_nq(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="156"><highlight class="comment">/**<sp/>return<sp/>the<sp/>preferred<sp/>decomposition<sp/>in<sp/>blocks<sp/>for<sp/>a<sp/>nb<sp/>of<sp/>queries.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157" refid="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" kindref="member">pq4_preferred_qbs</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="159"><highlight class="comment">/**<sp/>Pack<sp/>Look-up<sp/>table<sp/>for<sp/>consumption<sp/>by<sp/>the<sp/>kernel.</highlight></codeline>
+<codeline lineno="160"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="161"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>query<sp/>blocks,<sp/>the<sp/>total<sp/>number<sp/>of</highlight></codeline>
+<codeline lineno="162"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queries<sp/>handled<sp/>(nq)<sp/>is<sp/>deduced<sp/>from<sp/>it</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
+<codeline lineno="166"><highlight class="comment"><sp/>*<sp/>@return<sp/>nq</highlight></codeline>
+<codeline lineno="167"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168" refid="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" kindref="member">pq4_pack_LUT_qbs</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>fqbs,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,<sp/>uint8_t*<sp/>dest);</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="170"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>pq4_pack_LUT_qbs,<sp/>except<sp/>the<sp/>source<sp/>vectors<sp/>are<sp/>remapped<sp/>with<sp/>q_map</highlight></codeline>
+<codeline lineno="171"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172" refid="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" kindref="member">pq4_pack_LUT_qbs_q_map</ref>(</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs,</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>src,</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>q_map,</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>dest);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="179"><highlight class="comment">/**<sp/>Run<sp/>accumulation<sp/>loop.</highlight></codeline>
+<codeline lineno="180"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="181"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>codes<sp/>(mutliple<sp/>of<sp/>bbs)</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers</highlight></codeline>
+<codeline lineno="184"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>encoded<sp/>database<sp/>vectors<sp/>(packed)</highlight></codeline>
+<codeline lineno="185"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>look-up<sp/>table<sp/>(packed)</highlight></codeline>
+<codeline lineno="186"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/><sp/><sp/><sp/>call-back<sp/>for<sp/>the<sp/>resutls</highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
+<codeline lineno="188"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189" refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" kindref="member">pq4_accumulate_loop_qbs</ref>(</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>qbs,</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb,</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/>scaler<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="198"><highlight class="comment">/**<sp/>Wrapper<sp/>of<sp/>pq4_accumulate_loop_qbs<sp/>using<sp/>simple<sp/>StoreResultHandler</highlight></codeline>
+<codeline lineno="199"><highlight class="comment"><sp/>*<sp/><sp/>and<sp/>DummyScaler</highlight></codeline>
+<codeline lineno="200"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="201"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/>*<sp/>@param<sp/>ntotal2<sp/>number<sp/>of<sp/>database<sp/>elements<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
+<codeline lineno="205"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
+<codeline lineno="206"><highlight class="comment"><sp/>*<sp/>@param<sp/>accu<sp/><sp/><sp/><sp/>array<sp/>to<sp/>store<sp/>the<sp/>results</highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208" refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" kindref="member">accumulate_to_mem</ref>(</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nq,</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ntotal2,</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsq,</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes,</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>LUT,</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint16_t*<sp/>accu);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/pq4_fast_scan.h"/>
   </compounddef>

@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="FastScanDistancePostProcessing_8h" kind="file" language="C++">
+    <compoundname>FastScanDistancePostProcessing.h</compoundname>
+    <includedby refid="IndexFastScan_8h" local="no">faiss/IndexFastScan.h</includedby>
+    <includedby refid="IndexIVFAdditiveQuantizerFastScan_8h" local="no">faiss/IndexIVFAdditiveQuantizerFastScan.h</includedby>
+    <invincdepgraph>
+      <node id="3">
+        <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="2">
+        <label>faiss/IndexFastScan.h</label>
+        <link refid="IndexFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/IndexPQFastScan.h</label>
+        <link refid="IndexPQFastScan_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/FastScanDistancePostProcessing.h</label>
+        <link refid="FastScanDistancePostProcessing_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structfaiss_1_1FastScanDistancePostProcessing" prot="public">faiss::FastScanDistancePostProcessing</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Forward<sp/>declarations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">NormTableScaler;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">rabitq_utils<sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">QueryFactorsData;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="19"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>Simple<sp/>context<sp/>object<sp/>that<sp/>holds<sp/>processors<sp/>for<sp/>FastScan<sp/>operations.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="structfaiss_1_1FastScanDistancePostProcessing" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Norm<sp/>scaling<sp/>processor<sp/>for<sp/>Additive<sp/>Quantizers<sp/>(nullptr<sp/>if<sp/>not<sp/>needed)</highlight></codeline>
+<codeline lineno="24" refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref>*<sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" kindref="member">norm_scaler</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Query<sp/>factors<sp/>data<sp/>pointer<sp/>for<sp/>RaBitQ<sp/>(nullptr<sp/>if<sp/>not<sp/>needed)</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>pointer<sp/>should<sp/>point<sp/>to<sp/>the<sp/>beginning<sp/>of<sp/>the<sp/>relevant</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>QueryFactorsData<sp/>subset<sp/>for<sp/>this<sp/>context.</highlight></codeline>
+<codeline lineno="29" refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">rabitq_utils::QueryFactorsData</ref>*<sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" kindref="member">query_factors</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Default<sp/>constructor<sp/>-<sp/>no<sp/>processing</highlight></codeline>
+<codeline lineno="32" refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" kindref="member">FastScanDistancePostProcessing</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>norm<sp/>scaling<sp/>is<sp/>enabled</highlight></codeline>
+<codeline lineno="35" refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" kindref="member">has_norm_scaling</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" kindref="member">norm_scaler</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>query<sp/>factors<sp/>processing<sp/>is<sp/>enabled</highlight></codeline>
+<codeline lineno="40" refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" kindref="member">has_query_processing</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" kindref="member">query_factors</ref><sp/>!=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/FastScanDistancePostProcessing.h"/>
+  </compounddef>
+</doxygen>

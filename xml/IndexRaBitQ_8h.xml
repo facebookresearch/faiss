@@ -4,6 +4,7 @@
     <compoundname>IndexRaBitQ.h</compoundname>
     <includes refid="IndexFlatCodes_8h" local="no">faiss/IndexFlatCodes.h</includes>
     <includes refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includes>
+    <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <incdepgraph>
       <node id="4">
         <label>faiss/Index.h</label>
@@ -158,6 +159,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IndexRaBitQ.h</label>
+        <link refid="IndexRaBitQ_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexRaBitQ" prot="public">faiss::IndexRaBitQ</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

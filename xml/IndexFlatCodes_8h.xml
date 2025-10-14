@@ -184,7 +184,7 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -260,22 +260,28 @@
       <node id="24">
         <label>faiss/IndexRaBitQ.h</label>
         <link refid="IndexRaBitQ_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
       </node>
       <node id="25">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="26">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
       <node id="13">
         <label>faiss/gpu/GpuIcmEncoder.h</label>
         <link refid="GpuIcmEncoder_8h_source"/>
       </node>
-      <node id="26">
+      <node id="27">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>

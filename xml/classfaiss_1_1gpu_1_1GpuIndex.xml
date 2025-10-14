@@ -523,6 +523,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1ae8846519e0f1b9fedd5eed195df3776f">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a370dc8afa7357850d9031585ec8e2291">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a6a8dab5dc77eaa55726a4d97dea9ea3d">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRaBitQFastScan_1ad5c03d0e4cdc6bc2f6e288c2b9255211">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a1b5c007b0cb0f76960a073b9843d8ae5">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1a71ecee52a0e63061b9a96b2feb628bc9">train</reimplementedby>
@@ -1029,6 +1030,7 @@
         <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1afe1ce4711953b8a679f83210fee8a30b">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a65ebc38abdff6a6fd9df63fecc775fa9">sa_decode</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexRaBitQFastScan_1ac182edfc908e98ee0603c6725dd24e74">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a9844bbc4ea9311674b0921108988222d">sa_decode</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1ab04e9ffc561f4de77af64d9ab122d58f">sa_decode</reimplementedby>

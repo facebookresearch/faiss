@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FastScanDistancePostProcessing" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::FastScanDistancePostProcessing</compoundname>
+    <includes refid="FastScanDistancePostProcessing_8h" local="no">FastScanDistancePostProcessing.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref> *</type>
+        <definition>const NormTableScaler* faiss::FastScanDistancePostProcessing::norm_scaler</definition>
+        <argsstring></argsstring>
+        <name>norm_scaler</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::norm_scaler</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>Norm scaling processor for Additive Quantizers (nullptr if not needed) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="24" column="27" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">rabitq_utils::QueryFactorsData</ref> *</type>
+        <definition>rabitq_utils::QueryFactorsData* faiss::FastScanDistancePostProcessing::query_factors</definition>
+        <argsstring></argsstring>
+        <name>query_factors</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::query_factors</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Query factors data pointer for RaBitQ (nullptr if not needed) This pointer should point to the beginning of the relevant QueryFactorsData subset for this context. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="29" column="36" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FastScanDistancePostProcessing::FastScanDistancePostProcessing</definition>
+        <argsstring>()=default</argsstring>
+        <name>FastScanDistancePostProcessing</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::FastScanDistancePostProcessing</qualifiedname>
+        <briefdescription>
+<para>Default constructor - no processing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="32" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::FastScanDistancePostProcessing::has_norm_scaling</definition>
+        <argsstring>() const</argsstring>
+        <name>has_norm_scaling</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::has_norm_scaling</qualifiedname>
+        <briefdescription>
+<para>Check if norm scaling is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="35" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::FastScanDistancePostProcessing::has_query_processing</definition>
+        <argsstring>() const</argsstring>
+        <name>has_query_processing</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::has_query_processing</qualifiedname>
+        <briefdescription>
+<para>Check if query factors processing is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="40" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="40" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Simple context object that holds processors for FastScan operations. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FastScanDistancePostProcessing</label>
+        <link refid="structfaiss_1_1FastScanDistancePostProcessing"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>norm_scaler</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>query_factors</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::NormTableScaler</label>
+        <link refid="structfaiss_1_1NormTableScaler"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>scale_simd</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::rabitq_utils::QueryFactorsData</label>
+        <link refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData"/>
+      </node>
+      <node id="3">
+        <label>faiss::simd16uint16</label>
+        <link refid="structfaiss_1_1simd16uint16"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::simd256bit</label>
+        <link refid="structfaiss_1_1simd256bit"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/FastScanDistancePostProcessing.h" line="22" column="1" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="22" bodyend="43"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>FastScanDistancePostProcessing</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_norm_scaling</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_query_processing</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>norm_scaler</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>query_factors</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

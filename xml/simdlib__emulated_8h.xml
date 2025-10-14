@@ -35,14 +35,20 @@
     </incdepgraph>
     <invincdepgraph>
       <node id="3">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="4">
         <label>faiss/impl/LookupTableScaler.h</label>
         <link refid="LookupTableScaler_8h_source"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
         <link refid="approx__topk__hamming_8h_source"/>
       </node>
@@ -54,6 +60,8 @@
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="1">

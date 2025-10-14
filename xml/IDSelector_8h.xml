@@ -161,6 +161,10 @@
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
+      <node id="34">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
       <node id="19">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
@@ -232,7 +236,7 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
       </node>
       <node id="32">
@@ -240,11 +244,11 @@
         <link refid="ResultHandler_8h_source"/>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
-        </childnode>
         <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="29">
@@ -254,6 +258,8 @@
       <node id="33">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="30">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
@@ -263,19 +269,19 @@
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
-      <node id="34">
+      <node id="35">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="35">
+      <node id="36">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="36">
+      <node id="37">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>

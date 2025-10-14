@@ -9,6 +9,7 @@
     <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
     <innerfile refid="FaissAssert_8h">FaissAssert.h</innerfile>
     <innerfile refid="FaissException_8h">FaissException.h</innerfile>
+    <innerfile refid="FastScanDistancePostProcessing_8h">FastScanDistancePostProcessing.h</innerfile>
     <innerfile refid="HNSW_8h">HNSW.h</innerfile>
     <innerfile refid="IDSelector_8h">IDSelector.h</innerfile>
     <innerfile refid="index__read__utils_8h">index_read_utils.h</innerfile>
@@ -30,6 +31,7 @@
     <innerfile refid="ProductQuantizer_8h">ProductQuantizer.h</innerfile>
     <innerfile refid="Quantizer_8h">Quantizer.h</innerfile>
     <innerfile refid="RaBitQuantizer_8h">RaBitQuantizer.h</innerfile>
+    <innerfile refid="RaBitQUtils_8h">RaBitQUtils.h</innerfile>
     <innerfile refid="residual__quantizer__encode__steps_8h">residual_quantizer_encode_steps.h</innerfile>
     <innerfile refid="ResidualQuantizer_8h">ResidualQuantizer.h</innerfile>
     <innerfile refid="ResultHandler_8h">ResultHandler.h</innerfile>

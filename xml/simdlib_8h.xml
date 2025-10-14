@@ -3,6 +3,7 @@
   <compounddef id="simdlib_8h" kind="file" language="C++">
     <compoundname>simdlib.h</compoundname>
     <includes refid="simdlib__emulated_8h" local="no">faiss/utils/simdlib_emulated.h</includes>
+    <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <includedby refid="LookupTableScaler_8h" local="no">faiss/impl/LookupTableScaler.h</includedby>
     <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="approx__topk__hamming_8h" local="no">faiss/utils/approx_topk_hamming/approx_topk_hamming.h</includedby>
@@ -40,14 +41,20 @@
     </incdepgraph>
     <invincdepgraph>
       <node id="2">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="3">
         <label>faiss/impl/LookupTableScaler.h</label>
         <link refid="LookupTableScaler_8h_source"/>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
         <link refid="approx__topk__hamming_8h_source"/>
       </node>
@@ -59,6 +66,8 @@
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

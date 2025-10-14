@@ -186,31 +186,37 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="3">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>

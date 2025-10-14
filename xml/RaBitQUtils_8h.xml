@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="RaBitQUtils_8h" kind="file" language="C++">
+    <compoundname>RaBitQUtils.h</compoundname>
+    <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">vector</includes>
+    <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/RaBitQUtils.h</label>
+        <link refid="RaBitQUtils_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/RaBitQUtils.h</label>
+        <link refid="RaBitQUtils_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1FactorsData" prot="public">faiss::rabitq_utils::FactorsData</innerclass>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" prot="public">faiss::rabitq_utils::QueryFactorsData</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">rabitq_utils<sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="19"><highlight class="comment">/**<sp/>Factors<sp/>computed<sp/>per<sp/>database<sp/>vector<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>These<sp/>can<sp/>be<sp/>stored<sp/>either<sp/>embedded<sp/>in<sp/>codes<sp/>(IndexRaBitQ)<sp/>or<sp/>separately</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>(IndexRaBitQFastScan).</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="structfaiss_1_1rabitq__utils_1_1FactorsData" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>||or<sp/>-<sp/>c||^2<sp/>-<sp/>((metric==IP)<sp/>?<sp/>||or||^2<sp/>:<sp/>0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_minus_c_l2sqr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_multiplier<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment">/**<sp/>Query-specific<sp/>factors<sp/>computed<sp/>during<sp/>search<sp/>for<sp/>RaBitQ<sp/>distance</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/>computation.<sp/>Used<sp/>by<sp/>both<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/>implementations.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c1<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c2<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c34<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_to_c_L2sqr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_norm_L2sqr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>int_dot_scale<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="44"><highlight class="comment">/**<sp/>Ideal<sp/>quantizer<sp/>radii<sp/>for<sp/>quantizers<sp/>of<sp/>1..8<sp/>bits,<sp/>optimized<sp/>to<sp/>minimize</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/>*<sp/>L2<sp/>reconstruction<sp/>error.<sp/>Shared<sp/>between<sp/>all<sp/>RaBitQ<sp/>implementations.</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>Z_MAX_BY_QB[8];</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="49"><highlight class="comment">/**<sp/>Compute<sp/>factors<sp/>for<sp/>a<sp/>single<sp/>database<sp/>vector<sp/>using<sp/>RaBitQ<sp/>algorithm.</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>This<sp/>function<sp/>consolidates<sp/>the<sp/>mathematical<sp/>logic<sp/>that<sp/>was<sp/>duplicated</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>between<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan.</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors<sp/>for<sp/>distance<sp/>computation</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref><sp/>compute_vector_factors(</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="65"><highlight class="comment">/**<sp/>Compute<sp/>intermediate<sp/>values<sp/>needed<sp/>for<sp/>vector<sp/>factor<sp/>computation.</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>Separated<sp/>out<sp/>to<sp/>allow<sp/>different<sp/>bit<sp/>packing<sp/>strategies<sp/>while<sp/>sharing</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>the<sp/>core<sp/>mathematical<sp/>computation.</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="70"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="71"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="72"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>output:<sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
+<codeline lineno="73"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>||or||^2</highlight></codeline>
+<codeline lineno="74"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|<sp/>(absolute<sp/>deviations)</highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_vector_intermediate_values(</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>norm_L2sqr,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>or_L2sqr,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>dp_oO);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="84"><highlight class="comment">/**<sp/>Compute<sp/>final<sp/>factors<sp/>from<sp/>intermediate<sp/>values.</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>||or||^2</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref><sp/>compute_factors_from_intermediates(</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm_L2sqr,</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_L2sqr,</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_oO,</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="99"><highlight class="comment">/**<sp/>Compute<sp/>query<sp/>factors<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
+<codeline lineno="100"><highlight class="comment"><sp/>*<sp/>This<sp/>consolidates<sp/>the<sp/>query<sp/>processing<sp/>logic<sp/>shared<sp/>between<sp/>implementations.</highlight></codeline>
+<codeline lineno="101"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"><sp/>*<sp/>@param<sp/>query<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="103"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/>*<sp/>@param<sp/>qb<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>quantization<sp/>bits<sp/>(1-8)</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/>*<sp/>@param<sp/>centered<sp/><sp/><sp/><sp/><sp/><sp/>whether<sp/>to<sp/>use<sp/>centered<sp/>quantization</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_q<sp/><sp/><sp/><sp/><sp/>output:<sp/>query<sp/>-<sp/>centroid</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_qq<sp/><sp/><sp/><sp/>output:<sp/>quantized<sp/>query<sp/>values</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>query<sp/>factors</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>compute_query_factors(</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>query,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>qb,</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centered,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>rotated_q,</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;&amp;<sp/>rotated_qq);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="122"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>RaBitQ<sp/>code<sp/>in<sp/>standard<sp/>format.</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQ<sp/>which<sp/>stores<sp/>bits<sp/>sequentially.</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_standard(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="131"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQFastScan<sp/>which<sp/>packs<sp/>bits<sp/>into<sp/>4-bit<sp/>sub-quantizers.</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
+<codeline lineno="137"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_fastscan(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>standard<sp/>RaBitQ<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_standard(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="146"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_fastscan(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>rabitq_utils</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/RaBitQUtils.h"/>
+  </compounddef>
+</doxygen>

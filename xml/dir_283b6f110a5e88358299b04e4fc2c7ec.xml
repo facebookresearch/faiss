@@ -48,6 +48,7 @@
     <innerfile refid="IndexPQFastScan_8h">IndexPQFastScan.h</innerfile>
     <innerfile refid="IndexPreTransform_8h">IndexPreTransform.h</innerfile>
     <innerfile refid="IndexRaBitQ_8h">IndexRaBitQ.h</innerfile>
+    <innerfile refid="IndexRaBitQFastScan_8h">IndexRaBitQFastScan.h</innerfile>
     <innerfile refid="IndexRefine_8h">IndexRefine.h</innerfile>
     <innerfile refid="IndexReplicas_8h">IndexReplicas.h</innerfile>
     <innerfile refid="IndexRowwiseMinMax_8h">IndexRowwiseMinMax.h</innerfile>
