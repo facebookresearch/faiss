@@ -45,7 +45,11 @@ struct IndexPQFastScan : IndexFastScan {
 
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 
-    void compute_float_LUT(float* lut, idx_t n, const float* x) const override;
+    void compute_float_LUT(
+            float* lut,
+            idx_t n,
+            const float* x,
+            const FastScanDistancePostProcessing& context) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 };
