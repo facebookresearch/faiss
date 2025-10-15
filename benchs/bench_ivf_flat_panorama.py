@@ -94,7 +94,7 @@ eval_and_plot(f"IVF{nlist},Flat")
 eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}")
 
 plt.title("Indexes on GIST1M")
-plt.xlabel("Recall@{k}")
+plt.xlabel(f"Recall@{k}")
 plt.ylabel("QPS")
 plt.yscale('log')
 plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
