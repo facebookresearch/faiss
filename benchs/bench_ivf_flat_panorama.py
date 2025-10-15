@@ -93,7 +93,7 @@ eval_and_plot(f"IVF{nlist},Flat")
 # IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
 eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}")
 
-plt.title("Indices on GIST1M")
+plt.title("Indexes on GIST1M")
 plt.xlabel("Recall@{k}")
 plt.ylabel("QPS")
 plt.yscale('log')
