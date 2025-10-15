@@ -445,7 +445,9 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
     return recons_buffer;
 }
 
-void ArrayInvertedListsPanorama::release_codes(size_t list_no, const uint8_t* codes) const {
+void ArrayInvertedListsPanorama::release_codes(
+        size_t list_no,
+        const uint8_t* codes) const {
     // Only delete if it's heap-allocated (from get_single_code).
     // If it's from get_codes (raw storage), it will be codes[list_no].data()
     if (codes != this->codes[list_no].data()) {
