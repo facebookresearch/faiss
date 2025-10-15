@@ -177,8 +177,8 @@ void search_single_query_template(
 struct Run_search_single_query {
     using T = void;
     template <class HammingComputer, class... Types>
-    T f(Types... args) {
-        search_single_query_template<HammingComputer>(args...);
+    T f(Types*... args) {
+        search_single_query_template<HammingComputer>(*args...);
     }
 };
 
@@ -192,7 +192,7 @@ void search_single_query(
         size_t& ndis) {
     Run_search_single_query r;
     dispatch_HammingComputer(
-            index.code_size, r, index, q, res, n0, nlist, ndis);
+            index.code_size, r, &index, &q, &res, &n0, &nlist, &ndis);
 }
 
 } // anonymous namespace

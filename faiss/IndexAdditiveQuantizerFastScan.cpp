@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResidualQuantizer.h>
@@ -123,7 +124,8 @@ void IndexAdditiveQuantizerFastScan::estimate_norm_scale(
     }
 
     std::vector<float> dis_tables(n * M * ksub);
-    compute_float_LUT(dis_tables.data(), n, x);
+    FastScanDistancePostProcessing empty_context;
+    compute_float_LUT(dis_tables.data(), n, x, empty_context);
 
     // here we compute the mean of scales for each query
     // TODO: try max of scales
@@ -153,7 +155,8 @@ void IndexAdditiveQuantizerFastScan::compute_codes(
 void IndexAdditiveQuantizerFastScan::compute_float_LUT(
         float* lut,
         idx_t n,
-        const float* x) const {
+        const float* x,
+        const FastScanDistancePostProcessing&) const {
     if (metric_type == METRIC_INNER_PRODUCT) {
         aq->compute_LUT(n, x, lut, 1.0f);
     } else {
@@ -200,10 +203,12 @@ void IndexAdditiveQuantizerFastScan::search(
     }
 
     NormTableScaler scaler(norm_scale);
+    FastScanDistancePostProcessing context;
+    context.norm_scaler = &scaler;
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<true>(n, x, k, distances, labels, context);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, &scaler);
+        search_dispatch_implem<false>(n, x, k, distances, labels, context);
     }
 }
 
