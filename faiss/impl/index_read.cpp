@@ -43,6 +43,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #ifdef FAISS_ENABLE_SVS
@@ -1230,6 +1231,27 @@ Index* read_index(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = imm;
+    } else if (h == fourcc("Irfs")) {
+        IndexRaBitQFastScan* idxqfs = new IndexRaBitQFastScan();
+        read_index_header(idxqfs, f);
+        read_RaBitQuantizer(&idxqfs->rabitq, f);
+        READVECTOR(idxqfs->center);
+        READ1(idxqfs->qb);
+        READVECTOR(idxqfs->factors_storage);
+        READ1(idxqfs->bbs);
+        READ1(idxqfs->ntotal2);
+        READ1(idxqfs->M2);
+        READ1(idxqfs->code_size);
+
+        // Need to initialize the FastScan base class fields
+        const size_t M_fastscan = (idxqfs->d + 3) / 4;
+        constexpr size_t nbits_fastscan = 4;
+        idxqfs->M = M_fastscan;
+        idxqfs->nbits = nbits_fastscan;
+        idxqfs->ksub = (1 << nbits_fastscan);
+
+        READVECTOR(idxqfs->codes);
+        idx = idxqfs;
     } else if (h == fourcc("Ixrq")) {
         IndexRaBitQ* idxq = new IndexRaBitQ();
         read_index_header(idxq, f);

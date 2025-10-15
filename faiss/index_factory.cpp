@@ -56,6 +56,9 @@
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
+#include <faiss/IndexIDMap.h>
+#include <algorithm>
+#include <cctype>
 #include <string>
 
 namespace faiss {
@@ -1069,6 +1072,28 @@ IndexBinary* index_binary_factory(
         bool own_invlists) {
     IndexBinary* index = nullptr;
 
+    std::smatch sm;
+    std::string desc_str(description);
+
+    // Handle IDMap2 and IDMap wrappers (prefix or suffix)
+    if (re_match(desc_str, "(.+),IDMap2", sm) ||
+        re_match(desc_str, "IDMap2,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap2* idmap2 = new IndexBinaryIDMap2(sub_index);
+        idmap2->own_fields = true;
+        return idmap2;
+    }
+
+    if (re_match(desc_str, "(.+),IDMap", sm) ||
+        re_match(desc_str, "IDMap,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap* idmap = new IndexBinaryIDMap(sub_index);
+        idmap->own_fields = true;
+        return idmap;
+    }
+
     int ncentroids = -1;
     int M, nhash, b;
 
@@ -1094,7 +1119,7 @@ IndexBinary* index_binary_factory(
     } else if (sscanf(description, "BHash%d", &b) == 1) {
         index = new IndexBinaryHash(d, b);
 
-    } else if (std::string(description) == "BFlat") {
+    } else if (desc_str == "BFlat") {
         index = new IndexBinaryFlat(d);
 
     } else {
