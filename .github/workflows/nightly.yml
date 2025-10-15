@@ -21,7 +21,7 @@ jobs:
         with:
           label: nightly
   linux-x86_64-GPU-CUDA-12-4-nightly:
-    name: Linux x86_64 GPU nightlies (CUDA 12.4.0)
+    name: Linux x86_64 GPU nightlies (CUDA 12.6)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -36,9 +36,9 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-          cuda: "12.4.0"
+          cuda: "12.6"
   linux-x86_64-GPU-CUVS-CUDA12-4-0-nightly:
-    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 12.4.0)
+    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 12.6)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -54,7 +54,7 @@ jobs:
         with:
           label: nightly
           cuvs: "ON"
-          cuda: "12.4.0"
+          cuda: "12.6"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
     runs-on: windows-2022
