@@ -76,6 +76,22 @@ struct SIMDResultHandlerToFloat : SIMDResultHandler {
     virtual size_t num_updates() {
         return 0;
     }
+
+    /** Set context information for handlers that need additional data
+     *
+     * This method can be overridden by handlers that need list numbers
+     * and probe mappings (e.g., RaBitQ handlers). Base implementation
+     * does nothing since most handlers don't need this context.
+     *
+     * @param list_no      current inverted list number being processed
+     * @param probe_map    mapping from local query index to probe index
+     */
+    virtual void set_list_context(
+            size_t /* list_no */,
+            const std::vector<int>& /* probe_map */) {
+        // Default implementation does nothing
+        // Derived handlers can override if they need this context
+    }
 };
 
 FAISS_API extern bool simd_result_handlers_accept_virtual;

@@ -212,7 +212,8 @@ void IndexIVFPQFastScan::compute_LUT(
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases) const {
+        AlignedTable<float>& biases,
+        const FastScanDistancePostProcessing&) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
     size_t nprobe = cq.nprobe;
@@ -328,7 +329,9 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                 .dis = &coarse_dis, // dis from query to list_no centroid.
                 .ids = &list_no,    // id of the current list we are scanning
         };
-        index.compute_LUT_uint8(1, xi, cq, dis_tables, biases, &normalizers[0]);
+        FastScanDistancePostProcessing empty_context{};
+        index.compute_LUT_uint8(
+                1, xi, cq, dis_tables, biases, &normalizers[0], empty_context);
     }
 
     float distance_to_code(const uint8_t* /* code */) const override {
@@ -350,7 +353,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         // the prior loop
         std::vector<float> curr_dists(k, distances[0]);
         std::vector<idx_t> curr_labels(k, labels[0]);
-
+        FastScanDistancePostProcessing empty_context{};
         std::unique_ptr<SIMDResultHandlerToFloat> handler(
                 index.make_knn_handler(
                         !keep_max,
@@ -360,6 +363,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                         curr_dists.data(),
                         curr_labels.data(),
                         sel,
+                        empty_context,
                         &normalizers[0]));
 
         // This does not quite match search_implem_10, but it is fine because

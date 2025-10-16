@@ -80,7 +80,8 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             const float* x,
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
-            AlignedTable<float>& biases) const override;
+            AlignedTable<float>& biases,
+            const FastScanDistancePostProcessing& context) const override;
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,

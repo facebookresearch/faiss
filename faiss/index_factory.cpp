@@ -31,6 +31,7 @@
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -39,6 +40,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -453,6 +455,10 @@ IndexIVF* parse_IndexIVF(
     if (match(rabitq_pattern)) {
         return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
     }
+    if (match("RaBitQfs(_[0-9]+)?")) {
+        int bbs = mres_to_int(sm[1], 32, 1);
+        return new IndexIVFRaBitQFastScan(get_q(), d, nlist, mt, bbs, own_il);
+    }
     return nullptr;
 }
 
@@ -677,6 +683,12 @@ Index* parse_other_indexes(
     // IndexRaBitQ
     if (match(rabitq_pattern)) {
         return new IndexRaBitQ(d, metric);
+    }
+
+    // IndexRaBitQFastScan
+    if (match("RaBitQfs(_[0-9]+)?")) {
+        int bbs = mres_to_int(sm[1], 32, 1);
+        return new IndexRaBitQFastScan(d, metric, bbs);
     }
 
     return nullptr;
