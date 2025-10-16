@@ -64,9 +64,9 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         cum_sums.resize(storage->n_levels + 1);
     }
 
-    const float* xi;
+    const float* xi = nullptr;
     std::vector<float> cum_sums;
-    float q_norm;
+    float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
 
@@ -179,7 +179,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 float lower_bound = exact_distances[idx] - cauchy_schwarz_bound;
 
                 active_indices[next_active] = idx;
-                next_active += C::cmp(threshold, lower_bound);
+                next_active += C::cmp(threshold, lower_bound) ? 1 : 0;
             }
 
             num_active = next_active;
