@@ -24,11 +24,12 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/index_io.h>
-#include <faiss/svs/IndexSVSFlat.h>
-#include <faiss/svs/IndexSVSVamana.h>
-#include <faiss/svs/IndexSVSVamanaLVQ.h>
-#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <svs/faiss/IndexSVSFlat.h>
+#include <svs/faiss/IndexSVSVamana.h>
+#include <svs/faiss/IndexSVSVamanaLVQ.h>
+#include <svs/faiss/IndexSVSVamanaLeanVec.h>
 #include <gtest/gtest.h>
+#include <random>
 #include <type_traits>
 
 #include "test_util.h"

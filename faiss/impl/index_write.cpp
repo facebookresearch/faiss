@@ -45,10 +45,11 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #ifdef FAISS_ENABLE_SVS
-#include <faiss/svs/IndexSVSFlat.h>
-#include <faiss/svs/IndexSVSVamana.h>
-#include <faiss/svs/IndexSVSVamanaLVQ.h>
-#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <svs/faiss/svs_io.h>
+#include <svs/faiss/IndexSVSFlat.h>
+#include <svs/faiss/IndexSVSVamana.h>
+#include <svs/faiss/IndexSVSVamanaLVQ.h>
+#include <svs/faiss/IndexSVSVamanaLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
