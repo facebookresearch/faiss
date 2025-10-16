@@ -81,6 +81,11 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
             AlignedTable<float>& biases) const override;
+
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs,
+            const IDSelector* sel,
+            const IVFSearchParameters*) const override;
 };
 
 } // namespace faiss

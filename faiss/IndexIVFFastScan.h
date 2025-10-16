@@ -99,7 +99,7 @@ struct IndexIVFFastScan : IndexIVF {
 
     // compact way of conveying coarse quantization results
     struct CoarseQuantized {
-        size_t nprobe;
+        size_t nprobe = 0;
         const float* dis = nullptr;
         const idx_t* ids = nullptr;
     };
@@ -147,6 +147,15 @@ struct IndexIVFFastScan : IndexIVF {
             const SearchParameters* params = nullptr) const override;
 
     // internal search funcs
+    SIMDResultHandlerToFloat* make_knn_handler(
+            bool is_max,
+            int impl,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            const float* normalizers = nullptr) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
