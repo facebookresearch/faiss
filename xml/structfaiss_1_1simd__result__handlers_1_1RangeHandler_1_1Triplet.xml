@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="559" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="559" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="587" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="587" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1ae4e44e7af5bd814f147859589237ad31" prot="public" static="no" mutable="no">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="560" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="560" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="588" column="15" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="588" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a7cb5fffa43fb40fb4e0ea37b1bd8c92b" prot="public" static="no" mutable="no">
         <type>uint16_t</type>
@@ -43,14 +43,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="561" column="18" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="561" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="589" column="18" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="589" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/simd_result_handlers.h" line="558" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="558" bodyend="562"/>
+    <location file="faiss/impl/simd_result_handlers.h" line="586" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="586" bodyend="590"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1ae4e44e7af5bd814f147859589237ad31" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler::Triplet</scope><name>b</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1_1Triplet_1a7cb5fffa43fb40fb4e0ea37b1bd8c92b" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::RangeHandler::Triplet</scope><name>dis</name></member>

@@ -709,7 +709,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="75" column="23" declfile="faiss/impl/simd_result_handlers.h" declline="75" declcolumn="23"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="81" column="23" declfile="faiss/impl/simd_result_handlers.h" declline="81" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
@@ -929,7 +929,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="272" column="35" declfile="faiss/IndexIVFFastScan.h" declline="272" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="281" column="35" declfile="faiss/IndexIVFFastScan.h" declline="281" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API size_t</type>

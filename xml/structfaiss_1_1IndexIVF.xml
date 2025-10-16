@@ -1146,6 +1146,7 @@
         <argsstring>(bool store_pairs=false, const IDSelector *sel=nullptr, const IVFSearchParameters *params=nullptr) const</argsstring>
         <name>get_InvertedListScanner</name>
         <qualifiedname>faiss::IndexIVF::get_InvertedListScanner</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a8589f41322e872f3acc9f7c40b35176b">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a468051ca8c1cc358f43c1b4324d27f3c">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a9b5ad8fe0e670f803a9292d6af2966fa">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c">get_InvertedListScanner</reimplementedby>

@@ -9,6 +9,7 @@
         <argsstring></argsstring>
         <name>nprobe</name>
         <qualifiedname>faiss::IndexIVFFastScan::CoarseQuantized::nprobe</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
