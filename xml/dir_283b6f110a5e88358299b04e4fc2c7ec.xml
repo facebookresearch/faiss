@@ -38,6 +38,7 @@
     <innerfile refid="IndexIVFPQFastScan_8h">IndexIVFPQFastScan.h</innerfile>
     <innerfile refid="IndexIVFPQR_8h">IndexIVFPQR.h</innerfile>
     <innerfile refid="IndexIVFRaBitQ_8h">IndexIVFRaBitQ.h</innerfile>
+    <innerfile refid="IndexIVFRaBitQFastScan_8h">IndexIVFRaBitQFastScan.h</innerfile>
     <innerfile refid="IndexIVFSpectralHash_8h">IndexIVFSpectralHash.h</innerfile>
     <innerfile refid="IndexLattice_8h">IndexLattice.h</innerfile>
     <innerfile refid="IndexLSH_8h">IndexLSH.h</innerfile>

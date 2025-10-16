@@ -7,6 +7,7 @@
     <includes local="no">cstddef</includes>
     <includes local="no">cstdint</includes>
     <includes local="no">vector</includes>
+    <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <incdepgraph>
       <node id="2">
@@ -54,13 +55,21 @@
     </incdepgraph>
     <invincdepgraph>
       <node id="2">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="3">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h"/>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

@@ -8,6 +8,7 @@
     <includes refid="DistanceComputer_8h" local="no">faiss/impl/DistanceComputer.h</includes>
     <includes refid="Quantizer_8h" local="no">faiss/impl/Quantizer.h</includes>
     <includedby refid="IndexIVFRaBitQ_8h" local="no">faiss/IndexIVFRaBitQ.h</includedby>
+    <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <includedby refid="IndexRaBitQ_8h" local="no">faiss/IndexRaBitQ.h</includedby>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <incdepgraph>
@@ -126,16 +127,24 @@
       <node id="2">
         <label>faiss/IndexIVFRaBitQ.h</label>
         <link refid="IndexIVFRaBitQ_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/IndexRaBitQ.h</label>
-        <link refid="IndexRaBitQ_8h_source"/>
-        <childnode refid="4" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
       <node id="4">
+        <label>faiss/IndexRaBitQ.h</label>
+        <link refid="IndexRaBitQ_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/RaBitQuantizer.h</label>
@@ -145,6 +154,8 @@
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

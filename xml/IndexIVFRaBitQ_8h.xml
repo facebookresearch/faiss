@@ -7,6 +7,7 @@
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includes>
+    <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <incdepgraph>
       <node id="20">
         <label>faiss/Clustering.h</label>
@@ -267,6 +268,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IndexIVFRaBitQ.h</label>
+        <link refid="IndexIVFRaBitQ_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IVFRaBitQSearchParameters" prot="public">faiss::IVFRaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFRaBitQ" prot="public">faiss::IndexIVFRaBitQ</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

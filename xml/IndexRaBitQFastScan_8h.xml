@@ -10,6 +10,7 @@
     <includes refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includes refid="simdlib_8h" local="no">faiss/utils/simdlib.h</includes>
+    <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <incdepgraph>
       <node id="4">
         <label>faiss/Index.h</label>
@@ -390,6 +391,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexRaBitQFastScan" prot="public">faiss::IndexRaBitQFastScan</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQHeapHandler" prot="public">faiss::RaBitQHeapHandler</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

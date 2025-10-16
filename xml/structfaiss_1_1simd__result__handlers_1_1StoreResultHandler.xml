@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="104" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="120" column="14" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="120" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1ab1d44a3b7d0ebe4c7ac127c0047186ea" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="105" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="121" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="121" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a3cd8c19a91caaa7f77848dfca52e701e" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="106" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="106" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="122" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="122" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a1e9dabad5a45552c7ce7740604d0bcc7" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -61,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="107" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="107" bodyend="-1"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="123" column="12" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="123" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="109" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="109" bodyend="109"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="125" column="5" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="125" bodyend="125"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aa310066f336b87f88ffdb208a5242549" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -162,7 +162,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="111" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="111" bodyend="115"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="127" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="127" bodyend="131"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aa756592f887c6c21419586b562ba431b" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -186,7 +186,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="117" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="117" bodyend="120"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="133" column="10" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="133" bodyend="136"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -219,7 +219,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/simd_result_handlers.h" line="103" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="103" bodyend="121"/>
+    <location file="faiss/impl/simd_result_handlers.h" line="119" column="1" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="119" bodyend="137"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a38a1e3ad217eac339f4a49040de22747" prot="public" virt="non-virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>data</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1aa310066f336b87f88ffdb208a5242549" prot="public" virt="virtual"><scope>faiss::simd_result_handlers::StoreResultHandler</scope><name>handle</name></member>
