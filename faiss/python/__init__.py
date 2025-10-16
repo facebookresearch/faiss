@@ -219,6 +219,7 @@ add_ref_in_constructor(IDSelectorXOr, slice(2))
 add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
+add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)

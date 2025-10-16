@@ -32,6 +32,7 @@
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -897,6 +898,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->by_residual);
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
+    } else if (
+            const IndexIVFRaBitQFastScan* ivrqfs =
+                    dynamic_cast<const IndexIVFRaBitQFastScan*>(idx)) {
+        uint32_t h = fourcc("Iwrf");
+        WRITE1(h);
+        write_ivf_header(ivrqfs, f);
+        write_RaBitQuantizer(&ivrqfs->rabitq, f);
+        WRITE1(ivrqfs->by_residual);
+        WRITE1(ivrqfs->code_size);
+        WRITE1(ivrqfs->bbs);
+        WRITE1(ivrqfs->qbs2);
+        WRITE1(ivrqfs->M2);
+        WRITE1(ivrqfs->implem);
+        WRITE1(ivrqfs->qb);
+        WRITE1(ivrqfs->centered);
+        WRITEVECTOR(ivrqfs->factors_storage);
+        write_InvertedLists(ivrqfs->invlists, f);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
     }
