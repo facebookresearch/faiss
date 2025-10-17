@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 
 namespace faiss {
 
@@ -51,7 +52,7 @@ TVec* vecs_read(const char* fileName, size_t num, size_t numOffset, int* dim) {
     *dim = currentDimension;
 
     numElementsRead = 0;
-    TLoad buffer[currentDimension];
+    std::unique_ptr<TLoad[]> buffer = std::make_unique<TLoad[]>(currentDimension);
     for (size_t i = 0; i < num; i++) {
         numElementsRead += fread(&currentDimension, sizeof(int), 1, f);
         FAISS_THROW_IF_NOT_FMT(
@@ -66,7 +67,7 @@ TVec* vecs_read(const char* fileName, size_t num, size_t numOffset, int* dim) {
                     currentVec, sizeof(TLoad), (size_t)currentDimension, f);
         } else {
             numElementsRead +=
-                    fread(buffer, sizeof(TLoad), (size_t)currentDimension, f);
+                    fread(buffer.get(), sizeof(TLoad), (size_t)currentDimension, f);
             for (int j = 0; j < currentDimension; j++) {
                 currentVec[j] = (TVec)buffer[j];
             }
@@ -107,7 +108,7 @@ void vecs_write(const char* fileName, size_t num, int dim, TVec* vecs) {
     FILE* f = fopen(fileName, "ab");
 
     size_t vecsPos = 0;
-    TStore buffer[dim];
+    std::unique_ptr<TStore[]> buffer = std::make_unique<TStore[]>(dim);
     for (size_t i = 0; i < num; i++) {
         fwrite(&dim, sizeof(int), 1, f);
         if (sizeof(TVec) == sizeof(TStore)) {
@@ -116,7 +117,7 @@ void vecs_write(const char* fileName, size_t num, int dim, TVec* vecs) {
             for (size_t j = 0; j < dim; j++) {
                 buffer[j] = (TStore)vecs[vecsPos + j];
             }
-            fwrite(&buffer, sizeof(TStore), (size_t)dim, f);
+            fwrite(buffer.get(), sizeof(TStore), (size_t)dim, f);
         }
         vecsPos += dim;
     }
