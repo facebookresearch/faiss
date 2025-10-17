@@ -59,12 +59,10 @@ def eval_recall(index, name, nprobe_val):
 
 def eval_and_plot(name, plot=True):
     index = faiss.index_factory(d, name)
-    index_path = f"indices/{name}.faissindex"
 
     faiss.omp_set_num_threads(mp.cpu_count())
     index.train(xt)
     index.add(xb)
-    faiss.write_index(index, index_path)
 
     faiss.omp_set_num_threads(1)
 
