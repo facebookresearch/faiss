@@ -89,6 +89,11 @@ class GpuIndexIMI : public GpuIndex {
     /// Returns our current number of list probes per query
     int getNumProbes() const;
 
+    /// `x` can be resident on the CPU or any GPU; copies are performed
+    /// as needed
+    /// Handles paged adds if the add set is too large; calls addInternal_
+    void add(idx_t n, const float* x) override;
+
     /// `x` and `ids` can be resident on the CPU or any GPU; copies are
     /// performed as needed
     /// Handles paged adds if the add set is too large; calls addInternal_

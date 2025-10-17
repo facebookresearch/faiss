@@ -219,6 +219,11 @@ bool GpuIndexIMI::addImplRequiresIDs_() const {
     return true;
 }
 
+void GpuIndexIMI::add(idx_t n, const float* x) {
+  // Pass to add_with_ids
+  add_with_ids(n, x, nullptr);
+}
+
 void GpuIndexIMI::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
     FAISS_THROW_IF_NOT_MSG(this->is_trained, "Index not trained");
 
