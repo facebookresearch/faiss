@@ -45,13 +45,13 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<=25.07"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
-        conda list --show-channel-urls
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
+        conda list --show-channel-urls
         conda install -y -q anaconda-client
         conda config --set anaconda_upload yes
     - name: Conda build (CPU)
@@ -59,6 +59,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        conda list --show-channel-urls
         conda build faiss --python 3.11 -c pytorch
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
@@ -67,12 +68,14 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
+        conda list --show-channel-urls
         conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
     - name: Conda build (GPU)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        conda list --show-channel-urls
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU) w/ anaconda upload
@@ -82,6 +85,7 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
+        conda list --show-channel-urls
         conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU w/ cuVS)
@@ -89,6 +93,7 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
+        conda list --show-channel-urls
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
@@ -98,6 +103,7 @@ runs:
       env:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
+        conda list --show-channel-urls
         conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Check installed packages channel
