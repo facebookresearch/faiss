@@ -31,6 +31,7 @@
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -39,6 +40,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -49,6 +51,9 @@
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexIDMap.h>
+#include <algorithm>
+#include <cctype>
 #include <string>
 
 namespace faiss {
@@ -450,6 +455,10 @@ IndexIVF* parse_IndexIVF(
     if (match(rabitq_pattern)) {
         return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
     }
+    if (match("RaBitQfs(_[0-9]+)?")) {
+        int bbs = mres_to_int(sm[1], 32, 1);
+        return new IndexIVFRaBitQFastScan(get_q(), d, nlist, mt, bbs, own_il);
+    }
     return nullptr;
 }
 
@@ -674,6 +683,12 @@ Index* parse_other_indexes(
     // IndexRaBitQ
     if (match(rabitq_pattern)) {
         return new IndexRaBitQ(d, metric);
+    }
+
+    // IndexRaBitQFastScan
+    if (match("RaBitQfs(_[0-9]+)?")) {
+        int bbs = mres_to_int(sm[1], 32, 1);
+        return new IndexRaBitQFastScan(d, metric, bbs);
     }
 
     return nullptr;
@@ -934,6 +949,28 @@ IndexBinary* index_binary_factory(
         bool own_invlists) {
     IndexBinary* index = nullptr;
 
+    std::smatch sm;
+    std::string desc_str(description);
+
+    // Handle IDMap2 and IDMap wrappers (prefix or suffix)
+    if (re_match(desc_str, "(.+),IDMap2", sm) ||
+        re_match(desc_str, "IDMap2,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap2* idmap2 = new IndexBinaryIDMap2(sub_index);
+        idmap2->own_fields = true;
+        return idmap2;
+    }
+
+    if (re_match(desc_str, "(.+),IDMap", sm) ||
+        re_match(desc_str, "IDMap,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap* idmap = new IndexBinaryIDMap(sub_index);
+        idmap->own_fields = true;
+        return idmap;
+    }
+
     int ncentroids = -1;
     int M, nhash, b;
 
@@ -959,7 +996,7 @@ IndexBinary* index_binary_factory(
     } else if (sscanf(description, "BHash%d", &b) == 1) {
         index = new IndexBinaryHash(d, b);
 
-    } else if (std::string(description) == "BFlat") {
+    } else if (desc_str == "BFlat") {
         index = new IndexBinaryFlat(d);
 
     } else {

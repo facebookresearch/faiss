@@ -30,8 +30,7 @@ inline int popcount64(uint64_t x) {
 // This table was moved from .cpp to .h file, because
 // otherwise it was causing compilation errors while trying to
 // compile swig modules on Windows.
-// todo for C++17: switch to 'inline constexpr'
-static constexpr uint8_t hamdis_tab_ham_bytes[256] = {
+inline constexpr uint8_t hamdis_tab_ham_bytes[256] = {
         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4,
         2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
         2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4,
