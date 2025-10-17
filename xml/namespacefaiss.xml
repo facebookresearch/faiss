@@ -1088,7 +1088,7 @@
         </inbodydescription>
         <location file="faiss/utils/hamming.h" line="104" column="25" declfile="faiss/utils/hamming.h" declline="104" declcolumn="25"/>
       </memberdef>
-      <memberdef kind="variable" id="namespacefaiss_1a807d8fdc887adb34ff028c3ccaeb1fe1" prot="public" static="yes" constexpr="yes" mutable="no">
+      <memberdef kind="variable" id="namespacefaiss_1a807d8fdc887adb34ff028c3ccaeb1fe1" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr uint8_t</type>
         <definition>constexpr uint8_t faiss::hamdis_tab_ham_bytes[256]</definition>
         <argsstring>[256]</argsstring>
@@ -1112,7 +1112,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/common.h" line="34" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="34" bodyend="45"/>
+        <location file="faiss/utils/hamming_distance/common.h" line="33" column="26" bodyfile="faiss/utils/hamming_distance/common.h" bodystart="33" bodyend="44"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PartitionStats" kindref="compound">PartitionStats</ref></type>
