@@ -261,6 +261,7 @@
         <argsstring>(size_t list_no, const uint8_t *codes) const</argsstring>
         <name>release_codes</name>
         <qualifiedname>faiss::InvertedLists::release_codes</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a6d51dff4e225367cf876dae82060071f">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1ad431aa76dc678d71747dcbc9379d123a">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1SliceInvertedLists_1a362456fac3002d1a5625a13dbfc0752b">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a331222282fb32dc55d6f5847bbd1c848">release_codes</reimplementedby>
@@ -347,6 +348,7 @@
         <argsstring>(size_t list_no, size_t offset) const</argsstring>
         <name>get_single_code</name>
         <qualifiedname>faiss::InvertedLists::get_single_code</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a5fe070177b3ff02c1f85dadc0751b6ca">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1aeef6bd41622796f5d142e60fe78a5da8">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1SliceInvertedLists_1abc95a98970bb7b4b044c5a61520c20d3">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3c229e59737b533464f5403c5cf5fca4">get_single_code</reimplementedby>
@@ -431,6 +433,7 @@
         <argsstring>(size_t list_no, void *inverted_list_context=nullptr) const</argsstring>
         <name>get_iterator</name>
         <qualifiedname>faiss::InvertedLists::get_iterator</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a8ef31fda6ea1aff6847983add66a06d4">get_iterator</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -489,6 +492,7 @@
         <qualifiedname>faiss::InvertedLists::add_entries</qualifiedname>
         <reimplementedby refid="structfaiss_1_1BlockInvertedLists_1a820d8f05e6fae5eb5f82d43d19d0c7c6">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ArrayInvertedLists_1a6b1f8d4cfe8413065c416d442bd4636b">add_entries</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a72c3abf8547925e21430aa2bcb34c9d1">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReadOnlyInvertedLists_1a0734538244d8c5969e3e23e38faf1c0c">add_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a762cfcc06fe60dbaa807ce72723531a9">add_entries</reimplementedby>
         <param>
@@ -553,6 +557,7 @@
         <qualifiedname>faiss::InvertedLists::update_entries</qualifiedname>
         <reimplementedby refid="structfaiss_1_1BlockInvertedLists_1aa5d61744a1478c537fec67e64b4dbe25">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ArrayInvertedLists_1af4aa699d0fba82f2d6f755e0b33b49af">update_entries</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a876d33b4e3e9c64b15f806a06c65f1d9">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReadOnlyInvertedLists_1a33c3a5174bcf6709dcefec8bdc4b9a52">update_entries</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a4d64d34d7ce9b242bb840c218fc3059c">update_entries</reimplementedby>
         <param>
@@ -591,6 +596,7 @@
         <qualifiedname>faiss::InvertedLists::resize</qualifiedname>
         <reimplementedby refid="structfaiss_1_1BlockInvertedLists_1a5004739d5e1315dfe537a1dead238acb">resize</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ArrayInvertedLists_1a2077262cafd78d12534a6bf780bae148">resize</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1ad69a3e2903dd8b31e86644fddaadb008">resize</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ReadOnlyInvertedLists_1a7b65c76388ba2fbc17a7060f6cf87039">resize</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a6b2faf11aea3dcb1dbf07a52af33099b">resize</reimplementedby>
         <param>
@@ -743,55 +749,61 @@
         </childnode>
       </node>
       <node id="3">
+        <label>faiss::ArrayInvertedListsPanorama</label>
+        <link refid="structfaiss_1_1ArrayInvertedListsPanorama"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::BlockInvertedLists</label>
         <link refid="structfaiss_1_1BlockInvertedLists"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss::HStackInvertedLists</label>
         <link refid="structfaiss_1_1HStackInvertedLists"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
         <label>faiss::InvertedLists</label>
         <link refid="structfaiss_1_1InvertedLists"/>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss::MaskedInvertedLists</label>
         <link refid="structfaiss_1_1MaskedInvertedLists"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::OnDiskInvertedLists</label>
         <link refid="structfaiss_1_1OnDiskInvertedLists"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::ReadOnlyInvertedLists</label>
         <link refid="structfaiss_1_1ReadOnlyInvertedLists"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss::SliceInvertedLists</label>
         <link refid="structfaiss_1_1SliceInvertedLists"/>
-        <childnode refid="5" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>faiss::StopWordsInvertedLists</label>
-        <link refid="structfaiss_1_1StopWordsInvertedLists"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
       <node id="10">
+        <label>faiss::StopWordsInvertedLists</label>
+        <link refid="structfaiss_1_1StopWordsInvertedLists"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss::VStackInvertedLists</label>
         <link refid="structfaiss_1_1VStackInvertedLists"/>
-        <childnode refid="5" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

@@ -870,6 +870,7 @@
         <name>get_InvertedListScanner</name>
         <qualifiedname>faiss::IndexIVFFlat::get_InvertedListScanner</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba">get_InvertedListScanner</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a892bca2b82d19902f792cc09d7711eb6">get_InvertedListScanner</reimplementedby>
         <param>
           <type>bool</type>
           <declname>store_pairs</declname>

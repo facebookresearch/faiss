@@ -33,6 +33,7 @@
     <innerfile refid="IndexIVFAdditiveQuantizerFastScan_8h">IndexIVFAdditiveQuantizerFastScan.h</innerfile>
     <innerfile refid="IndexIVFFastScan_8h">IndexIVFFastScan.h</innerfile>
     <innerfile refid="IndexIVFFlat_8h">IndexIVFFlat.h</innerfile>
+    <innerfile refid="IndexIVFFlatPanorama_8h">IndexIVFFlatPanorama.h</innerfile>
     <innerfile refid="IndexIVFIndependentQuantizer_8h">IndexIVFIndependentQuantizer.h</innerfile>
     <innerfile refid="IndexIVFPQ_8h">IndexIVFPQ.h</innerfile>
     <innerfile refid="IndexIVFPQFastScan_8h">IndexIVFPQFastScan.h</innerfile>

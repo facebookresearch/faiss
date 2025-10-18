@@ -5,6 +5,7 @@
     <includes local="no">stdint.h</includes>
     <includes local="no">unordered_map</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
+    <includedby refid="IndexIVFFlatPanorama_8h" local="yes">faiss/IndexIVFFlatPanorama.h</includedby>
     <incdepgraph>
       <node id="7">
         <label>faiss/Clustering.h</label>
@@ -235,6 +236,18 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/IndexIVFFlat.h</label>
+        <link refid="IndexIVFFlat_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/IndexIVFFlatPanorama.h</label>
+        <link refid="IndexIVFFlatPanorama_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1IndexIVFFlat" prot="public">faiss::IndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlatDedup" prot="public">faiss::IndexIVFFlatDedup</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

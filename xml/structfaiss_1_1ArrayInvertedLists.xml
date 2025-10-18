@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1ArrayInvertedLists" kind="struct" language="C++" prot="public">
     <compoundname>faiss::ArrayInvertedLists</compoundname>
     <basecompoundref refid="structfaiss_1_1InvertedLists" prot="public" virt="non-virtual">faiss::InvertedLists</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1ArrayInvertedListsPanorama" prot="public" virt="non-virtual">faiss::ArrayInvertedListsPanorama</derivedcompoundref>
     <includes refid="InvertedLists_8h" local="no">InvertedLists.h</includes>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="structfaiss_1_1ArrayInvertedLists_1a6f32dcbae471038a067b9b310e338f4b" prot="public" static="no" mutable="no">
@@ -177,6 +178,7 @@
         <name>add_entries</name>
         <qualifiedname>faiss::ArrayInvertedLists::add_entries</qualifiedname>
         <reimplements refid="structfaiss_1_1InvertedLists_1a0a2adbbd1d6b4f8ed1cbfa9bb93f4401">add_entries</reimplements>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a72c3abf8547925e21430aa2bcb34c9d1">add_entries</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -208,6 +210,7 @@
         <name>update_entries</name>
         <qualifiedname>faiss::ArrayInvertedLists::update_entries</qualifiedname>
         <reimplements refid="structfaiss_1_1InvertedLists_1afb45f0f325bf82f73737d804f8dbf49e">update_entries</reimplements>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a876d33b4e3e9c64b15f806a06c65f1d9">update_entries</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -243,6 +246,7 @@
         <name>resize</name>
         <qualifiedname>faiss::ArrayInvertedLists::resize</qualifiedname>
         <reimplements refid="structfaiss_1_1InvertedLists_1aae502a3372d94450e0b8ff4350b43610">resize</reimplements>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1ad69a3e2903dd8b31e86644fddaadb008">resize</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -323,6 +327,7 @@
         <argsstring>(size_t list_no, const uint8_t *codes) const</argsstring>
         <name>release_codes</name>
         <qualifiedname>faiss::InvertedLists::release_codes</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a6d51dff4e225367cf876dae82060071f">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1ad431aa76dc678d71747dcbc9379d123a">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1SliceInvertedLists_1a362456fac3002d1a5625a13dbfc0752b">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a331222282fb32dc55d6f5847bbd1c848">release_codes</reimplementedby>
@@ -409,6 +414,7 @@
         <argsstring>(size_t list_no, size_t offset) const</argsstring>
         <name>get_single_code</name>
         <qualifiedname>faiss::InvertedLists::get_single_code</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a5fe070177b3ff02c1f85dadc0751b6ca">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1aeef6bd41622796f5d142e60fe78a5da8">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1SliceInvertedLists_1abc95a98970bb7b4b044c5a61520c20d3">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3c229e59737b533464f5403c5cf5fca4">get_single_code</reimplementedby>
@@ -468,6 +474,7 @@
         <argsstring>(size_t list_no, void *inverted_list_context=nullptr) const</argsstring>
         <name>get_iterator</name>
         <qualifiedname>faiss::InvertedLists::get_iterator</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a8ef31fda6ea1aff6847983add66a06d4">get_iterator</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -748,6 +755,12 @@
         <label>faiss::ArrayInvertedLists</label>
         <link refid="structfaiss_1_1ArrayInvertedLists"/>
         <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::ArrayInvertedListsPanorama</label>
+        <link refid="structfaiss_1_1ArrayInvertedListsPanorama"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">

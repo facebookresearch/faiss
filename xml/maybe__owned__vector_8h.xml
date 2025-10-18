@@ -196,25 +196,25 @@
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
         <childnode refid="47" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
         <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
         </childnode>
       </node>
       <node id="16">
@@ -240,8 +240,14 @@
       <node id="44">
         <label>faiss/IndexIVFFlat.h</label>
         <link refid="IndexIVFFlat_8h_source"/>
+        <childnode refid="45" relation="include">
+        </childnode>
       </node>
       <node id="45">
+        <label>faiss/IndexIVFFlatPanorama.h</label>
+        <link refid="IndexIVFFlatPanorama_8h_source"/>
+      </node>
+      <node id="46">
         <label>faiss/IndexIVFIndependentQuantizer.h</label>
         <link refid="IndexIVFIndependentQuantizer_8h_source"/>
       </node>
@@ -261,7 +267,7 @@
         <label>faiss/IndexIVFPQR.h</label>
         <link refid="IndexIVFPQR_8h_source"/>
       </node>
-      <node id="46">
+      <node id="47">
         <label>faiss/IndexIVFRaBitQ.h</label>
         <link refid="IndexIVFRaBitQ_8h_source"/>
         <childnode refid="32" relation="include">
@@ -271,7 +277,7 @@
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
       </node>
-      <node id="47">
+      <node id="48">
         <label>faiss/IndexIVFSpectralHash.h</label>
         <link refid="IndexIVFSpectralHash_8h_source"/>
       </node>
@@ -337,7 +343,7 @@
         <childnode refid="34" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="49">
         <label>faiss/IndexShardsIVF.h</label>
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
@@ -353,37 +359,37 @@
         <label>faiss/gpu/GpuIndexBinaryFlat.h</label>
         <link refid="GpuIndexBinaryFlat_8h_source"/>
       </node>
-      <node id="49">
+      <node id="50">
         <label>faiss/gpu/GpuIndexCagra.h</label>
         <link refid="GpuIndexCagra_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="50">
+      <node id="51">
         <label>faiss/gpu/GpuIndexIVF.h</label>
         <link refid="GpuIndexIVF_8h_source"/>
-        <childnode refid="51" relation="include">
-        </childnode>
         <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
       </node>
-      <node id="51">
+      <node id="52">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
         <link refid="GpuIndexIVFFlat_8h_source"/>
       </node>
-      <node id="52">
+      <node id="53">
         <label>faiss/gpu/GpuIndexIVFPQ.h</label>
         <link refid="GpuIndexIVFPQ_8h_source"/>
-        <childnode refid="49" relation="include">
+        <childnode refid="50" relation="include">
         </childnode>
       </node>
       <node id="34">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="55">
+      <node id="56">
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h_source"/>
       </node>
@@ -447,7 +453,7 @@
         <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="54">
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
@@ -475,11 +481,11 @@
         <childnode refid="38" relation="include">
         </childnode>
       </node>
-      <node id="56">
+      <node id="57">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="57">
+      <node id="58">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
         <childnode refid="39" relation="include">
@@ -490,26 +496,26 @@
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="39" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
-        </childnode>
         <childnode refid="56" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
         </childnode>
         <childnode refid="58" relation="include">
         </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
         <childnode refid="41" relation="include">
         </childnode>
       </node>
-      <node id="58">
+      <node id="59">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="56" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="55">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>

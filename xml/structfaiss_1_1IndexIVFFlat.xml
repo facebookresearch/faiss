@@ -4,6 +4,7 @@
     <compoundname>faiss::IndexIVFFlat</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexIVF" prot="public" virt="non-virtual">faiss::IndexIVF</basecompoundref>
     <derivedcompoundref refid="structfaiss_1_1IndexIVFFlatDedup" prot="public" virt="non-virtual">faiss::IndexIVFFlatDedup</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1IndexIVFFlatPanorama" prot="public" virt="non-virtual">faiss::IndexIVFFlatPanorama</derivedcompoundref>
     <includes refid="IndexIVFFlat_8h" local="no">IndexIVFFlat.h</includes>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFlat_1a0bd6a2d2a6bbe8bf9edff3d36eff8eb0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -216,6 +217,7 @@
         <name>get_InvertedListScanner</name>
         <qualifiedname>faiss::IndexIVFFlat::get_InvertedListScanner</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba">get_InvertedListScanner</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a892bca2b82d19902f792cc09d7711eb6">get_InvertedListScanner</reimplementedby>
         <param>
           <type>bool</type>
           <declname>store_pairs</declname>
@@ -246,6 +248,7 @@
         <qualifiedname>faiss::IndexIVFFlat::reconstruct_from_offset</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexIVF_1ab02ee6dbd2a3c6a2144fc4ad8f7afe4d">reconstruct_from_offset</reimplements>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a903b66bafb3113dd9b43fc7e6c5c8173">reconstruct_from_offset</reimplementedby>
         <param>
           <type>int64_t</type>
           <declname>list_no</declname>
@@ -2327,6 +2330,12 @@
       <node id="6">
         <label>faiss::IndexIVFFlatDedup</label>
         <link refid="structfaiss_1_1IndexIVFFlatDedup"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::IndexIVFFlatPanorama</label>
+        <link refid="structfaiss_1_1IndexIVFFlatPanorama"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

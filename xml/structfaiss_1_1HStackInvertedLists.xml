@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="309" column="17" bodyfile="faiss/invlists/InvertedLists.h" bodystart="309" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="371" column="17" bodyfile="faiss/invlists/InvertedLists.h" bodystart="371" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="312" column="5"/>
+        <location file="faiss/invlists/InvertedLists.h" line="374" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1af8330d7cdc185533a1286e3413810c5e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="314" column="12"/>
+        <location file="faiss/invlists/InvertedLists.h" line="376" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1a3a69cb5d1c05fa6b583672c459ecc4a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>const uint8_t *</type>
@@ -131,7 +131,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="315" column="19"/>
+        <location file="faiss/invlists/InvertedLists.h" line="377" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1ab426f640ebd323a8d862a04af73ccd3c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
@@ -154,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="316" column="17"/>
+        <location file="faiss/invlists/InvertedLists.h" line="378" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1a249f680477fac00cdfcf319c3bbe8c05" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="318" column="10"/>
+        <location file="faiss/invlists/InvertedLists.h" line="380" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1ad431aa76dc678d71747dcbc9379d123a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -202,7 +202,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="320" column="10"/>
+        <location file="faiss/invlists/InvertedLists.h" line="382" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1aa987a3ecea9f4df3340fd8c21f5d7000" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -226,7 +226,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="321" column="10"/>
+        <location file="faiss/invlists/InvertedLists.h" line="383" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1a87091687f5fcc023f1db4c0f8c2c36da" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -252,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="323" column="11"/>
+        <location file="faiss/invlists/InvertedLists.h" line="385" column="11"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HStackInvertedLists_1aeef6bd41622796f5d142e60fe78a5da8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>const uint8_t *</type>
@@ -278,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="325" column="19"/>
+        <location file="faiss/invlists/InvertedLists.h" line="387" column="19"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReadOnlyInvertedLists_1a0734538244d8c5969e3e23e38faf1c0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -309,7 +309,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="291" column="12"/>
+        <location file="faiss/invlists/InvertedLists.h" line="353" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReadOnlyInvertedLists_1a33c3a5174bcf6709dcefec8bdc4b9a52" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -344,7 +344,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="297" column="10"/>
+        <location file="faiss/invlists/InvertedLists.h" line="359" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ReadOnlyInvertedLists_1a7b65c76388ba2fbc17a7060f6cf87039" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -367,7 +367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="304" column="10"/>
+        <location file="faiss/invlists/InvertedLists.h" line="366" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedLists_1adc9d4472a745350a9dcbc92f799e73fe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>bool</type>
@@ -400,6 +400,7 @@
         <argsstring>(size_t list_no, void *inverted_list_context=nullptr) const</argsstring>
         <name>get_iterator</name>
         <qualifiedname>faiss::InvertedLists::get_iterator</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a8ef31fda6ea1aff6847983add66a06d4">get_iterator</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -711,7 +712,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/invlists/InvertedLists.h" line="308" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="308" bodyend="327"/>
+    <location file="faiss/invlists/InvertedLists.h" line="370" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="370" bodyend="389"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ReadOnlyInvertedLists_1a0734538244d8c5969e3e23e38faf1c0c" prot="public" virt="virtual"><scope>faiss::HStackInvertedLists</scope><name>add_entries</name></member>
       <member refid="structfaiss_1_1InvertedLists_1aa8fe060cb73a42c570d7e835ab172356" prot="public" virt="virtual"><scope>faiss::HStackInvertedLists</scope><name>add_entry</name></member>

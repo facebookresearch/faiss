@@ -1641,6 +1641,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9f8c11f0496f76eb38b39d058373d798">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a12194f155176f68a779c1a41a1b2c2fb">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a8e60db84c02836ea5c786678171b55cf">reconstruct_from_offset</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a903b66bafb3113dd9b43fc7e6c5c8173">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1ab9ec78723d3fbc9834018f697e0cbe95">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFPQR_1a66645a61eb106f718fb5c8a7bac1f070">reconstruct_from_offset</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1a5ac77948c911d71310ab837a9a0fdd91">reconstruct_from_offset</reimplementedby>

@@ -7,6 +7,7 @@
     <innerclass refid="structfaiss_1_1AlignedTable" prot="public">faiss::AlignedTable</innerclass>
     <innerclass refid="structfaiss_1_1AlignedTableTightAlloc" prot="public">faiss::AlignedTableTightAlloc</innerclass>
     <innerclass refid="structfaiss_1_1ArrayInvertedLists" prot="public">faiss::ArrayInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1ArrayInvertedListsPanorama" prot="public">faiss::ArrayInvertedListsPanorama</innerclass>
     <innerclass refid="structfaiss_1_1AutoTuneCriterion" prot="public">faiss::AutoTuneCriterion</innerclass>
     <innerclass refid="structfaiss_1_1BinaryInvertedListScanner" prot="public">faiss::BinaryInvertedListScanner</innerclass>
     <innerclass refid="structfaiss_1_1BitstringReader" prot="public">faiss::BitstringReader</innerclass>
@@ -109,6 +110,7 @@
     <innerclass refid="structfaiss_1_1IndexIVFFastScan" prot="public">faiss::IndexIVFFastScan</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlat" prot="public">faiss::IndexIVFFlat</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFFlatDedup" prot="public">faiss::IndexIVFFlatDedup</innerclass>
+    <innerclass refid="structfaiss_1_1IndexIVFFlatPanorama" prot="public">faiss::IndexIVFFlatPanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFIndependentQuantizer" prot="public">faiss::IndexIVFIndependentQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFInterface" prot="public">faiss::IndexIVFInterface</innerclass>
     <innerclass refid="structfaiss_1_1IndexIVFLocalSearchQuantizer" prot="public">faiss::IndexIVFLocalSearchQuantizer</innerclass>
@@ -582,7 +584,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="329" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="329" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="391" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="391" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>
