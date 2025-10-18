@@ -125,6 +125,30 @@ struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2);
 };
 
+/** HNSW Flat index with Panorama optimization for accelerated distance
+ *  computations.
+ */
+struct IndexHNSWFlatPanorama : IndexHNSWFlat {
+    IndexHNSWFlatPanorama();
+    IndexHNSWFlatPanorama(
+            int d,
+            int M,
+            int num_levels,
+            MetricType metric = METRIC_L2);
+
+    const int num_levels;
+};
+// MASTER PLAN
+// 2. Create a IndexHNSWFlatPanorama which inherits from IndexHNSWFlat and sets
+// the HNSW as HNSWPanorama. Also enforce the invariant of L2 distance.
+// 3. Create HNSWPanorama which inherits from HNSW, and changes the search (or
+// more specific), and alos contains the number of levels as class parameter Try
+// to only change search from unbounded and bounded.
+// 4. Test bounded & unbounded. Maybe use 1 level as a way to test it. Also
+// check how HNSW is currently tested. Run vanilla HNSW and compare the recall
+// to be within a margin.
+// 5. Demo and bench PCA + HNSW with and without Panorama.
+
 /** PQ index topped with with a HNSW structure to access elements
  *  more efficiently.
  */
