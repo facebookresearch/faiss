@@ -8,16 +8,27 @@
 #pragma once
 
 #include <cuda.h>
+#ifdef USE_AMD_ROCM
+#include <rocm-core/rocm_version.h> // ROCm version macros
+#if ROCM_VERSION_MAJOR >= 7
+#include <rocprim/intrinsics/arch.hpp> // rocprim::arch::wavefront
+#endif
+#endif
 
 namespace faiss {
 namespace gpu {
 
 #ifdef USE_AMD_ROCM
 
+#if ROCM_VERSION_MAJOR < 7
 #if __AMDGCN_WAVEFRONT_SIZE == 32u
 constexpr int kWarpSize = 32;
 #else
 constexpr int kWarpSize = 64;
+#endif
+#else
+// ROCm 7.0 and above
+constexpr __device__ int kWarpSize = rocprim::arch::wavefront::max_size();
 #endif
 
 // This is a memory barrier for intra-warp writes to shared memory.
