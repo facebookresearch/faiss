@@ -485,7 +485,6 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1acfb42a2f0780bff4fd1b6f05b4fff3b2">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFIndependentQuantizer_1a2b390b220fdcc2fb2cbe7289d5bd2a4d">search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a887b3832aabd8f3bd8e7ed310a714a4a">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1aa5460e577f173869768d013586eb2d86">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNNDescent_1aa1010710fd5bca3f9f1e8028bae382cc">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexNSG_1a84e2a955e1a1a939b934e4e8be849943">search</reimplementedby>

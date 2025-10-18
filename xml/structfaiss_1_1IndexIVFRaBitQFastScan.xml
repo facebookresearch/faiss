@@ -840,13 +840,13 @@
         </inbodydescription>
         <location file="faiss/IndexIVFRaBitQFastScan.h" line="133" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1a887b3832aabd8f3bd8e7ed310a714a4a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexIVFRaBitQFastScan::search</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
-        <name>search</name>
-        <qualifiedname>faiss::IndexIVFRaBitQFastScan::search</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678">search</reimplements>
+        <definition>void faiss::IndexIVFRaBitQFastScan::search_preassigned</definition>
+        <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const override</argsstring>
+        <name>search_preassigned</name>
+        <qualifiedname>faiss::IndexIVFRaBitQFastScan::search_preassigned</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1">search_preassigned</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -860,6 +860,14 @@
           <declname>k</declname>
         </param>
         <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>assign</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid_dis</declname>
+        </param>
+        <param>
           <type>float *</type>
           <declname>distances</declname>
         </param>
@@ -868,14 +876,23 @@
           <declname>labels</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
           <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref> *</type>
+          <declname>stats</declname>
           <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Search for k nearest neighbors</para>
+<para>Search with pre-assigned coarse quantization</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
@@ -902,6 +919,22 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
+<parametername>assign</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>coarse cluster assignments (n * nprobe) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centroid_dis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>distances to centroids (n * nprobe) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -918,10 +951,26 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
+<parametername>store_pairs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether to store cluster-relative pairs </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
 <parametername>params</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>optional search parameters </para>
+<para>optional IVF search parameters </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>stats</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>optional search statistics </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -981,7 +1030,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="150" column="30"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="154" column="30"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a35721a1942a7ff74692d73fbb76ec123" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1253,13 +1302,13 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFastScan.h" line="159" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexIVFFastScan::search_preassigned</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, const idx_t *assign, const float *centroid_dis, float *distances, idx_t *labels, bool store_pairs, const IVFSearchParameters *params=nullptr, IndexIVFStats *stats=nullptr) const override</argsstring>
-        <name>search_preassigned</name>
-        <qualifiedname>faiss::IndexIVFFastScan::search_preassigned</qualifiedname>
-        <reimplements refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854">search_preassigned</reimplements>
+        <definition>void faiss::IndexIVFFastScan::search</definition>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>search</name>
+        <qualifiedname>faiss::IndexIVFFastScan::search</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexIVF_1a84cb8115ea19d50c5b53be19b0dae708">search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1273,14 +1322,6 @@
           <declname>k</declname>
         </param>
         <param>
-          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>assign</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>centroid_dis</declname>
-        </param>
-        <param>
           <type>float *</type>
           <declname>distances</declname>
         </param>
@@ -1289,23 +1330,14 @@
           <declname>labels</declname>
         </param>
         <param>
-          <type>bool</type>
-          <declname>store_pairs</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
           <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref> *</type>
-          <declname>stats</declname>
           <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Search with pre-assigned coarse quantization</para>
+<para>Search for k nearest neighbors</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
@@ -1332,22 +1364,6 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>assign</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>coarse cluster assignments (n * nprobe) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>centroid_dis</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>distances to centroids (n * nprobe) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
 <parametername>distances</parametername>
 </parameternamelist>
 <parameterdescription>
@@ -1364,26 +1380,10 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>store_pairs</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>whether to store cluster-relative pairs </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
 <parametername>params</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>optional IVF search parameters </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>stats</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>optional search statistics </para>
+<para>optional search parameters </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1391,7 +1391,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="198" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="177" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a1f8213db15661df4339ec9ce4e2244a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3556,7 +3556,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQFastScan.h" line="52" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="52" bodyend="215"/>
+    <location file="faiss/IndexIVFRaBitQFastScan.h" line="52" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="52" bodyend="219"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add_core</name></member>
@@ -3653,7 +3653,7 @@
       <member refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>sa_code_size</name></member>
       <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1463a1ea2123d2b672e7d74069a711f0" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>sa_decode</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a887b3832aabd8f3bd8e7ed310a714a4a" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search</name></member>
       <member refid="structfaiss_1_1IndexIVF_1ae370aa40139ca15359b1cbdf88c9b3d8" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_and_reconstruct</name></member>
       <member refid="structfaiss_1_1IndexIVF_1ad9acb1903e0ecfa61cb708eca06f2686" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_and_return_codes</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a8728886aaf8f241ba7410eecf20efcbb" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_dispatch_implem</name></member>
@@ -3663,7 +3663,7 @@
       <member refid="structfaiss_1_1IndexIVFFastScan_1ade68bfb359cd7e620c6dde4e46834edd" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_12</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a478421842b68a1d8e7f08eaf0bced854" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_14</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1afcb5f2af0e16d9dfd0fb9584bed9d5b6" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_implem_2</name></member>
-      <member refid="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_preassigned</name></member>
+      <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>search_preassigned</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a1a896475b88eff587c434dd796afa55a" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>set_direct_map_type</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1af5a65c4801f2d08dee73089242b4f062" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>skip</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>train</name></member>

@@ -1085,7 +1085,6 @@
         <name>search</name>
         <qualifiedname>faiss::IndexIVFFastScan::search</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexIVF_1a84cb8115ea19d50c5b53be19b0dae708">search</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a887b3832aabd8f3bd8e7ed310a714a4a">search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1177,6 +1176,7 @@
         <name>search_preassigned</name>
         <qualifiedname>faiss::IndexIVFFastScan::search_preassigned</qualifiedname>
         <reimplements refid="structfaiss_1_1IndexIVF_1aa5cf61c63eb9ccc68edc13fe8f5ba854">search_preassigned</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7">search_preassigned</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
