@@ -27,7 +27,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     # Helper methods for index creation and data generation
 
     def generate_data(self, d, nt, nb, nq, seed=42):
-        ds = SyntheticDataset(d, nt, nb, nq)
+        ds = SyntheticDataset(d, nt, nb, nq, seed=seed)
         return ds.get_train(), ds.get_database(), ds.get_queries()
 
     def create_ivf_flat(
@@ -177,11 +177,17 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=32)
         D_base, I_base = index_base.search(xq, k)
 
+        prev_ratio_dims_scanned = float('inf')
         for nlevels in [1, 2, 4, 8, 16, 32]:
             with self.subTest(nlevels=nlevels):
                 index = self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)
                 D, I = index.search(xq, k)
                 self.assert_search_results_equal(D_base, I_base, D, I)
+
+                # Make sure the ratio of dimensions scanned decreases as n_levels increases
+                self.assertLess(faiss.cvar.indexPanorama_stats.ratio_dims_scanned, prev_ratio_dims_scanned)
+                prev_ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                faiss.cvar.indexPanorama_stats.reset()
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""

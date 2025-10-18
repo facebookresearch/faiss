@@ -6,14 +6,14 @@
 
 namespace faiss {
 
-/// Statistics are not robust to internal threading nor when
-/// multiple Panorama searches are performed in parallel.
-/// Use these values in a single-threaded context to accurately
-/// gauge Panorama's pruning effectiveness.
+/// Statistics are not robust to internal threading nor to
+/// concurrent Panorama searches. Use these values in a 
+/// single-threaded context to accurately gauge Panorama's 
+/// pruning effectiveness.
 struct PanoramaStats {
     uint64_t total_dims_scanned; // total dimensions scanned
-    uint64_t total_dims;  	 // total dimensions
-    float pct_dims_scanned;      // average percentage of dimensions scanned
+    uint64_t total_dims;  	     // total dimensions
+    float ratio_dims_scanned;    // fraction of dimensions actually scanned
     
     PanoramaStats() { reset(); }
     void reset();
