@@ -102,8 +102,6 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 
-#include <faiss/impl/PanoramaStats.h>
-
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
@@ -173,6 +171,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/utils/NeuralNet.h>
+#include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 

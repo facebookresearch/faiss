@@ -20,7 +20,7 @@ void PanoramaStats::reset() {
 void PanoramaStats::add(const PanoramaStats& other) {
     total_dims_scanned += other.total_dims_scanned;
     total_dims += other.total_dims;
-    pct_dims_scanned = static_cast<float>(total_dims_scanned) / total_dims;
+    ratio_dims_scanned = static_cast<float>(total_dims_scanned) / total_dims;
 }
 
 PanoramaStats indexPanorama_stats;
