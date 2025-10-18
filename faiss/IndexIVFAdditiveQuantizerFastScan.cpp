@@ -14,6 +14,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -212,7 +213,9 @@ void IndexIVFAdditiveQuantizerFastScan::estimate_norm_scale(
     size_t index_nprobe = nprobe;
     nprobe = 1;
     CoarseQuantized cq{index_nprobe, coarse_dis.data(), coarse_ids.data()};
-    compute_LUT(n, x, cq, dis_tables, biases);
+    FastScanDistancePostProcessing empty_context{};
+
+    compute_LUT(n, x, cq, dis_tables, biases, empty_context);
     nprobe = index_nprobe;
 
     float scale = 0;
@@ -314,8 +317,10 @@ void IndexIVFAdditiveQuantizerFastScan::search(
     }
 
     NormTableScaler scaler(norm_scale);
+    FastScanDistancePostProcessing context;
+    context.norm_scaler = &scaler;
     IndexIVFFastScan::CoarseQuantized cq{nprobe};
-    search_dispatch_implem(n, x, k, distances, labels, cq, &scaler);
+    search_dispatch_implem(n, x, k, distances, labels, cq, context);
 }
 
 /*********************************************************
@@ -383,7 +388,8 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases) const {
+        AlignedTable<float>& biases,
+        const FastScanDistancePostProcessing&) const {
     const size_t dim12 = ksub * M;
     const size_t ip_dim12 = aq->M * ksub;
     const size_t nprobe = cq.nprobe;

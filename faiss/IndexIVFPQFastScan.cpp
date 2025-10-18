@@ -7,6 +7,7 @@
 
 #include <faiss/IndexIVFPQFastScan.h>
 
+#include <array>
 #include <cassert>
 #include <cstdio>
 
@@ -14,6 +15,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/simdlib.h>
 
@@ -210,10 +212,11 @@ void IndexIVFPQFastScan::compute_LUT(
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases) const {
+        AlignedTable<float>& biases,
+        const FastScanDistancePostProcessing&) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
-    size_t nprobe = this->nprobe;
+    size_t nprobe = cq.nprobe;
 
     if (by_residual) {
         if (metric_type == METRIC_L2) {
@@ -290,6 +293,135 @@ void IndexIVFPQFastScan::compute_LUT(
             FAISS_THROW_FMT("metric %d not supported", metric_type);
         }
     }
+}
+
+/*********************************************************
+ * InvertedListScanner for IVFPQFS
+ *********************************************************/
+
+namespace {
+
+struct IVFPQFastScanScanner : InvertedListScanner {
+    static constexpr int impl = 10; // based on search_implem_10
+    static constexpr size_t nq = 1; // 1 query at a time.
+    const IndexIVFPQFastScan& index;
+    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint16_t> biases;
+    std::array<float, 2> normalizers{};
+    const float* xi = nullptr;
+
+    IVFPQFastScanScanner(
+            const IndexIVFPQFastScan& index,
+            bool store_pairs,
+            const IDSelector* sel)
+            : InvertedListScanner(store_pairs, sel), index(index) {
+        this->keep_max = is_similarity_metric(index.metric_type);
+    }
+
+    void set_query(const float* query) override {
+        this->xi = query;
+    }
+
+    void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
+        IndexIVFFastScan::CoarseQuantized cq{
+                .nprobe = 1,        // 1 due to explicitly passing in list_no
+                .dis = &coarse_dis, // dis from query to list_no centroid.
+                .ids = &list_no,    // id of the current list we are scanning
+        };
+        FastScanDistancePostProcessing empty_context{};
+        index.compute_LUT_uint8(
+                1, xi, cq, dis_tables, biases, &normalizers[0], empty_context);
+    }
+
+    float distance_to_code(const uint8_t* /* code */) const override {
+        // It's not really possible to implement a distance_to_code since codes
+        // for 32 database vectors are intermixed.
+        FAISS_THROW_MSG("not implemented");
+    }
+
+    // Based on IVFFastScan search_implem_10, since it also deals with 1 query
+    // at a time.
+    size_t scan_codes(
+            size_t ntotal,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            size_t k) const override {
+        // initialize the current iteration heap to the worst possible value of
+        // the prior loop
+        std::vector<float> curr_dists(k, distances[0]);
+        std::vector<idx_t> curr_labels(k, labels[0]);
+        FastScanDistancePostProcessing empty_context{};
+        std::unique_ptr<SIMDResultHandlerToFloat> handler(
+                index.make_knn_handler(
+                        !keep_max,
+                        impl,
+                        nq,
+                        k,
+                        curr_dists.data(),
+                        curr_labels.data(),
+                        sel,
+                        empty_context,
+                        &normalizers[0]));
+
+        // This does not quite match search_implem_10, but it is fine because
+        // the scanner operates on a single query at a time, and this value is
+        // used as the query index. For a single query, the value is always 0.
+        int qmap1[1] = {0};
+
+        handler->q_map = qmap1;
+        handler->begin(&normalizers[0]);
+
+        const uint8_t* LUT = dis_tables.get();
+        handler->dbias = biases.get();
+
+        handler->ntotal = ntotal;
+        handler->id_map = ids;
+
+        pq4_accumulate_loop(
+                1,
+                roundup(ntotal, index.bbs),
+                index.bbs,
+                static_cast<int>(index.M2),
+                codes,
+                LUT,
+                *handler,
+                nullptr);
+
+        // The handler is for the results of this iteration.
+        // Then we need a second heap to combine across iterations.
+        handler->end();
+        if (keep_max) {
+            minheap_addn(
+                    k,
+                    distances,
+                    labels,
+                    curr_dists.data(),
+                    curr_labels.data(),
+                    k);
+        } else {
+            maxheap_addn(
+                    k,
+                    distances,
+                    labels,
+                    curr_dists.data(),
+                    curr_labels.data(),
+                    k);
+        }
+
+        return handler->num_updates();
+    }
+};
+
+} // anonymous namespace
+
+InvertedListScanner* IndexIVFPQFastScan::get_InvertedListScanner(
+        bool store_pairs,
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
+    return new IVFPQFastScanScanner(*this, store_pairs, sel);
 }
 
 } // namespace faiss

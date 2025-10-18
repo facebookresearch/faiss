@@ -23,12 +23,14 @@ set(FAISS_SRC
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
+  IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
   IndexIVFRaBitQ.cpp
+  IndexIVFRaBitQFastScan.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexNNDescent.cpp
@@ -123,12 +125,14 @@ set(FAISS_HEADERS
   IndexIVFAdditiveQuantizer.h
   IndexIVFIndependentQuantizer.h
   IndexIVFFlat.h
+  IndexIVFFlatPanorama.h
   IndexIVFPQ.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
   IndexIVFRaBitQ.h
+  IndexIVFRaBitQFastScan.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexNeuralNetCodec.h
