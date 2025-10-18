@@ -450,7 +450,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -647,11 +649,42 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
     is_trained = true;
 }
 
+IndexHNSWFlat::IndexHNSWFlat(int d, int M, IndexFlat* storage)
+        : IndexHNSW(storage, M) {
+    own_fields = true;
+    is_trained = true;
+}
+
 /**************************************************************
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
 
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
+        : IndexHNSWFlat(), num_levels(1) {}
 
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
+        int d,
+        int M,
+        int num_levels,
+        MetricType metric)
+        : IndexHNSWFlat(d, M, new IndexFlatL2(d)), num_levels(num_levels) {
+    // For now, we only support L2 distance.
+    // Supporting dot product and cosine distance is a trivial addition
+    // left for future work.
+    FAISS_THROW_IF_NOT(metric == METRIC_L2);
+}
+
+// MASTER PLAN
+// 1. Add to the existing FlatCodesDistanceComputer class to support partial dot product search.
+// NB: After discussion, add it at the top and make it throw by default. Only implement it for
+// L2 Flat distance computer. *DONE*
+// 2. Create a IndexHNSWFlatPanorama which inherits from IndexHNSWFlat and sets the HNSW as HNSWPanorama.
+// Also enforce the invariant of L2 distance. *DONE*
+// 3. Create HNSWPanorama which inherits from HNSW, and changes the search (or more specific), and alos contains
+// the number of levels as class parameter Try to only change search from unbounded and bounded.
+// 4. Test bounded & unbounded. Maybe use 1 level as a way to test it. Also check how HNSW is currently tested.
+// Run vanilla HNSW and compare the recall to be within a margin.
+// 5. Demo and bench PCA + HNSW with and without Panorama.
 
 /**************************************************************
  * IndexHNSWPQ implementation

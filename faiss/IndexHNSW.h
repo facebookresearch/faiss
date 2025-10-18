@@ -123,10 +123,34 @@ struct IndexHNSW : Index {
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2);
+    IndexHNSWFlat(int d, int M, IndexFlat* storage);
 };
 
-/** HNSW Flat index with Panorama optimization for accelerated distance
- *  computations.
+/** Panorama implementation of IndexHNSWFlat following
+ * https://www.arxiv.org/pdf/2510.00566.
+ *
+ * Unlike cluster-based Panorama, the vectors have to
+ * be higher dimensional (i.e. typically d > 512) and/or
+ * be able to compress a lot of their energy in the early
+ * dimensions to be effective. This is because HNSW accesses
+ * vectors in a random order, which makes cache misses dominate
+ * the distance computation time.
+ *
+ * The num_levels parameter controls the granularity of progressive distance
+ * refinement, allowing candidates to be eliminated early using partial
+ * distance computations rather than computing full distances.
+ *
+ * NOTE: This version of HNSW handles search slightly differently than the
+ * vanilla HNSW, as it uses partial distance computations with progressive
+ * refinement bounds. Instead of computing full distances immediately for all
+ * candidates, Panorama maintains lower and upper bounds that are incrementally
+ * tightened across refinement levels. Candidates are inserted into the search
+ * beam using approximate distance estimates (LB+UB)/2 and are only fully
+ * evaluated when they survive pruning and enter the result heap. This allows
+ * the algorithm to prune unpromising candidates early using Cauchy-Schwarz
+ * bounds on partial inner products. Hence, recall is not guaranteed to be the
+ * same as vanilla HNSW due to the heterogeneous precision within the search
+ * beam (exact vs. partial distance estimates affecting traversal order).
  */
 struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     IndexHNSWFlatPanorama();
@@ -138,16 +162,6 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
 
     const int num_levels;
 };
-// MASTER PLAN
-// 2. Create a IndexHNSWFlatPanorama which inherits from IndexHNSWFlat and sets
-// the HNSW as HNSWPanorama. Also enforce the invariant of L2 distance.
-// 3. Create HNSWPanorama which inherits from HNSW, and changes the search (or
-// more specific), and alos contains the number of levels as class parameter Try
-// to only change search from unbounded and bounded.
-// 4. Test bounded & unbounded. Maybe use 1 level as a way to test it. Also
-// check how HNSW is currently tested. Run vanilla HNSW and compare the recall
-// to be within a margin.
-// 5. Demo and bench PCA + HNSW with and without Panorama.
 
 /** PQ index topped with with a HNSW structure to access elements
  *  more efficiently.
