@@ -23,6 +23,7 @@ set(FAISS_SRC
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
+  IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
@@ -124,6 +125,7 @@ set(FAISS_HEADERS
   IndexIVFAdditiveQuantizer.h
   IndexIVFIndependentQuantizer.h
   IndexIVFFlat.h
+  IndexIVFFlatPanorama.h
   IndexIVFPQ.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h

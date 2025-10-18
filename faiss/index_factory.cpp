@@ -27,6 +27,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
@@ -330,6 +331,10 @@ IndexIVF* parse_IndexIVF(
     }
     if (match("FlatDedup")) {
         return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
+    }
+    if (match("FlatPanorama([0-9]+)?")) {
+        int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
+        return new IndexIVFFlatPanorama(get_q(), d, nlist, nlevels, mt, own_il);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(

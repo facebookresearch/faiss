@@ -13,6 +13,7 @@
 
 #include <cinttypes>
 #include <cstdio>
+#include <numeric>
 
 #include <faiss/IndexFlat.h>
 
