@@ -660,31 +660,93 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, IndexFlat* storage)
  **************************************************************/
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
-        : IndexHNSWFlat(), num_levels(1) {}
+        : IndexHNSWFlat(), cum_sums(), level_width(0), n_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d,
         int M,
-        int num_levels,
+        int n_levels,
         MetricType metric)
-        : IndexHNSWFlat(d, M, new IndexFlatL2(d)), num_levels(num_levels) {
+        : IndexHNSWFlat(d, M, new IndexFlatL2(d)),
+          cum_sums(),
+          level_width(d + (n_levels - 1) / n_levels),
+          n_levels(n_levels) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
     // left for future work.
     FAISS_THROW_IF_NOT(metric == METRIC_L2);
 }
 
-// MASTER PLAN
-// 1. Add to the existing FlatCodesDistanceComputer class to support partial dot product search.
-// NB: After discussion, add it at the top and make it throw by default. Only implement it for
-// L2 Flat distance computer. *DONE*
-// 2. Create a IndexHNSWFlatPanorama which inherits from IndexHNSWFlat and sets the HNSW as HNSWPanorama.
-// Also enforce the invariant of L2 distance. *DONE*
-// 3. Create HNSWPanorama which inherits from HNSW, and changes the search (or more specific), and alos contains
-// the number of levels as class parameter Try to only change search from unbounded and bounded.
-// 4. Test bounded & unbounded. Maybe use 1 level as a way to test it. Also check how HNSW is currently tested.
-// Run vanilla HNSW and compare the recall to be within a margin.
-// 5. Demo and bench PCA + HNSW with and without Panorama.
+void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
+    // Store the current ntotal before adding new vectors.
+    idx_t n0 = ntotal;
+
+    cum_sums.resize((ntotal + n) * (n_levels + 1));
+    std::vector<float> suffix_sums(d + 1);
+
+    for (size_t idx = 0; idx < n; idx++) {
+        const float* vector = x + idx * d;
+
+        // Compute suffix sums of squared values.
+        suffix_sums[d] = 0.0f;
+        for (int j = d - 1; j >= 0; j--) {
+            float squared_val = vector[j] * vector[j];
+            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+        }
+
+        for (size_t level = 0; level < n_levels; level++) {
+            size_t start_idx = level * level_width;
+            cum_sums[(n0 + idx) * (n_levels + 1) + level] =
+                    (start_idx < d) ? sqrt(suffix_sums[start_idx]) : 0.0f;
+        }
+
+        // Last level sum is always 0.
+        cum_sums[(n0 + idx) * (n_levels + 1) + n_levels] = 0.0f;
+    }
+
+    IndexHNSWFlat::add(n, x);
+}
+
+void IndexHNSWFlatPanorama::reset() {
+    cum_sums.clear();
+    IndexHNSWFlat::reset();
+}
+
+size_t IndexHNSWFlatPanorama::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (!sel.is_member(i)) {
+            if (i > j) {
+                memmove(&cum_sums[j * (n_levels + 1)],
+                        &cum_sums[i * (n_levels + 1)],
+                        (n_levels + 1) * sizeof(float));
+            }
+            j++;
+        }
+    }
+
+    idx_t n_removed = IndexHNSWFlat::remove_ids(sel);
+    if (n_removed > 0) {
+        // `ntotal` is updated by the base class.
+        cum_sums.resize(ntotal * (n_levels + 1));
+    }
+
+    return n_removed;
+}
+
+void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
+    std::vector<float> new_cum_sums(ntotal * (n_levels + 1));
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        idx_t src = perm[i];
+        memcpy(&new_cum_sums[i * (n_levels + 1)],
+               &cum_sums[src * (n_levels + 1)],
+               (n_levels + 1) * sizeof(float));
+    }
+
+    std::swap(cum_sums, new_cum_sums);
+    IndexHNSWFlat::permute_entries(perm);
+}
 
 /**************************************************************
  * IndexHNSWPQ implementation

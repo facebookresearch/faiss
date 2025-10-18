@@ -111,7 +111,7 @@ struct IndexHNSW : Index {
 
     void link_singletons();
 
-    void permute_entries(const idx_t* perm);
+    virtual void permute_entries(const idx_t* perm);
 
     DistanceComputer* get_distance_computer() const override;
 };
@@ -160,7 +160,14 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
             int num_levels,
             MetricType metric = METRIC_L2);
 
-    const int num_levels;
+    void add(idx_t n, const float* x) override;
+    void reset() override;
+    size_t remove_ids(const IDSelector& sel) override;
+    void permute_entries(const idx_t* perm) override;
+
+    std::vector<float> cum_sums;
+    const size_t level_width;
+    const size_t n_levels;
 };
 
 /** PQ index topped with with a HNSW structure to access elements
