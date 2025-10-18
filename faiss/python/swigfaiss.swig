@@ -102,6 +102,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 
+#include <faiss/impl/PanoramaStats.h>
+
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
@@ -504,6 +506,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
 %include  <faiss/impl/CodePacker.h>
+%include  <faiss/impl/PanoramaStats.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
