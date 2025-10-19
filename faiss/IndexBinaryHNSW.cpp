@@ -227,7 +227,7 @@ void IndexBinaryHNSW::search(
         for (idx_t i = 0; i < n; i++) {
             res.begin(i);
             dis->set_query((float*)(x + i * code_size));
-            hnsw.search(*dis, res, vt);
+            hnsw.search(*dis, nullptr, res, vt);
             res.end();
         }
     }

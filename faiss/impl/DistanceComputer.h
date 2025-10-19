@@ -150,7 +150,6 @@ struct FlatCodesDistanceComputer : DistanceComputer {
     /// For more details on partial (or chunked) dot product computations and
     /// the performance trade-offs involved, refer to the Panorama paper:
     /// https://arxiv.org/pdf/2510.00566
-
     virtual float partial_dot_product(
             const idx_t i,
             const uint32_t offset,

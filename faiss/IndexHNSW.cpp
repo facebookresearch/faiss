@@ -276,7 +276,7 @@ void hnsw_search(
                 res.begin(i);
                 dis->set_query(x + i * index->d);
 
-                HNSWStats stats = hnsw.search(*dis, res, vt, params);
+                HNSWStats stats = hnsw.search(*dis, index, res, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;
@@ -675,6 +675,9 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
     // Supporting dot product and cosine distance is a trivial addition
     // left for future work.
     FAISS_THROW_IF_NOT(metric == METRIC_L2);
+    
+    // Enable Panorama search mode.
+    hnsw.is_panorama = true;
 }
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
@@ -746,6 +749,10 @@ void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
 
     std::swap(cum_sums, new_cum_sums);
     IndexHNSWFlat::permute_entries(perm);
+}
+
+const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
+    return cum_sums.data() + i * (n_levels + 1);
 }
 
 /**************************************************************

@@ -10,6 +10,7 @@
 #include <queue>
 #include <unordered_set>
 #include <vector>
+#include "faiss/impl/DistanceComputer.h"
 
 #include <omp.h>
 
@@ -21,6 +22,10 @@
 #include <faiss/utils/random.h>
 
 namespace faiss {
+
+// Forward declarations to avoid circular dependency.
+struct IndexHNSW;
+struct IndexHNSWFlatPanorama;
 
 /** Implementation of the Hierarchical Navigable Small World
  * datastructure.
@@ -146,6 +151,9 @@ struct HNSW {
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
+    /// use Panorama progressive pruning in search
+    bool is_panorama = false;
+
     // methods that initialize the tree sizes
 
     /// initialize the assign_probas and cum_nneighbor_per_level to
@@ -199,6 +207,7 @@ struct HNSW {
     /// search interface for 1 point, single thread
     HNSWStats search(
             DistanceComputer& qdis,
+            const IndexHNSW* index,
             ResultHandler<C>& res,
             VisitedTable& vt,
             const SearchParameters* params = nullptr) const;
@@ -259,6 +268,22 @@ FAISS_API extern HNSWStats hnsw_stats;
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
+        ResultHandler<HNSW::C>& res,
+        HNSW::MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in = 0,
+        const SearchParameters* params = nullptr);
+
+/// Equivalent to `search_from_candidates`, but applies pruning with progressive
+/// refinement bounds.
+/// This is used in `IndexHNSWFlatPanorama` to improve the search performance
+/// for higher dimensional vectors.
+int search_from_candidates_panorama(
+        const HNSW& hnsw,
+        const IndexHNSWFlatPanorama& index,
+        FlatCodesDistanceComputer& qdis,
         ResultHandler<HNSW::C>& res,
         HNSW::MinimaxHeap& candidates,
         VisitedTable& vt,

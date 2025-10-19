@@ -165,6 +165,8 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     size_t remove_ids(const IDSelector& sel) override;
     void permute_entries(const idx_t* perm) override;
 
+    const float* get_cum_sum(idx_t i) const;
+    
     std::vector<float> cum_sums;
     const size_t level_width;
     const size_t n_levels;

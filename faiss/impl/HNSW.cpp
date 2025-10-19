@@ -9,6 +9,8 @@
 
 #include <cstddef>
 
+#include <faiss/IndexHNSW.h>
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/IDSelector.h>
@@ -735,6 +737,314 @@ int search_from_candidates(
     return nres;
 }
 
+int search_from_candidates_panorama(
+        const HNSW& hnsw,
+        const IndexHNSWFlatPanorama& index,
+        FlatCodesDistanceComputer& qdis,
+        ResultHandler<C>& res,
+        MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in,
+        const SearchParameters* params) {
+    int nres = nres_in;
+    int ndis = 0;
+
+    bool do_dis_check = hnsw.check_relative_distance;
+    int efSearch = hnsw.efSearch;
+    const IDSelector* sel = nullptr;
+    if (params) {
+        if (const SearchParametersHNSW* hnsw_params =
+                    dynamic_cast<const SearchParametersHNSW*>(params)) {
+            do_dis_check = hnsw_params->check_relative_distance;
+            efSearch = hnsw_params->efSearch;
+        }
+        sel = params->sel;
+    }
+
+    // Get PANORAMA constants from index
+    const int NUM_PANORAMA_LEVELS = index.n_levels;
+    const int LEVEL_SIZE = index.level_width;
+    const uint32_t DIM = index.d; // assuming d is padded dimension
+
+    // Compute query cumulative norms
+    std::vector<float> query_cum_norms(NUM_PANORAMA_LEVELS + 1);
+    std::vector<float> suffixSums(DIM + 1);
+    suffixSums[DIM] = 0.0f;
+
+    // TODO(Alexis): How to get query????
+    // Probably add a getter in distance computer!
+    // Virtual or everwhere? dilemna...
+    float* query = nullptr; //qdis.get_query();
+
+    for (int i = DIM - 1; i >= 0; i--) {
+        float squaredVal = query[i] * query[i];
+        suffixSums[i] = suffixSums[i + 1] + squaredVal;
+    }
+
+    // Extract level sums and take square root
+    for (int level_idx = 0; level_idx < NUM_PANORAMA_LEVELS; level_idx++) {
+        int startIdx = level_idx * LEVEL_SIZE;
+        if (startIdx < DIM) {
+            query_cum_norms[level_idx] = sqrt(suffixSums[startIdx]);
+        } else {
+            query_cum_norms[level_idx] = 0.0f;
+        }
+    }
+    query_cum_norms[NUM_PANORAMA_LEVELS] = 0.0f;
+
+    float query_norm_sq = query_cum_norms[0] * query_cum_norms[0];
+
+    C::T threshold = res.threshold;
+    for (int i = 0; i < candidates.size(); i++) {
+        idx_t v1 = candidates.ids[i];
+        float d = candidates.dis[i];
+        FAISS_ASSERT(v1 >= 0);
+        if (!sel || sel->is_member(v1)) {
+            if (d < threshold) {
+                if (res.add_result(d, v1)) {
+                    threshold = res.threshold;
+                }
+            }
+        }
+        prefetch_L2(vt.visited.data() + v1);
+        vt.set(v1);
+    }
+
+    int nstep = 0;
+
+    // Allocate arrays based on the number of neighbors at level 0
+    size_t M = hnsw.nb_neighbors(0);
+    std::vector<idx_t> index_array(M * 2);
+    std::vector<float> exact_distances(M * 2);
+
+    std::vector<idx_t> partial_index_array(M * 2);
+    std::vector<float> partial_distances(M * 2);
+
+    float num_levels_scanned = 0;
+    int num_points = 0;
+    while (candidates.size() > 0) {
+        float d0 = 0;
+        int v0 = candidates.pop_min(&d0);
+
+        if (do_dis_check) {
+            // tricky stopping condition: there are more that ef
+            // distances that are processed already that are smaller
+            // than d0
+
+            int n_dis_below = candidates.count_below(d0);
+            if (n_dis_below >= efSearch) {
+                break;
+            }
+        }
+
+        size_t begin, end;
+        hnsw.neighbor_range(v0, level, &begin, &end);
+
+        size_t initial_size = 0;
+
+        for (size_t j = begin; j < end; j++) {
+            int v1 = hnsw.neighbors[j];
+            if (v1 < 0)
+                break;
+
+            const float* cum_sums_v1 = index.get_cum_sum(v1);
+            index_array[initial_size] = v1;
+            exact_distances[initial_size] =
+                    query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
+            initial_size += !vt.get(v1);
+
+            vt.set(v1);
+        }
+
+        if (initial_size == 0) {
+            nstep++;
+            if (!do_dis_check && nstep > efSearch) {
+                break;
+            }
+            continue;
+        }
+
+        // PANORAMA progressive pruning
+        float threshold = res.threshold;
+        float prune_threshold = threshold;
+        int batch_size = initial_size;
+        int curr_level = 0;
+
+        // Progressive level-by-level pruning
+        uint32_t candidate_to_push = 0;
+        while (curr_level < NUM_PANORAMA_LEVELS && batch_size > 0) {
+            float query_cum_norm = query_cum_norms[curr_level + 1];
+            uint32_t start_dim = curr_level * LEVEL_SIZE;
+            uint32_t end_dim = (curr_level + 1) * LEVEL_SIZE;
+
+            uint32_t next_batch_size = 0;
+
+            size_t i = 0;
+            for (; i + 3 < batch_size; i += 4) {
+                idx_t storage_idx_0 = index_array[i];
+                idx_t storage_idx_1 = index_array[i + 1];
+                idx_t storage_idx_2 = index_array[i + 2];
+                idx_t storage_idx_3 = index_array[i + 3];
+
+                // Compute dot product for this level
+                float dot_product_0 = 0.0f;
+                float dot_product_1 = 0.0f;
+                float dot_product_2 = 0.0f;
+                float dot_product_3 = 0.0f;
+
+                float dp[4];
+                qdis.partial_dot_product_batch_4(
+                        storage_idx_0,
+                        storage_idx_1,
+                        storage_idx_2,
+                        storage_idx_3,
+                        dp[0],
+                        dp[1],
+                        dp[2],
+                        dp[3],
+                        start_dim,
+                        std::min(end_dim, DIM) - start_dim);
+
+                float new_exact_0 = exact_distances[i + 0] - 2 * dp[0];
+                float new_exact_1 = exact_distances[i + 1] - 2 * dp[1];
+                float new_exact_2 = exact_distances[i + 2] - 2 * dp[2];
+                float new_exact_3 = exact_distances[i + 3] - 2 * dp[3];
+
+                const float cum_sums_point_0 =
+                        index.get_cum_sum(storage_idx_0)[curr_level + 1];
+                const float cum_sums_point_1 =
+                        index.get_cum_sum(storage_idx_1)[curr_level + 1];
+                const float cum_sums_point_2 =
+                        index.get_cum_sum(storage_idx_2)[curr_level + 1];
+                const float cum_sums_point_3 =
+                        index.get_cum_sum(storage_idx_3)[curr_level + 1];
+
+                float cauchy_schwarz_bound_0 =
+                        2.0f * cum_sums_point_0 * query_cum_norm;
+                float cauchy_schwarz_bound_1 =
+                        2.0f * cum_sums_point_1 * query_cum_norm;
+                float cauchy_schwarz_bound_2 =
+                        2.0f * cum_sums_point_2 * query_cum_norm;
+                float cauchy_schwarz_bound_3 =
+                        2.0f * cum_sums_point_3 * query_cum_norm;
+
+                float lower_bound_0 = new_exact_0 - cauchy_schwarz_bound_0;
+                float lower_bound_1 = new_exact_1 - cauchy_schwarz_bound_1;
+                float lower_bound_2 = new_exact_2 - cauchy_schwarz_bound_2;
+                float lower_bound_3 = new_exact_3 - cauchy_schwarz_bound_3;
+
+                uint32_t cond0 = lower_bound_0 <= prune_threshold;
+                uint32_t cond1 = lower_bound_1 <= prune_threshold;
+                uint32_t cond2 = lower_bound_2 <= prune_threshold;
+                uint32_t cond3 = lower_bound_3 <= prune_threshold;
+
+                uint32_t not_cond0 = !cond0;
+                uint32_t not_cond1 = !cond1;
+                uint32_t not_cond2 = !cond2;
+                uint32_t not_cond3 = !cond3;
+
+                partial_distances[candidate_to_push] = new_exact_0;
+                partial_index_array[candidate_to_push] = storage_idx_0;
+
+                exact_distances[next_batch_size] = new_exact_0;
+                index_array[next_batch_size] = storage_idx_0;
+
+                partial_distances[candidate_to_push + not_cond0] = new_exact_1;
+                partial_index_array[candidate_to_push + not_cond0] =
+                        storage_idx_1;
+
+                exact_distances[next_batch_size + cond0] = new_exact_1;
+                index_array[next_batch_size + cond0] = storage_idx_1;
+
+                partial_distances[candidate_to_push + not_cond0 + not_cond1] =
+                        new_exact_2;
+                partial_index_array[candidate_to_push + not_cond0 + not_cond1] =
+                        storage_idx_2;
+
+                exact_distances[next_batch_size + cond0 + cond1] = new_exact_2;
+                index_array[next_batch_size + cond0 + cond1] = storage_idx_2;
+
+                partial_distances
+                        [candidate_to_push + not_cond0 + not_cond1 +
+                         not_cond2] = new_exact_3;
+                partial_index_array
+                        [candidate_to_push + not_cond0 + not_cond1 +
+                         not_cond2] = storage_idx_3;
+
+                exact_distances[next_batch_size + cond0 + cond1 + cond2] =
+                        new_exact_3;
+                index_array[next_batch_size + cond0 + cond1 + cond2] =
+                        storage_idx_3;
+
+                candidate_to_push +=
+                        not_cond0 + not_cond1 + not_cond2 + not_cond3;
+                next_batch_size += cond0 + cond1 + cond2 + cond3;
+            }
+
+            for (; i < batch_size; i++) {
+                idx_t storage_idx = index_array[i];
+                float dot_product = qdis.partial_dot_product(
+                        storage_idx,
+                        start_dim,
+                        std::min(end_dim, DIM) - start_dim);
+                float new_exact = exact_distances[i] - 2.0f * dot_product;
+
+                float cum_sum = index.get_cum_sum(storage_idx)[curr_level + 1];
+                float cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
+                float lower_bound = new_exact - cauchy_schwarz_bound;
+
+                uint32_t cond = lower_bound <= prune_threshold;
+                uint32_t not_cond = !cond;
+
+                partial_distances[candidate_to_push] = new_exact;
+                partial_index_array[candidate_to_push] = storage_idx;
+
+                exact_distances[next_batch_size] = new_exact;
+                index_array[next_batch_size] = storage_idx;
+
+                candidate_to_push += not_cond;
+                next_batch_size += cond;
+            }
+
+            batch_size = next_batch_size;
+            curr_level++;
+        }
+
+        // Add surviving candidates to heap
+        for (size_t i = 0; i < batch_size; i++) {
+            idx_t storage_idx = index_array[i];
+            float final_dist = exact_distances[i];
+
+            res.add_result(final_dist, storage_idx);
+            candidates.push(storage_idx, final_dist);
+            ndis += 1; // Count the distance computation
+        }
+
+        // Add partial distances to candidates
+        for (size_t i = 0; i < candidate_to_push; i++) {
+            candidates.push(partial_index_array[i], partial_distances[i]);
+        }
+
+        nstep++;
+        if (!do_dis_check && nstep > efSearch) {
+            break;
+        }
+    }
+
+    if (level == 0) {
+        stats.n1++;
+        if (candidates.size() == 0) {
+            stats.n2++;
+        }
+        stats.ndis += ndis;
+        stats.nhops += nstep;
+    }
+
+    return nres;
+}
+
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         const HNSW& hnsw,
         const Node& node,
@@ -936,6 +1246,7 @@ int extract_k_from_ResultHandler(ResultHandler<C>& res) {
 
 HNSWStats HNSW::search(
         DistanceComputer& qdis,
+        const IndexHNSW* index,
         ResultHandler<C>& res,
         VisitedTable& vt,
         const SearchParameters* params) const {
@@ -971,8 +1282,34 @@ HNSWStats HNSW::search(
 
         candidates.push(nearest, d_nearest);
 
-        search_from_candidates(
-                *this, qdis, res, candidates, vt, stats, 0, 0, params);
+        if (is_panorama) {
+            FAISS_THROW_IF_NOT_MSG(
+                    index,
+                    "Panorama search requires an IndexHNSW pointer");
+            const auto* panorama_index =
+                    dynamic_cast<const IndexHNSWFlatPanorama*>(index);
+            auto* flat_codes_qdis =
+                    dynamic_cast<FlatCodesDistanceComputer*>(&qdis);
+            FAISS_THROW_IF_NOT_MSG(
+                    panorama_index, "Index must be a IndexHNSWFlatPanorama");
+            FAISS_THROW_IF_NOT_MSG(
+                    flat_codes_qdis,
+                    "DistanceComputer must be a FlatCodesDistanceComputer");
+            search_from_candidates_panorama(
+                    *this,
+                    *panorama_index,
+                    *flat_codes_qdis,
+                    res,
+                    candidates,
+                    vt,
+                    stats,
+                    0,
+                    0,
+                    params);
+        } else {
+            search_from_candidates(
+                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
+        }
     } else {
         std::priority_queue<Node> top_candidates =
                 search_from_candidate_unbounded(
