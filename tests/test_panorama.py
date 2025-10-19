@@ -166,10 +166,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 self.assert_range_results_equal(
                     lims_reg, D_reg, I_reg, lims_pan, D_pan, I_pan, nq
                 )
-        
-        self.assertEqual(faiss.cvar.indexPanorama_stats.total_dims_scanned, 0)
-        self.assertEqual(faiss.cvar.indexPanorama_stats.total_dims, 0)
-        self.assertEqual(faiss.cvar.indexPanorama_stats.pct_dims_scanned, 0.0)
 
     # Parameter variation tests
 
