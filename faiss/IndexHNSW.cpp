@@ -450,9 +450,7 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        {
-            hnsw_stats.combine(search_stats);
-        }
+        { hnsw_stats.combine(search_stats); }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
