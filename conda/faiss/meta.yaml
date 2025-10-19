@@ -51,6 +51,7 @@ outputs:
         - mkl-devel =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
       host:
         - python {{ python }}
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
@@ -61,7 +62,8 @@ outputs:
         - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.30 # [not x86_64]
+        - openblas =0.3.30  # [not x86_64]
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
       run:
         - python {{ python }}
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
@@ -72,7 +74,8 @@ outputs:
         - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.30 # [not x86_64]
+        - openblas =0.3.30  # [not x86_64]
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
     test:
       requires:
         - conda-build =25.1.2
@@ -107,6 +110,7 @@ outputs:
         - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
       host:
         - python {{ python }}
         - numpy >=2.0,<3.0
@@ -120,6 +124,7 @@ outputs:
         - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
       run:
         - python {{ python }}
         - numpy >=2.0,<3.0
@@ -133,6 +138,7 @@ outputs:
         - mkl =2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
+        - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
     test:
       requires:
         - numpy >=2.0,<3.0

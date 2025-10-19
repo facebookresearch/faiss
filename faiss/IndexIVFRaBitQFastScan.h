@@ -138,13 +138,17 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             AlignedTable<float>& biases,
             const FastScanDistancePostProcessing& context) const override;
 
-    void search(
+    void search_preassigned(
             idx_t n,
             const float* x,
             idx_t k,
+            const idx_t* assign,
+            const float* centroid_dis,
             float* distances,
             idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
+            bool store_pairs,
+            const IVFSearchParameters* params = nullptr,
+            IndexIVFStats* stats = nullptr) const override;
 
     /// Override to create RaBitQ-specific handlers
     SIMDResultHandlerToFloat* make_knn_handler(

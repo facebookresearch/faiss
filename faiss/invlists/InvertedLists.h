@@ -276,6 +276,68 @@ struct ArrayInvertedLists : InvertedLists {
     ~ArrayInvertedLists() override;
 };
 
+/// Level-oriented storage as defined in the IVFFlat section of Panorama
+/// (https://www.arxiv.org/pdf/2510.00566).
+struct ArrayInvertedListsPanorama : ArrayInvertedLists {
+    static constexpr size_t kBatchSize = 128;
+    std::vector<MaybeOwnedVector<float>> cum_sums;
+    const size_t n_levels;
+    const size_t level_width; // in code units
+
+    ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
+
+    const float* get_cum_sums(size_t list_no) const;
+
+    size_t add_entries(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void update_entries(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void resize(size_t list_no, size_t new_size) override;
+
+    /// Panorama's layout make it impractical to support iterators as defined
+    /// by Faiss (i.e. `InvertedListsIterator` API). The iterator would require
+    /// to allocate and reassemble the vector at each call.
+    /// Hence, we override this method to throw an error, this effectively
+    /// disables the `iterate_codes` and `iterate_codes_range` methods.
+    InvertedListsIterator* get_iterator(
+            size_t list_no,
+            void* inverted_list_context = nullptr) const override;
+
+    /// Reconstructs a single code from level-oriented storage to flat format.
+    const uint8_t* get_single_code(size_t list_no, size_t offset)
+            const override;
+
+    /// Frees codes returned by `get_single_code`.
+    void release_codes(size_t list_no, const uint8_t* codes) const override;
+
+   private:
+    /// Helper method to copy codes into level-oriented batch layout at a given
+    /// offset in the list.
+    void copy_codes_to_level_layout(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code);
+
+    /// Helper method to compute the cumulative sums of the codes.
+    /// The cumsums also follow the level-oriented batch layout to minimize the
+    /// number of random memory accesses.
+    void compute_cumulative_sums(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code);
+};
+
 /*****************************************************************
  * Meta-inverted lists
  *

@@ -1298,6 +1298,54 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
     def test_search_implem_14(self):
         self.do_test_search_implementation(impl=14)
 
+    def test_search_with_parameters(self):
+        """Test IndexIVFRaBitQFastScan with search_with_parameters
+
+        This tests the code path through search_with_parameters which
+        performs explicit coarse quantization before calling
+        search_preassigned.
+        """
+        nlist = 64
+        nprobe = 8
+        nq = 500
+        ds = datasets.SyntheticDataset(128, 2048, 2048, nq)
+        k = 10
+
+        d = ds.d
+        xb = ds.get_database()
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, faiss.METRIC_L2, 32
+        )
+        index.qb = 8
+        index.centered = False
+        index.nprobe = nprobe
+
+        index.train(xt)
+        index.add(xb)
+
+        params = faiss.IVFRaBitQFastScanSearchParameters()
+        params.nprobe = nprobe
+        params.qb = 8
+        params.centered = False
+
+        distances, labels = faiss.search_with_parameters(index, xq, k, params)
+
+        self.assertEqual(distances.shape, (nq, k))
+        self.assertEqual(labels.shape, (nq, k))
+        self.assertGreater(np.sum(labels >= 0), 0)
+
+        index_flat = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index_flat.add(xb)
+        _, gt_labels = index_flat.search(xq, k)
+        recall = faiss.eval_intersection(labels, gt_labels) / (nq * k)
+        # With nlist=64 and nprobe=8, recall should be reasonable
+        self.assertGreater(recall, 0.4)
+
 
 class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
     def do_test_encode_decode(self, d, metric):
