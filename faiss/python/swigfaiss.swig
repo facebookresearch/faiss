@@ -87,7 +87,6 @@ typedef uint64_t size_t;
 #include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/mapped_io.h>
 #include <faiss/impl/zerocopy_io.h>
-#include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -539,7 +538,6 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
-%include  <faiss/impl/PanoramaStats.h>
 %include  <faiss/IndexIVFFlat.h>
 %include  <faiss/IndexIVFFlatPanorama.h>
 
