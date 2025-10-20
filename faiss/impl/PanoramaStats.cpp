@@ -14,7 +14,8 @@
 namespace faiss {
 
 void PanoramaStats::reset() {
-    memset((void*)this, 0, sizeof(*this));
+    total_dims_scanned = 0;
+    total_dims = 0;
     ratio_dims_scanned = 1.0f;
 }
 
