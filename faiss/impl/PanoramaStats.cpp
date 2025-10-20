@@ -22,7 +22,8 @@ void PanoramaStats::add(const PanoramaStats& other) {
     total_dims_scanned += other.total_dims_scanned;
     total_dims += other.total_dims;
     if (total_dims > 0) {
-        ratio_dims_scanned = static_cast<float>(total_dims_scanned) / total_dims;
+        ratio_dims_scanned =
+                static_cast<float>(total_dims_scanned) / total_dims;
     } else {
         ratio_dims_scanned = 1.0f;
     }
