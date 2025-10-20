@@ -38,10 +38,9 @@ def get_ivf_index(index):
     return index
 
 
-def eval_recall(index, name, nprobe_val):
-    ivf_index = get_ivf_index(index)
+def eval_recall(index, nprobe_val):
     t0 = time.time()
-    _, I = ivf_index.search(xq, k=k)
+    _, I = index.search(xq, k=k)
     t = time.time() - t0
     speed = t * 1000 / nq
     qps = 1000 / speed
@@ -72,7 +71,7 @@ def eval_and_plot(name, plot=True):
     print(f"======{name}")
     for nprobe in 1, 2, 4, 8, 16, 32, 64:
         ivf_index.nprobe = nprobe
-        recall, qps = eval_recall(index, name, nprobe)
+        recall, qps = eval_recall(index, nprobe)
         data.append((recall, qps))
 
     if plot:
