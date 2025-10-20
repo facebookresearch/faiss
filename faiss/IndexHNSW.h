@@ -182,6 +182,7 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
             const SearchParameters* params = nullptr) const override;
 
     mutable std::vector<float> query_cum_sums;
+    mutable float query_norm_sq;
     std::vector<float> cum_sums;
     const size_t level_width;
     const size_t n_levels;

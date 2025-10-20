@@ -686,6 +686,7 @@ void compute_cum_sums(
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
         : IndexHNSWFlat(),
           query_cum_sums(),
+          query_norm_sq(0.0f),
           cum_sums(),
           level_width(0),
           n_levels(0) {}
@@ -697,6 +698,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         MetricType metric)
         : IndexHNSWFlat(d, M, new IndexFlatL2(d)),
           query_cum_sums(n_levels + 1),
+          query_norm_sq(0.0f),
           cum_sums(),
           level_width(d + (n_levels - 1) / n_levels),
           n_levels(n_levels) {
@@ -781,6 +783,7 @@ void IndexHNSWFlatPanorama::search(
         idx_t* labels,
         const SearchParameters* params) const {
     compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
     IndexHNSWFlat::search(n, x, k, distances, labels, params);
 }
 
@@ -791,6 +794,7 @@ void IndexHNSWFlatPanorama::range_search(
         RangeSearchResult* result,
         const SearchParameters* params) const {
     compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
     IndexHNSWFlat::range_search(n, x, radius, result, params);
 }
 

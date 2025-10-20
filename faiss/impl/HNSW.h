@@ -204,7 +204,12 @@ struct HNSW {
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
-    /// search interface for 1 point, single thread
+    /// Search interface for 1 point, single thread
+    ///
+    /// NOTE: We pass a reference to the index itself to allow for additional
+    /// state information to be passed (used for Panorama progressive pruning).
+    /// The alternative would be to override both HNSW::search and
+    /// HNSWIndex::search, which would be a nuisance of code duplication.
     HNSWStats search(
             DistanceComputer& qdis,
             const IndexHNSW* index,
