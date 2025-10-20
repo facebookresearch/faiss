@@ -198,6 +198,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFRaBitQ.h>
 
 #ifdef FAISS_ENABLE_SVS
+#include <svs/faiss/exports.h>
 #include <svs/faiss/IndexSVSVamana.h>
 #include <svs/faiss/IndexSVSFlat.h>
 #include <svs/faiss/IndexSVSVamanaLVQ.h>
@@ -651,8 +652,10 @@ struct faiss::simd16uint16 {};
 %ignore faiss::svs_io::WriterStreambuf;
 %ignore faiss::svs_io::SVSTempDirectory;
 
+%include  <svs/faiss/exports.h>
 %include  <svs/faiss/IndexSVSVamana.h>
 %include  <svs/faiss/IndexSVSFlat.h>
+%include  <svs/faiss/IndexSVSFlatImpl.h>
 %include  <svs/faiss/IndexSVSVamanaLVQ.h>
 %include  <svs/faiss/IndexSVSVamanaLeanVec.h>
 #endif // FAISS_ENABLE_SVS
