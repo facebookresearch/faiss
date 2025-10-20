@@ -739,8 +739,8 @@ int search_from_candidates(
 
 int search_from_candidates_panorama(
         const HNSW& hnsw,
-        const IndexHNSWFlatPanorama& index,
-        FlatCodesDistanceComputer& qdis,
+        const IndexHNSW* index,
+        DistanceComputer& qdis,
         ResultHandler<C>& res,
         MinimaxHeap& candidates,
         VisitedTable& vt,
@@ -748,6 +748,15 @@ int search_from_candidates_panorama(
         int level,
         int nres_in,
         const SearchParameters* params) {
+    const auto* panorama_index =
+            dynamic_cast<const IndexHNSWFlatPanorama*>(index);
+    FAISS_THROW_IF_NOT_MSG(
+            panorama_index, "Index must be a IndexHNSWFlatPanorama");
+    auto* flat_codes_qdis = dynamic_cast<FlatCodesDistanceComputer*>(&qdis);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_codes_qdis,
+            "DistanceComputer must be a FlatCodesDistanceComputer");
+
     int nres = nres_in;
     int ndis = 0;
 
@@ -763,38 +772,11 @@ int search_from_candidates_panorama(
         sel = params->sel;
     }
 
-    // Get PANORAMA constants from index
-    const int NUM_PANORAMA_LEVELS = index.n_levels;
-    const int LEVEL_SIZE = index.level_width;
-    const uint32_t DIM = index.d; // assuming d is padded dimension
-
-    // Compute query cumulative norms
-    std::vector<float> query_cum_norms(NUM_PANORAMA_LEVELS + 1);
-    std::vector<float> suffixSums(DIM + 1);
-    suffixSums[DIM] = 0.0f;
-
-    // TODO(Alexis): How to get query????
-    // Probably add a getter in distance computer!
-    // Virtual or everwhere? dilemna...
-    float* query = nullptr; //qdis.get_query();
-
-    for (int i = DIM - 1; i >= 0; i--) {
-        float squaredVal = query[i] * query[i];
-        suffixSums[i] = suffixSums[i + 1] + squaredVal;
-    }
-
-    // Extract level sums and take square root
-    for (int level_idx = 0; level_idx < NUM_PANORAMA_LEVELS; level_idx++) {
-        int startIdx = level_idx * LEVEL_SIZE;
-        if (startIdx < DIM) {
-            query_cum_norms[level_idx] = sqrt(suffixSums[startIdx]);
-        } else {
-            query_cum_norms[level_idx] = 0.0f;
-        }
-    }
-    query_cum_norms[NUM_PANORAMA_LEVELS] = 0.0f;
-
-    float query_norm_sq = query_cum_norms[0] * query_cum_norms[0];
+    const size_t n_levels = panorama_index->n_levels;
+    const size_t level_width = panorama_index->level_width;
+    const size_t d = panorama_index->d;
+    const std::vector<float>& query_cum_norms = panorama_index->query_cum_sums;
+    const float query_norm_sq = query_cum_norms[0] * query_cum_norms[0];
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -822,14 +804,12 @@ int search_from_candidates_panorama(
     std::vector<idx_t> partial_index_array(M * 2);
     std::vector<float> partial_distances(M * 2);
 
-    float num_levels_scanned = 0;
-    int num_points = 0;
     while (candidates.size() > 0) {
         float d0 = 0;
         int v0 = candidates.pop_min(&d0);
 
         if (do_dis_check) {
-            // tricky stopping condition: there are more that ef
+            // tricky stopping condition: there are more than ef
             // distances that are processed already that are smaller
             // than d0
 
@@ -849,7 +829,7 @@ int search_from_candidates_panorama(
             if (v1 < 0)
                 break;
 
-            const float* cum_sums_v1 = index.get_cum_sum(v1);
+            const float* cum_sums_v1 = panorama_index->get_cum_sum(v1);
             index_array[initial_size] = v1;
             exact_distances[initial_size] =
                     query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
@@ -870,14 +850,14 @@ int search_from_candidates_panorama(
         float threshold = res.threshold;
         float prune_threshold = threshold;
         int batch_size = initial_size;
-        int curr_level = 0;
+        size_t curr_level = 0;
 
         // Progressive level-by-level pruning
         uint32_t candidate_to_push = 0;
-        while (curr_level < NUM_PANORAMA_LEVELS && batch_size > 0) {
+        while (curr_level < n_levels && batch_size > 0) {
             float query_cum_norm = query_cum_norms[curr_level + 1];
-            uint32_t start_dim = curr_level * LEVEL_SIZE;
-            uint32_t end_dim = (curr_level + 1) * LEVEL_SIZE;
+            size_t start_dim = curr_level * level_width;
+            size_t end_dim = (curr_level + 1) * level_width;
 
             uint32_t next_batch_size = 0;
 
@@ -895,7 +875,7 @@ int search_from_candidates_panorama(
                 float dot_product_3 = 0.0f;
 
                 float dp[4];
-                qdis.partial_dot_product_batch_4(
+                flat_codes_qdis->partial_dot_product_batch_4(
                         storage_idx_0,
                         storage_idx_1,
                         storage_idx_2,
@@ -905,21 +885,21 @@ int search_from_candidates_panorama(
                         dp[2],
                         dp[3],
                         start_dim,
-                        std::min(end_dim, DIM) - start_dim);
+                        std::min(end_dim, d) - start_dim);
 
                 float new_exact_0 = exact_distances[i + 0] - 2 * dp[0];
                 float new_exact_1 = exact_distances[i + 1] - 2 * dp[1];
                 float new_exact_2 = exact_distances[i + 2] - 2 * dp[2];
                 float new_exact_3 = exact_distances[i + 3] - 2 * dp[3];
 
-                const float cum_sums_point_0 =
-                        index.get_cum_sum(storage_idx_0)[curr_level + 1];
-                const float cum_sums_point_1 =
-                        index.get_cum_sum(storage_idx_1)[curr_level + 1];
-                const float cum_sums_point_2 =
-                        index.get_cum_sum(storage_idx_2)[curr_level + 1];
-                const float cum_sums_point_3 =
-                        index.get_cum_sum(storage_idx_3)[curr_level + 1];
+                const float cum_sums_point_0 = panorama_index->get_cum_sum(
+                        storage_idx_0)[curr_level + 1];
+                const float cum_sums_point_1 = panorama_index->get_cum_sum(
+                        storage_idx_1)[curr_level + 1];
+                const float cum_sums_point_2 = panorama_index->get_cum_sum(
+                        storage_idx_2)[curr_level + 1];
+                const float cum_sums_point_3 = panorama_index->get_cum_sum(
+                        storage_idx_3)[curr_level + 1];
 
                 float cauchy_schwarz_bound_0 =
                         2.0f * cum_sums_point_0 * query_cum_norm;
@@ -985,13 +965,14 @@ int search_from_candidates_panorama(
 
             for (; i < batch_size; i++) {
                 idx_t storage_idx = index_array[i];
-                float dot_product = qdis.partial_dot_product(
+                float dot_product = flat_codes_qdis->partial_dot_product(
                         storage_idx,
                         start_dim,
-                        std::min(end_dim, DIM) - start_dim);
+                        std::min(end_dim, d) - start_dim);
                 float new_exact = exact_distances[i] - 2.0f * dot_product;
 
-                float cum_sum = index.get_cum_sum(storage_idx)[curr_level + 1];
+                float cum_sum = panorama_index->get_cum_sum(
+                        storage_idx)[curr_level + 1];
                 float cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
                 float lower_bound = new_exact - cauchy_schwarz_bound;
 
@@ -1277,28 +1258,17 @@ HNSWStats HNSW::search(
     }
 
     int ef = std::max(efSearch, k);
-    if (bounded_queue) { // this is the most common branch
+    if (bounded_queue) { // this is the most common branch, for now we only
+                         // support Panorama search in this branch
         MinimaxHeap candidates(ef);
 
         candidates.push(nearest, d_nearest);
 
         if (is_panorama) {
-            FAISS_THROW_IF_NOT_MSG(
-                    index,
-                    "Panorama search requires an IndexHNSW pointer");
-            const auto* panorama_index =
-                    dynamic_cast<const IndexHNSWFlatPanorama*>(index);
-            auto* flat_codes_qdis =
-                    dynamic_cast<FlatCodesDistanceComputer*>(&qdis);
-            FAISS_THROW_IF_NOT_MSG(
-                    panorama_index, "Index must be a IndexHNSWFlatPanorama");
-            FAISS_THROW_IF_NOT_MSG(
-                    flat_codes_qdis,
-                    "DistanceComputer must be a FlatCodesDistanceComputer");
             search_from_candidates_panorama(
                     *this,
-                    *panorama_index,
-                    *flat_codes_qdis,
+                    index,
+                    qdis,
                     res,
                     candidates,
                     vt,

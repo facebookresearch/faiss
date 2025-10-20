@@ -166,7 +166,22 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     void permute_entries(const idx_t* perm) override;
 
     const float* get_cum_sum(idx_t i) const;
-    
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
+    mutable std::vector<float> query_cum_sums;
     std::vector<float> cum_sums;
     const size_t level_width;
     const size_t n_levels;

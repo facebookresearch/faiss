@@ -282,8 +282,8 @@ int search_from_candidates(
 /// for higher dimensional vectors.
 int search_from_candidates_panorama(
         const HNSW& hnsw,
-        const IndexHNSWFlatPanorama& index,
-        FlatCodesDistanceComputer& qdis,
+        const IndexHNSW& index,
+        DistanceComputer& qdis,
         ResultHandler<HNSW::C>& res,
         HNSW::MinimaxHeap& candidates,
         VisitedTable& vt,

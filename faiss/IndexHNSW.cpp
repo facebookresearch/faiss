@@ -450,7 +450,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -657,8 +659,36 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, IndexFlat* storage)
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
 
+namespace {
+void compute_cum_sums(
+        const float* x,
+        float* dst_cum_sums,
+        int d,
+        int n_levels,
+        int level_width) {
+    // Iterate backwards through levels, accumulating sum as we go.
+    // This avoids computing the suffix sum for each vector, which takes
+    // extra memory.
+
+    float sum = 0.0f;
+    dst_cum_sums[n_levels] = 0.0f;
+    for (int level = n_levels - 1; level >= 0; level--) {
+        int start_idx = level * level_width;
+        int end_idx = std::min(start_idx + level_width, d);
+        for (int j = start_idx; j < end_idx; j++) {
+            sum += x[j] * x[j];
+        }
+        dst_cum_sums[level] = sqrt(sum);
+    }
+}
+} // namespace
+
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
-        : IndexHNSWFlat(), cum_sums(), level_width(0), n_levels(0) {}
+        : IndexHNSWFlat(),
+          query_cum_sums(),
+          cum_sums(),
+          level_width(0),
+          n_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d,
@@ -666,6 +696,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int n_levels,
         MetricType metric)
         : IndexHNSWFlat(d, M, new IndexFlatL2(d)),
+          query_cum_sums(n_levels + 1),
           cum_sums(),
           level_width(d + (n_levels - 1) / n_levels),
           n_levels(n_levels) {
@@ -673,36 +704,25 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
     // Supporting dot product and cosine distance is a trivial addition
     // left for future work.
     FAISS_THROW_IF_NOT(metric == METRIC_L2);
-    
+
     // Enable Panorama search mode.
+    // This is not ideal, but is still more simple than making a subclass of
+    // HNSW and overriding the search logic.
     hnsw.is_panorama = true;
 }
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
-    // Store the current ntotal before adding new vectors.
     idx_t n0 = ntotal;
-
     cum_sums.resize((ntotal + n) * (n_levels + 1));
-    std::vector<float> suffix_sums(d + 1);
 
     for (size_t idx = 0; idx < n; idx++) {
         const float* vector = x + idx * d;
-
-        // Compute suffix sums of squared values.
-        suffix_sums[d] = 0.0f;
-        for (int j = d - 1; j >= 0; j--) {
-            float squared_val = vector[j] * vector[j];
-            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-        }
-
-        for (size_t level = 0; level < n_levels; level++) {
-            size_t start_idx = level * level_width;
-            cum_sums[(n0 + idx) * (n_levels + 1) + level] =
-                    (start_idx < d) ? sqrt(suffix_sums[start_idx]) : 0.0f;
-        }
-
-        // Last level sum is always 0.
-        cum_sums[(n0 + idx) * (n_levels + 1) + n_levels] = 0.0f;
+        compute_cum_sums(
+                vector,
+                &cum_sums[(n0 + idx) * (n_levels + 1)],
+                d,
+                n_levels,
+                level_width);
     }
 
     IndexHNSWFlat::add(n, x);
@@ -751,6 +771,27 @@ void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
 
 const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
     return cum_sums.data() + i * (n_levels + 1);
+}
+
+void IndexHNSWFlatPanorama::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    IndexHNSWFlat::search(n, x, k, distances, labels, params);
+}
+
+void IndexHNSWFlatPanorama::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    IndexHNSWFlat::range_search(n, x, radius, result, params);
 }
 
 /**************************************************************
