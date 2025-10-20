@@ -39,9 +39,8 @@ def get_ivf_index(index):
 
 
 def eval_recall(index, name, nprobe_val):
-    ivf_index = get_ivf_index(index)
     t0 = time.time()
-    _, I = ivf_index.search(xq, k=k)
+    _, I = index.search(xq, k=k)
     t = time.time() - t0
     speed = t * 1000 / nq
     qps = 1000 / speed
