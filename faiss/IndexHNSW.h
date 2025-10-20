@@ -129,12 +129,11 @@ struct IndexHNSWFlat : IndexHNSW {
 /** Panorama implementation of IndexHNSWFlat following
  * https://www.arxiv.org/pdf/2510.00566.
  *
- * Unlike cluster-based Panorama, the vectors have to
- * be higher dimensional (i.e. typically d > 512) and/or
- * be able to compress a lot of their energy in the early
- * dimensions to be effective. This is because HNSW accesses
- * vectors in a random order, which makes cache misses dominate
- * the distance computation time.
+ * Unlike cluster-based Panorama, the vectors have to be higher dimensional
+ * (i.e. typically d > 512) and/or be able to compress a lot of their energy in
+ * the early dimensions to be effective. This is because HNSW accesses vectors
+ * in a random order, which makes cache misses dominate the distance computation
+ * time.
  *
  * The num_levels parameter controls the granularity of progressive distance
  * refinement, allowing candidates to be eliminated early using partial
