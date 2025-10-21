@@ -120,6 +120,10 @@ DEFINE_GETTER(PCAMatrix, float, eigen_power)
 
 DEFINE_GETTER(PCAMatrix, int, random_rotation)
 
+DEFINE_GETTER(PCAMatrix, int, balanced_bins)
+
+DEFINE_SETTER(PCAMatrix, int, balanced_bins)
+
 /*********************************************
  * ITQMatrix
  *********************************************/

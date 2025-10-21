@@ -15,6 +15,7 @@ jobs:
       - name: Comment on autoclose label
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: gh issue comment ${{ github.event.issue.number }} --body "This issue has been marked for autoclose and will be closed after 14 days of inactivity."
 
   close-issues:
