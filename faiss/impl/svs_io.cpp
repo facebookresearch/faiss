@@ -49,23 +49,36 @@ int WriterStreambuf::overflow(int ch) {
     return wrote == 1 ? ch : traits_type::eof();
 }
 
-ReaderStreambuf::ReaderStreambuf(IOReader* rr)
-        : r(rr), buf(1 << 20 /* 1 MiB */) {
-    setg(buf.data(), buf.data(), buf.data());
+ReaderStreambuf::ReaderStreambuf(IOReader* rr) : r(rr), single_char_buffer(0) {
+    // Initialize with empty get area
+    setg(nullptr, nullptr, nullptr);
 }
 
 ReaderStreambuf::~ReaderStreambuf() = default;
 
 std::streambuf::int_type ReaderStreambuf::underflow() {
-    if (gptr() < egptr()) {
-        return traits_type::to_int_type(*gptr());
-    }
-    size_t got = (*r)(buf.data(), 1, buf.size());
+    // Called by std::istream for single-character operations (get, peek, etc.)
+    // when the get area is exhausted. Reads one byte from IOReader.
+    size_t got = (*r)(&single_char_buffer, 1, 1);
     if (got == 0) {
         return traits_type::eof();
     }
-    setg(buf.data(), buf.data(), buf.data() + got);
-    return traits_type::to_int_type(*gptr());
+
+    // Configure get area to expose the single buffered character
+    setg(&single_char_buffer, &single_char_buffer, &single_char_buffer + 1);
+    return traits_type::to_int_type(single_char_buffer);
+}
+
+std::streamsize ReaderStreambuf::xsgetn(char* s, std::streamsize n) {
+    // Called by std::istream for bulk reads (read, readsome, etc.).
+    // Forwards directly to IOReader without intermediate buffering to avoid
+    // advancing IOReader beyond what the stream consumer requested.
+    if (n <= 0) {
+        return 0;
+    }
+
+    size_t got = (*r)(s, 1, n);
+    return static_cast<std::streamsize>(got);
 }
 
 } // namespace svs_io
