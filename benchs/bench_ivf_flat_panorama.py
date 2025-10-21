@@ -52,7 +52,7 @@ def eval_recall(index, nprobe_val):
     print(
         f"\tnprobe {nprobe_val:3d}, Recall@{k}: "
         f"{recall:.6f}, speed: {speed:.6f} ms/query, "
-        f"dims_scanned: {ratio_dims_scanned*100:.2f}%"
+        f"dims scanned: {ratio_dims_scanned*100:.2f}%"
     )
 
     return recall, qps
