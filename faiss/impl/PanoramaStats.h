@@ -22,7 +22,7 @@ struct PanoramaStats {
     uint64_t total_dims_scanned = 0; // total dimensions scanned
     uint64_t total_dims = 0;         // total dimensions
     float ratio_dims_scanned = 1.0f; // fraction of dimensions actually scanned
-    
+
     PanoramaStats() {
         reset();
     }
