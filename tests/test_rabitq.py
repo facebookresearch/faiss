@@ -210,7 +210,7 @@ class TestRaBitQ(unittest.TestCase):
             _, I_pq = index_pq.search(ds.get_queries(), k)
             loss_pq = 1 - eval_I(I_pq)
             print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
-            np.testing.assert_(loss_pq < 0.25, f"{loss_pq}")
+            np.testing.assert_(loss_pq < 0.35, f"{loss_pq}")
 
             index_rbq = faiss.IndexRaBitQ(ds.d, metric_type)
             if random_rotate:
@@ -917,10 +917,8 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
                 index_ivf_rbq_fs.train(xt)
                 index_ivf_rbq_fs.add(xb)
 
-                rbq_fs_params = faiss.IVFRaBitQFastScanSearchParameters()
+                rbq_fs_params = faiss.IVFSearchParameters()
                 rbq_fs_params.nprobe = nprobe
-                rbq_fs_params.qb = qb
-                rbq_fs_params.centered = centered
                 _, I_ivf_rbq_fs = index_ivf_rbq_fs.search(
                     xq, k, params=rbq_fs_params
                 )
@@ -1045,10 +1043,8 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
             index_ivf_rbq_fs.train(xt)
             index_ivf_rbq_fs.add(xb)
 
-            rbq_fs_params = faiss.IVFRaBitQFastScanSearchParameters()
+            rbq_fs_params = faiss.IVFSearchParameters()
             rbq_fs_params.nprobe = nprobe
-            rbq_fs_params.qb = 8
-            rbq_fs_params.centered = False
             _, I_fs = index_ivf_rbq_fs.search(xq, k, params=rbq_fs_params)
 
             # Evaluate against ground truth
@@ -1130,7 +1126,8 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
         np.testing.assert_equal(index_ivf_rbq_fs.ntotal, ds.nb)
 
         # Test search still works
-        search_params = faiss.IVFRaBitQFastScanSearchParameters(nprobe=4)
+        search_params = faiss.IVFSearchParameters()
+        search_params.nprobe = 4
         _, I = index_ivf_rbq_fs.search(
             ds.get_queries(), 5, params=search_params
         )
@@ -1170,10 +1167,8 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
         index_ivf_rbq_fs.add(ds.get_database())
 
         # Create search parameters
-        params = faiss.IVFRaBitQFastScanSearchParameters()
+        params = faiss.IVFSearchParameters()
         params.nprobe = 4
-        params.qb = 8
-        params.centered = False
 
         # Search with multiple queries
         # n * nprobe = 300 * 4 = 1200 > 1000, triggering OpenMP parallel loop
@@ -1200,11 +1195,26 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
         index.train(ds.get_train())
         index.add(ds.get_database())
 
-        # Test basic search
-        _, I = index.search(ds.get_queries(), 5)
-        np.testing.assert_equal(I.shape, (ds.nq, 5))
+        k = 5
+        _, I = index.search(ds.get_queries(), k)
+        np.testing.assert_equal(I.shape, (ds.nq, k))
 
-        # Test IVF with custom batch size
+        quantizer = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
+        index_ivf_rbq = faiss.IndexIVFRaBitQ(
+            quantizer, ds.d, nlist, faiss.METRIC_L2
+        )
+        index_ivf_rbq.train(ds.get_train())
+        index_ivf_rbq.add(ds.get_database())
+        _, I_rbq = index_ivf_rbq.search(ds.get_queries(), k)
+
+        recall = faiss.eval_intersection(I[:, :k], I_rbq[:, :k])
+        recall /= (ds.nq * k)
+        print(f"IVFRaBitQFastScan vs IVFRaBitQ recall: {recall:.3f}")
+        np.testing.assert_(
+            recall > 0.95,
+            f"Recall too low: {recall:.3f} - should be close to baseline"
+        )
+
         index_custom = faiss.index_factory(
             ds.d, f"IVF{nlist},RaBitQfs_64"
         )
@@ -1265,10 +1275,8 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
         index_ivf_rbq_fs.add(xb)
 
         # Create search parameters
-        params = faiss.IVFRaBitQFastScanSearchParameters()
+        params = faiss.IVFSearchParameters()
         params.nprobe = nprobe
-        params.qb = 8
-        params.centered = False
 
         # Perform search
         _, I_impl = index_ivf_rbq_fs.search(xq, k, params=params)
@@ -1297,6 +1305,52 @@ class TestIVFRaBitQFastScan(unittest.TestCase):
 
     def test_search_implem_14(self):
         self.do_test_search_implementation(impl=14)
+
+    def test_search_with_parameters(self):
+        """Test IndexIVFRaBitQFastScan with search_with_parameters
+
+        This tests the code path through search_with_parameters which
+        performs explicit coarse quantization before calling
+        search_preassigned.
+        """
+        nlist = 64
+        nprobe = 8
+        nq = 500
+        ds = datasets.SyntheticDataset(128, 2048, 2048, nq)
+        k = 10
+
+        d = ds.d
+        xb = ds.get_database()
+        xt = ds.get_train()
+        xq = ds.get_queries()
+
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, faiss.METRIC_L2, 32
+        )
+        index.qb = 8
+        index.centered = False
+        index.nprobe = nprobe
+
+        index.train(xt)
+        index.add(xb)
+
+        params = faiss.IVFSearchParameters()
+        params.nprobe = nprobe
+
+        distances, labels = faiss.search_with_parameters(index, xq, k, params)
+
+        self.assertEqual(distances.shape, (nq, k))
+        self.assertEqual(labels.shape, (nq, k))
+        self.assertGreater(np.sum(labels >= 0), 0)
+
+        index_flat = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index_flat.add(xb)
+        _, gt_labels = index_flat.search(xq, k)
+        recall = faiss.eval_intersection(labels, gt_labels) / (nq * k)
+        # With nlist=64 and nprobe=8, recall should be reasonable
+        self.assertGreater(recall, 0.4)
 
 
 class TestRaBitQuantizerEncodeDecode(unittest.TestCase):

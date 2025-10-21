@@ -279,37 +279,34 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
     }
 }
 
-void IndexIVFRaBitQFastScan::search(
+void IndexIVFRaBitQFastScan::search_preassigned(
         idx_t n,
         const float* x,
         idx_t k,
+        const idx_t* assign,
+        const float* centroid_dis,
         float* distances,
         idx_t* labels,
-        const SearchParameters* params_in) const {
+        bool store_pairs,
+        const IVFSearchParameters* params,
+        IndexIVFStats* stats) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !store_pairs, "store_pairs not supported for RaBitQFastScan");
+    FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
 
-    // Parse parameters following parent class pattern
-    const IVFSearchParameters* params = nullptr;
-    if (params_in) {
-        params = dynamic_cast<const IVFSearchParameters*>(params_in);
-        FAISS_THROW_IF_NOT_MSG(
-                params, "IndexIVFFastScan params have incorrect type");
-    }
     size_t nprobe = this->nprobe;
     if (params) {
         FAISS_THROW_IF_NOT(params->max_codes == 0);
         nprobe = params->nprobe;
     }
 
-    // Create query factors storage and ProcessingContext
     std::vector<QueryFactorsData> query_factors_storage(n * nlist);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
 
-    // Replicate search_preassigned behavior but with ProcessingContext:
-    // Create CoarseQuantized struct and call search_dispatch_implem directly
-    const CoarseQuantized cq = {nprobe, nullptr, nullptr};
+    const CoarseQuantized cq = {nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
 }
 
@@ -323,7 +320,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
 
-    size_t nprobe = this->nprobe;
+    size_t nprobe = cq.nprobe;
 
     size_t dim12 = 16 * M;
 
