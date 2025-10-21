@@ -34,7 +34,8 @@ void testAdd(
         imipqGpu.train(numOfTrainingVecs, trainVecs.data());
         int numOfIndexedVecs = 1;
         int numOfAdds = 3;
-        std::vector<float> indexVecs = faiss::gpu::randVecs(numOfIndexedVecs, d);
+        std::vector<float> indexVecs =
+                faiss::gpu::randVecs(numOfIndexedVecs, d);
         for (int i = 0; i < numOfAdds; i++) {
             imipqGpu.updateExpectedNumAddsPerList(
                     numOfIndexedVecs, indexVecs.data());
@@ -50,8 +51,10 @@ void testAdd(
         EXPECT_EQ(numOfIndexedVecs * numOfAdds, imipqGpu.getAllListsLength());
     }
 
-    { // Check if vectors encodings and ids are correctly added to the inverted lists
-        // TIP: if only single vector is passing, there could be problems with spltting it during search
+    { // Check if vectors encodings and ids are correctly added to the inverted
+      // lists
+        // TIP: if only single vector is passing, there could be problems with
+        // spltting it during search
         std::vector<int> numOfIndexedVecsList = {1, 10};
         for (int i = 0; i < numOfIndexedVecsList.size(); i++) {
             faiss::gpu::StandardGpuResources res;
@@ -63,12 +66,13 @@ void testAdd(
 
             // checking initial length
             EXPECT_EQ(0, imipqGpu.getAllListsLength());
-            
+
             // create a copy of the GPU index for the multi-index quantizer
             faiss::IndexIVFPQ imipqCpu;
             imipqGpu.copyTo(&imipqCpu);
             faiss::MultiIndexQuantizer* multiIndexCpu =
-                dynamic_cast<faiss::MultiIndexQuantizer*>(imipqCpu.quantizer);
+                    dynamic_cast<faiss::MultiIndexQuantizer*>(
+                            imipqCpu.quantizer);
             faiss::gpu::GpuMultiIndex2 multiIndex(&res, d, coarseCodebookSize);
             multiIndex.copyFrom(multiIndexCpu);
 
@@ -99,13 +103,15 @@ void testAdd(
 
             std::vector<float> residuals(numOfIndexedVecsList[i] * d);
             multiIndex.compute_nearest_residual_n(
-                    numOfIndexedVecsList[i], indexVecs.data(), residuals.data());
+                    numOfIndexedVecsList[i],
+                    indexVecs.data(),
+                    residuals.data());
 
             int subCodebookSize = 1 << bitsPerCode;
             std::vector<faiss::IndexFlatL2> subCentroidsIndex(numSubQuantizers);
             std::vector<float> subCentroids = imipqGpu.getPQCentroids();
             int subDim = d / numSubQuantizers;
-            
+
             // move PQ centroids to CPU
             for (int j = 0; j < subCentroidsIndex.size(); j++) {
                 float* subCentroidsView =
@@ -141,7 +147,6 @@ void testAdd(
                 for (int k = 0; k < numOfIndexedVecsList[i]; k++) {
                     std::cout << " " << outLabels[k];
                     std::cout << std::endl;
-                    
                 }
                 std::cout << std::endl;
 
@@ -191,7 +196,8 @@ void testAdd(
                         numOfIndexedVecsList[i],
                         &subResiduals[j * numOfIndexedVecsList[i] * subDim],
                         1,
-                        &nearestSubCentroidDistance[j * numOfIndexedVecsList[i]],
+                        &nearestSubCentroidDistance
+                                [j * numOfIndexedVecsList[i]],
                         &nearestSubCentroid[j * numOfIndexedVecsList[i]]);
             }
 
@@ -476,8 +482,10 @@ void testSearchPrecomputedCodes(
                 faiss::gpu::randVecs(numOfTrainingVecs, d);
         imipqGpu.train(numOfTrainingVecs, trainVecs.data());
 
-        std::vector<float> indexVecs = faiss::gpu::randVecs(numOfIndexedVecs, d);
-        imipqGpu.updateExpectedNumAddsPerList(numOfIndexedVecs, indexVecs.data());
+        std::vector<float> indexVecs =
+                faiss::gpu::randVecs(numOfIndexedVecs, d);
+        imipqGpu.updateExpectedNumAddsPerList(
+                numOfIndexedVecs, indexVecs.data());
         faiss::gpu::CudaEvent updateEnd(
                 res.getResources()->getDefaultStreamCurrentDevice());
         updateEnd.cpuWaitOnEvent();
@@ -960,7 +968,8 @@ void testCopyFrom(
     }
 
     if (numOfIndexedVecs > 0) {
-        std::vector<float> indexVecs = faiss::gpu::randVecs(numOfIndexedVecs, d);
+        std::vector<float> indexVecs =
+                faiss::gpu::randVecs(numOfIndexedVecs, d);
         imipqCpu.add(numOfIndexedVecs, indexVecs.data());
     }
 
@@ -1044,8 +1053,10 @@ void testCopyTo(
     }
 
     if (numOfIndexedVecs > 0) {
-        std::vector<float> indexVecs = faiss::gpu::randVecs(numOfIndexedVecs, d);
-        imipqGpu.updateExpectedNumAddsPerList(numOfIndexedVecs, indexVecs.data());
+        std::vector<float> indexVecs =
+                faiss::gpu::randVecs(numOfIndexedVecs, d);
+        imipqGpu.updateExpectedNumAddsPerList(
+                numOfIndexedVecs, indexVecs.data());
         faiss::gpu::CudaEvent updateEnd(
                 res.getResources()->getDefaultStreamCurrentDevice());
         updateEnd.cpuWaitOnEvent();

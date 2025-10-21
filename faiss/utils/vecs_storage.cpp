@@ -52,7 +52,8 @@ TVec* vecs_read(const char* fileName, size_t num, size_t numOffset, int* dim) {
     *dim = currentDimension;
 
     numElementsRead = 0;
-    std::unique_ptr<TLoad[]> buffer = std::make_unique<TLoad[]>(currentDimension);
+    std::unique_ptr<TLoad[]> buffer =
+            std::make_unique<TLoad[]>(currentDimension);
     for (size_t i = 0; i < num; i++) {
         numElementsRead += fread(&currentDimension, sizeof(int), 1, f);
         FAISS_THROW_IF_NOT_FMT(
@@ -66,8 +67,8 @@ TVec* vecs_read(const char* fileName, size_t num, size_t numOffset, int* dim) {
             numElementsRead += fread(
                     currentVec, sizeof(TLoad), (size_t)currentDimension, f);
         } else {
-            numElementsRead +=
-                    fread(buffer.get(), sizeof(TLoad), (size_t)currentDimension, f);
+            numElementsRead += fread(
+                    buffer.get(), sizeof(TLoad), (size_t)currentDimension, f);
             for (int j = 0; j < currentDimension; j++) {
                 currentVec[j] = (TVec)buffer[j];
             }

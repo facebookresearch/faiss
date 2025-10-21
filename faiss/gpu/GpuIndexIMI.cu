@@ -220,8 +220,8 @@ bool GpuIndexIMI::addImplRequiresIDs_() const {
 }
 
 void GpuIndexIMI::add(idx_t n, const float* x) {
-  // Pass to add_with_ids
-  add_with_ids(n, x, nullptr);
+    // Pass to add_with_ids
+    add_with_ids(n, x, nullptr);
 }
 
 void GpuIndexIMI::add_with_ids(idx_t n, const float* x, const idx_t* ids) {
