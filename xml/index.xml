@@ -7361,15 +7361,6 @@
     <member refid="structfaiss_1_1IVFPQSearchParameters_1abb58e8a6e58752abee118760b48e7d7e" kind="function"><name>IVFPQSearchParameters</name></member>
     <member refid="structfaiss_1_1IVFPQSearchParameters_1a233675559ed182bd59490cad0641ca8e" kind="function"><name>~IVFPQSearchParameters</name></member>
   </compound>
-  <compound refid="structfaiss_1_1IVFRaBitQFastScanSearchParameters" kind="struct"><name>faiss::IVFRaBitQFastScanSearchParameters</name>
-    <member refid="structfaiss_1_1IVFRaBitQFastScanSearchParameters_1ac2306a537dcc91a73616005c73bb7bb1" kind="variable"><name>qb</name></member>
-    <member refid="structfaiss_1_1IVFRaBitQFastScanSearchParameters_1a064bc6b6a54f9646e0420dd49f8f085f" kind="variable"><name>centered</name></member>
-    <member refid="structfaiss_1_1SearchParametersIVF_1a8367077ad30dca0bf5cc4daa6ee195e7" kind="variable"><name>nprobe</name></member>
-    <member refid="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" kind="variable"><name>max_codes</name></member>
-    <member refid="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" kind="variable"><name>quantizer_params</name></member>
-    <member refid="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" kind="variable"><name>inverted_list_context</name></member>
-    <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
-  </compound>
   <compound refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler" kind="struct"><name>faiss::IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler</name>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a49a9ed4e4508f95bb2885d02be739e71" kind="typedef"><name>Cfloat</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a68797712fe708c5fcd8de53111ef8ee4" kind="typedef"><name>TI</name></member>

@@ -60,12 +60,6 @@
         </childnode>
       </node>
       <node id="7">
-        <label>faiss::IVFRaBitQFastScanSearchParameters</label>
-        <link refid="structfaiss_1_1IVFRaBitQFastScanSearchParameters"/>
-        <childnode refid="5" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="8">
         <label>faiss::IVFRaBitQSearchParameters</label>
         <link refid="structfaiss_1_1IVFRaBitQSearchParameters"/>
         <childnode refid="5" relation="public-inheritance">
@@ -99,25 +93,25 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="8">
         <label>faiss::SearchParametersPQ</label>
         <link refid="structfaiss_1_1SearchParametersPQ"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="9">
         <label>faiss::SearchParametersPreTransform</label>
         <link refid="structfaiss_1_1SearchParametersPreTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
         <label>faiss::SearchParametersResidualCoarseQuantizer</label>
         <link refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="12">
+      <node id="11">
         <label>faiss::gpu::SearchParametersCagra</label>
         <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
         <childnode refid="1" relation="public-inheritance">

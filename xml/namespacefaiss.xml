@@ -180,7 +180,6 @@
     <innerclass refid="structfaiss_1_1ITQTransform" prot="public">faiss::ITQTransform</innerclass>
     <innerclass refid="structfaiss_1_1IVFFastScanStats" prot="public">faiss::IVFFastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1IVFPQSearchParameters" prot="public">faiss::IVFPQSearchParameters</innerclass>
-    <innerclass refid="structfaiss_1_1IVFRaBitQFastScanSearchParameters" prot="public">faiss::IVFRaBitQFastScanSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1IVFRaBitQSearchParameters" prot="public">faiss::IVFRaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1Level1Quantizer" prot="public">faiss::Level1Quantizer</innerclass>
     <innerclass refid="structfaiss_1_1LinearTransform" prot="public">faiss::LinearTransform</innerclass>
