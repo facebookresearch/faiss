@@ -9,11 +9,11 @@
 
 #include <queue>
 #include <vector>
-#include <faiss/impl/DistanceComputer.h>
 
 #include <omp.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
