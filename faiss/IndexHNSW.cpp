@@ -742,10 +742,6 @@ void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
     IndexHNSWFlat::permute_entries(perm);
 }
 
-inline const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
-    return cum_sums.data() + i * (num_panorama_levels + 1);
-}
-
 void IndexHNSWFlatPanorama::search(
         idx_t n,
         const float* x,

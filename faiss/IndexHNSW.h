@@ -162,7 +162,10 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     void reset() override;
     void permute_entries(const idx_t* perm) override;
 
-    const float* get_cum_sum(idx_t i) const;
+    // Inline for performance - called frequently in search hot path.
+    const float* get_cum_sum(idx_t i) const {
+        return cum_sums.data() + i * (num_panorama_levels + 1);
+    }
 
     void search(
             idx_t n,
