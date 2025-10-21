@@ -47,6 +47,7 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #ifdef FAISS_ENABLE_SVS
+#include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
@@ -1303,8 +1304,8 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
         }
 
-        faiss::BufferedIOReader br(f);
-        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        // Create a non-buffering stream adapter from IOReader
+        faiss::svs_io::ReaderStreambuf rbuf(f);
         std::istream is(&rbuf);
         svs->deserialize_impl(is);
         idx = svs;
@@ -1313,8 +1314,8 @@ Index* read_index(IOReader* f, int io_flags) {
         IndexSVSFlat* svs = new IndexSVSFlat();
         read_index_header(svs, f);
 
-        faiss::BufferedIOReader br(f);
-        faiss::svs_io::ReaderStreambuf rbuf(&br);
+        // Create a non-buffering stream adapter from IOReader
+        faiss::svs_io::ReaderStreambuf rbuf(f);
         std::istream is(&rbuf);
         svs->deserialize_impl(is);
         idx = svs;
