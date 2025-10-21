@@ -105,7 +105,7 @@ bool IDSelectorBatch::is_member(idx_t i) const {
     if (!(bloom[im >> 3] & (1 << (im & 7)))) {
         return 0;
     }
-    return set.count(i);
+    return set.contains(i);
 }
 
 /***********************************************************************
