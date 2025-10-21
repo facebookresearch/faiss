@@ -27,11 +27,6 @@ struct FastScanDistancePostProcessing;
 using rabitq_utils::FactorsData;
 using rabitq_utils::QueryFactorsData;
 
-struct IVFRaBitQFastScanSearchParameters : IVFSearchParameters {
-    uint8_t qb = 0;
-    bool centered = false;
-};
-
 /** Fast-scan version of IndexIVFRaBitQ that processes vectors in batches
  * using SIMD operations. Combines the inverted file structure of IVF
  * with RaBitQ's bit-level quantization and FastScan's batch processing.
