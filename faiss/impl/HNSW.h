@@ -8,9 +8,8 @@
 #pragma once
 
 #include <queue>
-#include <unordered_set>
 #include <vector>
-#include "faiss/impl/DistanceComputer.h"
+#include <faiss/impl/DistanceComputer.h>
 
 #include <omp.h>
 

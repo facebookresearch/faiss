@@ -123,7 +123,6 @@ struct IndexHNSW : Index {
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2);
-    IndexHNSWFlat(int d, int M, IndexFlat* storage);
 };
 
 /** Panorama implementation of IndexHNSWFlat following
@@ -135,8 +134,8 @@ struct IndexHNSWFlat : IndexHNSW {
  * in a random order, which makes cache misses dominate the distance computation
  * time.
  *
- * The num_levels parameter controls the granularity of progressive distance
- * refinement, allowing candidates to be eliminated early using partial
+ * The `num_panorama_levels` parameter controls the granularity of progressive
+ * distance refinement, allowing candidates to be eliminated early using partial
  * distance computations rather than computing full distances.
  *
  * NOTE: This version of HNSW handles search slightly differently than the
@@ -156,12 +155,11 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     IndexHNSWFlatPanorama(
             int d,
             int M,
-            int num_levels,
+            int num_panorama_levels,
             MetricType metric = METRIC_L2);
 
     void add(idx_t n, const float* x) override;
     void reset() override;
-    size_t remove_ids(const IDSelector& sel) override;
     void permute_entries(const idx_t* perm) override;
 
     const float* get_cum_sum(idx_t i) const;
@@ -183,8 +181,8 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     mutable std::vector<float> query_cum_sums;
     mutable float query_norm_sq;
     std::vector<float> cum_sums;
-    const size_t level_width;
-    const size_t n_levels;
+    const size_t panorama_level_width;
+    const size_t num_panorama_levels;
 };
 
 /** PQ index topped with with a HNSW structure to access elements

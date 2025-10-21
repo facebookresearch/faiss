@@ -450,7 +450,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -647,12 +649,6 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
     is_trained = true;
 }
 
-IndexHNSWFlat::IndexHNSWFlat(int d, int M, IndexFlat* storage)
-        : IndexHNSW(storage, M) {
-    own_fields = true;
-    is_trained = true;
-}
-
 /**************************************************************
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
@@ -662,17 +658,17 @@ void compute_cum_sums(
         const float* x,
         float* dst_cum_sums,
         int d,
-        int n_levels,
-        int level_width) {
+        int num_panorama_levels,
+        int panorama_level_width) {
     // Iterate backwards through levels, accumulating sum as we go.
     // This avoids computing the suffix sum for each vector, which takes
     // extra memory.
 
     float sum = 0.0f;
-    dst_cum_sums[n_levels] = 0.0f;
-    for (int level = n_levels - 1; level >= 0; level--) {
-        int start_idx = level * level_width;
-        int end_idx = std::min(start_idx + level_width, d);
+    dst_cum_sums[num_panorama_levels] = 0.0f;
+    for (int level = num_panorama_levels - 1; level >= 0; level--) {
+        int start_idx = level * panorama_level_width;
+        int end_idx = std::min(start_idx + panorama_level_width, d);
         for (int j = start_idx; j < end_idx; j++) {
             sum += x[j] * x[j];
         }
@@ -686,20 +682,21 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
           query_cum_sums(),
           query_norm_sq(0.0f),
           cum_sums(),
-          level_width(0),
-          n_levels(0) {}
+          panorama_level_width(0),
+          num_panorama_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d,
         int M,
-        int n_levels,
+        int num_panorama_levels,
         MetricType metric)
-        : IndexHNSWFlat(d, M, new IndexFlatL2(d)),
-          query_cum_sums(n_levels + 1),
+        : IndexHNSWFlat(d, M, metric),
+          query_cum_sums(num_panorama_levels + 1),
           query_norm_sq(0.0f),
           cum_sums(),
-          level_width(d + (n_levels - 1) / n_levels),
-          n_levels(n_levels) {
+          panorama_level_width(
+                  d + (num_panorama_levels - 1) / num_panorama_levels),
+          num_panorama_levels(num_panorama_levels) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
     // left for future work.
@@ -713,16 +710,16 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
     idx_t n0 = ntotal;
-    cum_sums.resize((ntotal + n) * (n_levels + 1));
+    cum_sums.resize((ntotal + n) * (num_panorama_levels + 1));
 
     for (size_t idx = 0; idx < n; idx++) {
         const float* vector = x + idx * d;
         compute_cum_sums(
                 vector,
-                &cum_sums[(n0 + idx) * (n_levels + 1)],
+                &cum_sums[(n0 + idx) * (num_panorama_levels + 1)],
                 d,
-                n_levels,
-                level_width);
+                num_panorama_levels,
+                panorama_level_width);
     }
 
     IndexHNSWFlat::add(n, x);
@@ -733,44 +730,22 @@ void IndexHNSWFlatPanorama::reset() {
     IndexHNSWFlat::reset();
 }
 
-size_t IndexHNSWFlatPanorama::remove_ids(const IDSelector& sel) {
-    idx_t j = 0;
-    for (idx_t i = 0; i < ntotal; i++) {
-        if (!sel.is_member(i)) {
-            if (i > j) {
-                memmove(&cum_sums[j * (n_levels + 1)],
-                        &cum_sums[i * (n_levels + 1)],
-                        (n_levels + 1) * sizeof(float));
-            }
-            j++;
-        }
-    }
-
-    idx_t n_removed = IndexHNSWFlat::remove_ids(sel);
-    if (n_removed > 0) {
-        // `ntotal` is updated by the base class.
-        cum_sums.resize(ntotal * (n_levels + 1));
-    }
-
-    return n_removed;
-}
-
 void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
-    std::vector<float> new_cum_sums(ntotal * (n_levels + 1));
+    std::vector<float> new_cum_sums(ntotal * (num_panorama_levels + 1));
 
     for (idx_t i = 0; i < ntotal; i++) {
         idx_t src = perm[i];
-        memcpy(&new_cum_sums[i * (n_levels + 1)],
-               &cum_sums[src * (n_levels + 1)],
-               (n_levels + 1) * sizeof(float));
+        memcpy(&new_cum_sums[i * (num_panorama_levels + 1)],
+               &cum_sums[src * (num_panorama_levels + 1)],
+               (num_panorama_levels + 1) * sizeof(float));
     }
 
     std::swap(cum_sums, new_cum_sums);
     IndexHNSWFlat::permute_entries(perm);
 }
 
-const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
-    return cum_sums.data() + i * (n_levels + 1);
+inline const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
+    return cum_sums.data() + i * (num_panorama_levels + 1);
 }
 
 void IndexHNSWFlatPanorama::search(
@@ -780,7 +755,12 @@ void IndexHNSWFlatPanorama::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    compute_cum_sums(
+            x,
+            query_cum_sums.data(),
+            d,
+            num_panorama_levels,
+            panorama_level_width);
     query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
     IndexHNSWFlat::search(n, x, k, distances, labels, params);
 }
@@ -791,7 +771,12 @@ void IndexHNSWFlatPanorama::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    compute_cum_sums(x, query_cum_sums.data(), d, n_levels, level_width);
+    compute_cum_sums(
+            x,
+            query_cum_sums.data(),
+            d,
+            num_panorama_levels,
+            panorama_level_width);
     query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
     IndexHNSWFlat::range_search(n, x, radius, result, params);
 }

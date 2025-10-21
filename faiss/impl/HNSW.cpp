@@ -591,8 +591,8 @@ using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 using C = HNSW::C;
 
-/** Helper to parse search parameters from HNSW and SearchParameters */
-static inline void parse_search_params(
+/** Helper to extract search parameters from HNSW and SearchParameters */
+static inline void extract_search_params(
         const HNSW& hnsw,
         const SearchParameters* params,
         bool& do_dis_check,
@@ -629,7 +629,7 @@ int search_from_candidates(
     bool do_dis_check;
     int efSearch;
     const IDSelector* sel;
-    parse_search_params(hnsw, params, do_dis_check, efSearch, sel);
+    extract_search_params(hnsw, params, do_dis_check, efSearch, sel);
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -768,7 +768,7 @@ int search_from_candidates_panorama(
     bool do_dis_check;
     int efSearch;
     const IDSelector* sel;
-    parse_search_params(hnsw, params, do_dis_check, efSearch, sel);
+    extract_search_params(hnsw, params, do_dis_check, efSearch, sel);
 
     C::T threshold = res.threshold;
     for (int i = 0; i < candidates.size(); i++) {
@@ -840,15 +840,17 @@ int search_from_candidates_panorama(
         }
 
         size_t batch_size = initial_size;
-        size_t curr_level = 0;
+        size_t curr_panorama_level = 0;
         threshold = res.threshold;
-        while (curr_level < panorama_index->n_levels && batch_size > 0) {
+        const size_t num_panorama_levels = panorama_index->num_panorama_levels;
+        while (curr_panorama_level < num_panorama_levels && batch_size > 0) {
             float query_cum_norm =
-                    panorama_index->query_cum_sums[curr_level + 1];
+                    panorama_index->query_cum_sums[curr_panorama_level + 1];
 
-            const size_t level_width = panorama_index->level_width;
-            size_t start_dim = curr_level * level_width;
-            size_t end_dim = (curr_level + 1) * level_width;
+            const size_t panorama_level_width =
+                    panorama_index->panorama_level_width;
+            size_t start_dim = curr_panorama_level * panorama_level_width;
+            size_t end_dim = (curr_panorama_level + 1) * panorama_level_width;
             end_dim = std::min(end_dim, static_cast<size_t>(panorama_index->d));
 
             size_t i = 0;
@@ -878,14 +880,14 @@ int search_from_candidates_panorama(
                 float new_exact_2 = exact_distances[i + 2] - 2 * dp[2];
                 float new_exact_3 = exact_distances[i + 3] - 2 * dp[3];
 
-                float cum_sum_0 =
-                        panorama_index->get_cum_sum(idx_0)[curr_level + 1];
-                float cum_sum_1 =
-                        panorama_index->get_cum_sum(idx_1)[curr_level + 1];
-                float cum_sum_2 =
-                        panorama_index->get_cum_sum(idx_2)[curr_level + 1];
-                float cum_sum_3 =
-                        panorama_index->get_cum_sum(idx_3)[curr_level + 1];
+                float cum_sum_0 = panorama_index->get_cum_sum(
+                        idx_0)[curr_panorama_level + 1];
+                float cum_sum_1 = panorama_index->get_cum_sum(
+                        idx_1)[curr_panorama_level + 1];
+                float cum_sum_2 = panorama_index->get_cum_sum(
+                        idx_2)[curr_panorama_level + 1];
+                float cum_sum_3 = panorama_index->get_cum_sum(
+                        idx_3)[curr_panorama_level + 1];
 
                 float cs_bound_0 = 2.0f * cum_sum_0 * query_cum_norm;
                 float cs_bound_1 = 2.0f * cum_sum_1 * query_cum_norm;
@@ -940,8 +942,8 @@ int search_from_candidates_panorama(
                 ndis += 1;
                 float new_exact = exact_distances[i] - 2.0f * dp;
 
-                float cum_sum =
-                        panorama_index->get_cum_sum(idx)[curr_level + 1];
+                float cum_sum = panorama_index->get_cum_sum(
+                        idx)[curr_panorama_level + 1];
                 float cs_bound = 2.0f * cum_sum * query_cum_norm;
                 float lower_bound = new_exact - cs_bound;
 
@@ -955,7 +957,7 @@ int search_from_candidates_panorama(
             }
 
             batch_size = next_batch_size;
-            curr_level++;
+            curr_panorama_level++;
         }
 
         // Add surviving candidates to the result handler.
@@ -1225,7 +1227,10 @@ HNSWStats HNSW::search(
 
         candidates.push(nearest, d_nearest);
 
-        if (is_panorama) {
+        if (!is_panorama) {
+            search_from_candidates(
+                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
+        } else {
             search_from_candidates_panorama(
                     *this,
                     index,
@@ -1237,9 +1242,6 @@ HNSWStats HNSW::search(
                     0,
                     0,
                     params);
-        } else {
-            search_from_candidates(
-                    *this, qdis, res, candidates, vt, stats, 0, 0, params);
         }
     } else {
         std::priority_queue<Node> top_candidates =
