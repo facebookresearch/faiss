@@ -770,15 +770,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_index(idxmap->index, f);
         WRITEVECTOR(idxmap->id_map);
     } else if (const IndexHNSW* idxhnsw = dynamic_cast<const IndexHNSW*>(idx)) {
-        uint32_t h = dynamic_cast<const IndexHNSWFlat*>(idx) ? fourcc("IHNf")
-                : dynamic_cast<const IndexHNSWPQ*>(idx)      ? fourcc("IHNp")
-                : dynamic_cast<const IndexHNSWSQ*>(idx)      ? fourcc("IHNs")
-                : dynamic_cast<const IndexHNSW2Level*>(idx)  ? fourcc("IHN2")
-                : dynamic_cast<const IndexHNSWCagra*>(idx)   ? fourcc("IHc2")
-                                                             : 0;
+        uint32_t h = dynamic_cast<const IndexHNSWFlatPanorama*>(idx)
+                ? fourcc("IHfP")
+                : dynamic_cast<const IndexHNSWFlat*>(idx)   ? fourcc("IHNf")
+                : dynamic_cast<const IndexHNSWPQ*>(idx)     ? fourcc("IHNp")
+                : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
+                : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
+                : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
+                                                            : 0;
         FAISS_THROW_IF_NOT(h != 0);
         WRITE1(h);
         write_index_header(idxhnsw, f);
+        if (h == fourcc("IHfP")) {
+            auto idx_panorama =
+                    dynamic_cast<const IndexHNSWFlatPanorama*>(idxhnsw);
+            WRITE1(idx_panorama->num_panorama_levels);
+            WRITEVECTOR(idx_panorama->cum_sums);
+        }
         if (h == fourcc("IHc2")) {
             WRITE1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<const IndexHNSWCagra*>(idxhnsw);
