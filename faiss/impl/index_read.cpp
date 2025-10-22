@@ -509,6 +509,7 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READ1(hnsw->max_level);
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
+    READ1(hnsw->is_panorama);
 
     // // deprecated field
     // READ1(hnsw->upper_beam);
@@ -1132,10 +1133,8 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
             const_cast<size_t&>(idx_panorama->panorama_level_width) =
-                    idx_panorama->d +
-                    (nlevels - 1) / idx_panorama->num_panorama_levels;
+                    (idx_panorama->d + nlevels - 1) / nlevels;
             READVECTOR(idx_panorama->cum_sums);
-            idx_panorama->query_cum_sums.resize(nlevels + 1);
         }
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);

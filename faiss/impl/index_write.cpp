@@ -312,6 +312,7 @@ static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     WRITE1(hnsw->max_level);
     WRITE1(hnsw->efConstruction);
     WRITE1(hnsw->efSearch);
+    WRITE1(hnsw->is_panorama);
 
     // // deprecated field
     // WRITE1(hnsw->upper_beam);

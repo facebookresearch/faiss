@@ -115,7 +115,8 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const uint32_t offset,
             const uint32_t num_components) final override {
         npartial_dot_products++;
-        return fvec_inner_product(q + offset, b + i * d, num_components);
+        return fvec_inner_product(
+                q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -135,6 +136,10 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
+    }
+
+    const float* get_query() const override {
+        return q;
     }
 
     // compute four distances
@@ -198,7 +203,16 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         float dp2_ = 0;
         float dp3_ = 0;
         fvec_inner_product_batch_4(
-                q + offset, y0, y1, y2, y3, d, dp0_, dp1_, dp2_, dp3_);
+                q + offset,
+                y0 + offset,
+                y1 + offset,
+                y2 + offset,
+                y3 + offset,
+                num_components,
+                dp0_,
+                dp1_,
+                dp2_,
+                dp3_);
         dp0 = dp0_;
         dp1 = dp1_;
         dp2 = dp2_;
@@ -234,6 +248,10 @@ struct FlatIPDis : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
+    }
+
+    const float* get_query() const override {
+        return q;
     }
 
     // compute four distances
@@ -358,6 +376,10 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
     void set_query(const float* x) override {
         q = x;
         query_l2norm = fvec_norm_L2sqr(q, d);
+    }
+
+    const float* get_query() const override {
+        return q;
     }
 
     // compute four distances

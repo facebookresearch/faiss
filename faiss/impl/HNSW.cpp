@@ -801,6 +801,16 @@ int search_from_candidates_panorama(
     std::vector<idx_t> index_array(M);
     std::vector<float> exact_distances(M);
 
+    const float* query = flat_codes_qdis->get_query();
+    std::vector<float> query_cum_sums(panorama_index->num_panorama_levels + 1);
+    IndexHNSWFlatPanorama::compute_cum_sums(
+            query,
+            query_cum_sums.data(),
+            panorama_index->d,
+            panorama_index->num_panorama_levels,
+            panorama_index->panorama_level_width);
+    float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
+
     int nstep = 0;
 
     while (candidates.size() > 0) {
@@ -832,8 +842,8 @@ int search_from_candidates_panorama(
 
             const float* cum_sums_v1 = panorama_index->get_cum_sum(v1);
             index_array[initial_size] = v1;
-            exact_distances[initial_size] = panorama_index->query_norm_sq +
-                    cum_sums_v1[0] * cum_sums_v1[0];
+            exact_distances[initial_size] =
+                    query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
             initial_size += vt.get(v1) ? 0 : 1;
 
             vt.set(v1);
@@ -844,8 +854,7 @@ int search_from_candidates_panorama(
         threshold = res.threshold;
         const size_t num_panorama_levels = panorama_index->num_panorama_levels;
         while (curr_panorama_level < num_panorama_levels && batch_size > 0) {
-            float query_cum_norm =
-                    panorama_index->query_cum_sums[curr_panorama_level + 1];
+            float query_cum_norm = query_cum_sums[curr_panorama_level + 1];
 
             const size_t panorama_level_width =
                     panorama_index->panorama_level_width;
@@ -969,6 +978,7 @@ int search_from_candidates_panorama(
                     nres += 1;
                 }
             }
+            candidates.push(idx, exact_distances[i]);
         }
 
         nstep++;

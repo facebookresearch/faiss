@@ -162,27 +162,20 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
     void reset() override;
     void permute_entries(const idx_t* perm) override;
 
-    // Inline for performance - called frequently in search hot path.
+    /// Inline for performance - called frequently in search hot path.
     const float* get_cum_sum(idx_t i) const {
         return cum_sums.data() + i * (num_panorama_levels + 1);
     }
 
-    void search(
-            idx_t n,
+    /// Compute cumulative sums for a vector (used both for database points and
+    /// queries).
+    static void compute_cum_sums(
             const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params = nullptr) const override;
-    void range_search(
-            idx_t n,
-            const float* x,
-            float radius,
-            RangeSearchResult* result,
-            const SearchParameters* params = nullptr) const override;
+            float* dst_cum_sums,
+            int d,
+            int num_panorama_levels,
+            int panorama_level_width);
 
-    mutable std::vector<float> query_cum_sums;
-    mutable float query_norm_sq;
     std::vector<float> cum_sums;
     const size_t panorama_level_width;
     const size_t num_panorama_levels;

@@ -133,7 +133,13 @@ struct RaBitDistanceComputer : FlatCodesDistanceComputer {
     // the metric
     MetricType metric_type = MetricType::METRIC_L2;
 
+    const float* q = nullptr;
+
     RaBitDistanceComputer();
+
+    const float* get_query() const override {
+        return q;
+    }
 
     float symmetric_dis(idx_t i, idx_t j) override;
 };
@@ -219,6 +225,7 @@ float RaBitDistanceComputerNotQ::distance_to_code(const uint8_t* code) {
 }
 
 void RaBitDistanceComputerNotQ::set_query(const float* x) {
+    q = x;
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||
@@ -343,6 +350,7 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
 using rabitq_utils::Z_MAX_BY_QB;
 
 void RaBitDistanceComputerQ::set_query(const float* x) {
+    q = x;
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||

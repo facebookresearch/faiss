@@ -651,8 +651,7 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
 
-namespace {
-void compute_cum_sums(
+void IndexHNSWFlatPanorama::compute_cum_sums(
         const float* x,
         float* dst_cum_sums,
         int d,
@@ -673,12 +672,9 @@ void compute_cum_sums(
         dst_cum_sums[level] = sqrt(sum);
     }
 }
-} // namespace
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
         : IndexHNSWFlat(),
-          query_cum_sums(),
-          query_norm_sq(0.0f),
           cum_sums(),
           panorama_level_width(0),
           num_panorama_levels(0) {}
@@ -689,11 +685,9 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int num_panorama_levels,
         MetricType metric)
         : IndexHNSWFlat(d, M, metric),
-          query_cum_sums(num_panorama_levels + 1),
-          query_norm_sq(0.0f),
           cum_sums(),
           panorama_level_width(
-                  d + (num_panorama_levels - 1) / num_panorama_levels),
+                  (d + num_panorama_levels - 1) / num_panorama_levels),
           num_panorama_levels(num_panorama_levels) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
@@ -740,39 +734,6 @@ void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
 
     std::swap(cum_sums, new_cum_sums);
     IndexHNSWFlat::permute_entries(perm);
-}
-
-void IndexHNSWFlatPanorama::search(
-        idx_t n,
-        const float* x,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const SearchParameters* params) const {
-    compute_cum_sums(
-            x,
-            query_cum_sums.data(),
-            d,
-            num_panorama_levels,
-            panorama_level_width);
-    query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
-    IndexHNSWFlat::search(n, x, k, distances, labels, params);
-}
-
-void IndexHNSWFlatPanorama::range_search(
-        idx_t n,
-        const float* x,
-        float radius,
-        RangeSearchResult* result,
-        const SearchParameters* params) const {
-    compute_cum_sums(
-            x,
-            query_cum_sums.data(),
-            d,
-            num_panorama_levels,
-            panorama_level_width);
-    query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
-    IndexHNSWFlat::range_search(n, x, radius, result, params);
 }
 
 /**************************************************************

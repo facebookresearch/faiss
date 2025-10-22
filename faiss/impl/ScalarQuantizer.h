@@ -102,6 +102,10 @@ struct ScalarQuantizer : Quantizer {
 
         SQDistanceComputer() : q(nullptr) {}
 
+        const float* get_query() const override {
+            return q;
+        }
+
         virtual float query_to_code(const uint8_t* code) const = 0;
 
         float distance_to_code(const uint8_t* code) final {

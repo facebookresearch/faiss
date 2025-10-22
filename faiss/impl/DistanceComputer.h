@@ -113,6 +113,11 @@ struct FlatCodesDistanceComputer : DistanceComputer {
     const uint8_t* codes;
     size_t code_size;
 
+    /// Returns a pointer to the currently active query vector.
+    /// Only present for FlatCodesDistanceComputer subclasses
+    /// out of need for Panorama to compute the squared norm of the query.
+    virtual const float* get_query() const = 0;
+
     FlatCodesDistanceComputer(const uint8_t* codes, size_t code_size)
             : codes(codes), code_size(code_size) {}
 
