@@ -947,24 +947,32 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(lean->leanvec_level);
         }
 
-        // Wrap SVS I/O and stream to IOWriter
-        faiss::BufferedIOWriter bwr(f);
-        faiss::svs_io::WriterStreambuf wbuf(&bwr);
-        std::ostream os(&wbuf);
-        svs->serialize_impl(os);
-        os.flush();
+        bool initialized = (svs->impl != nullptr);
+        WRITE1(initialized);
+        if (initialized) {
+            // Wrap SVS I/O and stream to IOWriter
+            faiss::BufferedIOWriter bwr(f);
+            faiss::svs_io::WriterStreambuf wbuf(&bwr);
+            std::ostream os(&wbuf);
+            svs->serialize_impl(os);
+            os.flush();
+        }
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
         uint32_t h = fourcc("ISVF");
         WRITE1(h);
         write_index_header(idx, f);
 
-        // Wrap SVS I/O and stream to IOWriter
-        faiss::BufferedIOWriter bwr(f);
-        faiss::svs_io::WriterStreambuf wbuf(&bwr);
-        std::ostream os(&wbuf);
-        svs->serialize_impl(os);
-        os.flush();
+        bool initialized = (svs->impl != nullptr);
+        WRITE1(initialized);
+        if (initialized) {
+            // Wrap SVS I/O and stream to IOWriter
+            faiss::BufferedIOWriter bwr(f);
+            faiss::svs_io::WriterStreambuf wbuf(&bwr);
+            std::ostream os(&wbuf);
+            svs->serialize_impl(os);
+            os.flush();
+        }
     }
 #endif // FAISS_ENABLE_SVS
     else {

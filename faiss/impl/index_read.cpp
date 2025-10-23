@@ -1303,22 +1303,29 @@ Index* read_index(IOReader* f, int io_flags) {
             READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_d);
             READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
         }
-
-        // Create a non-buffering stream adapter from IOReader
-        faiss::svs_io::ReaderStreambuf rbuf(f);
-        std::istream is(&rbuf);
-        svs->deserialize_impl(is);
-        idx = svs;
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            // Create a non-buffering stream adapter from IOReader
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs->deserialize_impl(is);
+            idx = svs;
+        }
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
         IndexSVSFlat* svs = new IndexSVSFlat();
         read_index_header(svs, f);
 
-        // Create a non-buffering stream adapter from IOReader
-        faiss::svs_io::ReaderStreambuf rbuf(f);
-        std::istream is(&rbuf);
-        svs->deserialize_impl(is);
-        idx = svs;
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            // Create a non-buffering stream adapter from IOReader
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs->deserialize_impl(is);
+            idx = svs;
+        }
     }
 #endif // FAISS_ENABLE_SVS
     else {
