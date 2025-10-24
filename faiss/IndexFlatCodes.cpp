@@ -142,6 +142,10 @@ struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
         query = x;
     }
 
+    const float* get_query() const override {
+        return query;
+    }
+
     float operator()(idx_t i) override {
         codec.sa_decode(1, codes + i * code_size, vec_buffer.data());
         return vd(query, vec_buffer.data());
