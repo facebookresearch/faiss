@@ -27,6 +27,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -247,6 +248,33 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
     if (ils == nullptr) {
         uint32_t h = fourcc("il00");
         WRITE1(h);
+    } else if (
+            const auto& ailp =
+                    dynamic_cast<const ArrayInvertedListsPanorama*>(ils)) {
+        uint32_t h = fourcc("ilpn");
+        WRITE1(h);
+        WRITE1(ailp->nlist);
+        WRITE1(ailp->code_size);
+        WRITE1(ailp->n_levels);
+        uint32_t list_type = fourcc("full");
+        WRITE1(list_type);
+        std::vector<size_t> sizes;
+        sizes.reserve(ailp->nlist);
+        for (size_t i = 0; i < ailp->nlist; i++) {
+            sizes.push_back(ailp->ids[i].size());
+        }
+        WRITEVECTOR(sizes);
+
+        // Write codes, ids, and cum_sums
+        for (size_t i = 0; i < ailp->nlist; i++) {
+            size_t n = ailp->ids[i].size();
+            if (n > 0) {
+                WRITEANDCHECK(ailp->codes[i].data(), ailp->codes[i].size());
+                WRITEANDCHECK(ailp->ids[i].data(), n);
+                WRITEANDCHECK(
+                        ailp->cum_sums[i].data(), ailp->cum_sums[i].size());
+            }
+        }
     } else if (
             const auto& ails = dynamic_cast<const ArrayInvertedLists*>(ils)) {
         uint32_t h = fourcc("ilar");
@@ -640,6 +668,14 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITEVECTOR(tab);
         }
         write_InvertedLists(ivfl->invlists, f);
+    } else if (
+            const IndexIVFFlatPanorama* ivfp =
+                    dynamic_cast<const IndexIVFFlatPanorama*>(idx)) {
+        uint32_t h = fourcc("IwPn");
+        WRITE1(h);
+        write_ivf_header(ivfp, f);
+        WRITE1(ivfp->n_levels);
+        write_InvertedLists(ivfp->invlists, f);
     } else if (
             const IndexIVFFlat* ivfl_2 =
                     dynamic_cast<const IndexIVFFlat*>(idx)) {
