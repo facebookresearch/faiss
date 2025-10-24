@@ -72,7 +72,7 @@ void IndexPQ::train(idx_t n, const float* x) {
 
 namespace {
 
-template <class PQDecoder>
+template <class PQCodeDistance>
 struct PQDistanceComputer : FlatCodesDistanceComputer {
     size_t d;
     MetricType metric;
@@ -85,7 +85,7 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     float distance_to_code(const uint8_t* code) final {
         ndis++;
 
-        float dis = distance_single_code<PQDecoder>(
+        float dis = PQCodeDistance::distance_single_code(
                 pq.M, pq.nbits, precomputed_table.data(), code);
         return dis;
     }
@@ -94,8 +94,10 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
         FAISS_THROW_IF_NOT(sdc);
         const float* sdci = sdc;
         float accu = 0;
-        PQDecoder codei(codes + i * code_size, pq.nbits);
-        PQDecoder codej(codes + j * code_size, pq.nbits);
+        typename PQCodeDistance::PQDecoder codei(
+                codes + i * code_size, pq.nbits);
+        typename PQCodeDistance::PQDecoder codej(
+                codes + j * code_size, pq.nbits);
 
         for (int l = 0; l < pq.M; l++) {
             accu += sdci[codei.decode() + (codej.decode() << codei.nbits)];
@@ -131,16 +133,24 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     }
 };
 
+template <SIMDLevel SL>
+FlatCodesDistanceComputer* get_FlatCodesDistanceComputer1(
+        const IndexPQ& index) {
+    int nbits = index.pq.nbits;
+    if (nbits == 8) {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoder8, SL>>(index);
+    } else if (nbits == 16) {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoder16, SL>>(index);
+    } else {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoderGeneric, SL>>(
+                index);
+    }
+}
+
 } // namespace
 
 FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
-    if (pq.nbits == 8) {
-        return new PQDistanceComputer<PQDecoder8>(*this);
-    } else if (pq.nbits == 16) {
-        return new PQDistanceComputer<PQDecoder16>(*this);
-    } else {
-        return new PQDistanceComputer<PQDecoderGeneric>(*this);
-    }
+    DISPATCH_SIMDLevel(get_FlatCodesDistanceComputer1, *this);
 }
 
 /*****************************************
