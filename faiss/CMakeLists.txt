@@ -102,6 +102,16 @@ set(FAISS_SRC
   utils/distances_fused/simdlib_based.cpp
 )
 
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_SRC
+    svs/IndexSVSFlat.cpp
+    svs/IndexSVSVamana.cpp
+    svs/IndexSVSVamanaLVQ.cpp
+    svs/IndexSVSVamanaLeanVec.cpp
+    impl/svs_io.cpp
+  )
+endif()
+
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
@@ -245,6 +255,15 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
 )
+
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_HEADERS
+    svs/IndexSVSFlat.h
+    svs/IndexSVSVamana.h
+    svs/IndexSVSVamanaLVQ.h
+    svs/IndexSVSVamanaLeanVec.h
+  )
+endif()
 
 if(NOT WIN32)
   list(APPEND FAISS_SRC invlists/OnDiskInvertedLists.cpp)
