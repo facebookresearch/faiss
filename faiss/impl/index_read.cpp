@@ -340,7 +340,8 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
                     ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                    ArrayInvertedListsPanorama::kBatchSize) * ArrayInvertedListsPanorama::kBatchSize;
+                     ArrayInvertedListsPanorama::kBatchSize) *
+                    ArrayInvertedListsPanorama::kBatchSize;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
