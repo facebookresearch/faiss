@@ -29,6 +29,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
@@ -327,6 +328,34 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
                 "read_InvertedLists:"
                 " WARN! inverted lists not stored with IVF object\n");
         return nullptr;
+    } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        size_t nlist, code_size, n_levels;
+        READ1(nlist);
+        READ1(code_size);
+        READ1(n_levels);
+        auto ailp = new ArrayInvertedListsPanorama(nlist, code_size, n_levels);
+        std::vector<size_t> sizes(nlist);
+        read_ArrayInvertedLists_sizes(f, sizes);
+        for (size_t i = 0; i < nlist; i++) {
+            ailp->ids[i].resize(sizes[i]);
+            size_t num_elems =
+                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
+                     ArrayInvertedListsPanorama::kBatchSize) *
+                    ArrayInvertedListsPanorama::kBatchSize;
+            ailp->codes[i].resize(num_elems * code_size);
+            ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
+        }
+        for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
+            if (n > 0) {
+                read_vector_with_known_size(
+                        ailp->codes[i], f, ailp->codes[i].size());
+                read_vector_with_known_size(ailp->ids[i], f, n);
+                read_vector_with_known_size(
+                        ailp->cum_sums[i], f, ailp->cum_sums[i].size());
+            }
+        }
+        return ailp;
     } else if (h == fourcc("ilar") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         auto ails = new ArrayInvertedLists(0, 0);
         READ1(ails->nlist);
@@ -929,6 +958,13 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         read_InvertedLists(ivfl, f, io_flags);
         idx = ivfl;
+    } else if (h == fourcc("IwPn")) {
+        IndexIVFFlatPanorama* ivfp = new IndexIVFFlatPanorama();
+        read_ivf_header(ivfp, f);
+        ivfp->code_size = ivfp->d * sizeof(float);
+        READ1(ivfp->n_levels);
+        read_InvertedLists(ivfp, f, io_flags);
+        idx = ivfp;
     } else if (h == fourcc("IwFl")) {
         IndexIVFFlat* ivfl = new IndexIVFFlat();
         read_ivf_header(ivfl, f);
