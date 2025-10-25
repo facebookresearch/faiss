@@ -44,6 +44,8 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     this->own_invlists = own_invlists;
 }
 
+IndexIVFFlatPanorama::IndexIVFFlatPanorama() : n_levels(0) {}
+
 namespace {
 
 template <typename VectorDistance, bool use_sel>

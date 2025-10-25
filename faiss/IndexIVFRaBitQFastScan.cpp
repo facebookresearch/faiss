@@ -320,7 +320,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
 
-    size_t nprobe = this->nprobe;
+    size_t nprobe = cq.nprobe;
 
     size_t dim12 = 16 * M;
 

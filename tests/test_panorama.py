@@ -15,6 +15,8 @@ Paper: https://www.arxiv.org/pdf/2510.00566
 """
 
 import unittest
+import tempfile
+import os
 
 import faiss
 import numpy as np
@@ -515,7 +517,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         D_reg_2, I_reg_2 = index_regular.search(xq, k)
         D_pan_2, I_pan_2 = index_panorama.search(xq, k)
         self.assert_search_results_equal(D_reg_2, I_reg_2, D_pan_2, I_pan_2)
-
+    
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
         d, nb, nt, nq, nlist, k = 128, 500000, 500000, 1, 1, 1
@@ -545,3 +547,27 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
         expected_ratios = [1 / nlevels for nlevels in nlevels_list]
         np.testing.assert_allclose(ratios, expected_ratios, atol=1e-3)
+    
+    def test_serialization(self):
+        """Test that writing and reading Panorama indexes preserves search results"""
+        d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
+        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
+
+        indexes = [self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)]
+
+        for index in indexes:
+            D_before, I_before = index.search(xq, k)
+
+            fd, fname = tempfile.mkstemp()
+            os.close(fd)
+            try:
+                faiss.write_index(index, fname)
+                index_after = faiss.read_index(fname)
+            finally:
+                if os.path.exists(fname):
+                    os.unlink(fname)
+
+            D_after, I_after = index_after.search(xq, k)
+
+            np.testing.assert_array_equal(I_before, I_after)
+            np.testing.assert_array_equal(D_before, D_after)
