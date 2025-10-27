@@ -13,8 +13,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor()
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
           state_(AllocState::NotOwner) {}
@@ -24,8 +23,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::~HostTensor() {
     if (state_ == AllocState::Owner) {
         FAISS_ASSERT(this->data_ != nullptr);
@@ -39,8 +37,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(),
@@ -53,8 +50,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& HostTensor<
         T,
         Dim,
@@ -82,8 +78,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         const IndexT sizes[Dim])
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
@@ -97,8 +92,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         std::initializer_list<IndexT> sizes)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes),
@@ -112,8 +106,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         DataPtrType data,
         const IndexT sizes[Dim])
@@ -125,8 +118,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         DataPtrType data,
         std::initializer_list<IndexT> sizes)
@@ -138,8 +130,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         DataPtrType data,
         const IndexT sizes[Dim],
@@ -152,8 +143,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::HostTensor(
         const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
         cudaStream_t stream)
@@ -175,8 +165,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& HostTensor<
         T,
         Dim,
@@ -198,8 +187,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ T HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>::maxDiff(
         const HostTensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) const {
     auto size = this->numElements();

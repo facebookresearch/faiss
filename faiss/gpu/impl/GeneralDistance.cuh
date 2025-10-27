@@ -137,8 +137,9 @@ __launch_bounds__(TILE_SIZE* TILE_SIZE) __global__ void generalDistance(
             __syncthreads();
 
             // thread (y, x) does (query y, vec x)
-            acc.combine(reduce<T, 8, kDimMultiple, DistanceOp>(
-                    op, queryTile, vecTile));
+            acc.combine(
+                    reduce<T, 8, kDimMultiple, DistanceOp>(
+                            op, queryTile, vecTile));
 
             __syncthreads();
         }
