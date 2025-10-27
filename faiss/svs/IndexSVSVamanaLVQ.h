@@ -27,7 +27,12 @@
 
 namespace faiss {
 
-using LVQLevel = svs::faiss_bind::IndexSVSVamanaLVQImpl::LVQLevel;
+// Enum redefinition to avoid including IndexSVSVamanaLVQImpl.h in swigfaiss
+enum LVQLevel {
+    LVQ4x0 = svs::faiss_bind::IndexSVSVamanaLVQImpl::LVQ4x0,
+    LVQ4x4 = svs::faiss_bind::IndexSVSVamanaLVQImpl::LVQ4x4,
+    LVQ4x8 = svs::faiss_bind::IndexSVSVamanaLVQImpl::LVQ4x8
+};
 
 struct IndexSVSVamanaLVQ : IndexSVSVamana {
     IndexSVSVamanaLVQ() = default;

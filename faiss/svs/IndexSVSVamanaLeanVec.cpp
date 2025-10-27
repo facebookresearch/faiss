@@ -80,7 +80,13 @@ void IndexSVSVamanaLeanVec::create_impl() {
     build_params.construction_window_size = construction_window_size;
     build_params.max_candidate_pool_size = max_candidate_pool_size;
     auto limpl = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::build(
-            d, svs_metric, build_params, leanvec_d, leanvec_level);
+            d,
+            svs_metric,
+            build_params,
+            leanvec_d,
+            static_cast<
+                    svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVecLevel>(
+                    leanvec_level));
     FAISS_THROW_IF_NOT(limpl);
     impl = limpl;
     is_trained = limpl->is_trained();

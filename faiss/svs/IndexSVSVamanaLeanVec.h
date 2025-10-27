@@ -27,7 +27,12 @@
 
 namespace faiss {
 
-using LeanVecLevel = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVecLevel;
+// Enum redefinition to avoid including IndexSVSVamanaLeanVecImpl.h in swigfaiss
+enum LeanVecLevel {
+    LeanVec4x4 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec4x4,
+    LeanVec4x8 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec4x8,
+    LeanVec8x8 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec8x8
+};
 
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     IndexSVSVamanaLeanVec();

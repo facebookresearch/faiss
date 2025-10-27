@@ -45,7 +45,11 @@ void IndexSVSVamanaLVQ::create_impl() {
     build_params.construction_window_size = construction_window_size;
     build_params.max_candidate_pool_size = max_candidate_pool_size;
     impl = svs::faiss_bind::IndexSVSVamanaLVQImpl::build(
-            d, svs_metric, build_params, lvq_level);
+            d,
+            svs_metric,
+            build_params,
+            static_cast<svs::faiss_bind::IndexSVSVamanaLVQImpl::LVQLevel>(
+                    lvq_level));
     FAISS_THROW_IF_NOT(impl);
 }
 
