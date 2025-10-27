@@ -39,6 +39,7 @@ def get_ivf_index(index):
 
 
 def eval_recall(index, nprobe_val):
+    faiss.cvar.indexPanorama_stats.reset()
     t0 = time.time()
     _, I = index.search(xq, k=k)
     t = time.time() - t0
@@ -47,9 +48,11 @@ def eval_recall(index, nprobe_val):
 
     corrects = (gt == I).sum()
     recall = corrects / (nq * k)
+    ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
     print(
         f"\tnprobe {nprobe_val:3d}, Recall@{k}: "
-        f"{recall:.6f}, speed: {speed:.6f} ms/query"
+        f"{recall:.6f}, speed: {speed:.6f} ms/query, "
+        f"dims scanned: {ratio_dims_scanned * 100:.2f}%"
     )
 
     return recall, qps
