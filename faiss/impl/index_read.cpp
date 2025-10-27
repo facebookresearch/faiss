@@ -1310,8 +1310,8 @@ Index* read_index(IOReader* f, int io_flags) {
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
-            idx = svs;
         }
+        idx = svs;
     } else if (h == fourcc("ISVF")) {
         // SVS Flat
         IndexSVSFlat* svs = new IndexSVSFlat();
