@@ -378,7 +378,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="32" column="18" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="47" bodyend="86"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="32" column="18" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="47" bodyend="87"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a21604d6b8b8d42e6cc78c26e85564027" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -397,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="37" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="89" bodyend="117"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="37" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="90" bodyend="118"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a30ade89dc4e571868cf121e5592d6687" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -416,7 +416,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="42" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="120" bodyend="149"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="42" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="121" bodyend="150"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1af5188782bc9e776800b96d1610b3f22b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -434,7 +434,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="43" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="152" bodyend="156"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="43" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="153" bodyend="157"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a4536f6e7a8cce1f79bebc420ae1e909b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -449,7 +449,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="47" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="159" bodyend="163"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="47" column="10" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="160" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1ThreadedIndex_1a2f9cadbcb9335c0833f61259230429a7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -596,7 +596,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ThreadedIndex.h" line="75" column="17" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="172" bodyend="190"/>
+        <location file="faiss/impl/ThreadedIndex.h" line="75" column="17" bodyfile="faiss/impl/ThreadedIndex-inl.h" bodystart="173" bodyend="191"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
