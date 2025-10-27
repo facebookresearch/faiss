@@ -206,6 +206,7 @@
     <innerclass refid="structfaiss_1_1OperatingPoint" prot="public">faiss::OperatingPoint</innerclass>
     <innerclass refid="structfaiss_1_1OperatingPoints" prot="public">faiss::OperatingPoints</innerclass>
     <innerclass refid="structfaiss_1_1OPQMatrix" prot="public">faiss::OPQMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1PanoramaStats" prot="public">faiss::PanoramaStats</innerclass>
     <innerclass refid="structfaiss_1_1ParameterRange" prot="public">faiss::ParameterRange</innerclass>
     <innerclass refid="structfaiss_1_1ParameterSpace" prot="public">faiss::ParameterSpace</innerclass>
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
@@ -671,6 +672,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="257" column="28" declfile="faiss/impl/HNSW.h" declline="257" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
+        <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
+        <definition>FAISS_API PanoramaStats faiss::indexPanorama_stats</definition>
+        <argsstring></argsstring>
+        <name>indexPanorama_stats</name>
+        <qualifiedname>faiss::indexPanorama_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="34" column="32" declfile="faiss/impl/PanoramaStats.h" declline="34" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>

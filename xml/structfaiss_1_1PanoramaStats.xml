@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1PanoramaStats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::PanoramaStats</compoundname>
+    <includes refid="PanoramaStats_8h" local="no">PanoramaStats.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1PanoramaStats_1aa8a51f62835cf72dabe89a1e606d3d11" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::PanoramaStats::total_dims_scanned</definition>
+        <argsstring></argsstring>
+        <name>total_dims_scanned</name>
+        <qualifiedname>faiss::PanoramaStats::total_dims_scanned</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="22" column="14" bodyfile="faiss/impl/PanoramaStats.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PanoramaStats_1a9bff63c5a4c5bc0b47b7c1328d5f5d40" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::PanoramaStats::total_dims</definition>
+        <argsstring></argsstring>
+        <name>total_dims</name>
+        <qualifiedname>faiss::PanoramaStats::total_dims</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="23" column="14" bodyfile="faiss/impl/PanoramaStats.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1PanoramaStats_1a63d758623e3e3c8d7cae761ac30e0864" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::PanoramaStats::ratio_dims_scanned</definition>
+        <argsstring></argsstring>
+        <name>ratio_dims_scanned</name>
+        <qualifiedname>faiss::PanoramaStats::ratio_dims_scanned</qualifiedname>
+        <initializer>= 1.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="24" column="11" bodyfile="faiss/impl/PanoramaStats.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1PanoramaStats_1a000763ff8f928854645e3e4a3346ee66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::PanoramaStats::PanoramaStats</definition>
+        <argsstring>()</argsstring>
+        <name>PanoramaStats</name>
+        <qualifiedname>faiss::PanoramaStats::PanoramaStats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="26" column="5" bodyfile="faiss/impl/PanoramaStats.h" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PanoramaStats_1a97d804b5c183e3ef46f2be45ace632d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PanoramaStats::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::PanoramaStats::reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="29" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1PanoramaStats_1adc244aabdfb1da7c9a8d6ff811c6c394" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::PanoramaStats::add</definition>
+        <argsstring>(const PanoramaStats &amp;other)</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::PanoramaStats::add</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/PanoramaStats.h" line="30" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Statistics are not robust to internal threading nor to concurrent Panorama searches. Use these values in a single-threaded context to accurately gauge Panorama&apos;s pruning effectiveness. </para>
+    </detaileddescription>
+    <location file="faiss/impl/PanoramaStats.h" line="21" column="1" bodyfile="faiss/impl/PanoramaStats.h" bodystart="21" bodyend="31"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1PanoramaStats_1adc244aabdfb1da7c9a8d6ff811c6c394" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>add</name></member>
+      <member refid="structfaiss_1_1PanoramaStats_1a000763ff8f928854645e3e4a3346ee66" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>PanoramaStats</name></member>
+      <member refid="structfaiss_1_1PanoramaStats_1a63d758623e3e3c8d7cae761ac30e0864" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>ratio_dims_scanned</name></member>
+      <member refid="structfaiss_1_1PanoramaStats_1a97d804b5c183e3ef46f2be45ace632d7" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1PanoramaStats_1a9bff63c5a4c5bc0b47b7c1328d5f5d40" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>total_dims</name></member>
+      <member refid="structfaiss_1_1PanoramaStats_1aa8a51f62835cf72dabe89a1e606d3d11" prot="public" virt="non-virtual"><scope>faiss::PanoramaStats</scope><name>total_dims_scanned</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

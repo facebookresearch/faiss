@@ -8056,6 +8056,14 @@
     <member refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" kind="function"><name>apply</name></member>
   </compound>
+  <compound refid="structfaiss_1_1PanoramaStats" kind="struct"><name>faiss::PanoramaStats</name>
+    <member refid="structfaiss_1_1PanoramaStats_1aa8a51f62835cf72dabe89a1e606d3d11" kind="variable"><name>total_dims_scanned</name></member>
+    <member refid="structfaiss_1_1PanoramaStats_1a9bff63c5a4c5bc0b47b7c1328d5f5d40" kind="variable"><name>total_dims</name></member>
+    <member refid="structfaiss_1_1PanoramaStats_1a63d758623e3e3c8d7cae761ac30e0864" kind="variable"><name>ratio_dims_scanned</name></member>
+    <member refid="structfaiss_1_1PanoramaStats_1a000763ff8f928854645e3e4a3346ee66" kind="function"><name>PanoramaStats</name></member>
+    <member refid="structfaiss_1_1PanoramaStats_1a97d804b5c183e3ef46f2be45ace632d7" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1PanoramaStats_1adc244aabdfb1da7c9a8d6ff811c6c394" kind="function"><name>add</name></member>
+  </compound>
   <compound refid="structfaiss_1_1ParameterRange" kind="struct"><name>faiss::ParameterRange</name>
     <member refid="structfaiss_1_1ParameterRange_1a5db7cd6389a8303c7fb98d668b9a7625" kind="variable"><name>name</name></member>
     <member refid="structfaiss_1_1ParameterRange_1a5e4f4836fe1f0c9be007c8009a068c7a" kind="variable"><name>values</name></member>
@@ -10425,6 +10433,7 @@
     <member refid="namespacefaiss_1a3d829413dc05d84f9564a4fa8d831456" kind="typedef"><name>float_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a4bd3ab42c7aaf074f798553a68eacd52" kind="typedef"><name>int_maxheap_array_t</name></member>
     <member refid="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" kind="variable"><name>hnsw_stats</name></member>
+    <member refid="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" kind="variable"><name>indexPanorama_stats</name></member>
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
     <member refid="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" kind="variable"><name>simd_result_handlers_accept_virtual</name></member>
@@ -10723,17 +10732,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d149" kind="namespace"><name>faiss::@149</name>
+  <compound refid="namespacefaiss_1_1_0d150" kind="namespace"><name>faiss::@150</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d158" kind="namespace"><name>faiss::@158</name>
+  <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d177" kind="namespace"><name>faiss::@177</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d179" kind="namespace"><name>faiss::@179</name>
+  <compound refid="namespacefaiss_1_1_0d178" kind="namespace"><name>faiss::@178</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d180" kind="namespace"><name>faiss::@180</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d181" kind="namespace"><name>faiss::@181</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d182" kind="namespace"><name>faiss::@182</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -11271,6 +11280,8 @@
   <compound refid="NNDescent_8h" kind="file"><name>NNDescent.h</name>
   </compound>
   <compound refid="NSG_8h" kind="file"><name>NSG.h</name>
+  </compound>
+  <compound refid="PanoramaStats_8h" kind="file"><name>PanoramaStats.h</name>
   </compound>
   <compound refid="platform__macros_8h" kind="file"><name>platform_macros.h</name>
     <member refid="platform__macros_8h_1a42c3236f250a1cda84bbf4932470fe89" kind="define"><name>FAISS_API</name></member>
