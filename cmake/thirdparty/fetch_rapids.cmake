@@ -16,6 +16,7 @@
 # the License.
 # =============================================================================
 set(RAPIDS_VERSION "25.10")
+set(rapids-cmake-version ${RAPIDS_VERSION})
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/FAISS_RAPIDS.cmake)
     file(DOWNLOAD https://raw.githubusercontent.com/rapidsai/rapids-cmake/branch-${RAPIDS_VERSION}/RAPIDS.cmake
