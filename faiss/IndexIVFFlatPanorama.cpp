@@ -131,6 +131,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         size_t cumsum_batch_offset =
                 batch_no * storage->kBatchSize * (storage->n_levels + 1);
         const float* batch_cum_sums = cum_sums_data + cumsum_batch_offset;
+        const float* level_cum_sums = batch_cum_sums + storage->kBatchSize;
 
         size_t batch_offset = batch_no * storage->kBatchSize * code_size;
         const uint8_t* storage_base = codes_base + batch_offset;
@@ -152,48 +153,16 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             return 0;
         }
 
-        size_t total_active = num_active;
-
-        const float* level_cum_sums = batch_cum_sums + storage->kBatchSize;
-
-        // Progressive filtering through levels.
-        for (size_t level = 0; level < storage->n_levels; level++) {
-            local_stats.total_dims_scanned += num_active;
-            local_stats.total_dims += total_active;
-
-            float query_cum_norm = cum_sums[level + 1];
-
-            size_t level_offset =
-                    level * storage->level_width * storage->kBatchSize;
-            const float* level_storage =
-                    (const float*)(storage_base + level_offset);
-
-            size_t next_active = 0;
-            for (size_t i = 0; i < num_active; i++) {
-                uint32_t idx = active_indices[i];
-                const float* yj = level_storage + idx * level_width_floats;
-                const float* query_level = xi + level * level_width_floats;
-
-                size_t actual_level_width = std::min(
-                        level_width_floats, d - level * level_width_floats);
-                float dot_product =
-                        fvec_inner_product(query_level, yj, actual_level_width);
-
-                exact_distances[idx] -= 2.0f * dot_product;
-
-                float cum_sum = level_cum_sums[idx];
-                float cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
-                float lower_bound = exact_distances[idx] - cauchy_schwarz_bound;
-
-                active_indices[next_active] = idx;
-                next_active += C::cmp(threshold, lower_bound) ? 1 : 0;
-            }
-
-            num_active = next_active;
-            level_cum_sums += storage->kBatchSize;
-        }
-
-        return num_active;
+        return storage->pano.progressive_filter_batch<C>(
+                storage_base,
+                level_cum_sums,
+                xi,
+                cum_sums.data(),
+                active_indices,
+                exact_distances,
+                num_active,
+                threshold,
+                local_stats);
     }
 
     size_t scan_codes(

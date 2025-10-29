@@ -6,6 +6,7 @@
  */
 
 #include <faiss/impl/Panorama.h>
+#include <faiss/utils/distances.h>
 
 #include <algorithm>
 #include <cmath>
@@ -26,6 +27,7 @@ Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
 void Panorama::set_derived_values() {
     this->d = code_size / sizeof(float);
     this->level_width = ((d + n_levels - 1) / n_levels) * sizeof(float);
+    this->level_width_floats = this->level_width / sizeof(float);
 }
 
 void Panorama::copy_codes_to_level_layout(
@@ -111,4 +113,5 @@ void Panorama::compute_cumulative_sums(
         cumsum_base[cumsum_offset] = 0.0f;
     }
 }
+
 } // namespace faiss

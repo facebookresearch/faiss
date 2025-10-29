@@ -101,19 +101,21 @@ struct IndexFlatL2 : IndexFlat {
 };
 
 struct IndexFlatL2Panorama : IndexFlatL2 {
-    // TODO(aknayar): Confirm this value.
-    constexpr static size_t batch_size = 4096;
+    const size_t batch_size;
     const int n_levels;
     const size_t level_width;
     std::vector<float> cum_sums;
 
     /**
      * @param d dimensionality of the input vectors
+     * @param n_levels number of Panorama levels
+     * @param batch_size batch size for Panorama storage
      */
-    explicit IndexFlatL2Panorama(idx_t d, int n_levels)
+    explicit IndexFlatL2Panorama(idx_t d, int n_levels, size_t batch_size = 128)
             : IndexFlatL2(d),
               n_levels(n_levels),
               level_width(((d + n_levels - 1) / n_levels) * sizeof(float)),
+              batch_size(batch_size),
               pano(d, n_levels, batch_size) {}
 
     void add(idx_t n, const float* x) override;

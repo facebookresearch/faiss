@@ -284,6 +284,7 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     std::vector<MaybeOwnedVector<float>> cum_sums;
     const size_t n_levels;
     const size_t level_width; // in code units
+    Panorama pano;
 
     ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
 
@@ -319,9 +320,6 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
 
     /// Frees codes returned by `get_single_code`.
     void release_codes(size_t list_no, const uint8_t* codes) const override;
-
-   private:
-    Panorama pano;
 };
 
 /*****************************************************************
