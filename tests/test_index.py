@@ -24,7 +24,7 @@ class TestModuleInterface(unittest.TestCase):
 
 
 class TestIndexFlat(unittest.TestCase):
-
+    # TODO(aknayar): Add test for IndexFlatL2Panorama.
     def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
         d = 32
         nb = 1000

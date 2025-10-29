@@ -11,12 +11,15 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
+#include <omp.h>
 #include <cstring>
+#include <numeric>
 
 namespace faiss {
 
@@ -525,11 +528,15 @@ void IndexFlat1D::search(
  ***************************************************/
 
 void IndexFlatL2Panorama::add(idx_t n, const float* x) {
+    size_t offset = ntotal;
     IndexFlatL2::add(n, x);
 
+    size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
-    pano.copy_codes_to_level_layout(codes.data(), 0, n, code);
-    pano.compute_cumulative_sums(cum_sums.data(), 0, n, code);
+    pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
+    pano.compute_cumulative_sums(cum_sums.data(), offset, n, code);
 }
 
 void IndexFlatL2Panorama::search(
@@ -539,53 +546,153 @@ void IndexFlatL2Panorama::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    // IDSelector* sel = params ? params->sel : nullptr;
-    // FAISS_ASSERT(sel == nullptr);
-    // FAISS_THROW_IF_NOT(k > 0);
-    // FAISS_THROW_IF_NOT(batch_size >= k);
+    using SingleResultHandler =
+            typename HeapBlockResultHandler<CMax<float, int64_t>, false>::
+                    SingleResultHandler;
 
-    // double search_start = omp_get_wtime();
-    // verification_time = 0.0;
+    IDSelector* sel = params ? params->sel : nullptr;
+    FAISS_ASSERT(sel == nullptr);
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(batch_size >= k);
 
-    // // we see the distances and labels as heaps
-    // if (metric_type == METRIC_INNER_PRODUCT) {
-    //     FAISS_ASSERT(false);
-    //     float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
-    //     knn_inner_product(x, get_xb(), d, n, ntotal, &res, sel);
-    // } else if (metric_type == METRIC_L2) {
-    //     float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
-    //     knn_L2sqr_panorama(
-    //             x,
-    //             get_xb(),
-    //             column_storage_offsets,
-    //             d,
-    //             n,
-    //             ntotal,
-    //             &res,
-    //             n_levels,
-    //             levels_size,
-    //             epsilon,
-    //             cum_sums,
-    //             cum_sum_offsets,
-    //             batch_size);
-    // } else {
-    //     FAISS_ASSERT(false);
-    //     FAISS_THROW_IF_NOT(!sel);
-    //     knn_extra_metrics(
-    //             x,
-    //             get_xb(),
-    //             d,
-    //             n,
-    //             ntotal,
-    //             metric_type,
-    //             metric_arg,
-    //             k,
-    //             distances,
-    //             labels);
-    // }
+    HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
+            size_t(n), distances, labels, size_t(k), nullptr);
+    [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
-    // double search_end = omp_get_wtime();
-    // printf("Search time = %f ms\n", (search_end - search_start) * 1000.0);
-    // printf("Verification time = %f ms\n", (search_end - search_start) * 1000.0);
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler res(handler);
+
+        std::vector<float> query_cum_norms(n_levels + 1);
+        std::vector<float> suffix_sums(d + 1);
+        std::vector<float> query(d);
+        std::vector<float> exact_distances(batch_size);
+        std::vector<uint32_t> active_indices(batch_size);
+        suffix_sums[d] = 0.0f;
+
+        PanoramaStats local_stats;
+        local_stats.reset();
+
+        size_t chunk_size = d / n_levels;
+
+        uint64_t total_active = 0;
+        uint64_t total_points = 0;
+
+        size_t n_batches = (ntotal + batch_size - 1) / batch_size;
+
+#pragma omp for
+        for (int64_t i = 0; i < n; i++) {
+            const float* xi = x + i * d;
+
+            for (int i = d - 1; i >= 0; i--) {
+                float squaredVal = xi[i] * xi[i];
+                suffix_sums[i] = suffix_sums[i + 1] + squaredVal;
+            }
+
+            for (int level_idx = 0; level_idx < n_levels; level_idx++) {
+                int startIdx = level_idx * level_width;
+                if (startIdx < d) {
+                    query_cum_norms[level_idx] = sqrt(suffix_sums[startIdx]);
+                } else {
+                    query_cum_norms[level_idx] = 0.0f;
+                }
+            }
+            query_cum_norms[n_levels] = 0.0f;
+
+            res.begin(i);
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t curr_batch_size =
+                        std::min(ntotal - batch_no * batch_size, batch_size);
+                total_points += curr_batch_size;
+
+                std::iota(
+                        active_indices.begin(),
+                        active_indices.begin() + curr_batch_size,
+                        0);
+
+                size_t cumsum_batch_offset =
+                        batch_no * batch_size * (n_levels + 1);
+                const float* batch_cum_sums =
+                        cum_sums.data() + cumsum_batch_offset;
+                const float* level_cum_sums = batch_cum_sums + batch_size;
+
+                // Initialize with the first cum sums of each point.
+                for (size_t idx = 0; idx < curr_batch_size; idx++) {
+                    float squared_root = batch_cum_sums[idx];
+                    exact_distances[idx] = squared_root * squared_root;
+                }
+
+                idx_t idx_offset = batch_no * batch_size;
+
+                size_t active_num = curr_batch_size;
+                size_t start_dim = 0;
+
+                size_t batch_offset = batch_no * batch_size * code_size;
+                const uint8_t* storage_base = codes.data() + batch_offset;
+
+                active_num =
+                        pano.progressive_filter_batch<CMax<float, int64_t>>(
+                                storage_base,
+                                level_cum_sums,
+                                xi,
+                                query_cum_norms.data(),
+                                active_indices,
+                                exact_distances,
+                                active_num,
+                                res.heap_dis[0],
+                                local_stats);
+                // for (size_t level = 0; level < n_levels; level++) {
+                //     total_active += active_num;
+                //     const float* storage =
+                //             column_storage_offsets[batch_no * n_levels +
+                //             level];
+
+                //     size_t cum_sum_offset = cum_sum_offsets[batch_no];
+                //     const float* cum_sumss = cum_sums + cum_sum_offset +
+                //             (level + 1) * curr_batch_size;
+
+                //     float query_cum_norm = query_cum_norms[level + 1];
+
+                //     size_t next_active = 0;
+
+                //     for (size_t j = 0; j < active_num; j++) {
+                //         int64_t idx = active_indices[j];
+
+                //         const float* yj = storage + idx * chunk_size;
+                //         float dot_product =
+                //                 fvec_inner_product(x_i + start_dim, yj,
+                //                 chunk_size);
+
+                //         float cum_sum = cum_sumss[idx];
+                //         float cauchy_schwarz_bound =
+                //                 2.0f * cum_sum * query_cum_norm;
+
+                //         exact_distances[idx] -= 2.0f * dot_product;
+                //         float new_exact = exact_distances[idx];
+
+                //         float lower_bound =
+                //                 new_exact - cauchy_schwarz_bound;
+                //         float upper_bound = new_exact + cauchy_schwarz_bound;
+
+                //         active_indices[next_active] = idx;
+                //         next_active += res.should_keep(lower_bound);
+                //     }
+
+                //     start_dim += chunk_size;
+                //     active_num = next_active;
+                // }
+
+                for (size_t j = 0; j < active_num; j++) {
+                    res.add_result(
+                            exact_distances[active_indices[j]],
+                            active_indices[j] + idx_offset);
+                }
+            }
+
+            res.end();
+            indexPanorama_stats.add(local_stats);
+        }
+    }
 }
 } // namespace faiss
