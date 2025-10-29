@@ -524,13 +524,12 @@ void IndexFlat1D::search(
  * IndexFlatL2Panorama
  ***************************************************/
 
- void IndexFlatL2Panorama::add(idx_t n, const float* x) {
-    FAISS_ASSERT(d % n_levels == 0);
-
+void IndexFlatL2Panorama::add(idx_t n, const float* x) {
     IndexFlatL2::add(n, x);
 
-    pano.copy_codes_to_level_layout(codes.data(), 0, n, reinterpret_cast<const uint8_t*>(x));
-    pano.compute_cumulative_sums(cum_sums.data(), 0, n, reinterpret_cast<const uint8_t*>(x));
+    const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
+    pano.copy_codes_to_level_layout(codes.data(), 0, n, code);
+    pano.compute_cumulative_sums(cum_sums.data(), 0, n, code);
 }
 
 void IndexFlatL2Panorama::search(
