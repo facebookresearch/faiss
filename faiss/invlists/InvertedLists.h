@@ -19,6 +19,7 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/maybe_owned_vector.h>
+#include <faiss/impl/Panorama.h>
 
 namespace faiss {
 
@@ -283,6 +284,7 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     std::vector<MaybeOwnedVector<float>> cum_sums;
     const size_t n_levels;
     const size_t level_width; // in code units
+    Panorama pano;
 
     ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
 
@@ -318,24 +320,6 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
 
     /// Frees codes returned by `get_single_code`.
     void release_codes(size_t list_no, const uint8_t* codes) const override;
-
-   private:
-    /// Helper method to copy codes into level-oriented batch layout at a given
-    /// offset in the list.
-    void copy_codes_to_level_layout(
-            size_t list_no,
-            size_t offset,
-            size_t n_entry,
-            const uint8_t* code);
-
-    /// Helper method to compute the cumulative sums of the codes.
-    /// The cumsums also follow the level-oriented batch layout to minimize the
-    /// number of random memory accesses.
-    void compute_cumulative_sums(
-            size_t list_no,
-            size_t offset,
-            size_t n_entry,
-            const uint8_t* code);
 };
 
 /*****************************************************************

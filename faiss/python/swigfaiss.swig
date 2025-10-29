@@ -171,6 +171,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/utils/NeuralNet.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -505,6 +506,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
 %include  <faiss/impl/CodePacker.h>
+%include  <faiss/impl/Panorama.h>
 %include  <faiss/impl/PanoramaStats.h>
 
 %include  <faiss/VectorTransform.h>
