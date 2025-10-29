@@ -519,4 +519,74 @@ void IndexFlat1D::search(
     done:;
     }
 }
+
+/***************************************************
+ * IndexFlatL2Panorama
+ ***************************************************/
+
+ void IndexFlatL2Panorama::add(idx_t n, const float* x) {
+    FAISS_ASSERT(d % n_levels == 0);
+
+    IndexFlatL2::add(n, x);
+
+    pano.copy_codes_to_level_layout(codes.data(), 0, n, reinterpret_cast<const uint8_t*>(x));
+    pano.compute_cumulative_sums(cum_sums.data(), 0, n, reinterpret_cast<const uint8_t*>(x));
+}
+
+void IndexFlatL2Panorama::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    // IDSelector* sel = params ? params->sel : nullptr;
+    // FAISS_ASSERT(sel == nullptr);
+    // FAISS_THROW_IF_NOT(k > 0);
+    // FAISS_THROW_IF_NOT(batch_size >= k);
+
+    // double search_start = omp_get_wtime();
+    // verification_time = 0.0;
+
+    // // we see the distances and labels as heaps
+    // if (metric_type == METRIC_INNER_PRODUCT) {
+    //     FAISS_ASSERT(false);
+    //     float_minheap_array_t res = {size_t(n), size_t(k), labels, distances};
+    //     knn_inner_product(x, get_xb(), d, n, ntotal, &res, sel);
+    // } else if (metric_type == METRIC_L2) {
+    //     float_maxheap_array_t res = {size_t(n), size_t(k), labels, distances};
+    //     knn_L2sqr_panorama(
+    //             x,
+    //             get_xb(),
+    //             column_storage_offsets,
+    //             d,
+    //             n,
+    //             ntotal,
+    //             &res,
+    //             n_levels,
+    //             levels_size,
+    //             epsilon,
+    //             cum_sums,
+    //             cum_sum_offsets,
+    //             batch_size);
+    // } else {
+    //     FAISS_ASSERT(false);
+    //     FAISS_THROW_IF_NOT(!sel);
+    //     knn_extra_metrics(
+    //             x,
+    //             get_xb(),
+    //             d,
+    //             n,
+    //             ntotal,
+    //             metric_type,
+    //             metric_arg,
+    //             k,
+    //             distances,
+    //             labels);
+    // }
+
+    // double search_end = omp_get_wtime();
+    // printf("Search time = %f ms\n", (search_end - search_start) * 1000.0);
+    // printf("Verification time = %f ms\n", (search_end - search_start) * 1000.0);
+}
 } // namespace faiss

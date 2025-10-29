@@ -38,11 +38,11 @@ struct Panorama {
             const uint8_t* code);
 
    private:
-    size_t d;
-    size_t code_size;
-    size_t n_levels;
-    size_t level_width;
-    size_t batch_size;
+    size_t d = 0;
+    size_t code_size = 0;
+    size_t n_levels = 0;
+    size_t level_width = 0;
+    size_t batch_size = 0;
 };
 
 } // namespace faiss

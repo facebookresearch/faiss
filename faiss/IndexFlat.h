@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/impl/Panorama.h>
 
 namespace faiss {
 
@@ -97,6 +98,36 @@ struct IndexFlatL2 : IndexFlat {
     void sync_l2norms();
     // clear L2 norms
     void clear_l2norms();
+};
+
+struct IndexFlatL2Panorama : IndexFlatL2 {
+    // TODO(aknayar): Confirm this value.
+    constexpr static size_t batch_size = 4096;
+    const int n_levels;
+    const size_t level_width;
+    std::vector<float> cum_sums;
+
+    /**
+     * @param d dimensionality of the input vectors
+     */
+    explicit IndexFlatL2Panorama(idx_t d, int n_levels)
+            : IndexFlatL2(d),
+              n_levels(n_levels),
+              level_width(((d + n_levels - 1) / n_levels) * sizeof(float)),
+              pano(d, n_levels, batch_size) {}
+
+    void add(idx_t n, const float* x) override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+   private:
+    Panorama pano;
 };
 
 /// optimized version for 1D "vectors".
