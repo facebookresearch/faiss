@@ -1,9 +1,12 @@
 """
-Tests for IndexFlatL2Panorama adapted from IndexIVFFlatPanorama tests.
+Comprehensive test suite for IndexFlatL2Panorama.
 
-All tests enforce nq = 10. IVF-specific parameters (nprobe, nlist) are removed.
-Range-search and ID-selector tests are disabled for now as requested.
-The entire test class is currently skipped (disabled) pending enablement.
+Panorama is an adaptation of IndexFlatL2 that uses level-oriented storage
+and progressive filtering with Cauchy-Schwarz bounds to achieve significant
+speedups (up to 45x when combined with PCA or Cayley transforms) with zero
+loss in accuracy.
+
+Paper: https://www.arxiv.org/pdf/2510.00566
 """
 
 import unittest
@@ -15,7 +18,7 @@ import numpy as np
 from faiss.contrib.datasets import SyntheticDataset
 
 
-# @unittest.skip("Temporarily disabled: enable when ready to run L2FlatPanorama tests")
+# @unittest.skip("Temporarily disabled: enable when ready to run FlatL2Panorama tests")
 class TestIndexFlatL2Panorama(unittest.TestCase):
     """Test Suite for IndexFlatL2Panorama."""
 
