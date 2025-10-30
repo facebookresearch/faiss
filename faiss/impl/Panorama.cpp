@@ -6,7 +6,6 @@
  */
 
 #include <faiss/impl/Panorama.h>
-#include <faiss/utils/distances.h>
 
 #include <algorithm>
 #include <cmath>

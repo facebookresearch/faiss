@@ -70,7 +70,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
-        this->storage->pano.compute_query_cum_sums(this->xi, this->cum_sums.data());
+        this->storage->pano.compute_query_cum_sums(
+                this->xi, this->cum_sums.data());
         q_norm = cum_sums[0] * cum_sums[0];
     }
 
@@ -86,64 +87,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 "IndexIVFFlatPanorama does not support distance_to_code");
     }
 
-    /// Helper function for progressive filtering that both scan_codes and
-    /// scan_codes_range use. Processes a batch of vectors through all levels,
-    /// computing exact distances and pruning based on a threshold.
-    /// Returns the number of active survivors after all levels.
-    size_t progressive_filter_batch(
-            size_t batch_no,
-            size_t list_size,
-            const uint8_t* codes_base,
-            const float* cum_sums_data,
-            float threshold,
-            std::vector<float>& exact_distances,
-            std::vector<uint32_t>& active_indices,
-            const idx_t* ids,
-            PanoramaStats& local_stats) const {
-        const size_t d = vd.d;
-        const size_t level_width_floats = storage->level_width / sizeof(float);
-
-        size_t batch_start = batch_no * storage->kBatchSize;
-        size_t curr_batch_size =
-                std::min(list_size - batch_start, storage->kBatchSize);
-
-        size_t cumsum_batch_offset =
-                batch_no * storage->kBatchSize * (storage->n_levels + 1);
-        const float* batch_cum_sums = cum_sums_data + cumsum_batch_offset;
-        const float* level_cum_sums = batch_cum_sums + storage->kBatchSize;
-
-        size_t batch_offset = batch_no * storage->kBatchSize * code_size;
-        const uint8_t* storage_base = codes_base + batch_offset;
-
-        // Initialize active set with ID-filtered vectors.
-        size_t num_active = 0;
-        for (size_t i = 0; i < curr_batch_size; i++) {
-            size_t global_idx = batch_start + i;
-            bool include = !use_sel || sel->is_member(ids[global_idx]);
-
-            active_indices[num_active] = i;
-            float cum_sum = batch_cum_sums[i];
-            exact_distances[i] = cum_sum * cum_sum + q_norm;
-
-            num_active += include;
-        }
-
-        if (num_active == 0) {
-            return 0;
-        }
-
-        return storage->pano.progressive_filter_batch<C>(
-                storage_base,
-                level_cum_sums,
-                xi,
-                cum_sums.data(),
-                active_indices,
-                exact_distances,
-                num_active,
-                threshold,
-                local_stats);
-    }
-
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
@@ -156,7 +99,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         const size_t n_batches =
                 (list_size + storage->kBatchSize - 1) / storage->kBatchSize;
 
-        const uint8_t* codes_base = codes;
         const float* cum_sums_data = storage->get_cum_sums(list_no);
 
         std::vector<float> exact_distances(storage->kBatchSize);
@@ -183,16 +125,22 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active = progressive_filter_batch(
-                    batch_no,
-                    list_size,
-                    codes_base,
-                    cum_sums_data,
-                    simi[0],
-                    exact_distances,
-                    active_indices,
-                    ids,
-                    local_stats);
+            size_t num_active =
+                    storage->pano
+                            .progressive_filter_batch<CMax<float, int64_t>>(
+                                    codes,
+                                    cum_sums_data,
+                                    xi,
+                                    cum_sums.data(),
+                                    batch_no,
+                                    list_size,
+                                    sel,
+                                    nullptr,
+                                    use_sel,
+                                    active_indices,
+                                    exact_distances,
+                                    simi[0],
+                                    local_stats);
 
             // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
@@ -222,7 +170,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         const size_t n_batches =
                 (list_size + storage->kBatchSize - 1) / storage->kBatchSize;
 
-        const uint8_t* codes_base = codes;
         const float* cum_sums_data = storage->get_cum_sums(list_no);
 
         std::vector<float> exact_distances(storage->kBatchSize);
@@ -236,16 +183,22 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active = progressive_filter_batch(
-                    batch_no,
-                    list_size,
-                    codes_base,
-                    cum_sums_data,
-                    radius,
-                    exact_distances,
-                    active_indices,
-                    ids,
-                    local_stats);
+            size_t num_active =
+                    storage->pano
+                            .progressive_filter_batch<CMax<float, int64_t>>(
+                                    codes,
+                                    cum_sums_data,
+                                    xi,
+                                    cum_sums.data(),
+                                    batch_no,
+                                    list_size,
+                                    sel,
+                                    nullptr,
+                                    use_sel,
+                                    active_indices,
+                                    exact_distances,
+                                    radius,
+                                    local_stats);
 
             // Add batch survivors to range result.
             for (size_t i = 0; i < num_active; i++) {

@@ -10,6 +10,7 @@
 #ifndef FAISS_PANORAMA_H
 #define FAISS_PANORAMA_H
 
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/PanoramaStats.h>
 #include <faiss/utils/distances.h>
 
@@ -47,13 +48,17 @@ struct Panorama {
     /// Returns the number of active survivors after all levels.
     template <typename C>
     size_t progressive_filter_batch(
-            const uint8_t* storage_base,
-            const float* level_cum_sums,
+            const uint8_t* codes_base,
+            const float* cum_sums,
             const float* query,
             const float* query_cum_sums,
+            size_t batch_no,
+            size_t list_size,
+            const IDSelector* sel,
+            const idx_t* ids,
+            bool use_sel,
             std::vector<uint32_t>& active_indices,
             std::vector<float>& exact_distances,
-            size_t num_active,
             float threshold,
             PanoramaStats& local_stats) const;
 
@@ -72,15 +77,48 @@ struct Panorama {
 
 template <typename C>
 size_t Panorama::progressive_filter_batch(
-        const uint8_t* storage_base,
-        const float* level_cum_sums,
+        const uint8_t* codes_base,
+        const float* cum_sums,
         const float* query,
         const float* query_cum_sums,
+        size_t batch_no,
+        size_t list_size,
+        const IDSelector* sel,
+        const idx_t* ids,
+        bool use_sel,
         std::vector<uint32_t>& active_indices,
         std::vector<float>& exact_distances,
-        size_t num_active,
         float threshold,
         PanoramaStats& local_stats) const {
+    size_t batch_start = batch_no * batch_size;
+    size_t curr_batch_size = std::min(list_size - batch_start, batch_size);
+
+    size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
+    const float* batch_cum_sums = cum_sums + cumsum_batch_offset;
+    const float* level_cum_sums = batch_cum_sums + batch_size;
+    float q_norm = query_cum_sums[0] * query_cum_sums[0];
+
+    size_t batch_offset = batch_no * batch_size * code_size;
+    const uint8_t* storage_base = codes_base + batch_offset;
+
+    // Initialize active set with ID-filtered vectors.
+    size_t num_active = 0;
+    for (size_t i = 0; i < curr_batch_size; i++) {
+        size_t global_idx = batch_start + i;
+        idx_t id = (ids == nullptr) ? global_idx : ids[global_idx];
+        bool include = !use_sel || sel->is_member(id);
+
+        active_indices[num_active] = i;
+        float cum_sum = batch_cum_sums[i];
+        exact_distances[i] = cum_sum * cum_sum + q_norm;
+
+        num_active += include;
+    }
+
+    if (num_active == 0) {
+        return 0;
+    }
+
     size_t total_active = num_active;
     for (size_t level = 0; level < n_levels; level++) {
         local_stats.total_dims_scanned += num_active;
@@ -120,7 +158,6 @@ size_t Panorama::progressive_filter_batch(
 
     return num_active;
 }
-
 } // namespace faiss
 
 #endif

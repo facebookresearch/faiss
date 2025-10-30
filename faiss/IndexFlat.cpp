@@ -577,50 +577,24 @@ void IndexFlatL2Panorama::search(
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
             pano.compute_query_cum_sums(xi, query_cum_norms.data());
-            float query_cum_norm = query_cum_norms[0] * query_cum_norms[0];
-
             res.begin(i);
 
             for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-                size_t curr_batch_size =
-                        std::min(ntotal - batch_no * batch_size, batch_size);
-
                 size_t batch_start = batch_no * batch_size;
 
-                size_t cumsum_batch_offset =
-                        batch_no * batch_size * (n_levels + 1);
-                const float* batch_cum_sums =
-                        cum_sums.data() + cumsum_batch_offset;
-                const float* level_cum_sums = batch_cum_sums + batch_size;
-
-                // Initialize active set with ID-filtered vectors.
-                size_t num_active = 0;
-                for (size_t i = 0; i < curr_batch_size; i++) {
-                    bool include = !use_sel || sel->is_member(batch_start + i);
-
-                    active_indices[num_active] = i;
-                    float cum_sum = batch_cum_sums[i];
-                    exact_distances[i] = cum_sum * cum_sum + query_cum_norm;
-
-                    num_active += include;
-                }
-
-                if (num_active == 0) {
-                    continue;
-                }
-
-                size_t batch_offset = batch_no * batch_size * code_size;
-                const uint8_t* storage_base = codes.data() + batch_offset;
-
-                num_active =
+                size_t num_active =
                         pano.progressive_filter_batch<CMax<float, int64_t>>(
-                                storage_base,
-                                level_cum_sums,
+                                codes.data(),
+                                cum_sums.data(),
                                 xi,
                                 query_cum_norms.data(),
+                                batch_no,
+                                ntotal,
+                                sel,
+                                nullptr,
+                                use_sel,
                                 active_indices,
                                 exact_distances,
-                                num_active,
                                 res.heap_dis[0],
                                 local_stats);
 
