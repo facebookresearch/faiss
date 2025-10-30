@@ -562,7 +562,7 @@ void IndexFlatL2Panorama::search(
 
     size_t n_batches = (ntotal + batch_size - 1) / batch_size;
 
-    // #pragma omp parallel num_threads(nt)
+#pragma omp parallel num_threads(nt)
     {
         SingleResultHandler res(handler);
 
@@ -576,7 +576,7 @@ void IndexFlatL2Panorama::search(
         PanoramaStats local_stats;
         local_stats.reset();
 
-        // #pragma omp for
+#pragma omp for
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
 

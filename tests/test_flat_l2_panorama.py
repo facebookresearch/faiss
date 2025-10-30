@@ -376,7 +376,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
-        d, nb, nq, k = 128, 125000, 10, 1
+        d, nb, nq, k = 128, 500000, 10, 1
 
         # Setup: All vectors in the dataset are [1, 1, ..., 1], except for
         # one, which is [0, 0, ..., 0]. The queries are [0, 0, ..., 0]. This
