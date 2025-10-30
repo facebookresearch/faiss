@@ -138,6 +138,15 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
 
    private:
     Panorama pano;
+
+    template <typename BlockHandler, bool use_radius>
+    inline void search_core(
+            BlockHandler& handler,
+            idx_t n,
+            const float* x,
+            float radius,
+            const IDSelector* sel,
+            bool use_sel) const;
 };
 
 /// optimized version for 1D "vectors".
