@@ -43,6 +43,10 @@ struct Panorama {
             size_t n_entry,
             const float* vectors);
 
+    /// Compute the cumulative sums of the query vector.
+    void compute_query_cum_sums(const float* query, float* query_cum_sums)
+            const;
+
     /// Processes a batch of vectors through all levels,
     /// computing exact distances and pruning based on a threshold.
     /// Returns the number of active survivors after all levels.
@@ -61,10 +65,6 @@ struct Panorama {
             std::vector<float>& exact_distances,
             float threshold,
             PanoramaStats& local_stats) const;
-
-    /// Compute the cumulative sums of the query vector.
-    void compute_query_cum_sums(const float* query, float* query_cum_sums)
-            const;
 
    private:
     size_t d = 0;
