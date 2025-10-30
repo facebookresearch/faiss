@@ -414,8 +414,10 @@ void ArrayInvertedListsPanorama::update_entries(
     // Cast to float* is safe here as we guarantee codes are always float
     // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
     const float* vectors = reinterpret_cast<const float*>(code);
-    pano.copy_codes_to_level_layout(codes[list_no].data(), offset, n_entry, code);
-    pano.compute_cumulative_sums(cum_sums[list_no].data(), offset, n_entry, vectors);
+    pano.copy_codes_to_level_layout(
+            codes[list_no].data(), offset, n_entry, code);
+    pano.compute_cumulative_sums(
+            cum_sums[list_no].data(), offset, n_entry, vectors);
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {

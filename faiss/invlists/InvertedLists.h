@@ -18,8 +18,8 @@
 #include <vector>
 
 #include <faiss/MetricType.h>
-#include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/Panorama.h>
+#include <faiss/impl/maybe_owned_vector.h>
 
 namespace faiss {
 
