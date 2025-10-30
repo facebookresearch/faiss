@@ -24,9 +24,10 @@ struct IcmEncoderShards {
             workers;
 
     void add(IcmEncoderImpl* encoder) {
-        workers.emplace_back(std::make_pair(
-                std::unique_ptr<IcmEncoderImpl>(encoder),
-                std::unique_ptr<WorkerThread>(new WorkerThread)));
+        workers.emplace_back(
+                std::make_pair(
+                        std::unique_ptr<IcmEncoderImpl>(encoder),
+                        std::unique_ptr<WorkerThread>(new WorkerThread)));
     }
 
     IcmEncoderImpl* at(int idx) {
@@ -96,7 +97,7 @@ void GpuIcmEncoder::encode(
     auto fn = [=](int idx, IcmEncoderImpl* encoder) {
         size_t i0 = idx * base_shard_size + std::min(size_t(idx), n % nshards);
         size_t ni = base_shard_size;
-        if (ni < n % nshards) {
+        if (idx < n % nshards) {
             ++ni;
         }
         if (ni <= 0) { // only if n < nshards

@@ -8,6 +8,7 @@
 import faiss
 import numpy as np
 
+
 def test_slow():
     d = 256
     index = faiss.index_cpu_to_gpu(faiss.StandardGpuResources(),

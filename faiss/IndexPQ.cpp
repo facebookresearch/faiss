@@ -8,7 +8,6 @@
 #include <faiss/IndexPQ.h>
 
 #include <cinttypes>
-#include <cmath>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>

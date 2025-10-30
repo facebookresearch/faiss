@@ -15,8 +15,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include <sys/types.h>
-
 #ifdef _MSC_VER
 #define NOMINMAX
 #include <windows.h>
@@ -35,7 +33,6 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 
 #ifndef FINTEGER
@@ -105,7 +102,10 @@ int sgemv_(
 namespace faiss {
 
 // this will be set at load time from GPU Faiss
-std::string gpu_compile_options;
+std::string& ref_gpu_compile_options() {
+    static std::string gpu_compile_options;
+    return gpu_compile_options;
+}
 
 std::string get_compile_options() {
     std::string options;
@@ -132,7 +132,7 @@ std::string get_compile_options() {
     options += "GENERIC ";
 #endif
 
-    options += gpu_compile_options;
+    options += ref_gpu_compile_options();
 
     return options;
 }

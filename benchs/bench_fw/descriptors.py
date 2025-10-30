@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 # Important: filenames end with . without extension (npy, codec, index),
 # when writing files, you are required to filename + "npy" etc.
 
+
 @dataclass
 class IndexDescriptorClassic:
     bucket: Optional[str] = None
@@ -50,6 +51,7 @@ class IndexDescriptorClassic:
 
     def __hash__(self):
         return hash(str(self))
+
 
 @dataclass
 class DatasetDescriptor:
@@ -88,6 +90,15 @@ class DatasetDescriptor:
 
     embedding_id_column: Optional[str] = None
 
+    # only used when previous_assignment_table is set
+    # this represents the centroid id that the embedding was mapped to
+    # in a previous clustering job
+    centroid_id_column: Optional[str] = None
+
+    # filters on the dataset where each filter is a
+    # string rep of a filter expression
+    filters: Optional[List[str]] = None
+
     # unused in open-source
     splits_distribution: Optional[List[List[bytes]]] = None
 
@@ -108,6 +119,8 @@ class DatasetDescriptor:
 
     # desc_name
     desc_name: Optional[str] = None
+
+    filename_suffix: Optional[str] = None
 
     normalize_L2: bool = False
 
@@ -134,6 +147,8 @@ class DatasetDescriptor:
             ).replace("=", "_").replace("/", "_")
         if self.num_vectors is not None:
             filename += f"_{self.num_vectors}"
+        if self.filename_suffix is not None:
+            filename += f"_{self.filename_suffix}"
         filename += "."
 
         self.desc_name = filename
@@ -162,6 +177,7 @@ class DatasetDescriptor:
         else:
             t = io.read_json(meta_filename)["k_means_time"]
         return kmeans_vectors, t, None
+
 
 @dataclass
 class IndexBaseDescriptor:
@@ -219,6 +235,8 @@ class CodecDescriptor(IndexBaseDescriptor):
     factory: Optional[str] = None
     construction_params: Optional[List[Dict[str, int]]] = None
     training_vectors: Optional[DatasetDescriptor] = None
+    normalize_l2: bool = False
+    is_spherical: bool = False
     FILENAME_PREFIX: str = "xt"
 
     def __post_init__(self):
@@ -280,6 +298,7 @@ class CodecDescriptor(IndexBaseDescriptor):
         return CodecDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
 
 
+
 @dataclass
 class IndexDescriptor(IndexBaseDescriptor):
     codec_desc: Optional[CodecDescriptor] = None
@@ -312,6 +331,7 @@ class IndexDescriptor(IndexBaseDescriptor):
         if hasattr(benchmark_io, "bucket"):
             return IndexDescriptor(desc_name=self.get_name(), bucket=benchmark_io.bucket, path=self.get_path(benchmark_io), d=self.d, metric=self.metric)
         return IndexDescriptor(desc_name=self.get_name(), d=self.d, metric=self.metric)
+
 
 @dataclass
 class KnnDescriptor(IndexBaseDescriptor):

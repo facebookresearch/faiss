@@ -3252,8 +3252,9 @@ void fvec_inner_products_ny(
         float bf,
         const float* b,
         float* c) {
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++) {
         c[i] = a[i] + bf * b[i];
+    }
 }
 
 #if defined(__AVX512F__)
@@ -3536,10 +3537,11 @@ int fvec_madd_and_argmin(
         float bf,
         const float* b,
         float* c) {
-    if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0)
+    if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0) {
         return fvec_madd_and_argmin_sse(n, a, bf, b, c);
-    else
+    } else {
         return fvec_madd_and_argmin_ref(n, a, bf, b, c);
+    }
 }
 
 #elif defined(__aarch64__)

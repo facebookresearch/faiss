@@ -26,9 +26,16 @@
 
 namespace faiss {
 
-IndexBinaryIVF::IndexBinaryIVF(IndexBinary* quantizer, size_t d, size_t nlist)
+IndexBinaryIVF::IndexBinaryIVF(
+        IndexBinary* quantizer,
+        size_t d,
+        size_t nlist,
+        bool own_invlists)
         : IndexBinary(d),
-          invlists(new ArrayInvertedLists(nlist, code_size)),
+          invlists(
+                  own_invlists ? new ArrayInvertedLists(nlist, code_size)
+                               : nullptr),
+          own_invlists(own_invlists),
           quantizer(quantizer),
           nlist(nlist) {
     FAISS_THROW_IF_NOT(d == quantizer->d);
@@ -283,7 +290,7 @@ void IndexBinaryIVF::check_compatible_for_merge(
             direct_map.no() && other->direct_map.no(),
             "direct map copy not implemented");
     FAISS_THROW_IF_NOT_MSG(
-            typeid(*this) == typeid(other),
+            typeid(*this) == typeid(*other),
             "can only merge indexes of the same type");
 }
 
@@ -444,8 +451,9 @@ void search_knn_hamming_heap(
                         list_size, scodes.get(), ids, simi, idxi, k);
 
                 nscan += list_size;
-                if (max_codes && nscan >= max_codes)
+                if (max_codes && nscan >= max_codes) {
                     break;
+                }
             }
 
             ndis += nscan;
@@ -484,12 +492,13 @@ void search_knn_hamming_count(
 
     std::vector<HCounterState<HammingComputer>> cs;
     for (size_t i = 0; i < nx; ++i) {
-        cs.push_back(HCounterState<HammingComputer>(
-                all_counters.data() + i * nBuckets,
-                all_ids_per_dis.get() + i * nBuckets * k,
-                x + i * ivf->code_size,
-                ivf->d,
-                k));
+        cs.push_back(
+                HCounterState<HammingComputer>(
+                        all_counters.data() + i * nBuckets,
+                        all_ids_per_dis.get() + i * nBuckets * k,
+                        x + i * ivf->code_size,
+                        ivf->d,
+                        k));
     }
 
     size_t nlistv = 0, ndis = 0;
@@ -532,8 +541,9 @@ void search_knn_hamming_count(
             }
 
             nscan += list_size;
-            if (max_codes && nscan >= max_codes)
+            if (max_codes && nscan >= max_codes) {
                 break;
+            }
         }
         ndis += nscan;
 
@@ -850,8 +860,9 @@ void IndexBinaryIVF::range_search_preassigned(
 
         auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
             idx_t key = assign[i * nprobe_2 + ik]; /* select the list  */
-            if (key < 0)
+            if (key < 0) {
                 return;
+            }
             FAISS_THROW_IF_NOT_FMT(
                     key < (idx_t)nlist,
                     "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
@@ -860,8 +871,9 @@ void IndexBinaryIVF::range_search_preassigned(
                     nlist);
             const size_t list_size = invlists->list_size(key);
 
-            if (list_size == 0)
+            if (list_size == 0) {
                 return;
+            }
 
             InvertedLists::ScopedCodes scodes(invlists, key);
             InvertedLists::ScopedIds ids(invlists, key);

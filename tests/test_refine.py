@@ -74,7 +74,15 @@ class TestIndexRefineSearchParams(unittest.TestCase):
         index = faiss.index_factory(32, factory_string)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 4
+
+        # Set nprobe on the base index (for IndexRefine, nprobe belongs to
+        # the IVF base index)
+        if hasattr(index, 'base_index') and hasattr(
+                index.base_index, 'nprobe'):
+            index.base_index.nprobe = 4
+        elif hasattr(index, 'nprobe'):
+            index.nprobe = 4
+
         xq = ds.get_queries()
 
         # do a search with k_factor = 1

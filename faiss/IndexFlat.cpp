@@ -239,6 +239,7 @@ FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
 }
 
 void IndexFlat::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT(key < ntotal);
     memcpy(recons, &(codes[key * code_size]), code_size);
 }
 
@@ -399,8 +400,9 @@ void IndexFlat1D::update_permutation() {
 
 void IndexFlat1D::add(idx_t n, const float* x) {
     IndexFlatL2::add(n, x);
-    if (continuous_update)
+    if (continuous_update) {
         update_permutation();
+    }
 }
 
 void IndexFlat1D::reset() {
@@ -452,10 +454,11 @@ void IndexFlat1D::search(
 
         while (i0 + 1 < i1) {
             idx_t imed = (i0 + i1) / 2;
-            if (xb[perm[imed]] <= q)
+            if (xb[perm[imed]] <= q) {
                 i0 = imed;
-            else
+            } else {
                 i1 = imed;
+            }
         }
 
         // query is between xb[perm[i0]] and xb[perm[i1]]
@@ -516,5 +519,4 @@ void IndexFlat1D::search(
     done:;
     }
 }
-
 } // namespace faiss

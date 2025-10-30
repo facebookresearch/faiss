@@ -6,15 +6,9 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% if cudatoolkit == '11.8.0' %}
-{% set cuda_constraints=">=11.4,<12" %}
-{% set libcublas_constraints=">=11.6,<12" %}
-{% set cudart_constraints="=12.6.77" %}
-{% elif cudatoolkit == '12.4.0' %}
-{% set cuda_constraints=">=12.1,<12.5" %}
-{% set libcublas_constraints=">=12.1,<13" %}
-{% set cudart_constraints=">=12.4,<12.5" %}
-{% endif %}
+{% set cuda_constraints=">=12.6,<12.7" %}
+{% set libcublas_constraints=">=12.6,<12.7" %}
+{% set cudart_constraints=">=12.6,<12.7" %}
 
 package:
   name: faiss-pkg
@@ -50,11 +44,11 @@ outputs:
         - {{ compiler('cxx') }} =12.4
         - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
-        - cmake >=3.26.4
+        - cmake >=3.30.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - mkl-devel =2023  # [x86_64]
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl-devel >=2024.2.2,<2025.0a0  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
         - cuda-cudart {{ cudart_constraints }}
         - cuda-cudart-dev {{ cudart_constraints }}
@@ -64,17 +58,17 @@ outputs:
         - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - openblas =0.3.29 # [not x86_64]
-        - libcuvs =24.12
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - openblas =0.3.30 # [not x86_64]
+        - libcuvs =25.08
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - openblas =0.3.29 # [not x86_64]
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - openblas =0.3.30 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =24.12
+        - libcuvs =25.08
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
     test:
@@ -101,27 +95,26 @@ outputs:
         - cmake >=3.26.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=2.0,<3.0
         - scipy
-        - pytorch <2.5
-        - pytorch-cuda {{ cuda_constraints }}
+        - pytorch-gpu >=2.7
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"

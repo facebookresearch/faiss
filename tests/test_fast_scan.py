@@ -17,6 +17,7 @@ from faiss.contrib import datasets
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
+
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
@@ -44,6 +45,7 @@ class TestSearch(unittest.TestCase):
     # not exploitable, hence the flag test on that as well.
     @unittest.skipUnless(
         ('AVX2' in faiss.get_compile_options() or
+        'AVX512' in faiss.get_compile_options() or
         'NEON' in faiss.get_compile_options()) and
         "OPTIMIZE" in faiss.get_compile_options(),
         "only test while building with avx2 or neon")
@@ -182,6 +184,8 @@ def reference_accu(codes, LUT):
 
 
 # disabled because the function to write to mem is not implemented currently
+
+
 class ThisIsNotATestLoop5:    # (unittest.TestCase):
 
     def do_loop5_kernel(self, nq, bb):
@@ -519,7 +523,6 @@ class TestAQFastScan(unittest.TestCase):
         index = faiss.index_factory(d, 'RQ8x4' + st, metric_type)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        index.nprobe = 16
         Dref, Iref = index.search(ds.get_queries(), 1)
 
         indexfs = faiss.IndexAdditiveQuantizerFastScan(index)

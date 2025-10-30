@@ -12,6 +12,7 @@ import getpass
 from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap
 from .exhaustive_search import knn
 
+
 class Dataset:
     """ Generic abstract class for a test dataset """
 
@@ -320,10 +321,11 @@ class DatasetMusic100(Dataset):
             gt = gt[:, :k]
         return gt
 
+
 class DatasetGIST1M(Dataset):
     """
     The original dataset is available at: http://corpus-texmex.irisa.fr/
-    (ANN_SIFT1M)
+    (ANN_GIST1M)
     """
 
     def __init__(self):

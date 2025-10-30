@@ -9,9 +9,6 @@
 
 #include <faiss/clone_index.h>
 
-#include <cstdio>
-#include <cstdlib>
-
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/Index2Layer.h>
@@ -26,6 +23,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
@@ -100,6 +98,7 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
 
     TRYCLONE(IndexIVFFlatDedup, ivf)
     TRYCLONE(IndexIVFFlat, ivf)
+    TRYCLONE(IndexIVFFlatPanorama, ivf)
 
     TRYCLONE(IndexIVFSpectralHash, ivf)
 
@@ -315,8 +314,9 @@ Index* Cloner::clone_Index(const Index* index) {
         res->metric_arg = ipt->metric_arg;
 
         res->index = clone_Index(ipt->index);
-        for (int i = 0; i < ipt->chain.size(); i++)
+        for (int i = 0; i < ipt->chain.size(); i++) {
             res->chain.push_back(clone_VectorTransform(ipt->chain[i]));
+        }
         res->own_fields = true;
         return res;
     } else if (

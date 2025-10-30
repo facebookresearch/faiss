@@ -66,7 +66,7 @@ class TestHNSW(unittest.TestCase):
 
         index = faiss.IndexHNSWFlat(d, 16)
         index.add(self.xb)
-        index.search_bounded_queue = False
+        index.hnsw.search_bounded_queue = False
         Dhnsw, Ihnsw = index.search(self.xq, 1)
 
         self.assertGreaterEqual((self.Iref == Ihnsw).sum(), 460)
@@ -205,21 +205,6 @@ class TestHNSW(unittest.TestCase):
             )
             self.assertEqual(index3.storage, None)
 
-    def test_abs_inner_product(self):
-        """Test HNSW with abs inner product (not a real distance, so dubious that triangular inequality works)"""
-        d = self.xq.shape[1]
-        xb = self.xb - self.xb.mean(axis=0)  # need to be centered to give interesting directions
-        xq = self.xq - self.xq.mean(axis=0)
-        Dref, Iref = faiss.knn(xq, xb, 10, faiss.METRIC_ABS_INNER_PRODUCT)
-
-        index = faiss.IndexHNSWFlat(d, 32, faiss.METRIC_ABS_INNER_PRODUCT)
-        index.add(xb)
-        Dnew, Inew = index.search(xq, 10)
-
-        inter = faiss.eval_intersection(Iref, Inew)
-        # 4769 vs. 500*10
-        self.assertGreater(inter, Iref.size * 0.9)
-
     def test_hnsw_reset(self):
         d = self.xb.shape[1]
         index_flat = faiss.IndexFlat(d)
@@ -235,6 +220,7 @@ class TestHNSW(unittest.TestCase):
 
         self.assertEqual(index_flat.ntotal, 0)
         self.assertEqual(index_hnsw.ntotal, 0)
+
 
 class Issue3684(unittest.TestCase):
 
@@ -254,11 +240,11 @@ class Issue3684(unittest.TestCase):
         hnsw_index_ip.hnsw.efSearch = 512
         hnsw_index_ip.add(xb)
 
-        # test knn 
+        # test knn
         D, I = hnsw_index_ip.search(xq, 10)
         self.assertTrue(np.all(D[:, :-1] >= D[:, 1:]))
 
-        # test range search 
+        # test range search
         radius = 0.74  # Cosine similarity threshold
         lims, D, I = hnsw_index_ip.range_search(xq, radius)
         self.assertTrue(np.all(D >= radius))
@@ -440,6 +426,48 @@ class TestNSG(unittest.TestCase):
         gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
         np.testing.assert_array_equal(indices, gt)
+
+    def test_nsg_supports_pre_built_knn_graph(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+        self.assertTrue(index.is_built)
+
+    def test_nsg_with_pre_built_knn_graph_throws_when_rebuilding_via_add(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+        self.assertTrue(index.is_built)
+
+        index.GK = 32
+        index.train(self.xb)
+        with self.assertRaises(RuntimeError) as context:
+            index.add(self.xb)
+
+        self.assertIn(
+            "NSG does not support incremental addition",
+            str(context.exception)
+        )
+
+    def test_nsg_rebuild_throws_with_pre_built_knn_graph(self):
+        """Test IndexNSGBuild"""
+        knn_graph = self.make_knn_graph(faiss.METRIC_L2)
+        d = self.xq.shape[1]
+        index = faiss.IndexNSGFlat(d, 16)
+        index.build(self.xb, knn_graph)
+        index.search(self.xq, k=1)
+
+        with self.assertRaises(RuntimeError) as context:
+            index.build(self.xb, knn_graph)
+
+        self.assertIn("The IndexNSG is already built", str(context.exception))
 
     def test_nsg_pq(self):
         """Test IndexNSGPQ"""

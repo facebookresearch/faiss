@@ -46,10 +46,14 @@ IndexIVFPQ::IndexIVFPQ(
         size_t nlist,
         size_t M,
         size_t nbits_per_idx,
-        MetricType metric)
-        : IndexIVF(quantizer, d, nlist, 0, metric), pq(d, M, nbits_per_idx) {
+        MetricType metric,
+        bool own_invlists)
+        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
+          pq(d, M, nbits_per_idx) {
     code_size = pq.code_size;
-    invlists->code_size = code_size;
+    if (own_invlists) {
+        invlists->code_size = code_size;
+    }
     is_trained = false;
     by_residual = true;
     use_precomputed_table = 0;
@@ -179,6 +183,14 @@ void IndexIVFPQ::encode_vectors(
             encode_listno(list_nos[i], code);
         }
     }
+}
+
+void IndexIVFPQ::decode_vectors(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* listnos,
+        float* x) const {
+    return decode_multiple(n, listnos, codes, x);
 }
 
 void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
@@ -1151,7 +1163,9 @@ struct IVFPQScannerT : QueryTables {
         }
 
 #pragma omp critical
-        { indexIVFPQ_stats.n_hamming_pass += n_hamming_pass; }
+        {
+            indexIVFPQ_stats.n_hamming_pass += n_hamming_pass;
+        }
     }
 
     template <class SearchResultType>
@@ -1201,6 +1215,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
               sel(sel) {
         this->store_pairs = store_pairs;
         this->keep_max = is_similarity_metric(METRIC_TYPE);
+        this->code_size = this->pq.code_size;
     }
 
     void set_query(const float* query) override {
@@ -1321,7 +1336,8 @@ InvertedListScanner* get_InvertedListScanner2(
 
 InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     if (sel) {
         return get_InvertedListScanner2<true>(*this, store_pairs, sel);
     } else {

@@ -81,8 +81,9 @@ void fvec_norms_L2sqr(
         size_t d,
         size_t nx) {
 #pragma omp parallel for if (nx > 10000)
-    for (int64_t i = 0; i < nx; i++)
+    for (int64_t i = 0; i < nx; i++) {
         nr[i] = fvec_norm_L2sqr(x + i * d, d);
+    }
 }
 
 // The following is a workaround to a problem
@@ -230,8 +231,9 @@ void exhaustive_inner_product_blas(
         size_t ny,
         BlockResultHandler& res) {
     // BLAS does not like empty matrices
-    if (nx == 0 || ny == 0)
+    if (nx == 0 || ny == 0) {
         return;
+    }
 
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
@@ -240,15 +242,17 @@ void exhaustive_inner_product_blas(
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
-        if (i1 > nx)
+        if (i1 > nx) {
             i1 = nx;
+        }
 
         res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
             size_t j1 = j0 + bs_y;
-            if (j1 > ny)
+            if (j1 > ny) {
                 j1 = ny;
+            }
             /* compute the actual dot products */
             {
                 float one = 1, zero = 0;
@@ -287,8 +291,9 @@ void exhaustive_L2sqr_blas_default_impl(
         BlockResultHandler& res,
         const float* y_norms = nullptr) {
     // BLAS does not like empty matrices
-    if (nx == 0 || ny == 0)
+    if (nx == 0 || ny == 0) {
         return;
+    }
 
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
@@ -309,15 +314,17 @@ void exhaustive_L2sqr_blas_default_impl(
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
-        if (i1 > nx)
+        if (i1 > nx) {
             i1 = nx;
+        }
 
         res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
             size_t j1 = j0 + bs_y;
-            if (j1 > ny)
+            if (j1 > ny) {
                 j1 = ny;
+            }
             /* compute the actual dot products */
             {
                 float one = 1, zero = 0;
@@ -349,8 +356,9 @@ void exhaustive_L2sqr_blas_default_impl(
                     }
                     // negative values can occur for identical vectors
                     // due to roundoff errors
-                    if (dis < 0)
+                    if (dis < 0) {
                         dis = 0;
+                    }
 
                     *ip_line = dis;
                     ip_line++;
@@ -385,8 +393,9 @@ void exhaustive_L2sqr_blas_cmax_avx2(
         Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms) {
     // BLAS does not like empty matrices
-    if (nx == 0 || ny == 0)
+    if (nx == 0 || ny == 0) {
         return;
+    }
 
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
@@ -407,15 +416,17 @@ void exhaustive_L2sqr_blas_cmax_avx2(
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
-        if (i1 > nx)
+        if (i1 > nx) {
             i1 = nx;
+        }
 
         res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
             size_t j1 = j0 + bs_y;
-            if (j1 > ny)
+            if (j1 > ny) {
                 j1 = ny;
+            }
             /* compute the actual dot products */
             {
                 float one = 1, zero = 0;
@@ -541,8 +552,9 @@ void exhaustive_L2sqr_blas_cmax_avx2(
 
                     // negative values can occur for identical vectors
                     //    due to roundoff errors.
-                    if (distance_candidate < 0)
+                    if (distance_candidate < 0) {
                         distance_candidate = 0;
+                    }
 
                     int64_t index_candidate = min_indices_scalar[jv] + j0;
 
@@ -562,8 +574,9 @@ void exhaustive_L2sqr_blas_cmax_avx2(
                     float dis = x_norms[i] + y_norms[idx_j + j0] - 2 * ip;
                     // negative values can occur for identical vectors
                     //    due to roundoff errors.
-                    if (dis < 0)
+                    if (dis < 0) {
                         dis = 0;
+                    }
 
                     if (current_min_distance > dis) {
                         current_min_distance = dis;
@@ -1171,33 +1184,40 @@ void pairwise_L2sqr(
         int64_t ldq,
         int64_t ldb,
         int64_t ldd) {
-    if (nq == 0 || nb == 0)
+    if (nq == 0 || nb == 0) {
         return;
-    if (ldq == -1)
+    }
+    if (ldq == -1) {
         ldq = d;
-    if (ldb == -1)
+    }
+    if (ldb == -1) {
         ldb = d;
-    if (ldd == -1)
+    }
+    if (ldd == -1) {
         ldd = nb;
+    }
 
     // store in beginning of distance matrix to avoid malloc
     float* b_norms = dis;
 
 #pragma omp parallel for if (nb > 1)
-    for (int64_t i = 0; i < nb; i++)
+    for (int64_t i = 0; i < nb; i++) {
         b_norms[i] = fvec_norm_L2sqr(xb + i * ldb, d);
+    }
 
 #pragma omp parallel for
     for (int64_t i = 1; i < nq; i++) {
         float q_norm = fvec_norm_L2sqr(xq + i * ldq, d);
-        for (int64_t j = 0; j < nb; j++)
+        for (int64_t j = 0; j < nb; j++) {
             dis[i * ldd + j] = q_norm + b_norms[j];
+        }
     }
 
     {
         float q_norm = fvec_norm_L2sqr(xq, d);
-        for (int64_t j = 0; j < nb; j++)
+        for (int64_t j = 0; j < nb; j++) {
             dis[j] += q_norm;
+        }
     }
 
     {
@@ -1229,8 +1249,9 @@ void inner_product_to_L2sqr(
 #pragma omp parallel for
     for (int64_t j = 0; j < n1; j++) {
         float* disj = dis + j * n2;
-        for (size_t i = 0; i < n2; i++)
+        for (size_t i = 0; i < n2; i++) {
             disj[i] = nr1[j] + nr2[i] - 2 * disj[i];
+        }
     }
 }
 

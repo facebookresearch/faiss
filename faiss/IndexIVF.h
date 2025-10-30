@@ -210,7 +210,8 @@ struct IndexIVF : Index, IndexIVFInterface {
             size_t d,
             size_t nlist,
             size_t code_size,
-            MetricType metric = METRIC_L2);
+            MetricType metric = METRIC_L2,
+            bool own_invlists = true);
 
     void reset() override;
 
@@ -252,6 +253,20 @@ struct IndexIVF : Index, IndexIVFInterface {
             const idx_t* list_nos,
             uint8_t* codes,
             bool include_listno = false) const = 0;
+
+    /** Decodes a set of vectors as they would appear in a given set of inverted
+     * lists (inverse of encode_vectors)
+     *
+     * @param codes      input codes, size n * code_size
+     * @param x          output decoded vectors
+     * @param list_nos   input listnos, size n
+     *
+     */
+    virtual void decode_vectors(
+            idx_t n,
+            const uint8_t* codes,
+            const idx_t* list_nos,
+            float* x) const;
 
     /** Add vectors that are computed with the standalone codec
      *
@@ -312,11 +327,14 @@ struct IndexIVF : Index, IndexIVFInterface {
 
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
-     * The default search implementation uses this to compute the distances
+     * The default search implementation uses this to compute the distances.
+     * Use sel instead of params->sel, because sel is initialized with
+     * params->sel, but may get overridden by IndexIVF's internal logic.
      */
     virtual InvertedListScanner* get_InvertedListScanner(
             bool store_pairs = false,
-            const IDSelector* sel = nullptr) const;
+            const IDSelector* sel = nullptr,
+            const IVFSearchParameters* params = nullptr) const;
 
     /** reconstruct a vector. Works only if maintain_direct_map is set to 1 or 2
      */
@@ -479,12 +497,12 @@ struct InvertedListScanner {
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
-    /** scan a set of codes, compute distances to current query and
+    /** scan a set of codes, compute distances to current query, and
      * update heap of results if necessary. Default implementation
      * calls distance_to_code.
      *
-     * @param n      number of codes to scan
-     * @param codes  codes to scan (n * code_size)
+     * @param n          number of codes to scan
+     * @param codes      codes to scan (n * code_size)
      * @param ids        corresponding ids (ignored if store_pairs)
      * @param distances  heap distances (size k)
      * @param labels     heap labels (size k)

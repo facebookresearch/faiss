@@ -18,8 +18,10 @@ try:
 except ImportError:
     print("scipy not accessible, Python k-means will not work")
 
+
 def print_nop(*arg, **kwargs):
     pass
+
 
 def two_level_clustering(xt, nc1, nc2, rebalance=True, clustering_niter=25, **args):
     """
@@ -192,7 +194,7 @@ def sparse_assign_to_dense(xq, xb, xq_norms=None, xb_norms=None):
         xb_norms = (xb ** 2).sum(1)
     if xq_norms is None:
         xq_norms = np.array(xq.power(2).sum(1))
-    d2 =  xb_norms - 2 * xq @ xb.T
+    d2 = xb_norms - 2 * xq @ xb.T
     I = d2.argmin(axis=1)
     D = d2.ravel()[I + np.arange(nq) * nb] + xq_norms.ravel()
     return D, I
@@ -379,7 +381,7 @@ def kmeans(k, data, niter=25, seed=1234, checkpoint=None, verbose=True,
 
         log('compute centroids', end='\r', flush=True)
 
-        t_search_tot += time.time() - t0s;
+        t_search_tot += time.time() - t0s
 
         err = D.sum()
         if is_torch:

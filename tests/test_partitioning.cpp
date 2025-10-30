@@ -12,7 +12,7 @@
 
 using namespace faiss;
 
-typedef AlignedTable<uint16_t> AlignedTableUint16;
+using AlignedTableUint16 = AlignedTable<uint16_t>;
 
 // TODO: This test fails when Faiss is compiled with
 // GCC 13.2 from conda-forge with AVX2 enabled. This may be

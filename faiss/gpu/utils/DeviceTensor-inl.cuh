@@ -15,8 +15,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor()
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>() {}
 
@@ -25,8 +24,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>() {
@@ -38,8 +36,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>& DeviceTensor<
         T,
         Dim,
@@ -59,8 +56,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::~DeviceTensor() {
 }
 
@@ -69,15 +65,14 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
         const IndexT sizes[Dim])
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
@@ -88,15 +83,14 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
         std::initializer_list<IndexT> sizes)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>(nullptr, sizes) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
@@ -107,8 +101,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         const IndexT sizes[Dim])
@@ -119,8 +112,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         std::initializer_list<IndexT> sizes)
@@ -131,8 +123,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         const IndexT sizes[Dim],
@@ -145,8 +136,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
@@ -155,8 +145,8 @@ __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
                   nullptr,
                   t.sizes(),
                   t.strides()) {
-    this->reservation_ = std::move(
-            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes())));
+    this->reservation_ =
+            res->allocMemoryHandle(AllocRequest(info, this->getSizeInBytes()));
     this->data_ = (T*)reservation_.get();
 
     FAISS_ASSERT(this->data_ || (this->getSizeInBytes() == 0));
@@ -169,8 +159,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>& DeviceTensor<
         T,
         Dim,

@@ -424,8 +424,18 @@ void GpuIndexIVFPQ::train(idx_t n, const float* x) {
         cuvs::neighbors::ivf_pq::helpers::extract_centers(
                 raft_handle, cuvs_ivfpq_index.value(), cluster_centers.view());
 
-        quantizer->train(nlist, cluster_centers.data_handle());
-        quantizer->add(nlist, cluster_centers.data_handle());
+        if (isGpuIndex(quantizer)) {
+            quantizer->train(nlist, cluster_centers.data_handle());
+            quantizer->add(nlist, cluster_centers.data_handle());
+        } else {
+            // transfer centroids to host
+            auto host_centroids = toHost<float, 2>(
+                    cluster_centers.data_handle(),
+                    raft_handle.get_stream(),
+                    {idx_t(nlist), this->d});
+            quantizer->train(nlist, host_centroids.data());
+            quantizer->add(nlist, host_centroids.data());
+        }
 
         raft::copy(
                 pq.get_centroids(0, 0),
@@ -566,17 +576,13 @@ void GpuIndexIVFPQ::verifyPQSettings_() const {
                     "Bits per code must be 8 (passed %d)",
                     bitsPerCode_);
         }
-    }
-
-    // The number of bytes per encoded vector must be one we support
-    FAISS_THROW_IF_NOT_FMT(
-            ivfpqConfig_.interleavedLayout ||
-                    IVFPQ::isSupportedPQCodeLength(subQuantizers_),
-            "Number of bytes per encoded vector / sub-quantizers (%d) "
-            "is not supported",
-            subQuantizers_);
-
-    if (!should_use_cuvs(config_)) {
+        // The number of bytes per encoded vector must be one we support
+        FAISS_THROW_IF_NOT_FMT(
+                ivfpqConfig_.interleavedLayout ||
+                        IVFPQ::isSupportedPQCodeLength(subQuantizers_),
+                "Number of bytes per encoded vector / sub-quantizers (%d) "
+                "is not supported",
+                subQuantizers_);
         // Sub-quantizers must evenly divide dimensions available
         FAISS_THROW_IF_NOT_FMT(
                 this->d % subQuantizers_ == 0,

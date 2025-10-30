@@ -27,8 +27,15 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
         size_t d,
         size_t nlist,
         int nbit,
-        float period)
-        : IndexIVF(quantizer, d, nlist, (nbit + 7) / 8, METRIC_L2),
+        float period,
+        bool own_invlists)
+        : IndexIVF(
+                  quantizer,
+                  d,
+                  nlist,
+                  (nbit + 7) / 8,
+                  METRIC_L2,
+                  own_invlists),
           nbit(nbit),
           period(period) {
     RandomRotationMatrix* rr = new RandomRotationMatrix(d, nbit);
@@ -301,7 +308,8 @@ struct BuildScanner {
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         bool store_pairs,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
     BuildScanner bs;
     return dispatch_HammingComputer(code_size, bs, this, store_pairs);

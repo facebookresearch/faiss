@@ -104,6 +104,7 @@ def eval_setting(index, xq, gt, k, inter, min_time):
 # Training
 ######################################################
 
+
 def run_train(args, ds, res):
     nq, d = ds.nq, ds.d
     nb, d = ds.nq, ds.d
@@ -234,6 +235,7 @@ def run_train(args, ds, res):
 ######################################################
 # Populating index
 ######################################################
+
 
 def run_add(args, ds, index, res):
 
@@ -397,6 +399,7 @@ def run_search(args, ds, index, res):
 ######################################################
 # Driver function
 ######################################################
+
 
 def main():
 

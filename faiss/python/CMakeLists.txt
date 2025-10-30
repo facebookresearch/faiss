@@ -10,7 +10,11 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR FAISS_ENABLE_CUVS)
+  set(CMAKE_CXX_STANDARD 17)
+else()
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 find_package(SWIG REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
@@ -81,52 +85,29 @@ if(TARGET faiss)
     list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
-  if(FAISS_ENABLE_ROCM)
-    foreach(h ${FAISS_GPU_HEADERS})
-      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu-rocm/${h}")
-    endforeach()
-  else()
-    foreach(h ${FAISS_GPU_HEADERS})
-      list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-      list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
-        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
-    endforeach()
-  endif()
+  foreach(h ${FAISS_GPU_HEADERS})
+    list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx2_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_avx512_spr_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_swigfaiss_sve_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
+      "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+  endforeach()
 else()
   find_package(faiss REQUIRED)
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
-swig_add_library(swigfaiss
-  TYPE MODULE
-  LANGUAGE python
-  SOURCES swigfaiss.swig
-)
-else ()
 swig_add_library(swigfaiss
   TYPE SHARED
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
-endif()
 
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
@@ -138,7 +119,7 @@ swig_add_library(swigfaiss_avx2
   SOURCES swigfaiss_avx2.swig
 )
 set_property(TARGET swigfaiss_avx2 PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
-if(NOT FAISS_OPT_LEVEL STREQUAL "avx2")
+if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
   set_target_properties(swigfaiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 
@@ -187,7 +168,10 @@ swig_add_library(faiss_example_external_module
 )
 set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
-if(NOT WIN32)
+if(AIX)
+  set_target_properties(swigfaiss PROPERTIES SUFFIX .a)
+  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .a)
+elseif(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
@@ -280,7 +264,7 @@ target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 
 find_package(Python REQUIRED
-  COMPONENTS Development NumPy
+  COMPONENTS Development.Module NumPy
 )
 
 add_library(faiss_python_callbacks EXCLUDE_FROM_ALL
@@ -290,7 +274,7 @@ set_property(TARGET faiss_python_callbacks
   PROPERTY POSITION_INDEPENDENT_CODE ON
 )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "AIX")
 target_link_libraries(faiss_python_callbacks PRIVATE faiss)
 endif()
 

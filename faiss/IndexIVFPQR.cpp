@@ -30,8 +30,16 @@ IndexIVFPQR::IndexIVFPQR(
         size_t M,
         size_t nbits_per_idx,
         size_t M_refine,
-        size_t nbits_per_idx_refine)
-        : IndexIVFPQ(quantizer, d, nlist, M, nbits_per_idx),
+        size_t nbits_per_idx_refine,
+        bool own_invlists)
+        : IndexIVFPQ(
+                  quantizer,
+                  d,
+                  nlist,
+                  M,
+                  nbits_per_idx,
+                  METRIC_L2,
+                  own_invlists),
           refine_pq(d, M_refine, nbits_per_idx_refine),
           k_factor(4) {
     by_residual = true;
@@ -160,8 +168,9 @@ void IndexIVFPQR::search_preassigned(
             for (int j = 0; j < k_coarse; j++) {
                 idx_t sl = shortlist[j];
 
-                if (sl == -1)
+                if (sl == -1) {
                     continue;
+                }
 
                 int list_no = lo_listno(sl);
                 int ofs = lo_offset(sl);
@@ -176,8 +185,9 @@ void IndexIVFPQR::search_preassigned(
                 const uint8_t* l2code = invlists->get_single_code(list_no, ofs);
 
                 pq.decode(l2code, residual_2);
-                for (int l = 0; l < d; l++)
+                for (int l = 0; l < d; l++) {
                     residual_2[l] = residual_1[l] - residual_2[l];
+                }
 
                 // 3rd level residual's approximation
                 idx_t id = invlists->get_single_id(list_no, ofs);

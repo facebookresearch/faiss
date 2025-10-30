@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/impl/AdditiveQuantizer.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
 
@@ -50,9 +51,15 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             size_t d,
             size_t nlist,
             MetricType metric = METRIC_L2,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
-    void init(AdditiveQuantizer* aq, size_t nlist, MetricType metric, int bbs);
+    void init(
+            AdditiveQuantizer* aq,
+            size_t nlist,
+            MetricType metric,
+            int bbs,
+            bool own_invlists);
 
     IndexIVFAdditiveQuantizerFastScan();
 
@@ -95,7 +102,8 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const float* x,
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
-            AlignedTable<float>& biases) const override;
+            AlignedTable<float>& biases,
+            const FastScanDistancePostProcessing& context) const override;
 };
 
 struct IndexIVFLocalSearchQuantizerFastScan
@@ -110,7 +118,8 @@ struct IndexIVFLocalSearchQuantizerFastScan
             size_t nbits,
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
     IndexIVFLocalSearchQuantizerFastScan();
 };
@@ -126,7 +135,8 @@ struct IndexIVFResidualQuantizerFastScan : IndexIVFAdditiveQuantizerFastScan {
             size_t nbits,
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
     IndexIVFResidualQuantizerFastScan();
 };
@@ -144,7 +154,8 @@ struct IndexIVFProductLocalSearchQuantizerFastScan
             size_t nbits,
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
     IndexIVFProductLocalSearchQuantizerFastScan();
 };
@@ -162,7 +173,8 @@ struct IndexIVFProductResidualQuantizerFastScan
             size_t nbits,
             MetricType metric = METRIC_L2,
             Search_type_t search_type = AdditiveQuantizer::ST_norm_lsq2x4,
-            int bbs = 32);
+            int bbs = 32,
+            bool own_invlists = true);
 
     IndexIVFProductResidualQuantizerFastScan();
 };

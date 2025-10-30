@@ -3,6 +3,210 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.12.0] - 2025-08-11
+
+
+Added
+- Adding `Ex` suffix for extended API (#4512)
+- SIMD optimization RaBitQ (#4515)
+- Binary CAGRA with NN Descent (#4445)
+- BinaryHNSWCagra Struct; Allow base_level_only (#4478)
+- Added libgflags-dev to Dockerfile (#4460)
+- try to add nightly conda publish for Faiss classic GPU with CUDA 12.4 (#4442)
+- Add support for IndexIDMap with Cagra fp16 (#4411)
+- Faiss + Cuvs Example Notebook (#4434)
+- Common ancestor to top-k result handlers (#4414)
+- Add rabitq to reverse factory string so telemetry wrapper will log it (#4428)
+- Add option to link cuda statically (#4422)
+- support extra metrics in IVF (#4409)
+- Support decode_vectors (sa_decode but no decode_listnos) in multiple IVF index (#4400)
+- Add workaround to check SVE support when numpy.distutils is not available (#4416)
+- Dsweet/gowers distance (#4371)
+- cuVS Cagra FP16 support (#4384)
+- Add cuVS filter conversion utility (#4378)
+- GpuIndexBinaryCagra - Binary CAGRA index (#4331)
+- Add guarantee_connectivity parameter to GpuIndexCagra (#4388)
+- Add Virtual Destructor to FlatIndex Class (#4381)
+- Adding unit tests for supporting pre-built KNN while using `IndexNSG` (#4368)
+- Pass in "own_invlists" to ivf index constructor (#4353)
+- Add new centroid_id_column to support previous_assignment_table (#4343)
+- Copy IVF Centroids to Host for CPU Quantizer (#4336)
+- Expose IndexBinaryIVF to C API (#4302)
+- Add rabitq bench to source control (#4307)
+
+Changed
+- Remove unused cmath include from IndexPQ.cpp (#4518)
+- Allow Odd Degree Binary CAGRA graph to HNSW conversion (#4516)
+- Remove unused cassert and cmath headers from Index2Layer.cpp (#4514)
+- Remove unused headers from AutoTune.cpp and clone_index.cpp (#4513)
+- Remove unused import header from IndexBinaryHNSW.cpp (#4507)
+- Remove unused import header from IndexBinaryHash.cpp (#4506)
+- Remove unused import header from IndexIDMap.cpp (#4505)
+- Remove unused import header from AutoTune.cpp (#4504)
+- Make GpuIndexCagra reuse existing memory block when converting to CPU index (#4477)
+- Remove unused standard library includes from index_io.h (#4495)
+- Remove unused standard library includes from Index.h (#4494)
+- Remove unused standard library includes from IndexBinary.h (#4493)
+- Remove unused platform_macros.h include from MetricType.h (#4490)
+- fbcode//faiss:faiss (#4462)
+- fbcode//faiss/gpu:faiss (#4463)
+- fbcode//faiss/gpu/test:test_utils (#4464)
+- BW compatibility for read & write with `numeric_type_` in cagra (#4441)
+- Upgrade cuVS version to 25.08 (#4394)
+- Improve naming of the residual_quantizer_encode_steps.cpp file (#4433)
+- Github actions: upgrade windows-2019 to windows-2022 (#4417)
+- Update the dependency for submitit in faiss_bench_fw (#4410)
+- Increase top-k limit on GPU for cuVS (#4325)
+- Let IndexShards Pass down SearchParams (#4387)
+- Change uint8_t* => const uint8_t* in faiss::ZeroCopyIOReader (#4376)
+- Set code_size for more InvertedListScanner implementations (#4365)
+- Improving variable name post codemod changes (#4369)
+- Improve naming due to codemod (#4367)
+- Use packaging.version for correct version parsing (#4330)
+- Update Swig File for CAGRA Params (#4314)
+
+Fixed
+- Fix the warning that numpy.core._multiarray_umath is deprecated and has been renamed to numpy._core._multiarray_umath (#4501)
+- Fix inline code syntax (#4437)
+- Bug fix for faiss_Index_sa_code_size (#4492)
+- Fix CQS signal modernize-use-using in fbcode/faiss/tests [B] [B] (#4483)
+- Fix CQS signal modernize-use-using in fbcode/faiss/tests [B] [A] (#4484)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/utils [B] [B] (#4479)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/utils [B] [A] (#4480)
+- Fix CQS signal modernize-use-using in fbcode/faiss/tests [A] (#4476)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/utils [A] (#4475)
+- Fix ALL nightlies (#4471)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/invlists (#4467)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/perf_tests (#4458)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/tests (#4457)
+- `int8` support for cuVS cagra (#4439)
+- Fix indexes after fp16 change (#4452)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss (#4454)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/gpu (#4453)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss (#4451)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/benchs (#4449)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/impl (#4447)
+- Revert D78330300 (#4448)
+- Fix CQS signal readability-braces-around-statements in fbcode/faiss/tutorial (#4446)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/utils (#4435)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/perf_tests (#4443)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/impl (#4436)
+- Remove Debug Statement (#4425)
+- Fix invalid long_description in setup.py (#4398)
+- Fix building on mingw (#4420)
+- fix: add avx2 in python if avx512 enabled (#4419)
+- IndexFlat: Reconstruct validate if key < ntotal (#4415)
+- cmake: disable installing external documents under docs/faiss (#4406)
+- Pin openblas 0.3.30 to fix nightly breakage (#4404)
+- Add override to IndexBinaryCagra (#4401)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/gpu (#4390)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/impl (#4395)
+- Fix unreachable-break issue in faiss/IndexAdditiveQuantizer.cpp +1 (#4391)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/utils (#4389)
+- fix IndexIVFFastScan ndis/nlist stat (#4383)
+- fix: update broken links (#4382)
+- Fix incorrect constructor docstring for IndexScalarQuantizer (#4350)
+- Fix CQS signal facebook-unused-include-check in fbcode/faiss/tests (#4375)
+- Fix input param for IndexIVFScalarQuantizer in index_factory (#4358)
+- Fix openMP index bug (#4348)
+- Fix CQS signal. Id] 95408353 -- performance-faster-string-find in fbcode/faiss (#4345)
+- cmake: install missing header `impl/zerocopy_io.h` (#4328)
+- Fix CQS signal. Id] 62183176 -- readability-redundant-string-init in fbcode/faiss/impl (#4332)
+- Fix CQS signal. Id] 57328835 -- performance-unnecessary-value-param in fbcode/faiss/impl (#4329)
+- Fix IndexBinaryIVF::merge_from (#4305)
+- FreeBSD compatibility patch (#4316)
+
+Deprecated
+- Deprecate CUDA 11 from Faiss nightly and releases (#4496)
+- Deprecate CUDA 11 nightly, add 12.4 to build-release, fix cuvs nightly (#4482)
+- Remove cuVS CUDA 11.8 CI (#4444)
+- remove ABS_INNER_PRODUCT metric (#4408)
+- Disable failing test until we support CUDA 12.8 in CI (#4392)
+- Disable flaky ivfflat test_mem_leak
+
+
+
+## [1.11.0] - 2025-04-24
+
+
+Added
+- RaBitQ implementation (#4235)
+- Add RaBitQ to the swigfaiss so we can access its properties correctly in python (#4304)
+- Add date and time to the codec file path so that the file doesn't get overridden with each run (#4303)
+- Add missing header in faiss/CMakeLists.txt (#4285)
+- Implement is_spherical and normalize_L2 booleans as part of the training APIs (#4279)
+- Add normalize_l2 boolean to distributed training API
+- re-land mmap diff (#4250)
+- SearchParameters support for IndexBinaryFlat (#4055)
+- Support non-partition col and map in the embedding reader (#4229)
+- Support cosine distance for training vectors (#4227)
+- Add missing #include in code_distance-sve.h (#4219)
+- Add the support for IndexIDMap with Cagra index (#4188)
+- Add bounds checking to hnsw nb_neighbors (#4185)
+- Add sharding convenience function for IVF indexes (#4150)
+- Added support for building for MinGW, in addition to MSVC (#4145)
+
+Changed
+- Skip mmap test case in AIX. (#4275)
+- Handle insufficient driver gracefully (#4271)
+- relax input params for IndexIVFRaBitQ::get_InvertedListScanner() (#4270)
+- Allow using custom index readers and writers (#4180)
+- Upgrade to libcuvs=25.04 (#4164)
+- ignore regex (#4264)
+- Publish the C API to Conda (#4186)
+- Pass row filters to Hive Reader to filter rows (#4256)
+- Back out "test merge with internal repo" (#4244)
+- test merge with internal repo (#4242)
+- Revert D69972250: Memory-mapping and Zero-copy deserializers
+- Revert D69984379: mem mapping and zero-copy python fixes
+- mem mapping and zero-copy python fixes (#4212)
+- Memory-mapping and Zero-copy deserializers (#4199)
+- Use `nullptr` in faiss/gpu/StandardGpuResources.cpp (#4232)
+- Make static method in header inline (#4214)
+- Upgrade openblas to 0.3.29 for ARM architectures (#4203)
+- Pass `store_dataset` argument along to cuVS CAGRA (#4173)
+- Handle plain SearchParameters in HNSW searches (#4167)
+- Update INSTALL.md to remove some raft references, add missing dependency (#4176)
+- Update README.md (#4169)
+- Update CAGRA docs (#4152)
+- Expose IDSelectorBitmap in the C_API (#4158)
+
+Fixed
+- fix: algorithm of spreading vectors over shards (#4299)
+- Fix overflow of int32 in IndexNSG (#4297)
+- Fix Type Error in Conditional Logic (#4294)
+- faiss/gpu/GpuAutoTune.cpp: fix llvm-19-exposed -Wunused-but-set-variable warnings
+- Fix nightly by pinning conda-build to prevent regression in 25.3.2 (#4287)
+- Fix CQS signal. Id] 88153895 -- readability-redundant-string-init in fbcode/faiss (#4283)
+- Fix a placeholder for 'unimplemented' in mapped_io.cpp (#4268)
+- fix bug: IVFPQ of raft/cuvs does not require redundant check (#4241)
+- fix a serialization problem in RaBitQ (#4261)
+- Grammar fix in FlatIndexHNSW (#4253)
+- Fix CUDA kernel index data type in faiss/gpu/impl/DistanceUtils.cuh +10 (#4246)
+- fix `IVFPQFastScan::RangeSearch()` on the `ARM` architecture (#4247)
+- fix integer overflow issue when calculating imbalance_factor (#4245)
+- Fix bug with metric_arg in IndexHNSW (#4239)
+- Address compile errors and warnings (#4238)
+- faiss: fix non-templated hammings function (#4195)
+- Fix LLVM-19 compilation issue in faiss/AutoTune.cpp (#4220)
+- Fix cloning and reverse index factory for NSG indices (#4151)
+- Remove python_abi to fix nightly (#4217)
+- Fix IVF quantizer centroid sharding so IDs are generated (#4197)
+- Pin lief to fix nightly (#4211)
+- Fix Sapphire Rapids never loading in Python bindings (#4209)
+- Attempt to nightly fix (#4204)
+- Fix nightly by installing earlier version of lief (#4198)
+- Check for not completed
+- Fix install error when building avx512_spr variant (#4170)
+- fix: gpu tests link failure with static lib (#4137)
+- Fix the order of parameters in bench_scalar_quantizer_distance. (#4159)
+
+Deprecated
+- Remove unused exception parameter from faiss/impl/ResultHandler.h (#4243)
+- Remove unused variable (#4205)
+
+
+
 ## [1.10.0] - 2025-01-30
 
 
@@ -459,7 +663,9 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/facebookresearch/faiss/compare/v1.10.0...v1.11.0
+[1.10.0]: https://github.com/facebookresearch/faiss/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/facebookresearch/faiss/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/facebookresearch/faiss/compare/v1.7.4...v1.8.0
 [1.7.4]: https://github.com/facebookresearch/faiss/compare/v1.7.3...v1.7.4

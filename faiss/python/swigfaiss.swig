@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Meta Platforms, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,6 +32,7 @@
 #pragma SWIG nowarn=341
 #pragma SWIG nowarn=512
 #pragma SWIG nowarn=362
+#pragma SWIG nowarn=509
 
 // we need explict control of these typedefs...
 // %include <stdint.i>
@@ -81,6 +82,11 @@ typedef uint64_t size_t;
 
 #endif
 
+#include <faiss/impl/io.h>
+
+#include <faiss/impl/maybe_owned_vector.h>
+#include <faiss/impl/mapped_io.h>
+#include <faiss/impl/zerocopy_io.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
@@ -93,11 +99,13 @@ typedef uint64_t size_t;
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/utils/simdlib.h>
 #include <faiss/impl/simd_result_handlers.h>
 
@@ -163,6 +171,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/utils/NeuralNet.h>
+#include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -183,6 +192,13 @@ typedef uint64_t size_t;
 #include <faiss/IndexLattice.h>
 
 #include <faiss/IndexNeuralNetCodec.h>
+
+#include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQUtils.h>
+#include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 
 %}
 
@@ -280,6 +296,9 @@ namespace std {
 %template(RepeatVector) std::vector<faiss::Repeat>;
 %template(ClusteringIterationStatsVector) std::vector<faiss::ClusteringIterationStats>;
 %template(ParameterRangeVector) std::vector<faiss::ParameterRange>;
+%template(MaybeOwnedVectorUInt8Vector) std::vector<faiss::MaybeOwnedVector<uint8_t> >;
+%template(MaybeOwnedVectorInt32Vector) std::vector<faiss::MaybeOwnedVector<int32_t> >;
+%template(MaybeOwnedVectorFloat32Vector) std::vector<faiss::MaybeOwnedVector<float> >;
 
 #ifndef SWIGWIN
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
@@ -317,79 +336,6 @@ void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
 #ifdef GPU_WRAPPER
-#ifdef FAISS_ENABLE_ROCM
-
-%shared_ptr(faiss::gpu::GpuResources);
-%shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
-
-%{
-
-#include <faiss/gpu-rocm/StandardGpuResources.h>
-#include <faiss/gpu-rocm/GpuIndicesOptions.h>
-#include <faiss/gpu-rocm/GpuClonerOptions.h>
-#include <faiss/gpu-rocm/GpuIndex.h>
-#include <faiss/gpu-rocm/GpuIndexFlat.h>
-#include <faiss/gpu-rocm/GpuIndexIVF.h>
-#include <faiss/gpu-rocm/GpuIndexIVFPQ.h>
-#include <faiss/gpu-rocm/GpuIndexIVFFlat.h>
-#include <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
-#include <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
-#include <faiss/gpu-rocm/GpuAutoTune.h>
-#include <faiss/gpu-rocm/GpuCloner.h>
-#include <faiss/gpu-rocm/GpuDistance.h>
-#include <faiss/gpu-rocm/GpuIcmEncoder.h>
-
-int get_num_gpus()
-{
-    return faiss::gpu::getNumDevices();
-}
-
-void gpu_profiler_start()
-{
-    return faiss::gpu::profilerStart();
-}
-
-void gpu_profiler_stop()
-{
-    return faiss::gpu::profilerStop();
-}
-
-void gpu_sync_all_devices()
-{
-    return faiss::gpu::synchronizeAllDevices();
-}
-
-%}
-
-%template() std::pair<int, uint64_t>;
-%template() std::map<std::string, std::pair<int, uint64_t> >;
-%template() std::map<int, std::map<std::string, std::pair<int, uint64_t> > >;
-
-// causes weird wrapper bug
-%ignore *::allocMemoryHandle;
-%ignore faiss::gpu::GpuMemoryReservation;
-%ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
-%ignore faiss::gpu::AllocType;
-
-%include  <faiss/gpu-rocm/GpuResources.h>
-%include  <faiss/gpu-rocm/StandardGpuResources.h>
-
-typedef ihipStream_t* hipStream_t;
-
-%inline %{
-
-// interop between pytorch exposed hipStream_t and faiss
-hipStream_t cast_integer_to_cudastream_t(int64_t x) {
-  return (hipStream_t) x;
-}
-
-int64_t cast_cudastream_t_to_integer(hipStream_t x) {
-  return (int64_t) x;
-}
-
-%}
-
-#else // FAISS_ENABLE_ROCM
 
 %shared_ptr(faiss::gpu::GpuResources);
 %shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
@@ -400,7 +346,6 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuClonerOptions.h>
 #include <faiss/gpu/GpuIndex.h>
-#include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuIndexIVF.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
@@ -446,6 +391,35 @@ void gpu_sync_all_devices()
 
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
+
+#ifdef FAISS_ENABLE_ROCM
+
+typedef ihipStream_t* hipStream_t;
+
+%inline %{
+
+// interop between pytorch exposed hipStream_t and faiss
+hipStream_t cast_integer_to_cudastream_t(int64_t x) {
+  return (hipStream_t) x;
+}
+
+int64_t cast_cudastream_t_to_integer(hipStream_t x) {
+  return (int64_t) x;
+}
+
+%}
+
+#else // FAISS_ENABLE_ROCM
+
+%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
+%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
+
+%{
+
+#include <faiss/gpu/GpuIndexCagra.h>
+#include <faiss/gpu/GpuIndexBinaryCagra.h>
+
+%}
 
 typedef CUstream_st* cudaStream_t;
 
@@ -506,6 +480,14 @@ void gpu_sync_all_devices()
 
 %include <faiss/impl/DistanceComputer.h>
 
+%include <faiss/impl/io.h>
+
+%ignore faiss::MmappedFileMappingOwner::p_impl;
+
+%include <faiss/impl/maybe_owned_vector.h>
+%include <faiss/impl/mapped_io.h>
+%include <faiss/impl/zerocopy_io.h>
+
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
 %include  <faiss/IndexFlat.h>
@@ -523,6 +505,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
 %include  <faiss/impl/CodePacker.h>
+%include  <faiss/impl/PanoramaStats.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -558,6 +541,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexNNDescent.h>
 
 %include  <faiss/IndexIVFFlat.h>
+%include  <faiss/IndexIVFFlatPanorama.h>
 
 %warnfilter(509) faiss::nsg::Graph< int >::at(int,int);
 
@@ -588,6 +572,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
+%include  <faiss/impl/FastScanDistancePostProcessing.h>
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
@@ -633,6 +618,12 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/IndexNeuralNetCodec.h>
 
+%include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQUtils.h>
+%include <faiss/IndexRaBitQ.h>
+%include <faiss/IndexRaBitQFastScan.h>
+%include <faiss/IndexIVFRaBitQ.h>
+%include <faiss/IndexIVFRaBitQFastScan.h>
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -655,25 +646,6 @@ struct faiss::simd16uint16 {};
 
 #ifdef GPU_WRAPPER
 
-#ifdef FAISS_ENABLE_ROCM
-
-// quiet SWIG warnings
-%ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
-
-%include  <faiss/gpu-rocm/GpuIndicesOptions.h>
-%include  <faiss/gpu-rocm/GpuClonerOptions.h>
-%include  <faiss/gpu-rocm/GpuIndex.h>
-%include  <faiss/gpu-rocm/GpuIndexFlat.h>
-%include  <faiss/gpu-rocm/GpuIndexIVF.h>
-%include  <faiss/gpu-rocm/GpuIndexIVFPQ.h>
-%include  <faiss/gpu-rocm/GpuIndexIVFFlat.h>
-%include  <faiss/gpu-rocm/GpuIndexIVFScalarQuantizer.h>
-%include  <faiss/gpu-rocm/GpuIndexBinaryFlat.h>
-%include  <faiss/gpu-rocm/GpuDistance.h>
-%include  <faiss/gpu-rocm/GpuIcmEncoder.h>
-
-#else // FAISS_ENABLE_ROCM
-
 // quiet SWIG warnings
 %ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
 
@@ -682,6 +654,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu/GpuIndex.h>
 #ifdef FAISS_ENABLE_CUVS
 %include  <faiss/gpu/GpuIndexCagra.h>
+%include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
 %include  <faiss/gpu/GpuIndexFlat.h>
 %include  <faiss/gpu/GpuIndexIVF.h>
@@ -692,7 +665,6 @@ struct faiss::simd16uint16 {};
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
 
-#endif // FAISS_ENABLE_ROCM
 #endif
 
 
@@ -744,6 +716,10 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexRaBitQFastScan )
+    DOWNCAST ( IndexRaBitQ )
+    DOWNCAST ( IndexIVFRaBitQ )
+    DOWNCAST ( IndexIVFRaBitQFastScan )
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
@@ -758,6 +734,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFProductResidualQuantizerFastScan )
     DOWNCAST ( IndexIVFProductLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexIVFFlatPanorama )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
@@ -799,6 +776,7 @@ struct faiss::simd16uint16 {};
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
+    DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -825,6 +803,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
+    DOWNCAST ( IndexBinaryHNSWCagra )
     DOWNCAST ( IndexBinaryHNSW )
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
@@ -928,16 +907,6 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 #ifdef GPU_WRAPPER
 
-#ifdef FAISS_ENABLE_ROCM
-%include  <faiss/gpu-rocm/GpuAutoTune.h>
-
-%newobject index_gpu_to_cpu;
-%newobject index_cpu_to_gpu;
-%newobject index_cpu_to_gpu_multiple;
-
-%include  <faiss/gpu-rocm/GpuCloner.h>
-
-#else // FAISS_ENABLE_ROCM
 %include  <faiss/gpu/GpuAutoTune.h>
 
 %newobject index_gpu_to_cpu;
@@ -946,7 +915,6 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %include  <faiss/gpu/GpuCloner.h>
 
-#endif // FAISS_ENABLE_ROCM
 #endif
 
 
@@ -991,6 +959,10 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 %template(AlignedTableUint8) faiss::AlignedTable<uint8_t>;
 %template(AlignedTableUint16) faiss::AlignedTable<uint16_t>;
 %template(AlignedTableFloat32) faiss::AlignedTable<float>;
+
+%template(MaybeOwnedVectorUInt8) faiss::MaybeOwnedVector<uint8_t>;
+%template(MaybeOwnedVectorInt32) faiss::MaybeOwnedVector<int32_t>;
+%template(MaybeOwnedVectorFloat32) faiss::MaybeOwnedVector<float>;
 
 
 // SWIG seems to have some trouble resolving function template types here, so

@@ -53,8 +53,9 @@ void hammings(
     for (i = 0; i < n1; i++) {
         const uint64_t* __restrict bs1_ = bs1 + i * nwords;
         hamdis_t* __restrict dis_ = dis + i * n2;
-        for (j = 0; j < n2; j++)
+        for (j = 0; j < n2; j++) {
             dis_[j] = hamming<nbits>(bs1_, bs2 + j * nwords);
+        }
     }
 }
 
@@ -70,8 +71,9 @@ void hammings(
     for (i = 0; i < n1; i++) {
         const uint64_t* __restrict bs1_ = bs1 + i * nwords;
         hamdis_t* __restrict dis_ = dis + i * n2;
-        for (j = 0; j < n2; j++)
+        for (j = 0; j < n2; j++) {
             dis_[j] = hamming(bs1_, bs2 + j * nwords, nwords);
+        }
     }
 }
 
@@ -92,8 +94,9 @@ void hamming_count_thres(
         bs2 = bs2_;
         for (j = 0; j < n2; j++) {
             /* collect the match only if this satisfies the threshold */
-            if (hamming<nbits>(bs1, bs2) <= ht)
+            if (hamming<nbits>(bs1, bs2) <= ht) {
                 posm++;
+            }
             bs2 += nwords;
         }
         bs1 += nwords; /* next signature */
@@ -114,8 +117,9 @@ void crosshamming_count_thres(
         const uint64_t* bs2 = bs1 + 2;
         for (j = i + 1; j < n; j++) {
             /* collect the match only if this satisfies the threshold */
-            if (hamming<nbits>(bs1, bs2) <= ht)
+            if (hamming<nbits>(bs1, bs2) <= ht) {
                 posm++;
+            }
             bs2 += nwords;
         }
         bs1 += nwords;
@@ -175,8 +179,9 @@ void hammings_knn_hc(
         ApproxTopK_mode_t approx_topk_mode = ApproxTopK_mode_t::EXACT_TOPK,
         const faiss::IDSelector* sel = nullptr) {
     size_t k = ha->k;
-    if (init_heap)
+    if (init_heap) {
         ha->heapify();
+    }
 
     const size_t block_size = hamming_batch_size;
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
@@ -229,8 +234,9 @@ void hammings_knn_hc(
             }
         }
     }
-    if (order)
+    if (order) {
         ha->reorder();
+    }
 }
 
 /* Return closest neighbors w.r.t Hamming distance, using max count. */
@@ -251,12 +257,13 @@ void hammings_knn_mc(
 
     std::vector<HCounterState<HammingComputer>> cs;
     for (size_t i = 0; i < na; ++i) {
-        cs.push_back(HCounterState<HammingComputer>(
-                all_counters.data() + i * nBuckets,
-                all_ids_per_dis.get() + i * nBuckets * k,
-                a + i * bytes_per_code,
-                8 * bytes_per_code,
-                k));
+        cs.push_back(
+                HCounterState<HammingComputer>(
+                        all_counters.data() + i * nBuckets,
+                        all_ids_per_dis.get() + i * nBuckets * k,
+                        a + i * bytes_per_code,
+                        8 * bytes_per_code,
+                        k));
     }
 
     const size_t block_size = hamming_batch_size;
@@ -364,8 +371,9 @@ void fvec2bitvec(const float* __restrict x, uint8_t* __restrict b, size_t d) {
         uint8_t mask = 1;
         int nj = i + 8 <= d ? 8 : d - i;
         for (int j = 0; j < nj; j++) {
-            if (x[i + j] >= 0)
+            if (x[i + j] >= 0) {
                 w |= mask;
+            }
             mask <<= 1;
         }
         *b = w;
@@ -382,8 +390,9 @@ void fvecs2bitvecs(
         size_t n) {
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if (n > 100000)
-    for (int64_t i = 0; i < n; i++)
+    for (int64_t i = 0; i < n; i++) {
         fvec2bitvec(x + i * d, b + i * ncodes, d);
+    }
 }
 
 void bitvecs2fvecs(
@@ -667,8 +676,9 @@ void generalized_hammings_knn_hc(
     int na = ha->nh;
     int k = ha->k;
 
-    if (ordered)
+    if (ordered) {
         ha->heapify();
+    }
 
 #pragma omp parallel for
     for (int i = 0; i < na; i++) {
@@ -698,8 +708,9 @@ void generalized_hammings_knn_hc(
         }
     }
 
-    if (ordered)
+    if (ordered) {
         ha->reorder();
+    }
 }
 
 void pack_bitstrings(

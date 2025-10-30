@@ -18,10 +18,12 @@
 #include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 
 namespace faiss {
@@ -103,6 +105,8 @@ std::string reverse_index_factory(const faiss::Index* index) {
                                 ivf_index)) {
             return prefix + ",PQ" + std::to_string(ivfpqfs_index->pq.M) + "x" +
                     std::to_string(ivfpqfs_index->pq.nbits) + "fs";
+        } else if (dynamic_cast<const faiss::IndexIVFRaBitQ*>(ivf_index)) {
+            return prefix + ",RaBitQ";
         }
     } else if (
             const faiss::IndexPreTransform* pretransform_index =
@@ -175,6 +179,8 @@ std::string reverse_index_factory(const faiss::Index* index) {
             const faiss::IndexIDMap* idmap =
                     dynamic_cast<const faiss::IndexIDMap*>(index)) {
         return std::string("IDMap,") + reverse_index_factory(idmap->index);
+    } else if (dynamic_cast<const faiss::IndexRaBitQ*>(index)) {
+        return "RaBitQ";
     }
     // Avoid runtime error, just return empty string for logging.
     return "";

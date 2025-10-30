@@ -19,6 +19,7 @@
 #include <random>
 
 #include <cstdint>
+#include "faiss/Index.h"
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
@@ -81,8 +82,9 @@ void hnsw_add_vertices(
     }
 
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++)
+    for (int i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
+    }
 
     // add vectors from highest to lowest level
     std::vector<int> hist;
@@ -94,8 +96,9 @@ void hnsw_add_vertices(
         for (int i = 0; i < n; i++) {
             storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= hist.size())
+            while (pt_level >= hist.size()) {
                 hist.push_back(0);
+            }
             hist[pt_level]++;
         }
 
@@ -131,8 +134,9 @@ void hnsw_add_vertices(
             }
 
             // random permutation to get rid of dataset order bias
-            for (int j = i0; j < i1; j++)
+            for (int j = i0; j < i1; j++) {
                 std::swap(order[j], order[j + rng2.rand_int(i1 - j)]);
+            }
 
             bool interrupt = false;
 
@@ -377,8 +381,9 @@ void IndexHNSW::shrink_level_0_neighbors(int new_size) {
 
             for (size_t j = begin; j < end; j++) {
                 int v1 = hnsw.neighbors[j];
-                if (v1 < 0)
+                if (v1 < 0) {
                     break;
+                }
                 initial_list.emplace(dis->symmetric_dis(i, v1), v1);
 
                 // initial_list.emplace(qdis(v1), v1);
@@ -389,10 +394,11 @@ void IndexHNSW::shrink_level_0_neighbors(int new_size) {
                     *dis, initial_list, shrunk_list, new_size);
 
             for (size_t j = begin; j < end; j++) {
-                if (j - begin < shrunk_list.size())
+                if (j - begin < shrunk_list.size()) {
                     hnsw.neighbors[j] = shrunk_list[j - begin].id;
-                else
+                } else {
                     hnsw.neighbors[j] = -1;
+                }
             }
         }
     }
@@ -444,7 +450,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -472,10 +480,12 @@ void IndexHNSW::init_level_0_from_knngraph(
 
         for (size_t j = 0; j < k; j++) {
             int v1 = I[i * k + j];
-            if (v1 == i)
+            if (v1 == i) {
                 continue;
-            if (v1 < 0)
+            }
+            if (v1 < 0) {
                 break;
+            }
             initial_list.emplace(D[i * k + j], v1);
         }
 
@@ -486,10 +496,11 @@ void IndexHNSW::init_level_0_from_knngraph(
         hnsw.neighbor_range(i, 0, &begin, &end);
 
         for (size_t j = begin; j < end; j++) {
-            if (j - begin < shrunk_list.size())
+            if (j - begin < shrunk_list.size()) {
                 hnsw.neighbors[j] = shrunk_list[j - begin].id;
-            else
+            } else {
                 hnsw.neighbors[j] = -1;
+            }
         }
     }
 }
@@ -499,8 +510,9 @@ void IndexHNSW::init_level_0_from_entry_points(
         const storage_idx_t* points,
         const storage_idx_t* nearests) {
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++)
+    for (int i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
+    }
 
 #pragma omp parallel
     {
@@ -530,8 +542,9 @@ void IndexHNSW::init_level_0_from_entry_points(
         printf("\n");
     }
 
-    for (int i = 0; i < ntotal; i++)
+    for (int i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
+    }
 }
 
 void IndexHNSW::reorder_links() {
@@ -578,8 +591,9 @@ void IndexHNSW::link_singletons() {
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
             storage_idx_t ni = hnsw.neighbors[j];
-            if (ni >= 0)
+            if (ni >= 0) {
                 seen[ni] = true;
+            }
         }
     }
 
@@ -589,8 +603,9 @@ void IndexHNSW::link_singletons() {
         if (!seen[i]) {
             singletons.push_back(i);
             n_sing++;
-            if (hnsw.levels[i] > 1)
+            if (hnsw.levels[i] > 1) {
                 n_sing_l1++;
+            }
         }
     }
 
@@ -722,8 +737,9 @@ int search_from_candidates_2(
 
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
-            if (v1 < 0)
+            if (v1 < 0) {
                 break;
+            }
             if (vt.visited[v1] == vt.visno + 1) {
                 // nothing to do
             } else {
@@ -749,8 +765,9 @@ int search_from_candidates_2(
     }
 
     stats.n1++;
-    if (candidates.size() == 0)
+    if (candidates.size() == 0) {
         stats.n2++;
+    }
 
     return nres;
 }
@@ -814,8 +831,9 @@ void IndexHNSW2Level::search(
 
                 for (int j = 0; j < nprobe; j++) {
                     idx_t key = coarse_assign[j + i * nprobe];
-                    if (key < 0)
+                    if (key < 0) {
                         break;
+                    }
                     size_t list_length = index_ivfpq->get_list_size(key);
                     const idx_t* ids = index_ivfpq->invlists->get_ids(key);
 
@@ -827,8 +845,9 @@ void IndexHNSW2Level::search(
                 candidates.clear();
 
                 for (int j = 0; j < k; j++) {
-                    if (idxi[j] < 0)
+                    if (idxi[j] < 0) {
                         break;
+                    }
                     candidates.push(idxi[j], simi[j]);
                 }
 
@@ -893,15 +912,31 @@ IndexHNSWCagra::IndexHNSWCagra() {
     is_trained = true;
 }
 
-IndexHNSWCagra::IndexHNSWCagra(int d, int M, MetricType metric)
-        : IndexHNSW(
-                  (metric == METRIC_L2)
-                          ? static_cast<IndexFlat*>(new IndexFlatL2(d))
-                          : static_cast<IndexFlat*>(new IndexFlatIP(d)),
-                  M) {
+IndexHNSWCagra::IndexHNSWCagra(
+        int d,
+        int M,
+        MetricType metric,
+        NumericType numeric_type)
+        : IndexHNSW(d, M, metric) {
     FAISS_THROW_IF_NOT_MSG(
             ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
             "unsupported metric type for IndexHNSWCagra");
+    numeric_type_ = numeric_type;
+    if (numeric_type == NumericType::Float32) {
+        // Use flat storage with full precision for fp32
+        storage = (metric == METRIC_L2)
+                ? static_cast<Index*>(new IndexFlatL2(d))
+                : static_cast<Index*>(new IndexFlatIP(d));
+    } else if (numeric_type == NumericType::Float16) {
+        auto qtype = ScalarQuantizer::QT_fp16;
+        storage = new IndexScalarQuantizer(d, qtype, metric);
+    } else {
+        FAISS_THROW_MSG(
+                "Unsupported numeric_type: only F16 and F32 are supported for IndexHNSWCagra");
+    }
+
+    metric_arg = storage->metric_arg;
+
     own_fields = true;
     is_trained = true;
     init_level0 = true;
@@ -965,6 +1000,14 @@ void IndexHNSWCagra::search(
                 1, // search_type
                 params);
     }
+}
+
+faiss::NumericType IndexHNSWCagra::get_numeric_type() const {
+    return numeric_type_;
+}
+
+void IndexHNSWCagra::set_numeric_type(faiss::NumericType numeric_type) {
+    numeric_type_ = numeric_type;
 }
 
 } // namespace faiss
