@@ -552,6 +552,7 @@ void IndexFlatL2Panorama::search(
                     SingleResultHandler;
 
     IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(batch_size >= k);
 
@@ -584,10 +585,7 @@ void IndexFlatL2Panorama::search(
                 size_t curr_batch_size =
                         std::min(ntotal - batch_no * batch_size, batch_size);
 
-                std::iota(
-                        active_indices.begin(),
-                        active_indices.begin() + curr_batch_size,
-                        0);
+                size_t batch_start = batch_no * batch_size;
 
                 size_t cumsum_batch_offset =
                         batch_no * batch_size * (n_levels + 1);
@@ -595,17 +593,26 @@ void IndexFlatL2Panorama::search(
                         cum_sums.data() + cumsum_batch_offset;
                 const float* level_cum_sums = batch_cum_sums + batch_size;
 
-                // Initialize with the first cum sums of each point.
-                for (size_t idx = 0; idx < curr_batch_size; idx++) {
-                    float squared_root = batch_cum_sums[idx];
-                    exact_distances[idx] = squared_root * squared_root +
-                            query_cum_norm;
+                // Initialize active set with ID-filtered vectors.
+                size_t num_active = 0;
+                for (size_t i = 0; i < curr_batch_size; i++) {
+                    bool include = !use_sel || sel->is_member(batch_start + i);
+
+                    active_indices[num_active] = i;
+                    float cum_sum = batch_cum_sums[i];
+                    exact_distances[i] = cum_sum * cum_sum + query_cum_norm;
+
+                    num_active += include;
+                }
+
+                if (num_active == 0) {
+                    continue;
                 }
 
                 size_t batch_offset = batch_no * batch_size * code_size;
                 const uint8_t* storage_base = codes.data() + batch_offset;
 
-                size_t active_num =
+                num_active =
                         pano.progressive_filter_batch<CMax<float, int64_t>>(
                                 storage_base,
                                 level_cum_sums,
@@ -613,15 +620,14 @@ void IndexFlatL2Panorama::search(
                                 query_cum_norms.data(),
                                 active_indices,
                                 exact_distances,
-                                curr_batch_size,
+                                num_active,
                                 res.heap_dis[0],
                                 local_stats);
 
-                idx_t idx_offset = batch_no * batch_size;
-                for (size_t j = 0; j < active_num; j++) {
+                for (size_t j = 0; j < num_active; j++) {
                     res.add_result(
                             exact_distances[active_indices[j]],
-                            active_indices[j] + idx_offset);
+                            batch_start + active_indices[j]);
                 }
             }
 

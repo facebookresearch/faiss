@@ -215,21 +215,90 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
     # ID selector tests (disabled)
 
-    @unittest.skip("ID selector (range) disabled for now")
     def test_id_selector_range(self):
-        pass
+        """Test ID filtering with range selector"""
+        d, nb, nt, nq, nlevels, k = 128, 80000, 120000, 500, 8, 20
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=321)
 
-    @unittest.skip("ID selector (batch) disabled for now")
+        index_regular = self.create_flat(d, xb)
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        params = faiss.SearchParameters()
+        params.sel = faiss.IDSelectorRange(10000, 50000)
+
+        D_regular, I_regular = index_regular.search(xq, k, params=params)
+        D_panorama, I_panorama = index_panorama.search(xq, k, params=params)
+
+        valid_ids = I_panorama >= 0
+        self.assertTrue(np.all(I_panorama[valid_ids] >= 10000))
+        self.assertTrue(np.all(I_panorama[valid_ids] < 50000))
+
+        np.testing.assert_array_equal(I_regular, I_panorama)
+        np.testing.assert_allclose(
+            D_regular[valid_ids], D_panorama[valid_ids], rtol=1e-5
+        )
+
     def test_id_selector_batch(self):
-        pass
+        """Test ID filtering with batch selector"""
+        d, nb, nt, nq, nlevels, k = 128, 60000, 90000, 400, 8, 20
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=654)
 
-    @unittest.skip("Selector with small dataset disabled for now")
+        index_regular = self.create_flat(d, xb)
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        allowed_ids = np.array([i * 100 for i in range(500)], dtype=np.int64)
+        params = faiss.SearchParameters()
+        params.sel = faiss.IDSelectorBatch(allowed_ids)
+
+        D_regular, I_regular = index_regular.search(xq, k, params=params)
+        D_panorama, I_panorama = index_panorama.search(xq, k, params=params)
+
+        allowed_set = set(allowed_ids)
+        valid_panorama = I_panorama >= 0
+        for id_val in I_panorama[valid_panorama]:
+            self.assertIn(int(id_val), allowed_set)
+
+        np.testing.assert_array_equal(I_regular, I_panorama)
+        np.testing.assert_allclose(
+            D_regular[valid_panorama], D_panorama[valid_panorama], rtol=1e-5
+        )
+
     def test_selector_with_small_dataset(self):
-        pass
+        """Test ID selectors with dataset smaller than batch size"""
+        d, nb, nt, nq, nlevels, k = 32, 100, 200, 10, 4, 5
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=888)
 
-    @unittest.skip("Selector excludes all disabled for now")
+        index_regular = self.create_flat(d, xb)
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        params = faiss.SearchParameters()
+        params.sel = faiss.IDSelectorRange(20, 60)
+
+        D_regular, I_regular = index_regular.search(xq, k, params=params)
+        D_panorama, I_panorama = index_panorama.search(xq, k, params=params)
+
+        valid_ids = I_panorama >= 0
+        if np.any(valid_ids):
+            self.assertTrue(np.all(I_panorama[valid_ids] >= 20))
+            self.assertTrue(np.all(I_panorama[valid_ids] < 60))
+
+        np.testing.assert_array_equal(I_regular, I_panorama)
+        np.testing.assert_allclose(
+            D_regular[valid_ids], D_panorama[valid_ids], rtol=1e-5
+        )
+
     def test_selector_excludes_all(self):
-        pass
+        """Test selector that excludes all results"""
+        d, nb, nt, nq, nlevels, k = 32, 300, 400, 5, 4, 10
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=999)
+
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        params = faiss.SearchParameters()
+        params.sel = faiss.IDSelectorRange(nb + 100, nb + 200)
+
+        D, I = index_panorama.search(xq, k, params=params)
+        self.assertTrue(np.all(I == -1))
 
     # Batch size and edge case tests
 
@@ -412,5 +481,3 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
