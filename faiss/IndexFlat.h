@@ -116,7 +116,7 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
               n_levels(n_levels),
               level_width(((d + n_levels - 1) / n_levels) * sizeof(float)),
               batch_size(batch_size),
-              pano(d, n_levels, batch_size) {}
+              pano(code_size, n_levels, batch_size) {}
 
     void add(idx_t n, const float* x) override;
 

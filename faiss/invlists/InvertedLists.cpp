@@ -391,8 +391,11 @@ size_t ArrayInvertedListsPanorama::add_entries(
     codes[list_no].resize(num_batches * kBatchSize * code_size);
     cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
     pano.copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
-    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, code);
+    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, vectors);
 
     return o;
 }
@@ -407,8 +410,12 @@ void ArrayInvertedListsPanorama::update_entries(
     assert(n_entry + offset <= ids[list_no].size());
 
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
+
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
     pano.copy_codes_to_level_layout(codes[list_no].data(), offset, n_entry, code);
-    pano.compute_cumulative_sums(cum_sums[list_no].data(), offset, n_entry, code);
+    pano.compute_cumulative_sums(cum_sums[list_no].data(), offset, n_entry, vectors);
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {

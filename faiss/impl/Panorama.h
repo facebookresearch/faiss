@@ -40,7 +40,7 @@ struct Panorama {
             float* cumsum_base,
             size_t offset,
             size_t n_entry,
-            const uint8_t* code);
+            const float* vectors);
 
     /// Processes a batch of vectors through all levels,
     /// computing exact distances and pruning based on a threshold.
@@ -57,7 +57,7 @@ struct Panorama {
             float threshold,
             PanoramaStats& local_stats) const;
 
-   private:
+    //    private:
     size_t d = 0;
     size_t code_size = 0;
     size_t n_levels = 0;
@@ -69,7 +69,7 @@ struct Panorama {
 template <typename C>
 size_t Panorama::progressive_filter_batch(
         const uint8_t* storage_base,
-        const float* level_cum_sums_in,
+        const float* level_cum_sums,
         const float* query,
         const float* query_cum_sums,
         std::vector<uint32_t>& active_indices,
@@ -77,7 +77,6 @@ size_t Panorama::progressive_filter_batch(
         size_t num_active,
         float threshold,
         PanoramaStats& local_stats) const {
-    const float* level_cum_sums = level_cum_sums_in;
     size_t total_active = num_active;
     for (size_t level = 0; level < n_levels; level++) {
         local_stats.total_dims_scanned += num_active;

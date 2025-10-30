@@ -30,39 +30,39 @@ void Panorama::set_derived_values() {
     this->level_width_floats = this->level_width / sizeof(float);
 }
 
+/**
+ * @brief Copy codes to level-oriented layout
+ * @param codes The base pointer to codes
+ * @param offset The offset in number of vectors to write new data to
+ * @param n_entry The number of new vectors to write
+ * @param code The new vector data
+ */
 void Panorama::copy_codes_to_level_layout(
         uint8_t* codes,
         size_t offset,
         size_t n_entry,
         const uint8_t* code) {
-    size_t current_pos = offset;
-    for (size_t entry_idx = 0; entry_idx < n_entry;) {
+    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
+        size_t current_pos = offset + entry_idx;
         // Determine which batch we're in and position within that batch.
         size_t batch_no = current_pos / batch_size;
         size_t pos_in_batch = current_pos % batch_size;
-        size_t entries_in_this_batch =
-                std::min(n_entry - entry_idx, batch_size - pos_in_batch);
 
-        // Copy entries into level-oriented layout for this batch.
+        // Copy entry into level-oriented layout for this batch.
         size_t batch_offset = batch_no * batch_size * code_size;
         for (size_t level = 0; level < n_levels; level++) {
             size_t level_offset = level * level_width * batch_size;
             size_t start_byte = level * level_width;
-            size_t copy_size =
+            size_t actual_level_width =
                     std::min(level_width, code_size - level * level_width);
 
-            for (size_t i = 0; i < entries_in_this_batch; i++) {
-                const uint8_t* src =
-                        code + (entry_idx + i) * code_size + start_byte;
-                uint8_t* dest = codes + batch_offset + level_offset +
-                        (pos_in_batch + i) * level_width;
+            const uint8_t* src =
+                    code + entry_idx * code_size + start_byte;
+            uint8_t* dest = codes + batch_offset + level_offset +
+                    pos_in_batch * actual_level_width;
 
-                memcpy(dest, src, copy_size);
-            }
+            memcpy(dest, src, actual_level_width);
         }
-
-        entry_idx += entries_in_this_batch;
-        current_pos += entries_in_this_batch;
     }
 }
 
@@ -70,11 +70,7 @@ void Panorama::compute_cumulative_sums(
         float* cumsum_base,
         size_t offset,
         size_t n_entry,
-        const uint8_t* code) {
-    // Cast to float* is safe here as we guarantee codes are always float
-    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
-    const float* vectors = reinterpret_cast<const float*>(code);
-    const size_t d = code_size / sizeof(float);
+        const float* vectors) {
 
     std::vector<float> suffix_sums(d + 1);
 
@@ -95,7 +91,6 @@ void Panorama::compute_cumulative_sums(
         // Store cumulative sums in batch-oriented layout.
         size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
 
-        const size_t level_width_floats = level_width / sizeof(float);
         for (size_t level = 0; level < n_levels; level++) {
             size_t start_idx = level * level_width_floats;
             size_t cumsum_offset =

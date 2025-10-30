@@ -529,14 +529,18 @@ void IndexFlat1D::search(
 
 void IndexFlatL2Panorama::add(idx_t n, const float* x) {
     size_t offset = ntotal;
-    IndexFlatL2::add(n, x);
-
+    ntotal += n;
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+
+    codes.resize(num_batches * batch_size * code_size);
     cum_sums.resize(num_batches * batch_size * (n_levels + 1));
 
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
-    pano.compute_cumulative_sums(cum_sums.data(), offset, n, code);
+    pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+
+    printf("codes size: %zu\n", codes.size());
+    printf("cum_sums size: %zu\n", cum_sums.size());
 }
 
 void IndexFlatL2Panorama::search(
@@ -559,7 +563,35 @@ void IndexFlatL2Panorama::search(
             size_t(n), distances, labels, size_t(k), nullptr);
     [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
-#pragma omp parallel num_threads(nt)
+    std::cout << "batch_size: " << batch_size << std::endl;
+    std::cout << "d: " << d << std::endl;
+    std::cout << "n_levels: " << n_levels << std::endl;
+    std::cout << "pano batch_size: " << pano.batch_size << std::endl;
+    std::cout << "pano level_width: " << pano.level_width << std::endl;
+    std::cout << "pano n_levels: " << pano.n_levels << std::endl;
+    std::cout << "pano level_width_floats: " << pano.level_width_floats
+              << std::endl;
+    std::cout << "pano code_size: " << pano.code_size << std::endl;
+
+    std::cout << "a" << std::endl;
+
+    // print the first point in codes() and its cumsums
+    for (size_t i = 0; i < n_levels; i++) {
+        for (size_t j = 0; j < d / n_levels; j++) {
+            std::cout << reinterpret_cast<const float*>(codes.data())
+                                 [i * batch_size * (d / n_levels) + j]
+                      << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "b" << std::endl;
+
+    size_t n_batches = (ntotal + batch_size - 1) / batch_size;
+
+    std::cout << "n_batches: " << n_batches << std::endl;
+
+    // #pragma omp parallel num_threads(nt)
     {
         SingleResultHandler res(handler);
 
@@ -573,24 +605,24 @@ void IndexFlatL2Panorama::search(
         PanoramaStats local_stats;
         local_stats.reset();
 
-        size_t chunk_size = d / n_levels;
-
-        uint64_t total_active = 0;
-        uint64_t total_points = 0;
-
-        size_t n_batches = (ntotal + batch_size - 1) / batch_size;
-
-#pragma omp for
+        // #pragma omp for
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
 
             for (int i = d - 1; i >= 0; i--) {
-                float squaredVal = xi[i] * xi[i];
-                suffix_sums[i] = suffix_sums[i + 1] + squaredVal;
+                float squared_val = xi[i] * xi[i];
+                suffix_sums[i] = suffix_sums[i + 1] + squared_val;
             }
 
+            // std::cout << "suffix_sums: ";
+            // for (size_t i = 0; i < d + 1; i++) {
+            //     std::cout << suffix_sums[i] << " ";
+            // }
+            // std::cout << std::endl;
+
             for (int level_idx = 0; level_idx < n_levels; level_idx++) {
-                int startIdx = level_idx * level_width;
+                int startIdx = level_idx * pano.level_width_floats;
+                // std::cout << "startIdx: " << startIdx << std::endl;
                 if (startIdx < d) {
                     query_cum_norms[level_idx] = sqrt(suffix_sums[startIdx]);
                 } else {
@@ -599,12 +631,24 @@ void IndexFlatL2Panorama::search(
             }
             query_cum_norms[n_levels] = 0.0f;
 
+            // // print xi and query_cum_norms
+            // for (size_t i = 0; i < d; i++) {
+            //     std::cout << xi[i] << " ";
+            // }
+            // std::cout << std::endl;
+            // for (size_t i = 0; i < n_levels + 1; i++) {
+            //     std::cout << query_cum_norms[i] << " ";
+            // }
+            // std::cout << std::endl;
+
             res.begin(i);
 
             for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                // std::cout << "-------" << std::endl;
                 size_t curr_batch_size =
                         std::min(ntotal - batch_no * batch_size, batch_size);
-                total_points += curr_batch_size;
+
+                std::cout << "curr_batch_size: " << curr_batch_size << std::endl;
 
                 std::iota(
                         active_indices.begin(),
@@ -620,18 +664,20 @@ void IndexFlatL2Panorama::search(
                 // Initialize with the first cum sums of each point.
                 for (size_t idx = 0; idx < curr_batch_size; idx++) {
                     float squared_root = batch_cum_sums[idx];
-                    exact_distances[idx] = squared_root * squared_root;
+                    exact_distances[idx] =
+                            squared_root * squared_root + suffix_sums[0];
                 }
 
-                idx_t idx_offset = batch_no * batch_size;
-
-                size_t active_num = curr_batch_size;
-                size_t start_dim = 0;
-
                 size_t batch_offset = batch_no * batch_size * code_size;
+                // std::cout << "batch_no: " << batch_no << std::endl;
+                // std::cout << "batch_offset: " << batch_offset << std::endl;
+                // std::cout << "cumsum_batch_offset: " << cumsum_batch_offset << std::endl;
+                // std::cout << "level_cum_sums[0]: " << level_cum_sums[0] << std::endl;
                 const uint8_t* storage_base = codes.data() + batch_offset;
 
-                active_num =
+                printf("res.heap_dis[0]: %f\n", res.heap_dis[0]);
+
+                size_t active_num =
                         pano.progressive_filter_batch<CMax<float, int64_t>>(
                                 storage_base,
                                 level_cum_sums,
@@ -639,50 +685,11 @@ void IndexFlatL2Panorama::search(
                                 query_cum_norms.data(),
                                 active_indices,
                                 exact_distances,
-                                active_num,
+                                curr_batch_size,
                                 res.heap_dis[0],
                                 local_stats);
-                // for (size_t level = 0; level < n_levels; level++) {
-                //     total_active += active_num;
-                //     const float* storage =
-                //             column_storage_offsets[batch_no * n_levels +
-                //             level];
 
-                //     size_t cum_sum_offset = cum_sum_offsets[batch_no];
-                //     const float* cum_sumss = cum_sums + cum_sum_offset +
-                //             (level + 1) * curr_batch_size;
-
-                //     float query_cum_norm = query_cum_norms[level + 1];
-
-                //     size_t next_active = 0;
-
-                //     for (size_t j = 0; j < active_num; j++) {
-                //         int64_t idx = active_indices[j];
-
-                //         const float* yj = storage + idx * chunk_size;
-                //         float dot_product =
-                //                 fvec_inner_product(x_i + start_dim, yj,
-                //                 chunk_size);
-
-                //         float cum_sum = cum_sumss[idx];
-                //         float cauchy_schwarz_bound =
-                //                 2.0f * cum_sum * query_cum_norm;
-
-                //         exact_distances[idx] -= 2.0f * dot_product;
-                //         float new_exact = exact_distances[idx];
-
-                //         float lower_bound =
-                //                 new_exact - cauchy_schwarz_bound;
-                //         float upper_bound = new_exact + cauchy_schwarz_bound;
-
-                //         active_indices[next_active] = idx;
-                //         next_active += res.should_keep(lower_bound);
-                //     }
-
-                //     start_dim += chunk_size;
-                //     active_num = next_active;
-                // }
-
+                idx_t idx_offset = batch_no * batch_size;
                 for (size_t j = 0; j < active_num; j++) {
                     res.add_result(
                             exact_distances[active_indices[j]],
