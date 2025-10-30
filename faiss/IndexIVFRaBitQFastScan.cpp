@@ -302,9 +302,10 @@ void IndexIVFRaBitQFastScan::search_preassigned(
         nprobe = params->nprobe;
     }
 
-    std::vector<QueryFactorsData> query_factors_storage(n * nlist);
+    std::vector<QueryFactorsData> query_factors_storage(n * nprobe);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
+    context.nprobe = nprobe;
 
     const CoarseQuantized cq = {nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
@@ -341,9 +342,6 @@ void IndexIVFRaBitQFastScan::compute_LUT(
         if (cij >= 0) {
             quantizer->compute_residual(x + i * d, xij, cij);
 
-            // Compute storage index for IVF: query_id * nlist + list_id
-            idx_t storage_idx = i * nlist + cij;
-
             // Create QueryFactorsData for this query-list combination
             QueryFactorsData query_factors_data;
 
@@ -353,9 +351,9 @@ void IndexIVFRaBitQFastScan::compute_LUT(
                     dis_tables.get() + ij * dim12,
                     x + i * d);
 
-            // Store query factors directly in array
+            // Store query factors using compact indexing (ij directly)
             if (context.query_factors) {
-                context.query_factors[storage_idx] = query_factors_data;
+                context.query_factors[ij] = query_factors_data;
             }
 
         } else {
@@ -551,13 +549,16 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
             local_q,
             q);
 
-    size_t storage_idx = q * index->nlist + current_list_no;
-
     // Access query factors directly from array via ProcessingContext
     if (!context || !context->query_factors) {
         FAISS_THROW_MSG(
                 "Query factors not available: FastScanDistancePostProcessing with query_factors required");
     }
+
+    // Use probe_rank from probe_indices for compact storage indexing
+    size_t probe_rank = probe_indices[local_q];
+    size_t nprobe = context->nprobe > 0 ? context->nprobe : index->nprobe;
+    size_t storage_idx = q * nprobe + probe_rank;
 
     const auto& query_factors = context->query_factors[storage_idx];
 
