@@ -442,7 +442,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxp->batch_size);
         WRITE1(idxp->ntotal);
         WRITE1(idxp->is_trained);
-        WRITEXBVECTOR(idxp->codes);
+        WRITEVECTOR(idxp->codes);
         WRITEVECTOR(idxp->cum_sums);
     } else if (const IndexFlat* idxf = dynamic_cast<const IndexFlat*>(idx)) {
         uint32_t h =

@@ -95,7 +95,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
     # Core functionality tests
 
-    def test_exact_match_with_ivf_flat(self):
+    def test_exact_match_with_flat(self):
         """Core test: Panorama must return identical results to IndexFlatL2"""
         d, nb, nt, nq, nlevels, k = 128, 50000, 60000, 10, 8, 20
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=42)
@@ -110,7 +110,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
             D_regular, I_regular, D_panorama, I_panorama
         )
 
-    def test_exact_match_with_ivf_flat_medium(self):
+    def test_exact_match_with_flat_medium(self):
         """Core test: Medium scale version"""
         d, nb, nt, nq, nlevels, k = 64, 10000, 15000, 10, 4, 10
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=42)
@@ -447,7 +447,6 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         D_pan_2, I_pan_2 = index_panorama.search(xq2, k)
         self.assert_search_results_equal(D_reg_2, I_reg_2, D_pan_2, I_pan_2)
 
-    @unittest.skip("Serialization not yet implemented for IndexFlatL2Panorama")
     def test_serialization(self):
         """Test that writing and reading Panorama indexes preserves search results"""
         d, nb, nt, nq, nlevels, k = 128, 10000, 15000, 100, 8, 20
