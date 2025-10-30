@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="24" column="27" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="24" bodyend="-1"/>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="26" column="27" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">rabitq_utils::QueryFactorsData</ref> *</type>
@@ -34,7 +34,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="29" column="36" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="31" column="36" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::FastScanDistancePostProcessing::nprobe</definition>
+        <argsstring></argsstring>
+        <name>nprobe</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::nprobe</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The nprobe value used when allocating query_factors storage. This is needed because the allocation size (n * nprobe) may use a different nprobe than index-&gt;nprobe if search params override it. Set to 0 to use index-&gt;nprobe as fallback. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="37" column="12" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="37" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -51,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="32" column="5"/>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="40" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -66,7 +82,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="35" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="35" bodyend="37"/>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="43" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="43" bodyend="45"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -81,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="40" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="40" bodyend="42"/>
+        <location file="faiss/impl/FastScanDistancePostProcessing.h" line="48" column="10" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="48" bodyend="50"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -126,12 +142,13 @@
         <link refid="structfaiss_1_1simd256bit"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/FastScanDistancePostProcessing.h" line="22" column="1" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="22" bodyend="43"/>
+    <location file="faiss/impl/FastScanDistancePostProcessing.h" line="24" column="1" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="24" bodyend="51"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>FastScanDistancePostProcessing</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_norm_scaling</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_query_processing</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>norm_scaler</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>nprobe</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>query_factors</name></member>
     </listofallmembers>
   </compounddef>

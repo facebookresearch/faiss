@@ -28,7 +28,7 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -68,6 +68,8 @@
       <node id="15">
         <label>faiss/impl/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>faiss/impl/platform_macros.h</label>
@@ -77,27 +79,30 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>algorithm</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>cassert</label>
+      </node>
+      <node id="16">
+        <label>cstddef</label>
       </node>
       <node id="4">
         <label>cstdint</label>
@@ -108,7 +113,7 @@
       <node id="13">
         <label>cstdlib</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>cstring</label>
       </node>
       <node id="8">

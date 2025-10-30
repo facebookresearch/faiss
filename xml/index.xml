@@ -700,6 +700,7 @@
   <compound refid="structfaiss_1_1FastScanDistancePostProcessing" kind="struct"><name>faiss::FastScanDistancePostProcessing</name>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a52bca4c51d84179d18737578c14e5f37" kind="variable"><name>norm_scaler</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" kind="variable"><name>query_factors</name></member>
+    <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" kind="variable"><name>nprobe</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" kind="function"><name>FastScanDistancePostProcessing</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" kind="function"><name>has_norm_scaling</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" kind="function"><name>has_query_processing</name></member>

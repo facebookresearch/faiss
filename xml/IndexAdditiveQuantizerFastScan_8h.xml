@@ -151,6 +151,8 @@
       <node id="42">
         <label>faiss/impl/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
       </node>
       <node id="27">
         <label>faiss/impl/LocalSearchQuantizer.h</label>

@@ -542,6 +542,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/FastScanDistancePostProcessing.h" line="15" column="1"/>
+    <location file="faiss/impl/FastScanDistancePostProcessing.h" line="17" column="1"/>
   </compounddef>
 </doxygen>

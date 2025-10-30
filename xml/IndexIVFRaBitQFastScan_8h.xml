@@ -215,6 +215,8 @@
       <node id="34">
         <label>faiss/impl/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
       </node>
       <node id="21">
         <label>faiss/impl/IDSelector.h</label>
