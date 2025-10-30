@@ -15,7 +15,6 @@ try:
 except ImportError:
     from faiss.contrib.datasets import DatasetGIST1M
 
-# TODO(aknayar): Integrate dims scanned in here
 ds = DatasetGIST1M()
 
 nq = 10
@@ -32,7 +31,7 @@ k = 10
 gt = gt[:, :k]
 
 
-def eval_qps_and_recall(index):
+def eval_qps(index):
     faiss.cvar.indexPanorama_stats.reset()
     t0 = time.time()
     _, I = index.search(xq, k=k)
@@ -42,6 +41,11 @@ def eval_qps_and_recall(index):
 
     corrects = (gt == I).sum()
     recall = corrects / (nq * k)
+    ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+    print(
+        f"\tRecall@{k}: {recall:.6f}, speed: {speed:.6f} ms/query, "
+        f"dims scanned: {ratio_dims_scanned * 100:.2f}%"
+    )
     return recall, qps
 
 
@@ -72,8 +76,7 @@ qps_values = []
 for name in names:
     print(f"======{name}")
     index = build_index(name)
-    recall, qps = eval_qps_and_recall(index)
-    print(f"\tRecall@{k}: {recall:.6f}, QPS: {qps:.2f}")
+    recall, qps = eval_qps(index)
     labels.append(f"{name}\n(r@{recall:.3f})")
     qps_values.append(qps)
 
@@ -90,7 +93,7 @@ ax.text(
 )
 plt.xticks(x, labels, rotation=0)
 plt.ylabel("QPS")
-plt.title("Flat vs FlatL2Panorama on GIST1M")
+plt.title("Flat Indexes on GIST1M")
 
 plt.tight_layout()
 plt.savefig("bench_flat_l2_panorama.png", bbox_inches="tight")

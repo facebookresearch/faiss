@@ -25,9 +25,8 @@ Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
 
 void Panorama::set_derived_values() {
     this->d = code_size / sizeof(float);
-    // TODO(aknayar): Once things are correct, simplify these two by switching.
-    this->level_width = ((d + n_levels - 1) / n_levels) * sizeof(float);
-    this->level_width_floats = this->level_width / sizeof(float);
+    this->level_width_floats = ((d + n_levels - 1) / n_levels);
+    this->level_width = this->level_width_floats * sizeof(float);
 }
 
 /**

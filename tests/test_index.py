@@ -24,7 +24,6 @@ class TestModuleInterface(unittest.TestCase):
 
 
 class TestIndexFlat(unittest.TestCase):
-    # TODO(aknayar): Add test for IndexFlatL2Panorama.
     def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
         d = 32
         nb = 1000
@@ -143,6 +142,52 @@ class TestIndexFlatL2(unittest.TestCase):
         self.assertLessEqual((I3 != I1).sum(), 0)
         #  np.testing.assert_equal(Iref, I1)
         np.testing.assert_equal(D3, D1)
+
+
+class TestIndexFlatL2Panorama(unittest.TestCase):
+    def test_indexflat_l2_panorama(self):
+        d = 32
+        nlevels = 8
+        batch_size = 128
+        nq = 200
+        nb = 1000
+        nt = 0
+        k = 10
+
+        (xt, xb, xq) = get_dataset_2(d, nt, nb, nq)
+        index = faiss.IndexFlatL2Panorama(d, nlevels, batch_size)
+
+        ### k-NN search
+
+        index.add(xb)
+        D1, I1 = index.search(xq, k)
+
+        all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(2)
+        Iref = all_dis.argsort(axis=1)[:, :k]
+
+        Dref = all_dis[np.arange(nq)[:, None], Iref]
+
+        # not too many elements are off.
+        self.assertLessEqual((Iref != I1).sum(), Iref.size * 0.0002)
+        np.testing.assert_almost_equal(Dref, D1, decimal=5)
+
+        ### Range search
+
+        radius = float(np.median(Dref[:, -1]))
+
+        lims, D2, I2 = index.range_search(xq, radius)
+
+        for i in range(nq):
+            l0, l1 = lims[i:i + 2]
+            _, Il = D2[l0:l1], I2[l0:l1]
+            Ilref, = np.where(all_dis[i] < radius)
+            Il.sort()
+            Ilref.sort()
+            np.testing.assert_equal(Il, Ilref)
+            np.testing.assert_almost_equal(
+                all_dis[i, Ilref], D2[l0:l1],
+                decimal=5
+            )
 
 
 class EvalIVFPQAccuracy(unittest.TestCase):

@@ -18,7 +18,6 @@ import numpy as np
 from faiss.contrib.datasets import SyntheticDataset
 
 
-# TODO(aknayar): Add parallel tests.
 class TestIndexFlatL2Panorama(unittest.TestCase):
     """Test Suite for IndexFlatL2Panorama."""
 
