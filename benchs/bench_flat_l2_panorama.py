@@ -15,7 +15,7 @@ try:
 except ImportError:
     from faiss.contrib.datasets import DatasetGIST1M
 
-
+# TODO(aknayar): Integrate dims scanned in here
 ds = DatasetGIST1M()
 
 nq = 10

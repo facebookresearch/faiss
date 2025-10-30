@@ -128,6 +128,13 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
    private:
     Panorama pano;
 };

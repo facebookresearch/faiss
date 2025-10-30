@@ -610,4 +610,72 @@ void IndexFlatL2Panorama::search(
         }
     }
 }
+
+void IndexFlatL2Panorama::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    using SingleResultHandler = typename RangeSearchBlockResultHandler<
+            CMax<float, int64_t>,
+            false>::SingleResultHandler;
+
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+
+    RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
+            result, radius, nullptr);
+    [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
+
+    size_t n_batches = (ntotal + batch_size - 1) / batch_size;
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler res(handler);
+
+        std::vector<float> query_cum_norms(n_levels + 1);
+        std::vector<float> exact_distances(batch_size);
+        std::vector<uint32_t> active_indices(batch_size);
+
+        PanoramaStats local_stats;
+        local_stats.reset();
+
+#pragma omp for
+        for (int64_t i = 0; i < n; i++) {
+            const float* xi = x + i * d;
+            pano.compute_query_cum_sums(xi, query_cum_norms.data());
+            res.begin(i);
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t batch_start = batch_no * batch_size;
+
+                size_t num_active =
+                        pano.progressive_filter_batch<CMax<float, int64_t>>(
+                                codes.data(),
+                                cum_sums.data(),
+                                xi,
+                                query_cum_norms.data(),
+                                batch_no,
+                                ntotal,
+                                sel,
+                                nullptr,
+                                use_sel,
+                                active_indices,
+                                exact_distances,
+                                radius,
+                                local_stats);
+
+                for (size_t j = 0; j < num_active; j++) {
+                    res.add_result(
+                            exact_distances[active_indices[j]],
+                            batch_start + active_indices[j]);
+                }
+            }
+
+            res.end();
+            indexPanorama_stats.add(local_stats);
+        }
+    }
+}
 } // namespace faiss

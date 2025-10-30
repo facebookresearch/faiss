@@ -125,7 +125,6 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
             D_regular, I_regular, D_panorama, I_panorama
         )
 
-    @unittest.skip("Range search disabled for now")
     def test_range_search(self):
         """Test range search returns correct results within radius"""
         d, nb, nt, nq, nlevels = 128, 50000, 75000, 10, 8
@@ -375,9 +374,25 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
                     D_regular, I_regular, D_panorama, I_panorama
                 )
 
-    @unittest.skip("Range search edge cases disabled for now")
     def test_range_search_edge_cases(self):
-        pass
+        """Test range search with extreme radius values"""
+        d, nb, nt, nq, nlevels = 32, 500, 700, 10, 4
+        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=777)
+
+        index_regular = self.create_flat(d)
+        index_panorama = self.create_panorama(d, nlevels)
+
+        for radius in [0.01, 0.1, 100.0, 1000.0]:
+            with self.subTest(radius=radius):
+                lims_reg, D_reg, I_reg = index_regular.range_search(xq, radius)
+                lims_pan, D_pan, I_pan = index_panorama.range_search(xq, radius)
+
+                np.testing.assert_array_equal(lims_reg, lims_pan)
+
+                if len(I_reg) > 0:
+                    self.assert_range_results_equal(
+                        lims_reg, D_reg, I_reg, lims_pan, D_pan, I_pan, nq
+                    )
 
     # Dynamic operations tests
 
