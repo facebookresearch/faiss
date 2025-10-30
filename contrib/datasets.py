@@ -325,7 +325,7 @@ class DatasetMusic100(Dataset):
 class DatasetGIST1M(Dataset):
     """
     The original dataset is available at: http://corpus-texmex.irisa.fr/
-    (ANN_SIFT1M)
+    (ANN_GIST1M)
     """
 
     def __init__(self):
