@@ -570,11 +570,11 @@ Index* parse_other_indexes(
     }
 
     // IndexFlatL2Panorama
-    if (match("FlatL2Panorama([0-9]+)?(_[0-9]+)?")) {
+    if (match("FlatL2Panorama([0-9]+)(_[0-9]+)?")) {
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
-        int nlevels = mres_to_int(sm[1], 8);
+        int nlevels = std::stoi(sm[1].str());
         if (sm[2].length() > 0) {
-            int batch_size = mres_to_int(sm[2], 1);
+            int batch_size = std::stoi(sm[2].str().substr(1));
             return new IndexFlatL2Panorama(d, nlevels, (size_t)batch_size);
         } else {
             return new IndexFlatL2Panorama(d, nlevels);
