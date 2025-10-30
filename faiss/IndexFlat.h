@@ -139,7 +139,7 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
    private:
     Panorama pano;
 
-    template <typename BlockHandler, bool use_radius>
+    template <bool use_radius, typename BlockHandler>
     inline void search_core(
             BlockHandler& handler,
             idx_t n,

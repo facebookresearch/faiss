@@ -540,7 +540,7 @@ void IndexFlatL2Panorama::add(idx_t n, const float* x) {
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
 }
 
-template <typename BlockHandler, bool use_radius>
+template <bool use_radius, typename BlockHandler>
 inline void IndexFlatL2Panorama::search_core(
         BlockHandler& handler,
         idx_t n,
@@ -625,8 +625,7 @@ void IndexFlatL2Panorama::search(
     HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
             size_t(n), distances, labels, size_t(k), nullptr);
 
-    search_core<HeapBlockResultHandler<CMax<float, int64_t>, false>, false>(
-            handler, n, x, 0.0f, sel, use_sel);
+    search_core<false>(handler, n, x, 0.0f, sel, use_sel);
 }
 
 void IndexFlatL2Panorama::range_search(
@@ -641,8 +640,6 @@ void IndexFlatL2Panorama::range_search(
     RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
             result, radius, nullptr);
 
-    search_core<
-            RangeSearchBlockResultHandler<CMax<float, int64_t>, false>,
-            true>(handler, n, x, radius, sel, use_sel);
+    search_core<true>(handler, n, x, radius, sel, use_sel);
 }
 } // namespace faiss
