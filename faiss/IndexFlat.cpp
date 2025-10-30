@@ -538,9 +538,6 @@ void IndexFlatL2Panorama::add(idx_t n, const float* x) {
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
-
-    printf("codes size: %zu\n", codes.size());
-    printf("cum_sums size: %zu\n", cum_sums.size());
 }
 
 void IndexFlatL2Panorama::search(
@@ -563,33 +560,7 @@ void IndexFlatL2Panorama::search(
             size_t(n), distances, labels, size_t(k), nullptr);
     [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
-    std::cout << "batch_size: " << batch_size << std::endl;
-    std::cout << "d: " << d << std::endl;
-    std::cout << "n_levels: " << n_levels << std::endl;
-    std::cout << "pano batch_size: " << pano.batch_size << std::endl;
-    std::cout << "pano level_width: " << pano.level_width << std::endl;
-    std::cout << "pano n_levels: " << pano.n_levels << std::endl;
-    std::cout << "pano level_width_floats: " << pano.level_width_floats
-              << std::endl;
-    std::cout << "pano code_size: " << pano.code_size << std::endl;
-
-    std::cout << "a" << std::endl;
-
-    // print the first point in codes() and its cumsums
-    for (size_t i = 0; i < n_levels; i++) {
-        for (size_t j = 0; j < d / n_levels; j++) {
-            std::cout << reinterpret_cast<const float*>(codes.data())
-                                 [i * batch_size * (d / n_levels) + j]
-                      << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "b" << std::endl;
-
     size_t n_batches = (ntotal + batch_size - 1) / batch_size;
-
-    std::cout << "n_batches: " << n_batches << std::endl;
 
     // #pragma omp parallel num_threads(nt)
     {
@@ -614,15 +585,8 @@ void IndexFlatL2Panorama::search(
                 suffix_sums[i] = suffix_sums[i + 1] + squared_val;
             }
 
-            // std::cout << "suffix_sums: ";
-            // for (size_t i = 0; i < d + 1; i++) {
-            //     std::cout << suffix_sums[i] << " ";
-            // }
-            // std::cout << std::endl;
-
             for (int level_idx = 0; level_idx < n_levels; level_idx++) {
                 int startIdx = level_idx * pano.level_width_floats;
-                // std::cout << "startIdx: " << startIdx << std::endl;
                 if (startIdx < d) {
                     query_cum_norms[level_idx] = sqrt(suffix_sums[startIdx]);
                 } else {
@@ -631,24 +595,11 @@ void IndexFlatL2Panorama::search(
             }
             query_cum_norms[n_levels] = 0.0f;
 
-            // // print xi and query_cum_norms
-            // for (size_t i = 0; i < d; i++) {
-            //     std::cout << xi[i] << " ";
-            // }
-            // std::cout << std::endl;
-            // for (size_t i = 0; i < n_levels + 1; i++) {
-            //     std::cout << query_cum_norms[i] << " ";
-            // }
-            // std::cout << std::endl;
-
             res.begin(i);
 
             for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-                // std::cout << "-------" << std::endl;
                 size_t curr_batch_size =
                         std::min(ntotal - batch_no * batch_size, batch_size);
-
-                std::cout << "curr_batch_size: " << curr_batch_size << std::endl;
 
                 std::iota(
                         active_indices.begin(),
@@ -669,13 +620,7 @@ void IndexFlatL2Panorama::search(
                 }
 
                 size_t batch_offset = batch_no * batch_size * code_size;
-                // std::cout << "batch_no: " << batch_no << std::endl;
-                // std::cout << "batch_offset: " << batch_offset << std::endl;
-                // std::cout << "cumsum_batch_offset: " << cumsum_batch_offset << std::endl;
-                // std::cout << "level_cum_sums[0]: " << level_cum_sums[0] << std::endl;
                 const uint8_t* storage_base = codes.data() + batch_offset;
-
-                printf("res.heap_dis[0]: %f\n", res.heap_dis[0]);
 
                 size_t active_num =
                         pano.progressive_filter_batch<CMax<float, int64_t>>(

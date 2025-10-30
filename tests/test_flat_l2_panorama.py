@@ -56,11 +56,6 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         # Faiss: (a - b) * (a - b) vs. Panorama: a * a + b * b - 2(a * b)
         overlap_rate = np.mean(I_regular == I_panorama)
 
-        print(I_regular[2])
-        print(I_panorama[2])
-        print(D_regular[2])
-        print(D_panorama[2])
-
         self.assertGreater(
             overlap_rate,
             1 - otol,
@@ -249,7 +244,6 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         batch_size = getattr(probe_index, "batch_size")
 
         for nb in [batch_size - 1, batch_size, batch_size * 2, batch_size * 3, batch_size * 5 - 1]:
-            print("------NEW TEST------")
             with self.subTest(nb=nb):
                 np.random.seed(987)
                 xb = np.random.rand(nb, d).astype("float32")

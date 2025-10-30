@@ -91,11 +91,12 @@ size_t Panorama::progressive_filter_batch(
         size_t next_active = 0;
         for (size_t i = 0; i < num_active; i++) {
             uint32_t idx = active_indices[i];
-            const float* yj = level_storage + idx * level_width_floats;
-            const float* query_level = query + level * level_width_floats;
-
             size_t actual_level_width = std::min(
                     level_width_floats, d - level * level_width_floats);
+
+            const float* yj = level_storage + idx * actual_level_width;
+            const float* query_level = query + level * level_width_floats;
+
             float dot_product =
                     fvec_inner_product(query_level, yj, actual_level_width);
 

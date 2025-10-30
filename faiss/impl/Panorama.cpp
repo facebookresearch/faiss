@@ -26,6 +26,7 @@ Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
 
 void Panorama::set_derived_values() {
     this->d = code_size / sizeof(float);
+    // TODO(aknayar): Once things are correct, simplify these two by switching.
     this->level_width = ((d + n_levels - 1) / n_levels) * sizeof(float);
     this->level_width_floats = this->level_width / sizeof(float);
 }
@@ -56,8 +57,7 @@ void Panorama::copy_codes_to_level_layout(
             size_t actual_level_width =
                     std::min(level_width, code_size - level * level_width);
 
-            const uint8_t* src =
-                    code + entry_idx * code_size + start_byte;
+            const uint8_t* src = code + entry_idx * code_size + start_byte;
             uint8_t* dest = codes + batch_offset + level_offset +
                     pos_in_batch * actual_level_width;
 
@@ -71,7 +71,6 @@ void Panorama::compute_cumulative_sums(
         size_t offset,
         size_t n_entry,
         const float* vectors) {
-
     std::vector<float> suffix_sums(d + 1);
 
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
