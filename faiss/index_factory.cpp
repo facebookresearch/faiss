@@ -573,8 +573,12 @@ Index* parse_other_indexes(
     if (match("FlatL2Panorama([0-9]+)?(_[0-9]+)?")) {
         FAISS_THROW_IF_NOT(metric == METRIC_L2);
         int nlevels = mres_to_int(sm[1], 8);
-        int batch_size = mres_to_int(sm[2], 128, 1);
-        return new IndexFlatL2Panorama(d, nlevels, (size_t)batch_size);
+        if (sm[2].length() > 0) {
+            int batch_size = mres_to_int(sm[2], 1);
+            return new IndexFlatL2Panorama(d, nlevels, (size_t)batch_size);
+        } else {
+            return new IndexFlatL2Panorama(d, nlevels);
+        }
     }
 
     // IndexLSH

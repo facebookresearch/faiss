@@ -570,13 +570,14 @@ void IndexFlatL2Panorama::search(
         std::vector<float> exact_distances(batch_size);
         std::vector<uint32_t> active_indices(batch_size);
 
-        PanoramaStats local_stats;
-        local_stats.reset();
-
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
             pano.compute_query_cum_sums(xi, query_cum_norms.data());
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
             res.begin(i);
 
             for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
@@ -638,13 +639,14 @@ void IndexFlatL2Panorama::range_search(
         std::vector<float> exact_distances(batch_size);
         std::vector<uint32_t> active_indices(batch_size);
 
-        PanoramaStats local_stats;
-        local_stats.reset();
-
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
             pano.compute_query_cum_sums(xi, query_cum_norms.data());
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
             res.begin(i);
 
             for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {

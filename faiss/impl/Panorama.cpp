@@ -32,7 +32,7 @@ void Panorama::set_derived_values() {
 /**
  * @brief Copy codes to level-oriented layout
  * @param codes The base pointer to codes
- * @param offset The offset in number of vectors to write new data to
+ * @param offset Where to start writing new data (in number of vectors)
  * @param n_entry The number of new vectors to write
  * @param code The new vector data
  */
@@ -43,6 +43,7 @@ void Panorama::copy_codes_to_level_layout(
         const uint8_t* code) {
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
         size_t current_pos = offset + entry_idx;
+
         // Determine which batch we're in and position within that batch.
         size_t batch_no = current_pos / batch_size;
         size_t pos_in_batch = current_pos % batch_size;

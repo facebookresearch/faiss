@@ -70,8 +70,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
-        this->storage->pano.compute_query_cum_sums(
-                this->xi, this->cum_sums.data());
+        this->storage->pano.compute_query_cum_sums(query, cum_sums.data());
         q_norm = cum_sums[0] * cum_sums[0];
     }
 

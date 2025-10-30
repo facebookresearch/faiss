@@ -103,7 +103,6 @@ struct IndexFlatL2 : IndexFlat {
 struct IndexFlatL2Panorama : IndexFlatL2 {
     const size_t batch_size;
     const size_t n_levels;
-    const size_t level_width;
     std::vector<float> cum_sums;
 
     /**
@@ -111,10 +110,12 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
      * @param n_levels number of Panorama levels
      * @param batch_size batch size for Panorama storage
      */
-    explicit IndexFlatL2Panorama(idx_t d, size_t n_levels, size_t batch_size = 128)
+    explicit IndexFlatL2Panorama(
+            idx_t d,
+            size_t n_levels,
+            size_t batch_size = 512)
             : IndexFlatL2(d),
               n_levels(n_levels),
-              level_width(((d + n_levels - 1) / n_levels) * sizeof(float)),
               batch_size(batch_size),
               pano(code_size, n_levels, batch_size) {}
 
