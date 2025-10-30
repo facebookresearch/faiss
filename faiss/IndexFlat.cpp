@@ -552,7 +552,6 @@ void IndexFlatL2Panorama::search(
                     SingleResultHandler;
 
     IDSelector* sel = params ? params->sel : nullptr;
-    FAISS_ASSERT(sel == nullptr);
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(batch_size >= k);
 

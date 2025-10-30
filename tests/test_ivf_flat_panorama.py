@@ -527,24 +527,16 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
-        indexes = [self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)]
+        index = self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)
 
-        for index in indexes:
-            D_before, I_before = index.search(xq, k)
+        D_before, I_before = index.search(xq, k)
+        faiss.write_index(index, "index.bin")
+        index_after = faiss.read_index("index.bin")
+        D_after, I_after = index_after.search(xq, k)
+        os.unlink("index.bin")
 
-            fd, fname = tempfile.mkstemp()
-            os.close(fd)
-            try:
-                faiss.write_index(index, fname)
-                index_after = faiss.read_index(fname)
-            finally:
-                if os.path.exists(fname):
-                    os.unlink(fname)
-
-            D_after, I_after = index_after.search(xq, k)
-
-            np.testing.assert_array_equal(I_before, I_after)
-            np.testing.assert_array_equal(D_before, D_after)
+        np.testing.assert_array_equal(I_before, I_after)
+        np.testing.assert_array_equal(D_before, D_after)
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""

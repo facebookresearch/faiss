@@ -432,6 +432,18 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         // eg. for a storage component of HNSW that is set to nullptr
         uint32_t h = fourcc("null");
         WRITE1(h);
+    } else if (
+            const IndexFlatL2Panorama* idxp =
+                    dynamic_cast<const IndexFlatL2Panorama*>(idx)) {
+        uint32_t h = fourcc("IxFP");
+        WRITE1(h);
+        WRITE1(idxp->d);
+        WRITE1(idxp->n_levels);
+        WRITE1(idxp->batch_size);
+        WRITE1(idxp->ntotal);
+        WRITE1(idxp->is_trained);
+        WRITEXBVECTOR(idxp->codes);
+        WRITEVECTOR(idxp->cum_sums);
     } else if (const IndexFlat* idxf = dynamic_cast<const IndexFlat*>(idx)) {
         uint32_t h =
                 fourcc(idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI"

@@ -18,7 +18,7 @@ import numpy as np
 from faiss.contrib.datasets import SyntheticDataset
 
 
-# TODO(aknayar): Add parallel tests and batchSize = 1 tests.
+# TODO(aknayar): Add parallel tests.
 class TestIndexFlatL2Panorama(unittest.TestCase):
     """Test Suite for IndexFlatL2Panorama."""
 
@@ -34,9 +34,9 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
             index.add(xb)
         return index
 
-    def create_panorama(self, d, nlevels, xb=None):
+    def create_panorama(self, d, nlevels, xb=None, batch_size=128):
         """Create and initialize IndexFlatL2Panorama."""
-        index = faiss.IndexFlatL2Panorama(d, nlevels)
+        index = faiss.IndexFlatL2Panorama(d, nlevels, batch_size)
         if xb is not None:
             index.add(xb)
         return index
@@ -168,24 +168,24 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
                 self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
                 prev_ratio_dims_scanned = ratio_dims_scanned
 
-    # def test_uneven_dimension_division(self):
-    #     """Test when n_levels doesn't evenly divide dimension"""
-    #     test_cases = [(65, 4), (63, 8), (100, 7)]
+    def test_uneven_dimension_division(self):
+        """Test when n_levels doesn't evenly divide dimension"""
+        test_cases = [(65, 4), (63, 8), (100, 7)]
 
-    #     for d, nlevels in test_cases:
-    #         with self.subTest(d=d, nlevels=nlevels):
-    #             nb, nt, nq, k = 5000, 7000, 10, 5
-    #             _, xb, xq = self.generate_data(d, nt, nb, nq, seed=789)
+        for d, nlevels in test_cases:
+            with self.subTest(d=d, nlevels=nlevels):
+                nb, nt, nq, k = 5000, 7000, 10, 5
+                _, xb, xq = self.generate_data(d, nt, nb, nq, seed=789)
 
-    #             index_regular = self.create_flat(d, xb)
-    #             index_panorama = self.create_panorama(d, nlevels, xb)
+                index_regular = self.create_flat(d, xb)
+                index_panorama = self.create_panorama(d, nlevels, xb)
 
-    #             D_regular, I_regular = index_regular.search(xq, k)
-    #             D_panorama, I_panorama = index_panorama.search(xq, k)
+                D_regular, I_regular = index_regular.search(xq, k)
+                D_panorama, I_panorama = index_panorama.search(xq, k)
 
-    #             self.assert_search_results_equal(
-    #                 D_regular, I_regular, D_panorama, I_panorama
-    #             )
+                self.assert_search_results_equal(
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
 
     def test_single_level(self):
         """Test edge case with n_levels=1"""
@@ -254,6 +254,22 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
                 D_regular, I_regular = index_regular.search(xq, k)
                 D_panorama, I_panorama = index_panorama.search(xq, k)
 
+                self.assert_search_results_equal(
+                    D_regular, I_regular, D_panorama, I_panorama
+                )
+
+    def test_batch_size(self):
+        """Test correctness across different internal batch sizes"""
+        d, nb, nt, nq, nlevels = 128, 10000, 15000, 10, 8
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=4242)
+
+        index_regular = self.create_flat(d, xb)
+
+        for k, bs in [(1, 1), (10, 128), (100, 4096)]:
+            with self.subTest(batch_size=bs):
+                index_panorama = self.create_panorama(d, nlevels, xb=xb, batch_size=bs)
+                D_regular, I_regular = index_regular.search(xq, k)
+                D_panorama, I_panorama = index_panorama.search(xq, k)
                 self.assert_search_results_equal(
                     D_regular, I_regular, D_panorama, I_panorama
                 )
@@ -347,32 +363,22 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         D_pan_2, I_pan_2 = index_panorama.search(xq2, k)
         self.assert_search_results_equal(D_reg_2, I_reg_2, D_pan_2, I_pan_2)
 
-    @unittest.skip("update_vectors not supported for IndexFlatL2Panorama; disabled")
-    def test_update_vectors(self):
-        pass
+    @unittest.skip("Serialization not yet implemented for IndexFlatL2Panorama")
+    def test_serialization(self):
+        """Test that writing and reading Panorama indexes preserves search results"""
+        d, nb, nt, nq, nlevels, k = 128, 10000, 15000, 100, 8, 20
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
-    # def test_serialization(self):
-    #     """Test that writing and reading Panorama indexes preserves search results"""
-    #     d, nb, nt, nq, nlevels, k = 128, 10000, 15000, 100, 8, 20
-    #     _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
+        index = self.create_panorama(d, nlevels, xb)
 
-    #     index = self.create_panorama(d, nlevels, xb)
+        D_before, I_before = index.search(xq, k)
+        faiss.write_index(index, "index.bin")
+        index_after = faiss.read_index("index.bin")
+        D_after, I_after = index_after.search(xq, k)
+        os.unlink("index.bin")
 
-    #     D_before, I_before = index.search(xq, k)
-
-    #     fd, fname = tempfile.mkstemp()
-    #     os.close(fd)
-    #     try:
-    #         faiss.write_index(index, fname)
-    #         index_after = faiss.read_index(fname)
-    #     finally:
-    #         if os.path.exists(fname):
-    #             os.unlink(fname)
-
-    #     D_after, I_after = index_after.search(xq, k)
-
-    #     np.testing.assert_array_equal(I_before, I_after)
-    #     np.testing.assert_array_equal(D_before, D_after)
+        np.testing.assert_array_equal(I_before, I_after)
+        np.testing.assert_array_equal(D_before, D_after)
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
