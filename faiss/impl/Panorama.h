@@ -21,13 +21,6 @@
 namespace faiss {
 
 struct Panorama {
-    size_t d = 0;
-    size_t code_size = 0;
-    size_t n_levels = 0;
-    size_t level_width = 0;
-    size_t level_width_floats = 0;
-    size_t batch_size = 0;
-
     explicit Panorama(size_t code_size, size_t n_levels, size_t batch_size);
 
     void set_derived_values();
@@ -63,6 +56,18 @@ struct Panorama {
             size_t num_active,
             float threshold,
             PanoramaStats& local_stats) const;
+
+    /// Compute the cumulative sums of the query vector.
+    void compute_query_cum_sums(const float* query, float* query_cum_sums)
+            const;
+
+   private:
+    size_t d = 0;
+    size_t code_size = 0;
+    size_t n_levels = 0;
+    size_t level_width = 0;
+    size_t level_width_floats = 0;
+    size_t batch_size = 0;
 };
 
 template <typename C>

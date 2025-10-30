@@ -70,29 +70,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
-
-        const size_t d = vd.d;
-        const size_t level_width_floats = storage->level_width / sizeof(float);
-
-        std::vector<float> suffix_sums(d + 1);
-        suffix_sums[d] = 0.0f;
-
-        for (int j = d - 1; j >= 0; j--) {
-            float squared_val = query[j] * query[j];
-            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-        }
-
-        for (size_t level = 0; level < storage->n_levels; level++) {
-            size_t start_idx = level * level_width_floats;
-            if (start_idx < d) {
-                cum_sums[level] = sqrt(suffix_sums[start_idx]);
-            } else {
-                cum_sums[level] = 0.0f;
-            }
-        }
-
-        cum_sums[storage->n_levels] = 0.0f;
-        q_norm = suffix_sums[0];
+        this->storage->pano.compute_query_cum_sums(this->xi, this->cum_sums.data());
+        q_norm = cum_sums[0] * cum_sums[0];
     }
 
     void set_list(idx_t list_no, float /* coarse_dis */) override {

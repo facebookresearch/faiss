@@ -108,4 +108,25 @@ void Panorama::compute_cumulative_sums(
     }
 }
 
+void Panorama::compute_query_cum_sums(const float* query, float* query_cum_sums)
+        const {
+    std::vector<float> suffix_sums(d + 1);
+    suffix_sums[d] = 0.0f;
+
+    for (int j = d - 1; j >= 0; j--) {
+        float squared_val = query[j] * query[j];
+        suffix_sums[j] = suffix_sums[j + 1] + squared_val;
+    }
+
+    for (size_t level = 0; level < n_levels; level++) {
+        size_t start_idx = level * level_width_floats;
+        if (start_idx < d) {
+            query_cum_sums[level] = sqrt(suffix_sums[start_idx]);
+        } else {
+            query_cum_sums[level] = 0.0f;
+        }
+    }
+
+    query_cum_sums[n_levels] = 0.0f;
+}
 } // namespace faiss

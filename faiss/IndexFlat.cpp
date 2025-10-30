@@ -566,11 +566,8 @@ void IndexFlatL2Panorama::search(
         SingleResultHandler res(handler);
 
         std::vector<float> query_cum_norms(n_levels + 1);
-        std::vector<float> suffix_sums(d + 1);
-        std::vector<float> query(d);
         std::vector<float> exact_distances(batch_size);
         std::vector<uint32_t> active_indices(batch_size);
-        suffix_sums[d] = 0.0f;
 
         PanoramaStats local_stats;
         local_stats.reset();
@@ -578,21 +575,8 @@ void IndexFlatL2Panorama::search(
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
             const float* xi = x + i * d;
-
-            for (int i = d - 1; i >= 0; i--) {
-                float squared_val = xi[i] * xi[i];
-                suffix_sums[i] = suffix_sums[i + 1] + squared_val;
-            }
-
-            for (int level_idx = 0; level_idx < n_levels; level_idx++) {
-                int startIdx = level_idx * pano.level_width_floats;
-                if (startIdx < d) {
-                    query_cum_norms[level_idx] = sqrt(suffix_sums[startIdx]);
-                } else {
-                    query_cum_norms[level_idx] = 0.0f;
-                }
-            }
-            query_cum_norms[n_levels] = 0.0f;
+            pano.compute_query_cum_sums(xi, query_cum_norms.data());
+            float query_cum_norm = query_cum_norms[0] * query_cum_norms[0];
 
             res.begin(i);
 
@@ -614,8 +598,8 @@ void IndexFlatL2Panorama::search(
                 // Initialize with the first cum sums of each point.
                 for (size_t idx = 0; idx < curr_batch_size; idx++) {
                     float squared_root = batch_cum_sums[idx];
-                    exact_distances[idx] =
-                            squared_root * squared_root + suffix_sums[0];
+                    exact_distances[idx] = squared_root * squared_root +
+                            query_cum_norm;
                 }
 
                 size_t batch_offset = batch_no * batch_size * code_size;
