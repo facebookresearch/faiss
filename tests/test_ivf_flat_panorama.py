@@ -554,6 +554,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=1)
         D_base, I_base = index_base.search(xq, k)
 
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
         ratios = []
         nlevels_list = [1, 2, 4, 8, 16, 32]
         for nlevels in nlevels_list:
@@ -571,3 +574,5 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
         expected_ratios = [1 / nlevels for nlevels in nlevels_list]
         np.testing.assert_allclose(ratios, expected_ratios, atol=1e-3)
+
+        faiss.omp_set_num_threads(nt)
