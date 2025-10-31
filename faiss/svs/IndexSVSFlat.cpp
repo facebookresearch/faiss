@@ -51,7 +51,7 @@ void IndexSVSFlat::reset() {
 }
 
 IndexSVSFlat::~IndexSVSFlat() {
-    svs::faiss_bind::IndexSVSFlatImpl::destroy(impl);
+    svs::runtime::IndexSVSFlatImpl::destroy(impl);
     impl = nullptr;
 }
 
@@ -78,7 +78,7 @@ void IndexSVSFlat::search(
 void IndexSVSFlat::create_impl() {
     FAISS_ASSERT(impl == nullptr);
     auto svs_metric = to_svs_metric(metric_type);
-    impl = svs::faiss_bind::IndexSVSFlatImpl::build(d, svs_metric);
+    impl = svs::runtime::IndexSVSFlatImpl::build(d, svs_metric);
     FAISS_THROW_IF_NOT(impl);
 }
 

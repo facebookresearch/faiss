@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <svs/faiss/IndexSVSImplDefs.h>
+#include <svs/runtime/IndexSVSImplDefs.h>
 
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>
@@ -39,18 +39,18 @@
 
 namespace faiss {
 
-inline svs::faiss_bind::MetricType to_svs_metric(faiss::MetricType metric) {
+inline svs::runtime::MetricType to_svs_metric(faiss::MetricType metric) {
     switch (metric) {
         case METRIC_INNER_PRODUCT:
-            return svs::faiss_bind::MetricType::INNER_PRODUCT;
+            return svs::runtime::MetricType::INNER_PRODUCT;
         case METRIC_L2:
-            return svs::faiss_bind::MetricType::L2;
+            return svs::runtime::MetricType::L2;
         default:
             FAISS_ASSERT(!"not supported SVS distance");
     }
 }
 
-struct FaissIDFilter : public svs::faiss_bind::IDFilter {
+struct FaissIDFilter : public svs::runtime::IDFilter {
     FaissIDFilter(const faiss::IDSelector& sel) : selector(sel) {}
 
     bool is_member(size_t id) const override {
@@ -69,12 +69,12 @@ inline std::unique_ptr<FaissIDFilter> make_faiss_id_filter(
     return nullptr;
 }
 
-struct FaissResultsAllocator : public svs::faiss_bind::ResultsAllocator {
+struct FaissResultsAllocator : public svs::runtime::ResultsAllocator {
     FaissResultsAllocator(faiss::RangeSearchResult* result) : result(result) {
         FAISS_ASSERT(result != nullptr);
     }
 
-    svs::faiss_bind::SearchResultsStorage allocate(
+    svs::runtime::SearchResultsStorage allocate(
             std::span<size_t> result_counts) const override {
         FAISS_ASSERT(result != nullptr);
         FAISS_ASSERT(result_counts.size() == result->nq);
@@ -86,7 +86,7 @@ struct FaissResultsAllocator : public svs::faiss_bind::ResultsAllocator {
 
         std::copy(result_counts.begin(), result_counts.end(), result->lims);
         result->do_allocation();
-        return svs::faiss_bind::SearchResultsStorage{
+        return svs::runtime::SearchResultsStorage{
                 std::span<int64_t>(
                         result->labels, result->lims[result_counts.size()]),
                 std::span<float>(

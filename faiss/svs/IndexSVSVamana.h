@@ -24,7 +24,7 @@
 
 #include <faiss/Index.h>
 
-#include <svs/faiss/IndexSVSVamanaImpl.h>
+#include <svs/runtime/IndexSVSVamanaImpl.h>
 #include "IndexSVSFaissUtils.h"
 
 #include <iostream>
@@ -37,7 +37,7 @@ struct SearchParametersSVSVamana : public SearchParameters {
 };
 
 struct IndexSVSVamana : Index {
-    using StorageKind = svs::faiss_bind::IndexSVSVamanaImpl::StorageKind;
+    using StorageKind = svs::runtime::IndexSVSVamanaImpl::StorageKind;
 
     size_t graph_max_degree;
     size_t prune_to;
@@ -86,7 +86,7 @@ struct IndexSVSVamana : Index {
     virtual void deserialize_impl(std::istream& in);
 
     /* The actual SVS implementation */
-    svs::faiss_bind::IndexSVSVamanaImpl* impl{nullptr};
+    svs::runtime::IndexSVSVamanaImpl* impl{nullptr};
 
    protected:
     /* Initializes the implementation*/
