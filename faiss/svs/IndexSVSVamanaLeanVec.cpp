@@ -48,7 +48,6 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
         FAISS_THROW_MSG(status.message);
     }
     is_trained = limpl->is_trained();
-    ;
 }
 
 void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
