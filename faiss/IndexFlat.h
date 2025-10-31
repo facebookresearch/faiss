@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/impl/Panorama.h>
 
 namespace faiss {
 
@@ -97,6 +98,55 @@ struct IndexFlatL2 : IndexFlat {
     void sync_l2norms();
     // clear L2 norms
     void clear_l2norms();
+};
+
+struct IndexFlatL2Panorama : IndexFlatL2 {
+    const size_t batch_size;
+    const size_t n_levels;
+    std::vector<float> cum_sums;
+
+    /**
+     * @param d dimensionality of the input vectors
+     * @param n_levels number of Panorama levels
+     * @param batch_size batch size for Panorama storage
+     */
+    explicit IndexFlatL2Panorama(
+            idx_t d,
+            size_t n_levels,
+            size_t batch_size = 512)
+            : IndexFlatL2(d),
+              n_levels(n_levels),
+              batch_size(batch_size),
+              pano(code_size, n_levels, batch_size) {}
+
+    void add(idx_t n, const float* x) override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
+   private:
+    Panorama pano;
+
+    template <bool use_radius, typename BlockHandler>
+    inline void search_core(
+            BlockHandler& handler,
+            idx_t n,
+            const float* x,
+            float radius,
+            const IDSelector* sel,
+            bool use_sel) const;
 };
 
 /// optimized version for 1D "vectors".

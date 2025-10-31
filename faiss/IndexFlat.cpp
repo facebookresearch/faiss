@@ -11,12 +11,15 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
+#include <omp.h>
 #include <cstring>
+#include <numeric>
 
 namespace faiss {
 
@@ -518,5 +521,125 @@ void IndexFlat1D::search(
         }
     done:;
     }
+}
+
+/***************************************************
+ * IndexFlatL2Panorama
+ ***************************************************/
+
+void IndexFlatL2Panorama::add(idx_t n, const float* x) {
+    size_t offset = ntotal;
+    ntotal += n;
+    size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+
+    codes.resize(num_batches * batch_size * code_size);
+    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+
+    const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
+    pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
+    pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+}
+
+template <bool use_radius, typename BlockHandler>
+inline void IndexFlatL2Panorama::search_core(
+        BlockHandler& handler,
+        idx_t n,
+        const float* x,
+        float radius,
+        const IDSelector* sel,
+        bool use_sel) const {
+    using SingleResultHandler = typename BlockHandler::SingleResultHandler;
+
+    int nt = std::min(int(n), omp_get_max_threads());
+    size_t n_batches = (ntotal + batch_size - 1) / batch_size;
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler res(handler);
+
+        std::vector<float> query_cum_norms(n_levels + 1);
+        std::vector<float> exact_distances(batch_size);
+        std::vector<uint32_t> active_indices(batch_size);
+
+#pragma omp for
+        for (int64_t i = 0; i < n; i++) {
+            const float* xi = x + i * d;
+            pano.compute_query_cum_sums(xi, query_cum_norms.data());
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
+            res.begin(i);
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t batch_start = batch_no * batch_size;
+
+                float threshold;
+                if constexpr (use_radius) {
+                    threshold = radius;
+                } else {
+                    threshold = res.heap_dis[0];
+                }
+
+                size_t num_active =
+                        pano.progressive_filter_batch<CMax<float, int64_t>>(
+                                codes.data(),
+                                cum_sums.data(),
+                                xi,
+                                query_cum_norms.data(),
+                                batch_no,
+                                ntotal,
+                                sel,
+                                nullptr,
+                                use_sel,
+                                active_indices,
+                                exact_distances,
+                                threshold,
+                                local_stats);
+
+                for (size_t j = 0; j < num_active; j++) {
+                    res.add_result(
+                            exact_distances[active_indices[j]],
+                            batch_start + active_indices[j]);
+                }
+            }
+
+            res.end();
+            indexPanorama_stats.add(local_stats);
+        }
+    }
+}
+
+void IndexFlatL2Panorama::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(batch_size >= k);
+
+    HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
+            size_t(n), distances, labels, size_t(k), nullptr);
+
+    search_core<false>(handler, n, x, 0.0f, sel, use_sel);
+}
+
+void IndexFlatL2Panorama::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+
+    RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
+            result, radius, nullptr);
+
+    search_core<true>(handler, n, x, radius, sel, use_sel);
 }
 } // namespace faiss
