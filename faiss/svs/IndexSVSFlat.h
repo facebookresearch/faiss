@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <svs/faiss/IndexSVSFlatImpl.h>
+#include <svs/runtime/IndexSVSFlatImpl.h>
 
 #include <iostream>
 
@@ -52,7 +52,7 @@ struct IndexSVSFlat : Index {
     void reset() override;
 
     /* The actual SVS implementation */
-    svs::faiss_bind::IndexSVSFlatImpl* impl{nullptr};
+    svs::runtime::IndexSVSFlatImpl* impl{nullptr};
 
     /* Serialization */
     void serialize_impl(std::ostream& out) const;

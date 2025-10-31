@@ -33,7 +33,7 @@
 
 namespace faiss {
 namespace {
-svs::faiss_bind::IndexSVSVamanaImpl::SearchParams make_search_parameters(
+svs::runtime::IndexSVSVamanaImpl::SearchParams make_search_parameters(
         const IndexSVSVamana& index,
         const SearchParameters* params) {
     FAISS_THROW_IF_NOT(index.impl);
@@ -66,7 +66,7 @@ IndexSVSVamana::IndexSVSVamana(
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
-    svs::faiss_bind::IndexSVSVamanaImpl::destroy(impl);
+    svs::runtime::IndexSVSVamanaImpl::destroy(impl);
     impl = nullptr;
 }
 
@@ -160,14 +160,14 @@ void IndexSVSVamana::create_impl() {
     FAISS_THROW_IF_NOT(!impl);
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
-    svs::faiss_bind::IndexSVSVamanaImpl::BuildParams build_params;
+    svs::runtime::IndexSVSVamanaImpl::BuildParams build_params;
     build_params.storage_kind = storage_kind;
     build_params.graph_max_degree = graph_max_degree;
     build_params.prune_to = prune_to;
     build_params.alpha = alpha;
     build_params.construction_window_size = construction_window_size;
     build_params.max_candidate_pool_size = max_candidate_pool_size;
-    impl = svs::faiss_bind::IndexSVSVamanaImpl::build(
+    impl = svs::runtime::IndexSVSVamanaImpl::build(
             d, svs_metric, build_params);
     FAISS_THROW_IF_NOT(impl);
 }

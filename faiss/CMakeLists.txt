@@ -346,22 +346,21 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   include(FetchContent)
-  set(SVS_URL "file:///home/rfsaliev/tmp/svs_bungle.tar.gz")
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-shared-library-1.0.0-NIGHTLY-20251030-737-bindings.tar.gz")
   FetchContent_Declare(
       svs
-      #URL "${SVS_URL}"
-      SOURCE_DIR "/home/rfsaliev/tmp/svs_bungle"
+      URL "${SVS_URL}"
   )
   FetchContent_MakeAvailable(svs)
   list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
-  find_package(svs_faiss REQUIRED)
+  find_package(svs_runtime REQUIRED)
   #target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
 
-  target_link_libraries(faiss PUBLIC svs::svs_faiss)
-  target_link_libraries(faiss_avx2 PUBLIC svs::svs_faiss)
-  target_link_libraries(faiss_avx512 PUBLIC svs::svs_faiss)
-  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs_faiss)
-  target_link_libraries(faiss_sve PUBLIC svs::svs_faiss)
+  target_link_libraries(faiss PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_sve PUBLIC svs::svs_runtime)
 endif()
 
 # Handle `#include <faiss/foo.h>`.

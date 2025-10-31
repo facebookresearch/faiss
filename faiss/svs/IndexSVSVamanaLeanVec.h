@@ -23,15 +23,15 @@
 #pragma once
 
 #include <faiss/svs/IndexSVSVamana.h>
-#include <svs/faiss/IndexSVSVamanaLeanVecImpl.h>
+#include <svs/runtime/IndexSVSVamanaLeanVecImpl.h>
 
 namespace faiss {
 
 // Enum redefinition to avoid including IndexSVSVamanaLeanVecImpl.h in swigfaiss
 enum LeanVecLevel {
-    LeanVec4x4 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec4x4,
-    LeanVec4x8 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec4x8,
-    LeanVec8x8 = svs::faiss_bind::IndexSVSVamanaLeanVecImpl::LeanVec8x8
+    LeanVec4x4 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x4,
+    LeanVec4x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x8,
+    LeanVec8x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec8x8
 };
 
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
@@ -58,7 +58,7 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
 
    protected:
     void create_impl() override;
-    svs::faiss_bind::IndexSVSVamanaLeanVecImpl* leanvec_impl() const;
+    svs::runtime::IndexSVSVamanaLeanVecImpl* leanvec_impl() const;
 };
 
 } // namespace faiss
