@@ -346,11 +346,10 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   include(FetchContent)
-  set(SVS_URL "file:///home/rfsaliev/tmp/svs_bungle.tar.gz")
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-shared-library-1.0.0-NIGHTLY-20251030-737-bindings.tar.gz")
   FetchContent_Declare(
       svs
-      #URL "${SVS_URL}"
-      SOURCE_DIR "/home/rfsaliev/tmp/svs_bungle"
+      URL "${SVS_URL}"
   )
   FetchContent_MakeAvailable(svs)
   list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
