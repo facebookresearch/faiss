@@ -28,10 +28,6 @@
 
 namespace faiss {
 
-IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec() : IndexSVSVamana() {
-    is_trained = false;
-}
-
 IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         idx_t d,
         size_t degree,
@@ -40,7 +36,6 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         LeanVecLevel leanvec_level)
         : IndexSVSVamana(d, degree, metric), leanvec_level{leanvec_level} {
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
-    is_trained = false;
 }
 
 void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
@@ -48,17 +43,12 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
         create_impl();
     }
     auto limpl = leanvec_impl();
-    FAISS_THROW_IF_NOT(!limpl->is_trained());
     auto status = limpl->train(static_cast<size_t>(n), x);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
     is_trained = limpl->is_trained();
-}
-
-void IndexSVSVamanaLeanVec::reset() {
-    is_trained = false;
-    IndexSVSVamana::reset();
+    ;
 }
 
 void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
@@ -84,18 +74,15 @@ void IndexSVSVamanaLeanVec::create_impl() {
             svs_metric,
             build_params,
             leanvec_d,
-            static_cast<
-                    svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVecLevel>(
+            static_cast<svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVecLevel>(
                     leanvec_level));
     FAISS_THROW_IF_NOT(limpl);
     impl = limpl;
-    is_trained = limpl->is_trained();
 }
 
-svs::runtime::IndexSVSVamanaLeanVecImpl* IndexSVSVamanaLeanVec::
-        leanvec_impl() const {
-    auto limpl =
-            dynamic_cast<svs::runtime::IndexSVSVamanaLeanVecImpl*>(impl);
+svs::runtime::IndexSVSVamanaLeanVecImpl* IndexSVSVamanaLeanVec::leanvec_impl()
+        const {
+    auto limpl = dynamic_cast<svs::runtime::IndexSVSVamanaLeanVecImpl*>(impl);
     FAISS_ASSERT(limpl != nullptr);
     return limpl;
 }

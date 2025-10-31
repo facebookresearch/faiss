@@ -35,7 +35,7 @@ enum LeanVecLevel {
 };
 
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
-    IndexSVSVamanaLeanVec();
+    IndexSVSVamanaLeanVec() = default;
 
     IndexSVSVamanaLeanVec(
             idx_t d,
@@ -46,15 +46,13 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
 
     ~IndexSVSVamanaLeanVec() override = default;
 
-    void reset() override;
-
     void train(idx_t n, const float* x) override;
+
+    void deserialize_impl(std::istream& in) override;
 
     size_t leanvec_d;
 
     LeanVecLevel leanvec_level;
-
-    void deserialize_impl(std::istream& in) override;
 
    protected:
     void create_impl() override;

@@ -947,19 +947,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(lean->leanvec_d);
             WRITE1(lean->leanvec_level);
         }
-        if (lean != nullptr && lean->is_trained) {
-            // store leanvec_matrix
-            size_t num_rows = lean->leanvec_matrix.num_rows();
-            size_t num_cols = lean->leanvec_matrix.num_cols();
-            WRITE1(num_rows);
-            WRITE1(num_cols);
-
-            // data and query matrices are the same, can use either
-            auto matrix = lean->leanvec_matrix.view_data_matrix();
-
-            size_t elements = num_rows * num_cols;
-            WRITEANDCHECK(matrix.data(), elements);
-        }
 
         bool initialized = (svs->impl != nullptr);
         WRITE1(initialized);

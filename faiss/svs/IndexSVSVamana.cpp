@@ -87,6 +87,7 @@ void IndexSVSVamana::reset() {
     if (impl) {
         impl->reset();
     }
+    is_trained = false;
     ntotal = 0;
 }
 
@@ -167,8 +168,7 @@ void IndexSVSVamana::create_impl() {
     build_params.alpha = alpha;
     build_params.construction_window_size = construction_window_size;
     build_params.max_candidate_pool_size = max_candidate_pool_size;
-    impl = svs::runtime::IndexSVSVamanaImpl::build(
-            d, svs_metric, build_params);
+    impl = svs::runtime::IndexSVSVamanaImpl::build(d, svs_metric, build_params);
     FAISS_THROW_IF_NOT(impl);
 }
 
