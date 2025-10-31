@@ -31,7 +31,9 @@
 namespace faiss {
 namespace svs_io {
 
-// Bridges IOWriter to std::ostream (used for streaming payload out)
+// Bridges IOWriter to std::ostream for streaming serialization.
+// No buffering concerns since consumer is expected to write everything
+// he receives.
 struct WriterStreambuf : std::streambuf {
     IOWriter* w;
     explicit WriterStreambuf(IOWriter* w_);
@@ -42,15 +44,22 @@ struct WriterStreambuf : std::streambuf {
     int overflow(int ch) override;
 };
 
-// Bridges IOReader to std::istream (used to read payload to EOF)
+// Bridges IOReader to std::istream for streaming deserialization.
+// Uses minimal buffering (single byte) to avoid over-reading from IOReader,
+// which would advance its position beyond what the stream consumer actually
+// read. This ensures subsequent direct reads from IOReader continue at the
+// correct position. Bulk reads via xsgetn() forward directly to IOReader
+// without intermediate buffering.
 struct ReaderStreambuf : std::streambuf {
     IOReader* r;
-    std::vector<char> buf;
+    char single_char_buffer; // Single-byte buffer for underflow() operations
+
     explicit ReaderStreambuf(IOReader* rr);
     ~ReaderStreambuf() override;
 
    protected:
     int_type underflow() override;
+    std::streamsize xsgetn(char* s, std::streamsize n) override;
 };
 
 } // namespace svs_io

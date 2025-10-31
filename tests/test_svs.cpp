@@ -108,6 +108,44 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     delete loaded;
 }
 
+template <typename T>
+void train_save_load_and_add_index(
+        T& index,
+        const std::vector<float>& xb,
+        size_t n) {
+    index.train(n, xb.data());
+
+    std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
+
+    ASSERT_NO_THROW({ faiss::write_index(&index, filename.c_str()); });
+
+    T* loaded = nullptr;
+    ASSERT_NO_THROW({
+        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
+    });
+
+    ASSERT_NE(loaded, nullptr);
+    ASSERT_NO_THROW({ loaded->add(n, xb.data()); });
+
+    delete loaded;
+}
+
+template <typename T>
+void save_and_load_index() {
+    T index;
+
+    std::string temp_filename_template = "/tmp/faiss_svs_test_XXXXXX";
+    Tempfilename filename(&temp_file_mutex, temp_filename_template);
+
+    faiss::write_index(&index, filename.c_str());
+    T* loaded = nullptr;
+    ASSERT_NO_THROW({
+        loaded = dynamic_cast<T*>(faiss::read_index(filename.c_str()));
+    });
+    delete loaded;
+}
+
 TEST_F(SVS, WriteAndReadIndexSVS) {
     faiss::IndexSVSVamana index{d, 64ul};
     write_and_read_index(index, test_data, n);
@@ -171,6 +209,81 @@ TEST_F(SVS, LeanVecThrowsWithoutTraining) {
     faiss::IndexSVSVamanaLeanVec index{
             64, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
     ASSERT_THROW(index.add(100, test_data.data()), faiss::FaissException);
+}
+
+TEST_F(SVS, VamanaTrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamana index{d, 64ul};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, VamanaFP16TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamana index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            faiss::IndexSVSVamana::StorageKind::FP16};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, VamanaSQI8TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamana index{
+            d,
+            64ul,
+            faiss::METRIC_L2,
+            faiss::IndexSVSVamana::StorageKind::SQI8};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LVQ4x0TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
+    index.lvq_level = faiss::LVQLevel::LVQ4x0;
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LVQ4x4TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
+    index.lvq_level = faiss::LVQLevel::LVQ4x4;
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LVQ4x8TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
+    index.lvq_level = faiss::LVQLevel::LVQ4x8;
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LeanVec4x4TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLeanVec index{
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x4};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LeanVec4x8TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLeanVec index{
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec4x8};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, LeanVec8x8TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLeanVec index{
+            d, 64ul, faiss::METRIC_L2, 0, faiss::LeanVecLevel::LeanVec8x8};
+    train_save_load_and_add_index(index, test_data, n);
+}
+
+TEST_F(SVS, SaveAndLoadIndexSVSFlat) {
+    save_and_load_index<faiss::IndexSVSFlat>();
+}
+
+TEST_F(SVS, SaveAndLoadIndexSVSVamana) {
+    save_and_load_index<faiss::IndexSVSVamana>();
+}
+
+TEST_F(SVS, SaveAndLoadIndexSVSVamanaLVQ) {
+    save_and_load_index<faiss::IndexSVSVamanaLVQ>();
+}
+
+TEST_F(SVS, SaveAndLoadIndexSVSVamanaLeanVec) {
+    save_and_load_index<faiss::IndexSVSVamanaLeanVec>();
 }
 
 TEST_F(SVS, WriteAndReadIndexSVSFlat) {
