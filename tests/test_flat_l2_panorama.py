@@ -154,6 +154,9 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         index_base = self.create_flat(d, xb)
         D_base, I_base = index_base.search(xq, k)
 
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
         prev_ratio_dims_scanned = float("inf")
         for nlevels in [1, 2, 4, 8, 16, 32]:
             with self.subTest(nlevels=nlevels):
@@ -165,6 +168,8 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
                 ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
                 self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
                 prev_ratio_dims_scanned = ratio_dims_scanned
+
+        faiss.omp_set_num_threads(nt)
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
