@@ -760,6 +760,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexLattice )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
+    DOWNCAST ( IndexHNSWFlatPanorama )
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )

@@ -129,6 +129,7 @@ IndexIDMap* clone_IndexIDMap(const IndexIDMap* im) {
 
 IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW2Level, ihnsw)
+    TRYCLONE(IndexHNSWFlatPanorama, ihnsw)
     TRYCLONE(IndexHNSWFlat, ihnsw)
     TRYCLONE(IndexHNSWPQ, ihnsw)
     TRYCLONE(IndexHNSWSQ, ihnsw)
