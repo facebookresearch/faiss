@@ -239,7 +239,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
     def test_id_selector_batch(self):
         """Test ID filtering with batch selector"""
         d, nb, nt, nq, nlevels, k = 128, 60000, 90000, 400, 8, 20
-        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=654)
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=522)
 
         index_regular = self.create_flat(d, xb)
         index_panorama = self.create_panorama(d, nlevels, xb)
