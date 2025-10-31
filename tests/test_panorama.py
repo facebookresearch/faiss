@@ -29,7 +29,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     # Helper methods for index creation and data generation
 
     def generate_data(self, d, nt, nb, nq, seed=42):
-        ds = SyntheticDataset(d, nt, nb, nq)
+        ds = SyntheticDataset(d, nt, nb, nq, seed=seed)
         return ds.get_train(), ds.get_database(), ds.get_queries()
 
     def create_ivf_flat(
@@ -179,11 +179,20 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=32)
         D_base, I_base = index_base.search(xq, k)
 
+        prev_ratio_dims_scanned = float('inf')
         for nlevels in [1, 2, 4, 8, 16, 32]:
             with self.subTest(nlevels=nlevels):
+                faiss.cvar.indexPanorama_stats.reset()
                 index = self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)
                 D, I = index.search(xq, k)
                 self.assert_search_results_equal(D_base, I_base, D, I)
+
+                # Verify ratio_dims_scanned decreases as n_levels increases
+                ratio_dims_scanned = (
+                    faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                )
+                self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
+                prev_ratio_dims_scanned = ratio_dims_scanned
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
@@ -534,3 +543,37 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
             np.testing.assert_array_equal(I_before, I_after)
             np.testing.assert_array_equal(D_before, D_after)
+
+    def test_ratio_dims_scanned(self):
+        """Test the correctness of the ratio of dimensions scanned"""
+        d, nb, nq, nlist, k = 128, 500000, 1, 1, 1
+
+        # Setup: All vectors in the dataset are [1, 1, ..., 1], except for
+        # one, which is [0, 0, ..., 0]. The query is also [0, 0, ..., 0]. This
+        # ensures that pruning happens as early as it can. As a result, the
+        # ratio of dimensions scanned should be approximately (1 / nlevels).
+        xb = np.ones((nb, d)).astype("float32")
+        xb[-1] = 0
+        xt = xb
+        xq = np.zeros((nq, d)).astype("float32")
+
+        index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=1)
+        D_base, I_base = index_base.search(xq, k)
+
+        ratios = []
+        nlevels_list = [1, 2, 4, 8, 16, 32]
+        for nlevels in nlevels_list:
+            with self.subTest(nlevels=nlevels):
+                faiss.cvar.indexPanorama_stats.reset()
+                index = self.create_panorama(
+                    d, nlist, nlevels, xt, xb, nprobe=1
+                )
+                D, I = index.search(xq, k)
+                self.assert_search_results_equal(D_base, I_base, D, I)
+
+                ratios.append(
+                    faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                )
+
+        expected_ratios = [1 / nlevels for nlevels in nlevels_list]
+        np.testing.assert_allclose(ratios, expected_ratios, atol=1e-3)

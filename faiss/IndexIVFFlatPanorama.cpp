@@ -15,6 +15,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
@@ -118,7 +119,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             float threshold,
             std::vector<float>& exact_distances,
             std::vector<uint32_t>& active_indices,
-            const idx_t* ids) const {
+            const idx_t* ids,
+            PanoramaStats& local_stats) const {
         const size_t d = vd.d;
         const size_t level_width_floats = storage->level_width / sizeof(float);
 
@@ -150,10 +152,15 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             return 0;
         }
 
+        size_t total_active = num_active;
+
         const float* level_cum_sums = batch_cum_sums + storage->kBatchSize;
 
         // Progressive filtering through levels.
         for (size_t level = 0; level < storage->n_levels; level++) {
+            local_stats.total_dims_scanned += num_active;
+            local_stats.total_dims += total_active;
+
             float query_cum_norm = cum_sums[level + 1];
 
             size_t level_offset =
@@ -207,6 +214,9 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         std::vector<float> exact_distances(storage->kBatchSize);
         std::vector<uint32_t> active_indices(storage->kBatchSize);
 
+        PanoramaStats local_stats;
+        local_stats.reset();
+
         // Panorama's IVFFlat core progressive filtering algorithm:
         // Process vectors in batches for cache efficiency. For each batch:
         // 1. Apply ID selection filter and initialize distances
@@ -233,7 +243,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                     simi[0],
                     exact_distances,
                     active_indices,
-                    ids);
+                    ids,
+                    local_stats);
 
             // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
@@ -250,6 +261,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             }
         }
 
+        indexPanorama_stats.add(local_stats);
         return nup;
     }
 
@@ -268,6 +280,9 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         std::vector<float> exact_distances(storage->kBatchSize);
         std::vector<uint32_t> active_indices(storage->kBatchSize);
 
+        PanoramaStats local_stats;
+        local_stats.reset();
+
         // Same progressive filtering as scan_codes, but with fixed radius
         // threshold instead of dynamic heap threshold.
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
@@ -281,7 +296,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                     radius,
                     exact_distances,
                     active_indices,
-                    ids);
+                    ids,
+                    local_stats);
 
             // Add batch survivors to range result.
             for (size_t i = 0; i < num_active; i++) {
@@ -296,6 +312,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 }
             }
         }
+
+        indexPanorama_stats.add(local_stats);
     }
 };
 

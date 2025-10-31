@@ -1163,7 +1163,9 @@ struct IVFPQScannerT : QueryTables {
         }
 
 #pragma omp critical
-        { indexIVFPQ_stats.n_hamming_pass += n_hamming_pass; }
+        {
+            indexIVFPQ_stats.n_hamming_pass += n_hamming_pass;
+        }
     }
 
     template <class SearchResultType>

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace faiss {
 
 // Forward declarations
@@ -27,6 +29,12 @@ struct FastScanDistancePostProcessing {
     /// This pointer should point to the beginning of the relevant
     /// QueryFactorsData subset for this context.
     rabitq_utils::QueryFactorsData* query_factors = nullptr;
+
+    /// The nprobe value used when allocating query_factors storage.
+    /// This is needed because the allocation size (n * nprobe) may use a
+    /// different nprobe than index->nprobe if search params override it.
+    /// Set to 0 to use index->nprobe as fallback.
+    size_t nprobe = 0;
 
     /// Default constructor - no processing
     FastScanDistancePostProcessing() = default;
