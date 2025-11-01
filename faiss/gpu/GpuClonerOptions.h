@@ -8,12 +8,19 @@
 #pragma once
 
 #include <faiss/gpu/GpuIndicesOptions.h>
+#include <faiss/gpu/GpuResources.h>
 
 namespace faiss {
 namespace gpu {
 
 /// set some options on how to copy to GPU
 struct GpuClonerOptions {
+    /// The memory space used for storing the index
+    MemorySpace memorySpace = MemorySpace::Device;
+
+    /// The memory space used for storing the coarse quantizer if any
+    MemorySpace coarseQuantizerMemorySpace = MemorySpace::Device;
+
     /// how should indices be stored on index types that support indices
     /// (anything but GpuIndexFlat*)?
     IndicesOptions indicesOptions = INDICES_64_BIT;
@@ -28,11 +35,17 @@ struct GpuClonerOptions {
     /// use precomputed tables?
     bool usePrecomputed = false;
 
+    /// Enable loading precomputed for IVF indexes from CPU
+    bool precomputeCodesOnCpu = false;
+
     /// reserve vectors in the invfiles?
     long reserveVecs = 0;
 
     /// For GpuIndexFlat, store data in transposed layout?
     bool storeTransposed = false;
+
+    /// Force use of pinned memory in index
+    bool forcePinnedMemory = false;
 
     /// Set verbose options on the index
     bool verbose = false;

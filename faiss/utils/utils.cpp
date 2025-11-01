@@ -564,6 +564,20 @@ bool check_openmp() {
     return true;
 }
 
+void fvec_split(
+        float* outs,
+        const int numOuts,
+        const float* in,
+        size_t inLength,
+        int inSubDim) {
+    for (int j = 0; j < numOuts; j++) {
+        for (size_t i = 0; i < inLength; i++) {
+            memcpy(outs + ((j * inLength + i) * inSubDim),
+                   in + ((i * numOuts + j) * inSubDim),
+                   inSubDim * sizeof(float));
+        }
+    }
+}
 namespace {
 
 template <typename T>
