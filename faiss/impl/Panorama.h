@@ -47,9 +47,21 @@ struct Panorama {
     void compute_query_cum_sums(const float* query, float* query_cum_sums)
             const;
 
-    /// Processes a batch of vectors through all levels,
-    /// computing exact distances and pruning based on a threshold.
-    /// Returns the number of active survivors after all levels.
+    /// Panorama's core progressive filtering algorithm:
+    /// Process vectors in batches for cache efficiency. For each batch:
+    /// 1. Apply ID selection filter and initialize distances
+    /// (||y||^2 + ||x||^2).
+    /// 2. Maintain an "active set" of candidate indices that haven't been
+    /// pruned yet.
+    /// 3. For each level, refine distances incrementally and compact the active
+    /// set:
+    ///    - Compute dot product for current level: exact_dist -= 2*<x,y>.
+    ///    - Use Cauchy-Schwarz bound on remaining levels to get lower bound
+    ///    - Prune candidates whose lower bound exceeds k-th best distance.
+    ///    - Compact active_indices to remove pruned candidates (branchless)
+    /// 4. After all levels, survivors are exact distances; update heap.
+    /// This achieves early termination while maintaining SIMD-friendly
+    /// sequential access patterns in the level-oriented storage layout.
     template <typename C>
     size_t progressive_filter_batch(
             const uint8_t* codes_base,

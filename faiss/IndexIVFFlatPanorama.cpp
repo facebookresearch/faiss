@@ -106,21 +106,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         PanoramaStats local_stats;
         local_stats.reset();
 
-        // Panorama's IVFFlat core progressive filtering algorithm:
-        // Process vectors in batches for cache efficiency. For each batch:
-        // 1. Apply ID selection filter and initialize distances
-        // (||y||^2 + ||x||^2).
-        // 2. Maintain an "active set" of candidate indices that haven't been
-        //    pruned yet.
-        // 3. For each level, refine distances incrementally and compact the
-        //    active set:
-        //    - Compute dot product for current level: exact_dist -= 2*<x,y>.
-        //    - Use Cauchy-Schwarz bound on remaining levels to get lower bound
-        //    - Prune candidates whose lower bound exceeds k-th best distance.
-        //    - Compact active_indices to remove pruned candidates (branchless)
-        // 4. After all levels, survivors are exact distances; update heap.
-        // This achieves early termination while maintaining SIMD-friendly
-        // sequential access patterns in the level-oriented storage layout.
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
