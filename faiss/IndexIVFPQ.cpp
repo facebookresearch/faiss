@@ -150,7 +150,8 @@ static std::unique_ptr<float[]> compute_residuals(
         const idx_t* list_nos) {
     size_t d = quantizer->d;
     std::unique_ptr<float[]> residuals(new float[n * d]);
-    // TODO: parallelize?
+    // Parallelize with OpenMP (each iteration is independent)
+#pragma omp parallel for if (n > 1000)
     for (size_t i = 0; i < n; i++) {
         if (list_nos[i] < 0)
             memset(residuals.get() + i * d, 0, sizeof(float) * d);
