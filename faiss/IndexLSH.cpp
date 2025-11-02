@@ -86,12 +86,16 @@ void IndexLSH::train(idx_t n, const float* x) {
 
         for (idx_t i = 0; i < nbits; i++) {
             float* xi = transposed_x.get() + i * n;
-            // std::nth_element
-            std::sort(xi, xi + n);
-            if (n % 2 == 1)
+            // Use nth_element (O(n)) instead of sort (O(n log n)) for median
+            if (n % 2 == 1) {
+                std::nth_element(xi, xi + n / 2, xi + n);
                 thresholds[i] = xi[n / 2];
-            else
-                thresholds[i] = (xi[n / 2 - 1] + xi[n / 2]) / 2;
+            } else {
+                std::nth_element(xi, xi + n / 2, xi + n);
+                float median_high = xi[n / 2];
+                std::nth_element(xi, xi + n / 2 - 1, xi + n);
+                thresholds[i] = (xi[n / 2 - 1] + median_high) / 2;
+            }
         }
     }
     is_trained = true;
