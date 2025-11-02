@@ -546,9 +546,11 @@ inline void IndexFlatL2Panorama::search_core(
         idx_t n,
         const float* x,
         float radius,
-        const IDSelector* sel,
-        bool use_sel) const {
+        const SearchParameters* params) const {
     using SingleResultHandler = typename BlockHandler::SingleResultHandler;
+
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
 
     int nt = std::min(int(n), omp_get_max_threads());
     size_t n_batches = (ntotal + batch_size - 1) / batch_size;
@@ -617,15 +619,13 @@ void IndexFlatL2Panorama::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    IDSelector* sel = params ? params->sel : nullptr;
-    bool use_sel = sel != nullptr;
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(batch_size >= k);
 
     HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
             size_t(n), distances, labels, size_t(k), nullptr);
 
-    search_core<false>(handler, n, x, 0.0f, sel, use_sel);
+    search_core<false>(handler, n, x, 0.0f, params);
 }
 
 void IndexFlatL2Panorama::range_search(
@@ -634,12 +634,9 @@ void IndexFlatL2Panorama::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    IDSelector* sel = params ? params->sel : nullptr;
-    bool use_sel = sel != nullptr;
-
     RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
             result, radius, nullptr);
 
-    search_core<true>(handler, n, x, radius, sel, use_sel);
+    search_core<true>(handler, n, x, radius, params);
 }
 } // namespace faiss

@@ -145,8 +145,7 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
             idx_t n,
             const float* x,
             float radius,
-            const IDSelector* sel,
-            bool use_sel) const;
+            const SearchParameters* params) const;
 };
 
 /// optimized version for 1D "vectors".
