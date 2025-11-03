@@ -100,7 +100,7 @@ struct IndexFlatL2 : IndexFlat {
     void clear_l2norms();
 };
 
-struct IndexFlatL2Panorama : IndexFlatL2 {
+struct IndexFlatL2Panorama : IndexFlat {
     const size_t batch_size;
     const size_t n_levels;
     std::vector<float> cum_sums;
@@ -114,7 +114,7 @@ struct IndexFlatL2Panorama : IndexFlatL2 {
             idx_t d,
             size_t n_levels,
             size_t batch_size = 512)
-            : IndexFlatL2(d),
+            : IndexFlat(d, METRIC_L2),
               n_levels(n_levels),
               batch_size(batch_size),
               pano(code_size, n_levels, batch_size) {}
