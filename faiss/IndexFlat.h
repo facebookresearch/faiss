@@ -100,24 +100,28 @@ struct IndexFlatL2 : IndexFlat {
     void clear_l2norms();
 };
 
-struct IndexFlatL2Panorama : IndexFlat {
+struct IndexFlatPanorama : IndexFlat {
     const size_t batch_size;
     const size_t n_levels;
     std::vector<float> cum_sums;
 
     /**
      * @param d dimensionality of the input vectors
+     * @param metric metric type
      * @param n_levels number of Panorama levels
      * @param batch_size batch size for Panorama storage
      */
-    explicit IndexFlatL2Panorama(
+    explicit IndexFlatPanorama(
             idx_t d,
+            MetricType metric,
             size_t n_levels,
-            size_t batch_size = 512)
-            : IndexFlat(d, METRIC_L2),
+            size_t batch_size)
+            : IndexFlat(d, metric),
               n_levels(n_levels),
               batch_size(batch_size),
-              pano(code_size, n_levels, batch_size) {}
+              pano(code_size, n_levels, batch_size) {
+        FAISS_THROW_IF_NOT(metric == METRIC_L2);
+    }
 
     void add(idx_t n, const float* x) override;
 
@@ -159,6 +163,19 @@ struct IndexFlatL2Panorama : IndexFlat {
             const float* x,
             float radius,
             const SearchParameters* params) const;
+};
+
+struct IndexFlatL2Panorama : IndexFlatPanorama {
+    /**
+     * @param d dimensionality of the input vectors
+     * @param n_levels number of Panorama levels
+     * @param batch_size batch size for Panorama storage
+     */
+    explicit IndexFlatL2Panorama(
+            idx_t d,
+            size_t n_levels,
+            size_t batch_size = 512)
+            : IndexFlatPanorama(d, METRIC_L2, n_levels, batch_size) {}
 };
 
 /// optimized version for 1D "vectors".

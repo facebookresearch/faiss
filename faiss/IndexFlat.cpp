@@ -524,10 +524,10 @@ void IndexFlat1D::search(
 }
 
 /***************************************************
- * IndexFlatL2Panorama
+ * IndexFlatPanorama
  ***************************************************/
 
-void IndexFlatL2Panorama::add(idx_t n, const float* x) {
+void IndexFlatPanorama::add(idx_t n, const float* x) {
     size_t offset = ntotal;
     ntotal += n;
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
@@ -541,7 +541,7 @@ void IndexFlatL2Panorama::add(idx_t n, const float* x) {
 }
 
 template <bool use_radius, typename BlockHandler>
-inline void IndexFlatL2Panorama::search_core(
+inline void IndexFlatPanorama::search_core(
         BlockHandler& handler,
         idx_t n,
         const float* x,
@@ -612,7 +612,7 @@ inline void IndexFlatL2Panorama::search_core(
     }
 }
 
-void IndexFlatL2Panorama::search(
+void IndexFlatPanorama::search(
         idx_t n,
         const float* x,
         idx_t k,
@@ -628,7 +628,7 @@ void IndexFlatL2Panorama::search(
     search_core<false>(handler, n, x, 0.0f, params);
 }
 
-void IndexFlatL2Panorama::range_search(
+void IndexFlatPanorama::range_search(
         idx_t n,
         const float* x,
         float radius,
@@ -640,32 +640,32 @@ void IndexFlatL2Panorama::range_search(
     search_core<true>(handler, n, x, radius, params);
 }
 
-void IndexFlatL2Panorama::reset() {
+void IndexFlatPanorama::reset() {
     IndexFlat::reset();
     cum_sums.clear();
 }
 
-void IndexFlatL2Panorama::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_MSG("reconstruct not implemented for IndexFlatL2Panorama");
+void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_MSG("reconstruct not implemented for IndexFlatPanorama");
 }
 
-size_t IndexFlatL2Panorama::remove_ids(const IDSelector& sel) {
-    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatL2Panorama");
+size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatPanorama");
     return 0;
 }
 
-void IndexFlatL2Panorama::merge_from(Index& otherIndex, idx_t add_id) {
-    FAISS_THROW_MSG("merge_from not implemented for IndexFlatL2Panorama");
+void IndexFlatPanorama::merge_from(Index& otherIndex, idx_t add_id) {
+    FAISS_THROW_MSG("merge_from not implemented for IndexFlatPanorama");
 }
 
-void IndexFlatL2Panorama::add_sa_codes(
+void IndexFlatPanorama::add_sa_codes(
         idx_t n,
         const uint8_t* codes_in,
         const idx_t* /* xids */) {
-    FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatL2Panorama");
+    FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatPanorama");
 }
 
-void IndexFlatL2Panorama::permute_entries(const idx_t* perm) {
-    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatL2Panorama");
+void IndexFlatPanorama::permute_entries(const idx_t* perm) {
+    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatPanorama");
 }
 } // namespace faiss
