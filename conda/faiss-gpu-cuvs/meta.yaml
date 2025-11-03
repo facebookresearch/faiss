@@ -60,7 +60,7 @@ outputs:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
-        - libcuvs =25.08
+        - libcuvs =25.10
         - cuda-version {{ cuda_constraints }}
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
@@ -68,7 +68,7 @@ outputs:
         - openblas =0.3.30 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =25.08
+        - libcuvs =25.10
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
     test:

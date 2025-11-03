@@ -647,7 +647,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                     // pointer
                     FastScanDistancePostProcessing thread_context = context;
                     if (thread_context.query_factors != nullptr) {
-                        thread_context.query_factors += i0 * nlist;
+                        thread_context.query_factors += i0 * nprobe;
                     }
 
                     std::unique_ptr<RH> handler(
