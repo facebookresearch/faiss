@@ -639,4 +639,33 @@ void IndexFlatL2Panorama::range_search(
 
     search_core<true>(handler, n, x, radius, params);
 }
+
+void IndexFlatL2Panorama::reset() {
+    IndexFlat::reset();
+    cum_sums.clear();
+}
+
+void IndexFlatL2Panorama::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_MSG("reconstruct not implemented for IndexFlatL2Panorama");
+}
+
+size_t IndexFlatL2Panorama::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatL2Panorama");
+    return 0;
+}
+
+void IndexFlatL2Panorama::merge_from(Index& otherIndex, idx_t add_id) {
+    FAISS_THROW_MSG("merge_from not implemented for IndexFlatL2Panorama");
+}
+
+void IndexFlatL2Panorama::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes_in,
+        const idx_t* /* xids */) {
+    FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatL2Panorama");
+}
+
+void IndexFlatL2Panorama::permute_entries(const idx_t* perm) {
+    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatL2Panorama");
+}
 } // namespace faiss

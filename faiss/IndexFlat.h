@@ -136,6 +136,19 @@ struct IndexFlatL2Panorama : IndexFlat {
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
+    void reset() override;
+
+    void reconstruct(idx_t key, float* recons) const override;
+
+    size_t remove_ids(const IDSelector& sel) override;
+
+    void merge_from(Index& otherIndex, idx_t add_id) override;
+
+    void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids)
+            override;
+
+    void permute_entries(const idx_t* perm);
+
    private:
     Panorama pano;
 
