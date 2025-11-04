@@ -25,7 +25,10 @@ namespace faiss {
 FAISS_API int distance_compute_dnnl_query_bs = 10240;
 FAISS_API int distance_compute_dnnl_database_bs = 10240;
 
-/* Find the nearest neighbors for nx queries in a set of ny vectors using oneDNN/AMX */
+/**
+* Find the nearest neighbors for nx queries in a set of ny vectors，
+* accelerated via oneDNN/AMX.
+*/
 template <class BlockResultHandler>
 void exhaustive_inner_product_seq_dnnl(
         const float* x,
@@ -64,7 +67,10 @@ void exhaustive_inner_product_seq_dnnl(
     }
 }
 
-/* Find the nearest neighbors for nx queries in a set of ny vectors using oneDNN/AMX */
+/**
+* Find the nearest neighbors for nx queries in a set of ny vectors，
+* accelerated via oneDNN/AMX.
+*/
 template <class BlockResultHandler>
 void exhaustive_inner_product_blas_dnnl(
         const float* x,
