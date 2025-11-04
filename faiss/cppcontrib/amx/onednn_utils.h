@@ -16,7 +16,7 @@
 #include "oneapi/dnnl/dnnl.hpp"
 
 namespace faiss {
-        
+
 static dnnl::engine cpu_engine;
 static dnnl::stream engine_stream;
 static bool is_onednn_init = false;
