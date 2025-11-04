@@ -23,7 +23,14 @@
 #pragma once
 
 #include <faiss/svs/IndexSVSVamana.h>
+#include <svs/runtime/IndexSVSTrainingInfo.h>
 #include <svs/runtime/IndexSVSVamanaLeanVecImpl.h>
+
+namespace svs {
+namespace runtime {
+struct IndexSVSTrainingInfo;
+}
+} // namespace svs
 
 namespace faiss {
 
@@ -32,6 +39,12 @@ enum LeanVecLevel {
     LeanVec4x4 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x4,
     LeanVec4x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x8,
     LeanVec8x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec8x8
+};
+
+enum LeanVecState {
+    EmptyAndUntrained = 0,
+    EmptyAndTrained,
+    NonEmptyAndTrained
 };
 
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
@@ -48,6 +61,8 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
 
     void train(idx_t n, const float* x) override;
 
+    void add(idx_t n, const float* x) override;
+
     void deserialize_impl(std::istream& in) override;
 
     size_t leanvec_d;
@@ -55,8 +70,13 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     LeanVecLevel leanvec_level;
 
    protected:
-    void create_impl() override;
+    void build_impl(idx_t n, const float* x);
     svs::runtime::IndexSVSVamanaLeanVecImpl* leanvec_impl() const;
+
+    LeanVecState state{LeanVecState::EmptyAndUntrained};
+
+    /* Training information */
+    svs::runtime::IndexSVSTrainingInfo* training_info{nullptr};
 };
 
 } // namespace faiss

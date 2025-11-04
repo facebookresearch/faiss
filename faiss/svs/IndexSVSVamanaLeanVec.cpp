@@ -22,9 +22,11 @@
 
 #include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <svs/runtime/IndexSVSVamanaLeanVecImpl.h>
 
 #include <memory>
 #include <span>
+#include "faiss/impl/FaissAssert.h"
 
 namespace faiss {
 
@@ -38,26 +40,48 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
 }
 
-void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
-    if (!impl) {
-        create_impl();
+void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
+    if (state == LeanVecState::EmptyAndUntrained) {
+        FAISS_THROW_MSG("Index must be trained before adding data.");
     }
-    auto limpl = leanvec_impl();
-    auto status = limpl->train(static_cast<size_t>(n), x);
+
+    auto status = svs::runtime::Status_Ok;
+    if (!impl) {
+        build_impl(n, x);
+    } else {
+        status = impl->add(n, x);
+    }
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
-    is_trained = limpl->is_trained();
+    ntotal += n;
+}
+
+void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            state == LeanVecState::EmptyAndUntrained,
+            "Index already trained or contains data.");
+
+    auto* info =
+            svs::runtime::IndexSVSVamanaLeanVecImpl::build_leanvec_training(
+                    n, x, d, leanvec_d);
+    FAISS_THROW_IF_NOT_MSG(info, "Failed to build leanvec training info.");
+    training_info = info;
+    state = LeanVecState::EmptyAndTrained;
+    is_trained = true;
 }
 
 void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
     IndexSVSVamana::deserialize_impl(in);
     auto limpl = leanvec_impl();
-    is_trained = limpl->is_trained();
+    // is_trained = limpl->is_trained();
 }
 
-void IndexSVSVamanaLeanVec::create_impl() {
-    FAISS_THROW_IF_NOT(!impl);
+void IndexSVSVamanaLeanVec::build_impl(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            state != LeanVecState::EmptyAndUntrained,
+            "Index must be trained before adding data.");
+    FAISS_THROW_IF_NOT(!impl); // impl should be null here
     ntotal = 0;
 
     auto svs_metric = to_svs_metric(metric_type);
@@ -68,15 +92,19 @@ void IndexSVSVamanaLeanVec::create_impl() {
     build_params.alpha = alpha;
     build_params.construction_window_size = construction_window_size;
     build_params.max_candidate_pool_size = max_candidate_pool_size;
-    auto limpl = svs::runtime::IndexSVSVamanaLeanVecImpl::build(
+    auto limpl = svs::runtime::IndexSVSVamanaLeanVecImpl::build_leanvec(
             d,
             svs_metric,
             build_params,
             leanvec_d,
             static_cast<svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVecLevel>(
-                    leanvec_level));
+                    leanvec_level),
+            n,
+            x,
+            training_info);
     FAISS_THROW_IF_NOT(limpl);
     impl = limpl;
+    state = LeanVecState::NonEmptyAndTrained;
 }
 
 svs::runtime::IndexSVSVamanaLeanVecImpl* IndexSVSVamanaLeanVec::leanvec_impl()

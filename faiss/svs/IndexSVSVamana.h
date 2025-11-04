@@ -22,10 +22,11 @@
 
 #pragma once
 
+#include "IndexSVSFaissUtils.h"
+
 #include <faiss/Index.h>
 
 #include <svs/runtime/IndexSVSVamanaImpl.h>
-#include "IndexSVSFaissUtils.h"
 
 #include <iostream>
 

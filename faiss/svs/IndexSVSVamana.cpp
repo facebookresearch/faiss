@@ -25,6 +25,8 @@
 
 #include <faiss/Index.h>
 
+#include <svs/runtime/IndexSVSTrainingInfo.h>
+
 #include <cstddef>
 #include <numeric>
 #include <span>
@@ -71,7 +73,6 @@ IndexSVSVamana::~IndexSVSVamana() {
 }
 
 void IndexSVSVamana::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(is_trained);
     if (!impl) {
         create_impl();
     }
