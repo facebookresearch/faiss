@@ -119,7 +119,6 @@ std::string get_compile_options() {
     options += "DNNL ";
 #endif
 
-
 #ifdef __AVX512F__
     options += "AVX512 ";
 #elif defined(__AVX2__)
