@@ -137,7 +137,10 @@ void fvec_renorm_L2(size_t d, size_t nx, float* __restrict x) {
 namespace {
 
 #ifdef ENABLE_DNNL
-/* Find the nearest neighbors for nx queries in a set of ny vectors using oneDNN/AMX */
+/**
+ * Find the nearest neighbors for nx queries in a set of ny vectors，
+ * accelerated via oneDNN/AMX.
+ */
 template <class BlockResultHandler>
 void exhaustive_inner_product_dnnl(
         const float* x,
@@ -832,11 +835,11 @@ struct Run_search_inner_product {
            size_t nx,
            size_t ny) {
 #ifdef ENABLE_DNNL
-        if(!res.sel && is_amxbf16_supported()) {
+        if (!res.sel && is_amxbf16_supported()) {
             exhaustive_inner_product_dnnl(x, y, d, nx, ny, res);
             return;
         }
-#endif        
+#endif
         if (res.sel || nx < distance_compute_blas_threshold) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
