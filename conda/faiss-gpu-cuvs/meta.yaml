@@ -101,18 +101,18 @@ outputs:
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=2.0,<3.0
+        - numpy >=2.0,<2.3
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=2.0,<3.0
+        - numpy >=2.0,<2.3
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=2.0,<3.0
+        - numpy >=2.0,<2.3
         - scipy
         - pytorch-gpu >=2.7
       commands:
