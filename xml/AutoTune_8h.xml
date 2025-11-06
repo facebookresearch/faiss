@@ -171,7 +171,7 @@
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1AutoTuneCriterion" kindref="compound">AutoTuneCriterion</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1adcfaafb3f1b3449e2cfd553f0f603a5b" kindref="member">nq</ref>,<sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1AutoTuneCriterion_1a3bb11e873707a812999f8391869aafab" kindref="member">nnn</ref>);</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Intitializes<sp/>the<sp/>gt_D<sp/>and<sp/>gt_I<sp/>vectors.<sp/>Must<sp/>be<sp/>called<sp/>before<sp/>evaluating</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Initializes<sp/>the<sp/>gt_D<sp/>and<sp/>gt_I<sp/>vectors.<sp/>Must<sp/>be<sp/>called<sp/>before<sp/>evaluating</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>gt_D_in<sp/><sp/>size<sp/>nq<sp/>*<sp/>gt_nnn</highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>gt_I_in<sp/><sp/>size<sp/>nq<sp/>*<sp/>gt_nnn</highlight></codeline>

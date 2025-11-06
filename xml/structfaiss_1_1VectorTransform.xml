@@ -117,7 +117,7 @@
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>training vecors, size n * d </para>
+<para>training vectors, size n * d </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

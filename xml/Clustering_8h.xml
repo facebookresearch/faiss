@@ -498,7 +498,7 @@
 <codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="110"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>run<sp/>with<sp/>encoded<sp/>vectors</highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>win<sp/>addition<sp/>to<sp/>train()&apos;s<sp/>parameters<sp/>takes<sp/>a<sp/>codec<sp/>as<sp/>parameter</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>in<sp/>addition<sp/>to<sp/>train()&apos;s<sp/>parameters<sp/>takes<sp/>a<sp/>codec<sp/>as<sp/>parameter</highlight></codeline>
 <codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>to<sp/>decode<sp/>the<sp/>input<sp/>vectors.</highlight></codeline>
 <codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="115"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>codec<sp/><sp/><sp/><sp/><sp/><sp/>codec<sp/>used<sp/>to<sp/>decode<sp/>the<sp/>vectors<sp/>(nullptr<sp/>=</highlight></codeline>

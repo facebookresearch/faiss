@@ -421,7 +421,7 @@
         <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752cacb32f4fe0d27316f90eda03ffe999f85" prot="public">
           <name>METRIC_NaNEuclidean</name>
           <briefdescription>
-<para>Squared Eucliden distance, ignoring NaNs. </para>
+<para>Squared Euclidean distance, ignoring NaNs. </para>
           </briefdescription>
           <detaileddescription>
           </detaileddescription>

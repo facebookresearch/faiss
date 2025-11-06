@@ -126,7 +126,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Intitializes the gt_D and gt_I vectors. Must be called before evaluating</para>
+<para>Initializes the gt_D and gt_I vectors. Must be called before evaluating</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>gt_D_in</parametername>

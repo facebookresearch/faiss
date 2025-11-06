@@ -170,7 +170,7 @@
         </briefdescription>
         <detaileddescription>
 <para>run with encoded vectors</para>
-<para>win addition to <ref refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kindref="member">train()</ref>&apos;s parameters takes a codec as parameter to decode the input vectors.</para>
+<para>in addition to <ref refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kindref="member">train()</ref>&apos;s parameters takes a codec as parameter to decode the input vectors.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>codec</parametername>
