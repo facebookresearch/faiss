@@ -943,7 +943,7 @@
 <parametername>stddev</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>standard derivations of each dimension in training data </para>
+<para>standard deviations of each dimension in training data </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

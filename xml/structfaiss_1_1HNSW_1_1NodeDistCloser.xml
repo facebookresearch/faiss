@@ -76,7 +76,7 @@
       </memberdef>
     </sectiondef>
     <briefdescription>
-<para>to sort pairs of (id, distance) from nearest to fathest or the reverse </para>
+<para>to sort pairs of (id, distance) from nearest to farthest or the reverse </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>

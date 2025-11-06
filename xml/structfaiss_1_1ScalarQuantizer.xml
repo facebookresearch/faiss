@@ -127,7 +127,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>The uniform encoder can estimate the range of representable values of the unform encoder using different statistics. Here rs = rangestat_arg </para>
+<para>The uniform encoder can estimate the range of representable values of the uniform encoder using different statistics. Here rs = rangestat_arg </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

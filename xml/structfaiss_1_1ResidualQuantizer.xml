@@ -608,7 +608,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>set this bit to <emphasis>not</emphasis> autmatically compute the codebook tables after training </para>
+<para>set this bit to <emphasis>not</emphasis> automatically compute the codebook tables after training </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

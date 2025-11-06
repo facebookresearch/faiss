@@ -445,7 +445,7 @@
 <codeline lineno="166"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Symmetric<sp/>Distance<sp/>Table</highlight></codeline>
 <codeline lineno="167" refid="structfaiss_1_1ProductQuantizer_1a6bd65fb4407452f73acb7242931d09e4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1ProductQuantizer_1a6bd65fb4407452f73acb7242931d09e4" kindref="member">sdc_table</ref>;</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"></highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>intitialize<sp/>the<sp/>SDC<sp/>table<sp/>from<sp/>the<sp/>centroids</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>initialize<sp/>the<sp/>SDC<sp/>table<sp/>from<sp/>the<sp/>centroids</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_sdc_table();</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"></highlight></codeline>
 <codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_sdc(</highlight></codeline>

@@ -461,7 +461,7 @@
 <codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Add<sp/>some<sp/>perturbation<sp/>to<sp/>codebooks</highlight></codeline>
 <codeline lineno="139"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
 <codeline lineno="140"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>T<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>temperature<sp/>of<sp/>simulated<sp/>annealing</highlight></codeline>
-<codeline lineno="141"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>stddev<sp/><sp/><sp/><sp/>standard<sp/>derivations<sp/>of<sp/>each<sp/>dimension<sp/>in<sp/>training<sp/>data</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>@param<sp/>stddev<sp/><sp/><sp/><sp/>standard<sp/>deviations<sp/>of<sp/>each<sp/>dimension<sp/>in<sp/>training<sp/>data</highlight></codeline>
 <codeline lineno="142"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="143" refid="structfaiss_1_1LocalSearchQuantizer_1afc4e3de814ca5dd2733c70c9012f2c2a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1LocalSearchQuantizer_1afc4e3de814ca5dd2733c70c9012f2c2a" kindref="member">perturb_codebooks</ref>(</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>T,</highlight></codeline>

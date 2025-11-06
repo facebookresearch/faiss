@@ -314,7 +314,7 @@
           <declname>layer_no</declname>
         </param>
         <briefdescription>
-<para>cumumlative nb up to (and excluding) this level </para>
+<para>cumulative nb up to (and excluding) this level </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

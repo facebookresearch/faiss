@@ -226,7 +226,7 @@
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref><sp/>qtype<sp/>=<sp/><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952ea1650389e3efa052ff60177d502328a2c" kindref="member">QT_8bit</ref>;</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>The<sp/>uniform<sp/>encoder<sp/>can<sp/>estimate<sp/>the<sp/>range<sp/>of<sp/>representable</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>values<sp/>of<sp/>the<sp/>unform<sp/>encoder<sp/>using<sp/>different<sp/>statistics.<sp/>Here</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>values<sp/>of<sp/>the<sp/>uniform<sp/>encoder<sp/>using<sp/>different<sp/>statistics.<sp/>Here</highlight></codeline>
 <codeline lineno="44"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>rs<sp/>=<sp/>rangestat_arg<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="45"><highlight class="normal"></highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>rangestat_arg.</highlight><highlight class="normal"></highlight></codeline>
