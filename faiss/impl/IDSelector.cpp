@@ -31,7 +31,7 @@ void IDSelectorRange::find_sorted_ids_bounds(
         *jmin_out = *jmax_out = 0;
         return;
     }
-    // bissection to find imin
+    // bisection to find imin
     if (ids[0] >= imin) {
         *jmin_out = 0;
     } else {
@@ -46,7 +46,7 @@ void IDSelectorRange::find_sorted_ids_bounds(
         }
         *jmin_out = j1;
     }
-    // bissection to find imax
+    // bisection to find imax
     if (*jmin_out == list_size || ids[*jmin_out] >= imax) {
         *jmax_out = *jmin_out;
     } else {
