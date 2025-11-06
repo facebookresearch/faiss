@@ -49,7 +49,7 @@ struct IndexBinary {
     /** Perform training on a representative set of vectors.
      *
      * @param n      nb of training vectors
-     * @param x      training vecors, size n * d / 8
+     * @param x      training vectors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
     virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
