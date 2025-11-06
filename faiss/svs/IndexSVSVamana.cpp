@@ -25,7 +25,8 @@
 
 #include <faiss/Index.h>
 
-#include <svs/runtime/IndexSVSTrainingInfo.h>
+#include <svs/runtime/dynamic_vamana_index.h>
+#include <svs/runtime/vamana_index.h>
 
 #include <cstddef>
 #include <numeric>
@@ -35,7 +36,7 @@
 
 namespace faiss {
 namespace {
-svs::runtime::IndexSVSVamanaImpl::SearchParams make_search_parameters(
+svs::runtime::VamanaIndex::SearchParams make_search_parameters(
         const IndexSVSVamana& index,
         const SearchParameters* params) {
     FAISS_THROW_IF_NOT(index.impl);
@@ -61,14 +62,15 @@ IndexSVSVamana::IndexSVSVamana(
         idx_t d,
         size_t degree,
         MetricType metric,
-        StorageKind storage)
+        SVSStorageKind storage)
         : Index(d, metric), graph_max_degree{degree}, storage_kind{storage} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
-    svs::runtime::IndexSVSVamanaImpl::destroy(impl);
+    auto status = svs::runtime::DynamicVamanaIndex::destroy(impl);
+    FAISS_ASSERT(status.ok());
     impl = nullptr;
 }
 
@@ -77,7 +79,10 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
         create_impl();
     }
 
-    auto status = impl->add(n, x);
+    std::vector<size_t> labels(n);
+    std::iota(labels.begin(), labels.end(), ntotal);
+
+    auto status = impl->add(n, labels.data(), x);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
@@ -153,7 +158,8 @@ void IndexSVSVamana::range_search(
 size_t IndexSVSVamana::remove_ids(const IDSelector& sel) {
     FAISS_THROW_IF_NOT(impl);
     auto id_filter = FaissIDFilter{sel};
-    size_t removed = impl->remove_ids(id_filter);
+    size_t removed = 0;
+    auto Status = impl->remove_selected(&removed, id_filter);
     ntotal -= removed;
     return removed;
 }
@@ -162,14 +168,29 @@ void IndexSVSVamana::create_impl() {
     FAISS_THROW_IF_NOT(!impl);
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
-    svs::runtime::IndexSVSVamanaImpl::BuildParams build_params;
-    build_params.storage_kind = storage_kind;
-    build_params.graph_max_degree = graph_max_degree;
-    build_params.prune_to = prune_to;
-    build_params.alpha = alpha;
-    build_params.construction_window_size = construction_window_size;
-    build_params.max_candidate_pool_size = max_candidate_pool_size;
-    impl = svs::runtime::IndexSVSVamanaImpl::build(d, svs_metric, build_params);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+    auto build_params = svs::runtime::VamanaIndex::BuildParams{
+            .graph_max_degree = graph_max_degree,
+            .prune_to = prune_to,
+            .alpha = alpha,
+            .construction_window_size = construction_window_size,
+            .max_candidate_pool_size = max_candidate_pool_size,
+            .use_full_search_history = use_full_search_history,
+    };
+    auto search_params = svs::runtime::VamanaIndex::SearchParams{
+            .search_window_size = search_window_size,
+            .search_buffer_capacity = search_buffer_capacity,
+    };
+    auto Status = svs::runtime::DynamicVamanaIndex::build(
+            &impl,
+            d,
+            svs_metric,
+            svs_storage_kind,
+            build_params,
+            search_params);
+    if (!Status.ok()) {
+        FAISS_THROW_MSG(Status.message);
+    }
     FAISS_THROW_IF_NOT(impl);
 }
 
@@ -177,18 +198,17 @@ void IndexSVSVamana::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
-    auto status = impl->serialize_impl(out);
+    auto status = impl->save(out);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
 }
 
 void IndexSVSVamana::deserialize_impl(std::istream& in) {
-    if (!impl) {
-        create_impl();
-    }
-
-    auto status = impl->deserialize_impl(in);
+    FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+    auto status = impl->load(&impl, in, svs_metric, svs_storage_kind);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }

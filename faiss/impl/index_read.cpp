@@ -1296,12 +1296,8 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
         READ1(svs->storage_kind);
-        if (h == fourcc("ILVQ")) {
-            READ1(dynamic_cast<IndexSVSVamanaLVQ*>(svs)->lvq_level);
-        }
         if (h == fourcc("ISVL")) {
             READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_d);
-            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
         }
 
         bool initialized;
@@ -1311,6 +1307,16 @@ Index* read_index(IOReader* f, int io_flags) {
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
+        }
+        if (h == fourcc("ISVL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                dynamic_cast<IndexSVSVamanaLeanVec*>(svs)
+                        ->deserialize_training_data(is);
+            }
         }
         idx = svs;
     } else if (h == fourcc("ISVF")) {

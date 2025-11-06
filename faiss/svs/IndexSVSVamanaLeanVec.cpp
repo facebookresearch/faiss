@@ -22,11 +22,13 @@
 
 #include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
-#include <svs/runtime/IndexSVSVamanaLeanVecImpl.h>
+
+#include <svs/runtime/dynamic_vamana_index.h>
+#include <svs/runtime/training.h>
+#include <svs/runtime/vamana_index.h>
 
 #include <memory>
 #include <span>
-#include "faiss/impl/FaissAssert.h"
 
 namespace faiss {
 
@@ -35,83 +37,100 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         size_t degree,
         MetricType metric,
         size_t leanvec_dims,
-        LeanVecLevel leanvec_level)
-        : IndexSVSVamana(d, degree, metric), leanvec_level{leanvec_level} {
+        SVSStorageKind storage_kind)
+        : IndexSVSVamana(d, degree, metric, storage_kind) {
+    is_trained = false;
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
 }
 
-void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
-    if (state == LeanVecState::EmptyAndUntrained) {
-        FAISS_THROW_MSG("Index must be trained before adding data.");
-    }
+IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
+    auto status = svs::runtime::LeanVecTrainingData::destroy(training_data);
+    FAISS_ASSERT(status.ok());
+    training_data = nullptr;
+    IndexSVSVamana::~IndexSVSVamana();
+}
 
-    auto status = svs::runtime::Status_Ok;
-    if (!impl) {
-        build_impl(n, x);
-    } else {
-        status = impl->add(n, x);
-    }
-    if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
-    }
-    ntotal += n;
+void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_MSG(
+            !is_trained, "Index not trained: call train() before add().");
+    IndexSVSVamana::add(n, x);
 }
 
 void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            state == LeanVecState::EmptyAndUntrained,
-            "Index already trained or contains data.");
+    FAISS_THROW_IF_MSG(
+            training_data || impl, "Index already trained or contains data.");
 
-    auto* info =
-            svs::runtime::IndexSVSVamanaLeanVecImpl::build_leanvec_training(
-                    n, x, d, leanvec_d);
-    FAISS_THROW_IF_NOT_MSG(info, "Failed to build leanvec training info.");
-    training_info = info;
-    state = LeanVecState::EmptyAndTrained;
+    auto status = svs::runtime::LeanVecTrainingData::build(
+            &training_data, d, n, x, leanvec_d);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message);
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            training_data, "Failed to build leanvec training info.");
     is_trained = true;
 }
 
-void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
-    IndexSVSVamana::deserialize_impl(in);
-    auto limpl = leanvec_impl();
-    // is_trained = limpl->is_trained();
-}
-
-void IndexSVSVamanaLeanVec::build_impl(idx_t n, const float* x) {
+void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
-            state != LeanVecState::EmptyAndUntrained,
-            "Index must be trained before adding data.");
-    FAISS_THROW_IF_NOT(!impl); // impl should be null here
-    ntotal = 0;
+            training_data, "Cannot serialize: Training data not initialized.");
 
-    auto svs_metric = to_svs_metric(metric_type);
-    svs::runtime::IndexSVSVamanaImpl::BuildParams build_params;
-    build_params.storage_kind = storage_kind;
-    build_params.graph_max_degree = graph_max_degree;
-    build_params.prune_to = prune_to;
-    build_params.alpha = alpha;
-    build_params.construction_window_size = construction_window_size;
-    build_params.max_candidate_pool_size = max_candidate_pool_size;
-    auto limpl = svs::runtime::IndexSVSVamanaLeanVecImpl::build_leanvec(
-            d,
-            svs_metric,
-            build_params,
-            leanvec_d,
-            static_cast<svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVecLevel>(
-                    leanvec_level),
-            n,
-            x,
-            training_info);
-    FAISS_THROW_IF_NOT(limpl);
-    impl = limpl;
-    state = LeanVecState::NonEmptyAndTrained;
+    auto status = training_data->save(out);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message);
+    }
 }
 
-svs::runtime::IndexSVSVamanaLeanVecImpl* IndexSVSVamanaLeanVec::leanvec_impl()
-        const {
-    auto limpl = dynamic_cast<svs::runtime::IndexSVSVamanaLeanVecImpl*>(impl);
-    FAISS_ASSERT(limpl != nullptr);
-    return limpl;
+void IndexSVSVamanaLeanVec::deserialize_training_data(std::istream& in) {
+    svs::runtime::LeanVecTrainingData* tdata = nullptr;
+    auto status = svs::runtime::LeanVecTrainingData::load(&tdata, in);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message);
+    }
+    FAISS_THROW_IF_NOT_MSG(tdata, "Failed to load leanvec training data.");
+    training_data = tdata;
+}
+
+void IndexSVSVamanaLeanVec::create_impl() {
+    ntotal = 0;
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+    auto build_params = svs::runtime::VamanaIndex::BuildParams{
+            .graph_max_degree = graph_max_degree,
+            .prune_to = prune_to,
+            .alpha = alpha,
+            .construction_window_size = construction_window_size,
+            .max_candidate_pool_size = max_candidate_pool_size,
+            .use_full_search_history = use_full_search_history,
+    };
+    auto search_params = svs::runtime::VamanaIndex::SearchParams{
+            .search_window_size = search_window_size,
+            .search_buffer_capacity = search_buffer_capacity,
+    };
+    auto status = svs::runtime::Status_Ok;
+    if (training_data) {
+        status = svs::runtime::DynamicVamanaIndexLeanVec::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                training_data,
+                build_params,
+                search_params);
+    } else {
+        status = svs::runtime::DynamicVamanaIndexLeanVec::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                leanvec_d,
+                build_params,
+                search_params);
+    }
+
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message);
+    }
+    FAISS_THROW_IF_NOT(impl);
 }
 
 } // namespace faiss

@@ -940,12 +940,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->prune_to);
         WRITE1(svs->use_full_search_history);
         WRITE1(svs->storage_kind);
-        if (lvq != nullptr) {
-            WRITE1(lvq->lvq_level);
-        }
+
         if (lean != nullptr) {
             WRITE1(lean->leanvec_d);
-            WRITE1(lean->leanvec_level);
         }
 
         bool initialized = (svs->impl != nullptr);
@@ -957,6 +954,20 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             std::ostream os(&wbuf);
             svs->serialize_impl(os);
             os.flush();
+        }
+
+        if (lean != nullptr) {
+            // Store training data info
+            bool trained = (lean->training_data != nullptr);
+            WRITE1(trained);
+            if (trained) {
+                // Wrap SVS I/O and stream to IOWriter
+                faiss::BufferedIOWriter bwr(f);
+                faiss::svs_io::WriterStreambuf wbuf(&bwr);
+                std::ostream os(&wbuf);
+                lean->serialize_training_data(os);
+                os.flush();
+            }
         }
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {

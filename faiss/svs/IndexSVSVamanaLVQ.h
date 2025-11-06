@@ -23,16 +23,8 @@
 #pragma once
 
 #include <faiss/svs/IndexSVSVamana.h>
-#include <svs/runtime/IndexSVSVamanaLVQImpl.h>
 
 namespace faiss {
-
-// Enum redefinition to avoid including IndexSVSVamanaLVQImpl.h in swigfaiss
-enum LVQLevel {
-    LVQ4x0 = svs::runtime::IndexSVSVamanaLVQImpl::LVQ4x0,
-    LVQ4x4 = svs::runtime::IndexSVSVamanaLVQImpl::LVQ4x4,
-    LVQ4x8 = svs::runtime::IndexSVSVamanaLVQImpl::LVQ4x8
-};
 
 struct IndexSVSVamanaLVQ : IndexSVSVamana {
     IndexSVSVamanaLVQ() = default;
@@ -40,14 +32,9 @@ struct IndexSVSVamanaLVQ : IndexSVSVamana {
             idx_t d,
             size_t degree,
             MetricType metric = METRIC_L2,
-            LVQLevel lvq_level = LVQLevel::LVQ4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LVQ4x4);
 
     ~IndexSVSVamanaLVQ() override = default;
-
-    LVQLevel lvq_level;
-
-   protected:
-    void create_impl() override;
 };
 
 } // namespace faiss

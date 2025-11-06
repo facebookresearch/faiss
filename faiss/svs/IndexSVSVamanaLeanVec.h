@@ -23,23 +23,14 @@
 #pragma once
 
 #include <faiss/svs/IndexSVSVamana.h>
-#include <svs/runtime/IndexSVSTrainingInfo.h>
-#include <svs/runtime/IndexSVSVamanaLeanVecImpl.h>
 
 namespace svs {
 namespace runtime {
-struct IndexSVSTrainingInfo;
+struct LeanVecTrainingData;
 }
 } // namespace svs
 
 namespace faiss {
-
-// Enum redefinition to avoid including IndexSVSVamanaLeanVecImpl.h in swigfaiss
-enum LeanVecLevel {
-    LeanVec4x4 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x4,
-    LeanVec4x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec4x8,
-    LeanVec8x8 = svs::runtime::IndexSVSVamanaLeanVecImpl::LeanVec8x8
-};
 
 enum LeanVecState {
     EmptyAndUntrained = 0,
@@ -55,28 +46,24 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             size_t degree,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            LeanVecLevel leanvec_level = LeanVecLevel::LeanVec4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4);
 
-    ~IndexSVSVamanaLeanVec() override = default;
-
-    void train(idx_t n, const float* x) override;
+    ~IndexSVSVamanaLeanVec() override;
 
     void add(idx_t n, const float* x) override;
 
-    void deserialize_impl(std::istream& in) override;
+    void train(idx_t n, const float* x) override;
+
+    void serialize_training_data(std::ostream& out) const;
+    void deserialize_training_data(std::istream& in);
 
     size_t leanvec_d;
 
-    LeanVecLevel leanvec_level;
+    /* Training information */
+    svs::runtime::LeanVecTrainingData* training_data{nullptr};
 
    protected:
-    void build_impl(idx_t n, const float* x);
-    svs::runtime::IndexSVSVamanaLeanVecImpl* leanvec_impl() const;
-
-    LeanVecState state{LeanVecState::EmptyAndUntrained};
-
-    /* Training information */
-    svs::runtime::IndexSVSTrainingInfo* training_info{nullptr};
+    void create_impl() override;
 };
 
 } // namespace faiss
