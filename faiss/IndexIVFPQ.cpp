@@ -152,7 +152,7 @@ static std::unique_ptr<float[]> compute_residuals(
     std::unique_ptr<float[]> residuals(new float[n * d]);
     // Parallelize with OpenMP (each iteration is independent)
 #pragma omp parallel for if (n > 1000)
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         if (list_nos[i] < 0)
             memset(residuals.get() + i * d, 0, sizeof(float) * d);
         else
