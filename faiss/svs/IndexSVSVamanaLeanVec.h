@@ -26,12 +26,6 @@
 
 namespace faiss {
 
-enum LeanVecState {
-    EmptyAndUntrained = 0,
-    EmptyAndTrained,
-    NonEmptyAndTrained
-};
-
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     IndexSVSVamanaLeanVec() = default;
 
