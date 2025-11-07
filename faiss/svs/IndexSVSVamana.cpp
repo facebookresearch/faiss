@@ -36,7 +36,7 @@
 
 namespace faiss {
 namespace {
-svs::runtime::VamanaIndex::SearchParams make_search_parameters(
+svs_runtime::VamanaIndex::SearchParams make_search_parameters(
         const IndexSVSVamana& index,
         const SearchParameters* params) {
     FAISS_THROW_IF_NOT(index.impl);
@@ -69,7 +69,7 @@ IndexSVSVamana::IndexSVSVamana(
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
-    auto status = svs::runtime::DynamicVamanaIndex::destroy(impl);
+    auto status = svs_runtime::DynamicVamanaIndex::destroy(impl);
     FAISS_ASSERT(status.ok());
     impl = nullptr;
 }
@@ -169,7 +169,7 @@ void IndexSVSVamana::create_impl() {
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
-    auto build_params = svs::runtime::VamanaIndex::BuildParams{
+    auto build_params = svs_runtime::VamanaIndex::BuildParams{
             .graph_max_degree = graph_max_degree,
             .prune_to = prune_to,
             .alpha = alpha,
@@ -177,11 +177,11 @@ void IndexSVSVamana::create_impl() {
             .max_candidate_pool_size = max_candidate_pool_size,
             .use_full_search_history = use_full_search_history,
     };
-    auto search_params = svs::runtime::VamanaIndex::SearchParams{
+    auto search_params = svs_runtime::VamanaIndex::SearchParams{
             .search_window_size = search_window_size,
             .search_buffer_capacity = search_buffer_capacity,
     };
-    auto Status = svs::runtime::DynamicVamanaIndex::build(
+    auto Status = svs_runtime::DynamicVamanaIndex::build(
             &impl,
             d,
             svs_metric,

@@ -24,12 +24,6 @@
 
 #include <faiss/svs/IndexSVSVamana.h>
 
-namespace svs {
-namespace runtime {
-struct LeanVecTrainingData;
-}
-} // namespace svs
-
 namespace faiss {
 
 enum LeanVecState {
@@ -60,7 +54,7 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     size_t leanvec_d;
 
     /* Training information */
-    svs::runtime::LeanVecTrainingData* training_data{nullptr};
+    svs_runtime::LeanVecTrainingData* training_data{nullptr};
 
    protected:
     void create_impl() override;

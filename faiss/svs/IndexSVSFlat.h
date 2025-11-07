@@ -22,11 +22,10 @@
 
 #pragma once
 
-#include <svs/runtime/IndexSVSFlatImpl.h>
+#include <faiss/Index.h>
+#include <faiss/svs/IndexSVSFaissUtils.h>
 
 #include <iostream>
-
-#include <faiss/Index.h>
 
 namespace faiss {
 
@@ -52,7 +51,7 @@ struct IndexSVSFlat : Index {
     void reset() override;
 
     /* The actual SVS implementation */
-    svs::runtime::IndexSVSFlatImpl* impl{nullptr};
+    svs_runtime::FlatIndex* impl{nullptr};
 
     /* Serialization */
     void serialize_impl(std::ostream& out) const;

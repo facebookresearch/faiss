@@ -44,7 +44,7 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
 }
 
 IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
-    auto status = svs::runtime::LeanVecTrainingData::destroy(training_data);
+    auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
     FAISS_ASSERT(status.ok());
     training_data = nullptr;
     IndexSVSVamana::~IndexSVSVamana();
@@ -60,7 +60,7 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
     FAISS_THROW_IF_MSG(
             training_data || impl, "Index already trained or contains data.");
 
-    auto status = svs::runtime::LeanVecTrainingData::build(
+    auto status = svs_runtime::LeanVecTrainingData::build(
             &training_data, d, n, x, leanvec_d);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
@@ -81,8 +81,8 @@ void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {
 }
 
 void IndexSVSVamanaLeanVec::deserialize_training_data(std::istream& in) {
-    svs::runtime::LeanVecTrainingData* tdata = nullptr;
-    auto status = svs::runtime::LeanVecTrainingData::load(&tdata, in);
+    svs_runtime::LeanVecTrainingData* tdata = nullptr;
+    auto status = svs_runtime::LeanVecTrainingData::load(&tdata, in);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
@@ -94,7 +94,7 @@ void IndexSVSVamanaLeanVec::create_impl() {
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
-    auto build_params = svs::runtime::VamanaIndex::BuildParams{
+    auto build_params = svs_runtime::VamanaIndex::BuildParams{
             .graph_max_degree = graph_max_degree,
             .prune_to = prune_to,
             .alpha = alpha,
@@ -102,13 +102,13 @@ void IndexSVSVamanaLeanVec::create_impl() {
             .max_candidate_pool_size = max_candidate_pool_size,
             .use_full_search_history = use_full_search_history,
     };
-    auto search_params = svs::runtime::VamanaIndex::SearchParams{
+    auto search_params = svs_runtime::VamanaIndex::SearchParams{
             .search_window_size = search_window_size,
             .search_buffer_capacity = search_buffer_capacity,
     };
-    auto status = svs::runtime::Status_Ok;
+    auto status = svs_runtime::Status_Ok;
     if (training_data) {
-        status = svs::runtime::DynamicVamanaIndexLeanVec::build(
+        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
                 &impl,
                 d,
                 svs_metric,
@@ -117,7 +117,7 @@ void IndexSVSVamanaLeanVec::create_impl() {
                 build_params,
                 search_params);
     } else {
-        status = svs::runtime::DynamicVamanaIndexLeanVec::build(
+        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
                 &impl,
                 d,
                 svs_metric,

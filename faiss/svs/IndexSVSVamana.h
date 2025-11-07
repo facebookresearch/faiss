@@ -23,16 +23,11 @@
 #pragma once
 
 #include <faiss/Index.h>
+#include <faiss/svs/IndexSVSFaissUtils.h>
 
 #include <svs/runtime/IndexSVSImplDefs.h>
 
 #include <iostream>
-
-namespace svs {
-namespace runtime {
-struct DynamicVamanaIndex;
-} // namespace runtime
-} // namespace svs
 
 namespace faiss {
 
@@ -54,26 +49,26 @@ enum SVSStorageKind {
     SVS_LeanVec8x8,
 };
 
-inline svs::runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
+inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
     switch (kind) {
         case SVS_FP32:
-            return svs::runtime::StorageKind::FP32;
+            return svs_runtime::StorageKind::FP32;
         case SVS_FP16:
-            return svs::runtime::StorageKind::FP16;
+            return svs_runtime::StorageKind::FP16;
         case SVS_SQI8:
-            return svs::runtime::StorageKind::SQI8;
+            return svs_runtime::StorageKind::SQI8;
         case SVS_LVQ4x0:
-            return svs::runtime::StorageKind::LVQ4x0;
+            return svs_runtime::StorageKind::LVQ4x0;
         case SVS_LVQ4x4:
-            return svs::runtime::StorageKind::LVQ4x4;
+            return svs_runtime::StorageKind::LVQ4x4;
         case SVS_LVQ4x8:
-            return svs::runtime::StorageKind::LVQ4x8;
+            return svs_runtime::StorageKind::LVQ4x8;
         case SVS_LeanVec4x4:
-            return svs::runtime::StorageKind::LeanVec4x4;
+            return svs_runtime::StorageKind::LeanVec4x4;
         case SVS_LeanVec4x8:
-            return svs::runtime::StorageKind::LeanVec4x8;
+            return svs_runtime::StorageKind::LeanVec4x8;
         case SVS_LeanVec8x8:
-            return svs::runtime::StorageKind::LeanVec8x8;
+            return svs_runtime::StorageKind::LeanVec8x8;
         default:
             FAISS_ASSERT(!"not supported SVS storage kind");
     }
@@ -127,7 +122,7 @@ struct IndexSVSVamana : Index {
     virtual void deserialize_impl(std::istream& in);
 
     /* The actual SVS implementation */
-    svs::runtime::DynamicVamanaIndex* impl{nullptr};
+    svs_runtime::DynamicVamanaIndex* impl{nullptr};
 
    protected:
     /* Initializes the implementation*/
