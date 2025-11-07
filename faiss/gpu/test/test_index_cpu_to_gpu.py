@@ -91,4 +91,4 @@ class TestMoveToGpu(unittest.TestCase):
                                             allowCpuCoarseQuantizer=False)
         except Exception as e:
             if "set the flag to true to allow the CPU fallback" not in str(e):
-                self.fail("Unexepected error message thrown: %s." % str(e))
+                self.fail("Unexpected error message thrown: %s." % str(e))
