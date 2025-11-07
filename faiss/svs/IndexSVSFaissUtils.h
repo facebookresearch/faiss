@@ -38,12 +38,12 @@
 #include <type_traits>
 #include <vector>
 
-// validate SVS_RUNTIME_VERSION is set
-#ifndef SVS_RUNTIME_VERSION
-#error "SVS_RUNTIME_VERSION is not defined"
+// validate FAISS_SVS_RUNTIME_VERSION is set
+#ifndef FAISS_SVS_RUNTIME_VERSION
+#error "FAISS_SVS_RUNTIME_VERSION is not defined"
 #endif
-// create svs_runtime as alias for svs::runtime::SVS_RUNTIME_VERSION
-SVS_RUNTIME_CREATE_API_ALIAS(svs_runtime, SVS_RUNTIME_VERSION);
+// create svs_runtime as alias for svs::runtime::FAISS_SVS_RUNTIME_VERSION
+SVS_RUNTIME_CREATE_API_ALIAS(svs_runtime, FAISS_SVS_RUNTIME_VERSION);
 
 // SVS forward declarations
 namespace svs {

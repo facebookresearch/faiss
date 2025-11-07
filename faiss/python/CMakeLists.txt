@@ -35,7 +35,7 @@ macro(configure_swigfaiss source)
   endif()
   if(FAISS_ENABLE_SVS)
     set_property(SOURCE ${source} APPEND PROPERTY
-      SWIG_FLAGS -DFAISS_ENABLE_SVS -DSVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION}
+      SWIG_FLAGS -DFAISS_ENABLE_SVS -DFAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION}
     )
   endif()
   if(FAISS_ENABLE_GPU)
@@ -191,12 +191,12 @@ else()
 endif()
 
 if(FAISS_ENABLE_SVS)
-  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
-  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
-  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
-  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
-  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
-  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS SVS_RUNTIME_VERSION=${SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
 endif()
 
 if(FAISS_ENABLE_GPU)
