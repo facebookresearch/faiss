@@ -20,16 +20,25 @@
  * limitations under the License.
  */
 
+#include <faiss/Index.h>
 #include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSFlat.h>
 
-#include <iostream>
+#include <svs/runtime/flat_index.h>
 
-#include <faiss/Index.h>
+#include <iostream>
 
 namespace faiss {
 
 IndexSVSFlat::IndexSVSFlat(idx_t d, MetricType metric) : Index(d, metric) {}
+
+IndexSVSFlat::~IndexSVSFlat() {
+    if (impl) {
+        auto status = svs_runtime::FlatIndex::destroy(impl);
+        FAISS_ASSERT(status.ok());
+    }
+    impl = nullptr;
+}
 
 void IndexSVSFlat::add(idx_t n, const float* x) {
     if (!impl) {
@@ -45,14 +54,12 @@ void IndexSVSFlat::add(idx_t n, const float* x) {
 
 void IndexSVSFlat::reset() {
     if (impl) {
-        impl->reset();
+        auto status = impl->reset();
+        if (!status.ok()) {
+            FAISS_THROW_MSG(status.message);
+        }
     }
     ntotal = 0;
-}
-
-IndexSVSFlat::~IndexSVSFlat() {
-    svs::runtime::IndexSVSFlatImpl::destroy(impl);
-    impl = nullptr;
 }
 
 void IndexSVSFlat::search(
@@ -78,7 +85,10 @@ void IndexSVSFlat::search(
 void IndexSVSFlat::create_impl() {
     FAISS_ASSERT(impl == nullptr);
     auto svs_metric = to_svs_metric(metric_type);
-    impl = svs::runtime::IndexSVSFlatImpl::build(d, svs_metric);
+    auto status = svs_runtime::FlatIndex::build(&impl, d, svs_metric);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message);
+    }
     FAISS_THROW_IF_NOT(impl);
 }
 
@@ -87,20 +97,20 @@ void IndexSVSFlat::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
-    auto status = impl->serialize(out);
+    auto status = impl->save(out);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
 }
 
 void IndexSVSFlat::deserialize_impl(std::istream& in) {
-    if (!impl) {
-        create_impl();
-    }
-    auto status = impl->deserialize(in);
+    FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
+    auto metric = to_svs_metric(metric_type);
+    auto status = impl->load(&impl, in, metric);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message);
     }
+    FAISS_THROW_IF_NOT(impl);
 }
 
 } // namespace faiss

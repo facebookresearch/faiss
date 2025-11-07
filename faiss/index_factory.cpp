@@ -552,28 +552,28 @@ IndexNSG* parse_IndexNSG(
  * Parse IndexSVS
  */
 
-LVQLevel parse_lvq(const std::string& lvq_string) {
+SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x0") {
-        return LVQLevel::LVQ4x0;
+        return SVSStorageKind::SVS_LVQ4x0;
     }
     if (lvq_string == "LVQ4x4") {
-        return LVQLevel::LVQ4x4;
+        return SVSStorageKind::SVS_LVQ4x4;
     }
     if (lvq_string == "LVQ4x8") {
-        return LVQLevel::LVQ4x8;
+        return SVSStorageKind::SVS_LVQ4x8;
     }
     FAISS_ASSERT(!"not supported SVS LVQ level");
 }
 
-LeanVecLevel parse_leanvec(const std::string& leanvec_string) {
+SVSStorageKind parse_leanvec(const std::string& leanvec_string) {
     if (leanvec_string == "LeanVec4x4") {
-        return LeanVecLevel::LeanVec4x4;
+        return SVSStorageKind::SVS_LeanVec4x4;
     }
     if (leanvec_string == "LeanVec4x8") {
-        return LeanVecLevel::LeanVec4x8;
+        return SVSStorageKind::SVS_LeanVec4x8;
     }
     if (leanvec_string == "LeanVec8x8") {
-        return LeanVecLevel::LeanVec8x8;
+        return SVSStorageKind::SVS_LeanVec8x8;
     }
     FAISS_ASSERT(!"not supported SVS Leanvec level");
 }
@@ -596,19 +596,13 @@ Index* parse_svs_datatype(
     if (re_match(datatype_string, "FP16", sm)) {
         if (index_type == "Vamana")
             return new IndexSVSVamana(
-                    d,
-                    std::stoul(arg_string),
-                    mt,
-                    IndexSVSVamana::StorageKind::FP16);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
         FAISS_ASSERT(!"Unspported SVS index type for Float16");
     }
     if (re_match(datatype_string, "SQ8", sm)) {
         if (index_type == "Vamana")
             return new IndexSVSVamana(
-                    d,
-                    std::stoul(arg_string),
-                    mt,
-                    IndexSVSVamana::StorageKind::SQI8);
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
         FAISS_ASSERT(!"Unspported SVS index type for SQ8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {

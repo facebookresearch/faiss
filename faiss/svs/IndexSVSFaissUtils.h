@@ -23,6 +23,7 @@
 #pragma once
 
 #include <svs/runtime/IndexSVSImplDefs.h>
+#include <svs/runtime/version.h>
 
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>
@@ -37,20 +38,39 @@
 #include <type_traits>
 #include <vector>
 
+// validate FAISS_SVS_RUNTIME_VERSION is set
+#ifndef FAISS_SVS_RUNTIME_VERSION
+#error "FAISS_SVS_RUNTIME_VERSION is not defined"
+#endif
+// create svs_runtime as alias for svs::runtime::FAISS_SVS_RUNTIME_VERSION
+SVS_RUNTIME_CREATE_API_ALIAS(svs_runtime, FAISS_SVS_RUNTIME_VERSION);
+
+// SVS forward declarations
+namespace svs {
+namespace runtime {
+namespace v0 {
+struct FlatIndex;
+struct VamanaIndex;
+struct DynamicVamanaIndex;
+struct LeanVecTrainingData;
+} // namespace v0
+} // namespace runtime
+} // namespace svs
+
 namespace faiss {
 
-inline svs::runtime::MetricType to_svs_metric(faiss::MetricType metric) {
+inline svs_runtime::MetricType to_svs_metric(faiss::MetricType metric) {
     switch (metric) {
         case METRIC_INNER_PRODUCT:
-            return svs::runtime::MetricType::INNER_PRODUCT;
+            return svs_runtime::MetricType::INNER_PRODUCT;
         case METRIC_L2:
-            return svs::runtime::MetricType::L2;
+            return svs_runtime::MetricType::L2;
         default:
             FAISS_ASSERT(!"not supported SVS distance");
     }
 }
 
-struct FaissIDFilter : public svs::runtime::IDFilter {
+struct FaissIDFilter : public svs_runtime::IDFilter {
     FaissIDFilter(const faiss::IDSelector& sel) : selector(sel) {}
 
     bool is_member(size_t id) const override {
@@ -69,12 +89,12 @@ inline std::unique_ptr<FaissIDFilter> make_faiss_id_filter(
     return nullptr;
 }
 
-struct FaissResultsAllocator : public svs::runtime::ResultsAllocator {
+struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
     FaissResultsAllocator(faiss::RangeSearchResult* result) : result(result) {
         FAISS_ASSERT(result != nullptr);
     }
 
-    svs::runtime::SearchResultsStorage allocate(
+    svs_runtime::SearchResultsStorage allocate(
             std::span<size_t> result_counts) const override {
         FAISS_ASSERT(result != nullptr);
         FAISS_ASSERT(result_counts.size() == result->nq);
@@ -86,7 +106,7 @@ struct FaissResultsAllocator : public svs::runtime::ResultsAllocator {
 
         std::copy(result_counts.begin(), result_counts.end(), result->lims);
         result->do_allocation();
-        return svs::runtime::SearchResultsStorage{
+        return svs_runtime::SearchResultsStorage{
                 std::span<int64_t>(
                         result->labels, result->lims[result_counts.size()]),
                 std::span<float>(

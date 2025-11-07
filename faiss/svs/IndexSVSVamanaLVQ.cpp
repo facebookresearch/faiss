@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 
 namespace faiss {
@@ -29,28 +28,7 @@ IndexSVSVamanaLVQ::IndexSVSVamanaLVQ(
         idx_t d,
         size_t degree,
         MetricType metric,
-        LVQLevel lvq_level)
-        : IndexSVSVamana(d, degree, metric), lvq_level{lvq_level} {}
-
-void IndexSVSVamanaLVQ::create_impl() {
-    FAISS_THROW_IF_NOT(!impl);
-    ntotal = 0;
-
-    auto svs_metric = to_svs_metric(metric_type);
-    svs::runtime::IndexSVSVamanaImpl::BuildParams build_params;
-    build_params.storage_kind = storage_kind;
-    build_params.graph_max_degree = graph_max_degree;
-    build_params.prune_to = prune_to;
-    build_params.alpha = alpha;
-    build_params.construction_window_size = construction_window_size;
-    build_params.max_candidate_pool_size = max_candidate_pool_size;
-    impl = svs::runtime::IndexSVSVamanaLVQImpl::build(
-            d,
-            svs_metric,
-            build_params,
-            static_cast<svs::runtime::IndexSVSVamanaLVQImpl::LVQLevel>(
-                    lvq_level));
-    FAISS_THROW_IF_NOT(impl);
-}
+        SVSStorageKind storage)
+        : IndexSVSVamana(d, degree, metric, storage) {}
 
 } // namespace faiss
