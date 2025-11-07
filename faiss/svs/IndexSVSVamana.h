@@ -25,7 +25,7 @@
 #include <faiss/Index.h>
 #include <faiss/svs/IndexSVSFaissUtils.h>
 
-#include <svs/runtime/IndexSVSImplDefs.h>
+#include <svs/runtime/api_defs.h>
 
 #include <iostream>
 

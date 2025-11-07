@@ -22,8 +22,7 @@
 
 #pragma once
 
-#include <svs/runtime/IndexSVSImplDefs.h>
-#include <svs/runtime/version.h>
+#include <svs/runtime/api_defs.h>
 
 #include <faiss/Index.h>
 #include <faiss/MetricType.h>

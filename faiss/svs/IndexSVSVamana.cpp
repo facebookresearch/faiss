@@ -84,7 +84,7 @@ void IndexSVSVamana::add(idx_t n, const float* x) {
 
     auto status = impl->add(n, labels.data(), x);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     ntotal += n;
 }
@@ -126,7 +126,7 @@ void IndexSVSVamana::search(
             id_filter.get());
 
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -151,7 +151,7 @@ void IndexSVSVamana::range_search(
             &sp,
             id_filter.get());
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -189,7 +189,7 @@ void IndexSVSVamana::create_impl() {
             build_params,
             search_params);
     if (!Status.ok()) {
-        FAISS_THROW_MSG(Status.message);
+        FAISS_THROW_MSG(Status.message());
     }
     FAISS_THROW_IF_NOT(impl);
 }
@@ -200,7 +200,7 @@ void IndexSVSVamana::serialize_impl(std::ostream& out) const {
 
     auto status = impl->save(out);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -210,7 +210,7 @@ void IndexSVSVamana::deserialize_impl(std::istream& in) {
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
     auto status = impl->load(&impl, in, svs_metric, svs_storage_kind);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 

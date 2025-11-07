@@ -47,7 +47,7 @@ void IndexSVSFlat::add(idx_t n, const float* x) {
 
     auto status = impl->add(n, x);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     ntotal += n;
 }
@@ -56,7 +56,7 @@ void IndexSVSFlat::reset() {
     if (impl) {
         auto status = impl->reset();
         if (!status.ok()) {
-            FAISS_THROW_MSG(status.message);
+            FAISS_THROW_MSG(status.message());
         }
     }
     ntotal = 0;
@@ -77,7 +77,7 @@ void IndexSVSFlat::search(
             distances,
             reinterpret_cast<size_t*>(labels));
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -87,7 +87,7 @@ void IndexSVSFlat::create_impl() {
     auto svs_metric = to_svs_metric(metric_type);
     auto status = svs_runtime::FlatIndex::build(&impl, d, svs_metric);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT(impl);
 }
@@ -99,7 +99,7 @@ void IndexSVSFlat::serialize_impl(std::ostream& out) const {
 
     auto status = impl->save(out);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -108,7 +108,7 @@ void IndexSVSFlat::deserialize_impl(std::istream& in) {
     auto metric = to_svs_metric(metric_type);
     auto status = impl->load(&impl, in, metric);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT(impl);
 }

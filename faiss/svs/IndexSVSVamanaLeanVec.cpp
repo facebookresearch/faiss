@@ -63,7 +63,7 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
     auto status = svs_runtime::LeanVecTrainingData::build(
             &training_data, d, n, x, leanvec_d);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT_MSG(
             training_data, "Failed to build leanvec training info.");
@@ -76,7 +76,7 @@ void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {
 
     auto status = training_data->save(out);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
 }
 
@@ -84,7 +84,7 @@ void IndexSVSVamanaLeanVec::deserialize_training_data(std::istream& in) {
     svs_runtime::LeanVecTrainingData* tdata = nullptr;
     auto status = svs_runtime::LeanVecTrainingData::load(&tdata, in);
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT_MSG(tdata, "Failed to load leanvec training data.");
     training_data = tdata;
@@ -128,7 +128,7 @@ void IndexSVSVamanaLeanVec::create_impl() {
     }
 
     if (!status.ok()) {
-        FAISS_THROW_MSG(status.message);
+        FAISS_THROW_MSG(status.message());
     }
     FAISS_THROW_IF_NOT(impl);
 }
