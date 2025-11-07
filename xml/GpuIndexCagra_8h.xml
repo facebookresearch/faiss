@@ -504,7 +504,7 @@
 <codeline lineno="135"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
 <codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>use<sp/>of<sp/>low-precision<sp/>types<sp/>reduces<sp/>the<sp/>amount<sp/>of<sp/>shared<sp/>memory</highlight></codeline>
 <codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>required<sp/>at<sp/>search<sp/>time,<sp/>so<sp/>fast<sp/>shared<sp/>memory<sp/>kernels<sp/>can<sp/>be<sp/>used<sp/>even</highlight></codeline>
-<codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>datasets<sp/>with<sp/>large<sp/>dimansionality.<sp/>Note<sp/>that<sp/>the<sp/>recall<sp/>is<sp/>slightly</highlight></codeline>
+<codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>datasets<sp/>with<sp/>large<sp/>dimensionality.<sp/>Note<sp/>that<sp/>the<sp/>recall<sp/>is<sp/>slightly</highlight></codeline>
 <codeline lineno="139"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>degraded<sp/>when<sp/>low-precision<sp/>type<sp/>is<sp/>selected.</highlight></codeline>
 <codeline lineno="140"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="141" refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>cudaDataType_t<sp/><ref refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" kindref="member">lut_dtype</ref><sp/>=<sp/>CUDA_R_32F;</highlight><highlight class="comment"></highlight></codeline>

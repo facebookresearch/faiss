@@ -570,7 +570,7 @@
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>search_params)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight></codeline>
 <codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Manages<sp/>streans,<sp/>cuBLAS<sp/>handles<sp/>and<sp/>scratch<sp/>memory<sp/>for<sp/>devices</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Manages<sp/>streams,<sp/>cuBLAS<sp/>handles<sp/>and<sp/>scratch<sp/>memory<sp/>for<sp/>devices</highlight></codeline>
 <codeline lineno="115" refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ae7e1d29e5f39bd801140172b300f3ff8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/><ref refid="structfaiss_1_1gpu_1_1GpuIndexBinaryCagra_1ae7e1d29e5f39bd801140172b300f3ff8" kindref="member">resources_</ref>;</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="117"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Configuration<sp/>options</highlight></codeline>

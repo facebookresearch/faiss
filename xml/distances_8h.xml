@@ -500,7 +500,7 @@
 <codeline lineno="389"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
 <codeline lineno="390"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>(max(ids)<sp/>+<sp/>1)<sp/>*<sp/>d</highlight></codeline>
 <codeline lineno="391"><highlight class="comment"><sp/>*<sp/>@param<sp/>subset<sp/>subset<sp/>of<sp/>database<sp/>vectors<sp/>to<sp/>consider,<sp/>size<sp/>(nx,<sp/>nsubset)</highlight></codeline>
-<codeline lineno="392"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>rIDesult<sp/>structure</highlight></codeline>
+<codeline lineno="392"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>structure</highlight></codeline>
 <codeline lineno="393"><highlight class="comment"><sp/>*<sp/>@param<sp/>ld_subset<sp/>stride<sp/>for<sp/>the<sp/>subset<sp/>array.<sp/>-1:<sp/>use<sp/>nsubset,<sp/>0:<sp/>all<sp/>queries</highlight></codeline>
 <codeline lineno="394"><highlight class="comment"><sp/>*<sp/>process<sp/>the<sp/>same<sp/>subset</highlight></codeline>
 <codeline lineno="395"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>

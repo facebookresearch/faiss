@@ -11,7 +11,7 @@
         <name>resources_</name>
         <qualifiedname>faiss::gpu::GpuIndexBinaryCagra::resources_</qualifiedname>
         <briefdescription>
-<para>Manages streans, cuBLAS handles and scratch memory for devices. </para>
+<para>Manages streams, cuBLAS handles and scratch memory for devices. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

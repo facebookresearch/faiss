@@ -31,7 +31,7 @@
         <detaileddescription>
 <para>Data type of look up table to be created dynamically at search time.</para>
 <para>Possible values: [CUDA_R_32F, CUDA_R_16F, CUDA_R_8U]</para>
-<para>The use of low-precision types reduces the amount of shared memory required at search time, so fast shared memory kernels can be used even for datasets with large dimansionality. Note that the recall is slightly degraded when low-precision type is selected. </para>
+<para>The use of low-precision types reduces the amount of shared memory required at search time, so fast shared memory kernels can be used even for datasets with large dimensionality. Note that the recall is slightly degraded when low-precision type is selected. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
