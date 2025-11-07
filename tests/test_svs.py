@@ -81,18 +81,15 @@ class TestSVSAdapter(unittest.TestCase):
         nremove += index.remove_ids(toremove[50:])
 
         self.assertEqual(nremove, len(toremove))
-        self.assertEqual(index.ntotal_soft_deleted, len(toremove))
 
         # remove more to trigger cleanup
         toremove = np.ascontiguousarray(ids[200:800])
         nremove = index.remove_ids(toremove)
         self.assertEqual(nremove, len(toremove))
-        self.assertEqual(index.ntotal_soft_deleted, 0)
 
         # Test reset
         index.reset()
         self.assertEqual(index.ntotal, 0)
-        self.assertEqual(index.ntotal_soft_deleted, 0)
 
     def test_svs_search_selected(self):
         """Test FAISS search with IDSelector interface compatibility"""
@@ -175,7 +172,6 @@ class TestSVSAdapter(unittest.TestCase):
         # Test reset
         index.reset()
         self.assertEqual(index.ntotal, 0)
-        self.assertEqual(index.ntotal_soft_deleted, 0)
 
     def test_svs_metric_types(self):
         """Test different metric types are handled correctly"""
@@ -262,33 +258,30 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.d, 32)
         self.assertEqual(index.graph_max_degree, 64)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
-        self.assertEqual(index.ntotal_soft_deleted, 0)
-        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.FP32)
+        self.assertEqual(index.storage_kind, faiss.SVS_FP32)
 
         index = faiss.index_factory(16, "SVSVamana32,LVQ4x8")
         self.assertEqual(index.d, 16)
         self.assertEqual(index.graph_max_degree, 32)
-        self.assertEqual(index.lvq_level, faiss.LVQ4x8)
+        self.assertEqual(index.storage_kind, faiss.SVS_LVQ4x8)
 
         index = faiss.index_factory(128, "SVSVamana48,LeanVec4x4_64")
         self.assertEqual(index.d, 128)
         self.assertEqual(index.graph_max_degree, 48)
-        self.assertEqual(index.leanvec_level, faiss.LeanVec4x4)
+        self.assertEqual(index.storage_kind, faiss.SVS_LeanVec4x4)
         self.assertEqual(index.leanvec_d, 64)
 
         index = faiss.index_factory(256, "SVSVamana16,FP16")
         self.assertEqual(index.d, 256)
         self.assertEqual(index.graph_max_degree, 16)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
-        self.assertEqual(index.ntotal_soft_deleted, 0)
-        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.FP16)
+        self.assertEqual(index.storage_kind, faiss.SVS_FP16)
 
         index = faiss.index_factory(512, "SVSVamana24,SQ8")
         self.assertEqual(index.d, 512)
         self.assertEqual(index.graph_max_degree, 24)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
-        self.assertEqual(index.ntotal_soft_deleted, 0)
-        self.assertEqual(index.storage_kind, faiss.IndexSVSVamana.SQI8)
+        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -296,7 +289,7 @@ class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
     def _create_instance(self):
         idx = faiss.IndexSVSVamana(self.d, 64)
-        idx.storage_kind = faiss.IndexSVSVamana.FP16
+        idx.storage_kind = faiss.SVS_FP16
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -304,7 +297,7 @@ class TestSVSAdapterSQI8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
     def _create_instance(self):
         idx = faiss.IndexSVSVamana(self.d, 64)
-        idx.storage_kind = faiss.IndexSVSVamana.SQI8
+        idx.storage_kind = faiss.SVS_SQI8
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -315,7 +308,7 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x0
+        idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -326,7 +319,7 @@ class TestSVSAdapterLVQ4x4(TestSVSAdapter):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x4
+        idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -336,7 +329,7 @@ class TestSVSAdapterLVQ4x8(TestSVSAdapter):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x8
+        idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
 class TestSVSAdapterFlat(TestSVSAdapter):
@@ -487,7 +480,7 @@ class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
     def _create_instance(self):
         idx = faiss.IndexSVSVamana(self.d, 64)
-        idx.storage_kind = faiss.IndexSVSVamana.FP16
+        idx.storage_kind = faiss.SVS_FP16
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -495,7 +488,7 @@ class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
     def _create_instance(self):
         idx = faiss.IndexSVSVamana(self.d, 64)
-        idx.storage_kind = faiss.IndexSVSVamana.SQI8
+        idx.storage_kind = faiss.SVS_SQI8
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -506,7 +499,7 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x0
+        idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -517,7 +510,7 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x4
+        idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -528,7 +521,7 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
 
     def _create_instance(self):
         idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
-        idx.lvq_level = faiss.LVQ4x8
+        idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
 if __name__ == '__main__':
