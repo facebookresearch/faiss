@@ -572,7 +572,7 @@ struct RangeSearchBlockResultHandler : BlockResultHandler<C, use_sel> {
         RangeSearchPartialResult* pres;
         // there is one RangeSearchPartialResult structure per j0
         // (= block of columns of the large distance matrix)
-        // it is a bit tricky to find the poper PartialResult structure
+        // it is a bit tricky to find the proper PartialResult structure
         // because the inner loop is on db not on queries.
 
         if (pr < j0s.size() && j0 == j0s[pr]) {
