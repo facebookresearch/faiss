@@ -263,7 +263,7 @@
 <codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*<sp/><sp/>Dong,<sp/>Wei,<sp/>Charikar<sp/>Moses,<sp/>and<sp/>Kai<sp/>Li,<sp/>WWW<sp/>2011</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>This<sp/>implmentation<sp/>is<sp/>heavily<sp/>influenced<sp/>by<sp/>the<sp/>efanna</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>This<sp/>implementation<sp/>is<sp/>heavily<sp/>influenced<sp/>by<sp/>the<sp/>efanna</highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/>*<sp/>implementation<sp/>by<sp/>Cong<sp/>Fu<sp/>and<sp/>the<sp/>KGraph<sp/>library<sp/>by<sp/>Wei<sp/>Dong</highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/>*<sp/>(https://github.com/ZJULearning/efanna_graph)</highlight></codeline>
 <codeline lineno="40"><highlight class="comment"><sp/>*<sp/>(https://github.com/aaalgo/kgraph)</highlight></codeline>
