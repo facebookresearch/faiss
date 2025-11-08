@@ -389,7 +389,7 @@ void knn_inner_products_by_idx(
  * @param x    query vectors, size nx * d
  * @param y    database vectors, size (max(ids) + 1) * d
  * @param subset subset of database vectors to consider, size (nx, nsubset)
- * @param res  rIDesult structure
+ * @param res  result structure
  * @param ld_subset stride for the subset array. -1: use nsubset, 0: all queries
  * process the same subset
  */

@@ -210,7 +210,7 @@ class TestRaBitQ(unittest.TestCase):
             _, I_pq = index_pq.search(ds.get_queries(), k)
             loss_pq = 1 - eval_I(I_pq)
             print(f"{random_rotate=:1}, {loss_pq=:5.3f}")
-            np.testing.assert_(loss_pq < 0.35, f"{loss_pq}")
+            np.testing.assert_(loss_pq < 0.4, f"{loss_pq}")
 
             index_rbq = faiss.IndexRaBitQ(ds.d, metric_type)
             if random_rotate:

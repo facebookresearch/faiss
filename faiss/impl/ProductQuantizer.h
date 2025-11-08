@@ -166,7 +166,7 @@ struct ProductQuantizer : Quantizer {
     /// Symmetric Distance Table
     std::vector<float> sdc_table;
 
-    // intitialize the SDC table from the centroids
+    // initialize the SDC table from the centroids
     void compute_sdc_table();
 
     void search_sdc(
