@@ -258,7 +258,7 @@ class ResultHeap:
     def add_result_subset(self, subset, D, I):
         """
         Add results for a subset of heaps.
-        D, I should hold resutls for all the subset
+        D, I should hold results for all the subset
         as a special case, if I is 1D, then all ids are assumed to be the same
         """
         nsubset, kd = D.shape
@@ -591,7 +591,7 @@ class Kmeans:
 
 
 ###########################################
-# Packing and unpacking bistrings
+# Packing and unpacking bitstrings
 ###########################################
 
 def is_sequence(x):
