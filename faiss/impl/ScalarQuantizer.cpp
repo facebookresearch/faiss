@@ -1013,8 +1013,8 @@ void train_Uniform(
         if (o < 0) {
             o = 0;
         }
-        if (o > n - o) {
-            o = n / 2;
+        if (o > n - 1 - o) {
+            o = (n - 1) / 2;
         }
         // Use nth_element (O(n)) instead of sort (O(n log n))
         std::nth_element(x_copy.begin(), x_copy.begin() + o, x_copy.end());
