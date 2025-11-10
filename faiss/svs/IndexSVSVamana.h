@@ -23,15 +23,11 @@
 #pragma once
 
 #include <faiss/Index.h>
-#include <faiss/impl/svs_io.h>
+#include <faiss/svs/IndexSVSFaissUtils.h>
 
-#include <cstddef>
-#include <numeric>
-#include <vector>
+#include <svs/runtime/api_defs.h>
 
-namespace svs {
-class DynamicVamana;
-}
+#include <iostream>
 
 namespace faiss {
 
@@ -39,6 +35,44 @@ struct SearchParametersSVSVamana : public SearchParameters {
     size_t search_window_size = 0;
     size_t search_buffer_capacity = 0;
 };
+
+// redefinition for swig export
+enum SVSStorageKind {
+    SVS_FP32,
+    SVS_FP16,
+    SVS_SQI8,
+    SVS_LVQ4x0,
+    SVS_LVQ4x4,
+    SVS_LVQ4x8,
+    SVS_LeanVec4x4,
+    SVS_LeanVec4x8,
+    SVS_LeanVec8x8,
+};
+
+inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
+    switch (kind) {
+        case SVS_FP32:
+            return svs_runtime::StorageKind::FP32;
+        case SVS_FP16:
+            return svs_runtime::StorageKind::FP16;
+        case SVS_SQI8:
+            return svs_runtime::StorageKind::SQI8;
+        case SVS_LVQ4x0:
+            return svs_runtime::StorageKind::LVQ4x0;
+        case SVS_LVQ4x4:
+            return svs_runtime::StorageKind::LVQ4x4;
+        case SVS_LVQ4x8:
+            return svs_runtime::StorageKind::LVQ4x8;
+        case SVS_LeanVec4x4:
+            return svs_runtime::StorageKind::LeanVec4x4;
+        case SVS_LeanVec4x8:
+            return svs_runtime::StorageKind::LeanVec4x8;
+        case SVS_LeanVec8x8:
+            return svs_runtime::StorageKind::LeanVec8x8;
+        default:
+            FAISS_ASSERT(!"not supported SVS storage kind");
+    }
+}
 
 struct IndexSVSVamana : Index {
     size_t graph_max_degree;
@@ -50,7 +84,7 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
-    enum StorageKind { FP32, FP16, SQI8 } storage_kind = StorageKind::FP32;
+    SVSStorageKind storage_kind;
 
     IndexSVSVamana();
 
@@ -58,9 +92,9 @@ struct IndexSVSVamana : Index {
             idx_t d,
             size_t degree,
             MetricType metric = METRIC_L2,
-            StorageKind storage = StorageKind::FP32);
+            SVSStorageKind storage = SVSStorageKind::SVS_FP32);
 
-    virtual ~IndexSVSVamana() override;
+    ~IndexSVSVamana() override;
 
     void add(idx_t n, const float* x) override;
 
@@ -88,11 +122,11 @@ struct IndexSVSVamana : Index {
     virtual void deserialize_impl(std::istream& in);
 
     /* The actual SVS implementation */
-    svs::DynamicVamana* impl{nullptr};
-    size_t ntotal_soft_deleted{0};
+    svs_runtime::DynamicVamanaIndex* impl{nullptr};
 
-    /* Initializes the implementation, using the provided data */
-    virtual void init_impl(idx_t n, const float* x);
+   protected:
+    /* Initializes the implementation*/
+    virtual void create_impl();
 };
 
 } // namespace faiss

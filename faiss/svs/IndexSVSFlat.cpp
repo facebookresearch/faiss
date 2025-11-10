@@ -20,37 +20,47 @@
  * limitations under the License.
  */
 
+#include <faiss/Index.h>
+#include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSFlat.h>
 
-#include <faiss/impl/FaissAssert.h>
-#include <svs/core/data.h>
-#include <svs/core/query_result.h>
+#include <svs/runtime/flat_index.h>
 
-#include <svs/orchestrators/exhaustive.h>
+#include <iostream>
 
 namespace faiss {
 
 IndexSVSFlat::IndexSVSFlat(idx_t d, MetricType metric) : Index(d, metric) {}
 
+IndexSVSFlat::~IndexSVSFlat() {
+    if (impl) {
+        auto status = svs_runtime::FlatIndex::destroy(impl);
+        FAISS_ASSERT(status.ok());
+    }
+    impl = nullptr;
+}
+
 void IndexSVSFlat::add(idx_t n, const float* x) {
     if (!impl) {
-        init_impl(n, x);
-        return;
+        create_impl();
     }
 
-    FAISS_THROW_MSG(
-            "IndexSVSFlat does not support adding points after initialization");
+    auto status = impl->add(n, x);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    ntotal += n;
 }
 
 void IndexSVSFlat::reset() {
     if (impl) {
-        delete impl;
-        impl = nullptr;
+        auto status = impl->reset();
+        if (!status.ok()) {
+            FAISS_THROW_MSG(status.message());
+        }
     }
     ntotal = 0;
 }
-
-IndexSVSFlat::~IndexSVSFlat() {}
 
 void IndexSVSFlat::search(
         idx_t n,
@@ -60,83 +70,47 @@ void IndexSVSFlat::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(impl);
-    FAISS_THROW_IF_NOT(k > 0);
-
-    auto queries = svs::data::ConstSimpleDataView<float>(x, n, d);
-
-    auto results =
-            svs::QueryResult<size_t>{queries.size(), static_cast<size_t>(k)};
-    impl->search(results.view(), queries, {});
-
-    svs::threads::parallel_for(
-            impl->get_threadpool_handle(),
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    for (idx_t j = 0; j < k; ++j) {
-                        labels[j + i * k] = results.index(i, j);
-                        distances[j + i * k] = results.distance(i, j);
-                    }
-                }
-            });
-}
-
-void IndexSVSFlat::init_impl(idx_t n, const float* x) {
-    auto data = svs::data::SimpleData<float>(n, d);
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-    ntotal = n;
-
-    svs::threads::parallel_for(
-            threadpool,
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    data.set_datum(i, std::span<const float>(x + i * d, d));
-                }
-            });
-
-    switch (metric_type) {
-        case METRIC_INNER_PRODUCT:
-            impl = new svs::Flat(svs::Flat::assemble<float>(
-                    std::move(data), svs::DistanceIP(), std::move(threadpool)));
-            break;
-        case METRIC_L2:
-            impl = new svs::Flat(svs::Flat::assemble<float>(
-                    std::move(data), svs::DistanceL2(), std::move(threadpool)));
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS distance");
+    auto status = impl->search(
+            n,
+            x,
+            static_cast<size_t>(k),
+            distances,
+            reinterpret_cast<size_t*>(labels));
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
     }
 }
 
+/* Initializes the implementation*/
+void IndexSVSFlat::create_impl() {
+    FAISS_ASSERT(impl == nullptr);
+    auto svs_metric = to_svs_metric(metric_type);
+    auto status = svs_runtime::FlatIndex::build(&impl, d, svs_metric);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    FAISS_THROW_IF_NOT(impl);
+}
+
+/* Serialization */
 void IndexSVSFlat::serialize_impl(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             impl, "Cannot serialize: SVS index not initialized.");
 
-    impl->save(out);
+    auto status = impl->save(out);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
 }
 
 void IndexSVSFlat::deserialize_impl(std::istream& in) {
-    FAISS_THROW_IF_MSG(
-            impl, "Cannot deserialize: SVS index already initialized.");
-
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-    using storage_type = typename svs::VectorDataLoader<float>::return_type;
-
-    switch (metric_type) {
-        case METRIC_INNER_PRODUCT:
-            impl = new svs::Flat(svs::Flat::assemble<float, storage_type>(
-                    in, svs::DistanceIP(), std::move(threadpool)));
-            break;
-        case METRIC_L2:
-            impl = new svs::Flat(svs::Flat::assemble<float, storage_type>(
-                    in, svs::DistanceL2(), std::move(threadpool)));
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS distance");
+    FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
+    auto metric = to_svs_metric(metric_type);
+    auto status = impl->load(&impl, in, metric);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
     }
+    FAISS_THROW_IF_NOT(impl);
 }
 
 } // namespace faiss

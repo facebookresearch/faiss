@@ -20,16 +20,15 @@
  * limitations under the License.
  */
 
+#include <faiss/svs/IndexSVSFaissUtils.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
 
-#include <variant>
+#include <svs/runtime/dynamic_vamana_index.h>
+#include <svs/runtime/training.h>
+#include <svs/runtime/vamana_index.h>
 
-#include <svs/core/medioid.h>
-#include <svs/cpuid.h>
-#include <svs/extensions/vamana/scalar.h>
-#include <svs/orchestrators/dynamic_vamana.h>
-
-#include <faiss/impl/FaissAssert.h>
+#include <memory>
+#include <span>
 
 namespace faiss {
 
@@ -38,203 +37,100 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         size_t degree,
         MetricType metric,
         size_t leanvec_dims,
-        LeanVecLevel leanvec_level)
-        : IndexSVSVamana(d, degree, metric), leanvec_level{leanvec_level} {
-    leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
+        SVSStorageKind storage_kind)
+        : IndexSVSVamana(d, degree, metric, storage_kind) {
     is_trained = false;
+    leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
+}
+
+IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
+    auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
+    FAISS_ASSERT(status.ok());
+    training_data = nullptr;
+    IndexSVSVamana::~IndexSVSVamana();
+}
+
+void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_MSG(
+            !is_trained, "Index not trained: call train() before add().");
+    IndexSVSVamana::add(n, x);
 }
 
 void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
-    const auto data =
-            svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-    auto means = svs::utils::compute_medioid(data, threadpool);
-    auto matrix =
-            svs::leanvec::compute_leanvec_matrix<svs::Dynamic, svs::Dynamic>(
-                    data,
-                    means,
-                    threadpool,
-                    svs::lib::MaybeStatic<svs::Dynamic>{leanvec_d});
-    leanvec_matrix =
-            svs::leanvec::LeanVecMatrices<svs::Dynamic>(matrix, matrix);
+    FAISS_THROW_IF_MSG(
+            training_data || impl, "Index already trained or contains data.");
+
+    auto status = svs_runtime::LeanVecTrainingData::build(
+            &training_data, d, n, x, leanvec_d);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    FAISS_THROW_IF_NOT_MSG(
+            training_data, "Failed to build leanvec training info.");
     is_trained = true;
 }
 
-void IndexSVSVamanaLeanVec::reset() {
-    is_trained = false;
-    IndexSVSVamana::reset();
-}
-
-void IndexSVSVamanaLeanVec::init_impl(idx_t n, const float* x) {
+void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
-            is_trained,
-            "Cannot initialize SVS LeanVec index without training first.");
+            training_data, "Cannot serialize: Training data not initialized.");
 
-    // TODO: support ConstSimpleDataView in SVS shared/static lib
-    const auto data =
-            svs::data::SimpleDataView<float>(const_cast<float*>(x), n, d);
-    std::vector<size_t> labels(n);
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-
-    std::variant<
-            std::monostate,
-            storage_type_4x4,
-            storage_type_4x8,
-            storage_type_8x8,
-            storage_type_sq>
-            compressed_data;
-
-    if (svs::detail::intel_enabled()) {
-        switch (leanvec_level) {
-            case LeanVecLevel::LeanVec4x4:
-                compressed_data = storage_type_4x4::reduce(
-                        data,
-                        leanvec_matrix,
-                        threadpool,
-                        0,
-                        svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
-                        blocked_alloc_type{});
-                break;
-            case LeanVecLevel::LeanVec4x8:
-                compressed_data = storage_type_4x8::reduce(
-                        data,
-                        leanvec_matrix,
-                        threadpool,
-                        0,
-                        svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
-                        blocked_alloc_type{});
-                break;
-            case LeanVecLevel::LeanVec8x8:
-                compressed_data = storage_type_8x8::reduce(
-                        data,
-                        leanvec_matrix,
-                        threadpool,
-                        0,
-                        svs::lib::MaybeStatic<svs::Dynamic>(leanvec_d),
-                        blocked_alloc_type{});
-                break;
-            default:
-                FAISS_ASSERT(!"not supported SVS LeanVec level");
-        }
-    } else {
-        compressed_data = storage_type_sq::compress(
-                data, threadpool, blocked_alloc_type_sq{});
+    auto status = training_data->save(out);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
     }
-
-    svs::threads::parallel_for(
-            threadpool,
-            svs::threads::StaticPartition(n),
-            [&](auto is, auto SVS_UNUSED(tid)) {
-                for (auto i : is) {
-                    labels[i] = ntotal + i;
-                }
-            });
-    ntotal += n;
-
-    svs::index::vamana::VamanaBuildParameters build_parameters{
-            alpha,
-            graph_max_degree,
-            construction_window_size,
-            max_candidate_pool_size,
-            prune_to,
-            use_full_search_history};
-
-    std::visit(
-            [&](auto&& storage) {
-                if constexpr (std::is_same_v<
-                                      std::decay_t<decltype(storage)>,
-                                      std::monostate>) {
-                    FAISS_ASSERT(!"SVS LeanVec data is not initialized.");
-                } else {
-                    switch (metric_type) {
-                        case METRIC_INNER_PRODUCT:
-                            impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::build<float>(
-                                            std::move(build_parameters),
-                                            std::forward<decltype(storage)>(
-                                                    storage),
-                                            std::move(labels),
-                                            svs::DistanceIP(),
-                                            std::move(threadpool)));
-                            break;
-                        case METRIC_L2:
-                            impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::build<float>(
-                                            std::move(build_parameters),
-                                            std::forward<decltype(storage)>(
-                                                    storage),
-                                            std::move(labels),
-                                            svs::DistanceL2(),
-                                            std::move(threadpool)));
-                            break;
-                        default:
-                            FAISS_ASSERT(!"not supported SVS distance");
-                    }
-                }
-            },
-            compressed_data);
 }
 
-void IndexSVSVamanaLeanVec::deserialize_impl(std::istream& in) {
-    FAISS_THROW_IF_MSG(
-            impl, "Cannot deserialize: SVS index already initialized.");
+void IndexSVSVamanaLeanVec::deserialize_training_data(std::istream& in) {
+    svs_runtime::LeanVecTrainingData* tdata = nullptr;
+    auto status = svs_runtime::LeanVecTrainingData::load(&tdata, in);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    FAISS_THROW_IF_NOT_MSG(tdata, "Failed to load leanvec training data.");
+    training_data = tdata;
+}
 
-    auto threadpool = svs::threads::ThreadPoolHandle(
-            svs::threads::OMPThreadPool(omp_get_max_threads()));
-
-    std::variant<svs::DistanceIP, svs::DistanceL2> svs_distance;
-    switch (metric_type) {
-        case METRIC_INNER_PRODUCT:
-            svs_distance = svs::DistanceIP();
-            break;
-        case METRIC_L2:
-            svs_distance = svs::DistanceL2();
-            break;
-        default:
-            FAISS_ASSERT(!"not supported SVS distance");
+void IndexSVSVamanaLeanVec::create_impl() {
+    ntotal = 0;
+    auto svs_metric = to_svs_metric(metric_type);
+    auto svs_storage_kind = to_svs_storage_kind(storage_kind);
+    auto build_params = svs_runtime::VamanaIndex::BuildParams{
+            .graph_max_degree = graph_max_degree,
+            .prune_to = prune_to,
+            .alpha = alpha,
+            .construction_window_size = construction_window_size,
+            .max_candidate_pool_size = max_candidate_pool_size,
+            .use_full_search_history = use_full_search_history,
+    };
+    auto search_params = svs_runtime::VamanaIndex::SearchParams{
+            .search_window_size = search_window_size,
+            .search_buffer_capacity = search_buffer_capacity,
+    };
+    auto status = svs_runtime::Status_Ok;
+    if (training_data) {
+        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                training_data,
+                build_params,
+                search_params);
+    } else {
+        status = svs_runtime::DynamicVamanaIndexLeanVec::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                leanvec_d,
+                build_params,
+                search_params);
     }
 
-    std::visit(
-            [&](auto&& svs_distance) {
-                if (svs::detail::intel_enabled()) {
-                    switch (leanvec_level) {
-                        case LeanVecLevel::LeanVec4x4:
-                            impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::
-                                            assemble<float, storage_type_4x4>(
-                                                    in,
-                                                    svs_distance,
-                                                    std::move(threadpool)));
-                            break;
-                        case LeanVecLevel::LeanVec4x8:
-                            impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::
-                                            assemble<float, storage_type_4x8>(
-                                                    in,
-                                                    svs_distance,
-                                                    std::move(threadpool)));
-                            break;
-                        case LeanVecLevel::LeanVec8x8:
-                            impl = new svs::DynamicVamana(
-                                    svs::DynamicVamana::
-                                            assemble<float, storage_type_8x8>(
-                                                    in,
-                                                    svs_distance,
-                                                    std::move(threadpool)));
-                            break;
-                        default:
-                            FAISS_ASSERT(!"not supported SVS LeanVec level");
-                    }
-                } else {
-                    impl = new svs::DynamicVamana(svs::DynamicVamana::assemble<
-                                                  float,
-                                                  storage_type_sq>(
-                            in, svs_distance, std::move(threadpool)));
-                }
-            },
-            svs_distance);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    FAISS_THROW_IF_NOT(impl);
 }
 
 } // namespace faiss

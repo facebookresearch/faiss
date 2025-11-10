@@ -1296,32 +1296,8 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
         READ1(svs->storage_kind);
-        if (h == fourcc("ILVQ")) {
-            READ1(dynamic_cast<IndexSVSVamanaLVQ*>(svs)->lvq_level);
-        }
         if (h == fourcc("ISVL")) {
             READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_d);
-            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_level);
-        }
-        if (h == fourcc("ISVL") && svs->is_trained) {
-            // restore leanvec_matrix
-            size_t num_rows, num_cols;
-            READ1(num_rows);
-            READ1(num_cols);
-
-            size_t elements = num_rows * num_cols;
-            std::vector<float> leanvec_data(elements);
-            READANDCHECK(leanvec_data.data(), elements);
-
-            auto matrix = svs::data::SimpleData<float, svs::Dynamic>(
-                    num_rows, num_cols);
-            for (size_t i = 0; i < num_rows; i++) {
-                const auto datum = std::span<const float>(
-                        leanvec_data.data() + i * num_cols, num_cols);
-                matrix.set_datum(i, datum);
-            }
-            dynamic_cast<IndexSVSVamanaLeanVec*>(svs)->leanvec_matrix =
-                    svs::leanvec::LeanVecMatrices<svs::Dynamic>(matrix, matrix);
         }
 
         bool initialized;
@@ -1331,6 +1307,16 @@ Index* read_index(IOReader* f, int io_flags) {
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
+        }
+        if (h == fourcc("ISVL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                dynamic_cast<IndexSVSVamanaLeanVec*>(svs)
+                        ->deserialize_training_data(is);
+            }
         }
         idx = svs;
     } else if (h == fourcc("ISVF")) {

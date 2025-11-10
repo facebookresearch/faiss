@@ -346,21 +346,21 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   include(FetchContent)
-  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-shared-library-1.0.0.-NIGHTLY-20251029.tar.gz")
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-cpp-runtime-bindings-1.0.0-NIGHTLY-20251107-41.tar.gz")
   FetchContent_Declare(
       svs
       URL "${SVS_URL}"
   )
   FetchContent_MakeAvailable(svs)
   list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
-  find_package(svs REQUIRED)
-  target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
+  find_package(svs_runtime REQUIRED)
+  #target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
 
-  target_link_libraries(faiss PUBLIC svs::svs svs::svs_shared_library)
-  target_link_libraries(faiss_avx2 PUBLIC svs::svs svs::svs_shared_library)
-  target_link_libraries(faiss_avx512 PUBLIC svs::svs svs::svs_shared_library)
-  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs svs::svs_shared_library)
-  target_link_libraries(faiss_sve PUBLIC svs::svs svs::svs_shared_library)
+  target_link_libraries(faiss PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_sve PUBLIC svs::svs_runtime)
 endif()
 
 # Handle `#include <faiss/foo.h>`.
@@ -378,23 +378,6 @@ target_include_directories(faiss_avx512_spr PUBLIC
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_sve PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
-if(FAISS_ENABLE_SVS)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss_avx2 PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss_avx512 PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss_avx512_spr PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
-  # Handle `#include <svs/foo.h>`.
-  target_include_directories(faiss_sve PUBLIC
-    $<BUILD_INTERFACE:${svs_SOURCE_DIR}/include>)
-endif()
 
 set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve PROPERTIES
   POSITION_INDEPENDENT_CODE ON
@@ -410,11 +393,11 @@ if(WIN32)
 endif()
 
 if(FAISS_ENABLE_SVS)
-  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_SVS)
-  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_SVS)
-  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS)
-  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS)
-  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
 endif()
 
 if(WIN32)

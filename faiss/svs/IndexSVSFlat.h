@@ -22,16 +22,10 @@
 
 #pragma once
 
-#include <iostream>
-
-#include <svs/core/distance.h>
-
 #include <faiss/Index.h>
-#include <faiss/impl/svs_io.h>
+#include <faiss/svs/IndexSVSFaissUtils.h>
 
-namespace svs {
-class Flat;
-}
+#include <iostream>
 
 namespace faiss {
 
@@ -42,7 +36,7 @@ struct IndexSVSFlat : Index {
     IndexSVSFlat() = default;
     IndexSVSFlat(idx_t d, MetricType metric = METRIC_L2);
 
-    ~IndexSVSFlat();
+    ~IndexSVSFlat() override;
 
     void add(idx_t n, const float* x) override;
 
@@ -57,14 +51,15 @@ struct IndexSVSFlat : Index {
     void reset() override;
 
     /* The actual SVS implementation */
-    svs::Flat* impl{nullptr};
-
-    /* Initializes the implementation, using the provided data */
-    virtual void init_impl(idx_t n, const float* x);
+    svs_runtime::FlatIndex* impl{nullptr};
 
     /* Serialization */
     void serialize_impl(std::ostream& out) const;
     void deserialize_impl(std::istream& in);
+
+   protected:
+    /* Initializes the implementation*/
+    virtual void create_impl();
 };
 
 } // namespace faiss
