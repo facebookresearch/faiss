@@ -293,7 +293,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(outDistances.getSize(1)<sp/>==<sp/>k);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>FAISS_ASSERT(outIndices.getSize(1)<sp/>==<sp/>k);</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>we&apos;re<sp/>quering<sp/>against<sp/>a<sp/>0<sp/>sized<sp/>set,<sp/>just<sp/>return<sp/>empty<sp/>results</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>If<sp/>we&apos;re<sp/>querying<sp/>against<sp/>a<sp/>0<sp/>sized<sp/>set,<sp/>just<sp/>return<sp/>empty<sp/>results</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>if<sp/>(centroids.numElements()<sp/>==<sp/>0)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thrust::fill(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>thrust::cuda::par.on(stream),</highlight></codeline>
