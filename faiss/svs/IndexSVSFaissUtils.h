@@ -47,7 +47,7 @@ SVS_RUNTIME_CREATE_API_ALIAS(svs_runtime, FAISS_SVS_RUNTIME_VERSION);
 // SVS forward declarations
 namespace svs {
 namespace runtime {
-namespace v0 {
+inline namespace v0 {
 struct FlatIndex;
 struct VamanaIndex;
 struct DynamicVamanaIndex;

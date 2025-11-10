@@ -649,7 +649,6 @@ struct faiss::simd16uint16 {};
 /* Hide SVS I/O helpers */
 %ignore faiss::svs_io::ReaderStreambuf;
 %ignore faiss::svs_io::WriterStreambuf;
-%ignore faiss::svs_io::SVSTempDirectory;
 
 %include  <faiss/svs/IndexSVSVamana.h>
 %include  <faiss/svs/IndexSVSFlat.h>
