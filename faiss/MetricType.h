@@ -35,7 +35,7 @@ enum MetricType {
 
     /// sum_i(min(a_i, b_i)) / sum_i(max(a_i, b_i)) where a_i, b_i > 0
     METRIC_Jaccard,
-    /// Squared Eucliden distance, ignoring NaNs
+    /// Squared Euclidean distance, ignoring NaNs
     METRIC_NaNEuclidean,
     /// Gower's distance - numeric dimensions are in [0,1] and categorical
     /// dimensions are negative integers

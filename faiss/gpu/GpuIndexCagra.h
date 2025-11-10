@@ -135,7 +135,7 @@ struct IVFPQSearchCagraConfig {
     ///
     /// The use of low-precision types reduces the amount of shared memory
     /// required at search time, so fast shared memory kernels can be used even
-    /// for datasets with large dimansionality. Note that the recall is slightly
+    /// for datasets with large dimensionality. Note that the recall is slightly
     /// degraded when low-precision type is selected.
 
     cudaDataType_t lut_dtype = CUDA_R_32F;
