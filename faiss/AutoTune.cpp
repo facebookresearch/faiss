@@ -125,7 +125,7 @@ bool OperatingPoints::add(
         }
     } else {
         int i;
-        // stricto sensu this should be a bissection
+        // stricto sensu this should be a bisection
         for (i = 0; i < a.size(); i++) {
             if (a[i].perf >= perf) {
                 break;

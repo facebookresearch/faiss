@@ -102,7 +102,10 @@ int sgemv_(
 namespace faiss {
 
 // this will be set at load time from GPU Faiss
-std::string gpu_compile_options;
+std::string& ref_gpu_compile_options() {
+    static std::string gpu_compile_options;
+    return gpu_compile_options;
+}
 
 std::string get_compile_options() {
     std::string options;
@@ -128,7 +131,7 @@ std::string get_compile_options() {
     options += "SVS ";
 #endif
 
-    options += gpu_compile_options;
+    options += ref_gpu_compile_options();
 
     return options;
 }

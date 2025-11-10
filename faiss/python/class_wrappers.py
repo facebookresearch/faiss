@@ -1093,7 +1093,7 @@ def handle_VectorTransform(the_class):
         self.train_c(n, swig_ptr(x))
 
     replace_method(the_class, 'train', replacement_vt_train)
-    # apply is reserved in Pyton...
+    # apply is reserved in Python...
     the_class.apply_py = apply_method
     the_class.apply = apply_method
     replace_method(the_class, 'reverse_transform',
@@ -1164,7 +1164,7 @@ def handle_IndexRowwiseMinMax(the_class):
         The index must be trained before vectors can be added to it.
 
         This call WILL change the values in the input array, because
-        of two scaling proceduces being performed inplace.
+        of two scaling procedures being performed inplace.
 
         Parameters
         ----------
@@ -1262,7 +1262,7 @@ def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
     SearchParametersXX(a=3, b=SearchParamsYY)
     This also requires the enclosing class to keep a reference on the
-    sub-object, since the C++ code assumes the object ownwership is
+    sub-object, since the C++ code assumes the object ownership is
     handled externally.
     """
     the_class.original_init = the_class.__init__
@@ -1314,7 +1314,7 @@ def handle_CodeSet(the_class):
     replace_method(the_class, 'insert', replacement_insert)
 
 ######################################################
-# Syntatic sugar for NeuralNet classes
+# Syntactic sugar for NeuralNet classes
 ######################################################
 
 
@@ -1405,7 +1405,7 @@ def handle_Linear(the_class):
     the_class.from_torch = from_torch
 
 ######################################################
-# Syntatic sugar for QINCo and QINCoStep
+# Syntactic sugar for QINCo and QINCoStep
 ######################################################
 
 

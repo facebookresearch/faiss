@@ -32,7 +32,7 @@ struct AutoTuneCriterion {
 
     AutoTuneCriterion(idx_t nq, idx_t nnn);
 
-    /** Intitializes the gt_D and gt_I vectors. Must be called before evaluating
+    /** Initializes the gt_D and gt_I vectors. Must be called before evaluating
      *
      * @param gt_D_in  size nq * gt_nnn
      * @param gt_I_in  size nq * gt_nnn

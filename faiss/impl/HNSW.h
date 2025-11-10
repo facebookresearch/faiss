@@ -87,7 +87,7 @@ struct HNSW {
         int count_below(float thresh);
     };
 
-    /// to sort pairs of (id, distance) from nearest to fathest or the reverse
+    /// to sort pairs of (id, distance) from nearest to farthest or the reverse
     struct NodeDistCloser {
         float d;
         int id;
@@ -160,7 +160,7 @@ struct HNSW {
     /// nb of neighbors for this level
     int nb_neighbors(int layer_no) const;
 
-    /// cumumlative nb up to (and excluding) this level
+    /// cumulative nb up to (and excluding) this level
     int cum_nb_neighbors(int layer_no) const;
 
     /// range of entries in the neighbors table of vertex no at layer_no

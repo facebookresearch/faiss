@@ -61,7 +61,7 @@ runs:
           conda install -y -q cuda-toolkit=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=25.08 'cuda-version=12.6' cuda-toolkit=12.6 gxx_linux-64=12.4 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=25.10 'cuda-version=12.6' cuda-toolkit=12.6 gxx_linux-64=13.4.0 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
         # install test packages
@@ -122,6 +122,7 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
+        conda list --show-channel-urls
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
@@ -139,33 +140,39 @@ runs:
     - name: C++ tests
       shell: bash
       run: |
+        conda list --show-channel-urls
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
     - name: C++ perf benchmarks
       shell: bash
       if: inputs.rocm == 'OFF'
       run: |
+        conda list --show-channel-urls
         find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
       run: |
+        conda list --show-channel-urls
         $CONDA/bin/python setup.py install
     - name: ROCm - install ROCm-enabled torch via pip
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test
@@ -175,6 +182,7 @@ runs:
       if: inputs.opt_level == 'avx2'
       shell: bash
       run: |
+        conda list --show-channel-urls
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
