@@ -257,12 +257,13 @@ void hammings_knn_mc(
 
     std::vector<HCounterState<HammingComputer>> cs;
     for (size_t i = 0; i < na; ++i) {
-        cs.push_back(HCounterState<HammingComputer>(
-                all_counters.data() + i * nBuckets,
-                all_ids_per_dis.get() + i * nBuckets * k,
-                a + i * bytes_per_code,
-                8 * bytes_per_code,
-                k));
+        cs.push_back(
+                HCounterState<HammingComputer>(
+                        all_counters.data() + i * nBuckets,
+                        all_ids_per_dis.get() + i * nBuckets * k,
+                        a + i * bytes_per_code,
+                        8 * bytes_per_code,
+                        k));
     }
 
     const size_t block_size = hamming_batch_size;

@@ -40,7 +40,7 @@ struct ScalarQuantizer : Quantizer {
     QuantizerType qtype = QT_8bit;
 
     /** The uniform encoder can estimate the range of representable
-     * values of the unform encoder using different statistics. Here
+     * values of the uniform encoder using different statistics. Here
      * rs = rangestat_arg */
 
     // rangestat_arg.

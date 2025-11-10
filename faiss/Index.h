@@ -125,7 +125,7 @@ struct Index {
     /** Perform training on a representative set of vectors
      *
      * @param n      nb of training vectors
-     * @param x      training vecors, size n * d
+     * @param x      training vectors, size n * d
      */
     virtual void train(idx_t n, const float* x);
 

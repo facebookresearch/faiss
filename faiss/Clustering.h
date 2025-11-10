@@ -109,7 +109,7 @@ struct Clustering : ClusteringParameters {
 
     /** run with encoded vectors
      *
-     * win addition to train()'s parameters takes a codec as parameter
+     * in addition to train()'s parameters takes a codec as parameter
      * to decode the input vectors.
      *
      * @param codec      codec used to decode the vectors (nullptr =

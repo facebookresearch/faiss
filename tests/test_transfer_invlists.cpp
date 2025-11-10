@@ -125,7 +125,9 @@ void test_index_type(const char* factory_string) {
                             read_InvertedLists(&reader)));
 
             // swap inverted lists. Block searches here!
-            { ivflib::set_invlist_range(dst_index.get(), i0, i1, il.get()); }
+            {
+                ivflib::set_invlist_range(dst_index.get(), i0, i1, il.get());
+            }
         }
     }
     EXPECT_EQ(dst_index->ntotal, src_index->ntotal);

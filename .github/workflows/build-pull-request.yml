@@ -17,11 +17,11 @@ jobs:
             sudo apt install -y lsb-release wget software-properties-common gnupg
             wget https://apt.llvm.org/llvm.sh
             chmod u+x llvm.sh
-            sudo ./llvm.sh 18
-            sudo apt-get install -y git-core clang-format-18
+            sudo ./llvm.sh 21
+            sudo apt-get install -y git-core clang-format-21
       - name: Verify clang-format
         run: |
-            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-18 -i
+            git ls-files | grep -E  '\.(cpp|h|cu|cuh)$' | xargs clang-format-21 -i
             if git diff --quiet; then
               echo "Formatting OK!"
             else
@@ -94,29 +94,6 @@ jobs:
         with:
           gpu: ON
           cuvs: ON
-  linux-x86_64-GPU-w-ROCm-cmake:
-    name: Linux x86_64 GPU w/ ROCm (cmake)
-    needs: linux-x86_64-cmake
-    runs-on: faiss-amd-MI200
-    container:
-      image: ubuntu:22.04
-      options: --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --cap-add=SYS_ADMIN
-    steps:
-      - name: Container setup
-        run: |
-            if [ -f /.dockerenv ]; then
-              apt-get update && apt-get install -y sudo && apt-get install -y git
-              git config --global --add safe.directory '*'
-            else
-              echo 'Skipping. Current job is not running inside a container.'
-            fi
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build and Test (cmake)
-        uses: ./.github/actions/build_cmake
-        with:
-          gpu: ON
-          rocm: ON
   linux-arm64-SVE-cmake:
     name: Linux arm64 SVE (cmake)
     needs: linux-x86_64-cmake

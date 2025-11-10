@@ -136,7 +136,7 @@ int faiss_BufferList_new(FaissBufferList** p_bl, size_t buffer_size);
 
 int faiss_BufferList_add(FaissBufferList* bl, idx_t id, float dis);
 
-/// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
+/// copy elements ofs:ofs+n-1 seen as linear data in the buffers to
 /// tables dest_ids, dest_dis
 int faiss_BufferList_copy_range(
         FaissBufferList* bl,

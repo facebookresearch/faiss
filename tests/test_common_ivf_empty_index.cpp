@@ -76,8 +76,9 @@ TEST(COMMON, test_common_trained_index) {
 
     // construct and build an "empty index": a trained index that does not
     // itself hold any data
-    std::unique_ptr<faiss::IndexIVF> empty_index(dynamic_cast<faiss::IndexIVF*>(
-            faiss::index_factory(d, "IVF32,PQ8np")));
+    std::unique_ptr<faiss::IndexIVF> empty_index(
+            dynamic_cast<faiss::IndexIVF*>(
+                    faiss::index_factory(d, "IVF32,PQ8np")));
     auto xt = get_random_vectors(nt, 123);
     empty_index->train(nt, xt.data());
     empty_index->nprobe = 4;

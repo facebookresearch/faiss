@@ -24,9 +24,10 @@ struct IcmEncoderShards {
             workers;
 
     void add(IcmEncoderImpl* encoder) {
-        workers.emplace_back(std::make_pair(
-                std::unique_ptr<IcmEncoderImpl>(encoder),
-                std::unique_ptr<WorkerThread>(new WorkerThread)));
+        workers.emplace_back(
+                std::make_pair(
+                        std::unique_ptr<IcmEncoderImpl>(encoder),
+                        std::unique_ptr<WorkerThread>(new WorkerThread)));
     }
 
     IcmEncoderImpl* at(int idx) {

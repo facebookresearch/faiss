@@ -116,6 +116,12 @@ FAISS_DECLARE_GETTER(PCAMatrix, float, eigen_power)
 /// Getter for random_rotation
 FAISS_DECLARE_GETTER(PCAMatrix, int, random_rotation)
 
+/// Getter for balanced_bins
+FAISS_DECLARE_GETTER(PCAMatrix, int, balanced_bins)
+
+/// Setter for balanced_bins
+FAISS_DECLARE_SETTER(PCAMatrix, int, balanced_bins)
+
 FAISS_DECLARE_CLASS_INHERITED(ITQMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(ITQMatrix)
 
