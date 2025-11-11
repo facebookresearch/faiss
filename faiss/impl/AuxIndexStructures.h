@@ -80,7 +80,7 @@ struct BufferList {
     /// add one result, possibly appending a new buffer if needed
     void add(idx_t id, float dis);
 
-    /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
+    /// copy elements ofs:ofs+n-1 seen as linear data in the buffers to
     /// tables dest_ids, dest_dis
     void copy_range(size_t ofs, size_t n, idx_t* dest_ids, float* dest_dis);
 };

@@ -113,7 +113,7 @@ struct IndexIVFPQ : IndexIVF {
      */
     size_t find_duplicates(idx_t* ids, size_t* lims) const;
 
-    // map a vector to a binary code knowning the index
+    // map a vector to a binary code knowing the index
     void encode(idx_t key, const float* x, uint8_t* code) const;
 
     /** Encode multiple vectors

@@ -404,7 +404,7 @@ void AdditiveQuantizer::compute_LUT(
 namespace {
 
 /* compute inner products of one query with all centroids, given a look-up
- * table of all inner producst with codebook entries */
+ * table of all inner products with codebook entries */
 void compute_inner_prod_with_LUT(
         const AdditiveQuantizer& aq,
         const float* LUT,

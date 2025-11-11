@@ -78,7 +78,7 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
     }
 }
 
-/** Parent class for the optional search paramenters.
+/** Parent class for the optional search parameters.
  *
  * Sub-classes with additional search parameters should inherit this class.
  * Ownership of the object fields is always to the caller.
@@ -258,7 +258,7 @@ struct Index {
      *
      * this function may not be defined for some indexes
      * @param key         id of the vector to reconstruct
-     * @param recons      reconstucted vector (size d)
+     * @param recons      reconstructed vector (size d)
      */
     virtual void reconstruct(idx_t key, float* recons) const;
 
@@ -268,7 +268,7 @@ struct Index {
      * this function may not be defined for some indexes
      * @param n           number of vectors to reconstruct
      * @param keys        ids of the vectors to reconstruct (size n)
-     * @param recons      reconstucted vector (size n * d)
+     * @param recons      reconstructed vector (size n * d)
      */
     virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
             const;
@@ -278,7 +278,7 @@ struct Index {
      * this function may not be defined for some indexes
      * @param i0          index of the first vector in the sequence
      * @param ni          number of vectors in the sequence
-     * @param recons      reconstucted vector (size ni * d)
+     * @param recons      reconstructed vector (size ni * d)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, float* recons) const;
 

@@ -264,7 +264,7 @@ void IndexShardsTemplate<IndexT>::search(
     }
 }
 
-// explicit instanciations
+// explicit instantiations
 template struct IndexShardsTemplate<Index>;
 template struct IndexShardsTemplate<IndexBinary>;
 

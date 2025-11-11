@@ -26,7 +26,7 @@ struct ZnSphereSearch {
     int dimS, r2;
     int natom;
 
-    /// size dim * ntatom
+    /// size dim * natom
     std::vector<float> voc;
 
     ZnSphereSearch(int dim, int r2);
@@ -138,7 +138,7 @@ struct ZnSphereCodec : ZnSphereSearch, EnumeratedVectors {
  *
  * Uses a recursive decomposition on the dimensions to encode
  * centroids found by the ZnSphereSearch. The codes are *not*
- * compatible with the ones of ZnSpehreCodec
+ * compatible with the ones of ZnSphereCodec
  */
 struct ZnSphereCodecRec : EnumeratedVectors {
     int r2;
