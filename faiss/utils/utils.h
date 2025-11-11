@@ -8,7 +8,7 @@
 // -*- c++ -*-
 
 /*
- *  A few utilitary functions for similarity search:
+ *  A few utility functions for similarity search:
  * - optimized exhaustive distance and knn search functions
  * - some functions reimplemented from torch for speed
  */
@@ -64,7 +64,7 @@ void matrix_qr(int m, int n, float* a);
 void ranklist_handle_ties(int k, int64_t* idx, const float* dis);
 
 /** count the number of common elements between v1 and v2
- * algorithm = sorting + bissection to avoid double-counting duplicates
+ * algorithm = sorting + bisection to avoid double-counting duplicates
  */
 size_t ranklist_intersection_size(
         size_t k1,

@@ -135,7 +135,7 @@ struct CuvsIVFFlatCodePackerInterleaved : CodePacker {
     CuvsIVFFlatCodePackerInterleaved(
             size_t list_size,
             uint32_t dim,
-            uint32_t chuk_size);
+            uint32_t chunk_size);
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)

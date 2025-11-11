@@ -45,7 +45,7 @@ class IVFPQ : public IVFBase {
     /// (sub q)(code id)(sub dim)
     Tensor<float, 3, true> getPQCentroids();
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,
