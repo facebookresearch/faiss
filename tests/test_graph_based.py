@@ -52,13 +52,13 @@ class TestHNSW(unittest.TestCase):
         lims, D, I = index.range_search(self.xq, radius)
 
         nmiss = 0
-        # check if returned resutls are a subset of the reference results
+        # check if returned results are a subset of the reference results
         for i in range(len(self.xq)):
             ref = Iref[lims_ref[i]: lims_ref[i + 1]]
             new = I[lims[i]: lims[i + 1]]
             self.assertLessEqual(set(new), set(ref))
             nmiss += len(ref) - len(new)
-        # currenly we miss 405 / 6019 neighbors
+        # currently we miss 405 / 6019 neighbors
         self.assertLessEqual(nmiss, lims_ref[-1] * 0.1)
 
     def test_hnsw_unbounded_queue(self):
