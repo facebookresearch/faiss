@@ -362,7 +362,7 @@ void GpuIndexCagra::copyFrom_ex(
         FAISS_ASSERT(base_index);
         auto dataset = (uint8_t*)base_index->codes.data();
 
-        // decode what was encded by Quantizer8bitDirectSigned in
+        // decode what was encoded by Quantizer8bitDirectSigned in
         // ScalarQuantizer
         int8_t* decoded_train_dataset = new int8_t[index->ntotal * index->d];
         for (int i = 0; i < index->ntotal * this->d; i++) {

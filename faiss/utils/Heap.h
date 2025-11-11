@@ -150,7 +150,7 @@ inline void heap_replace_top(
     bh_ids[i] = id;
 }
 
-/* Partial instanciation for heaps with TI = int64_t */
+/* Partial instantiation for heaps with TI = int64_t */
 
 template <typename T>
 inline void minheap_pop(size_t k, T* bh_val, int64_t* bh_ids) {
@@ -393,7 +393,7 @@ inline void heap_addn(
     }
 }
 
-/* Partial instanciation for heaps with TI = int64_t */
+/* Partial instantiation for heaps with TI = int64_t */
 
 template <typename T>
 inline void minheap_addn(
@@ -489,7 +489,7 @@ struct HeapArray {
         return val + key * k;
     }
 
-    /// Correspponding identifiers
+    /// Corresponding identifiers
     TI* get_ids(size_t key) {
         return ids + key * k;
     }

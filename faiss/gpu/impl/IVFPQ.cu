@@ -300,7 +300,7 @@ std::vector<uint8_t> IVFPQ::translateCodesToGpu_(
             std::move(up), numVecs, numSubQuantizers_, bitsPerSubQuantizer_);
 }
 
-// Conver the GPU layout to the CPU layout
+// Convert the GPU layout to the CPU layout
 std::vector<uint8_t> IVFPQ::translateCodesFromGpu_(
         std::vector<uint8_t> codes,
         idx_t numVecs) const {

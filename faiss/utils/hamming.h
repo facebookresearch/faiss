@@ -14,7 +14,7 @@
  * fvecs2bitvecs).
  *
  * User-defined type hamdis_t is used for distances because at this time
- * it is still uncler clear how we will need to balance
+ * it is still unclear clear how we will need to balance
  * - flexibility in vector size (may need 16- or even 8-bit vectors)
  * - memory usage
  * - cache-misses when dealing with large volumes of data (fewer bits is better)
