@@ -212,7 +212,7 @@ void compute_centroids(
  * It works by slightly changing the centroids to make 2 clusters from
  * a single one. Takes the same arguments as compute_centroids.
  *
- * @return           nb of spliting operations (larger is worse)
+ * @return           nb of splitting operations (larger is worse)
  */
 int split_clusters(
         size_t d,
@@ -242,7 +242,7 @@ int split_clusters(
                    centroids + cj * d,
                    sizeof(*centroids) * d);
 
-            /* small symmetric pertubation */
+            /* small symmetric perturbation */
             for (size_t j = 0; j < d; j++) {
                 if (j % 2 == 0) {
                     centroids[ci * d + j] *= 1 + EPS;

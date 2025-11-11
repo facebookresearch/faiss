@@ -249,7 +249,7 @@ struct OPQMatrix : LinearTransform {
     void train(idx_t n, const float* x) override;
 };
 
-/** remap dimensions for intput vectors, possibly inserting 0s
+/** remap dimensions for input vectors, possibly inserting 0s
  * strictly speaking this is also a linear transform but we don't want
  * to compute it with matrix multiplies */
 struct RemapDimensionsTransform : VectorTransform {

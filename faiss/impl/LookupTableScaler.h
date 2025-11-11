@@ -63,7 +63,7 @@ struct DummyScaler {
 };
 
 /// consumes 2x4 bits to encode a norm as a scalar additive quantizer
-/// the norm is scaled because its range if larger than other components
+/// the norm is scaled because its range is larger than other components
 struct NormTableScaler {
     static constexpr int nscale = 2;
     int scale_int;
