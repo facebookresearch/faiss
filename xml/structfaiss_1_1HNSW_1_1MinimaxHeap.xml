@@ -215,7 +215,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Heap structure that allows fast </para>
+<para>Heap structure that allows fast access and updates. </para>
     </detaileddescription>
     <location file="faiss/impl/HNSW.h" line="66" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="66" bodyend="88"/>
     <listofallmembers>

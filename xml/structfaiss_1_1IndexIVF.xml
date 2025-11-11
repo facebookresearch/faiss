@@ -2035,7 +2035,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size n * d) </para>
+<para>reconstructed vector (size n * d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -2388,9 +2388,9 @@
     <detaileddescription>
 <para><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> based on a inverted file (IVF)</para>
 <para>In the inverted file, the quantizer (an <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> instance) provides a quantization index for each vector to be added. The quantization index maps to a list (aka inverted list or posting list), where the id of the vector is stored.</para>
-<para>The inverted list object is required only after trainng. If none is set externally, an <ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> is used automatically.</para>
+<para>The inverted list object is required only after training. If none is set externally, an <ref refid="structfaiss_1_1ArrayInvertedLists" kindref="compound">ArrayInvertedLists</ref> is used automatically.</para>
 <para>At search time, the vector to be searched is also quantized, and only the list corresponding to the quantization index is searched. This speeds up the search by making it non-exhaustive. This can be relaxed using multi-probe search: a few (nprobe) quantization indices are selected and several inverted lists are visited.</para>
-<para>Sub-classes implement a post-filtering of the index that refines the distance estimation from the query to databse vectors. </para>
+<para>Sub-classes implement a post-filtering of the index that refines the distance estimation from the query to database vectors. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">

@@ -341,7 +341,7 @@
 <codeline lineno="23"><highlight class="comment">/**<sp/>Same<sp/>as<sp/>an<sp/>IndexIVFPQ<sp/>without<sp/>the<sp/>inverted<sp/>lists:<sp/>codes<sp/>are<sp/>stored</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>sequentially</highlight></codeline>
 <codeline lineno="25"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>The<sp/>class<sp/>is<sp/>mainly<sp/>inteded<sp/>to<sp/>store<sp/>encoded<sp/>vectors<sp/>that<sp/>can<sp/>be</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>The<sp/>class<sp/>is<sp/>mainly<sp/>intended<sp/>to<sp/>store<sp/>encoded<sp/>vectors<sp/>that<sp/>can<sp/>be</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/>*<sp/>accessed<sp/>randomly,<sp/>the<sp/>search<sp/>function<sp/>is<sp/>not<sp/>implemented.</highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29" refid="structfaiss_1_1Index2Layer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1Index2Layer" kindref="compound">Index2Layer</ref><sp/>:<sp/><ref refid="structfaiss_1_1IndexFlatCodes" kindref="compound">IndexFlatCodes</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>

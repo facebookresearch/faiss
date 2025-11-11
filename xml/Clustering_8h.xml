@@ -462,7 +462,7 @@
 <codeline lineno="73"><highlight class="comment"><sp/>*<sp/>points<sp/>to<sp/>the<sp/>centroids.<sp/>Therefore,<sp/>at<sp/>each<sp/>iteration<sp/>the<sp/>centroids</highlight></codeline>
 <codeline lineno="74"><highlight class="comment"><sp/>*<sp/>are<sp/>added<sp/>to<sp/>the<sp/>index.</highlight></codeline>
 <codeline lineno="75"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"><sp/>*<sp/>On<sp/>output,<sp/>the<sp/>centoids<sp/>table<sp/>is<sp/>set<sp/>to<sp/>the<sp/>latest<sp/>version</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/>*<sp/>On<sp/>output,<sp/>the<sp/>centroids<sp/>table<sp/>is<sp/>set<sp/>to<sp/>the<sp/>latest<sp/>version</highlight></codeline>
 <codeline lineno="77"><highlight class="comment"><sp/>*<sp/>of<sp/>the<sp/>centroids<sp/>and<sp/>they<sp/>are<sp/>also<sp/>added<sp/>to<sp/>the<sp/>index.<sp/>If<sp/>the</highlight></codeline>
 <codeline lineno="78"><highlight class="comment"><sp/>*<sp/>centroids<sp/>table<sp/>it<sp/>is<sp/>not<sp/>empty<sp/>on<sp/>input,<sp/>it<sp/>is<sp/>also<sp/>used<sp/>for</highlight></codeline>
 <codeline lineno="79"><highlight class="comment"><sp/>*<sp/>initialization.</highlight></codeline>

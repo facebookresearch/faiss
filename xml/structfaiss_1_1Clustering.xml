@@ -463,7 +463,7 @@
     <detaileddescription>
 <para>K-means clustering based on assignment - centroid update iterations</para>
 <para>The clustering is based on an <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> object that assigns training points to the centroids. Therefore, at each iteration the centroids are added to the index.</para>
-<para>On output, the centoids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </para>
+<para>On output, the centroids table is set to the latest version of the centroids and they are also added to the index. If the centroids table it is not empty on input, it is also used for initialization. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">

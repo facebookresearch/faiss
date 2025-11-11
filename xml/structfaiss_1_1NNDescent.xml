@@ -388,7 +388,7 @@
         <name>update</name>
         <qualifiedname>faiss::NNDescent::update</qualifiedname>
         <briefdescription>
-<para>Sample new neighbors for each node to peform local join later. </para>
+<para>Sample new neighbors for each node to perform local join later. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

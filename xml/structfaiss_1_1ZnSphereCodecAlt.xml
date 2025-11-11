@@ -124,7 +124,7 @@
         <name>voc</name>
         <qualifiedname>faiss::ZnSphereSearch::voc</qualifiedname>
         <briefdescription>
-<para>size dim * ntatom </para>
+<para>size dim * natom </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

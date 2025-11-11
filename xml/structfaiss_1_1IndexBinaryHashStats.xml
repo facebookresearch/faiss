@@ -51,13 +51,14 @@
         <argsstring></argsstring>
         <name>ndis</name>
         <qualifiedname>faiss::IndexBinaryHashStats::ndis</qualifiedname>
+        <initializer>{}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="72" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="72" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHash.h" line="72" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="72" bodyend="72"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">

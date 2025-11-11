@@ -81,7 +81,7 @@
 <codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dimS,<sp/>r2;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>natom;</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>dim<sp/>*<sp/>ntatom</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>dim<sp/>*<sp/>natom</highlight></codeline>
 <codeline lineno="30" refid="structfaiss_1_1ZnSphereSearch_1a77143a72b6a5048df0fa79b7134740d8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/><ref refid="structfaiss_1_1ZnSphereSearch_1a77143a72b6a5048df0fa79b7134740d8" kindref="member">voc</ref>;</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ZnSphereSearch" kindref="compound">ZnSphereSearch</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dim,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>r2);</highlight></codeline>
@@ -193,7 +193,7 @@
 <codeline lineno="138"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="139"><highlight class="comment"><sp/>*<sp/>Uses<sp/>a<sp/>recursive<sp/>decomposition<sp/>on<sp/>the<sp/>dimensions<sp/>to<sp/>encode</highlight></codeline>
 <codeline lineno="140"><highlight class="comment"><sp/>*<sp/>centroids<sp/>found<sp/>by<sp/>the<sp/>ZnSphereSearch.<sp/>The<sp/>codes<sp/>are<sp/>*not*</highlight></codeline>
-<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>compatible<sp/>with<sp/>the<sp/>ones<sp/>of<sp/>ZnSpehreCodec</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>compatible<sp/>with<sp/>the<sp/>ones<sp/>of<sp/>ZnSphereCodec</highlight></codeline>
 <codeline lineno="142"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="143" refid="structfaiss_1_1ZnSphereCodecRec" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1ZnSphereCodecRec" kindref="compound">ZnSphereCodecRec</ref><sp/>:<sp/><ref refid="structfaiss_1_1EnumeratedVectors" kindref="compound">EnumeratedVectors</ref><sp/>{</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>r2;</highlight></codeline>

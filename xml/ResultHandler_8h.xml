@@ -313,11 +313,11 @@
 <codeline lineno="26"><highlight class="comment"><sp/>*<sp/>The<sp/>classes<sp/>below<sp/>are<sp/>intended<sp/>to<sp/>be<sp/>used<sp/>as<sp/>template<sp/>arguments</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/>*<sp/>they<sp/>handle<sp/>results<sp/>for<sp/>batches<sp/>of<sp/>queries<sp/>(size<sp/>nq).</highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/>*<sp/>They<sp/>can<sp/>be<sp/>called<sp/>in<sp/>two<sp/>ways:</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>-<sp/>by<sp/>instanciating<sp/>a<sp/>SingleResultHandler<sp/>that<sp/>tracks<sp/>results<sp/>for<sp/>a<sp/>single</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>-<sp/>by<sp/>instantiating<sp/>a<sp/>SingleResultHandler<sp/>that<sp/>tracks<sp/>results<sp/>for<sp/>a<sp/>single</highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/><sp/>query</highlight></codeline>
 <codeline lineno="31"><highlight class="comment"><sp/>*<sp/>-<sp/>with<sp/>begin_multiple/add_results/end_multiple<sp/>calls<sp/>where<sp/>a<sp/>whole<sp/>block<sp/>of</highlight></codeline>
 <codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/><sp/>results<sp/>is<sp/>submitted</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>All<sp/>classes<sp/>are<sp/>templated<sp/>on<sp/>C<sp/>which<sp/>to<sp/>define<sp/>wheter<sp/>the<sp/>min<sp/>or<sp/>the<sp/>max<sp/>of</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>All<sp/>classes<sp/>are<sp/>templated<sp/>on<sp/>C<sp/>which<sp/>to<sp/>define<sp/>whether<sp/>the<sp/>min<sp/>or<sp/>the<sp/>max<sp/>of</highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/>*<sp/>results<sp/>is<sp/>to<sp/>be<sp/>kept,<sp/>and<sp/>on<sp/>sel,<sp/>so<sp/>that<sp/>the<sp/>codepaths<sp/>for<sp/>with<sp/>/<sp/>without</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*<sp/>selector<sp/>can<sp/>be<sp/>separated<sp/>at<sp/>compile<sp/>time.</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*****************************************************************/</highlight><highlight class="normal"></highlight></codeline>
@@ -593,7 +593,7 @@
 <codeline lineno="306"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="307"><highlight class="comment"><sp/>*<sp/>A<sp/>reservoir<sp/>is<sp/>a<sp/>result<sp/>array<sp/>of<sp/>size<sp/>capacity<sp/>&gt;<sp/>n<sp/>(number<sp/>of<sp/>requested</highlight></codeline>
 <codeline lineno="308"><highlight class="comment"><sp/>*<sp/>results)<sp/>all<sp/>results<sp/>below<sp/>a<sp/>threshold<sp/>are<sp/>stored<sp/>in<sp/>an<sp/>arbitrary<sp/>order.</highlight></codeline>
-<codeline lineno="309"><highlight class="comment"><sp/>*When<sp/>the<sp/>capacity<sp/>is<sp/>reached,<sp/>a<sp/>new<sp/>threshold<sp/>is<sp/>chosen<sp/>by<sp/>partitionning</highlight></codeline>
+<codeline lineno="309"><highlight class="comment"><sp/>*When<sp/>the<sp/>capacity<sp/>is<sp/>reached,<sp/>a<sp/>new<sp/>threshold<sp/>is<sp/>chosen<sp/>by<sp/>partitioning</highlight></codeline>
 <codeline lineno="310"><highlight class="comment"><sp/>*the<sp/>distance<sp/>array.</highlight></codeline>
 <codeline lineno="311"><highlight class="comment"><sp/>*****************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="312"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>

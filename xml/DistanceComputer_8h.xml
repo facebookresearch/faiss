@@ -409,7 +409,7 @@
 <codeline lineno="60"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Wrap<sp/>the<sp/>distance<sp/>computer<sp/>into<sp/>one<sp/>that<sp/>negates<sp/>the</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/>distances.<sp/>This<sp/>makes<sp/>supporting<sp/>INNER_PRODUCE<sp/>search<sp/>easier<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/>distances.<sp/>This<sp/>makes<sp/>supporting<sp/>INNER_PRODUCT<sp/>search<sp/>easier<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
 <codeline lineno="65" refid="structfaiss_1_1NegativeDistanceComputer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NegativeDistanceComputer" kindref="compound">NegativeDistanceComputer</ref><sp/>:<sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="66"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>owned<sp/>by<sp/>this</highlight></codeline>

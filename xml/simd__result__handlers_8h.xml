@@ -406,7 +406,7 @@
 <codeline lineno="98"><highlight class="normal"></highlight></codeline>
 <codeline lineno="99"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">simd_result_handlers<sp/>{</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="101"><highlight class="comment">/**<sp/>Dummy<sp/>structure<sp/>that<sp/>just<sp/>computes<sp/>a<sp/>chqecksum<sp/>on<sp/>results</highlight></codeline>
+<codeline lineno="101"><highlight class="comment">/**<sp/>Dummy<sp/>structure<sp/>that<sp/>just<sp/>computes<sp/>a<sp/>checksum<sp/>on<sp/>results</highlight></codeline>
 <codeline lineno="102"><highlight class="comment"><sp/>*<sp/>(to<sp/>avoid<sp/>the<sp/>computation<sp/>to<sp/>be<sp/>optimized<sp/>away)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="103" refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" kindref="compound">DummyResultHandler</ref><sp/>:<sp/><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref><sp/>{</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>cs<sp/>=<sp/>0;</highlight></codeline>
@@ -1078,7 +1078,7 @@
 <codeline lineno="770"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{<sp/></highlight><highlight class="comment">//<sp/>generic<sp/>handler<sp/>--<sp/>will<sp/>not<sp/>be<sp/>inlined</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="771"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT_FMT(</highlight></codeline>
 <codeline lineno="772"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd_result_handlers_accept_virtual,</highlight></codeline>
-<codeline lineno="773"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Running<sp/>vitrual<sp/>handler<sp/>for<sp/>%s&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="773"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Running<sp/>virtual<sp/>handler<sp/>for<sp/>%s&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="774"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(res).name());</highlight></codeline>
 <codeline lineno="775"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>consumer.template<sp/>f&lt;SIMDResultHandler&gt;(res,<sp/>args...);</highlight></codeline>
 <codeline lineno="776"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -1109,7 +1109,7 @@
 <codeline lineno="801"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{<sp/></highlight><highlight class="comment">//<sp/>generic<sp/>path</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="802"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT_FMT(</highlight></codeline>
 <codeline lineno="803"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>simd_result_handlers_accept_virtual,</highlight></codeline>
-<codeline lineno="804"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Running<sp/>vitrual<sp/>handler<sp/>for<sp/>%s&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="804"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Running<sp/>virtual<sp/>handler<sp/>for<sp/>%s&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="805"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(res).name());</highlight></codeline>
 <codeline lineno="806"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>consumer.template<sp/>f&lt;SIMDResultHandler&gt;(res,<sp/>args...);</highlight></codeline>
 <codeline lineno="807"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>

@@ -2128,7 +2128,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size n * d) </para>
+<para>reconstructed vector (size n * d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

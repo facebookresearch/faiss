@@ -83,7 +83,7 @@
 <codeline lineno="34"><highlight class="comment"><sp/>*<sp/>@param<sp/>ntotal<sp/><sp/>number<sp/>of<sp/>input<sp/>codes</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>number<sp/>of<sp/>codes<sp/>(ntotal<sp/>rounded<sp/>up<sp/>to<sp/>a<sp/>multiple<sp/>of</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bbs)</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(=M<sp/>rounded<sp/>up<sp/>to<sp/>a<sp/>muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(=M<sp/>rounded<sp/>up<sp/>to<sp/>a<sp/>multiple<sp/>of<sp/>2)</highlight></codeline>
 <codeline lineno="38"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>database<sp/>blocks<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
 <codeline lineno="39"><highlight class="comment"><sp/>*<sp/>@param<sp/>blocks<sp/><sp/>output<sp/>array,<sp/>size<sp/>nb<sp/>*<sp/>nsq<sp/>/<sp/>2.</highlight></codeline>
 <codeline lineno="40"><highlight class="comment"><sp/>*<sp/>@param<sp/>code_stride<sp/><sp/>optional<sp/>stride<sp/>between<sp/>consecutive<sp/>codes<sp/>(0<sp/>=<sp/>use</highlight></codeline>
@@ -159,7 +159,7 @@
 <codeline lineno="110"><highlight class="comment">/**<sp/>Pack<sp/>Look-up<sp/>table<sp/>for<sp/>consumption<sp/>by<sp/>the<sp/>kernel.</highlight></codeline>
 <codeline lineno="111"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="112"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(multiple<sp/>of<sp/>2)</highlight></codeline>
 <codeline lineno="114"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
 <codeline lineno="115"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
 <codeline lineno="116"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -170,7 +170,7 @@
 <codeline lineno="121"><highlight class="comment"><sp/>*<sp/>@param<sp/>nq<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>queries</highlight></codeline>
 <codeline lineno="122"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>elements</highlight></codeline>
 <codeline lineno="123"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/>size<sp/>of<sp/>database<sp/>blocks<sp/>(multiple<sp/>of<sp/>32)</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(multiple<sp/>of<sp/>2)</highlight></codeline>
 <codeline lineno="125"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>packed<sp/>codes<sp/>array</highlight></codeline>
 <codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>packed<sp/>look-up<sp/>table</highlight></codeline>
 <codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
@@ -209,7 +209,7 @@
 <codeline lineno="160"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="161"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>query<sp/>blocks,<sp/>the<sp/>total<sp/>number<sp/>of</highlight></codeline>
 <codeline lineno="162"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queries<sp/>handled<sp/>(nq)<sp/>is<sp/>deduced<sp/>from<sp/>it</highlight></codeline>
-<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(muliple<sp/>of<sp/>2)</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers<sp/>(multiple<sp/>of<sp/>2)</highlight></codeline>
 <codeline lineno="164"><highlight class="comment"><sp/>*<sp/>@param<sp/>src<sp/><sp/><sp/><sp/><sp/>input<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
 <codeline lineno="165"><highlight class="comment"><sp/>*<sp/>@param<sp/>dest<sp/><sp/><sp/><sp/>output<sp/>array,<sp/>size<sp/>(nq,<sp/>16)</highlight></codeline>
 <codeline lineno="166"><highlight class="comment"><sp/>*<sp/>@return<sp/>nq</highlight></codeline>
@@ -228,11 +228,11 @@
 <codeline lineno="179"><highlight class="comment">/**<sp/>Run<sp/>accumulation<sp/>loop.</highlight></codeline>
 <codeline lineno="180"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="181"><highlight class="comment"><sp/>*<sp/>@param<sp/>qbs<sp/><sp/><sp/><sp/><sp/>4-bit<sp/>encoded<sp/>number<sp/>of<sp/>queries</highlight></codeline>
-<codeline lineno="182"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>codes<sp/>(mutliple<sp/>of<sp/>bbs)</highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>database<sp/>codes<sp/>(multiple<sp/>of<sp/>bbs)</highlight></codeline>
 <codeline lineno="183"><highlight class="comment"><sp/>*<sp/>@param<sp/>nsq<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>sub-quantizers</highlight></codeline>
 <codeline lineno="184"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/>encoded<sp/>database<sp/>vectors<sp/>(packed)</highlight></codeline>
 <codeline lineno="185"><highlight class="comment"><sp/>*<sp/>@param<sp/>LUT<sp/><sp/><sp/><sp/><sp/>look-up<sp/>table<sp/>(packed)</highlight></codeline>
-<codeline lineno="186"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/><sp/><sp/><sp/>call-back<sp/>for<sp/>the<sp/>resutls</highlight></codeline>
+<codeline lineno="186"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/><sp/><sp/><sp/>call-back<sp/>for<sp/>the<sp/>results</highlight></codeline>
 <codeline lineno="187"><highlight class="comment"><sp/>*<sp/>@param<sp/>scaler<sp/><sp/>scaler<sp/>to<sp/>scale<sp/>the<sp/>encoded<sp/>norm</highlight></codeline>
 <codeline lineno="188"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="189" refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" kindref="member">pq4_accumulate_loop_qbs</ref>(</highlight></codeline>

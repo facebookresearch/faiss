@@ -58,7 +58,7 @@
 <codeline lineno="16"><highlight class="comment"><sp/>*<sp/>object<sp/>that<sp/>abstracts<sp/>the<sp/>medium.</highlight></codeline>
 <codeline lineno="17"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="18"><highlight class="comment"><sp/>*<sp/>The<sp/>read<sp/>functions<sp/>return<sp/>objects<sp/>that<sp/>should<sp/>be<sp/>deallocated<sp/>with</highlight></codeline>
-<codeline lineno="19"><highlight class="comment"><sp/>*<sp/>delete.<sp/>All<sp/>references<sp/>within<sp/>these<sp/>objectes<sp/>are<sp/>owned<sp/>by<sp/>the</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/>delete.<sp/>All<sp/>references<sp/>within<sp/>these<sp/>objects<sp/>are<sp/>owned<sp/>by<sp/>the</highlight></codeline>
 <codeline lineno="20"><highlight class="comment"><sp/>*<sp/>object.</highlight></codeline>
 <codeline lineno="21"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>

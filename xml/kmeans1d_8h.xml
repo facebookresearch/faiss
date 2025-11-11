@@ -144,7 +144,7 @@
 <codeline lineno="41"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>array<sp/>length</highlight></codeline>
 <codeline lineno="42"><highlight class="comment"><sp/>*<sp/>@param<sp/>nclusters<sp/><sp/>number<sp/>of<sp/>clusters</highlight></codeline>
 <codeline lineno="43"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroids<sp/><sp/>output<sp/>centroids,<sp/>size<sp/>nclusters</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/>imbalancce<sp/>factor</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/>imbalance<sp/>factor</highlight></codeline>
 <codeline lineno="45"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="46" refid="namespacefaiss_1a613c867df3afeba8421d7ca1200e7529" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a613c867df3afeba8421d7ca1200e7529" kindref="member">kmeans1d</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nclusters,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroids);</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"></highlight></codeline>

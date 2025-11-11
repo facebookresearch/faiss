@@ -49,7 +49,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Parent class for the optional search paramenters.</para>
+<para>Parent class for the optional search parameters.</para>
 <para>Sub-classes with additional search parameters should inherit this class. Ownership of the object fields is always to the caller. </para>
     </detaileddescription>
     <inheritancegraph>

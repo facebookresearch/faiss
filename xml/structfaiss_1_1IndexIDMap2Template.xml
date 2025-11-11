@@ -92,7 +92,7 @@
         <name>id_map</name>
         <qualifiedname>faiss::IndexIDMapTemplate::id_map</qualifiedname>
         <briefdescription>
-<para>! whether pointers are deleted in destructo </para>
+<para>! whether pointers are deleted in destructor </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>

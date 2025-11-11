@@ -146,7 +146,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to tables dest_ids, dest_dis </para>
+<para>copy elements ofs:ofs+n-1 seen as linear data in the buffers to tables dest_ids, dest_dis </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

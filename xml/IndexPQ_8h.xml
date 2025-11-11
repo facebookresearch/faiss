@@ -466,7 +466,7 @@
 <codeline lineno="164"><highlight class="normal"></highlight><highlight class="comment">//<sp/>block<sp/>size<sp/>used<sp/>in<sp/>MultiIndexQuantizer::search</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="165"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>multi_index_quantizer_search_bs;</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="167"><highlight class="comment">/**<sp/>MultiIndexQuantizer<sp/>where<sp/>the<sp/>PQ<sp/>assignmnet<sp/>is<sp/>performed<sp/>by<sp/>sub-indexes</highlight></codeline>
+<codeline lineno="167"><highlight class="comment">/**<sp/>MultiIndexQuantizer<sp/>where<sp/>the<sp/>PQ<sp/>assignment<sp/>is<sp/>performed<sp/>by<sp/>sub-indexes</highlight></codeline>
 <codeline lineno="168"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="169" refid="structfaiss_1_1MultiIndexQuantizer2" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1MultiIndexQuantizer2" kindref="compound">MultiIndexQuantizer2</ref><sp/>:<sp/><ref refid="structfaiss_1_1MultiIndexQuantizer" kindref="compound">MultiIndexQuantizer</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="170"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>M<sp/>Indexes<sp/>on<sp/>d<sp/>/<sp/>M<sp/>dimensions</highlight></codeline>

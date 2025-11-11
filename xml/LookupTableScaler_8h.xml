@@ -123,7 +123,7 @@
 <codeline lineno="63"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="65"><highlight class="comment">///<sp/>consumes<sp/>2x4<sp/>bits<sp/>to<sp/>encode<sp/>a<sp/>norm<sp/>as<sp/>a<sp/>scalar<sp/>additive<sp/>quantizer</highlight></codeline>
-<codeline lineno="66"><highlight class="comment">///<sp/>the<sp/>norm<sp/>is<sp/>scaled<sp/>because<sp/>its<sp/>range<sp/>if<sp/>larger<sp/>than<sp/>other<sp/>components</highlight></codeline>
+<codeline lineno="66"><highlight class="comment">///<sp/>the<sp/>norm<sp/>is<sp/>scaled<sp/>because<sp/>its<sp/>range<sp/>is<sp/>larger<sp/>than<sp/>other<sp/>components</highlight></codeline>
 <codeline lineno="67" refid="structfaiss_1_1NormTableScaler" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NormTableScaler" kindref="compound">NormTableScaler</ref><sp/>{</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nscale<sp/>=<sp/>2;</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>scale_int;</highlight></codeline>

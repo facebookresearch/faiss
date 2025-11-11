@@ -327,7 +327,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>remap dimensions for intput vectors, possibly inserting 0s strictly speaking this is also a linear transform but we don&apos;t want to compute it with matrix multiplies </para>
+<para>remap dimensions for input vectors, possibly inserting 0s strictly speaking this is also a linear transform but we don&apos;t want to compute it with matrix multiplies </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">

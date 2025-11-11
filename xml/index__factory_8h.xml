@@ -122,7 +122,7 @@
 <codeline lineno="12"><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="15"><highlight class="comment">/**<sp/>Build<sp/>and<sp/>index<sp/>with<sp/>the<sp/>sequence<sp/>of<sp/>processing<sp/>steps<sp/>described<sp/>in</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">/**<sp/>Build<sp/>an<sp/>index<sp/>with<sp/>the<sp/>sequence<sp/>of<sp/>processing<sp/>steps<sp/>described<sp/>in</highlight></codeline>
 <codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/>the<sp/>string.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17" refid="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" refkind="member"><highlight class="normal"><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>*<sp/><ref refid="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" kindref="member">index_factory</ref>(</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>d,</highlight></codeline>

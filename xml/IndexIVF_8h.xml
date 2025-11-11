@@ -609,7 +609,7 @@
 <codeline lineno="160"><highlight class="comment"><sp/>*<sp/>index<sp/>maps<sp/>to<sp/>a<sp/>list<sp/>(aka<sp/>inverted<sp/>list<sp/>or<sp/>posting<sp/>list),<sp/>where<sp/>the</highlight></codeline>
 <codeline lineno="161"><highlight class="comment"><sp/>*<sp/>id<sp/>of<sp/>the<sp/>vector<sp/>is<sp/>stored.</highlight></codeline>
 <codeline lineno="162"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>The<sp/>inverted<sp/>list<sp/>object<sp/>is<sp/>required<sp/>only<sp/>after<sp/>trainng.<sp/>If<sp/>none<sp/>is</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>The<sp/>inverted<sp/>list<sp/>object<sp/>is<sp/>required<sp/>only<sp/>after<sp/>training.<sp/>If<sp/>none<sp/>is</highlight></codeline>
 <codeline lineno="164"><highlight class="comment"><sp/>*<sp/>set<sp/>externally,<sp/>an<sp/>ArrayInvertedLists<sp/>is<sp/>used<sp/>automatically.</highlight></codeline>
 <codeline lineno="165"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="166"><highlight class="comment"><sp/>*<sp/>At<sp/>search<sp/>time,<sp/>the<sp/>vector<sp/>to<sp/>be<sp/>searched<sp/>is<sp/>also<sp/>quantized,<sp/>and</highlight></codeline>
@@ -620,7 +620,7 @@
 <codeline lineno="171"><highlight class="comment"><sp/>*<sp/>lists<sp/>are<sp/>visited.</highlight></codeline>
 <codeline lineno="172"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="173"><highlight class="comment"><sp/>*<sp/>Sub-classes<sp/>implement<sp/>a<sp/>post-filtering<sp/>of<sp/>the<sp/>index<sp/>that<sp/>refines</highlight></codeline>
-<codeline lineno="174"><highlight class="comment"><sp/>*<sp/>the<sp/>distance<sp/>estimation<sp/>from<sp/>the<sp/>query<sp/>to<sp/>databse<sp/>vectors.</highlight></codeline>
+<codeline lineno="174"><highlight class="comment"><sp/>*<sp/>the<sp/>distance<sp/>estimation<sp/>from<sp/>the<sp/>query<sp/>to<sp/>database<sp/>vectors.</highlight></codeline>
 <codeline lineno="175"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="176" refid="structfaiss_1_1IndexIVF" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref><sp/>:<sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>,<sp/><ref refid="structfaiss_1_1IndexIVFInterface" kindref="compound">IndexIVFInterface</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="177"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Access<sp/>to<sp/>the<sp/>actual<sp/>data</highlight></codeline>

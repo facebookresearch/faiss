@@ -703,7 +703,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>convenience function to get the VT from an index constucted by an index_factory (should end in &quot;LSH&quot;) </para>
+<para>convenience function to get the VT from an index constructed by an index_factory (should end in &quot;LSH&quot;) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -2199,7 +2199,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size n * d) </para>
+<para>reconstructed vector (size n * d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>

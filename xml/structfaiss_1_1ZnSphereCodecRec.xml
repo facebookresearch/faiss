@@ -391,7 +391,7 @@
     </briefdescription>
     <detaileddescription>
 <para>recursive sphere codec</para>
-<para>Uses a recursive decomposition on the dimensions to encode centroids found by the <ref refid="structfaiss_1_1ZnSphereSearch" kindref="compound">ZnSphereSearch</ref>. The codes are <emphasis>not</emphasis> compatible with the ones of ZnSpehreCodec </para>
+<para>Uses a recursive decomposition on the dimensions to encode centroids found by the <ref refid="structfaiss_1_1ZnSphereSearch" kindref="compound">ZnSphereSearch</ref>. The codes are <emphasis>not</emphasis> compatible with the ones of <ref refid="structfaiss_1_1ZnSphereCodec" kindref="compound">ZnSphereCodec</ref> </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">

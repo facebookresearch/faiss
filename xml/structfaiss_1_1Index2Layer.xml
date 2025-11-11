@@ -561,7 +561,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size ni * d) </para>
+<para>reconstructed vector (size ni * d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -603,7 +603,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size d) </para>
+<para>reconstructed vector (size d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1169,7 +1169,7 @@
 <parametername>recons</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>reconstucted vector (size n * d) </para>
+<para>reconstructed vector (size n * d) </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1436,7 +1436,7 @@
     </briefdescription>
     <detaileddescription>
 <para>Same as an <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref> without the inverted lists: codes are stored sequentially</para>
-<para>The class is mainly inteded to store encoded vectors that can be accessed randomly, the search function is not implemented. </para>
+<para>The class is mainly intended to store encoded vectors that can be accessed randomly, the search function is not implemented. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">

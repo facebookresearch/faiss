@@ -2124,7 +2124,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>imbalancce factor </para>
+<simplesect kind="return"><para>imbalance factor </para>
 </simplesect>
 </para>
         </detaileddescription>
@@ -2258,7 +2258,7 @@
 <parametername>nsq</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of sub-quantizers (=M rounded up to a muliple of 2) </para>
+<para>number of sub-quantizers (=M rounded up to a multiple of 2) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -2531,7 +2531,7 @@
 <parametername>nsq</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of sub-quantizers (muliple of 2) </para>
+<para>number of sub-quantizers (multiple of 2) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -2628,7 +2628,7 @@
 <parametername>nsq</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of sub-quantizers (muliple of 2) </para>
+<para>number of sub-quantizers (multiple of 2) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -2738,7 +2738,7 @@
 <parametername>nsq</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of sub-quantizers (muliple of 2) </para>
+<para>number of sub-quantizers (multiple of 2) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -2853,7 +2853,7 @@
 <parametername>nb</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of database codes (mutliple of bbs) </para>
+<para>number of database codes (multiple of bbs) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -2885,7 +2885,7 @@
 <parametername>res</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>call-back for the resutls </para>
+<para>call-back for the results </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -3443,7 +3443,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Build and index with the sequence of processing steps described in the string. </para>
+<para>Build an index with the sequence of processing steps described in the string. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -11226,7 +11226,7 @@
 <para>x[ i * d + j ]</para>
 <para>where 0 &lt;= i &lt; n and 0 &lt;= j &lt; d. In other words, matrices are always compact. When specifying the size of the matrix, we call it an n*d matrix, which implies a row-major storage.</para>
 <para>I/O functions can read/write to a filename, a file handle or to an object that abstracts the medium.</para>
-<para>The read functions return objects that should be deallocated with delete. All references within these objectes are owned by the object.</para>
+<para>The read functions return objects that should be deallocated with delete. All references within these objects are owned by the object.</para>
 <para>Definition of inverted lists + a few common classes that implement the interface.</para>
 <para>Since IVF (inverted file) indexes are of so much use for large-scale use cases, we group a few functions related to them in this small library. Most functions work both on IndexIVFs and IndexIVFs embedded within an <ref refid="structfaiss_1_1IndexPreTransform" kindref="compound">IndexPreTransform</ref>.</para>
 <para>In this file are the implementations of extra metrics beyond L2 and inner product</para>

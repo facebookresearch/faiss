@@ -141,7 +141,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Dummy structure that just computes a chqecksum on results (to avoid the computation to be optimized away) </para>
+<para>Dummy structure that just computes a checksum on results (to avoid the computation to be optimized away) </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">

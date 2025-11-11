@@ -279,7 +279,7 @@
 <codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>Yu.<sp/>A.<sp/>Malkov,<sp/>D.<sp/>A.<sp/>Yashunin,<sp/>arXiv<sp/>2017</highlight></codeline>
 <codeline lineno="32"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"><sp/>*<sp/>This<sp/>implementation<sp/>is<sp/>heavily<sp/>influenced<sp/>by<sp/>the<sp/>NMSlib</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>implementation<sp/>by<sp/>Yury<sp/>Malkov<sp/>and<sp/>Leonid<sp/>Boystov</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>implementation<sp/>by<sp/>Yury<sp/>Malkov<sp/>and<sp/>Leonid<sp/>Boytsov</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*<sp/>(https://github.com/searchivarius/nmslib)</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="37"><highlight class="comment"><sp/>*<sp/>The<sp/>HNSW<sp/>object<sp/>stores<sp/>only<sp/>the<sp/>neighbor<sp/>link<sp/>structure,<sp/>see</highlight></codeline>
@@ -309,7 +309,7 @@
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::pair&lt;float,<sp/>storage_idx_t&gt;<sp/>Node;</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Heap<sp/>structure<sp/>that<sp/>allows<sp/>fast</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Heap<sp/>structure<sp/>that<sp/>allows<sp/>fast<sp/>access<sp/>and<sp/>updates.</highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="66" refid="structfaiss_1_1HNSW_1_1MinimaxHeap" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref><sp/>{</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
