@@ -55,7 +55,7 @@ class CuvsIVFFlat : public IVFFlat {
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,
