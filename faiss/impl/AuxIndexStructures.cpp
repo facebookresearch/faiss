@@ -86,7 +86,7 @@ void BufferList::append_buffer() {
     wp = 0;
 }
 
-/// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
+/// copy elements ofs:ofs+n-1 seen as linear data in the buffers to
 /// tables dest_ids, dest_dis
 void BufferList::copy_range(
         size_t ofs,

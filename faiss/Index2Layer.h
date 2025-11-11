@@ -23,7 +23,7 @@ struct IndexIVFPQ;
 /** Same as an IndexIVFPQ without the inverted lists: codes are stored
  * sequentially
  *
- * The class is mainly inteded to store encoded vectors that can be
+ * The class is mainly intended to store encoded vectors that can be
  * accessed randomly, the search function is not implemented.
  */
 struct Index2Layer : IndexFlatCodes {

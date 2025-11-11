@@ -506,7 +506,7 @@ void IndexIVF::search_preassigned(
         };
 
         // single list scan using the current scanner (with query
-        // set porperly) and storing results in simi and idxi
+        // set properly) and storing results in simi and idxi
         auto scan_one_list = [&](idx_t key,
                                  float coarse_dis_i,
                                  float* simi,

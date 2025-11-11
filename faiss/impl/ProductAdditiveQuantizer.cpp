@@ -154,7 +154,7 @@ void ProductAdditiveQuantizer::compute_unpacked_codes(
         int32_t* unpacked_codes,
         size_t n,
         const float* centroids) const {
-    /// TODO: actuallly we do not need to unpack and pack
+    /// TODO: actually we do not need to unpack and pack
     size_t offset_d = 0, offset_m = 0;
     std::vector<float> xsub;
     std::vector<uint8_t> codes;

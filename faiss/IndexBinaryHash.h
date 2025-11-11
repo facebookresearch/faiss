@@ -66,10 +66,10 @@ struct IndexBinaryHash : IndexBinary {
 };
 
 struct IndexBinaryHashStats {
-    size_t nq;    // nb of queries run
-    size_t n0;    // nb of empty lists
-    size_t nlist; // nb of non-empty inverted lists scanned
-    size_t ndis;  // nb of distancs computed
+    size_t nq;     // nb of queries run
+    size_t n0;     // nb of empty lists
+    size_t nlist;  // nb of non-empty inverted lists scanned
+    size_t ndis{}; // nb of distances computed
 
     IndexBinaryHashStats() {
         reset();

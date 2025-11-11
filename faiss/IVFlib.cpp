@@ -57,7 +57,7 @@ void check_compatible_for_merge(const Index* index0, const Index* index1) {
         ivf0->check_compatible_for_merge(*ivf1);
     }
 
-    // TODO: check as thoroughfully for other index types
+    // TODO: check as thoroughly for other index types
 }
 
 const IndexIVF* try_extract_index_ivf(const Index* index) {

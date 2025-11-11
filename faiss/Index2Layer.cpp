@@ -82,7 +82,7 @@ void Index2Layer::train(idx_t n, const float* x) {
 
     std::unique_ptr<const float[]> del_x(x_in == x ? nullptr : x);
 
-    std::vector<idx_t> assign(n); // assignement to coarse centroids
+    std::vector<idx_t> assign(n); // assignment to coarse centroids
     q1.quantizer->assign(n, x, assign.data());
     std::vector<float> residuals(n * d);
     for (idx_t i = 0; i < n; i++) {
