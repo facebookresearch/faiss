@@ -461,13 +461,11 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         # Test reconstruct for single vector
         idx = 123
         v_panorama = index_panorama.reconstruct(idx)
-
         np.testing.assert_array_equal(xb[idx], v_panorama)
 
         # Test reconstruct_n for range of vectors
         start_idx, n_vectors = 120, 10
         vn_panorama = index_panorama.reconstruct_n(start_idx, n_vectors)
-
         np.testing.assert_array_equal(xb[start_idx:start_idx + n_vectors], vn_panorama)
 
     def test_serialization(self):
