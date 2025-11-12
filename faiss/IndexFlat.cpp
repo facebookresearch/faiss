@@ -543,8 +543,7 @@ inline void flat_pano_search_core(
     bool use_sel = sel != nullptr;
 
     int nt = std::min(int(n), omp_get_max_threads());
-    size_t n_batches =
-            (index.ntotal + index.batch_size - 1) / index.batch_size;
+    size_t n_batches = (index.ntotal + index.batch_size - 1) / index.batch_size;
 
 #pragma omp parallel num_threads(nt)
     {

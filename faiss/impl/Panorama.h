@@ -21,6 +21,25 @@
 
 namespace faiss {
 
+/**
+ * Implements the core logic of Panorama-based refinement.
+ * arXiv: https://arxiv.org/abs/2510.00566
+ *
+ * Panorama partitions the dimensions of all vectors into L contiguous levels.
+ * During the refinement stage of ANNS, it computes distances between the query
+ * and its candidates level-by-level. After processing each level, it prunes the
+ * candidates whose lower bound exceeds the k-th best distance.
+ *
+ * In order to enable speedups, the dimensions (or codes) of each vector are
+ * stored in a batched, level-major manner. Within each batch of b vectors, the
+ * dimensions corresponding to level 1 will be stored first (for all elements in
+ * that batch), followed by level 2, and so on. This allows for efficient memory
+ * access patterns.
+ *
+ * Coupled with the appropriate orthogonal PreTransform (e.g. PCA, Cayley,
+ * etc.), Panorama can prune the vast majority of dimensions, greatly
+ * accelerating the refinement stage.
+ */
 struct Panorama {
     size_t d = 0;
     size_t code_size = 0;
