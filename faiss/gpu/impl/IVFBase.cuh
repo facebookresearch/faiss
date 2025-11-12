@@ -13,6 +13,7 @@
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace faiss {
@@ -43,9 +44,16 @@ class IVFBase {
     /// Reserve GPU memory in our inverted lists for this number of vectors
     virtual void reserveMemory(idx_t numVecs);
 
+    /// Reserve GPU memory in our inverted lists for the exepected number of
+    /// adds per each inverted list
+    virtual void reserveMemory(
+            const std::unordered_map<int, int>* expectedNumAddsPerList);
+
     /// Clear out all inverted lists, but retain the coarse quantizer
     /// and the product quantizer info
     virtual void reset();
+
+    int getMaxListLength() const;
 
     /// Return the number of dimensions we are indexing
     idx_t getDim() const;

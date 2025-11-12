@@ -45,6 +45,7 @@ IVFPQ::IVFPQ(
         bool useFloat16LookupTables,
         bool useMMCodeDistance,
         bool interleavedLayout,
+        bool precomputeCodesOnCpu,
         float* pqCentroidData,
         IndicesOptions indicesOptions,
         MemorySpace space)
@@ -64,7 +65,8 @@ IVFPQ::IVFPQ(
           dimPerSubQuantizer_(dim_ / numSubQuantizers),
           useFloat16LookupTables_(useFloat16LookupTables),
           useMMCodeDistance_(useMMCodeDistance),
-          precomputedCodes_(false) {
+          precomputedCodes_(false),
+          precomputeCodesOnCpu_(precomputeCodesOnCpu) {
     FAISS_ASSERT(pqCentroidData);
 
     FAISS_ASSERT(bitsPerSubQuantizer_ <= 8);
@@ -76,6 +78,72 @@ IVFPQ::IVFPQ(
 }
 
 IVFPQ::~IVFPQ() {}
+
+size_t IVFPQ::calcVectorsEncodingMemorySpaceSize(
+        int numVecs,
+        int numSubQuantizers,
+        int bitsPerSubQuantizer,
+        bool interleavedLayout) {
+    if (interleavedLayout) {
+        // bits per PQ code
+        int bits = bitsPerSubQuantizer;
+
+        // bytes to encode a block of 32 vectors (single PQ code)
+        int bytesPerDimBlock = bits * 32 / 8;
+
+        // bytes to fully encode 32 vectors
+        int bytesPerBlock = bytesPerDimBlock * numSubQuantizers;
+
+        // number of blocks of 32 vectors we have
+        int numBlocks = utils::divUp(numVecs, 32);
+
+        // total size to encode numVecs
+        return bytesPerBlock * numBlocks;
+    } else {
+        return (size_t)numVecs * numSubQuantizers;
+    }
+}
+
+size_t IVFPQ::calcIndicesMemorySpaceSize(int numVecs, IndicesOptions options) {
+    if ((options == INDICES_32_BIT) || (options == INDICES_64_BIT)) {
+        return numVecs *
+                (options == INDICES_32_BIT ? sizeof(int) : sizeof(idx_t));
+    }
+
+    return 0;
+}
+
+size_t IVFPQ::calcMemorySpaceSize(
+        int numVecs,
+        int numSubQuantizers,
+        int bitsPerSubQuantizer,
+        bool interleavedLayout,
+        IndicesOptions options) {
+    return calcVectorsEncodingMemorySpaceSize(
+                   numVecs,
+                   numSubQuantizers,
+                   bitsPerSubQuantizer,
+                   interleavedLayout) +
+            calcIndicesMemorySpaceSize(numVecs, options);
+}
+
+std::unordered_map<AllocType, size_t> IVFPQ::getAllocSizePerTypeInfo(
+        int numVecs,
+        int numSubQuantizers,
+        int bitsPerSubQuantizer,
+        bool interleavedLayout,
+        IndicesOptions options) {
+    std::unordered_map<AllocType, size_t> allocSizePerType;
+    allocSizePerType[AllocType::InvListData] =
+            calcVectorsEncodingMemorySpaceSize(
+                    numVecs,
+                    numSubQuantizers,
+                    bitsPerSubQuantizer,
+                    interleavedLayout);
+    allocSizePerType[AllocType::InvListIndices] =
+            calcIndicesMemorySpaceSize(numVecs, options);
+    return allocSizePerType;
+}
 
 bool IVFPQ::isSupportedPQCodeLength(int size) {
     switch (size) {
@@ -101,6 +169,37 @@ bool IVFPQ::isSupportedPQCodeLength(int size) {
     }
 }
 
+void IVFPQ::movePrecomputedCodesFrom(
+        Index* coarseQuantizer,
+        DeviceTensor<float, 3, true>& precomputedCode) {
+    FAISS_ASSERT(precomputedCode.getSize(0) == coarseQuantizer->ntotal);
+    FAISS_ASSERT(precomputedCode.getSize(1) == numSubQuantizers_);
+    FAISS_ASSERT(precomputedCode.getSize(2) == numSubQuantizerCodes_);
+
+    precomputedCodes_ = true;
+
+    if (precomputedCode_.numElements() > 0) {
+        precomputedCode_ = DeviceTensor<float, 3, true>();
+
+    } else if (precomputedCodeHalf_.numElements() > 0) {
+        precomputedCodeHalf_ = DeviceTensor<half, 3, true>();
+    }
+
+    auto stream = resources_->getDefaultStreamCurrentDevice();
+    if (useFloat16LookupTables_) {
+        precomputedCodeHalf_ = DeviceTensor<half, 3, true>(
+                resources_,
+                makeDevAlloc(AllocType::QuantizerPrecomputedCodes, stream),
+                {coarseQuantizer->ntotal,
+                 numSubQuantizers_,
+                 numSubQuantizerCodes_});
+
+        convertTensor(stream, precomputedCode, precomputedCodeHalf_);
+    } else {
+        precomputedCode_ = std::move(precomputedCode);
+    }
+}
+
 void IVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
     if (enable && metric_ == MetricType::METRIC_INNER_PRODUCT) {
         fprintf(stderr,
@@ -109,7 +208,7 @@ void IVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
         return;
     }
 
-    if (precomputedCodes_ != enable) {
+    if (precomputedCodes_ != enable && !precomputeCodesOnCpu_) {
         precomputedCodes_ = enable;
 
         if (precomputedCodes_) {
@@ -122,8 +221,16 @@ void IVFPQ::setPrecomputedCodes(Index* quantizer, bool enable) {
     }
 }
 
+int IVFPQ::getNumSubQuantizerCodes() {
+    return numSubQuantizerCodes_;
+}
+
 Tensor<float, 3, true> IVFPQ::getPQCentroids() {
     return pqCentroidsMiddleCode_;
+}
+
+Tensor<float, 3, true> IVFPQ::getPrecomputedCodesVecFloat32() {
+    return precomputedCode_;
 }
 
 void IVFPQ::appendVectors_(

@@ -113,6 +113,13 @@ void GpuIndexIVF::init_() {
 
 GpuIndexIVF::~GpuIndexIVF() {}
 
+size_t GpuIndexIVF::calcMemorySpaceSizeCoarseQuantizer(
+        int numVecs,
+        int dims,
+        bool useFloat16) {
+    return GpuIndexFlat::calcMemorySpaceSize(numVecs, dims, useFloat16);
+}
+
 void GpuIndexIVF::verifyIVFSettings_() const {
     // We should always have a quantizer instance
     FAISS_THROW_IF_NOT(quantizer);

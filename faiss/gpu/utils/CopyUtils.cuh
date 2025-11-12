@@ -65,6 +65,32 @@ DeviceTensor<T, Dim, true> toDeviceNonTemporary(
     }
 }
 
+template <typename T, int Dim>
+DeviceTensor<T, Dim, true> toDeviceNonTemporary(
+        GpuResources* resources,
+        int dstDevice,
+        T* src,
+        AllocType allocType,
+        cudaStream_t stream,
+        std::initializer_list<idx_t> sizes) {
+    int dev = getDeviceForAddress(src);
+    DeviceTensor<T, Dim, true> oldT(src, sizes);
+
+    if (dev == dstDevice) {
+        // On device we expect
+        return oldT;
+    } else {
+        // On different device or on host
+        DeviceScope scope(dstDevice);
+
+        DeviceTensor<T, Dim, true> newT(
+                resources, makeDevAlloc(allocType, stream), sizes);
+
+        newT.copyFrom(oldT, stream);
+        return newT;
+    }
+}
+
 template <typename T>
 DeviceTensor<T, 1, true> toDeviceTemporary(
         GpuResources* resources,

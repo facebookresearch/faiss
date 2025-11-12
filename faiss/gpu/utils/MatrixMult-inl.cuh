@@ -478,5 +478,97 @@ void runBatchMatrixMult(
     CUDA_TEST_ERROR();
 }
 
+template <typename AT, typename BT>
+void runIteratedMatrixMult(
+        Tensor<float, 3, true>& c,
+        bool transC,
+        Tensor<AT, 3, true>& a,
+        bool transA,
+        Tensor<BT, 3, true>& b,
+        bool transB,
+        float alpha,
+        float beta,
+        cublasHandle_t handle,
+        cudaStream_t stream) {
+    FAISS_ASSERT(c.getSize(0) == a.getSize(0));
+    FAISS_ASSERT(a.getSize(0) == b.getSize(0));
+
+    for (int i = 0; i < a.getSize(0); ++i) {
+        auto cView = c[i].view();
+        auto aView = a[i].view();
+        auto bView = b[i].view();
+
+        runMatrixMult(
+                cView,
+                transC,
+                aView,
+                transA,
+                bView,
+                transB,
+                alpha,
+                beta,
+                handle,
+                stream);
+    }
+}
+
+template <bool AOuterIterationRowMajor, typename AT, typename BT>
+void runIteratedMatrixMult(
+        Tensor<float, 3, true>& c,
+        bool transC,
+        Tensor<AT, 4, true>& a,
+        bool transA,
+        Tensor<BT, 3, true>& b,
+        bool transB,
+        float alpha,
+        float beta,
+        cublasHandle_t handle,
+        cudaStream_t stream) {
+    FAISS_ASSERT(c.getSize(0) == a.getSize(0) * a.getSize(1));
+    FAISS_ASSERT(c.getSize(0) == b.getSize(0));
+
+    if (AOuterIterationRowMajor) {
+        for (int i = 0; i < a.getSize(0); ++i) {
+            for (int j = 0; j < a.getSize(1); ++j) {
+                auto cView = c[i * a.getSize(1) + j].view();
+                auto aView = a[i][j].view();
+                auto bView = b[i * a.getSize(1) + j].view();
+
+                runMatrixMult(
+                        cView,
+                        transC,
+                        aView,
+                        transA,
+                        bView,
+                        transB,
+                        alpha,
+                        beta,
+                        handle,
+                        stream);
+            }
+        }
+    } else {
+        for (int i = 0; i < a.getSize(1); ++i) {
+            for (int j = 0; j < a.getSize(0); ++j) {
+                auto cView = c[i * a.getSize(0) + j].view();
+                auto aView = a[j][i].view();
+                auto bView = b[i * a.getSize(0) + j].view();
+
+                runMatrixMult(
+                        cView,
+                        transC,
+                        aView,
+                        transA,
+                        bView,
+                        transB,
+                        alpha,
+                        beta,
+                        handle,
+                        stream);
+            }
+        }
+    }
+}
+
 } // namespace gpu
 } // namespace faiss

@@ -154,7 +154,9 @@ void runTransposeAny(
     auto totalSize = in.numElements();
 
     // Is this a transposition of the two outer dimensions?
-    bool isTransposeOuter = (Dim >= 3) && (dim1 == 0) && (dim2 == 1);
+    constexpr int gridMaxY = 65535;
+    bool isTransposeOuter = (Dim >= 3) && (dim1 == 0) && (dim2 == 1) &&
+            in.getSize(0) <= gridMaxY;
     if (isTransposeOuter) {
         // Outer dimension transposition only (there is a contiguous inner
         // dimension)

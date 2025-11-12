@@ -30,6 +30,7 @@
 
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/gpu/utils/FixedDeviceMemory.h>
 #include <faiss/gpu/utils/StackDeviceMemory.h>
 #include <functional>
 #include <map>
@@ -45,6 +46,9 @@ namespace gpu {
 class StandardGpuResourcesImpl : public GpuResources {
    public:
     StandardGpuResourcesImpl();
+
+    StandardGpuResourcesImpl(
+            const std::unordered_map<AllocType, size_t>& allocSizePerTypeMap);
 
     ~StandardGpuResourcesImpl() override;
 
@@ -139,6 +143,12 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// Temporary memory provider, per each device
     std::unordered_map<int, std::unique_ptr<StackDeviceMemory>> tempMemory_;
 
+    /// Fixed size alloc memory provider, per alloc type, per each device
+    std::unordered_map<
+            int,
+            std::unordered_map<AllocType, std::unique_ptr<FixedDeviceMemory>>>
+            allocPerTypeMap_;
+
     /// Our default stream that work is ordered on, one per each device
     std::unordered_map<int, cudaStream_t> defaultStreams_;
 
@@ -184,6 +194,10 @@ class StandardGpuResourcesImpl : public GpuResources {
     /// devices
     size_t tempMemSize_;
 
+    /// Reserved space required for each allocation type in the fixed size
+    /// allocator
+    std::unordered_map<AllocType, size_t> allocSizePerTypeMap_;
+
     /// Amount of pinned memory we should allocate
     size_t pinnedMemSize_;
 
@@ -198,6 +212,10 @@ class StandardGpuResourcesImpl : public GpuResources {
 class StandardGpuResources : public GpuResourcesProvider {
    public:
     StandardGpuResources();
+
+    StandardGpuResources(
+            const std::unordered_map<AllocType, size_t>& allocSizePerTypeMap);
+
     ~StandardGpuResources() override;
 
     std::shared_ptr<GpuResources> getResources() override;

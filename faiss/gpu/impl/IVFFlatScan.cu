@@ -433,7 +433,8 @@ void runIVFFlatScan(
     DeviceTensor<idx_t, 3, true>* heapIndices[2] = {
             &heapIndices1, &heapIndices2};
 
-    auto streams = res->getAlternateStreamsCurrentDevice();
+    auto allStreams = res->getAlternateStreamsCurrentDevice();
+    std::vector<cudaStream_t> streams = {allStreams[0], allStreams[1]};
     streamWait(streams, {stream});
 
     int curStream = 0;

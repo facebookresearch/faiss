@@ -102,11 +102,32 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl()
           tempMemSize_(getDefaultTempMemForGPU(
                   -1,
                   std::numeric_limits<size_t>::max())),
+          allocSizePerTypeMap_(),
+          pinnedMemSize_(kDefaultPinnedMemoryAllocation),
+          allocLogging_(false) {
+}
+
+StandardGpuResourcesImpl::StandardGpuResourcesImpl(
+        const std::unordered_map<AllocType, size_t>& allocSizePerTypeMap)
+        :
+#if defined USE_NVIDIA_CUVS
+          mmr_(new rmm::mr::managed_memory_resource),
+          pmr_(new rmm::mr::pinned_memory_resource),
+#endif
+          pinnedMemAlloc_(nullptr),
+          pinnedMemAllocSize_(0),
+          // let the adjustment function determine the memory size for us by
+          // passing in a huge value that will then be adjusted
+          tempMemSize_(getDefaultTempMemForGPU(
+                  -1,
+                  std::numeric_limits<size_t>::max())),
+          allocSizePerTypeMap_(allocSizePerTypeMap),
           pinnedMemSize_(kDefaultPinnedMemoryAllocation),
           allocLogging_(false) {
 }
 
 StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
+    allocPerTypeMap_.clear();
     // The temporary memory allocator has allocated memory through us, so clean
     // that up before we finish fully de-initializing ourselves
     tempMemory_.clear();
@@ -445,6 +466,15 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
     FAISS_ASSERT(allocs_.count(device) == 0);
     allocs_[device] = std::unordered_map<void*, AllocRequest>();
 
+    FAISS_ASSERT(allocPerTypeMap_.count(device) == 0);
+
+    for (auto&& allocSizePerType : allocSizePerTypeMap_) {
+        auto allocMem = std::unique_ptr<FixedDeviceMemory>(
+                new FixedDeviceMemory(this, device, allocSizePerType.second));
+        allocPerTypeMap_[device].emplace(
+                allocSizePerType.first, std::move(allocMem));
+    }
+
     FAISS_ASSERT(tempMemory_.count(device) == 0);
     auto mem = std::make_unique<StackDeviceMemory>(
             this,
@@ -611,10 +641,26 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             FAISS_THROW_IF_NOT_FMT(err == cudaSuccess, "%s", str.c_str());
         }
 #endif
+    } else if (adjReq.space == MemorySpace::Fixed) {
+        p = allocPerTypeMap_[adjReq.device][adjReq.type]->allocMemory(req.size);
+
+        if (p == nullptr) {
+            // We need to allocate this ourselves
+            AllocRequest newReq = req;
+            newReq.space = MemorySpace::Device;
+            newReq.type = AllocType::FixedMemoryOverflow;
+
+            if (allocLogging_) {
+                std::cout
+                        << "StandardGpuResources: alloc fail " << req.toString()
+                        << " (no fixed space); retrying as MemorySpace::Device\n";
+            }
+
+            return allocMemory(newReq);
+        }
     } else {
         FAISS_ASSERT_FMT(false, "unknown MemorySpace %d", (int)adjReq.space);
     }
-
     if (allocLogging_) {
         std::cout << "StandardGpuResources: alloc ok " << adjReq.toString()
                   << " ptr 0x" << p << "\n";
@@ -658,6 +704,8 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
                 (int)err,
                 cudaGetErrorString(err));
 #endif
+    } else if (req.space == MemorySpace::Fixed) {
+        // does not need to dealloc
     } else {
         FAISS_ASSERT_FMT(false, "unknown MemorySpace %d", (int)req.space);
     }
@@ -701,6 +749,10 @@ StandardGpuResourcesImpl::getMemoryInfo() const {
 
 StandardGpuResources::StandardGpuResources()
         : res_(new StandardGpuResourcesImpl) {}
+
+StandardGpuResources::StandardGpuResources(
+        const std::unordered_map<AllocType, size_t>& allocSizePerTypeMap)
+        : res_(new StandardGpuResourcesImpl(allocSizePerTypeMap)) {}
 
 StandardGpuResources::~StandardGpuResources() = default;
 

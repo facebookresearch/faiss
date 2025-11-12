@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 //
 // Kernels for non-L2 / inner product distances
@@ -350,7 +351,8 @@ void runGeneralDistance(
     DeviceTensor<idx_t, 2, true>* outIndexBufs[2] = {
             &outIndexBuf1, &outIndexBuf2};
 
-    auto streams = res->getAlternateStreamsCurrentDevice();
+    auto allStreams = res->getAlternateStreamsCurrentDevice();
+    std::vector<cudaStream_t> streams = {allStreams[0], allStreams[1]};
     streamWait(streams, {stream});
 
     int curStream = 0;

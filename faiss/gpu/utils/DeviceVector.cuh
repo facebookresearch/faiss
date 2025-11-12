@@ -132,7 +132,7 @@ class DeviceVector {
     bool resize(size_t newSize, cudaStream_t stream) {
         bool mem = false;
 
-        if (newSize > capacity_) {
+        if (num_ < newSize && newSize > capacity_) {
             mem = reserve(getNewCapacity_(newSize), stream);
         }
 

@@ -30,6 +30,62 @@ void runCalcResidual(
         Tensor<float, 2, true>& residuals,
         cudaStream_t stream);
 
+/**
+ * @param vecs (2 * numVecsPerCodebook)(subDim)
+ * @param centroids (2 * numCentroidPerCodebook)(subDim)
+ * @param vecToCentroid (2 * numVecsPerCodebook)
+ * @param residuals (2 * numVecsPerCodebook)(subDim * 2)
+ * @param stream executing stream
+ */
+void runCalcResidual(
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& centroids,
+        Tensor<ushort2, 1, true>& vecToCentroid,
+        Tensor<float, 2, true>& residuals,
+        cudaStream_t stream);
+
+/**
+ * @param vecs (2 * numVecsPerCodebook)(subDim)
+ * @param centroids (2 * numCentroidPerCodebook)(subDim)
+ * @param vecToCentroid (2 * numVecsPerCodebook)
+ * @param residuals (2 * numVecsPerCodebook)(subDim * 2)
+ * @param stream executing stream
+ */
+void runCalcResidual(
+        Tensor<float, 2, true>& vecs,
+        Tensor<half, 2, true>& centroids,
+        Tensor<ushort2, 1, true>& vecToCentroid,
+        Tensor<float, 2, true>& residuals,
+        cudaStream_t stream);
+
+/**
+ * @param vecs (2 * numVecsPerCodebook)(subDim)
+ * @param centroids (2 * numCentroidPerCodebook)(subDim)
+ * @param vecToCentroid (2 * numVecsPerCodebook)
+ * @param residuals (2 * numVecsPerCodebook)(subDim * 2)
+ * @param stream executing stream
+ */
+void runCalcResidual(
+        Tensor<float, 2, true>& vecs,
+        Tensor<float, 2, true>& centroids,
+        Tensor<int2, 1, true>& vecToCentroid,
+        Tensor<float, 2, true>& residuals,
+        cudaStream_t stream);
+
+/**
+ * @param vecs (2 * numVecsPerCodebook)(subDim)
+ * @param centroids (2 * numCentroidPerCodebook)(subDim)
+ * @param vecToCentroid (2 * numVecsPerCodebook)
+ * @param residuals (2 * numVecsPerCodebook)(subDim * 2)
+ * @param stream executing stream
+ */
+void runCalcResidual(
+        Tensor<float, 2, true>& vecs,
+        Tensor<half, 2, true>& centroids,
+        Tensor<int2, 1, true>& vecToCentroid,
+        Tensor<float, 2, true>& residuals,
+        cudaStream_t stream);
+
 // Gather vectors
 void runReconstruct(
         Tensor<idx_t, 1, true>& listIds,
