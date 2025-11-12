@@ -3,12 +3,12 @@
   <compounddef id="structfaiss_1_1PartitionStats" kind="struct" language="C++" prot="public">
     <compoundname>faiss::PartitionStats</compoundname>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1PartitionStats_1afd4b2492bce97a2d1b6c65967125ad26" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
-        <definition>uint64_t faiss::PartitionStats::bissect_cycles</definition>
+        <definition>uint64_t faiss::PartitionStats::bisect_cycles</definition>
         <argsstring></argsstring>
-        <name>bissect_cycles</name>
-        <qualifiedname>faiss::PartitionStats::bissect_cycles</qualifiedname>
+        <name>bisect_cycles</name>
+        <qualifiedname>faiss::PartitionStats::bisect_cycles</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -68,7 +68,7 @@
     </detaileddescription>
     <location file="faiss/utils/partitioning.h" line="61" column="1" bodyfile="faiss/utils/partitioning.h" bodystart="61" bodyend="69"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>bissect_cycles</name></member>
+      <member refid="structfaiss_1_1PartitionStats_1afd4b2492bce97a2d1b6c65967125ad26" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>bisect_cycles</name></member>
       <member refid="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>compress_cycles</name></member>
       <member refid="structfaiss_1_1PartitionStats_1aa9f9c8030b1ea6fd37df7f3cfff04d4f" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>PartitionStats</name></member>
       <member refid="structfaiss_1_1PartitionStats_1a2d09e115d4435fecc6af519e5fc10802" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>reset</name></member>

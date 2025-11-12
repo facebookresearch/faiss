@@ -89,7 +89,7 @@
 <codeline lineno="23"><highlight class="comment"><sp/>*<sp/>The<sp/>objective<sp/>is<sp/>to<sp/>separate<sp/>the<sp/>different<sp/>interpretations<sp/>of<sp/>the<sp/>same</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>registers<sp/>(as<sp/>a<sp/>vector<sp/>of<sp/>uint8,<sp/>uint16<sp/>or<sp/>uint32),<sp/>to<sp/>provide<sp/>printing</highlight></codeline>
 <codeline lineno="25"><highlight class="comment"><sp/>*<sp/>functions,<sp/>and<sp/>to<sp/>give<sp/>more<sp/>readable<sp/>names<sp/>to<sp/>the<sp/>AVX<sp/>intrinsics.<sp/>It<sp/>does<sp/>not</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>pretend<sp/>to<sp/>be<sp/>exhausitve,<sp/>functions<sp/>are<sp/>added<sp/>as<sp/>needed.</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>pretend<sp/>to<sp/>be<sp/>exhaustive,<sp/>functions<sp/>are<sp/>added<sp/>as<sp/>needed.</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="29"><highlight class="comment">///<sp/>512-bit<sp/>representation<sp/>without<sp/>interpretation<sp/>as<sp/>a<sp/>vector</highlight></codeline>

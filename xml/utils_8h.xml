@@ -213,7 +213,7 @@
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>-*-<sp/>c++<sp/>-*-</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
-<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/>A<sp/>few<sp/>utilitary<sp/>functions<sp/>for<sp/>similarity<sp/>search:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/>A<sp/>few<sp/>utility<sp/>functions<sp/>for<sp/>similarity<sp/>search:</highlight></codeline>
 <codeline lineno="12"><highlight class="comment"><sp/>*<sp/>-<sp/>optimized<sp/>exhaustive<sp/>distance<sp/>and<sp/>knn<sp/>search<sp/>functions</highlight></codeline>
 <codeline lineno="13"><highlight class="comment"><sp/>*<sp/>-<sp/>some<sp/>functions<sp/>reimplemented<sp/>from<sp/>torch<sp/>for<sp/>speed</highlight></codeline>
 <codeline lineno="14"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -269,7 +269,7 @@
 <codeline lineno="64" refid="namespacefaiss_1ad5827240bc67d6f8a612ba8761b34714" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad5827240bc67d6f8a612ba8761b34714" kindref="member">ranklist_handle_ties</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k,<sp/>int64_t*<sp/>idx,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis);</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="66"><highlight class="comment">/**<sp/>count<sp/>the<sp/>number<sp/>of<sp/>common<sp/>elements<sp/>between<sp/>v1<sp/>and<sp/>v2</highlight></codeline>
-<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>algorithm<sp/>=<sp/>sorting<sp/>+<sp/>bissection<sp/>to<sp/>avoid<sp/>double-counting<sp/>duplicates</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>algorithm<sp/>=<sp/>sorting<sp/>+<sp/>bisection<sp/>to<sp/>avoid<sp/>double-counting<sp/>duplicates</highlight></codeline>
 <codeline lineno="68"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="69" refid="namespacefaiss_1a104f2c4626def41c53ad1ca0027741cb" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a104f2c4626def41c53ad1ca0027741cb" kindref="member">ranklist_intersection_size</ref>(</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k1,</highlight></codeline>

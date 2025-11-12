@@ -78,7 +78,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Feed forward layer that expands to a hidden dimension, applies a ReLU non linearity and maps back to the orignal dimension </para>
+<para>Feed forward layer that expands to a hidden dimension, applies a ReLU non linearity and maps back to the original dimension </para>
     </detaileddescription>
     <collaborationgraph>
       <node id="1">

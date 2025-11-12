@@ -435,7 +435,7 @@
 <codeline lineno="324"><highlight class="comment"><sp/>*<sp/><sp/>vector<sp/>y,<sp/>for<sp/>the<sp/>L2<sp/>distance</highlight></codeline>
 <codeline lineno="325"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/>query<sp/>vectors,<sp/>size<sp/>nx<sp/>*<sp/>d</highlight></codeline>
 <codeline lineno="326"><highlight class="comment"><sp/>*<sp/>@param<sp/>y<sp/><sp/><sp/><sp/>database<sp/>vectors,<sp/>size<sp/>ny<sp/>*<sp/>d</highlight></codeline>
-<codeline lineno="327"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>heap<sp/>strcture,<sp/>which<sp/>also<sp/>provides<sp/>k.<sp/>Sorted<sp/>on<sp/>output</highlight></codeline>
+<codeline lineno="327"><highlight class="comment"><sp/>*<sp/>@param<sp/>res<sp/><sp/>result<sp/>heap<sp/>structure,<sp/>which<sp/>also<sp/>provides<sp/>k.<sp/>Sorted<sp/>on<sp/>output</highlight></codeline>
 <codeline lineno="328"><highlight class="comment"><sp/>*<sp/>@param<sp/>y_norm2<sp/><sp/><sp/><sp/>(optional)<sp/>norms<sp/>for<sp/>the<sp/>y<sp/>vectors<sp/>(nullptr<sp/>or<sp/>size<sp/>ny)</highlight></codeline>
 <codeline lineno="329"><highlight class="comment"><sp/>*<sp/>@param<sp/>sel<sp/><sp/>search<sp/>in<sp/>this<sp/>subset<sp/>of<sp/>vectors</highlight></codeline>
 <codeline lineno="330"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>

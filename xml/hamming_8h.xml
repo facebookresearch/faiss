@@ -183,7 +183,7 @@
 <codeline lineno="14"><highlight class="comment"><sp/>*<sp/>fvecs2bitvecs).</highlight></codeline>
 <codeline lineno="15"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="16"><highlight class="comment"><sp/>*<sp/>User-defined<sp/>type<sp/>hamdis_t<sp/>is<sp/>used<sp/>for<sp/>distances<sp/>because<sp/>at<sp/>this<sp/>time</highlight></codeline>
-<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>it<sp/>is<sp/>still<sp/>uncler<sp/>clear<sp/>how<sp/>we<sp/>will<sp/>need<sp/>to<sp/>balance</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>it<sp/>is<sp/>still<sp/>unclear<sp/>clear<sp/>how<sp/>we<sp/>will<sp/>need<sp/>to<sp/>balance</highlight></codeline>
 <codeline lineno="18"><highlight class="comment"><sp/>*<sp/>-<sp/>flexibility<sp/>in<sp/>vector<sp/>size<sp/>(may<sp/>need<sp/>16-<sp/>or<sp/>even<sp/>8-bit<sp/>vectors)</highlight></codeline>
 <codeline lineno="19"><highlight class="comment"><sp/>*<sp/>-<sp/>memory<sp/>usage</highlight></codeline>
 <codeline lineno="20"><highlight class="comment"><sp/>*<sp/>-<sp/>cache-misses<sp/>when<sp/>dealing<sp/>with<sp/>large<sp/>volumes<sp/>of<sp/>data<sp/>(fewer<sp/>bits<sp/>is<sp/>better)</highlight></codeline>

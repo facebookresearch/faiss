@@ -378,7 +378,7 @@
 <codeline lineno="190"><highlight class="normal"></highlight></codeline>
 <codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
 <codeline lineno="192"><highlight class="comment"><sp/>*<sp/>Dispatching<sp/>function<sp/>that<sp/>takes<sp/>a<sp/>metric<sp/>type<sp/>and<sp/>a<sp/>consumer<sp/>object</highlight></codeline>
-<codeline lineno="193"><highlight class="comment"><sp/>*<sp/>the<sp/>consumer<sp/>object<sp/>should<sp/>contain<sp/>a<sp/>retun<sp/>type<sp/>T<sp/>and<sp/>a<sp/>operation<sp/>template</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/>*<sp/>the<sp/>consumer<sp/>object<sp/>should<sp/>contain<sp/>a<sp/>return<sp/>type<sp/>T<sp/>and<sp/>a<sp/>operation<sp/>template</highlight></codeline>
 <codeline lineno="194"><highlight class="comment"><sp/>*<sp/>function<sp/>f()<sp/>that<sp/>is<sp/>called<sp/>to<sp/>perform<sp/>the<sp/>operation.<sp/>The<sp/>first<sp/>argument</highlight></codeline>
 <codeline lineno="195"><highlight class="comment"><sp/>*<sp/>of<sp/>the<sp/>function<sp/>is<sp/>the<sp/>VectorDistance<sp/>object.<sp/>The<sp/>rest<sp/>are<sp/>passed<sp/>in<sp/>as<sp/>is.</highlight></codeline>
 <codeline lineno="196"><highlight class="comment"><sp/>**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>

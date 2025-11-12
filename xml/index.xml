@@ -8127,7 +8127,7 @@
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1acf5c696ddb1a7c507fa0de0cff998b1c" kind="function"><name>set_list_context</name></member>
   </compound>
   <compound refid="structfaiss_1_1PartitionStats" kind="struct"><name>faiss::PartitionStats</name>
-    <member refid="structfaiss_1_1PartitionStats_1a46c75f722bb31664cb0604cce4e003da" kind="variable"><name>bissect_cycles</name></member>
+    <member refid="structfaiss_1_1PartitionStats_1afd4b2492bce97a2d1b6c65967125ad26" kind="variable"><name>bisect_cycles</name></member>
     <member refid="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52" kind="variable"><name>compress_cycles</name></member>
     <member refid="structfaiss_1_1PartitionStats_1aa9f9c8030b1ea6fd37df7f3cfff04d4f" kind="function"><name>PartitionStats</name></member>
     <member refid="structfaiss_1_1PartitionStats_1a2d09e115d4435fecc6af519e5fc10802" kind="function"><name>reset</name></member>

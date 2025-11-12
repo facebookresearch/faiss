@@ -193,7 +193,7 @@
 <codeline lineno="25"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"></highlight></codeline>
 <codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/>class<sp/>that<sp/>manages<sp/>suitably<sp/>aligned<sp/>arrays<sp/>for<sp/>SIMD</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/>T<sp/>should<sp/>be<sp/>a<sp/>POV<sp/>type.<sp/>The<sp/>default<sp/>alignment<sp/>is<sp/>32<sp/>for<sp/>AVX</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">//<sp/>T<sp/>should<sp/>be<sp/>a<sp/>POD<sp/>type.<sp/>The<sp/>default<sp/>alignment<sp/>is<sp/>32<sp/>for<sp/>AVX</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>T,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>A<sp/>=<sp/>32&gt;</highlight></codeline>
 <codeline lineno="30" refid="structfaiss_1_1AlignedTableTightAlloc" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1AlignedTableTightAlloc" kindref="compound">AlignedTableTightAlloc</ref><sp/>{</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>ptr;</highlight></codeline>

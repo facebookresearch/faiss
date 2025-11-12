@@ -683,7 +683,7 @@
 <codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>bh_ids[i]<sp/>=<sp/>id;</highlight></codeline>
 <codeline lineno="151"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="152"><highlight class="normal"></highlight></codeline>
-<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instantiation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight></codeline>
 <codeline lineno="155"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
 <codeline lineno="156"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_pop(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>k,<sp/>T*<sp/>bh_val,<sp/>int64_t*<sp/>bh_ids)<sp/>{</highlight></codeline>
@@ -926,7 +926,7 @@
 <codeline lineno="393"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="394"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="395"><highlight class="normal"></highlight></codeline>
-<codeline lineno="396"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instanciation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="396"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Partial<sp/>instantiation<sp/>for<sp/>heaps<sp/>with<sp/>TI<sp/>=<sp/>int64_t<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="397"><highlight class="normal"></highlight></codeline>
 <codeline lineno="398"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
 <codeline lineno="399"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>minheap_addn(</highlight></codeline>
@@ -1022,7 +1022,7 @@
 <codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a4b131abb659e7d0ee315223270deac53" kindref="member">val</ref><sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;</highlight></codeline>
 <codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="491"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="492"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Correspponding<sp/>identifiers</highlight></codeline>
+<codeline lineno="492"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Corresponding<sp/>identifiers</highlight></codeline>
 <codeline lineno="493" refid="structfaiss_1_1HeapArray_1a492695267029cdd40776d87e749ab106" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>TI*<sp/><ref refid="structfaiss_1_1HeapArray_1a492695267029cdd40776d87e749ab106" kindref="member">get_ids</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>key)<sp/>{</highlight></codeline>
 <codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HeapArray_1a22332dd179ce70e379addeaa47246cc2" kindref="member">ids</ref><sp/>+<sp/>key<sp/>*<sp/><ref refid="structfaiss_1_1HeapArray_1a1ee98429c766c77235f78c6d9aa32bb4" kindref="member">k</ref>;</highlight></codeline>
 <codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>

@@ -143,11 +143,11 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>v,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>valid,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>out)<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>wwrite<sp/>out<sp/>packed<sp/>data</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Lower<sp/>24<sp/>lanes<sp/>write<sp/>out<sp/>packed<sp/>data</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>laneFrom<sp/>=<sp/>(laneId<sp/>*<sp/>8)<sp/>/<sp/>5;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>valid<sp/>?<sp/>v<sp/>:<sp/>0;</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x1f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>6<sp/>bits</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>&amp;=<sp/>0x1f;<sp/>//<sp/>ensure<sp/>we<sp/>have<sp/>only<sp/>5<sp/>bits</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>lo<sp/>=<sp/>(uint8_t)SHFL_SYNC((unsigned<sp/>int)v,<sp/>laneFrom,<sp/>kWarpSize);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>hi<sp/>=</highlight></codeline>

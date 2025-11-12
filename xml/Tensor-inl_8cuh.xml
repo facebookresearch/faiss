@@ -185,7 +185,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(this-&gt;isContiguous());</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Size<sp/>must<sp/>be<sp/>the<sp/>same<sp/>(since<sp/>dimensions<sp/>are<sp/>checked<sp/>and</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>continuity<sp/>is<sp/>assumed,<sp/>we<sp/>need<sp/>only<sp/>check<sp/>total<sp/>number<sp/>of</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>contiguity<sp/>is<sp/>assumed,<sp/>we<sp/>need<sp/>only<sp/>check<sp/>total<sp/>number<sp/>of</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>elements</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(this-&gt;numElements()<sp/>==<sp/>t.numElements());</highlight></codeline>
 <codeline></codeline>
@@ -229,7 +229,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(this-&gt;isContiguous());</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Size<sp/>must<sp/>be<sp/>the<sp/>same<sp/>(since<sp/>dimensions<sp/>are<sp/>checked<sp/>and</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>continuity<sp/>is<sp/>assumed,<sp/>we<sp/>need<sp/>only<sp/>check<sp/>total<sp/>number<sp/>of</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>contiguity<sp/>is<sp/>assumed,<sp/>we<sp/>need<sp/>only<sp/>check<sp/>total<sp/>number<sp/>of</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>elements</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>GPU_FAISS_ASSERT(this-&gt;numElements()<sp/>==<sp/>t.numElements());</highlight></codeline>
 <codeline></codeline>

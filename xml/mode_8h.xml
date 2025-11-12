@@ -155,7 +155,7 @@
 <para>Represents the mode of use of approximate top-k computations that allows to trade accuracy vs speed. So, every options besides EXACT_TOPK increases the speed.</para>
 <para>B represents the number of buckets. D is the number of min-k elements to track within every bucket.</para>
 <para>Default option is EXACT_TOPK. APPROX_TOPK_BUCKETS_B16_D2 is worth starting from, if you&apos;d like to experiment a bit.</para>
-<para>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so ones were not introduced.</para>
+<para>It seems that only the limited number of combinations are meaningful, because of the limited supply of SIMD registers. Also, certain combinations, such as B32_D1 and B16_D1, were concluded to be not very precise in benchmarks, so they were not introduced.</para>
 <para>TODO: Consider d-ary SIMD heap. </para>
         </detaileddescription>
         <inbodydescription>
@@ -191,7 +191,7 @@
 <codeline lineno="21"><highlight class="comment">///<sp/>It<sp/>seems<sp/>that<sp/>only<sp/>the<sp/>limited<sp/>number<sp/>of<sp/>combinations<sp/>are</highlight></codeline>
 <codeline lineno="22"><highlight class="comment">///<sp/>meaningful,<sp/>because<sp/>of<sp/>the<sp/>limited<sp/>supply<sp/>of<sp/>SIMD<sp/>registers.</highlight></codeline>
 <codeline lineno="23"><highlight class="comment">///<sp/>Also,<sp/>certain<sp/>combinations,<sp/>such<sp/>as<sp/>B32_D1<sp/>and<sp/>B16_D1,<sp/>were<sp/>concluded</highlight></codeline>
-<codeline lineno="24"><highlight class="comment">///<sp/>to<sp/>be<sp/>not<sp/>very<sp/>precise<sp/>in<sp/>benchmarks,<sp/>so<sp/>ones<sp/>were<sp/>not<sp/>introduced.</highlight></codeline>
+<codeline lineno="24"><highlight class="comment">///<sp/>to<sp/>be<sp/>not<sp/>very<sp/>precise<sp/>in<sp/>benchmarks,<sp/>so<sp/>they<sp/>were<sp/>not<sp/>introduced.</highlight></codeline>
 <codeline lineno="25"><highlight class="comment">///</highlight></codeline>
 <codeline lineno="26"><highlight class="comment">///<sp/>TODO:<sp/>Consider<sp/>d-ary<sp/>SIMD<sp/>heap.</highlight></codeline>
 <codeline lineno="27"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>

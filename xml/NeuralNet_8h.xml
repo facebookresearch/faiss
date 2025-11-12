@@ -130,7 +130,7 @@
 <codeline lineno="75"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="77"><highlight class="comment">///<sp/>Feed<sp/>forward<sp/>layer<sp/>that<sp/>expands<sp/>to<sp/>a<sp/>hidden<sp/>dimension,<sp/>applies<sp/>a<sp/>ReLU<sp/>non</highlight></codeline>
-<codeline lineno="78"><highlight class="comment">///<sp/>linearity<sp/>and<sp/>maps<sp/>back<sp/>to<sp/>the<sp/>orignal<sp/>dimension</highlight></codeline>
+<codeline lineno="78"><highlight class="comment">///<sp/>linearity<sp/>and<sp/>maps<sp/>back<sp/>to<sp/>the<sp/>original<sp/>dimension</highlight></codeline>
 <codeline lineno="79" refid="structfaiss_1_1nn_1_1FFN" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1nn_1_1FFN" kindref="compound">FFN</ref><sp/>{</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1nn_1_1Linear" kindref="compound">Linear</ref><sp/>linear1,<sp/>linear2;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"></highlight></codeline>
@@ -158,7 +158,7 @@
 <codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>residual_blocks[i];</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>encode<sp/>a<sp/>set<sp/>of<sp/>vectors<sp/>x<sp/>with<sp/>intial<sp/>estimate<sp/>xhat.<sp/>Optionally<sp/>return</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>encode<sp/>a<sp/>set<sp/>of<sp/>vectors<sp/>x<sp/>with<sp/>initial<sp/>estimate<sp/>xhat.<sp/>Optionally<sp/>return</highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>the<sp/>delta<sp/>to<sp/>be<sp/>added<sp/>to<sp/>xhat<sp/>to<sp/>form<sp/>the<sp/>new<sp/>xhat<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="108" refid="structfaiss_1_1QINCoStep_1a25b36f2b59e01b903aef242e9e69bfd0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Int32Tensor2D</ref><sp/><ref refid="structfaiss_1_1QINCoStep_1a25b36f2b59e01b903aef242e9e69bfd0" kindref="member">encode</ref>(</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kindref="compound">nn::Tensor2D</ref>&amp;<sp/>xhat,</highlight></codeline>

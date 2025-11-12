@@ -33,7 +33,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;GpuResources&gt;<sp/>res;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>device;</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>4,<sp/>true&gt;<sp/>bterm;<sp/><sp/><sp/><sp/><sp/>///&lt;<sp/>bianry<sp/>terms,<sp/>size<sp/>[M,<sp/>M,<sp/>K,<sp/>K]</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>4,<sp/>true&gt;<sp/>bterm;<sp/><sp/><sp/><sp/><sp/>///&lt;<sp/>binary<sp/>terms,<sp/>size<sp/>[M,<sp/>M,<sp/>K,<sp/>K]</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>DeviceTensor&lt;float,<sp/>3,<sp/>true&gt;<sp/>codebooks;<sp/>///&lt;<sp/>codebooks,<sp/>size<sp/>[M,<sp/>K,<sp/>dims]</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>IcmEncoderImpl(</highlight></codeline>

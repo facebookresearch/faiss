@@ -54,7 +54,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(sub<sp/>q)(code<sp/>id)(sub<sp/>dim)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>3,<sp/>true&gt;<sp/>getPQCentroids();</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Find<sp/>the<sp/>approximate<sp/>k<sp/>nearest<sp/>neigbors<sp/>for<sp/>`queries`<sp/>against</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Find<sp/>the<sp/>approximate<sp/>k<sp/>nearest<sp/>neighbors<sp/>for<sp/>`queries`<sp/>against</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>our<sp/>database</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>search(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Index*<sp/>coarseQuantizer,</highlight></codeline>

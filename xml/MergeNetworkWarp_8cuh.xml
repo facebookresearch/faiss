@@ -47,7 +47,7 @@
 <codeline><highlight class="normal">//<sp/>template<sp/>specialization<sp/>/<sp/>expansion<sp/>and<sp/>constexpr,<sp/>and<sp/>it<sp/>uses<sp/>warp</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>shuffles<sp/>to<sp/>exchange<sp/>values<sp/>between<sp/>warp<sp/>lanes.</highlight></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
-<codeline><highlight class="normal">//<sp/>A<sp/>note<sp/>about<sp/>comparsions:</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>A<sp/>note<sp/>about<sp/>comparisons:</highlight></codeline>
 <codeline><highlight class="normal">//</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>For<sp/>a<sp/>sorting<sp/>network<sp/>of<sp/>keys<sp/>only,<sp/>we<sp/>only<sp/>need<sp/>one</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>comparison<sp/>(a<sp/>&lt;<sp/>b).<sp/>However,<sp/>what<sp/>we<sp/>really<sp/>need<sp/>to<sp/>know<sp/>is</highlight></codeline>
@@ -83,7 +83,7 @@
 <codeline><highlight class="normal">//<sp/>I<sp/>have<sp/>tried<sp/>both<sp/>re-arranging<sp/>the<sp/>order<sp/>in<sp/>the<sp/>higher<sp/>lane<sp/>to<sp/>get</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>away<sp/>with<sp/>one<sp/>comparison<sp/>or<sp/>adding<sp/>the<sp/>value<sp/>to<sp/>the<sp/>check;<sp/>both</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>result<sp/>in<sp/>greater<sp/>register<sp/>consumption<sp/>or<sp/>lower<sp/>speed<sp/>than<sp/>just</highlight></codeline>
-<codeline><highlight class="normal">//<sp/>perfoming<sp/>both<sp/>&lt;<sp/>and<sp/>&gt;<sp/>comparisons<sp/>with<sp/>the<sp/>variables,<sp/>so<sp/>I<sp/>just</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>performing<sp/>both<sp/>&lt;<sp/>and<sp/>&gt;<sp/>comparisons<sp/>with<sp/>the<sp/>variables,<sp/>so<sp/>I<sp/>just</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>stick<sp/>with<sp/>this.</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>function<sp/>merges<sp/>kWarpSize<sp/>/<sp/>2L<sp/>lists<sp/>in<sp/>parallel<sp/>using<sp/>warp</highlight></codeline>

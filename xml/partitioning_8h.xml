@@ -128,7 +128,7 @@
 <codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>q_max,</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>q_out);</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="31"><highlight class="comment">/**<sp/>simplified<sp/>interface<sp/>for<sp/>when<sp/>the<sp/>parition<sp/>is<sp/>not<sp/>fuzzy<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">/**<sp/>simplified<sp/>interface<sp/>for<sp/>when<sp/>the<sp/>partition<sp/>is<sp/>not<sp/>fuzzy<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
 <codeline lineno="33" refid="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T<sp/><ref refid="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" kindref="member">partition</ref>(</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>vals,</highlight></codeline>
@@ -159,7 +159,7 @@
 <codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>hist);</highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight></codeline>
 <codeline lineno="61" refid="structfaiss_1_1PartitionStats" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1PartitionStats" kindref="compound">PartitionStats</ref><sp/>{</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>bissect_cycles;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>bisect_cycles;</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>uint64_t<sp/>compress_cycles;</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"></highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1PartitionStats" kindref="compound">PartitionStats</ref>()<sp/>{</highlight></codeline>

@@ -174,7 +174,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>encode a set of vectors x with intial estimate xhat. Optionally return the delta to be added to xhat to form the new xhat </para>
+<para>encode a set of vectors x with initial estimate xhat. Optionally return the delta to be added to xhat to form the new xhat </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
