@@ -436,21 +436,8 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
 
     uint8_t* recons_buffer = new uint8_t[code_size];
 
-    const uint8_t* codes_base = codes[list_no].data();
-
-    size_t batch_no = offset / kBatchSize;
-    size_t pos_in_batch = offset % kBatchSize;
-    size_t batch_offset = batch_no * kBatchSize * code_size;
-
-    for (size_t level = 0; level < n_levels; level++) {
-        size_t level_offset = level * level_width * kBatchSize;
-        const uint8_t* src = codes_base + batch_offset + level_offset +
-                pos_in_batch * level_width;
-        uint8_t* dest = recons_buffer + level * level_width;
-        size_t copy_size =
-                std::min(level_width, code_size - level * level_width);
-        memcpy(dest, src, copy_size);
-    }
+    float* recons = reinterpret_cast<float*>(recons_buffer);
+    pano.reconstruct(offset, recons, codes[list_no].data());
 
     return recons_buffer;
 }

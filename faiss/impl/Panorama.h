@@ -103,6 +103,8 @@ struct Panorama {
             std::vector<float>& exact_distances,
             float threshold,
             PanoramaStats& local_stats) const;
+
+    void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
 
 template <typename C>

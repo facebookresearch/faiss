@@ -128,4 +128,23 @@ void Panorama::compute_query_cum_sums(const float* query, float* query_cum_sums)
 
     query_cum_sums[n_levels] = 0.0f;
 }
+
+void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
+        const {
+    uint8_t* recons_buffer = reinterpret_cast<uint8_t*>(recons);
+
+    size_t batch_no = key / batch_size;
+    size_t pos_in_batch = key % batch_size;
+    size_t batch_offset = batch_no * batch_size * code_size;
+
+    for (size_t level = 0; level < n_levels; level++) {
+        size_t level_offset = level * level_width * batch_size;
+        const uint8_t* src = codes_base + batch_offset + level_offset +
+                pos_in_batch * level_width;
+        uint8_t* dest = recons_buffer + level * level_width;
+        size_t copy_size =
+                std::min(level_width, code_size - level * level_width);
+        memcpy(dest, src, copy_size);
+    }
+}
 } // namespace faiss

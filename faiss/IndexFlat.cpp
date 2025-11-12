@@ -656,7 +656,11 @@ void IndexFlatPanorama::reset() {
 }
 
 void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_MSG("reconstruct not implemented for IndexFlatPanorama");
+    pano.reconstruct(key, recons, codes.data());
+}
+
+void IndexFlatPanorama::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
+    Index::reconstruct_n(i0, ni, recons);
 }
 
 size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {

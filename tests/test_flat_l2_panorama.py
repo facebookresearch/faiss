@@ -451,6 +451,25 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         D_pan_2, I_pan_2 = index_panorama.search(xq2, k)
         self.assert_search_results_equal(D_reg_2, I_reg_2, D_pan_2, I_pan_2)
 
+    def test_reconstruct(self):
+        """Test reconstruct and reconstruct_n return original vectors"""
+        d, nb, nt, nq, nlevels = 128, 10000, 15000, 10, 8
+        _, xb, _ = self.generate_data(d, nt, nb, nq, seed=2025)
+
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        # Test reconstruct for single vector
+        idx = 123
+        v_panorama = index_panorama.reconstruct(idx)
+
+        np.testing.assert_array_equal(xb[idx], v_panorama)
+
+        # Test reconstruct_n for range of vectors
+        start_idx, n_vectors = 120, 10
+        vn_panorama = index_panorama.reconstruct_n(start_idx, n_vectors)
+
+        np.testing.assert_array_equal(xb[start_idx:start_idx + n_vectors], vn_panorama)
+
     def test_serialization(self):
         """Test that writing and reading Panorama indexes preserves search results"""
         d, nb, nt, nq, nlevels, k = 128, 10000, 15000, 100, 8, 20
