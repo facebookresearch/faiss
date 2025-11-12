@@ -145,7 +145,7 @@ struct IndexFlatPanorama : IndexFlat {
 
     void reconstruct(idx_t key, float* recons) const override;
 
-    void reconstruct_n(idx_t i0, idx_t ni, float* recons) const override;
+    void reconstruct_n(idx_t i, idx_t n, float* recons) const override;
 
     size_t remove_ids(const IDSelector& sel) override;
 

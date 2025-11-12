@@ -659,8 +659,8 @@ void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
     pano.reconstruct(key, recons, codes.data());
 }
 
-void IndexFlatPanorama::reconstruct_n(idx_t i0, idx_t ni, float* recons) const {
-    Index::reconstruct_n(i0, ni, recons);
+void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
+    Index::reconstruct_n(i, n, recons);
 }
 
 size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
