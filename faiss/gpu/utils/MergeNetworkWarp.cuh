@@ -38,7 +38,7 @@ namespace gpu {
 // template specialization / expansion and constexpr, and it uses warp
 // shuffles to exchange values between warp lanes.
 //
-// A note about comparsions:
+// A note about comparisons:
 //
 // For a sorting network of keys only, we only need one
 // comparison (a < b). However, what we really need to know is
@@ -74,7 +74,7 @@ namespace gpu {
 // I have tried both re-arranging the order in the higher lane to get
 // away with one comparison or adding the value to the check; both
 // result in greater register consumption or lower speed than just
-// perfoming both < and > comparisons with the variables, so I just
+// performing both < and > comparisons with the variables, so I just
 // stick with this.
 
 // This function merges kWarpSize / 2L lists in parallel using warp

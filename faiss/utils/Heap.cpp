@@ -139,7 +139,7 @@ void HeapArray<C>::per_line_extrema(T* out_val, TI* out_ids) const {
     }
 }
 
-// explicit instanciations
+// explicit instantiations
 
 template struct HeapArray<CMin<float, int64_t>>;
 template struct HeapArray<CMax<float, int64_t>>;
@@ -238,7 +238,7 @@ void merge_knn_results(
     }
 }
 
-// explicit instanciations
+// explicit instantiations
 #define INSTANTIATE(C, distance_t)                                \
     template void merge_knn_results<int64_t, C<distance_t, int>>( \
             size_t,                                               \
