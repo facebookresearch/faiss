@@ -104,6 +104,7 @@ struct IndexFlatPanorama : IndexFlat {
     const size_t batch_size;
     const size_t n_levels;
     std::vector<float> cum_sums;
+    Panorama pano;
 
     /**
      * @param d dimensionality of the input vectors
@@ -152,17 +153,6 @@ struct IndexFlatPanorama : IndexFlat {
             override;
 
     void permute_entries(const idx_t* perm);
-
-   private:
-    Panorama pano;
-
-    template <bool use_radius, typename BlockHandler>
-    inline void search_core(
-            BlockHandler& handler,
-            idx_t n,
-            const float* x,
-            float radius,
-            const SearchParameters* params) const;
 };
 
 struct IndexFlatL2Panorama : IndexFlatPanorama {

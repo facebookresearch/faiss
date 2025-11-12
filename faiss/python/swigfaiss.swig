@@ -491,6 +491,9 @@ void gpu_sync_all_devices()
 
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
+
+%ignore faiss::IndexFlatPanorama::pano;
+
 %include  <faiss/IndexFlat.h>
 %include  <faiss/Clustering.h>
 

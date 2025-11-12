@@ -523,6 +523,89 @@ void IndexFlat1D::search(
     }
 }
 
+/**************************************************************
+ * shared flat Panorama search code
+ **************************************************************/
+
+namespace {
+
+template <bool use_radius, typename BlockHandler>
+inline void flat_pano_search_core(
+        const IndexFlatPanorama& index,
+        BlockHandler& handler,
+        idx_t n,
+        const float* x,
+        float radius,
+        const SearchParameters* params) {
+    using SingleResultHandler = typename BlockHandler::SingleResultHandler;
+
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+
+    int nt = std::min(int(n), omp_get_max_threads());
+    size_t n_batches =
+            (index.ntotal + index.batch_size - 1) / index.batch_size;
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler res(handler);
+
+        std::vector<float> query_cum_norms(index.n_levels + 1);
+        std::vector<float> exact_distances(index.batch_size);
+        std::vector<uint32_t> active_indices(index.batch_size);
+
+#pragma omp for
+        for (int64_t i = 0; i < n; i++) {
+            const float* xi = x + i * index.d;
+            index.pano.compute_query_cum_sums(xi, query_cum_norms.data());
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
+            res.begin(i);
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t batch_start = batch_no * index.batch_size;
+
+                float threshold;
+                if constexpr (use_radius) {
+                    threshold = radius;
+                } else {
+                    threshold = res.heap_dis[0];
+                }
+
+                size_t num_active =
+                        index.pano
+                                .progressive_filter_batch<CMax<float, int64_t>>(
+                                        index.codes.data(),
+                                        index.cum_sums.data(),
+                                        xi,
+                                        query_cum_norms.data(),
+                                        batch_no,
+                                        index.ntotal,
+                                        sel,
+                                        nullptr,
+                                        use_sel,
+                                        active_indices,
+                                        exact_distances,
+                                        threshold,
+                                        local_stats);
+
+                for (size_t j = 0; j < num_active; j++) {
+                    res.add_result(
+                            exact_distances[active_indices[j]],
+                            batch_start + active_indices[j]);
+                }
+            }
+
+            res.end();
+            indexPanorama_stats.add(local_stats);
+        }
+    }
+}
+
+} // anonymous namespace
+
 /***************************************************
  * IndexFlatPanorama
  ***************************************************/
@@ -540,78 +623,6 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
 }
 
-template <bool use_radius, typename BlockHandler>
-inline void IndexFlatPanorama::search_core(
-        BlockHandler& handler,
-        idx_t n,
-        const float* x,
-        float radius,
-        const SearchParameters* params) const {
-    using SingleResultHandler = typename BlockHandler::SingleResultHandler;
-
-    IDSelector* sel = params ? params->sel : nullptr;
-    bool use_sel = sel != nullptr;
-
-    int nt = std::min(int(n), omp_get_max_threads());
-    size_t n_batches = (ntotal + batch_size - 1) / batch_size;
-
-#pragma omp parallel num_threads(nt)
-    {
-        SingleResultHandler res(handler);
-
-        std::vector<float> query_cum_norms(n_levels + 1);
-        std::vector<float> exact_distances(batch_size);
-        std::vector<uint32_t> active_indices(batch_size);
-
-#pragma omp for
-        for (int64_t i = 0; i < n; i++) {
-            const float* xi = x + i * d;
-            pano.compute_query_cum_sums(xi, query_cum_norms.data());
-
-            PanoramaStats local_stats;
-            local_stats.reset();
-
-            res.begin(i);
-
-            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-                size_t batch_start = batch_no * batch_size;
-
-                float threshold;
-                if constexpr (use_radius) {
-                    threshold = radius;
-                } else {
-                    threshold = res.heap_dis[0];
-                }
-
-                size_t num_active =
-                        pano.progressive_filter_batch<CMax<float, int64_t>>(
-                                codes.data(),
-                                cum_sums.data(),
-                                xi,
-                                query_cum_norms.data(),
-                                batch_no,
-                                ntotal,
-                                sel,
-                                nullptr,
-                                use_sel,
-                                active_indices,
-                                exact_distances,
-                                threshold,
-                                local_stats);
-
-                for (size_t j = 0; j < num_active; j++) {
-                    res.add_result(
-                            exact_distances[active_indices[j]],
-                            batch_start + active_indices[j]);
-                }
-            }
-
-            res.end();
-            indexPanorama_stats.add(local_stats);
-        }
-    }
-}
-
 void IndexFlatPanorama::search(
         idx_t n,
         const float* x,
@@ -625,7 +636,7 @@ void IndexFlatPanorama::search(
     HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
             size_t(n), distances, labels, size_t(k), nullptr);
 
-    search_core<false>(handler, n, x, 0.0f, params);
+    flat_pano_search_core<false>(*this, handler, n, x, 0.0f, params);
 }
 
 void IndexFlatPanorama::range_search(
@@ -637,7 +648,7 @@ void IndexFlatPanorama::range_search(
     RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
             result, radius, nullptr);
 
-    search_core<true>(handler, n, x, radius, params);
+    flat_pano_search_core<true>(*this, handler, n, x, radius, params);
 }
 
 void IndexFlatPanorama::reset() {
