@@ -50,8 +50,8 @@
 //        for j in range(0, NBUCKETS):
 //          idx = beam * n + i * NBUCKETS + j
 //          if distances[idx] < local_min_distances[j]:
-//            local_min_distances[i] = distances[idx]
-//            local_min_indices[i] = indices[idx]
+//            local_min_distances[j] = distances[idx]
+//            local_min_indices[j] = indices[idx]
 //
 //    for j in range(0, NBUCKETS):
 //      heap.push(local_min_distances[j], local_min_indices[j])

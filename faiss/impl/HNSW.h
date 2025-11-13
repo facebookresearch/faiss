@@ -31,7 +31,7 @@ namespace faiss {
  *  Yu. A. Malkov, D. A. Yashunin, arXiv 2017
  *
  * This implementation is heavily influenced by the NMSlib
- * implementation by Yury Malkov and Leonid Boystov
+ * implementation by Yury Malkov and Leonid Boytsov
  * (https://github.com/searchivarius/nmslib)
  *
  * The HNSW object stores only the neighbor link structure, see
@@ -61,7 +61,7 @@ struct HNSW {
 
     typedef std::pair<float, storage_idx_t> Node;
 
-    /** Heap structure that allows fast
+    /** Heap structure that allows fast access and updates.
      */
     struct MinimaxHeap {
         int n;

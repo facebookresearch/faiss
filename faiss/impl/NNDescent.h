@@ -117,7 +117,7 @@ struct NNDescent {
     /// Perform local join on each node
     void join(DistanceComputer& qdis);
 
-    /// Sample new neighbors for each node to peform local join later
+    /// Sample new neighbors for each node to perform local join later
     void update();
 
     /// Sample a small number of points to evaluate the quality of KNNG built

@@ -60,7 +60,7 @@ HNSW::HNSW(int M) : rng(12345) {
 
 int HNSW::random_level() {
     double f = rng.rand_float();
-    // could be a bit faster with bissection
+    // could be a bit faster with bisection
     for (int level = 0; level < assign_probas.size(); level++) {
         if (f < assign_probas[level]) {
             return level;
