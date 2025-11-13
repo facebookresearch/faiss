@@ -254,7 +254,7 @@ void runDistance(
 
         auto queryView =
                 queries.narrow(queriesRowMajor ? 0 : 1, i, curQuerySize);
-        auto queryNormNiew = queryNorms.narrow(0, i, curQuerySize);
+        auto queryNormView = queryNorms.narrow(0, i, curQuerySize);
 
         auto outDistanceBufRowView =
                 outDistanceBufs[curStream]->narrow(0, 0, curQuerySize);
@@ -321,7 +321,7 @@ void runDistance(
                         // along rows top-k ||c||^2 - 2qc + ||q||^2 in the form
                         // (query id, k)
                         runSumAlongRows(
-                                queryNormNiew,
+                                queryNormView,
                                 outDistanceView,
                                 true, // L2 distances should not go below zero
                                       // due to roundoff error
@@ -345,7 +345,7 @@ void runDistance(
                         // along rows top-k ||c||^2 - 2qc + ||q||^2 in the form
                         // (query id, k)
                         runSumAlongRows(
-                                queryNormNiew,
+                                queryNormView,
                                 outDistanceBufColView,
                                 true, // L2 distances should not go below zero
                                       // due to roundoff error

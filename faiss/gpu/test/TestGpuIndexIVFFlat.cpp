@@ -493,7 +493,7 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
     // Construct a positive test set
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
 
-    // Put all vecs on positive size
+    // Put all vecs on positive side
     for (auto& f : queryVecs) {
         f = std::abs(f);
     }

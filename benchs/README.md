@@ -18,7 +18,7 @@ and
 ```
 @inproceedings{JDJ17,
    Author = {Jeff Johnson and Matthijs Douze and Herv{\'e} J{\'e}gou},
-   journal= {arXiv:1702.08734},,
+   journal = {arXiv:1702.08734},
    Title = {Billion-scale similarity search with GPUs},
    Year = {2017},
 }
@@ -150,10 +150,10 @@ The experiments in the appendix are only in the ArXiv version of the paper (tabl
 ```
 python bench_polysemous_1bn.py SIFT1000M OPQ8_64,IMI2x13,PQ8 nprobe={1,2,4,8,16,32,64,128},ht={20,24,26,28,30}
 
-               	R@1    R@10   R@100     time    %pass
-nprobe=1,ht=20 	0.0351 0.0616 0.0751    0.158   19.01
+                        R@1    R@10   R@100     time    %pass
+nprobe=1,ht=20          0.0351 0.0616 0.0751    0.158   19.01
 ...
-nprobe=32,ht=28 	0.1256 0.3563 0.5026    0.561   52.61
+nprobe=32,ht=28         0.1256 0.3563 0.5026    0.561   52.61
 ...
 ```
 Here again the runs are not exactly the same but the original result was obtained from nprobe=32,ht=28.

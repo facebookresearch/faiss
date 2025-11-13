@@ -66,7 +66,7 @@ struct IndexFlat : IndexFlatCodes {
 
     FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
-    /* The stanadlone codec interface (just memcopies in this case) */
+    /* The standalone codec interface (just memcopies in this case) */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;

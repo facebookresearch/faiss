@@ -31,7 +31,7 @@ namespace faiss {
  *  Yu. A. Malkov, D. A. Yashunin, arXiv 2017
  *
  * This implementation is heavily influenced by the NMSlib
- * implementation by Yury Malkov and Leonid Boystov
+ * implementation by Yury Malkov and Leonid Boytsov
  * (https://github.com/searchivarius/nmslib)
  *
  * The HNSW object stores only the neighbor link structure, see
@@ -61,7 +61,7 @@ struct HNSW {
 
     typedef std::pair<float, storage_idx_t> Node;
 
-    /** Heap structure that allows fast
+    /** Heap structure that allows fast access and updates.
      */
     struct MinimaxHeap {
         int n;
@@ -87,7 +87,7 @@ struct HNSW {
         int count_below(float thresh);
     };
 
-    /// to sort pairs of (id, distance) from nearest to fathest or the reverse
+    /// to sort pairs of (id, distance) from nearest to farthest or the reverse
     struct NodeDistCloser {
         float d;
         int id;
@@ -160,7 +160,7 @@ struct HNSW {
     /// nb of neighbors for this level
     int nb_neighbors(int layer_no) const;
 
-    /// cumumlative nb up to (and excluding) this level
+    /// cumulative nb up to (and excluding) this level
     int cum_nb_neighbors(int layer_no) const;
 
     /// range of entries in the neighbors table of vertex no at layer_no

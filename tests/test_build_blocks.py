@@ -80,7 +80,7 @@ class TestMapLong2Long(unittest.TestCase):
         assert m.search(12343) == -1
 
 
-class TestOrthognalReconstruct(unittest.TestCase):
+class TestOrthogonalReconstruct(unittest.TestCase):
 
     def test_recons_orthonormal(self):
         lt = faiss.LinearTransform(20, 10, True)
@@ -103,7 +103,7 @@ class TestOrthognalReconstruct(unittest.TestCase):
 
         self.assertGreater(1e-5, err)
 
-    def test_recons_orthogona_impossible(self):
+    def test_recons_orthogonal_impossible(self):
         lt = faiss.LinearTransform(20, 10, True)
         rs = np.random.RandomState(10)
         A = rs.randn(10 * 20).astype('float32')

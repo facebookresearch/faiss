@@ -60,7 +60,7 @@ struct DistanceComputer {
 };
 
 /* Wrap the distance computer into one that negates the
-   distances. This makes supporting INNER_PRODUCE search easier */
+   distances. This makes supporting INNER_PRODUCT search easier */
 
 struct NegativeDistanceComputer : DistanceComputer {
     /// owned by this

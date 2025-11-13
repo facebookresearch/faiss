@@ -41,7 +41,7 @@ int main() {
     };
 
     tic();
-    printf("samping dataset of %zd dim vectors, Q %zd B %zd T %zd\n",
+    printf("sampling dataset of %zd dim vectors, Q %zd B %zd T %zd\n",
            d,
            nq,
            nb,
