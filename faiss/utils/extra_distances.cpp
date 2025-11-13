@@ -126,6 +126,10 @@ struct ExtraDistanceComputer : FlatCodesDistanceComputer {
     void set_query(const float* x) override {
         q = x;
     }
+
+    const float* get_query() const override {
+        return q;
+    }
 };
 
 struct Run_get_distance_computer {
