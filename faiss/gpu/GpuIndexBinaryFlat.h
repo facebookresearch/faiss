@@ -86,7 +86,7 @@ class GpuIndexBinaryFlat : public IndexBinary {
             idx_t* outIndicesData) const;
 
    protected:
-    /// Manages streans, cuBLAS handles and scratch memory for devices
+    /// Manages streams, cuBLAS handles and scratch memory for devices
     std::shared_ptr<GpuResources> resources_;
 
     /// Configuration options

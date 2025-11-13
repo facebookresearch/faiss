@@ -160,7 +160,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * index maps to a list (aka inverted list or posting list), where the
  * id of the vector is stored.
  *
- * The inverted list object is required only after trainng. If none is
+ * The inverted list object is required only after training. If none is
  * set externally, an ArrayInvertedLists is used automatically.
  *
  * At search time, the vector to be searched is also quantized, and
@@ -171,7 +171,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * lists are visited.
  *
  * Sub-classes implement a post-filtering of the index that refines
- * the distance estimation from the query to databse vectors.
+ * the distance estimation from the query to database vectors.
  */
 struct IndexIVF : Index, IndexIVFInterface {
     /// Access to the actual data

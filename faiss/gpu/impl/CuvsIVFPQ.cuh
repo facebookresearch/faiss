@@ -68,7 +68,7 @@ class CuvsIVFPQ : public IVFPQ {
     /// the IVF centroids for use
     void setPrecomputedCodes(Index* coarseQuantizer, bool enable) override;
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,

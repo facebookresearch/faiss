@@ -71,7 +71,7 @@
  * or deprecated fields), the fourcc can be replaced. New code should
  * be able to read the old fourcc and fill in new classes.
  *
- * TODO: in this file, the read functions that encouter errors may
+ * TODO: in this file, the read functions that encounter errors may
  * leak memory.
  **************************************************************/
 
@@ -898,7 +898,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexRowwiseMinMax* imm =
                     dynamic_cast<const IndexRowwiseMinMax*>(idx)) {
-        // IndexRowwiseMinmaxFloat
+        // IndexRowwiseMinMaxFloat
         uint32_t h = fourcc("IRMf");
         WRITE1(h);
         write_index_header(imm, f);
@@ -906,7 +906,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexRowwiseMinMaxFP16* imm_2 =
                     dynamic_cast<const IndexRowwiseMinMaxFP16*>(idx)) {
-        // IndexRowwiseMinmaxHalf
+        // IndexRowwiseMinMaxHalf
         uint32_t h = fourcc("IRMh");
         WRITE1(h);
         write_index_header(imm_2, f);

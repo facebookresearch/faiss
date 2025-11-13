@@ -176,7 +176,7 @@ __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
     GPU_FAISS_ASSERT(this->isContiguous());
 
     // Size must be the same (since dimensions are checked and
-    // continuity is assumed, we need only check total number of
+    // contiguity is assumed, we need only check total number of
     // elements
     GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 
@@ -220,7 +220,7 @@ __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyTo(
     GPU_FAISS_ASSERT(this->isContiguous());
 
     // Size must be the same (since dimensions are checked and
-    // continuity is assumed, we need only check total number of
+    // contiguity is assumed, we need only check total number of
     // elements
     GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 

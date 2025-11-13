@@ -11,7 +11,7 @@ import numpy as np
 import faiss
 
 # reduce number of threads to avoid excessive nb of threads in opt
-# mode (recuces runtime from 100s to 4s!)
+# mode (reduces runtime from 100s to 4s!)
 faiss.omp_set_num_threads(4)
 
 

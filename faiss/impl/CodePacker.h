@@ -38,14 +38,14 @@ struct CodePacker {
                                   // code_size
     ) const = 0;
 
-    // pack all code in a block
+    // pack all codes in a block
     virtual void pack_all(
             const uint8_t* flat_codes, // codes to write to the block, size
                                        // (nvec * code_size)
             uint8_t* block             // block to write to (size block_size)
     ) const;
 
-    // unpack all code in a block
+    // unpack all codes in a block
     virtual void unpack_all(
             const uint8_t* block, // block to read from (size block_size)
             uint8_t* flat_codes // where to write the resulting codes size (nvec

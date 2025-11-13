@@ -192,7 +192,7 @@ TEST(IVF, list_context) {
         }
         std::vector<faiss::idx_t> coarse_idx(nb);
         index.quantizer->assign(nb, database.data(), coarse_idx.data());
-        // pass dummy ids, the acutal ids are assigned in TextContext object
+        // pass dummy ids, the actual ids are assigned in TextContext object
         std::vector<faiss::idx_t> xids(nb, 42);
         index.add_core(
                 nb, database.data(), xids.data(), coarse_idx.data(), &context);
