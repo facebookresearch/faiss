@@ -321,7 +321,7 @@ struct Codec6bit {
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
-        // // for the reference, maybe, it becomes used oned day.
+        // // for the reference, maybe, it becomes used one day.
         // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
         // const uint32_t* data32 = (const uint32_t*)data16;
         // const uint64_t val = *data32 + ((uint64_t)data16[2] << 32);

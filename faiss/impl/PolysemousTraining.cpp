@@ -178,7 +178,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         return x * x;
     }
 
-    // weihgting of distances: it is more important to reproduce small
+    // weighting of distances: it is more important to reproduce small
     // distances well
     double dis_weight(double x) const {
         return exp(-dis_weight_factor * x);
@@ -295,7 +295,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
 } // anonymous namespace
 
-// weihgting of distances: it is more important to reproduce small
+// weighting of distances: it is more important to reproduce small
 // distances well
 double ReproduceDistancesObjective::dis_weight(double x) const {
     return exp(-dis_weight_factor * x);
@@ -636,7 +636,7 @@ struct Score3Computer : PermutationObjective {
         return accu;
     }
 
-    /// PermutationObjective implementeation (just negates the scores
+    /// PermutationObjective implementation (just negates the scores
     /// for minimization)
 
     double compute_cost(const int* perm) const override {
@@ -689,7 +689,7 @@ struct RankingScore2 : Score3Computer<float, double> {
     /// count nb of i, j in a x b st. i < j
     /// a and b should be sorted on input
     /// they are the ranks of j and k respectively.
-    /// specific version for diff-of-rank weighting, cannot optimized
+    /// specific version for diff-of-rank weighting, cannot optimize
     /// with a cumulative table
     double accum_gt_weight_diff(
             const std::vector<int>& a,
@@ -985,7 +985,7 @@ size_t PolysemousTraining::memory_usage_per_thread(
             return n * n * n * sizeof(float);
     }
 
-    FAISS_THROW_MSG("Invalid optmization type");
+    FAISS_THROW_MSG("Invalid optimization type");
     return 0;
 }
 

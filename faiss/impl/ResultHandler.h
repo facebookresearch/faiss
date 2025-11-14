@@ -26,11 +26,11 @@ namespace faiss {
  * The classes below are intended to be used as template arguments
  * they handle results for batches of queries (size nq).
  * They can be called in two ways:
- * - by instanciating a SingleResultHandler that tracks results for a single
+ * - by instantiating a SingleResultHandler that tracks results for a single
  *   query
  * - with begin_multiple/add_results/end_multiple calls where a whole block of
  *   results is submitted
- * All classes are templated on C which to define wheter the min or the max of
+ * All classes are templated on C which to define whether the min or the max of
  * results is to be kept, and on sel, so that the codepaths for with / without
  * selector can be separated at compile time.
  *****************************************************************/
@@ -306,7 +306,7 @@ struct HeapBlockResultHandler : TopkBlockResultHandler<C, use_sel> {
  *
  * A reservoir is a result array of size capacity > n (number of requested
  * results) all results below a threshold are stored in an arbitrary order.
- *When the capacity is reached, a new threshold is chosen by partitionning
+ *When the capacity is reached, a new threshold is chosen by partitioning
  *the distance array.
  *****************************************************************/
 

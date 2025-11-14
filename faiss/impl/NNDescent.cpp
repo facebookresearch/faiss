@@ -177,7 +177,7 @@ void NNDescent::join(DistanceComputer& qdis) {
     }
 }
 
-/// Sample neighbors for each node to peform local join later
+/// Sample neighbors for each node to perform local join later
 /// Store them in nn_new and nn_old
 void NNDescent::update() {
     // Step 1.

@@ -12,7 +12,7 @@
 
 namespace faiss {
 
-/** Build and index with the sequence of processing steps described in
+/** Build an index with the sequence of processing steps described in
  *  the string. */
 Index* index_factory(
         int d,

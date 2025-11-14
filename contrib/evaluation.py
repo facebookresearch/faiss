@@ -80,7 +80,7 @@ def range_PR(lims_ref, Iref, lims_new, Inew, mode="overall"):
 
 
 def counts_to_PR(ngt, nres, ninter, mode="overall"):
-    """ computes a  precision-recall for a ser of queries.
+    """ computes a  precision-recall for a set of queries.
     ngt = nb of GT results per query
     nres = nb of found results per query
     ninter = nb of correct results per query (smaller than nres of course)
@@ -313,7 +313,7 @@ class OperatingPoints:
         raise NotImplemented
 
     def do_nothing_key(self):
-        """ parameters to say we do noting, takes 0 time and has 0 performance"""
+        """ parameters to say we do nothing, takes 0 time and has 0 performance"""
         raise NotImplemented
 
     def is_pareto_optimal(self, perf_new, t_new):

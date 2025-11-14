@@ -261,7 +261,7 @@ void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
     }
     FAISS_THROW_IF_NOT_MSG(
             total_count < n / 10,
-            "There are too much invalid entries in the knn graph. "
+            "There are too many invalid entries in the knn graph. "
             "It may be an invalid knn graph.");
 }
 
