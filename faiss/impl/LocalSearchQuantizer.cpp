@@ -30,7 +30,7 @@
 #endif
 
 extern "C" {
-// LU decomoposition of a general matrix
+// LU decomposition of a general matrix
 void sgetrf_(
         FINTEGER* m,
         FINTEGER* n,
@@ -65,7 +65,7 @@ int sgemm_(
         float* c,
         FINTEGER* ldc);
 
-// LU decomoposition of a general matrix
+// LU decomposition of a general matrix
 void dgetrf_(
         FINTEGER* m,
         FINTEGER* n,
@@ -189,7 +189,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     std::vector<int32_t> codes(n * M); // [n, M]
     random_int32(codes, 0, K - 1, gen);
 
-    // compute standard derivations of each dimension
+    // compute standard deviations of each dimension
     std::vector<float> stddev(d, 0);
 
 #pragma omp parallel for
@@ -487,7 +487,7 @@ void LocalSearchQuantizer::update_codebooks(
  *     L = (X - \sum cj)^2, j = 1, ..., M
  *     L = X^2 - 2X * \sum cj + (\sum cj)^2
  *
- * X^2 is negligable since it is the same for all possible value
+ * X^2 is negligible since it is the same for all possible value
  * k of the m-th subcode.
  *
  * 2X * \sum cj is the unary term

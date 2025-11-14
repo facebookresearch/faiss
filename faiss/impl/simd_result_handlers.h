@@ -98,7 +98,7 @@ FAISS_API extern bool simd_result_handlers_accept_virtual;
 
 namespace simd_result_handlers {
 
-/** Dummy structure that just computes a chqecksum on results
+/** Dummy structure that just computes a checksum on results
  * (to avoid the computation to be optimized away) */
 struct DummyResultHandler : SIMDResultHandler {
     size_t cs = 0;
@@ -770,7 +770,7 @@ void dispatch_SIMDResultHandler_fixedCW(
     } else { // generic handler -- will not be inlined
         FAISS_THROW_IF_NOT_FMT(
                 simd_result_handlers_accept_virtual,
-                "Running vitrual handler for %s",
+                "Running virtual handler for %s",
                 typeid(res).name());
         consumer.template f<SIMDResultHandler>(res, args...);
     }
@@ -801,7 +801,7 @@ void dispatch_SIMDResultHandler(
         } else { // generic path
             FAISS_THROW_IF_NOT_FMT(
                     simd_result_handlers_accept_virtual,
-                    "Running vitrual handler for %s",
+                    "Running virtual handler for %s",
                     typeid(res).name());
             consumer.template f<SIMDResultHandler>(res, args...);
         }

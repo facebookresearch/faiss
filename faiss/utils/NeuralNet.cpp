@@ -71,7 +71,7 @@ Tensor2DTemplate<T> Tensor2DTemplate<T>::column(size_t j) const {
     return out;
 }
 
-// explicit template instanciation
+// explicit template instantiation
 template struct Tensor2DTemplate<float>;
 template struct Tensor2DTemplate<int32_t>;
 

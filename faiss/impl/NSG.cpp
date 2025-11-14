@@ -621,7 +621,7 @@ int NSG::attach_unlinked(
         }
     }
 
-    // randomly choice annother node
+    // randomly choice another node
     if (!found) {
         do {
             node = rng.rand_int(ntotal);

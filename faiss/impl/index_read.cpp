@@ -78,9 +78,10 @@ namespace faiss {
  **************************************************************/
 
 // This is a baseline functionality for reading mmapped and zerocopied vector.
-// * if `beforeknown_size` is defined, then a size of the vector won't be read.
+// * if `beforeknown_size` is defined, then a size of the vector won't be
+// read.
 // * if `size_multiplier` is defined, then a size will be multiplied by it.
-// * returns true is the case was handled; ownerwise, false
+// * returns true is the case was handled; otherwise, false
 template <typename VectorT>
 bool read_vector_base(
         VectorT& target,
@@ -191,7 +192,7 @@ void read_vector(VectorT& target, IOReader* f) {
 // a replacement for READXBVECTOR
 template <typename VectorT>
 void read_xb_vector(VectorT& target, IOReader* f) {
-    // size is not known beforehand, nultiply the size 4x
+    // size is not known beforehand, multiply the size 4x
     if (read_vector_base<VectorT>(target, f, std::nullopt, 4)) {
         return;
     }

@@ -23,7 +23,7 @@ namespace faiss {
  * The objective is to separate the different interpretations of the same
  * registers (as a vector of uint8, uint16 or uint32), to provide printing
  * functions, and to give more readable names to the AVX intrinsics. It does not
- * pretend to be exhausitve, functions are added as needed.
+ * pretend to be exhaustive, functions are added as needed.
  */
 
 /// 512-bit representation without interpretation as a vector
