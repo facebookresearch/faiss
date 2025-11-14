@@ -132,10 +132,6 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
             pq.compute_inner_prod_table(x, precomputed_table.data());
         }
     }
-
-    const float* get_query() const override {
-        return q;
-    }
 };
 
 } // namespace

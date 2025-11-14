@@ -133,13 +133,7 @@ struct RaBitDistanceComputer : FlatCodesDistanceComputer {
     // the metric
     MetricType metric_type = MetricType::METRIC_L2;
 
-    const float* q = nullptr;
-
     RaBitDistanceComputer();
-
-    const float* get_query() const override {
-        return q;
-    }
 
     float symmetric_dis(idx_t i, idx_t j) override;
 };

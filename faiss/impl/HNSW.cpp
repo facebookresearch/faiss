@@ -801,7 +801,7 @@ int search_from_candidates_panorama(
     std::vector<idx_t> index_array(M);
     std::vector<float> exact_distances(M);
 
-    const float* query = flat_codes_qdis->get_query();
+    const float* query = flat_codes_qdis->q;
     std::vector<float> query_cum_sums(panorama_index->num_panorama_levels + 1);
     IndexHNSWFlatPanorama::compute_cum_sums(
             query,

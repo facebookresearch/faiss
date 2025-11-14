@@ -58,10 +58,6 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
         q = x;
     }
 
-    const float* get_query() const override {
-        return q;
-    }
-
     float symmetric_dis(idx_t i, idx_t j) final {
         aq.decode(codes + i * d, tmp.data(), 1);
         aq.decode(codes + j * d, tmp.data() + d, 1);
@@ -81,14 +77,12 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
     std::vector<float> LUT;
     const AdditiveQuantizer& aq;
     size_t d;
-    const float* q;
 
     explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer& iaq)
             : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
               LUT(iaq.aq->total_codebook_size + iaq.d * 2),
               aq(*iaq.aq),
-              d(iaq.d),
-              q(nullptr) {}
+              d(iaq.d) {}
 
     float bias;
     void set_query(const float* x) final {
@@ -100,10 +94,6 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
         } else {
             bias = fvec_norm_L2sqr(x, d);
         }
-    }
-
-    const float* get_query() const override {
-        return q;
     }
 
     float symmetric_dis(idx_t i, idx_t j) final {
