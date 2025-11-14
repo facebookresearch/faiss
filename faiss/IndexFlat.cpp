@@ -100,7 +100,6 @@ namespace {
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
     idx_t nb;
-    const float* q;
     const float* b;
     size_t ndis;
     size_t npartial_dot_products;
@@ -126,20 +125,16 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
-                      storage.code_size),
+                      storage.code_size,
+                      q),
               d(storage.d),
               nb(storage.ntotal),
-              q(q),
               b(storage.get_xb()),
               ndis(0),
               npartial_dot_products(0) {}
 
     void set_query(const float* x) override {
         q = x;
-    }
-
-    const float* get_query() const override {
-        return q;
     }
 
     // compute four distances
@@ -248,10 +243,6 @@ struct FlatIPDis : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
-    }
-
-    const float* get_query() const override {
-        return q;
     }
 
     // compute four distances
@@ -376,10 +367,6 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
     void set_query(const float* x) override {
         q = x;
         query_l2norm = fvec_norm_L2sqr(q, d);
-    }
-
-    const float* get_query() const override {
-        return q;
     }
 
     // compute four distances
