@@ -861,6 +861,18 @@ std::unique_ptr<Index> index_factory_sub(
         return std::unique_ptr<Index>(idmap);
     }
 
+    // handle refine Panorama
+    // TODO(aknayar): Add tests to test_factory.py
+    if (re_match(description, "(.+),RefinePanorama\\((.+)\\)", sm)) {
+        std::unique_ptr<Index> filter_index =
+                index_factory_sub(d, sm[1].str(), metric);
+        std::unique_ptr<Index> refine_index =
+                index_factory_sub(d, sm[2].str(), metric);
+        auto* index_rf = new IndexRefinePanorama(
+                filter_index.release(), refine_index.release());
+        return std::unique_ptr<Index>(index_rf);   
+    }
+
     // handle refines
     if (re_match(description, "(.+),RFlat", sm) ||
         re_match(description, "(.+),Refine\\((.+)\\)", sm)) {
