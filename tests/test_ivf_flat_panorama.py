@@ -179,6 +179,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=32)
         D_base, I_base = index_base.search(xq, k)
 
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
         prev_ratio_dims_scanned = float('inf')
         for nlevels in [1, 2, 4, 8, 16, 32]:
             with self.subTest(nlevels=nlevels):
@@ -194,13 +197,17 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
                 prev_ratio_dims_scanned = ratio_dims_scanned
 
+        faiss.omp_set_num_threads(nt)
+
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
         test_cases = [(65, 4), (63, 8), (100, 7)]
 
+        # TODO(aknayar): Test functions like get_single_code().
+
         for d, nlevels in test_cases:
             with self.subTest(d=d, nlevels=nlevels):
-                nb, nt, nq, nlist, k = 500, 700, 20, 16, 5
+                nb, nt, nq, nlist, k = 5000, 700, 20, 16, 5
                 xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=789)
 
                 index_regular = self.create_ivf_flat(d, nlist, xt, xb, nprobe=4)
@@ -525,24 +532,16 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
-        indexes = [self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)]
+        index = self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)
 
-        for index in indexes:
-            D_before, I_before = index.search(xq, k)
+        D_before, I_before = index.search(xq, k)
+        faiss.write_index(index, "index.bin")
+        index_after = faiss.read_index("index.bin")
+        D_after, I_after = index_after.search(xq, k)
+        os.unlink("index.bin")
 
-            fd, fname = tempfile.mkstemp()
-            os.close(fd)
-            try:
-                faiss.write_index(index, fname)
-                index_after = faiss.read_index(fname)
-            finally:
-                if os.path.exists(fname):
-                    os.unlink(fname)
-
-            D_after, I_after = index_after.search(xq, k)
-
-            np.testing.assert_array_equal(I_before, I_after)
-            np.testing.assert_array_equal(D_before, D_after)
+        np.testing.assert_array_equal(I_before, I_after)
+        np.testing.assert_array_equal(D_before, D_after)
 
     def test_ratio_dims_scanned(self):
         """Test the correctness of the ratio of dimensions scanned"""
@@ -559,6 +558,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
         index_base = self.create_ivf_flat(d, nlist, xt, xb, nprobe=1)
         D_base, I_base = index_base.search(xq, k)
+
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
 
         ratios = []
         nlevels_list = [1, 2, 4, 8, 16, 32]
@@ -577,3 +579,5 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
         expected_ratios = [1 / nlevels for nlevels in nlevels_list]
         np.testing.assert_allclose(ratios, expected_ratios, atol=1e-3)
+
+        faiss.omp_set_num_threads(nt)

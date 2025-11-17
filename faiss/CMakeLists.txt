@@ -83,6 +83,7 @@ set(FAISS_SRC
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
+  impl/Panorama.cpp
   impl/PanoramaStats.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
@@ -175,6 +176,7 @@ set(FAISS_HEADERS
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
+  impl/Panorama.h
   impl/PanoramaStats.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
