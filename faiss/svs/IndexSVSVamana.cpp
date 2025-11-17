@@ -66,6 +66,13 @@ IndexSVSVamana::IndexSVSVamana(
         : Index(d, metric), graph_max_degree{degree}, storage_kind{storage} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
+
+    auto svs_storage = to_svs_storage_kind(storage_kind);
+    auto status =
+            svs_runtime::DynamicVamanaIndex::check_storage_kind(svs_storage);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
