@@ -23,6 +23,7 @@
     <innerfile refid="maybe__owned__vector_8h">maybe_owned_vector.h</innerfile>
     <innerfile refid="NNDescent_8h">NNDescent.h</innerfile>
     <innerfile refid="NSG_8h">NSG.h</innerfile>
+    <innerfile refid="Panorama_8h">Panorama.h</innerfile>
     <innerfile refid="PanoramaStats_8h">PanoramaStats.h</innerfile>
     <innerfile refid="platform__macros_8h">platform_macros.h</innerfile>
     <innerfile refid="PolysemousTraining_8h">PolysemousTraining.h</innerfile>

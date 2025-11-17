@@ -101,7 +101,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Statistics are not robust to internal threading nor to concurrent Panorama searches. Use these values in a single-threaded context to accurately gauge Panorama&apos;s pruning effectiveness. </para>
+<para>Statistics are not robust to internal threading nor to concurrent <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> searches. Use these values in a single-threaded context to accurately gauge <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref>&apos;s pruning effectiveness. </para>
     </detaileddescription>
     <location file="faiss/impl/PanoramaStats.h" line="21" column="1" bodyfile="faiss/impl/PanoramaStats.h" bodystart="21" bodyend="31"/>
     <listofallmembers>

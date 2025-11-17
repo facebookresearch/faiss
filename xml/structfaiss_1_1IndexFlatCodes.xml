@@ -183,6 +183,7 @@
         <name>add</name>
         <qualifiedname>faiss::IndexFlatCodes::add</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03">add</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -207,6 +208,7 @@
         <name>reset</name>
         <qualifiedname>faiss::IndexFlatCodes::reset</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a35fdf82abfe078969b9a7a17fbaa6516">reset</reimplementedby>
         <briefdescription>
 <para>removes all elements from the database. </para>
         </briefdescription>
@@ -223,6 +225,7 @@
         <name>reconstruct_n</name>
         <qualifiedname>faiss::IndexFlatCodes::reconstruct_n</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f">reconstruct_n</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a4cb5411775c92c68d79efe2f8142386e">reconstruct_n</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>i0</declname>
@@ -277,6 +280,7 @@
         <name>reconstruct</name>
         <qualifiedname>faiss::IndexFlatCodes::reconstruct</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c">reconstruct</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a1b0c9cb07922637cb0a1fbb1bb983b75">reconstruct</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>key</declname>
@@ -336,6 +340,7 @@
         <name>remove_ids</name>
         <qualifiedname>faiss::IndexFlatCodes::remove_ids</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82">remove_ids</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1ac4df64ba5bb9ef11f73351ee5946434a">remove_ids</reimplementedby>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> &amp;</type>
           <declname>sel</declname>
@@ -395,6 +400,7 @@
         <name>search</name>
         <qualifiedname>faiss::IndexFlatCodes::search</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a4bec1a04796e20ea0bfa24bad5b246e3">search</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexLSH_1aa5460e577f173869768d013586eb2d86">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexPQ_1a838c9186a476abd7321afc95d5412ab8">search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1aee785bb6cceb835ad73483f4fa831b42">search</reimplementedby>
@@ -440,6 +446,7 @@
         <name>range_search</name>
         <qualifiedname>faiss::IndexFlatCodes::range_search</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba">range_search</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60">range_search</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a97da3c2d6eeba361a5af60a6a07e62e9">range_search</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -547,6 +554,7 @@
         <name>merge_from</name>
         <qualifiedname>faiss::IndexFlatCodes::merge_from</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415">merge_from</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a854b0837cf6044aacc1345c562fa42d5">merge_from</reimplementedby>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
           <declname>otherIndex</declname>
@@ -572,6 +580,7 @@
         <name>add_sa_codes</name>
         <qualifiedname>faiss::IndexFlatCodes::add_sa_codes</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b">add_sa_codes</reimplements>
+        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1a48d3d2d28ebfe217bc5b52ed40cab40d">add_sa_codes</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1465,13 +1474,25 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="14">
+        <label>faiss::IndexFlatL2Panorama</label>
+        <link refid="structfaiss_1_1IndexFlatL2Panorama"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="13">
+        <label>faiss::IndexFlatPanorama</label>
+        <link refid="structfaiss_1_1IndexFlatPanorama"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
         <label>faiss::IndexLSH</label>
         <link refid="structfaiss_1_1IndexLSH"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="14">
+      <node id="16">
         <label>faiss::IndexLattice</label>
         <link refid="structfaiss_1_1IndexLattice"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1483,13 +1504,13 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="15">
+      <node id="17">
         <label>faiss::IndexNeuralNetCodec</label>
         <link refid="structfaiss_1_1IndexNeuralNetCodec"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="17">
+      <node id="19">
         <label>faiss::IndexPQ</label>
         <link refid="structfaiss_1_1IndexPQ"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1507,13 +1528,13 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss::IndexQINCo</label>
         <link refid="structfaiss_1_1IndexQINCo"/>
-        <childnode refid="15" relation="public-inheritance">
+        <childnode refid="17" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="18">
+      <node id="20">
         <label>faiss::IndexRaBitQ</label>
         <link refid="structfaiss_1_1IndexRaBitQ"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1525,7 +1546,7 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="19">
+      <node id="21">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
         <childnode refid="1" relation="public-inheritance">

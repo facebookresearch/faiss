@@ -96,6 +96,8 @@
     <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatIP" prot="public">faiss::IndexFlatIP</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatL2" prot="public">faiss::IndexFlatL2</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlatL2Panorama" prot="public">faiss::IndexFlatL2Panorama</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlatPanorama" prot="public">faiss::IndexFlatPanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW" prot="public">faiss::IndexHNSW</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSW2Level" prot="public">faiss::IndexHNSW2Level</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWCagra" prot="public">faiss::IndexHNSWCagra</innerclass>
@@ -206,6 +208,7 @@
     <innerclass refid="structfaiss_1_1OperatingPoint" prot="public">faiss::OperatingPoint</innerclass>
     <innerclass refid="structfaiss_1_1OperatingPoints" prot="public">faiss::OperatingPoints</innerclass>
     <innerclass refid="structfaiss_1_1OPQMatrix" prot="public">faiss::OPQMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1Panorama" prot="public">faiss::Panorama</innerclass>
     <innerclass refid="structfaiss_1_1PanoramaStats" prot="public">faiss::PanoramaStats</innerclass>
     <innerclass refid="structfaiss_1_1ParameterRange" prot="public">faiss::ParameterRange</innerclass>
     <innerclass refid="structfaiss_1_1ParameterSpace" prot="public">faiss::ParameterSpace</innerclass>
@@ -584,7 +587,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/InvertedLists.h" line="391" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="391" bodyend="-1"/>
+        <location file="faiss/invlists/InvertedLists.h" line="375" column="1" bodyfile="faiss/invlists/InvertedLists.h" bodystart="375" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" prot="public" static="no">
         <type>int64_t</type>

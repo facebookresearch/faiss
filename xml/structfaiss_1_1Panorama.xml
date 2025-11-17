@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1Panorama" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::Panorama</compoundname>
+    <includes refid="Panorama_8h" local="no">Panorama.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1a0628ed744f5bc804f87e7e9f03b53604" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::Panorama::d</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="44" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::Panorama::code_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="45" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1ac885ad39deed6034073c8d839fcd113e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::n_levels</definition>
+        <argsstring></argsstring>
+        <name>n_levels</name>
+        <qualifiedname>faiss::Panorama::n_levels</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="46" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1a859f77843d41b3387d75a473c6dbb24a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::level_width</definition>
+        <argsstring></argsstring>
+        <name>level_width</name>
+        <qualifiedname>faiss::Panorama::level_width</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="47" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1a65a851d0bf7d13acf749f19f7b7d3808" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::level_width_floats</definition>
+        <argsstring></argsstring>
+        <name>level_width_floats</name>
+        <qualifiedname>faiss::Panorama::level_width_floats</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="48" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::batch_size</definition>
+        <argsstring></argsstring>
+        <name>batch_size</name>
+        <qualifiedname>faiss::Panorama::batch_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="49" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1ab7a44fc2e6edc36a8045512d09ec94d5" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::Panorama::Panorama</definition>
+        <argsstring>(size_t code_size, size_t n_levels, size_t batch_size)</argsstring>
+        <name>Panorama</name>
+        <qualifiedname>faiss::Panorama::Panorama</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_levels</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="51" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1a42c42d538990fad33d2a93bdb97a2c6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Panorama::set_derived_values</definition>
+        <argsstring>()</argsstring>
+        <name>set_derived_values</name>
+        <qualifiedname>faiss::Panorama::set_derived_values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="53" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1a800a0a45dbcb83ee4e612cc11567a8f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Panorama::copy_codes_to_level_layout</definition>
+        <argsstring>(uint8_t *codes, size_t offset, size_t n_entry, const uint8_t *code)</argsstring>
+        <name>copy_codes_to_level_layout</name>
+        <qualifiedname>faiss::Panorama::copy_codes_to_level_layout</qualifiedname>
+        <param>
+          <type>uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_entry</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Helper method to copy codes into level-oriented batch layout at a given offset in the list. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="57" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Panorama::compute_cumulative_sums</definition>
+        <argsstring>(float *cumsum_base, size_t offset, size_t n_entry, const float *vectors)</argsstring>
+        <name>compute_cumulative_sums</name>
+        <qualifiedname>faiss::Panorama::compute_cumulative_sums</qualifiedname>
+        <param>
+          <type>float *</type>
+          <declname>cumsum_base</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_entry</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>vectors</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Helper method to compute the cumulative sums of the codes. The cumsums also follow the level-oriented batch layout to minimize the number of random memory accesses. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="66" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Panorama::compute_query_cum_sums</definition>
+        <argsstring>(const float *query, float *query_cum_sums) const</argsstring>
+        <name>compute_query_cum_sums</name>
+        <qualifiedname>faiss::Panorama::compute_query_cum_sums</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>query_cum_sums</declname>
+        </param>
+        <briefdescription>
+<para>Compute the cumulative sums of the query vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="73" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1a1f7488e1e588d7a6b717ac6c818f40d0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename C</type>
+          </param>
+        </templateparamlist>
+        <type>size_t</type>
+        <definition>size_t faiss::Panorama::progressive_filter_batch</definition>
+        <argsstring>(const uint8_t *codes_base, const float *cum_sums, const float *query, const float *query_cum_sums, size_t batch_no, size_t list_size, const IDSelector *sel, const idx_t *ids, bool use_sel, std::vector&lt; uint32_t &gt; &amp;active_indices, std::vector&lt; float &gt; &amp;exact_distances, float threshold, PanoramaStats &amp;local_stats) const</argsstring>
+        <name>progressive_filter_batch</name>
+        <qualifiedname>faiss::Panorama::progressive_filter_batch</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes_base</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>cum_sums</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>query</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>query_cum_sums</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>batch_no</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>list_size</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>use_sel</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint32_t &gt; &amp;</type>
+          <declname>active_indices</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; float &gt; &amp;</type>
+          <declname>exact_distances</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>threshold</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref> &amp;</type>
+          <declname>local_stats</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref>&apos;s core progressive filtering algorithm: Process vectors in batches for cache efficiency. For each batch:<orderedlist>
+<listitem><para>Apply ID selection filter and initialize distances (||y||^2 + ||x||^2).</para>
+</listitem><listitem><para>Maintain an &quot;active set&quot; of candidate indices that haven&apos;t been pruned yet.</para>
+</listitem><listitem><para>For each level, refine distances incrementally and compact the active set:<itemizedlist>
+<listitem><para>Compute dot product for current level: exact_dist -= 2*&lt;x,y&gt;.</para>
+</listitem><listitem><para>Use Cauchy-Schwarz bound on remaining levels to get lower bound</para>
+</listitem><listitem><para>Prune candidates whose lower bound exceeds k-th best distance.</para>
+</listitem><listitem><para>Compact active_indices to remove pruned candidates (branchless)</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>After all levels, survivors are exact distances; update heap. This achieves early termination while maintaining SIMD-friendly sequential access patterns in the level-oriented storage layout. </para>
+</listitem></orderedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="92" column="12" bodyfile="faiss/impl/Panorama.h" bodystart="111" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1ae8c69dd7c911cf621b7110f4ad576819" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::Panorama::reconstruct</definition>
+        <argsstring>(idx_t key, float *recons, const uint8_t *codes_base) const</argsstring>
+        <name>reconstruct</name>
+        <qualifiedname>faiss::Panorama::reconstruct</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>recons</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes_base</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/Panorama.h" line="107" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Implements the core logic of Panorama-based refinement. arXiv: <ulink url="https://arxiv.org/abs/2510.00566">https://arxiv.org/abs/2510.00566</ulink></para>
+<para><ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> partitions the dimensions of all vectors into L contiguous levels. During the refinement stage of ANNS, it computes distances between the query and its candidates level-by-level. After processing each level, it prunes the candidates whose lower bound exceeds the k-th best distance.</para>
+<para>In order to enable speedups, the dimensions (or codes) of each vector are stored in a batched, level-major manner. Within each batch of b vectors, the dimensions corresponding to level 1 will be stored first (for all elements in that batch), followed by level 2, and so on. This allows for efficient memory access patterns.</para>
+<para>Coupled with the appropriate orthogonal PreTransform (e.g. PCA, Cayley, etc.), <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> can prune the vast majority of dimensions, greatly accelerating the refinement stage. </para>
+    </detaileddescription>
+    <location file="faiss/impl/Panorama.h" line="43" column="1" bodyfile="faiss/impl/Panorama.h" bodystart="43" bodyend="108"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>batch_size</name></member>
+      <member refid="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>compute_cumulative_sums</name></member>
+      <member refid="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>compute_query_cum_sums</name></member>
+      <member refid="structfaiss_1_1Panorama_1a800a0a45dbcb83ee4e612cc11567a8f5" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>copy_codes_to_level_layout</name></member>
+      <member refid="structfaiss_1_1Panorama_1a0628ed744f5bc804f87e7e9f03b53604" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Panorama_1a859f77843d41b3387d75a473c6dbb24a" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>level_width</name></member>
+      <member refid="structfaiss_1_1Panorama_1a65a851d0bf7d13acf749f19f7b7d3808" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>level_width_floats</name></member>
+      <member refid="structfaiss_1_1Panorama_1ac885ad39deed6034073c8d839fcd113e" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>n_levels</name></member>
+      <member refid="structfaiss_1_1Panorama_1ab7a44fc2e6edc36a8045512d09ec94d5" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>Panorama</name></member>
+      <member refid="structfaiss_1_1Panorama_1a1f7488e1e588d7a6b717ac6c818f40d0" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>progressive_filter_batch</name></member>
+      <member refid="structfaiss_1_1Panorama_1ae8c69dd7c911cf621b7110f4ad576819" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Panorama_1a42c42d538990fad33d2a93bdb97a2c6b" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>set_derived_values</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

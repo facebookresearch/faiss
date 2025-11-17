@@ -469,13 +469,13 @@
         </childnode>
         <childnode refid="97" relation="include">
         </childnode>
-        <childnode refid="100" relation="include">
+        <childnode refid="105" relation="include">
         </childnode>
         <childnode refid="80" relation="include">
         </childnode>
-        <childnode refid="101" relation="include">
+        <childnode refid="100" relation="include">
         </childnode>
-        <childnode refid="105" relation="include">
+        <childnode refid="106" relation="include">
         </childnode>
       </node>
       <node id="72">
@@ -647,13 +647,15 @@
         </childnode>
         <childnode refid="98" relation="include">
         </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
         <childnode refid="90" relation="include">
         </childnode>
         <childnode refid="91" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="99" relation="include">
+        <childnode refid="104" relation="include">
         </childnode>
       </node>
       <node id="63">
@@ -678,6 +680,14 @@
         <label>faiss/impl/NSG.h</label>
         <link refid="NSG_8h_source"/>
         <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="99">
+        <label>faiss/impl/Panorama.h</label>
+        <link refid="Panorama_8h_source"/>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
         </childnode>
       </node>
       <node id="39">
@@ -712,7 +722,7 @@
         <childnode refid="39" relation="include">
         </childnode>
       </node>
-      <node id="100">
+      <node id="105">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h_source"/>
         <childnode refid="15" relation="include">
@@ -798,36 +808,36 @@
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
       </node>
-      <node id="102">
+      <node id="101">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="103">
+      <node id="102">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="101">
+      <node id="100">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="78" relation="include">
         </childnode>
+        <childnode refid="101" relation="include">
+        </childnode>
         <childnode refid="102" relation="include">
         </childnode>
         <childnode refid="103" relation="include">
         </childnode>
-        <childnode refid="104" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="104">
+      <node id="103">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="102" relation="include">
+        <childnode refid="101" relation="include">
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
@@ -852,7 +862,7 @@
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="105">
+      <node id="106">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
         <childnode refid="87" relation="include">
@@ -862,7 +872,7 @@
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="99">
+      <node id="104">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
