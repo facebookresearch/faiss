@@ -30,11 +30,17 @@ _SKIP_REASON = "SVS support not compiled in"
 class TestSVSAdapter(unittest.TestCase):
     """Test the FAISS-SVS adapter layer integration"""
 
-    target_class = faiss.IndexSVSVamana
+    target_class = None  # set in setUpClass
 
-    def _create_instance(self) -> faiss.IndexSVSVamana | faiss.IndexSVSFlat:
+    def _create_instance(self) -> "faiss.IndexSVSVamana | faiss.IndexSVSFlat":
         """Create an instance of the SVS index"""
-        return faiss.IndexSVSVamana(self.d, 64)
+        self.assertIsNotNone(self.target_class, "target_class must be configured in setUpClass()")
+        return self.target_class(self.d, 64)
+
+    @classmethod
+    def setUpClass(cls):
+        # need to configure target_class here to avoid issues when SVS support is not compiled in
+        cls.target_class = faiss.IndexSVSVamana
 
     def setUp(self):
         self.d = 32
@@ -288,7 +294,7 @@ class TestSVSFactory(unittest.TestCase):
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
     def _create_instance(self):
-        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
         return idx
 
@@ -296,7 +302,7 @@ class TestSVSAdapterFP16(TestSVSAdapter):
 class TestSVSAdapterSQI8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
     def _create_instance(self):
-        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
         return idx
 
@@ -304,10 +310,12 @@ class TestSVSAdapterSQI8(TestSVSAdapter):
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x0 variant"""
 
-    target_class = faiss.IndexSVSVamanaLVQ
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
@@ -315,29 +323,37 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
 class TestSVSAdapterLVQ4x4(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x4 variant"""
 
-    target_class = faiss.IndexSVSVamanaLVQ
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterLVQ4x8(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x8 variant"""
-    target_class = faiss.IndexSVSVamanaLVQ
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
 class TestSVSAdapterFlat(TestSVSAdapter):
     """Repeat all tests for SVSFlat variant"""
-    target_class = faiss.IndexSVSFlat
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSFlat
 
     def _create_instance(self):
-        return faiss.IndexSVSFlat(self.d)
+        return self.target_class(self.d)
 
     def test_svs_metric_types(self):
         """Test different metric types are handled correctly"""
@@ -385,11 +401,13 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 class TestSVSVamanaParameters(unittest.TestCase):
     """Test Vamana-specific parameter forwarding and persistence for SVS Vamana variants"""
 
-    target_class = faiss.IndexSVSVamana
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamana
 
     def _create_instance(self):
         """Create an instance of the SVS Vamana index"""
-        return faiss.IndexSVSVamana(self.d ,64)
+        return self.target_class(self.d ,64)
 
     def setUp(self):
         self.d = 32
@@ -479,7 +497,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
 class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
     def _create_instance(self):
-        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
         return idx
 
@@ -487,7 +505,7 @@ class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
 class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
     def _create_instance(self):
-        idx = faiss.IndexSVSVamana(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
         return idx
 
@@ -495,10 +513,12 @@ class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
 class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x0 variant"""
 
-    target_class = faiss.IndexSVSVamanaLVQ
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
@@ -506,10 +526,12 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
 class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x4 variant"""
 
-    target_class = faiss.IndexSVSVamanaLVQ
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
@@ -517,10 +539,12 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
 class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x8 variant"""
 
-    target_class = faiss.IndexSVSVamanaLVQ
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
-        idx = faiss.IndexSVSVamanaLVQ(self.d, 64)
+        idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
