@@ -73,6 +73,22 @@ struct Graph {
         memcpy(data, g.data, N * K * sizeof(node_t));
     }
 
+    // copy assignment operator
+    Graph& operator=(const Graph& g) {
+        if (this == &g) {
+            return *this;
+        }
+        if (own_fields) {
+            delete[] data;
+        }
+        K = g.K;
+        N = g.N;
+        own_fields = true;
+        data = new node_t[N * K];
+        memcpy(data, g.data, N * K * sizeof(node_t));
+        return *this;
+    }
+
     // release the allocated memory if needed
     virtual ~Graph() {
         if (own_fields) {
