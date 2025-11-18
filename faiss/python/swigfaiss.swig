@@ -652,9 +652,7 @@ struct faiss::simd16uint16 {};
 %include <faiss/utils/approx_topk/mode.h>
 
 #ifdef FAISS_ENABLE_SVS
-/* Hide SVS I/O helpers */
-%ignore faiss::svs_io::ReaderStreambuf;
-%ignore faiss::svs_io::WriterStreambuf;
+%ignore faiss::to_svs_storage_kind;
 
 %include  <faiss/svs/IndexSVSVamana.h>
 %include  <faiss/svs/IndexSVSFlat.h>
