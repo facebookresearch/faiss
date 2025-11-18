@@ -847,7 +847,7 @@ int search_from_candidates_panorama(
                     query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
 
             bool is_selected = !sel || sel->is_member(v1);
-            initial_size += is_selected && vt.get(v1) ? 0 : 1;
+            initial_size += is_selected && !vt.get(v1) ? 1 : 0;
 
             vt.set(v1);
         }

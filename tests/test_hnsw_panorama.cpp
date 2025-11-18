@@ -10,11 +10,13 @@
 #include <cstdio>
 #include <iostream>
 #include <random>
+#include <set>
 
 #include <gtest/gtest.h>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/clone_index.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/index_factory.h>
 #include <faiss/index_io.h>
 #include <faiss/utils/random.h>
@@ -564,4 +566,80 @@ TEST(IndexHNSWFlatPanorama, PermuteEntries) {
     float recall = compute_recall(gt_I_permuted.data(), I_after.data(), nq, k);
     std::cout << "Recall after permutation: " << recall << std::endl;
     EXPECT_GE(recall, 0.85f);
+}
+
+TEST(IndexHNSWFlatPanorama, IDSelectorRange) {
+    int d = 128;
+    int nb = 1000;
+    int nq = 10;
+    int k = 10;
+
+    faiss::IndexHNSWFlatPanorama index(d, 32, 8);
+    index.hnsw.efSearch = 64;
+
+    auto xb = generate_random_vectors(nb, d);
+    index.add(nb, xb.data());
+
+    auto xq = generate_random_vectors(nq, d, 5678);
+
+    faiss::IDSelectorRange selector(200, 600);
+    faiss::SearchParametersHNSW params;
+    params.sel = &selector;
+
+    std::vector<faiss::idx_t> I(nq * k);
+    std::vector<float> D(nq * k);
+    index.search(nq, xq.data(), k, D.data(), I.data(), &params);
+
+    // Verify all returned IDs are in range (HNSW may return < k)
+    int count = 0;
+    for (int i = 0; i < nq * k; i++) {
+        if (I[i] != -1) {
+            EXPECT_GE(I[i], 200);
+            EXPECT_LT(I[i], 600);
+            count++;
+        }
+    }
+
+    std::cout << "IDSelectorRange test: " << count << " results" << std::endl;
+}
+
+TEST(IndexHNSWFlatPanorama, IDSelectorBatch) {
+    int d = 128;
+    int nb = 1000;
+    int nq = 10;
+    int k = 5;
+
+    faiss::IndexHNSWFlatPanorama index(d, 32, 8);
+    index.hnsw.efSearch = 64;
+
+    auto xb = generate_random_vectors(nb, d);
+    index.add(nb, xb.data());
+
+    auto xq = generate_random_vectors(nq, d, 5678);
+
+    std::vector<faiss::idx_t> allowed_ids;
+    for (int i = 0; i < nb; i += 10) {
+        allowed_ids.push_back(i);
+    }
+
+    faiss::IDSelectorBatch selector(allowed_ids.size(), allowed_ids.data());
+    faiss::SearchParametersHNSW params;
+    params.sel = &selector;
+
+    std::vector<faiss::idx_t> I(nq * k);
+    std::vector<float> D(nq * k);
+    index.search(nq, xq.data(), k, D.data(), I.data(), &params);
+
+    // Verify all returned IDs are in allowed set (HNSW may return < k)
+    std::set<faiss::idx_t> allowed_set(allowed_ids.begin(), allowed_ids.end());
+    int count = 0;
+    for (int i = 0; i < nq * k; i++) {
+        if (I[i] != -1) {
+            EXPECT_TRUE(allowed_set.count(I[i]) > 0)
+                    << "ID " << I[i] << " not in allowed set";
+            count++;
+        }
+    }
+
+    std::cout << "IDSelectorBatch test: " << count << " results" << std::endl;
 }
