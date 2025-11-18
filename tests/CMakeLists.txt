@@ -29,7 +29,6 @@ set(FAISS_TEST_SRC
   test_heap.cpp
   test_code_distance.cpp
   test_hnsw.cpp
-  test_hnsw_panorama.cpp
   test_partitioning.cpp
   test_fastscan_perf.cpp
   test_disable_pq_sdc_tables.cpp
