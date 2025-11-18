@@ -779,7 +779,6 @@ void IndexFlatPanorama::search_subset(
 
             res.begin(i);
 
-            int total_points = 0;
             for (size_t j = 0; j < k_base; j++) {
                 idx_t idx = idsi[j];
 
@@ -826,13 +825,9 @@ void IndexFlatPanorama::search_subset(
                     p_ptr += pano.level_width_floats;
                 }
 
-                // The first k points must be added to the heap
-                if (total_points < k ||
-                    (exact_distance < res.heap_dis[0] && !pruned)) {
+                if (!pruned) {
                     res.add_result(exact_distance, idx);
                 }
-
-                total_points++;
             }
 
             res.end();
