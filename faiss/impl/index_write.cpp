@@ -816,7 +816,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_ProductQuantizer(&imiq->pq, f);
     } else if (
             const IndexRefine* idxrf = dynamic_cast<const IndexRefine*>(idx)) {
-        bool is_pano = dynamic_cast<const IndexRefinePanorama*>(idxrf) != nullptr;
+        bool is_pano =
+                dynamic_cast<const IndexRefinePanorama*>(idxrf) != nullptr;
         uint32_t h = is_pano ? fourcc("IxRP") : fourcc("IxRF");
         WRITE1(h);
         write_index_header(idxrf, f);

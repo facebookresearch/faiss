@@ -870,7 +870,7 @@ std::unique_ptr<Index> index_factory_sub(
                 index_factory_sub(d, sm[2].str(), metric);
         auto* index_rf = new IndexRefinePanorama(
                 filter_index.release(), refine_index.release());
-        return std::unique_ptr<Index>(index_rf);   
+        return std::unique_ptr<Index>(index_rf);
     }
 
     // handle refines
