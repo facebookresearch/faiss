@@ -208,8 +208,7 @@ void IndexPreTransform::search_subset(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
     TransformedVectors tv(x, apply_chain(n, x));
-    index->search_subset(
-            n, tv.x, k_base, base_labels, k, distances, labels);
+    index->search_subset(n, tv.x, k_base, base_labels, k, distances, labels);
 }
 
 void IndexPreTransform::reset() {
