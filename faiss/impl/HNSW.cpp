@@ -832,7 +832,8 @@ int search_from_candidates_panorama(
         hnsw.neighbor_range(v0, level, &begin, &end);
 
         // Unlike the vanilla HNSW, we already remove (and compact) the visited
-        // nodes from the candidates list at this stage.
+        // nodes from the candidates list at this stage. We also remove nodes
+        // that are not selected.
         size_t initial_size = 0;
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
@@ -844,14 +845,15 @@ int search_from_candidates_panorama(
             index_array[initial_size] = v1;
             exact_distances[initial_size] =
                     query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
-            initial_size += vt.get(v1) ? 0 : 1;
+
+            bool is_selected = !sel || sel->is_member(v1);
+            initial_size += is_selected && vt.get(v1) ? 0 : 1;
 
             vt.set(v1);
         }
 
         size_t batch_size = initial_size;
         size_t curr_panorama_level = 0;
-        threshold = res.threshold;
         const size_t num_panorama_levels = panorama_index->num_panorama_levels;
         while (curr_panorama_level < num_panorama_levels && batch_size > 0) {
             float query_cum_norm = query_cum_sums[curr_panorama_level + 1];
@@ -972,11 +974,8 @@ int search_from_candidates_panorama(
         // Add surviving candidates to the result handler.
         for (size_t i = 0; i < batch_size; i++) {
             idx_t idx = index_array[i];
-            if (!sel || sel->is_member(idx)) {
-                if (res.add_result(exact_distances[i], idx)) {
-                    threshold = res.threshold;
-                    nres += 1;
-                }
+            if (res.add_result(exact_distances[i], idx)) {
+                nres += 1;
             }
             candidates.push(idx, exact_distances[i]);
         }
