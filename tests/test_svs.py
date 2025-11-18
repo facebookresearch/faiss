@@ -260,21 +260,24 @@ class TestSVSAdapter(unittest.TestCase):
 class TestSVSFactory(unittest.TestCase):
     """Test that SVS factory works correctly"""
 
-    def test_svs_factory(self):
+    def test_svs_factory_flat(self):
         index = faiss.index_factory(32, "SVSFlat")
         self.assertEqual(index.d, 32)
 
+    def test_svs_factory_vamana(self):
         index = faiss.index_factory(32, "SVSVamana64")
         self.assertEqual(index.d, 32)
         self.assertEqual(index.graph_max_degree, 64)
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
         self.assertEqual(index.storage_kind, faiss.SVS_FP32)
 
+    def test_svs_factory_fp16(self):
         index = faiss.index_factory(256, "SVSVamana16,FP16")
         self.assertEqual(index.d, 256)
         self.assertEqual(index.graph_max_degree, 16)
         self.assertEqual(index.storage_kind, faiss.SVS_FP16)
 
+    def test_svs_factory_sqi8(self):
         index = faiss.index_factory(64, "SVSVamana24,SQI8")
         self.assertEqual(index.d, 64)
         self.assertEqual(index.graph_max_degree, 24)
@@ -284,12 +287,13 @@ class TestSVSFactory(unittest.TestCase):
 class TestSVSFactoryLVQLeanVec(unittest.TestCase):
     """Test that SVS factory works correctly for LVQ and LeanVec"""
 
-    def test_svs_factory_lvq_leanvec(self):
+    def test_svs_factory_lvq(self):
         index = faiss.index_factory(16, "SVSVamana32,LVQ4x8")
         self.assertEqual(index.d, 16)
         self.assertEqual(index.graph_max_degree, 32)
         self.assertEqual(index.storage_kind, faiss.SVS_LVQ4x8)
 
+    def test_svs_factory_leanvec(self):
         index = faiss.index_factory(128, "SVSVamana48,LeanVec4x4_64")
         self.assertEqual(index.d, 128)
         self.assertEqual(index.graph_max_degree, 48)
