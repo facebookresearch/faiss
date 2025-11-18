@@ -25,6 +25,10 @@ import faiss
 _SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
 _SKIP_REASON = "SVS support not compiled in"
 
+# Check if LVQ/LeanVec support is available
+_SKIP_SVS_LL = _SKIP_SVS or not faiss.IndexSVSVamana.is_lvq_leanvec_enabled()
+_SKIP_SVS_LL_REASON = "LVQ/LeanVec support not available on this platform or build configuration"
+
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapter(unittest.TestCase):
@@ -266,6 +270,21 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.metric_type, faiss.METRIC_L2)
         self.assertEqual(index.storage_kind, faiss.SVS_FP32)
 
+        index = faiss.index_factory(256, "SVSVamana16,FP16")
+        self.assertEqual(index.d, 256)
+        self.assertEqual(index.graph_max_degree, 16)
+        self.assertEqual(index.storage_kind, faiss.SVS_FP16)
+
+        index = faiss.index_factory(64, "SVSVamana24,SQI8")
+        self.assertEqual(index.d, 64)
+        self.assertEqual(index.graph_max_degree, 24)
+        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSFactoryLVQLeanVec(unittest.TestCase):
+    """Test that SVS factory works correctly for LVQ and LeanVec"""
+
+    def test_svs_factory_lvq_leanvec(self):
         index = faiss.index_factory(16, "SVSVamana32,LVQ4x8")
         self.assertEqual(index.d, 16)
         self.assertEqual(index.graph_max_degree, 32)
@@ -276,18 +295,6 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.graph_max_degree, 48)
         self.assertEqual(index.storage_kind, faiss.SVS_LeanVec4x4)
         self.assertEqual(index.leanvec_d, 64)
-
-        index = faiss.index_factory(256, "SVSVamana16,FP16")
-        self.assertEqual(index.d, 256)
-        self.assertEqual(index.graph_max_degree, 16)
-        self.assertEqual(index.metric_type, faiss.METRIC_L2)
-        self.assertEqual(index.storage_kind, faiss.SVS_FP16)
-
-        index = faiss.index_factory(512, "SVSVamana24,SQ8")
-        self.assertEqual(index.d, 512)
-        self.assertEqual(index.graph_max_degree, 24)
-        self.assertEqual(index.metric_type, faiss.METRIC_L2)
-        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -306,7 +313,7 @@ class TestSVSAdapterSQI8(TestSVSAdapter):
         idx.storage_kind = faiss.SVS_SQI8
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x0 variant"""
 
@@ -319,7 +326,7 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x4(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x4 variant"""
 
@@ -332,7 +339,7 @@ class TestSVSAdapterLVQ4x4(TestSVSAdapter):
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x8(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x8 variant"""
 
@@ -509,7 +516,7 @@ class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_SQI8
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x0 variant"""
 
@@ -522,7 +529,7 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x4 variant"""
 
@@ -535,7 +542,7 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
-@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x8 variant"""
 
