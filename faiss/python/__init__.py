@@ -224,6 +224,8 @@ add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
 
 if "SVS" in get_compile_options():
     add_ref_in_constructor(IndexSVSVamana, 0)
+    add_ref_in_constructor(IndexSVSVamanaLVQ, 0)
+    add_ref_in_constructor(IndexSVSVamanaLeanVec, 0)
     add_ref_in_constructor(IndexSVSFlat, 0)
 
 # seems really marginal...
