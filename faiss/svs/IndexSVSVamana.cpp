@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 /*
- * Copyright 2025 Intel Corporation
+ * Portions Copyright 2025 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 
 #include <faiss/Index.h>
 
+#include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_vamana_index.h>
 #include <svs/runtime/vamana_index.h>
 
@@ -80,11 +81,23 @@ IndexSVSVamana::IndexSVSVamana(
 
 bool IndexSVSVamana::is_lvq_leanvec_enabled() {
     bool enabled = false;
-    auto status = svs_runtime::VamanaIndex::is_lvq_leanvec_enabled(&enabled);
+    auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
+    auto status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
     if (!status.ok()) {
+        if (status.code() == svs_runtime::StatusCode::INVALID_ARGUMENT) {
+            return false;
+        }
         FAISS_THROW_MSG(status.message());
     }
-    return enabled;
+    auto leanvec = to_svs_storage_kind(SVS_LeanVec4x4);
+    status = svs_runtime::DynamicVamanaIndex::check_storage_kind(leanvec);
+    if (!status.ok()) {
+        if (status.code() == svs_runtime::StatusCode::INVALID_ARGUMENT) {
+            return false;
+        }
+        FAISS_THROW_MSG(status.message());
+    }
+    return true;
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
