@@ -67,7 +67,7 @@ IndexSVSVamana::IndexSVSVamana(
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 
-// Validate the requested storage kind is available in current runtime.
+    // Validate the requested storage kind is available in current runtime.
     // NB: LVQ/LeanVec are only available on Intel(R) hardware AND when using
     //     a build based on LVQ/LeanVec-enabled SVS.
     auto svs_storage = to_svs_storage_kind(storage_kind);
