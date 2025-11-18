@@ -78,6 +78,15 @@ IndexSVSVamana::IndexSVSVamana(
     }
 }
 
+bool IndexSVSVamana::is_lvq_leanvec_enabled() {
+    bool enabled = false;
+    auto status = svs_runtime::VamanaIndex::is_lvq_leanvec_enabled(&enabled);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+    return enabled;
+}
+
 IndexSVSVamana::~IndexSVSVamana() {
     auto status = svs_runtime::DynamicVamanaIndex::destroy(impl);
     FAISS_ASSERT(status.ok());

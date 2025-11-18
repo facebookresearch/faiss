@@ -96,6 +96,10 @@ struct IndexSVSVamana : Index {
 
     ~IndexSVSVamana() override;
 
+    // static member that exposes whether or not LVQ/LeanVec are enabled for
+    // this build and runtime.
+    static bool is_lvq_leanvec_enabled();
+
     void add(idx_t n, const float* x) override;
 
     void search(
