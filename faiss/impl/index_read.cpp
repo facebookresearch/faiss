@@ -1313,15 +1313,13 @@ Index* read_index(IOReader* f, int io_flags) {
 #ifdef FAISS_ENABLE_SVS
     else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
-        // Vamana
         IndexSVSVamana* svs;
         if (h == fourcc("ILVQ")) {
-            svs = new IndexSVSVamanaLVQ(); // Vamana LVQ
+            svs = new IndexSVSVamanaLVQ();
         } else if (h == fourcc("ISVL")) {
-            svs = new IndexSVSVamanaLeanVec(); // Vamana LeanVec
+            svs = new IndexSVSVamanaLeanVec();
         } else if (h == fourcc("ISVD")) {
-            svs = new IndexSVSVamana(); // public SVS datatypes including fp32,
-                                        // fp16, and SQ8
+            svs = new IndexSVSVamana();
         }
 
         read_index_header(svs, f);
@@ -1341,7 +1339,6 @@ Index* read_index(IOReader* f, int io_flags) {
         bool initialized;
         READ1(initialized);
         if (initialized) {
-            // Create a non-buffering stream adapter from IOReader
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
@@ -1358,14 +1355,12 @@ Index* read_index(IOReader* f, int io_flags) {
         }
         idx = svs;
     } else if (h == fourcc("ISVF")) {
-        // SVS Flat
         IndexSVSFlat* svs = new IndexSVSFlat();
         read_index_header(svs, f);
 
         bool initialized;
         READ1(initialized);
         if (initialized) {
-            // Create a non-buffering stream adapter from IOReader
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);

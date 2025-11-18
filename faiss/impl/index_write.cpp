@@ -946,15 +946,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     else if (
             const IndexSVSVamana* svs =
                     dynamic_cast<const IndexSVSVamana*>(idx)) {
-        // SVS provides its own I/O routines, but it will write its output into
-        // three separate files.
-        // To match the behavior in faiss, we provide some logic in svs_io.h.
-        // In this namespace we provide a WriterStreambuf class that takes the
-        // contents of the SVS directories and streams them into the provided
-        // IOWriter f.
-        // This allows us to avoid in-memory copies, at the cost of temporarily
-        // utilizing additional disk space.
-
         uint32_t h;
         auto* lvq = dynamic_cast<const IndexSVSVamanaLVQ*>(svs);
         auto* lean = dynamic_cast<const IndexSVSVamanaLeanVec*>(svs);
@@ -985,7 +976,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         bool initialized = (svs->impl != nullptr);
         WRITE1(initialized);
         if (initialized) {
-            // Wrap SVS I/O and stream to IOWriter
             faiss::BufferedIOWriter bwr(f);
             faiss::svs_io::WriterStreambuf wbuf(&bwr);
             std::ostream os(&wbuf);
@@ -998,7 +988,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             bool trained = (lean->training_data != nullptr);
             WRITE1(trained);
             if (trained) {
-                // Wrap SVS I/O and stream to IOWriter
                 faiss::BufferedIOWriter bwr(f);
                 faiss::svs_io::WriterStreambuf wbuf(&bwr);
                 std::ostream os(&wbuf);
