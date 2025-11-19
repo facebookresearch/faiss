@@ -713,6 +713,20 @@ Index* read_index(IOReader* f, int io_flags) {
     if (h == fourcc("null")) {
         // denotes a missing index, useful for some cases
         return nullptr;
+    } else if (h == fourcc("IxFP")) {
+        int d;
+        size_t n_levels, batch_size;
+        READ1(d);
+        READ1(n_levels);
+        READ1(batch_size);
+        IndexFlatL2Panorama* idxp =
+                new IndexFlatL2Panorama(d, n_levels, batch_size);
+        READ1(idxp->ntotal);
+        READ1(idxp->is_trained);
+        READVECTOR(idxp->codes);
+        READVECTOR(idxp->cum_sums);
+        idxp->verbose = false;
+        idx = idxp;
     } else if (
             h == fourcc("IxFI") || h == fourcc("IxF2") || h == fourcc("IxFl")) {
         IndexFlat* idxf;

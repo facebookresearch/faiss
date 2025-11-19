@@ -276,6 +276,7 @@ Index* Cloner::clone_Index(const Index* index) {
     // IndexFlat
     TRYCLONE(IndexFlat1D, index)
     TRYCLONE(IndexFlatL2, index)
+    TRYCLONE(IndexFlatL2Panorama, index)
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
 
