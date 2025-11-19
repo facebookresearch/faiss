@@ -219,6 +219,7 @@ float RaBitDistanceComputerNotQ::distance_to_code(const uint8_t* code) {
 }
 
 void RaBitDistanceComputerNotQ::set_query(const float* x) {
+    q = x;
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||
@@ -343,6 +344,7 @@ float RaBitDistanceComputerQ::distance_to_code(const uint8_t* code) {
 using rabitq_utils::Z_MAX_BY_QB;
 
 void RaBitDistanceComputerQ::set_query(const float* x) {
+    q = x;
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||

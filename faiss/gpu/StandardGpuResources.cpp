@@ -700,7 +700,7 @@ StandardGpuResourcesImpl::getMemoryInfo() const {
 //
 
 StandardGpuResources::StandardGpuResources()
-        : res_(new StandardGpuResourcesImpl) {}
+        : res_(std::make_shared<StandardGpuResourcesImpl>()) {}
 
 StandardGpuResources::~StandardGpuResources() = default;
 
