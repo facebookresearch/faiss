@@ -78,6 +78,11 @@ print("nprobe  k_factor   recall_flat   qps_flat   recall_pano   qps_pano   dims
 
 faiss.omp_set_num_threads(1)
 
+# Visualization at a fixed nprobe
+plt.figure(figsize=(8, 5), dpi=300)
+qps_f_list, qps_p_list = [], []
+fixed_nprobe = 16
+
 for nprobe in nprobe_list:
     base_index.nprobe = nprobe
 
@@ -101,26 +106,14 @@ for nprobe in nprobe_list:
             f"{dims_pct:15.2f}  {speedup:9.2f}x"
         )
 
-# Visualization at a fixed nprobe
-fixed_nprobe = 16
-base_index.nprobe = fixed_nprobe
+        if nprobe == fixed_nprobe:
+            qps_f_list.append(qps_f)
+            qps_p_list.append(qps_p)
 
-plt.figure(figsize=(8, 5), dpi=300)
-
-qps_f_list, qps_p_list = [], []
-for kf in kfactor_list:
-    params = faiss.IndexRefineSearchParameters(k_factor=kf)
-    _, qf = eval_once(idx_flat, xq, params=params)
-    faiss.cvar.indexPanorama_stats.reset()
-    rp, qp = eval_once(idx_pano, xq, params=params)
-    qps_f_list.append(qf)
-    qps_p_list.append(qp)
-
-    # Display speedup
-    speedup = qp / qf
-    plt.plot([kf, kf], [qf, qp], 'k--', linewidth=1, alpha=0.7)
-    mid_y = (qf * qp) ** 0.5
-    plt.text(kf + 10, mid_y, f"{speedup:.2f}x\nr={rp:.2f}", 
+            # Draw speedup and recall
+            plt.plot([kf, kf], [qps_f, qps_p], 'k--', linewidth=1, alpha=0.7)
+            mid_y = (qps_f * qps_p) ** 0.5
+            plt.text(kf + 10, mid_y, f"{speedup:.2f}x\nr={recall_p:.2f}", 
             ha="left", va="center", fontsize=8)
 
 plt.plot(kfactor_list, qps_f_list, label="RefineFlat")
