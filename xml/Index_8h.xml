@@ -205,7 +205,7 @@
         </childnode>
         <childnode refid="78" relation="include">
         </childnode>
-        <childnode refid="81" relation="include">
+        <childnode refid="79" relation="include">
         </childnode>
         <childnode refid="82" relation="include">
         </childnode>
@@ -675,8 +675,10 @@
         </childnode>
         <childnode refid="80" relation="include">
         </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
       </node>
-      <node id="81">
+      <node id="79">
         <label>faiss/impl/HNSW.h</label>
         <link refid="HNSW_8h_source"/>
         <childnode refid="45" relation="include">
@@ -740,7 +742,7 @@
         <childnode refid="38" relation="include">
         </childnode>
       </node>
-      <node id="79">
+      <node id="80">
         <label>faiss/impl/RaBitQuantizer.h</label>
         <link refid="RaBitQuantizer_8h_source"/>
         <childnode refid="20" relation="include">
@@ -762,7 +764,7 @@
         <childnode refid="42" relation="include">
         </childnode>
       </node>
-      <node id="80">
+      <node id="81">
         <label>faiss/impl/ScalarQuantizer.h</label>
         <link refid="ScalarQuantizer_8h_source"/>
         <childnode refid="22" relation="include">

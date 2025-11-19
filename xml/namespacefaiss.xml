@@ -102,6 +102,7 @@
     <innerclass refid="structfaiss_1_1IndexHNSW2Level" prot="public">faiss::IndexHNSW2Level</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWCagra" prot="public">faiss::IndexHNSWCagra</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWFlat" prot="public">faiss::IndexHNSWFlat</innerclass>
+    <innerclass refid="structfaiss_1_1IndexHNSWFlatPanorama" prot="public">faiss::IndexHNSWFlatPanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWPQ" prot="public">faiss::IndexHNSWPQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexHNSWSQ" prot="public">faiss::IndexHNSWSQ</innerclass>
     <innerclass refid="structfaiss_1_1IndexIDMap2Template" prot="public">faiss::IndexIDMap2Template</innerclass>
@@ -674,7 +675,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="257" column="28" declfile="faiss/impl/HNSW.h" declline="257" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="270" column="28" declfile="faiss/impl/HNSW.h" declline="270" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -1618,7 +1619,64 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="259" column="5" declfile="faiss/impl/HNSW.h" declline="259" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="272" column="5" declfile="faiss/impl/HNSW.h" declline="272" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a68d1efb8727b9a1e41fdb037dd794e57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::search_from_candidates_panorama</definition>
+        <argsstring>(const HNSW &amp;hnsw, const IndexHNSW *index, DistanceComputer &amp;qdis, ResultHandler&lt; HNSW::C &gt; &amp;res, HNSW::MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
+        <name>search_from_candidates_panorama</name>
+        <qualifiedname>faiss::search_from_candidates_panorama</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref> &amp;</type>
+          <declname>hnsw</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> &amp;</type>
+          <declname>qdis</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">HNSW::C</ref> &gt; &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">HNSW::MinimaxHeap</ref> &amp;</type>
+          <declname>candidates</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref> &amp;</type>
+          <declname>vt</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref> &amp;</type>
+          <declname>stats</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nres_in</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Equivalent to <computeroutput>search_from_candidates</computeroutput>, but applies pruning with progressive refinement bounds. This is used in <computeroutput><ref refid="structfaiss_1_1IndexHNSWFlatPanorama" kindref="compound">IndexHNSWFlatPanorama</ref></computeroutput> to improve the search performance for higher dimensional vectors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="287" column="5" declfile="faiss/impl/HNSW.h" declline="287" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -1652,7 +1710,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="270" column="11" declfile="faiss/impl/HNSW.h" declline="270" declcolumn="11"/>
+        <location file="faiss/impl/HNSW.h" line="299" column="11" declfile="faiss/impl/HNSW.h" declline="299" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::priority_queue&lt; HNSW::Node &gt;</type>
@@ -1690,7 +1748,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="277" column="21" declfile="faiss/impl/HNSW.h" declline="277" declcolumn="21"/>
+        <location file="faiss/impl/HNSW.h" line="306" column="21" declfile="faiss/impl/HNSW.h" declline="306" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1737,7 +1795,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="285" column="6" declfile="faiss/impl/HNSW.h" declline="285" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="314" column="6" declfile="faiss/impl/HNSW.h" declline="314" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

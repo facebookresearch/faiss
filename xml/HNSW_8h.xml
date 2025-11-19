@@ -3,10 +3,10 @@
   <compounddef id="HNSW_8h" kind="file" language="C++">
     <compoundname>HNSW.h</compoundname>
     <includes local="no">queue</includes>
-    <includes local="no">unordered_set</includes>
     <includes local="no">vector</includes>
     <includes local="no">omp.h</includes>
     <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <includes refid="DistanceComputer_8h" local="no">faiss/impl/DistanceComputer.h</includes>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="maybe__owned__vector_8h" local="no">faiss/impl/maybe_owned_vector.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
@@ -15,50 +15,56 @@
     <includedby refid="IndexBinaryHNSW_8h" local="no">faiss/IndexBinaryHNSW.h</includedby>
     <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <incdepgraph>
-      <node id="6">
+      <node id="5">
         <label>faiss/Index.h</label>
         <link refid="Index_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss/MetricType.h</label>
-        <link refid="MetricType_8h_source"/>
         <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/impl/FaissAssert.h</label>
-        <link refid="FaissAssert_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+      </node>
+      <node id="6">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="17">
+        <label>faiss/impl/DistanceComputer.h</label>
+        <link refid="DistanceComputer_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -72,13 +78,13 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
@@ -90,23 +96,23 @@
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -122,11 +128,11 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="28" relation="include">
         </childnode>
@@ -161,19 +167,19 @@
       <node id="19">
         <label>cstddef</label>
       </node>
-      <node id="8">
+      <node id="7">
         <label>cstdint</label>
       </node>
-      <node id="9">
+      <node id="8">
         <label>cstdio</label>
       </node>
-      <node id="16">
+      <node id="15">
         <label>cstdlib</label>
       </node>
       <node id="20">
         <label>cstring</label>
       </node>
-      <node id="12">
+      <node id="11">
         <label>exception</label>
       </node>
       <node id="27">
@@ -182,7 +188,7 @@
       <node id="21">
         <label>memory</label>
       </node>
-      <node id="5">
+      <node id="4">
         <label>omp.h</label>
       </node>
       <node id="2">
@@ -191,22 +197,19 @@
       <node id="30">
         <label>random</label>
       </node>
-      <node id="17">
+      <node id="16">
         <label>sstream</label>
       </node>
       <node id="25">
         <label>stdint.h</label>
       </node>
-      <node id="13">
+      <node id="12">
         <label>string</label>
       </node>
-      <node id="3">
-        <label>unordered_set</label>
-      </node>
-      <node id="14">
+      <node id="13">
         <label>utility</label>
       </node>
-      <node id="4">
+      <node id="3">
         <label>vector</label>
       </node>
     </incdepgraph>
@@ -256,12 +259,12 @@
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;queue&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_set&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;omp.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;omp.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/DistanceComputer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/FaissAssert.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/maybe_owned_vector.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
@@ -269,278 +272,307 @@
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/random.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="25"><highlight class="comment">/**<sp/>Implementation<sp/>of<sp/>the<sp/>Hierarchical<sp/>Navigable<sp/>Small<sp/>World</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>datastructure.</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="28"><highlight class="comment"><sp/>*<sp/>Efficient<sp/>and<sp/>robust<sp/>approximate<sp/>nearest<sp/>neighbor<sp/>search<sp/>using</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>Hierarchical<sp/>Navigable<sp/>Small<sp/>World<sp/>graphs</highlight></codeline>
-<codeline lineno="30"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>Yu.<sp/>A.<sp/>Malkov,<sp/>D.<sp/>A.<sp/>Yashunin,<sp/>arXiv<sp/>2017</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>This<sp/>implementation<sp/>is<sp/>heavily<sp/>influenced<sp/>by<sp/>the<sp/>NMSlib</highlight></codeline>
-<codeline lineno="34"><highlight class="comment"><sp/>*<sp/>implementation<sp/>by<sp/>Yury<sp/>Malkov<sp/>and<sp/>Leonid<sp/>Boytsov</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>(https://github.com/searchivarius/nmslib)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Forward<sp/>declarations<sp/>to<sp/>avoid<sp/>circular<sp/>dependency.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexHNSW;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">IndexHNSWFlatPanorama;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="29"><highlight class="comment">/**<sp/>Implementation<sp/>of<sp/>the<sp/>Hierarchical<sp/>Navigable<sp/>Small<sp/>World</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/>datastructure.</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>Efficient<sp/>and<sp/>robust<sp/>approximate<sp/>nearest<sp/>neighbor<sp/>search<sp/>using</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/>Hierarchical<sp/>Navigable<sp/>Small<sp/>World<sp/>graphs</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/><sp/>Yu.<sp/>A.<sp/>Malkov,<sp/>D.<sp/>A.<sp/>Yashunin,<sp/>arXiv<sp/>2017</highlight></codeline>
 <codeline lineno="36"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>The<sp/>HNSW<sp/>object<sp/>stores<sp/>only<sp/>the<sp/>neighbor<sp/>link<sp/>structure,<sp/>see</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"><sp/>*<sp/>IndexHNSW.h<sp/>for<sp/>the<sp/>full<sp/>index<sp/>object.</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">VisitedTable;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">DistanceComputer;<sp/></highlight><highlight class="comment">//<sp/>from<sp/>AuxIndexStructures</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HNSWStats;</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ResultHandler;</highlight></codeline>
-<codeline lineno="46"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47" refid="structfaiss_1_1SearchParametersHNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref><sp/>:<sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref><sp/>{</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>efSearch<sp/>=<sp/>16;</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>check_relative_distance<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>bounded_queue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">~SearchParametersHNSW</ref>()<sp/>{}</highlight></codeline>
-<codeline lineno="53"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55" refid="structfaiss_1_1HNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="56"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>internal<sp/>storage<sp/>of<sp/>vectors<sp/>(32<sp/>bits:<sp/>this<sp/>is<sp/>expensive)</highlight></codeline>
-<codeline lineno="57" refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>This<sp/>implementation<sp/>is<sp/>heavily<sp/>influenced<sp/>by<sp/>the<sp/>NMSlib</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/>*<sp/>implementation<sp/>by<sp/>Yury<sp/>Malkov<sp/>and<sp/>Leonid<sp/>Boytsov</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/>*<sp/>(https://github.com/searchivarius/nmslib)</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/>*<sp/>The<sp/>HNSW<sp/>object<sp/>stores<sp/>only<sp/>the<sp/>neighbor<sp/>link<sp/>structure,<sp/>see</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>IndexHNSW.h<sp/>for<sp/>the<sp/>full<sp/>index<sp/>object.</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">VisitedTable;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">DistanceComputer;<sp/></highlight><highlight class="comment">//<sp/>from<sp/>AuxIndexStructures</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">HNSWStats;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ResultHandler;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="structfaiss_1_1SearchParametersHNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">SearchParametersHNSW</ref><sp/>:<sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref><sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>efSearch<sp/>=<sp/>16;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>check_relative_distance<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>bounded_queue<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SearchParametersHNSW" kindref="compound">~SearchParametersHNSW</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>for<sp/>now<sp/>we<sp/>do<sp/>only<sp/>these<sp/>distances</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1CMax" kindref="compound">C</ref><sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int64_t&gt;</ref>;</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::pair&lt;float,<sp/>storage_idx_t&gt;<sp/>Node;</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Heap<sp/>structure<sp/>that<sp/>allows<sp/>fast<sp/>access<sp/>and<sp/>updates.</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="66" refid="structfaiss_1_1HNSW_1_1MinimaxHeap" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref><sp/>{</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k;</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nvalid;</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;storage_idx_t&gt;<sp/>ids;</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>dis;</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">faiss::CMax&lt;float, storage_idx_t&gt;</ref><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">HC</ref>;</highlight></codeline>
+<codeline lineno="59" refid="structfaiss_1_1HNSW" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>internal<sp/>storage<sp/>of<sp/>vectors<sp/>(32<sp/>bits:<sp/>this<sp/>is<sp/>expensive)</highlight></codeline>
+<codeline lineno="61" refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>=<sp/>int32_t;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>for<sp/>now<sp/>we<sp/>do<sp/>only<sp/>these<sp/>distances</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1CMax" kindref="compound">C</ref><sp/>=<sp/><ref refid="structfaiss_1_1CMax" kindref="compound">CMax&lt;float, int64_t&gt;</ref>;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::pair&lt;float,<sp/>storage_idx_t&gt;<sp/>Node;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Heap<sp/>structure<sp/>that<sp/>allows<sp/>fast<sp/>access<sp/>and<sp/>updates.</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="structfaiss_1_1HNSW_1_1MinimaxHeap" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref><sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nvalid;</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n)<sp/>:<sp/>n(n),<sp/>k(0),<sp/>nvalid(0),<sp/>ids(n),<sp/>dis(n)<sp/>{}</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>push(<ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>i,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>v);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;storage_idx_t&gt;<sp/>ids;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>dis;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">faiss::CMax&lt;float, storage_idx_t&gt;</ref><sp/><ref refid="structfaiss_1_1CMax" kindref="compound">HC</ref>;</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>max()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">MinimaxHeap</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n)<sp/>:<sp/>n(n),<sp/>k(0),<sp/>nvalid(0),<sp/>ids(n),<sp/>dis(n)<sp/>{}</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>push(<ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>i,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>v);</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear();</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>max()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pop_min(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vmin_out<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count_below(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>thresh);</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="90"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>sort<sp/>pairs<sp/>of<sp/>(id,<sp/>distance)<sp/>from<sp/>nearest<sp/>to<sp/>farthest<sp/>or<sp/>the<sp/>reverse</highlight></codeline>
-<codeline lineno="91" refid="structfaiss_1_1HNSW_1_1NodeDistCloser" refkind="compound"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref><sp/>{</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>id;</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>:<sp/>d(d),<sp/>id(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{}</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator&lt;(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref>&amp;<sp/>obj1)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>d<sp/>&lt;<sp/>obj1.d;</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"></highlight></codeline>
-<codeline lineno="100" refid="structfaiss_1_1HNSW_1_1NodeDistFarther" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref><sp/>{</highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>id;</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>:<sp/>d(d),<sp/>id(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{}</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator&lt;(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref>&amp;<sp/>obj1)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>d<sp/>&gt;<sp/>obj1.d;</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="109"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>assignment<sp/>probability<sp/>to<sp/>each<sp/>layer<sp/>(sum=1)</highlight></codeline>
-<codeline lineno="110" refid="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" kindref="member">assign_probas</ref>;</highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>neighbors<sp/>stored<sp/>per<sp/>layer<sp/>(cumulative),<sp/>should<sp/>not</highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>be<sp/>changed<sp/>after<sp/>first<sp/>add</highlight></codeline>
-<codeline lineno="114" refid="structfaiss_1_1HNSW_1a1c258bb88aae9b1a754ab4690d85ed41" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a1c258bb88aae9b1a754ab4690d85ed41" kindref="member">cum_nneighbor_per_level</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pop_min(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vmin_out<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count_below(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>thresh);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>to<sp/>sort<sp/>pairs<sp/>of<sp/>(id,<sp/>distance)<sp/>from<sp/>nearest<sp/>to<sp/>farthest<sp/>or<sp/>the<sp/>reverse</highlight></codeline>
+<codeline lineno="95" refid="structfaiss_1_1HNSW_1_1NodeDistCloser" refkind="compound"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref><sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>id;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>:<sp/>d(d),<sp/>id(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{}</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator&lt;(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kindref="compound">NodeDistCloser</ref>&amp;<sp/>obj1)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>d<sp/>&lt;<sp/>obj1.d;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="structfaiss_1_1HNSW_1_1NodeDistFarther" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>id;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>:<sp/>d(d),<sp/>id(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">)<sp/>{}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator&lt;(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kindref="compound">NodeDistFarther</ref>&amp;<sp/>obj1)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>d<sp/>&gt;<sp/>obj1.d;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>assignment<sp/>probability<sp/>to<sp/>each<sp/>layer<sp/>(sum=1)</highlight></codeline>
+<codeline lineno="114" refid="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a907c94e0eca5200af1dc8d0aea482665" kindref="member">assign_probas</ref>;</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>level<sp/>of<sp/>each<sp/>vector<sp/>(base<sp/>level<sp/>=<sp/>1),<sp/>size<sp/>=<sp/>ntotal</highlight></codeline>
-<codeline lineno="117" refid="structfaiss_1_1HNSW_1a44847954c98957404829182c7db1b8af" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a44847954c98957404829182c7db1b8af" kindref="member">levels</ref>;</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>offsets[i]<sp/>is<sp/>the<sp/>offset<sp/>in<sp/>the<sp/>neighbors<sp/>array<sp/>where<sp/>vector<sp/>i<sp/>is<sp/>stored</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>ntotal<sp/>+<sp/>1</highlight></codeline>
-<codeline lineno="121" refid="structfaiss_1_1HNSW_1a0b456c521194903b29ce7c157539d771" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;size_t&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a0b456c521194903b29ce7c157539d771" kindref="member">offsets</ref>;</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>neighbors<sp/>stored<sp/>per<sp/>layer<sp/>(cumulative),<sp/>should<sp/>not</highlight></codeline>
+<codeline lineno="117"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>be<sp/>changed<sp/>after<sp/>first<sp/>add</highlight></codeline>
+<codeline lineno="118" refid="structfaiss_1_1HNSW_1a1c258bb88aae9b1a754ab4690d85ed41" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a1c258bb88aae9b1a754ab4690d85ed41" kindref="member">cum_nneighbor_per_level</ref>;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>level<sp/>of<sp/>each<sp/>vector<sp/>(base<sp/>level<sp/>=<sp/>1),<sp/>size<sp/>=<sp/>ntotal</highlight></codeline>
+<codeline lineno="121" refid="structfaiss_1_1HNSW_1a44847954c98957404829182c7db1b8af" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a44847954c98957404829182c7db1b8af" kindref="member">levels</ref>;</highlight></codeline>
 <codeline lineno="122"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>neighbors[offsets[i]:offsets[i+1]]<sp/>is<sp/>the<sp/>list<sp/>of<sp/>neighbors<sp/>of<sp/>vector<sp/>i</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>all<sp/>levels.<sp/>this<sp/>is<sp/>where<sp/>all<sp/>storage<sp/>goes.</highlight></codeline>
-<codeline lineno="125" refid="structfaiss_1_1HNSW_1aedac64067c015215bfccdc33918bc353" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;storage_idx_t&gt;</ref><sp/><ref refid="structfaiss_1_1HNSW_1aedac64067c015215bfccdc33918bc353" kindref="member">neighbors</ref>;</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>offsets[i]<sp/>is<sp/>the<sp/>offset<sp/>in<sp/>the<sp/>neighbors<sp/>array<sp/>where<sp/>vector<sp/>i<sp/>is<sp/>stored</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>size<sp/>ntotal<sp/>+<sp/>1</highlight></codeline>
+<codeline lineno="125" refid="structfaiss_1_1HNSW_1a0b456c521194903b29ce7c157539d771" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;size_t&gt;<sp/><ref refid="structfaiss_1_1HNSW_1a0b456c521194903b29ce7c157539d771" kindref="member">offsets</ref>;</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>entry<sp/>point<sp/>in<sp/>the<sp/>search<sp/>structure<sp/>(one<sp/>of<sp/>the<sp/>points<sp/>with<sp/>maximum</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>level</highlight></codeline>
-<codeline lineno="129" refid="structfaiss_1_1HNSW_1a95547d97c90b361a040bae0fb0d892b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/><ref refid="structfaiss_1_1HNSW_1a95547d97c90b361a040bae0fb0d892b4" kindref="member">entry_point</ref><sp/>=<sp/>-1;</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RandomGenerator" kindref="compound">faiss::RandomGenerator</ref><sp/>rng;</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="133"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>maximum<sp/>level</highlight></codeline>
-<codeline lineno="134" refid="structfaiss_1_1HNSW_1afba18a290f5f759a8a7a64ed35b950eb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1afba18a290f5f759a8a7a64ed35b950eb" kindref="member">max_level</ref><sp/>=<sp/>-1;</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>expansion<sp/>factor<sp/>at<sp/>construction<sp/>time</highlight></codeline>
-<codeline lineno="137" refid="structfaiss_1_1HNSW_1aa7309dd7826761def38233c8bbbc0c63" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1aa7309dd7826761def38233c8bbbc0c63" kindref="member">efConstruction</ref><sp/>=<sp/>40;</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="139"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>expansion<sp/>factor<sp/>at<sp/>search<sp/>time</highlight></codeline>
-<codeline lineno="140" refid="structfaiss_1_1HNSW_1a6d1cb35c4220bf554af90133c71ae04f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a6d1cb35c4220bf554af90133c71ae04f" kindref="member">efSearch</ref><sp/>=<sp/>16;</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="142"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>during<sp/>search:<sp/>do<sp/>we<sp/>check<sp/>whether<sp/>the<sp/>next<sp/>best<sp/>distance<sp/>is<sp/>good</highlight></codeline>
-<codeline lineno="143"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>enough?</highlight></codeline>
-<codeline lineno="144" refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" kindref="member">check_relative_distance</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>neighbors[offsets[i]:offsets[i+1]]<sp/>is<sp/>the<sp/>list<sp/>of<sp/>neighbors<sp/>of<sp/>vector<sp/>i</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>for<sp/>all<sp/>levels.<sp/>this<sp/>is<sp/>where<sp/>all<sp/>storage<sp/>goes.</highlight></codeline>
+<codeline lineno="129" refid="structfaiss_1_1HNSW_1aedac64067c015215bfccdc33918bc353" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1MaybeOwnedVector" kindref="compound">MaybeOwnedVector&lt;storage_idx_t&gt;</ref><sp/><ref refid="structfaiss_1_1HNSW_1aedac64067c015215bfccdc33918bc353" kindref="member">neighbors</ref>;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>entry<sp/>point<sp/>in<sp/>the<sp/>search<sp/>structure<sp/>(one<sp/>of<sp/>the<sp/>points<sp/>with<sp/>maximum</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>level</highlight></codeline>
+<codeline lineno="133" refid="structfaiss_1_1HNSW_1a95547d97c90b361a040bae0fb0d892b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/><ref refid="structfaiss_1_1HNSW_1a95547d97c90b361a040bae0fb0d892b4" kindref="member">entry_point</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1RandomGenerator" kindref="compound">faiss::RandomGenerator</ref><sp/>rng;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>maximum<sp/>level</highlight></codeline>
+<codeline lineno="138" refid="structfaiss_1_1HNSW_1afba18a290f5f759a8a7a64ed35b950eb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1afba18a290f5f759a8a7a64ed35b950eb" kindref="member">max_level</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>expansion<sp/>factor<sp/>at<sp/>construction<sp/>time</highlight></codeline>
+<codeline lineno="141" refid="structfaiss_1_1HNSW_1aa7309dd7826761def38233c8bbbc0c63" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1aa7309dd7826761def38233c8bbbc0c63" kindref="member">efConstruction</ref><sp/>=<sp/>40;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>expansion<sp/>factor<sp/>at<sp/>search<sp/>time</highlight></codeline>
+<codeline lineno="144" refid="structfaiss_1_1HNSW_1a6d1cb35c4220bf554af90133c71ae04f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a6d1cb35c4220bf554af90133c71ae04f" kindref="member">efSearch</ref><sp/>=<sp/>16;</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>use<sp/>bounded<sp/>queue<sp/>during<sp/>exploration</highlight></codeline>
-<codeline lineno="147" refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" kindref="member">search_bounded_queue</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"></highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>methods<sp/>that<sp/>initialize<sp/>the<sp/>tree<sp/>sizes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="150"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>initialize<sp/>the<sp/>assign_probas<sp/>and<sp/>cum_nneighbor_per_level<sp/>to</highlight></codeline>
-<codeline lineno="152"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>have<sp/>2*M<sp/>links<sp/>on<sp/>level<sp/>0<sp/>and<sp/>M<sp/>links<sp/>on<sp/>levels<sp/>&gt;<sp/>0</highlight></codeline>
-<codeline lineno="153" refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" kindref="member">set_default_probas</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>levelMult);</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>nb<sp/>of<sp/>neighbors<sp/>for<sp/>this<sp/>level<sp/>(before<sp/>adding<sp/>anything)</highlight></codeline>
-<codeline lineno="156" refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" kindref="member">set_nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level_no,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>methods<sp/>that<sp/>access<sp/>the<sp/>tree<sp/>sizes</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="160"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nb<sp/>of<sp/>neighbors<sp/>for<sp/>this<sp/>level</highlight></codeline>
-<codeline lineno="161" refid="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" kindref="member">nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="162"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="163"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cumulative<sp/>nb<sp/>up<sp/>to<sp/>(and<sp/>excluding)<sp/>this<sp/>level</highlight></codeline>
-<codeline lineno="164" refid="structfaiss_1_1HNSW_1a459a957547e1f003a1b3f4c8b16d4fdd" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a459a957547e1f003a1b3f4c8b16d4fdd" kindref="member">cum_nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="166"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>range<sp/>of<sp/>entries<sp/>in<sp/>the<sp/>neighbors<sp/>table<sp/>of<sp/>vertex<sp/>no<sp/>at<sp/>layer_no</highlight></codeline>
-<codeline lineno="167" refid="structfaiss_1_1HNSW_1a761ff10e3d7083560c87705b7c38b4fc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a761ff10e3d7083560c87705b7c38b4fc" kindref="member">neighbor_range</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>no,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>begin,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>end)</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>during<sp/>search:<sp/>do<sp/>we<sp/>check<sp/>whether<sp/>the<sp/>next<sp/>best<sp/>distance<sp/>is<sp/>good</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>enough?</highlight></codeline>
+<codeline lineno="148" refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" kindref="member">check_relative_distance</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>use<sp/>bounded<sp/>queue<sp/>during<sp/>exploration</highlight></codeline>
+<codeline lineno="151" refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" kindref="member">search_bounded_queue</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>use<sp/>Panorama<sp/>progressive<sp/>pruning<sp/>in<sp/>search</highlight></codeline>
+<codeline lineno="154" refid="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" kindref="member">is_panorama</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>methods<sp/>that<sp/>initialize<sp/>the<sp/>tree<sp/>sizes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>initialize<sp/>the<sp/>assign_probas<sp/>and<sp/>cum_nneighbor_per_level<sp/>to</highlight></codeline>
+<codeline lineno="159"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>have<sp/>2*M<sp/>links<sp/>on<sp/>level<sp/>0<sp/>and<sp/>M<sp/>links<sp/>on<sp/>levels<sp/>&gt;<sp/>0</highlight></codeline>
+<codeline lineno="160" refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" kindref="member">set_default_probas</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>levelMult);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>nb<sp/>of<sp/>neighbors<sp/>for<sp/>this<sp/>level<sp/>(before<sp/>adding<sp/>anything)</highlight></codeline>
+<codeline lineno="163" refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" kindref="member">set_nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level_no,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>methods<sp/>that<sp/>access<sp/>the<sp/>tree<sp/>sizes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="167"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nb<sp/>of<sp/>neighbors<sp/>for<sp/>this<sp/>level</highlight></codeline>
+<codeline lineno="168" refid="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" kindref="member">nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="170"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>only<sp/>mandatory<sp/>parameter:<sp/>nb<sp/>of<sp/>neighbors</highlight></codeline>
-<codeline lineno="171" refid="structfaiss_1_1HNSW_1a1fc852810a2497a8eb2c41635ec05520" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a1fc852810a2497a8eb2c41635ec05520" kindref="member">HNSW</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M<sp/>=<sp/>32);</highlight></codeline>
+<codeline lineno="170"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cumulative<sp/>nb<sp/>up<sp/>to<sp/>(and<sp/>excluding)<sp/>this<sp/>level</highlight></codeline>
+<codeline lineno="171" refid="structfaiss_1_1HNSW_1a459a957547e1f003a1b3f4c8b16d4fdd" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a459a957547e1f003a1b3f4c8b16d4fdd" kindref="member">cum_nb_neighbors</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="173"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>pick<sp/>a<sp/>random<sp/>level<sp/>for<sp/>a<sp/>new<sp/>point</highlight></codeline>
-<codeline lineno="174" refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" kindref="member">random_level</ref>();</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="176"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>n<sp/>random<sp/>levels<sp/>to<sp/>table<sp/>(for<sp/>debugging...)</highlight></codeline>
-<codeline lineno="177" refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" kindref="member">fill_with_random_links</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight></codeline>
-<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_links_starting_from(</highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>ptdis,</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>pt_id,</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>nearest,</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_nearest,</highlight></codeline>
-<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>omp_lock_t*<sp/>locks,</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="189"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>add<sp/>point<sp/>pt_id<sp/>on<sp/>all<sp/>levels<sp/>&lt;=<sp/>pt_level<sp/>and<sp/>build<sp/>the<sp/>link</highlight></codeline>
-<codeline lineno="190"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>structure<sp/>for<sp/>them.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="191" refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" kindref="member">add_with_locks</ref>(</highlight></codeline>
-<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>ptdis,</highlight></codeline>
-<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pt_level,</highlight></codeline>
-<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pt_id,</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;omp_lock_t&gt;&amp;<sp/>locks,</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>search<sp/>interface<sp/>for<sp/>1<sp/>point,<sp/>single<sp/>thread</highlight></codeline>
-<codeline lineno="200" refid="structfaiss_1_1HNSW_1a0bb51c7a1ef62db14209a83452ef6233" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/><ref refid="structfaiss_1_1HNSW_1a0bb51c7a1ef62db14209a83452ef6233" kindref="member">search</ref>(</highlight></codeline>
-<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="173"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>range<sp/>of<sp/>entries<sp/>in<sp/>the<sp/>neighbors<sp/>table<sp/>of<sp/>vertex<sp/>no<sp/>at<sp/>layer_no</highlight></codeline>
+<codeline lineno="174" refid="structfaiss_1_1HNSW_1a761ff10e3d7083560c87705b7c38b4fc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a761ff10e3d7083560c87705b7c38b4fc" kindref="member">neighbor_range</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>no,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>layer_no,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>begin,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">*<sp/>end)</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="177"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>only<sp/>mandatory<sp/>parameter:<sp/>nb<sp/>of<sp/>neighbors</highlight></codeline>
+<codeline lineno="178" refid="structfaiss_1_1HNSW_1a1fc852810a2497a8eb2c41635ec05520" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a1fc852810a2497a8eb2c41635ec05520" kindref="member">HNSW</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>M<sp/>=<sp/>32);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="180"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>pick<sp/>a<sp/>random<sp/>level<sp/>for<sp/>a<sp/>new<sp/>point</highlight></codeline>
+<codeline lineno="181" refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" kindref="member">random_level</ref>();</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>add<sp/>n<sp/>random<sp/>levels<sp/>to<sp/>table<sp/>(for<sp/>debugging...)</highlight></codeline>
+<codeline lineno="184" refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" kindref="member">fill_with_random_links</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_links_starting_from(</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>ptdis,</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>pt_id,</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref><sp/>nearest,</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_nearest,</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>omp_lock_t*<sp/>locks,</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>add<sp/>point<sp/>pt_id<sp/>on<sp/>all<sp/>levels<sp/>&lt;=<sp/>pt_level<sp/>and<sp/>build<sp/>the<sp/>link</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>structure<sp/>for<sp/>them.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198" refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" kindref="member">add_with_locks</ref>(</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>ptdis,</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pt_level,</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>pt_id,</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;omp_lock_t&gt;&amp;<sp/>locks,</highlight></codeline>
 <codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="205"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="206"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>search<sp/>only<sp/>in<sp/>level<sp/>0<sp/>from<sp/>a<sp/>given<sp/>vertex</highlight></codeline>
-<codeline lineno="207" refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" kindref="member">search_level_0</ref>(</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;</ref>&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>nprobe,</highlight></codeline>
-<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref>*<sp/>nearest_i,</highlight></codeline>
-<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>nearest_d,</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_type,</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>search_stats,</highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"></highlight></codeline>
-<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset();</highlight></codeline>
-<codeline lineno="219"><highlight class="normal"></highlight></codeline>
-<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear_neighbor_tables(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level);</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>print_neighbor_stats(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"></highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>prepare_level_tab(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>preset_levels<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"></highlight></codeline>
-<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>shrink_neighbor_list(</highlight></codeline>
-<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;NodeDistFarther&gt;&amp;<sp/>input,</highlight></codeline>
-<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;NodeDistFarther&gt;&amp;<sp/>output,</highlight></codeline>
-<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max_size,</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"></highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>permute_entries(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>map);</highlight></codeline>
-<codeline lineno="233"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"></highlight></codeline>
-<codeline lineno="235" refid="structfaiss_1_1HNSWStats" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/>{</highlight></codeline>
-<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n1<sp/>=<sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>vectors<sp/>searched</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="237" refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>=</highlight></codeline>
-<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>queries<sp/>for<sp/>which<sp/>the<sp/>candidate<sp/>list<sp/>is<sp/>exhausted</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="239" refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>=<sp/>0;<sp/><sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>distances<sp/>computed</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="240" refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>=<sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>hops<sp/>aka<sp/>number<sp/>of<sp/>edges<sp/>traversed</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="241"><highlight class="normal"></highlight></codeline>
-<codeline lineno="242" refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" kindref="member">reset</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n1<sp/>=<sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="206"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Search<sp/>interface<sp/>for<sp/>1<sp/>point,<sp/>single<sp/>thread</highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/><sp/><sp/><sp/>///</highlight></codeline>
+<codeline lineno="208"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>NOTE:<sp/>We<sp/>pass<sp/>a<sp/>reference<sp/>to<sp/>the<sp/>index<sp/>itself<sp/>to<sp/>allow<sp/>for<sp/>additional</highlight></codeline>
+<codeline lineno="209"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>state<sp/>information<sp/>to<sp/>be<sp/>passed<sp/>(used<sp/>for<sp/>Panorama<sp/>progressive<sp/>pruning).</highlight></codeline>
+<codeline lineno="210"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>alternative<sp/>would<sp/>be<sp/>to<sp/>override<sp/>both<sp/>HNSW::search<sp/>and</highlight></codeline>
+<codeline lineno="211"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>HNSWIndex::search,<sp/>which<sp/>would<sp/>be<sp/>a<sp/>nuisance<sp/>of<sp/>code<sp/>duplication.</highlight></codeline>
+<codeline lineno="212" refid="structfaiss_1_1HNSW_1ae7bd98db28a6d148603a0f3b0bbcf9e8" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/><ref refid="structfaiss_1_1HNSW_1ae7bd98db28a6d148603a0f3b0bbcf9e8" kindref="member">search</ref>(</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="219"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>search<sp/>only<sp/>in<sp/>level<sp/>0<sp/>from<sp/>a<sp/>given<sp/>vertex</highlight></codeline>
+<codeline lineno="220" refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a0fe2ff6d5a0b904217c6ecd6c7dd95fc" kindref="member">search_level_0</ref>(</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;C&gt;</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>nprobe,</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">storage_idx_t</ref>*<sp/>nearest_i,</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>nearest_d,</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_type,</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>search_stats,</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset();</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear_neighbor_tables(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level);</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>print_neighbor_stats(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>prepare_level_tab(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>preset_levels<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>shrink_neighbor_list(</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;NodeDistFarther&gt;&amp;<sp/>input,</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;NodeDistFarther&gt;&amp;<sp/>output,</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max_size,</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>keep_max_size_level0<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>permute_entries(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>map);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="247"><highlight class="normal"></highlight></codeline>
-<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>combine(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
-<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n1<sp/>+=<sp/>other.n1;</highlight></codeline>
-<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref>;</highlight></codeline>
-<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref>;</highlight></codeline>
-<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref>;</highlight></codeline>
-<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="254"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="255"><highlight class="normal"></highlight></codeline>
-<codeline lineno="256"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="257"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>HNSWStats<sp/>hnsw_stats;</highlight></codeline>
-<codeline lineno="258"><highlight class="normal"></highlight></codeline>
-<codeline lineno="259"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_from_candidates(</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceComputer&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ResultHandler&lt;HNSW::C&gt;&amp;<sp/>res,</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSW::MinimaxHeap&amp;<sp/>candidates,</highlight></codeline>
-<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VisitedTable&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSWStats&amp;<sp/>stats,</highlight></codeline>
-<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SearchParameters*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"></highlight></codeline>
-<codeline lineno="270"><highlight class="normal">HNSWStats<sp/>greedy_update_nearest(</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceComputer&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref>&amp;<sp/>nearest,</highlight></codeline>
-<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>d_nearest);</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"></highlight></codeline>
-<codeline lineno="277"><highlight class="normal">std::priority_queue&lt;HNSW::Node&gt;<sp/>search_from_candidate_unbounded(</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW::Node&amp;<sp/>node,</highlight></codeline>
-<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceComputer&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ef,</highlight></codeline>
-<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VisitedTable*<sp/>vt,</highlight></codeline>
-<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSWStats&amp;<sp/>stats);</highlight></codeline>
-<codeline lineno="284"><highlight class="normal"></highlight></codeline>
-<codeline lineno="285"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_neighbors_to_add(</highlight></codeline>
-<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSW&amp;<sp/>hnsw,</highlight></codeline>
-<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceComputer&amp;<sp/>qdis,</highlight></codeline>
-<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;HNSW::NodeDistCloser&gt;&amp;<sp/>results,</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>entry_point,</highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_entry_point,</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VisitedTable&amp;<sp/>vt,</highlight></codeline>
-<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>reference_version<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="294"><highlight class="normal"></highlight></codeline>
-<codeline lineno="295"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="248" refid="structfaiss_1_1HNSWStats" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/>{</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n1<sp/>=<sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>vectors<sp/>searched</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="250" refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>=</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>queries<sp/>for<sp/>which<sp/>the<sp/>candidate<sp/>list<sp/>is<sp/>exhausted</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252" refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>=<sp/>0;<sp/><sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>distances<sp/>computed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="253" refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>=<sp/>0;<sp/></highlight><highlight class="comment">///<sp/>number<sp/>of<sp/>hops<sp/>aka<sp/>number<sp/>of<sp/>edges<sp/>traversed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255" refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats_1ae97f2a47914b051f63843d4bceb4b951" kindref="member">reset</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n1<sp/>=<sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>combine(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n1<sp/>+=<sp/>other.n1;</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1aeb504ee9fcf7debd52737c92c3e0594d" kindref="member">n2</ref>;</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a420fdb8c251beb429829fa69a39d78e7" kindref="member">ndis</ref>;</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref><sp/>+=<sp/>other.<ref refid="structfaiss_1_1HNSWStats_1a65c0179c658e493759bed098677a51d4" kindref="member">nhops</ref>;</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="267"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight><highlight class="comment">//<sp/>global<sp/>var<sp/>that<sp/>collects<sp/>them<sp/>all</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/>HNSWStats<sp/>hnsw_stats;</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>search_from_candidates(</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DistanceComputer&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ResultHandler&lt;HNSW::C&gt;&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSW::MinimaxHeap&amp;<sp/>candidates,</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VisitedTable&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HNSWStats&amp;<sp/>stats,</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SearchParameters*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="283"><highlight class="comment">///<sp/>Equivalent<sp/>to<sp/>`search_from_candidates`,<sp/>but<sp/>applies<sp/>pruning<sp/>with<sp/>progressive</highlight></codeline>
+<codeline lineno="284"><highlight class="comment">///<sp/>refinement<sp/>bounds.</highlight></codeline>
+<codeline lineno="285"><highlight class="comment">///<sp/>This<sp/>is<sp/>used<sp/>in<sp/>`IndexHNSWFlatPanorama`<sp/>to<sp/>improve<sp/>the<sp/>search<sp/>performance</highlight></codeline>
+<codeline lineno="286"><highlight class="comment">///<sp/>for<sp/>higher<sp/>dimensional<sp/>vectors.</highlight></codeline>
+<codeline lineno="287" refid="namespacefaiss_1a68d1efb8727b9a1e41fdb037dd794e57" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a68d1efb8727b9a1e41fdb037dd794e57" kindref="member">search_from_candidates_panorama</ref>(</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IndexHNSW" kindref="compound">IndexHNSW</ref>*<sp/>index,</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler&lt;HNSW::C&gt;</ref>&amp;<sp/>res,</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kindref="compound">HNSW::MinimaxHeap</ref>&amp;<sp/>candidates,</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats,</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nres_in<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>*<sp/>params<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref><sp/>greedy_update_nearest(</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref>&amp;<sp/>nearest,</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>d_nearest);</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal">std::priority_queue&lt;HNSW::Node&gt;<sp/>search_from_candidate_unbounded(</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>HNSW::Node&amp;<sp/>node,</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ef,</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>*<sp/>vt,</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref>&amp;<sp/>stats);</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>search_neighbors_to_add(</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1HNSW" kindref="compound">HNSW</ref>&amp;<sp/>hnsw,</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref>&amp;<sp/>qdis,</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;HNSW::NodeDistCloser&gt;&amp;<sp/>results,</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>entry_point,</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_entry_point,</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>level,</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>&amp;<sp/>vt,</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>reference_version<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="324"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/HNSW.h"/>
   </compounddef>

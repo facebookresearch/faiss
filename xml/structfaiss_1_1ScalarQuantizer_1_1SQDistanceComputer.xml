@@ -3,50 +3,6 @@
   <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::ScalarQuantizer::SQDistanceComputer</compoundname>
     <basecompoundref refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public" virt="non-virtual">faiss::FlatCodesDistanceComputer</basecompoundref>
-    <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ade7fed44ffa6f4ea257136108dadb472" prot="public" static="no" mutable="no">
-        <type>const float *</type>
-        <definition>const float* faiss::ScalarQuantizer::SQDistanceComputer::q</definition>
-        <argsstring></argsstring>
-        <name>q</name>
-        <qualifiedname>faiss::ScalarQuantizer::SQDistanceComputer::q</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="101" column="21" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="101" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
-        <type>const uint8_t *</type>
-        <definition>const uint8_t* faiss::FlatCodesDistanceComputer::codes</definition>
-        <argsstring></argsstring>
-        <name>codes</name>
-        <qualifiedname>faiss::FlatCodesDistanceComputer::codes</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
-        <type>size_t</type>
-        <definition>size_t faiss::FlatCodesDistanceComputer::code_size</definition>
-        <argsstring></argsstring>
-        <name>code_size</name>
-        <qualifiedname>faiss::FlatCodesDistanceComputer::code_size</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
-      </memberdef>
-    </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -60,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="103" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="103" bodyend="103"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="101" column="9" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="101" bodyend="101"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>float</type>
@@ -78,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="105" column="23"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="103" column="23"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>float</type>
@@ -98,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="107" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="107" bodyend="109"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="105" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="105" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>
@@ -118,7 +74,92 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/DistanceComputer.h" line="121" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="121" bodyend="123"/>
+        <location file="faiss/impl/DistanceComputer.h" line="129" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="129" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>virtual float faiss::FlatCodesDistanceComputer::partial_dot_product</definition>
+        <argsstring>(const idx_t, const uint32_t, const uint32_t)</argsstring>
+        <name>partial_dot_product</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Computes a partial dot product over a slice of the query vector. The slice is defined by the following parameters: — <computeroutput>offset</computeroutput>: the starting index of the first component to include — <computeroutput>num_components</computeroutput>: the number of consecutive components to include</para>
+<para>Components refer to raw dimensions of the flat (uncompressed) query vector.</para>
+<para>By default, this method throws an error, as it is only implemented in specific subclasses such as <computeroutput>FlatL2Dis</computeroutput>. Other flat distance computers may override this when partial dot product support is needed.</para>
+<para>Over time, this method might be changed to a pure virtual function (<computeroutput>= 0</computeroutput>) to enforce implementation in subclasses that require this functionality.</para>
+<para>This method is not part of the generic <computeroutput><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref></computeroutput> interface because for compressed representations (e.g., product quantization), calling <computeroutput>partial_dot_product</computeroutput> repeatedly is often less efficient than computing the full distance at once.</para>
+<para>Supporting efficient partial scans generally requires a different memory layout, such as interleaved blocks that keep SIMD lanes full. This is a non-trivial change and not supported in the current flat layout.</para>
+<para>For more details on partial (or chunked) dot product computations and the performance trade-offs involved, refer to the <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> paper: <ulink url="https://arxiv.org/pdf/2510.00566">https://arxiv.org/pdf/2510.00566</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="161" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="161" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dp0, float &amp;dp1, float &amp;dp2, float &amp;dp3, const uint32_t offset, const uint32_t num_components)</argsstring>
+        <name>partial_dot_product_batch_4</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp3</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>num_components</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute partial dot products of current query to 4 stored vectors. See <computeroutput>partial_dot_product</computeroutput> for more details. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="173" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="173" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -213,6 +254,51 @@
         <location file="faiss/impl/DistanceComputer.h" line="57" column="19"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::FlatCodesDistanceComputer::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::codes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::FlatCodesDistanceComputer::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::FlatCodesDistanceComputer::q</definition>
+        <argsstring></argsstring>
+        <name>q</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::q</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="116" column="17" bodyfile="faiss/impl/DistanceComputer.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -253,16 +339,19 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ScalarQuantizer.h" line="100" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="100" bodyend="110"/>
+    <location file="faiss/impl/ScalarQuantizer.h" line="100" column="5" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="100" bodyend="108"/>
     <listofallmembers>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>codes</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a11e1e24a0e654098c5394e934faeb919" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>distances_batch_4</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae40ded398aac001acfbbab90926f1bd3" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a88114453bff4507a1ec3f3942718ec2d" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aff32b1ddb35a9da80cbc705b5b7716d0" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>operator()</name></member>
-      <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ade7fed44ffa6f4ea257136108dadb472" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>q</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>partial_dot_product</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" virt="virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>partial_dot_product_batch_4</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a06087541ea276ee00e0dd2d3a7d53298" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>q</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>query_to_code</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec" prot="public" virt="pure-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>set_query</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1a7a2c279fca53e025a59587c966a81ee3" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer::SQDistanceComputer</scope><name>SQDistanceComputer</name></member>

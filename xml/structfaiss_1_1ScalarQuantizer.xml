@@ -451,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="112" column="24"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="110" column="24"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1a5290e85695dc1f45a0f80d130ace7ce8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
@@ -486,7 +486,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="115" column="25"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="113" column="25"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -518,7 +518,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ScalarQuantizer.h" line="26" column="1" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="26" bodyend="121"/>
+    <location file="faiss/impl/ScalarQuantizer.h" line="26" column="1" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="26" bodyend="119"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ScalarQuantizer_1a8103b43429df7340ed495681ceff45b3" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>bits</name></member>
       <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>code_size</name></member>
