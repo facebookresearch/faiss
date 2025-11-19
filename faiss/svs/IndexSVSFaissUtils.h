@@ -88,37 +88,9 @@ inline std::unique_ptr<FaissIDFilter> make_faiss_id_filter(
     return nullptr;
 }
 
-struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
-    FaissResultsAllocator(faiss::RangeSearchResult* result) : result(result) {
-        FAISS_ASSERT(result != nullptr);
-    }
-
-    svs_runtime::SearchResultsStorage allocate(
-            std::span<size_t> result_counts) const override {
-        FAISS_ASSERT(result != nullptr);
-        FAISS_ASSERT(result_counts.size() == result->nq);
-
-        // RangeSearchResult .ctor() allows unallocated lims
-        if (result->lims == nullptr) {
-            result->lims = new size_t[result->nq + 1];
-        }
-
-        std::copy(result_counts.begin(), result_counts.end(), result->lims);
-        result->do_allocation();
-        return svs_runtime::SearchResultsStorage{
-                std::span<int64_t>(
-                        result->labels, result->lims[result_counts.size()]),
-                std::span<float>(
-                        result->distances, result->lims[result_counts.size()])};
-    }
-
-   private:
-    faiss::RangeSearchResult* result;
-};
-
 template <typename T, typename U, typename = void>
 struct InputBufferConverter {
-    InputBufferConverter(std::span<const U> data) : buffer(data.size()) {
+    InputBufferConverter(std::span<const U> data = {}) : buffer(data.size()) {
         FAISS_ASSERT(
                 !"InputBufferConverter: there is no suitable user code for this type conversion");
         std::transform(
@@ -155,7 +127,7 @@ struct InputBufferConverter<
                 std::is_same_v<T, U> ||
                 (std::is_integral_v<T> && std::is_integral_v<U> &&
                  sizeof(T) == sizeof(U))>> {
-    InputBufferConverter(std::span<const U> data) : data_span(data) {}
+    InputBufferConverter(std::span<const U> data = {}) : data_span(data) {}
     operator T*() {
         return reinterpret_cast<T*>(data_span.data());
     }
@@ -177,7 +149,7 @@ struct InputBufferConverter<
 
 template <typename T, typename U, typename = void>
 struct OutputBufferConverter {
-    OutputBufferConverter(std::span<U> data)
+    OutputBufferConverter(std::span<U> data = {})
             : data_span(data), buffer(data.size()) {
         FAISS_ASSERT(
                 !"OutputBufferConverter: there is no suitable user code for this type conversion");
@@ -213,7 +185,7 @@ struct OutputBufferConverter<
                 std::is_same_v<T, U> ||
                 (std::is_integral_v<T> && std::is_integral_v<U> &&
                  sizeof(T) == sizeof(U))>> {
-    OutputBufferConverter(std::span<U> data) : data_span(data) {}
+    OutputBufferConverter(std::span<U> data = {}) : data_span(data) {}
     operator T*() {
         return reinterpret_cast<T*>(data_span.data());
     }
@@ -255,4 +227,34 @@ auto convert_output_buffer(U* data, size_t size) {
     return convert_output_buffer<T, U>(std::span<U>(data, size));
 }
 
+struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
+    FaissResultsAllocator(faiss::RangeSearchResult* result) : result(result) {
+        FAISS_ASSERT(result != nullptr);
+    }
+
+    svs_runtime::SearchResultsStorage allocate(
+            std::span<size_t> result_counts) const override {
+        FAISS_ASSERT(result != nullptr);
+        FAISS_ASSERT(result_counts.size() == result->nq);
+
+        // RangeSearchResult .ctor() allows unallocated lims
+        if (result->lims == nullptr) {
+            result->lims = new size_t[result->nq + 1];
+        }
+
+        std::copy(result_counts.begin(), result_counts.end(), result->lims);
+        result->do_allocation();
+        this->labels_converter = LabelsConverter{
+                std::span(result->labels, result->lims[result_counts.size()])};
+        return svs_runtime::SearchResultsStorage{
+                labels_converter,
+                std::span<float>(
+                        result->distances, result->lims[result_counts.size()])};
+    }
+
+   private:
+    faiss::RangeSearchResult* result;
+    using LabelsConverter = OutputBufferConverter<size_t, faiss::idx_t>;
+    mutable LabelsConverter labels_converter;
+};
 } // namespace faiss
