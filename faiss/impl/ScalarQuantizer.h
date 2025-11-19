@@ -98,9 +98,7 @@ struct ScalarQuantizer : Quantizer {
     SQuantizer* select_quantizer() const;
 
     struct SQDistanceComputer : FlatCodesDistanceComputer {
-        const float* q;
-
-        SQDistanceComputer() : q(nullptr) {}
+        SQDistanceComputer() : FlatCodesDistanceComputer(nullptr) {}
 
         virtual float query_to_code(const uint8_t* code) const = 0;
 
