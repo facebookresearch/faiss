@@ -44,9 +44,11 @@ IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
 }
 
 IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
-    auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
-    FAISS_ASSERT(status.ok());
-    training_data = nullptr;
+    if (training_data) {
+        auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
+        FAISS_ASSERT(status.ok());
+        training_data = nullptr;
+    }
     IndexSVSVamana::~IndexSVSVamana();
 }
 
