@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="188" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="132" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWPQ_1aa5d0da54d482855eaa2c47327924349d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="189" column="5"/>
+        <location file="faiss/IndexHNSW.h" line="133" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSWPQ_1ae99b976eeb25717d10055b1786aa011c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="195" column="10"/>
+        <location file="faiss/IndexHNSW.h" line="139" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -86,7 +86,6 @@
         <name>add</name>
         <qualifiedname>faiss::IndexHNSW::add</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWFlatPanorama_1ab6169154be3d429b2970dc2e6cc4c9aa">add</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750">add</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -287,7 +286,6 @@
         <name>reset</name>
         <qualifiedname>faiss::IndexHNSW::reset</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWFlatPanorama_1a94e4e78428d53f59dba8bc6c467d5593">reset</reimplementedby>
         <briefdescription>
 <para>removes all elements from the database. </para>
         </briefdescription>
@@ -465,13 +463,12 @@
         </inbodydescription>
         <location file="faiss/IndexHNSW.h" line="112" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
-        <definition>virtual void faiss::IndexHNSW::permute_entries</definition>
+        <definition>void faiss::IndexHNSW::permute_entries</definition>
         <argsstring>(const idx_t *perm)</argsstring>
         <name>permute_entries</name>
         <qualifiedname>faiss::IndexHNSW::permute_entries</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexHNSWFlatPanorama_1abb67576d78b95b6d3cc5498eef916777">permute_entries</reimplementedby>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>perm</declname>
@@ -482,7 +479,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="114" column="18"/>
+        <location file="faiss/IndexHNSW.h" line="114" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
@@ -1663,7 +1660,7 @@
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexHNSW.h" line="187" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="187" bodyend="196"/>
+    <location file="faiss/IndexHNSW.h" line="131" column="1" bodyfile="faiss/IndexHNSW.h" bodystart="131" bodyend="140"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexHNSW_1a04a761ce17d0f9040b3bc8a77bd627d9" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>add_ex</name></member>
@@ -1695,7 +1692,7 @@
       <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>ntotal</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a96137d57aafb7275ebba0253d627a820" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>own_fields</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1a07563d6ae8ace792b2f5610762b25daa" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>permute_entries</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1a30c3044343a0935304068dd06140e29c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWPQ</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>range_search</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>reconstruct</name></member>
       <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexHNSWPQ</scope><name>reconstruct_batch</name></member>
