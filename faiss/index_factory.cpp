@@ -610,11 +610,11 @@ Index* parse_svs_datatype(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
         FAISS_ASSERT(!"Unspported SVS index type for Float16");
     }
-    if (re_match(datatype_string, "SQ8", sm)) {
+    if (re_match(datatype_string, "SQI8", sm)) {
         if (index_type == "Vamana")
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
-        FAISS_ASSERT(!"Unspported SVS index type for SQ8");
+        FAISS_ASSERT(!"Unspported SVS index type for SQI8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana")

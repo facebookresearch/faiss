@@ -25,6 +25,7 @@
 
 #include <faiss/Index.h>
 
+#include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_vamana_index.h>
 #include <svs/runtime/vamana_index.h>
 
@@ -66,6 +67,37 @@ IndexSVSVamana::IndexSVSVamana(
         : Index(d, metric), graph_max_degree{degree}, storage_kind{storage} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
+
+    // Validate the requested storage kind is available in current runtime.
+    // NB: LVQ/LeanVec are only available on Intel(R) hardware AND when using
+    //     a build based on LVQ/LeanVec-enabled SVS.
+    auto svs_storage = to_svs_storage_kind(storage_kind);
+    auto status =
+            svs_runtime::DynamicVamanaIndex::check_storage_kind(svs_storage);
+    if (!status.ok()) {
+        FAISS_THROW_MSG(status.message());
+    }
+}
+
+bool IndexSVSVamana::is_lvq_leanvec_enabled() {
+    bool enabled = false;
+    auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
+    auto status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
+    if (!status.ok()) {
+        if (status.code() == svs_runtime::StatusCode::INVALID_ARGUMENT) {
+            return false;
+        }
+        FAISS_THROW_MSG(status.message());
+    }
+    auto leanvec = to_svs_storage_kind(SVS_LeanVec4x4);
+    status = svs_runtime::DynamicVamanaIndex::check_storage_kind(leanvec);
+    if (!status.ok()) {
+        if (status.code() == svs_runtime::StatusCode::INVALID_ARGUMENT) {
+            return false;
+        }
+        FAISS_THROW_MSG(status.message());
+    }
+    return true;
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
