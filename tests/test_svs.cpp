@@ -416,8 +416,11 @@ TEST_F(SVS, RangeSearchFunctional) {
 }
 
 TEST_F(SVS_NoLL, VamanaIndexConstructorThrows) {
-    ASSERT_THROW({ faiss::IndexSVSVamanaLVQ index; }, faiss::FaissException);
+    ASSERT_THROW(
+            { volatile faiss::IndexSVSVamanaLVQ index; },
+            faiss::FaissException);
 
     ASSERT_THROW(
-            { faiss::IndexSVSVamanaLeanVec index; }, faiss::FaissException);
+            { volatile faiss::IndexSVSVamanaLeanVec index; },
+            faiss::FaissException);
 }

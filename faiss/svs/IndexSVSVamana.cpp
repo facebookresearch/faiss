@@ -80,7 +80,6 @@ IndexSVSVamana::IndexSVSVamana(
 }
 
 bool IndexSVSVamana::is_lvq_leanvec_enabled() {
-    bool enabled = false;
     auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
     auto status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
     if (!status.ok()) {
