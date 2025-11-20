@@ -18,14 +18,19 @@ FetchContent_MakeAvailable(
 
 find_package(Threads REQUIRED)
 find_package(OpenMP REQUIRED)
-find_package(gflags REQUIRED)
+find_package(gflags QUIET)
+if(NOT gflags_FOUND)
+    message(WARNING "gflags not found - perf_tests will be skipped. Install gflags to enable performance benchmarks.")
+    return()
+endif()
 
 add_library(faiss_perf_tests_utils
   utils.cpp
 )
 # `#include <faiss/perf_tests/utils.h>` or any other headers
+# Use CMAKE_SOURCE_DIR to get the root directory (where main CMakeLists.txt is)
 target_include_directories(faiss_perf_tests_utils PRIVATE
-   ${PROJECT_SOURCE_DIR}/../..)
+   ${CMAKE_SOURCE_DIR})
 
 include(../cmake/link_to_faiss_lib.cmake)
 
@@ -44,7 +49,8 @@ foreach(bench ${FAISS_PERF_TEST_SRC})
   link_to_faiss_lib(${bench_exec})
   target_link_libraries(${bench_exec} PRIVATE faiss_perf_tests_utils OpenMP::OpenMP_CXX benchmark::benchmark gflags)
   # `#include <faiss/perf_tests/utils.h>` or any other headers
+  # Use CMAKE_SOURCE_DIR to get the root directory (where main CMakeLists.txt is)
   target_include_directories(${bench_exec} PRIVATE
-   ${PROJECT_SOURCE_DIR}/../..)
+   ${CMAKE_SOURCE_DIR})
 
 endforeach()
