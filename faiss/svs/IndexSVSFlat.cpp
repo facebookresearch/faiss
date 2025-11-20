@@ -36,8 +36,8 @@ IndexSVSFlat::~IndexSVSFlat() {
     if (impl) {
         auto status = svs_runtime::FlatIndex::destroy(impl);
         FAISS_ASSERT(status.ok());
+        impl = nullptr;
     }
-    impl = nullptr;
 }
 
 void IndexSVSFlat::add(idx_t n, const float* x) {

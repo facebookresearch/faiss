@@ -101,9 +101,11 @@ bool IndexSVSVamana::is_lvq_leanvec_enabled() {
 }
 
 IndexSVSVamana::~IndexSVSVamana() {
-    auto status = svs_runtime::DynamicVamanaIndex::destroy(impl);
-    FAISS_ASSERT(status.ok());
-    impl = nullptr;
+    if (impl) {
+        auto status = svs_runtime::DynamicVamanaIndex::destroy(impl);
+        FAISS_ASSERT(status.ok());
+        impl = nullptr;
+    }
 }
 
 void IndexSVSVamana::add(idx_t n, const float* x) {
