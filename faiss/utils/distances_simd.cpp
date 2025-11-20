@@ -192,6 +192,40 @@ void fvec_inner_products_ny_ref(
  */
 
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+#if defined(__aarch64__)
+// Use NEON intrinsics and loop unroll 8 times
+float fvec_inner_product(const float* x, const float* y, size_t d) {
+    float res = 0.0f;
+    size_t i = 0;
+
+    if (d >= 32) {
+
+        float32x4_t sum[8] = {0};
+
+        for (; i + 31 < d; i += 32) {
+            for (int j = 0; j < 8; ++j) {
+                float32x4_t xv = vld1q_f32(x + i + 4 * j);
+                float32x4_t yv = vld1q_f32(y + i + 4 * j);
+                sum[j] = vfmaq_f32(sum[j], xv, yv);
+            }
+        }
+
+        float32x4_t tmp0 = vaddq_f32(sum[0], sum[1]);
+        float32x4_t tmp1 = vaddq_f32(sum[2], sum[3]);
+        float32x4_t tmp2 = vaddq_f32(sum[4], sum[5]);
+        float32x4_t tmp3 = vaddq_f32(sum[6], sum[7]);
+
+        float32x4_t total = vaddq_f32(vaddq_f32(tmp0, tmp1), vaddq_f32(tmp2, tmp3));
+
+        res = vaddvq_f32(total);
+    }
+
+    for (; i < d; ++i) {
+        res += x[i] * y[i];
+    }
+    return res;
+}
+#else
 float fvec_inner_product(const float* x, const float* y, size_t d) {
     float res = 0.F;
     FAISS_PRAGMA_IMPRECISE_LOOP
@@ -200,6 +234,7 @@ float fvec_inner_product(const float* x, const float* y, size_t d) {
     }
     return res;
 }
+#endif
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
