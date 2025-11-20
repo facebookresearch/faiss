@@ -539,7 +539,6 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READ1(hnsw->max_level);
     READ1(hnsw->efConstruction);
     READ1(hnsw->efSearch);
-    READ1(hnsw->is_panorama);
 
     // // deprecated field
     // READ1(hnsw->upper_beam);
@@ -1153,14 +1152,10 @@ Index* read_index(IOReader* f, int io_flags) {
         idx = idxp;
     } else if (
             h == fourcc("IHNf") || h == fourcc("IHNp") || h == fourcc("IHNs") ||
-            h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2") ||
-            h == fourcc("IHfP")) {
+            h == fourcc("IHN2") || h == fourcc("IHNc") || h == fourcc("IHc2")) {
         IndexHNSW* idxhnsw = nullptr;
         if (h == fourcc("IHNf")) {
             idxhnsw = new IndexHNSWFlat();
-        }
-        if (h == fourcc("IHfP")) {
-            idxhnsw = new IndexHNSWFlatPanorama();
         }
         if (h == fourcc("IHNp")) {
             idxhnsw = new IndexHNSWPQ();
@@ -1178,15 +1173,6 @@ Index* read_index(IOReader* f, int io_flags) {
             idxhnsw = new IndexHNSWCagra();
         }
         read_index_header(idxhnsw, f);
-        if (h == fourcc("IHfP")) {
-            auto idx_panorama = dynamic_cast<IndexHNSWFlatPanorama*>(idxhnsw);
-            size_t nlevels;
-            READ1(nlevels);
-            const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
-            const_cast<size_t&>(idx_panorama->panorama_level_width) =
-                    (idx_panorama->d + nlevels - 1) / nlevels;
-            READVECTOR(idx_panorama->cum_sums);
-        }
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw);
