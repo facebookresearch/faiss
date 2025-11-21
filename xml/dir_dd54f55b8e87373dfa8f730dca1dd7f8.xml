@@ -33,6 +33,7 @@
     <innerfile refid="ProductQuantizer_8h">ProductQuantizer.h</innerfile>
     <innerfile refid="Quantizer_8h">Quantizer.h</innerfile>
     <innerfile refid="RaBitQuantizer_8h">RaBitQuantizer.h</innerfile>
+    <innerfile refid="RaBitQuantizerMultiBit_8h">RaBitQuantizerMultiBit.h</innerfile>
     <innerfile refid="RaBitQUtils_8h">RaBitQUtils.h</innerfile>
     <innerfile refid="residual__quantizer__encode__steps_8h">residual_quantizer_encode_steps.h</innerfile>
     <innerfile refid="ResidualQuantizer_8h">ResidualQuantizer.h</innerfile>

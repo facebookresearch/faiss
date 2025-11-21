@@ -232,6 +232,7 @@
     <innerclass refid="structfaiss_1_1QINCo" prot="public">faiss::QINCo</innerclass>
     <innerclass refid="structfaiss_1_1QINCoStep" prot="public">faiss::QINCoStep</innerclass>
     <innerclass refid="structfaiss_1_1Quantizer" prot="public">faiss::Quantizer</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQDistanceComputer" prot="public">faiss::RaBitQDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQHeapHandler" prot="public">faiss::RaBitQHeapHandler</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQuantizer" prot="public">faiss::RaBitQuantizer</innerclass>
@@ -300,6 +301,7 @@
     <innernamespace refid="namespacefaiss_1_1nsg">faiss::nsg</innernamespace>
     <innernamespace refid="namespacefaiss_1_1quantize__lut">faiss::quantize_lut</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rabitq">faiss::rabitq</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1rabitq__multibit">faiss::rabitq_multibit</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>

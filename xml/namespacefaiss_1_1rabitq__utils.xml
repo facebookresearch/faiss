@@ -2,6 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1rabitq__utils" kind="namespace" language="C++">
     <compoundname>faiss::rabitq_utils</compoundname>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData" prot="public">faiss::rabitq_utils::BaseFactorsData</innerclass>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" prot="public">faiss::rabitq_utils::ExFactorsData</innerclass>
     <innerclass refid="structfaiss_1_1rabitq__utils_1_1FactorsData" prot="public">faiss::rabitq_utils::FactorsData</innerclass>
     <innerclass refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" prot="public">faiss::rabitq_utils::QueryFactorsData</innerclass>
     <sectiondef kind="var">
@@ -18,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="47" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="47" declcolumn="30"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="70" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="70" declcolumn="30"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -87,7 +89,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="59" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="59" declcolumn="13"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="82" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="82" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a331fb43e107f687e17ccd9d3c7c59a80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -176,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="76" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="76" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="99" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="99" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1af0d956f0b9813e498f087c7d6213d2e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref></type>
@@ -254,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="92" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="92" declcolumn="13"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="115" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="115" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a9a5a3bbed90878c9ffc93e8651e730f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref></type>
@@ -369,7 +371,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="112" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="112" declcolumn="18"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="135" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="135" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a421d9c2001db5a8d4bf07c6209ccaf56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -412,7 +414,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="129" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="129" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="152" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="152" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a25c2a02b5726381eb9ef994adab75592" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -455,7 +457,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="138" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="138" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="161" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="161" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a5b048fb1446148b1da2df5976b54a7e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -495,7 +497,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="144" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="144" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="167" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="167" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1aba390a0849a8f08f12e5356afbd66f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -535,7 +537,62 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="150" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="150" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="173" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="173" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::rabitq_utils::extract_code_inline</definition>
+        <argsstring>(const uint8_t *ex_code, size_t index, size_t ex_bits)</argsstring>
+        <name>extract_code_inline</name>
+        <qualifiedname>faiss::rabitq_utils::extract_code_inline</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ex_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Extract multi-bit code on-the-fly from packed ex-bit codes. This inline function extracts a single code value without unpacking the entire array, enabling efficient on-the-fly decoding during distance computation.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ex_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>packed ex-bit codes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>which code to extract (0 to d-1) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of bits per code (1-8) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>extracted code value in range [0, 2^ex_bits - 1] </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="185" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="185" bodyend="205"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

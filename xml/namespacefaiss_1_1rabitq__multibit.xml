@@ -1,0 +1,371 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1rabitq__multibit" kind="namespace" language="C++">
+    <compoundname>faiss::rabitq_multibit</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1a05089f9fecd23f4172b3e0d9ee972eca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rabitq_multibit::compute_optimal_scaling_factor</definition>
+        <argsstring>(const float *o_abs, size_t d, size_t nb_bits)</argsstring>
+        <name>compute_optimal_scaling_factor</name>
+        <qualifiedname>faiss::rabitq_multibit::compute_optimal_scaling_factor</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>o_abs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute optimal scaling factor for ex-bits quantization.</para>
+<para>Uses priority queue-based search to find the scaling factor that maximizes the inner product between quantized and original vectors.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>o_abs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Normalized absolute residual vector (positive values) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nb_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bits per dimension (2-9) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Optimal scaling factor &apos;t&apos; </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="39" column="7" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="39" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1add4a7c267f250fbe142a25be2051f7cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rabitq_multibit::pack_multibit_codes</definition>
+        <argsstring>(const int *tmp_code, uint8_t *ex_code, size_t d, size_t nb_bits)</argsstring>
+        <name>pack_multibit_codes</name>
+        <qualifiedname>faiss::rabitq_multibit::pack_multibit_codes</qualifiedname>
+        <param>
+          <type>const int *</type>
+          <declname>tmp_code</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pack multi-bit codes from integer array to byte array.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tmp_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Integer codes (length d), values in [0, 2^ex_bits - 1] </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output packed byte array </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nb_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bits per dimension (2-9) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="52" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="52" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1af28b054f7f92ff39b8ae0ff4bbefcf3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rabitq_multibit::compute_ex_factors</definition>
+        <argsstring>(const float *residual, const float *centroid, const int *tmp_code, size_t d, size_t ex_bits, float norm, double ipnorm, rabitq_utils::ExFactorsData &amp;ex_factors, MetricType metric_type)</argsstring>
+        <name>compute_ex_factors</name>
+        <qualifiedname>faiss::rabitq_multibit::compute_ex_factors</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>residual</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid</declname>
+        </param>
+        <param>
+          <type>const int *</type>
+          <declname>tmp_code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ex_bits</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>norm</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>ipnorm</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" kindref="compound">rabitq_utils::ExFactorsData</ref> &amp;</type>
+          <declname>ex_factors</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute ex-bits factors for distance computation.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>residual</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Original residual vector (data - centroid) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centroid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Centroid vector (can be nullptr for zero centroid) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tmp_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Quantized ex-bit codes (unpacked integers) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of extra bits </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>norm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>L2 norm of residual </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ipnorm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Unnormalized inner product </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_factors</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output factors structure </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metric_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Distance metric (L2 or IP) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="71" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="71" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1ad93489422454c70a5a96dc426c48d152" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rabitq_multibit::quantize_ex_bits</definition>
+        <argsstring>(const float *residual, size_t d, size_t nb_bits, uint8_t *ex_code, rabitq_utils::ExFactorsData &amp;ex_factors, MetricType metric_type, const float *centroid=nullptr)</argsstring>
+        <name>quantize_ex_bits</name>
+        <qualifiedname>faiss::rabitq_multibit::quantize_ex_bits</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>residual</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" kindref="compound">rabitq_utils::ExFactorsData</ref> &amp;</type>
+          <declname>ex_factors</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric_type</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>centroid</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Main quantization function: quantize residual vector to ex-bits.</para>
+<para>Performs the complete multi-bit quantization pipeline:<orderedlist>
+<listitem><para>Normalize residual</para>
+</listitem><listitem><para>Take absolute value</para>
+</listitem><listitem><para>Find optimal scaling factor</para>
+</listitem><listitem><para>Quantize to ex_bits</para>
+</listitem><listitem><para>Handle negative dimensions by bit flipping</para>
+</listitem><listitem><para>Pack codes into byte array</para>
+</listitem><listitem><para>Compute factors for distance computation</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>residual</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input residual vector (data - centroid), length d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nb_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of bits per dimension (2-9) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output packed ex-bit codes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_factors</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output ex-bits factors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metric_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Distance metric (L2 or Inner Product) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centroid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional centroid vector (needed for IP metric) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="102" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="102" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="26" column="1"/>
+  </compounddef>
+</doxygen>
