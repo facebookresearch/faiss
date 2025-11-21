@@ -415,7 +415,40 @@ TEST_F(SVS, RangeSearchFunctional) {
     }
 }
 
+TEST_F(SVS_LL, LVQAndLeanVecDoNotThrowWhenEnabled) {
+    // explicit constructor with LVQ dataset
+    ASSERT_NO_THROW({
+        faiss::IndexSVSVamanaLVQ index(
+                d, 64ul, faiss::METRIC_L2, faiss::SVSStorageKind::SVS_LVQ4x4);
+    });
+
+    // default constructor, will initialize dataset on first add()
+    ASSERT_NO_THROW({
+        faiss::IndexSVSVamanaLVQ index;
+        index.add(n, test_data.data());
+    });
+
+    // explicit constructor with LeanVec dataset
+    ASSERT_NO_THROW({
+        faiss::IndexSVSVamanaLeanVec index(
+                d,
+                64ul,
+                faiss::METRIC_L2,
+                faiss::SVSStorageKind::SVS_LeanVec4x4);
+    });
+
+    // default constructor, will initialize dataset on first add()
+    ASSERT_NO_THROW({
+        faiss::IndexSVSVamanaLeanVec index;
+        index.d = 64;
+        index.leanvec_d = 32;
+        index.train(n, test_data.data());
+        index.add(n, test_data.data());
+    });
+}
+
 TEST_F(SVS_NoLL, LVQAndLeanVecThrowWhenNotEnabled) {
+    // explicit constructor with LVQ dataset
     ASSERT_THROW(
             {
                 faiss::IndexSVSVamanaLVQ index(
@@ -426,6 +459,15 @@ TEST_F(SVS_NoLL, LVQAndLeanVecThrowWhenNotEnabled) {
             },
             faiss::FaissException);
 
+    // default constructor, will initialize dataset on first add()
+    ASSERT_THROW(
+            {
+                faiss::IndexSVSVamanaLVQ index;
+                index.add(n, test_data.data());
+            },
+            faiss::FaissException);
+
+    // explicit constructor with LeanVec dataset
     ASSERT_THROW(
             {
                 faiss::IndexSVSVamanaLeanVec index(
@@ -433,6 +475,17 @@ TEST_F(SVS_NoLL, LVQAndLeanVecThrowWhenNotEnabled) {
                         64ul,
                         faiss::METRIC_L2,
                         faiss::SVSStorageKind::SVS_LeanVec4x4);
+            },
+            faiss::FaissException);
+
+    // default constructor, will initialize dataset on first add()
+    ASSERT_THROW(
+            {
+                faiss::IndexSVSVamanaLeanVec index;
+                index.d = 64;
+                index.leanvec_d = 32;
+                index.train(n, test_data.data());
+                index.add(n, test_data.data());
             },
             faiss::FaissException);
 }

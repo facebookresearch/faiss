@@ -27,7 +27,8 @@
 namespace faiss {
 
 struct IndexSVSVamanaLVQ : IndexSVSVamana {
-    IndexSVSVamanaLVQ() = default;
+    IndexSVSVamanaLVQ();
+
     IndexSVSVamanaLVQ(
             idx_t d,
             size_t degree,

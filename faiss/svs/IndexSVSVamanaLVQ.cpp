@@ -24,6 +24,10 @@
 
 namespace faiss {
 
+IndexSVSVamanaLVQ::IndexSVSVamanaLVQ() : IndexSVSVamana() {
+    storage_kind = SVSStorageKind::SVS_LVQ4x0;
+}
+
 IndexSVSVamanaLVQ::IndexSVSVamanaLVQ(
         idx_t d,
         size_t degree,

@@ -29,8 +29,14 @@
 
 #include <memory>
 #include <span>
+#include "faiss/svs/IndexSVSVamana.h"
 
 namespace faiss {
+
+IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec() : IndexSVSVamana() {
+    is_trained = false;
+    storage_kind = SVSStorageKind::SVS_LeanVec4x4;
+}
 
 IndexSVSVamanaLeanVec::IndexSVSVamanaLeanVec(
         idx_t d,

@@ -27,7 +27,7 @@
 namespace faiss {
 
 struct IndexSVSVamanaLeanVec : IndexSVSVamana {
-    IndexSVSVamanaLeanVec() = default;
+    IndexSVSVamanaLeanVec();
 
     IndexSVSVamanaLeanVec(
             idx_t d,
