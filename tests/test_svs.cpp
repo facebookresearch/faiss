@@ -415,12 +415,24 @@ TEST_F(SVS, RangeSearchFunctional) {
     }
 }
 
-TEST_F(SVS_NoLL, VamanaIndexConstructorThrows) {
+TEST_F(SVS_NoLL, LVQAndLeanVecThrowWhenNotEnabled) {
     ASSERT_THROW(
-            { volatile faiss::IndexSVSVamanaLVQ index; },
+            {
+                faiss::IndexSVSVamanaLVQ index(
+                        d,
+                        64ul,
+                        faiss::METRIC_L2,
+                        faiss::SVSStorageKind::SVS_LVQ4x4);
+            },
             faiss::FaissException);
 
     ASSERT_THROW(
-            { volatile faiss::IndexSVSVamanaLeanVec index; },
+            {
+                faiss::IndexSVSVamanaLeanVec index(
+                        d,
+                        64ul,
+                        faiss::METRIC_L2,
+                        faiss::SVSStorageKind::SVS_LeanVec4x4);
+            },
             faiss::FaissException);
 }

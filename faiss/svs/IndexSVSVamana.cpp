@@ -83,18 +83,12 @@ bool IndexSVSVamana::is_lvq_leanvec_enabled() {
     auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
     auto status = svs_runtime::DynamicVamanaIndex::check_storage_kind(lvq);
     if (!status.ok()) {
-        if (status.code == svs_runtime::ErrorCode::INVALID_ARGUMENT) {
-            return false;
-        }
-        FAISS_THROW_MSG(status.message());
+        return false;
     }
     auto leanvec = to_svs_storage_kind(SVS_LeanVec4x4);
     status = svs_runtime::DynamicVamanaIndex::check_storage_kind(leanvec);
     if (!status.ok()) {
-        if (status.code == svs_runtime::ErrorCode::INVALID_ARGUMENT) {
-            return false;
-        }
-        FAISS_THROW_MSG(status.message());
+        return false;
     }
     return true;
 }
