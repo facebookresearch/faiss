@@ -1380,3 +1380,575 @@ class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
 
     def test_encode_decode_IP(self):
         self.do_test_encode_decode(16, faiss.METRIC_INNER_PRODUCT)
+
+
+# ==============================================================================
+# Multi-bit RaBitQ Test Suite
+# ==============================================================================
+
+
+def create_test_dataset(d=128, nb=1000, nq=100, nt=500, metric='L2'):
+    """Helper: Create synthetic dataset for testing."""
+    return datasets.SyntheticDataset(d, nt, nb, nq, metric=metric)
+
+
+def create_index_rabitq_with_rotation(d, metric, nb_bits, qb=0, rrot_seed=123):
+    """Helper: Create IndexRaBitQ with random rotation."""
+    index_rbq = faiss.IndexRaBitQ(d, metric, nb_bits)
+    index_rbq.qb = qb
+    rrot = faiss.RandomRotationMatrix(d, d)
+    rrot.init(rrot_seed)
+    return faiss.IndexPreTransform(rrot, index_rbq)
+
+
+def create_index_ivf_rabitq_with_rotation(
+    d, metric, nb_bits, nlist=16, qb=0, nprobe=4, rrot_seed=123
+):
+    """Helper: Create IndexIVFRaBitQ with random rotation."""
+    quantizer = faiss.IndexFlat(d, metric)
+    index_rbq = faiss.IndexIVFRaBitQ(
+        quantizer, d, nlist, metric, True, nb_bits
+    )
+    index_rbq.qb = qb
+    index_rbq.nprobe = nprobe
+    rrot = faiss.RandomRotationMatrix(d, d)
+    rrot.init(rrot_seed)
+    return faiss.IndexPreTransform(rrot, index_rbq)
+
+
+def compute_recall_at_k(I_gt, I_pred):
+    """Helper: Compute recall@k metric."""
+    nq, k = I_gt.shape
+    recall = 0.0
+    for i in range(nq):
+        gt_set = set(I_gt[i])
+        pred_set = set(I_pred[i])
+        recall += len(gt_set & pred_set) / k
+    return recall / nq
+
+
+def compute_expected_code_size(d, nb_bits):
+    """Helper: Compute expected code size based on formula."""
+    ex_bits = nb_bits - 1
+    # For 1-bit: use BaseFactorsData (8 bytes)
+    # For multi-bit: use FactorsData (12 bytes)
+    base_size = (d + 7) // 8 + (8 if ex_bits == 0 else 12)
+    if ex_bits > 0:
+        ex_size = (d * ex_bits + 7) // 8 + 8  # ex-bit codes + ExFactorsData
+        return base_size + ex_size
+    return base_size
+
+
+class TestMultiBitRaBitQConstruction(unittest.TestCase):
+    """Test construction and parameter validation for multi-bit RaBitQ."""
+
+    def test_valid_nb_bits_range(self):
+        """Test that nb_bits 1-9 are valid."""
+        d = 128
+        for nb_bits in range(1, 10):
+            for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+                index = faiss.IndexRaBitQ(d, metric, nb_bits)
+                self.assertEqual(index.d, d)
+                self.assertEqual(index.metric_type, metric)
+                self.assertEqual(index.rabitq.nb_bits, nb_bits)
+                self.assertFalse(index.is_trained)
+
+    def test_invalid_nb_bits_zero(self):
+        """Test that nb_bits=0 raises error."""
+        with self.assertRaises(RuntimeError):
+            faiss.IndexRaBitQ(128, faiss.METRIC_L2, 0)
+
+    def test_invalid_nb_bits_too_large(self):
+        """Test that nb_bits=10 raises error."""
+        with self.assertRaises(RuntimeError):
+            faiss.IndexRaBitQ(128, faiss.METRIC_L2, 10)
+
+    def test_code_size_formula(self):
+        """Test that code sizes match expected formula for all nb_bits."""
+        d = 128
+        for nb_bits in range(1, 10):
+            index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+            expected_size = compute_expected_code_size(d, nb_bits)
+            self.assertEqual(
+                index.code_size,
+                expected_size,
+                f"Code size mismatch for nb_bits={nb_bits}",
+            )
+
+    def test_ivf_construction_valid_nb_bits(self):
+        """Test IndexIVFRaBitQ construction with valid nb_bits."""
+        d = 64
+        nlist = 16
+        for nb_bits in range(1, 10):
+            quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+            index = faiss.IndexIVFRaBitQ(
+                quantizer, d, nlist, faiss.METRIC_L2, True, nb_bits
+            )
+            self.assertEqual(index.rabitq.nb_bits, nb_bits)
+            self.assertEqual(index.d, d)
+            expected_size = compute_expected_code_size(d, nb_bits)
+            self.assertEqual(index.code_size, expected_size)
+
+    def test_ivf_construction_invalid_nb_bits(self):
+        """Test that IndexIVFRaBitQ rejects invalid nb_bits."""
+        d = 64
+        nlist = 16
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+
+        with self.assertRaises(RuntimeError):
+            faiss.IndexIVFRaBitQ(quantizer, d, nlist, faiss.METRIC_L2, True, 0)
+
+        with self.assertRaises(RuntimeError):
+            faiss.IndexIVFRaBitQ(
+                quantizer, d, nlist, faiss.METRIC_L2, True, 10
+            )
+
+
+class TestMultiBitRaBitQBasicOperations(unittest.TestCase):
+    """Test basic train/add/search operations for all combinations."""
+
+    def do_test_basic_operations(self, metric, nb_bits, qb):
+        """Test train/add/search pipeline works correctly."""
+        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        k = 10
+
+        # Create index with rotation
+        index = create_index_rabitq_with_rotation(ds.d, metric, nb_bits, qb=qb)
+
+        # Train
+        index.train(ds.get_train())
+        self.assertTrue(index.is_trained)
+
+        # Add
+        index.add(ds.get_database())
+        self.assertEqual(index.ntotal, ds.nb)
+
+        # Search
+        D, I = index.search(ds.get_queries(), k)
+
+        # Assert: Result shapes are correct
+        self.assertEqual(D.shape, (ds.nq, k))
+        self.assertEqual(I.shape, (ds.nq, k))
+
+        # Assert: Indices are valid
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(I < ds.nb))
+
+        # Assert: Distances are finite
+        self.assertTrue(np.all(np.isfinite(D)))
+
+
+# Programmatically generate test methods for better test granularity
+def add_basic_operations_test(metric, nb_bits, qb):
+    """Helper to add a basic operations test method to the test class."""
+    metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
+    test_name = f"test_basic_ops_{metric_str}_nb{nb_bits}_qb{qb}"
+    setattr(
+        TestMultiBitRaBitQBasicOperations,
+        test_name,
+        lambda self: self.do_test_basic_operations(metric, nb_bits, qb),
+    )
+
+
+# Generate tests for all combinations of metric, nb_bits, and qb
+for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+    for nb_bits in [1, 2, 4, 8]:
+        for qb in [0, 4, 8]:
+            add_basic_operations_test(metric, nb_bits, qb)
+
+
+class TestMultiBitRaBitQRecall(unittest.TestCase):
+    """Test search quality using recall metric."""
+
+    def do_test_recall_quality(self, metric, nb_bits, qb):
+        """Test that recall is reasonable (better than random)."""
+        metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+        ds = create_test_dataset(
+            d=128, nb=1000, nq=50, nt=500, metric=metric_str
+        )
+        k = 10
+
+        # Ground truth
+        I_gt = ds.get_groundtruth(10)
+
+        # RaBitQ search
+        index = create_index_rabitq_with_rotation(ds.d, metric, nb_bits, qb=qb)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        _, I = index.search(ds.get_queries(), k)
+
+        # Compute recall
+        recall = compute_recall_at_k(I_gt, I)
+
+        # Assert: Recall is better than random (random ~= k/nb = 0.01)
+        self.assertGreater(
+            recall,
+            0.10,
+            f"Recall {recall:.3f} too low for metric={metric}, "
+            f"nb_bits={nb_bits}, qb={qb}",
+        )
+
+    def test_recall_all_combinations(self):
+        """Test recall for strategic subset of combinations."""
+        # Test subset: nb_bits=[1,2,4,8], qb=[0,8]
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 2, 4, 8]:
+                for qb in [0, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_recall_quality(metric, nb_bits, qb)
+
+    def do_test_recall_monotonic_improvement(self, metric, qb):
+        """Test that recall improves with more bits: 2>1, 4>2, 8>4."""
+        metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+        ds = create_test_dataset(
+            d=128, nb=1000, nq=50, nt=500, metric=metric_str
+        )
+        k = 10
+
+        # Ground truth
+        I_gt = ds.get_groundtruth(10)
+
+        # Test different nb_bits
+        recalls = {}
+        for nb_bits in [1, 2, 4, 8]:
+            index = create_index_rabitq_with_rotation(
+                ds.d, metric, nb_bits, qb=qb
+            )
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            _, I = index.search(ds.get_queries(), k)
+            recalls[nb_bits] = compute_recall_at_k(I_gt, I)
+
+        # Assert: Monotonic improvement with tolerance for variance
+        tolerance = 0.03
+        self.assertGreaterEqual(
+            recalls[2],
+            recalls[1] - tolerance,
+            f"2-bit recall {recalls[2]:.3f} should be >= "
+            f"1-bit {recalls[1]:.3f} (metric={metric}, qb={qb})",
+        )
+        self.assertGreaterEqual(
+            recalls[4],
+            recalls[2] - tolerance,
+            f"4-bit recall {recalls[4]:.3f} should be >= "
+            f"2-bit {recalls[2]:.3f} (metric={metric}, qb={qb})",
+        )
+        self.assertGreaterEqual(
+            recalls[8],
+            recalls[4] - tolerance,
+            f"8-bit recall {recalls[8]:.3f} should be >= "
+            f"4-bit {recalls[4]:.3f} (metric={metric}, qb={qb})",
+        )
+
+        # Assert: 8-bit achieves high recall
+        self.assertGreater(
+            recalls[8],
+            0.75,
+            f"8-bit recall {recalls[8]:.3f} should be > 0.75 "
+            f"(metric={metric}, qb={qb})",
+        )
+
+    def test_monotonic_improvement_all_qb(self):
+        """Test monotonic improvement for both metrics and qb values."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for qb in [0, 4, 8]:
+                with self.subTest(metric=metric, qb=qb):
+                    self.do_test_recall_monotonic_improvement(metric, qb)
+
+
+class TestMultiBitRaBitQSerialization(unittest.TestCase):
+    """Test serialization/deserialization preserves behavior."""
+
+    def do_test_serialization(self, metric, nb_bits, qb):
+        """Test that serialize/deserialize preserves search results."""
+        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        k = 5
+
+        # Create and populate index
+        index1 = create_index_rabitq_with_rotation(
+            ds.d, metric, nb_bits, qb=qb
+        )
+        index1.train(ds.get_train())
+        index1.add(ds.get_database())
+
+        # Search before serialization
+        D1, I1 = index1.search(ds.get_queries(), k)
+
+        # Serialize and deserialize
+        index_bytes = faiss.serialize_index(index1)
+        index2 = faiss.deserialize_index(index_bytes)
+
+        # Assert: Parameters preserved
+        self.assertEqual(index2.d, ds.d)
+        self.assertEqual(index2.ntotal, ds.nb)
+        self.assertTrue(index2.is_trained)
+
+        # Search after deserialization using search parameters
+        params = faiss.RaBitQSearchParameters()
+        params.qb = qb
+        params.centered = False
+        D2, I2 = index2.search(ds.get_queries(), k, params=params)
+
+        # Assert: Results are identical
+        np.testing.assert_array_equal(
+            I1, I2, err_msg=f"Indices mismatch for nb_bits={nb_bits}, qb={qb}"
+        )
+        np.testing.assert_allclose(
+            D1,
+            D2,
+            rtol=1e-5,
+            err_msg=f"Distances mismatch for nb_bits={nb_bits}, qb={qb}",
+        )
+
+    def test_serialization_all_nb_bits(self):
+        """Test serialization for all nb_bits values."""
+        # Test all nb_bits including edge cases (1, 9)
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 2, 4, 8, 9]:
+                for qb in [0, 4, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_serialization(metric, nb_bits, qb)
+
+
+class TestMultiBitIndexIVFRaBitQ(unittest.TestCase):
+    """Test IndexIVFRaBitQ with multi-bit support."""
+
+    def do_test_ivf_basic_operations(self, metric, nb_bits, qb):
+        """Test IVF train/add/search pipeline."""
+        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        k = 10
+        nlist = 16
+
+        # Create IVF index with rotation
+        index = create_index_ivf_rabitq_with_rotation(
+            ds.d, metric, nb_bits, nlist=nlist, qb=qb, nprobe=4
+        )
+
+        # Train
+        index.train(ds.get_train())
+        self.assertTrue(index.is_trained)
+
+        # Add
+        index.add(ds.get_database())
+        self.assertEqual(index.ntotal, ds.nb)
+
+        # Search
+        D, I = index.search(ds.get_queries(), k)
+
+        # Assert: Result shapes are correct
+        self.assertEqual(D.shape, (ds.nq, k))
+        self.assertEqual(I.shape, (ds.nq, k))
+
+        # Assert: Indices are valid
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(I < ds.nb))
+
+        # Assert: Distances are finite
+        self.assertTrue(np.all(np.isfinite(D)))
+
+    def test_ivf_all_combinations(self):
+        """Test IVF for subset of combinations."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 2, 4, 8]:
+                for qb in [0, 4, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_ivf_basic_operations(metric, nb_bits, qb)
+
+    def do_test_ivf_nprobe_improves_recall(self, metric, nb_bits):
+        """Test that higher nprobe improves recall."""
+        metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+        ds = create_test_dataset(
+            d=128, nb=1000, nq=50, nt=500, metric=metric_str
+        )
+        k = 10
+        nlist = 32
+
+        # Ground truth
+        I_gt = ds.get_groundtruth(10)
+
+        # Create IVF index
+        quantizer = faiss.IndexFlat(ds.d, metric)
+        index_rbq = faiss.IndexIVFRaBitQ(
+            quantizer, ds.d, nlist, metric, True, nb_bits
+        )
+        rrot = faiss.RandomRotationMatrix(ds.d, ds.d)
+        rrot.init(123)
+        index = faiss.IndexPreTransform(rrot, index_rbq)
+
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Test different nprobe values
+        recalls = {}
+        for nprobe in [1, 2, 4, 8]:
+            index_rbq.nprobe = nprobe
+            _, I = index.search(ds.get_queries(), k)
+            recalls[nprobe] = compute_recall_at_k(I_gt, I)
+
+        # Assert: Monotonic improvement with nprobe
+        self.assertGreaterEqual(recalls[2], recalls[1])
+        self.assertGreaterEqual(recalls[4], recalls[2])
+        self.assertGreaterEqual(recalls[8], recalls[4])
+
+    def test_nprobe_effect(self):
+        """Test nprobe effect for both metrics and selected nb_bits."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 4, 8]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    self.do_test_ivf_nprobe_improves_recall(metric, nb_bits)
+
+    def do_test_ivf_serialization(self, metric, nb_bits, qb):
+        """Test IVF serialization preserves results."""
+        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        k = 5
+        nlist = 16
+
+        # Create and populate IVF index
+        index1 = create_index_ivf_rabitq_with_rotation(
+            ds.d, metric, nb_bits, nlist=nlist, qb=qb, nprobe=4
+        )
+        index1.train(ds.get_train())
+        index1.add(ds.get_database())
+
+        # Search before serialization
+        D1, I1 = index1.search(ds.get_queries(), k)
+
+        # Serialize and deserialize
+        index_bytes = faiss.serialize_index(index1)
+        index2 = faiss.deserialize_index(index_bytes)
+
+        # Assert: Parameters preserved
+        self.assertEqual(index2.d, ds.d)
+        self.assertEqual(index2.ntotal, ds.nb)
+        self.assertTrue(index2.is_trained)
+
+        # Search after deserialization using search parameters
+        params = faiss.IVFRaBitQSearchParameters()
+        params.qb = qb
+        params.centered = False
+        params.nprobe = 4
+        D2, I2 = index2.search(ds.get_queries(), k, params=params)
+
+        # Assert: Results are identical
+        np.testing.assert_array_equal(I1, I2)
+        np.testing.assert_allclose(D1, D2, rtol=1e-5)
+
+    def test_ivf_serialization(self):
+        """Test IVF serialization for multiple configurations."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 2, 4, 8, 9]:
+                for qb in [0, 4, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_ivf_serialization(metric, nb_bits, qb)
+
+
+class TestMultiBitRaBitQQueryQuantization(unittest.TestCase):
+    """Test various query quantization levels."""
+
+    def do_test_query_quantization_levels(self, metric, nb_bits):
+        """Test that all qb values produce valid results."""
+        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        k = 10
+
+        # Create and train index once
+        index = create_index_rabitq_with_rotation(ds.d, metric, nb_bits, qb=0)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Test all qb values using search parameters
+        for qb in [0, 1, 2, 4, 6, 8]:
+            params = faiss.RaBitQSearchParameters()
+            params.qb = qb
+            params.centered = False
+            D, I = index.search(ds.get_queries(), k, params=params)
+
+            # Assert: Valid results for all qb values
+            self.assertEqual(D.shape, (ds.nq, k))
+            self.assertEqual(I.shape, (ds.nq, k))
+            self.assertTrue(np.all(I >= 0))
+            self.assertTrue(np.all(I < ds.nb))
+            self.assertTrue(np.all(np.isfinite(D)))
+
+    def test_all_qb_values(self):
+        """Test all qb values for both metrics and selected nb_bits."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [1, 2, 4, 8]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    self.do_test_query_quantization_levels(metric, nb_bits)
+
+
+class TestMultiBitRaBitQIndexFactory(unittest.TestCase):
+    """Test index factory support for multi-bit RaBitQ."""
+
+    def test_factory_default_nb_bits(self):
+        """Test that 'RaBitQ' creates 1-bit index by default."""
+        index = faiss.index_factory(128, "RaBitQ")
+        self.assertIsInstance(index, faiss.IndexRaBitQ)
+        self.assertEqual(index.rabitq.nb_bits, 1)
+        expected_size = compute_expected_code_size(128, 1)
+        self.assertEqual(index.code_size, expected_size)
+
+    def test_factory_multibit_specifications(self):
+        """Test that 'RaBitQ{nb_bits}' creates correct multi-bit indexes."""
+        d = 128
+        for nb_bits in [2, 4, 8]:
+            factory_str = f"RaBitQ{nb_bits}"
+            index = faiss.index_factory(d, factory_str)
+            self.assertIsInstance(index, faiss.IndexRaBitQ)
+            self.assertEqual(index.rabitq.nb_bits, nb_bits)
+            expected_size = compute_expected_code_size(d, nb_bits)
+            self.assertEqual(index.code_size, expected_size)
+
+    def test_factory_ivf_default_nb_bits(self):
+        """Test that 'IVF{nlist},RaBitQ' creates 1-bit IVF index."""
+        nlist = 16
+        index = faiss.index_factory(128, f"IVF{nlist},RaBitQ")
+        self.assertIsInstance(index, faiss.IndexIVFRaBitQ)
+        self.assertEqual(index.rabitq.nb_bits, 1)
+        expected_size = compute_expected_code_size(128, 1)
+        self.assertEqual(index.code_size, expected_size)
+
+    def test_factory_ivf_multibit_specifications(self):
+        """Test that 'IVF{nlist},RaBitQ{nb_bits}' creates multi-bit indexes."""
+        d = 128
+        nlist = 16
+        for nb_bits in [2, 4, 8]:
+            factory_str = f"IVF{nlist},RaBitQ{nb_bits}"
+            index = faiss.index_factory(d, factory_str)
+            self.assertIsInstance(index, faiss.IndexIVFRaBitQ)
+            self.assertEqual(index.rabitq.nb_bits, nb_bits)
+            expected_size = compute_expected_code_size(d, nb_bits)
+            self.assertEqual(index.code_size, expected_size)
+
+    def test_factory_end_to_end(self):
+        """Test complete workflow: factory creation, train, add, search."""
+        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        k = 5
+
+        # Test both non-IVF and IVF with multi-bit
+        for nb_bits in [1, 4]:
+            # Non-IVF
+            factory_str = f"RaBitQ{nb_bits}" if nb_bits > 1 else "RaBitQ"
+            index = faiss.index_factory(ds.d, factory_str)
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            D, I = index.search(ds.get_queries(), k)
+
+            self.assertEqual(D.shape, (ds.nq, k))
+            self.assertEqual(I.shape, (ds.nq, k))
+            self.assertTrue(np.all(I >= 0))
+            self.assertTrue(np.all(I < ds.nb))
+
+            # IVF
+            ivf_str = (
+                f"IVF16,RaBitQ{nb_bits}" if nb_bits > 1 else "IVF16,RaBitQ"
+            )
+            ivf_index = faiss.index_factory(ds.d, ivf_str)
+            ivf_index.train(ds.get_train())
+            ivf_index.add(ds.get_database())
+            D_ivf, I_ivf = ivf_index.search(ds.get_queries(), k)
+
+            self.assertEqual(D_ivf.shape, (ds.nq, k))
+            self.assertEqual(I_ivf.shape, (ds.nq, k))
+            self.assertTrue(np.all(I_ivf >= 0))
+            self.assertTrue(np.all(I_ivf < ds.nb))
