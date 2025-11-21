@@ -16,14 +16,37 @@
 namespace faiss {
 namespace rabitq_utils {
 
-/** Factors computed per database vector for RaBitQ distance computation.
+/** Base factors computed per database vector for RaBitQ distance computation.
+ * Used by both 1-bit and multi-bit RaBitQ variants.
  * These can be stored either embedded in codes (IndexRaBitQ) or separately
  * (IndexRaBitQFastScan).
  */
-struct FactorsData {
+struct BaseFactorsData {
     // ||or - c||^2 - ((metric==IP) ? ||or||^2 : 0)
     float or_minus_c_l2sqr = 0;
     float dp_multiplier = 0;
+};
+
+/** Extended factors for multi-bit RaBitQ (nb_bits > 1).
+ * Includes error bound for lower bound computation in two-stage search.
+ * Inherits base factors to maintain layout compatibility.
+ */
+struct FactorsData : BaseFactorsData {
+    // Error bound for lower bound computation in two-stage search
+    // Used in formula: lower_bound = est_distance - f_error * g_error
+    // Only allocated when nb_bits > 1
+    float f_error = 0;
+};
+
+/** Additional factors for multi-bit RaBitQ (nb_bits > 1).
+ * Used to store normalization and scaling factors for the extra bits
+ * (ex_bits) that encode magnitude information beyond the sign bit.
+ */
+struct ExFactorsData {
+    // Additive correction factor for ex-bit reconstruction
+    float f_add_ex = 0;
+    // Scaling/rescaling factor for ex-bit reconstruction
+    float f_rescale_ex = 0;
 };
 
 /** Query-specific factors computed during search for RaBitQ distance
@@ -148,6 +171,38 @@ void set_bit_standard(uint8_t* code, size_t bit_index);
  * @param bit_index     which bit to set (0 to d-1)
  */
 void set_bit_fastscan(uint8_t* code, size_t bit_index);
+
+/** Extract multi-bit code on-the-fly from packed ex-bit codes.
+ * This inline function extracts a single code value without unpacking the
+ * entire array, enabling efficient on-the-fly decoding during distance
+ * computation.
+ *
+ * @param ex_code       packed ex-bit codes
+ * @param index         which code to extract (0 to d-1)
+ * @param ex_bits       number of bits per code (1-8)
+ * @return              extracted code value in range [0, 2^ex_bits - 1]
+ */
+inline int extract_code_inline(
+        const uint8_t* ex_code,
+        size_t index,
+        size_t ex_bits) {
+    size_t bit_pos = index * ex_bits;
+    int code_value = 0;
+
+    // Extract ex_bits bits starting at bit_pos
+    for (size_t bit = 0; bit < ex_bits; bit++) {
+        size_t byte_idx = bit_pos / 8;
+        size_t bit_idx = bit_pos % 8;
+
+        if (ex_code[byte_idx] & (1 << bit_idx)) {
+            code_value |= (1 << bit);
+        }
+
+        bit_pos++;
+    }
+
+    return code_value;
+}
 
 } // namespace rabitq_utils
 } // namespace faiss

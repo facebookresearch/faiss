@@ -32,7 +32,10 @@ struct IndexRaBitQ : IndexFlatCodes {
 
     IndexRaBitQ();
 
-    explicit IndexRaBitQ(idx_t d, MetricType metric = METRIC_L2);
+    explicit IndexRaBitQ(
+            idx_t d,
+            MetricType metric = METRIC_L2,
+            uint8_t nb_bits = 1);
 
     void train(idx_t n, const float* x) override;
 

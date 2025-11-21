@@ -66,6 +66,7 @@ set(FAISS_SRC
   impl/ProductQuantizer.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
+  impl/RaBitQuantizerMultiBit.cpp
   impl/RaBitQUtils.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
@@ -183,6 +184,7 @@ set(FAISS_HEADERS
   impl/ProductQuantizer.h
   impl/Quantizer.h
   impl/RaBitQuantizer.h
+  impl/RaBitQuantizerMultiBit.h
   impl/RaBitQUtils.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
