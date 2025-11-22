@@ -40,7 +40,15 @@ set(FAISS_TEST_SRC
   test_zerocopy.cpp
 )
 
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_TEST_SRC test_svs.cpp)
+endif()
+
 add_executable(faiss_test ${FAISS_TEST_SRC})
+
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss_test PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
 
 include(../cmake/link_to_faiss_lib.cmake)
 

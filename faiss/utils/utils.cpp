@@ -127,6 +127,10 @@ std::string get_compile_options() {
     options += "GENERIC ";
 #endif
 
+#ifdef FAISS_ENABLE_SVS
+    options += "SVS ";
+#endif
+
     options += ref_gpu_compile_options();
 
     return options;

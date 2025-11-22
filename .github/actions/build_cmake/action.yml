@@ -16,6 +16,10 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  svs:
+    description: 'Enable SVS support.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -130,6 +134,7 @@ runs:
               -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_SVS=${{ inputs.svs }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
