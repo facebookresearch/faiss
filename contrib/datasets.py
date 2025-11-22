@@ -9,7 +9,7 @@ import faiss
 import getpass
 
 
-from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap
+from .vecs_io import fvecs_read, ivecs_read, bvecs_mmap, fvecs_mmap, bvecs_iter, bvecs_iter_chunked
 from .exhaustive_search import knn
 
 
@@ -350,6 +350,78 @@ class DatasetGIST1M(Dataset):
             gt = gt[:, :k]
         return gt
 
+class DatasetDINO10B(Dataset):
+    """
+    Data from https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/
+    The dataset contains 10 billion 1024-d vectors extracted from image patches from the YFCC100M dataset, using a Dino-ViT-L 16 model (facebook/dinov3-vitl16-pretrain-lvd1689m).
+    The dataset is sharded in multiple chunked .bvecs files. Downloading instructions can be obtained with "wget https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md".
+    Supported sizes : 100k 200k 500k 1M ... 5B 10B listed in supported_nbs (see __init__).
+    """
+    def __init__(self, nb, ignore_supported = False):
+        Dataset.__init__(self)
+        supported_nbs = [100_000, 200_000, 500_000, 1_000_000, 2_000_000, 5_000_000, 10_000_000, 20_000_000, 50_000_000, 100_000_000, 200_000_000, 500_000_000, 1_000_000_000, 2_000_000_000, 5_000_000_000, 10_000_000_000]
+        if nb not in supported_nbs and not ignore_supported:
+            raise ValueError(f"Unsupported dataset size: {nb}, supported values are: {supported_nbs}")
+        if not os.path.exists(dataset_basedir):
+            raise ValueError(f"Provided dataset base directory does not exist: {dataset_basedir}")
+        self.basedir = dataset_basedir + "dino_vitl_10B/"
+        self.indexdir = self.basedir + "chunked_base_10B"
+        assert os.path.exists(self.indexdir), f"Index path should exist, check your dataset path: {self.indexdir}"
+        self.queriesdir = self.basedir + "queries_clean.bvecs"
+        assert os.path.exists(self.queriesdir), f"Queries path should exist as dataset size {nb} is supported: {self.queriesdir}"
+        self.gtsdir = self.basedir + "gts/" + "gts_dino_patch_" + str(nb) + "_" + "k10.npy"
+        self.train_queriesdir = self.basedir + "train_queries_99M.bvecs"
+        self.nb = nb
+        self.d = 1024
+        self.nq = 100_000
+        self.nt = 99_000_000
+        self.metric = "L2"
+
+
+    def get_queries(self):
+        """Get all vectors as a single array"""
+        queries = bvecs_mmap(self.queriesdir)
+        return sanitize(queries)
+
+    def get_train(self, maxtrain = None):
+        """Get training query vectors as a single array"""
+        if maxtrain is None or maxtrain > 10_000_000:
+            raise NotImplementedError("The training set is potentially too large to fit in RAM (400 GB of data). Please use train_iterator or use maxtrain parameter below 10_000_000 to get the first maxtrain training vectors.")
+        return sanitize(bvecs_mmap(self.train_queriesdir)[:maxtrain])
+
+    def get_database(self):
+        """Get all database vectors as a single array"""
+        if self.nb > 10_000_000:
+            raise NotImplementedError("The dataset is potentially too large to fit in RAM. Please use database_iterator or use a dataset size equal to or below 10_000_000.")
+        else:
+            return sanitize(bvecs_iter_chunked(self.indexdir, batch_size=self.nb).__next__())
+
+    def database_iterator(self, bs=10_000):
+        """Iterator over the database of size nb, corresponding to the first nb vectors in the .bvecs file"""
+        total_read = 0
+        for batch in bvecs_iter_chunked(self.indexdir, batch_size=bs):
+            if total_read + batch.shape[0] > self.nb:
+                batch = batch[:self.nb - total_read]
+            yield sanitize(batch)
+            total_read += batch.shape[0]
+            if total_read >= self.nb:
+                break
+
+    def train_iterator(self, bs=10_000):
+        """Iterator over all training query vectors in the .bvecs file"""
+        for batch in bvecs_iter(self.train_queriesdir, batch_size=bs):
+            yield sanitize(batch)
+
+    def get_groundtruth(self, k = 10):
+        """Get ground truth from .npy file"""
+        if k > 10:
+            raise NotImplementedError("Ground truth files only available for k<=10")
+        gts = np.load(self.gtsdir)
+        gts = gts[:, :k]
+        return gts
+
+    def distance(self):
+        return "euclidean"
 
 def dataset_from_name(dataset='deep1M', download=False):
     """ converts a string describing a dataset to a Dataset object
@@ -384,6 +456,10 @@ def dataset_from_name(dataset='deep1M', download=False):
 
     elif dataset == "glove":
         return DatasetGlove(download=download)
+
+    elif dataset.startswith("dino"):
+        dbsize = 10_000_000_000 if dataset == "dino10B" else int(dataset[4:])
+        return DatasetDINO10B(nb=dbsize)
 
     else:
         raise RuntimeError("unknown dataset " + dataset)
