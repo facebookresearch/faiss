@@ -670,7 +670,7 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
             // should be removed
         } else {
             if (i > j) {
-                pano.move_element(
+                pano.copy_entry(
                         codes.data(),
                         codes.data(),
                         cum_sums.data(),
@@ -715,7 +715,7 @@ void IndexFlatPanorama::permute_entries(const idx_t* perm) {
     std::vector<float> new_cum_sums(cum_sums.size());
 
     for (idx_t i = 0; i < ntotal; i++) {
-        pano.move_element(
+        pano.copy_entry(
                 new_codes.data(),
                 codes.data(),
                 new_cum_sums.data(),

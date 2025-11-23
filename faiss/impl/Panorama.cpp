@@ -148,7 +148,7 @@ void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
     }
 }
 
-void Panorama::move_element(
+void Panorama::copy_entry(
         uint8_t* dest_codes,
         uint8_t* src_codes,
         float* dest_cum_sums,
@@ -167,7 +167,7 @@ void Panorama::move_element(
             dest_batch_no * batch_size * (n_levels + 1);
 
     for (size_t level = 0; level < n_levels; level++) {
-        // Move code
+        // Copy code
         size_t level_offset = level * level_width * batch_size;
 
         size_t actual_level_width =
@@ -179,7 +179,7 @@ void Panorama::move_element(
                 dest_pos_in_batch * actual_level_width;
         memcpy(dest, src, actual_level_width);
 
-        // Move cum_sum
+        // Copy cum_sums
         size_t cumsum_level_offset = level * batch_size;
 
         const size_t src_offset = src_cumsum_batch_offset +
