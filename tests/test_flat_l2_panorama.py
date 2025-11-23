@@ -474,7 +474,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
     
     def test_remove_ids_then_add(self):
         """Test removing vectors with remove_ids() then adding more vectors"""
-        d, nb, nt, nq, nlevels, k = 128, 20000, 0, 10, 9, 15
+        d, nb, nt, nq, nlevels, k = 128, 500000, 0, 10, 9, 15
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2026)
 
         xb1 = xb[:nb//2]
@@ -514,7 +514,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
     def test_merge_from(self):
         """Test merging indexes with merge_from()"""
-        d, nb, nt, nq, nlevels, k, batch_size = 128, 100000, 0, 10, 9, 15, 16
+        d, nb, nt, nq, nlevels, k, batch_size = 128, 500000, 0, 10, 9, 15, 16
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2027)
 
         # Split data and create two separate indexes
@@ -543,7 +543,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
 
     def test_permute_entries(self):
         """Test permuting entries with permute_entries()"""
-        d, nb, nt, nq, nlevels, k = 128, 20000, 0, 10, 8, 15
+        d, nb, nt, nq, nlevels, k = 128, 500000, 0, 10, 8, 15
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2028)
 
         index_regular = self.create_flat(d, xb)
