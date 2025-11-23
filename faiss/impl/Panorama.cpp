@@ -155,11 +155,13 @@ void Panorama::copy_entry(
         float* src_cum_sums,
         size_t dest_idx,
         size_t src_idx) const {
+    // Calculate positions
     size_t src_batch_no = src_idx / batch_size;
     size_t src_pos_in_batch = src_idx % batch_size;
     size_t dest_batch_no = dest_idx / batch_size;
     size_t dest_pos_in_batch = dest_idx % batch_size;
 
+    // Calculate offsets
     size_t src_batch_offset = src_batch_no * batch_size * code_size;
     size_t dest_batch_offset = dest_batch_no * batch_size * code_size;
     size_t src_cumsum_batch_offset = src_batch_no * batch_size * (n_levels + 1);
@@ -169,7 +171,6 @@ void Panorama::copy_entry(
     for (size_t level = 0; level < n_levels; level++) {
         // Copy code
         size_t level_offset = level * level_width * batch_size;
-
         size_t actual_level_width =
                 std::min(level_width, code_size - level * level_width);
 
