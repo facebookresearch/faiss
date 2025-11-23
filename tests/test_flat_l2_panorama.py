@@ -312,7 +312,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
     def test_batch_boundaries(self):
         """Test correctness at various batch size boundaries"""
         d, nt, nq, k = 128, 10000, 10, 15
-        # random train not needed for Flat indices
+        # random train not needed for Flat indexes
         xq = np.random.rand(nq, d).astype("float32")
 
         # Use index's batch_size
@@ -471,6 +471,98 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
         start_idx, n_vectors = 120, 10
         vn_panorama = index_panorama.reconstruct_n(start_idx, n_vectors)
         np.testing.assert_array_equal(xb[start_idx:start_idx + n_vectors], vn_panorama)
+    
+    def test_remove_ids_then_add(self):
+        """Test removing vectors with remove_ids() then adding more vectors"""
+        d, nb, nt, nq, nlevels, k = 128, 20000, 0, 10, 9, 15
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2026)
+
+        xb1 = xb[:nb//2]
+        xb2 = xb[nb//2:]
+
+        index_regular = self.create_flat(d, xb1)
+        index_panorama = self.create_panorama(d, nlevels, xb1)
+
+        # Remove every even ID
+        ids_to_remove = np.arange(0, nb, 2, dtype=np.int64)
+
+        nremove_regular = index_regular.remove_ids(ids_to_remove)
+        nremove_panorama = index_panorama.remove_ids(ids_to_remove)
+
+        # Verify same number of IDs removed
+        self.assertEqual(nremove_regular, nremove_panorama)
+
+        # Verify ntotal updated correctly
+        self.assertEqual(index_regular.ntotal, index_panorama.ntotal)
+
+        # Verify search results match between regular and panorama
+        D_reg_1, I_reg_1 = index_regular.search(xq, k)
+        D_pan_1, I_pan_1 = index_panorama.search(xq, k)
+        self.assert_search_results_equal(D_reg_1, I_reg_1, D_pan_1, I_pan_1)
+
+        # Second add and search
+        index_regular.add(xb2)
+        index_panorama.add(xb2)
+
+        # Verify ntotal updated correctly
+        self.assertEqual(index_regular.ntotal, index_panorama.ntotal)
+
+        # Verify second search results match between regular and panorama
+        D_reg_2, I_reg_2 = index_regular.search(xq, k)
+        D_pan_2, I_pan_2 = index_panorama.search(xq, k)
+        self.assert_search_results_equal(D_reg_2, I_reg_2, D_pan_2, I_pan_2)
+
+    def test_merge_from(self):
+        """Test merging indexes with merge_from()"""
+        d, nb, nt, nq, nlevels, k, batch_size = 128, 100000, 0, 10, 9, 15, 16
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2027)
+
+        # Split data and create two separate indexes
+        split = nb // 2
+        xb1 = xb[:split]
+        xb2 = xb[split:]
+
+        index1_regular = self.create_flat(d, xb1)
+        index2_regular = self.create_flat(d, xb2)
+
+        index1_panorama = self.create_panorama(d, nlevels, xb1, batch_size)
+        index2_panorama = self.create_panorama(d, nlevels * 2, xb2, batch_size // 2)
+
+        # Merge second index into first
+        index1_regular.merge_from(index2_regular, 0)
+        index1_panorama.merge_from(index2_panorama, 0)
+
+        # Verify ntotal after merge
+        self.assertEqual(index1_regular.ntotal, index1_panorama.ntotal)
+        self.assertEqual(index2_regular.ntotal, index2_panorama.ntotal)
+
+        # Verify merged index results
+        D_regular, I_regular = index1_regular.search(xq, k)
+        D_panorama, I_panorama = index1_panorama.search(xq, k)
+        self.assert_search_results_equal(D_regular, I_regular, D_panorama, I_panorama)
+
+    def test_permute_entries(self):
+        """Test permuting entries with permute_entries()"""
+        d, nb, nt, nq, nlevels, k = 128, 20000, 0, 10, 8, 15
+        _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2028)
+
+        index_regular = self.create_flat(d, xb)
+        index_panorama = self.create_panorama(d, nlevels, xb)
+
+        # Create a random permutation
+        np.random.seed(1234)
+        perm = np.random.permutation(nb).astype(np.int64)
+
+        # Apply permutation to both indexes
+        index_regular.permute_entries(perm)
+        index_panorama.permute_entries(perm)
+
+        # Search after permutation
+        D_regular, I_regular = index_regular.search(xq, k)
+        D_panorama, I_panorama = index_panorama.search(xq, k)
+
+        # Verify permuted indexes match each other
+        self.assert_search_results_equal(D_regular, I_regular, D_panorama, I_panorama)
 
     def test_serialization(self):
         """Test that writing and reading Panorama indexes preserves search results"""

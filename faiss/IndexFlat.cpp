@@ -663,15 +663,44 @@ void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
     Index::reconstruct_n(i, n, recons);
 }
 
-size_t IndexFlatPanorama::remove_ids(const IDSelector& /* sel */) {
-    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatPanorama");
-    return 0;
+size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                pano.move_element(
+                        codes.data(),
+                        codes.data(),
+                        cum_sums.data(),
+                        cum_sums.data(),
+                        j,
+                        i);
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+        codes.resize(num_batches * batch_size * code_size);
+        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+    }
+    return nremove;
 }
 
-void IndexFlatPanorama::merge_from(
-        Index& /* otherIndex */,
-        idx_t /* add_id */) {
-    FAISS_THROW_MSG("merge_from not implemented for IndexFlatPanorama");
+void IndexFlatPanorama::merge_from(Index& otherIndex, idx_t add_id) {
+    FAISS_THROW_IF_NOT_MSG(add_id == 0, "cannot set ids in FlatPanorama index");
+    check_compatible_for_merge(otherIndex);
+    IndexFlatPanorama* other = static_cast<IndexFlatPanorama*>(&otherIndex);
+
+    std::vector<float> buffer(other->ntotal * code_size);
+    otherIndex.reconstruct_n(0, other->ntotal, buffer.data());
+
+    add(other->ntotal, buffer.data());
+    other->reset();
 }
 
 void IndexFlatPanorama::add_sa_codes(
@@ -681,7 +710,21 @@ void IndexFlatPanorama::add_sa_codes(
     FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatPanorama");
 }
 
-void IndexFlatPanorama::permute_entries(const idx_t* /* perm */) {
-    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatPanorama");
+void IndexFlatPanorama::permute_entries(const idx_t* perm) {
+    MaybeOwnedVector<uint8_t> new_codes(codes.size());
+    std::vector<float> new_cum_sums(cum_sums.size());
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        pano.move_element(
+                new_codes.data(),
+                codes.data(),
+                new_cum_sums.data(),
+                cum_sums.data(),
+                i,
+                perm[i]);
+    }
+
+    std::swap(codes, new_codes);
+    std::swap(cum_sums, new_cum_sums);
 }
 } // namespace faiss
