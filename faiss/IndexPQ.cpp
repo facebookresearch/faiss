@@ -81,7 +81,6 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     const float* sdc;
     std::vector<float> precomputed_table;
     size_t ndis;
-    const float* q;
 
     float distance_to_code(const uint8_t* code) final {
         ndis++;
@@ -110,8 +109,7 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
-              pq(storage.pq),
-              q(nullptr) {
+              pq(storage.pq) {
         precomputed_table.resize(pq.M * pq.ksub);
         nb = storage.ntotal;
         d = storage.d;
@@ -125,7 +123,6 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     }
 
     void set_query(const float* x) override {
-        q = x;
         if (metric == METRIC_L2) {
             pq.compute_distance_table(x, precomputed_table.data());
         } else {
