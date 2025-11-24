@@ -1,0 +1,24 @@
+{
+  "name": "faiss-wasm",
+  "version": "0.0.1",
+  "description": "WebAssembly bindings for FAISS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:wasm": "./build.sh",
+    "build:ts": "tsc",
+    "build": "npm run build:wasm && npm run build:ts",
+    "test": "node tests/smoke.test.js && node tests/index_flat.test.js",
+    "demo": "./run_demo.sh"
+  },
+  "files": [
+    "dist",
+    "demo/faiss-wasm.js",
+    "demo/faiss-wasm.wasm"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

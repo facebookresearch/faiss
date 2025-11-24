@@ -337,7 +337,7 @@ endif()
 
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
-  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>)
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss_avx2 PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -392,12 +392,15 @@ if(FAISS_USE_LTO)
   endif()
 endif()
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+option(FAISS_ENABLE_OPENMP "Enable OpenMP support" ON)
+if(FAISS_ENABLE_OPENMP)
+  find_package(OpenMP REQUIRED)
+  target_link_libraries(faiss PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx2 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512 PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_avx512_spr PRIVATE OpenMP::OpenMP_CXX)
+  target_link_libraries(faiss_sve PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 if(FAISS_ENABLE_MKL)
   find_package(MKL)
@@ -408,19 +411,22 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx512 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
 else()
-  find_package(BLAS REQUIRED)
-  target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
-  target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
-  target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
-  target_link_libraries(faiss_avx512_spr PRIVATE ${BLAS_LIBRARIES})
-  target_link_libraries(faiss_sve PRIVATE ${BLAS_LIBRARIES})
+  option(FAISS_ENABLE_BLAS "Enable BLAS/LAPACK support" ON)
+  if(FAISS_ENABLE_BLAS)
+    find_package(BLAS REQUIRED)
+    target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
+    target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
+    target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
+    target_link_libraries(faiss_avx512_spr PRIVATE ${BLAS_LIBRARIES})
+    target_link_libraries(faiss_sve PRIVATE ${BLAS_LIBRARIES})
 
-  find_package(LAPACK REQUIRED)
-  target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
-  target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
-  target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
-  target_link_libraries(faiss_avx512_spr PRIVATE ${LAPACK_LIBRARIES})
-  target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
+    find_package(LAPACK REQUIRED)
+    target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
+    target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
+    target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
+    target_link_libraries(faiss_avx512_spr PRIVATE ${LAPACK_LIBRARIES})
+    target_link_libraries(faiss_sve PRIVATE ${LAPACK_LIBRARIES})
+  endif()
 endif()
 
 install(TARGETS faiss
@@ -473,7 +479,8 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
-configure_file(${PROJECT_SOURCE_DIR}/cmake/faiss-config.cmake.in
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/faiss-config.cmake.in
   ${PROJECT_BINARY_DIR}/cmake/faiss-config.cmake
   COPYONLY
 )
