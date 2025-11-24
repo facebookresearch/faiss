@@ -485,7 +485,6 @@ TEST_F(SVS_NoLL, LVQAndLeanVecThrowWhenNotEnabled) {
                 index.d = 64;
                 index.leanvec_d = 32;
                 index.train(n, test_data.data());
-                index.add(n, test_data.data());
             },
             faiss::FaissException);
 }
