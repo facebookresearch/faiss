@@ -193,8 +193,6 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     return nbits;
 }
 
-const std::string rabitq_pattern = "(RaBitQ)";
-
 /***************************************************************
  * Parse VectorTransform
  */
