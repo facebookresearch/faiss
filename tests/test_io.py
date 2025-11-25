@@ -359,21 +359,19 @@ class Test_IO_PQ(unittest.TestCase):
 
         try:
             faiss.write_ProductQuantizer(index.pq, fname)
-
             read_pq = faiss.read_ProductQuantizer(fname)
-
-            self.assertEqual(index.pq.M, read_pq.M)
-            self.assertEqual(index.pq.nbits, read_pq.nbits)
-            self.assertEqual(index.pq.dsub, read_pq.dsub)
-            self.assertEqual(index.pq.ksub, read_pq.ksub)
-            np.testing.assert_array_equal(
-                faiss.vector_to_array(index.pq.centroids),
-                faiss.vector_to_array(read_pq.centroids)
-            )
-
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
+        self.assertEqual(index.pq.M, read_pq.M)
+        self.assertEqual(index.pq.nbits, read_pq.nbits)
+        self.assertEqual(index.pq.dsub, read_pq.dsub)
+        self.assertEqual(index.pq.ksub, read_pq.ksub)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.pq.centroids),
+            faiss.vector_to_array(read_pq.centroids)
+        )
+
 
 
 class Test_IO_IndexLSH(unittest.TestCase):

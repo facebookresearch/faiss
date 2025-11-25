@@ -10,8 +10,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import numpy as np
 import unittest
 import faiss
-import os
-import tempfile
 
 
 def make_binary_dataset(d, nb, nt, nq):
@@ -37,21 +35,12 @@ class TestBinaryFlat(unittest.TestCase):
         index = faiss.IndexBinaryFlat(d)
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        D2, I2 = index2.search(self.xq, 3)
 
-            index2 = faiss.read_index_binary(tmpnam)
-
-            D2, I2 = index2.search(self.xq, 3)
-
-            assert (I2 == I).all()
-            assert (D2 == D).all()
-
-        finally:
-            os.remove(tmpnam)
+        assert (I2 == I).all()
+        assert (D2 == D).all()
 
 
 class TestBinaryIVF(unittest.TestCase):
@@ -76,20 +65,12 @@ class TestBinaryIVF(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
-            index2 = faiss.read_index_binary(tmpnam)
+        D2, I2 = index2.search(self.xq, 3)
 
-            D2, I2 = index2.search(self.xq, 3)
-
-            assert (I2 == I).all()
-            assert (D2 == D).all()
-
-        finally:
-            os.remove(tmpnam)
+        assert (I2 == I).all()
+        assert (D2 == D).all()
 
 
 class TestObjectOwnership(unittest.TestCase):
@@ -109,16 +90,10 @@ class TestObjectOwnership(unittest.TestCase):
         index = faiss.IndexBinaryFlat(d)
         index.add(self.xb)
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        # this is the output of read_index_binary (==> checks ownership)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
-            index2 = faiss.read_index_binary(tmpnam)
-
-            assert index2.thisown
-        finally:
-            os.remove(tmpnam)
+        assert index2.thisown
 
 
 class TestBinaryFromFloat(unittest.TestCase):
@@ -140,21 +115,11 @@ class TestBinaryFromFloat(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
+        D2, I2 = index2.search(self.xq, 3)
 
-            index2 = faiss.read_index_binary(tmpnam)
-
-            D2, I2 = index2.search(self.xq, 3)
-
-            assert (I2 == I).all()
-            assert (D2 == D).all()
-
-        finally:
-            os.remove(tmpnam)
-
+        assert (I2 == I).all()
+        assert (D2 == D).all()
 
 class TestBinaryHNSW(unittest.TestCase):
 
@@ -174,20 +139,12 @@ class TestBinaryHNSW(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
-            index2 = faiss.read_index_binary(tmpnam)
+        D2, I2 = index2.search(self.xq, 3)
 
-            D2, I2 = index2.search(self.xq, 3)
-
-            assert (I2 == I).all()
-            assert (D2 == D).all()
-
-        finally:
-            os.remove(tmpnam)
+        assert (I2 == I).all()
+        assert (D2 == D).all()
 
     def test_ivf_hnsw(self):
         d = self.xq.shape[1] * 8
@@ -200,21 +157,9 @@ class TestBinaryHNSW(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index)) 
+        
+        D2, I2 = index2.search(self.xq, 3)
 
-            index2 = faiss.read_index_binary(tmpnam)
-
-            D2, I2 = index2.search(self.xq, 3)
-
-            assert (I2 == I).all()
-            assert (D2 == D).all()
-
-        finally:
-            os.remove(tmpnam)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert (I2 == I).all()
+        assert (D2 == D).all()
