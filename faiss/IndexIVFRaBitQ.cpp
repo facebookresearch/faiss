@@ -24,9 +24,10 @@ IndexIVFRaBitQ::IndexIVFRaBitQ(
         const size_t d,
         const size_t nlist,
         MetricType metric,
-        bool own_invlists)
+        bool own_invlists,
+        uint8_t nb_bits_in)
         : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
-          rabitq(d, metric) {
+          rabitq(d, metric, nb_bits_in) {
     code_size = rabitq.code_size;
     if (own_invlists) {
         invlists->code_size = code_size;
@@ -153,6 +154,8 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     std::vector<float> query_vector;
 
     std::unique_ptr<FlatCodesDistanceComputer> dc;
+    RaBitQDistanceComputer* rabitq_dc =
+            nullptr; // For multi-bit adaptive filtering
 
     uint8_t qb = 0;
     bool centered = false;
@@ -194,6 +197,68 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         return dc->distance_to_code(code);
     }
 
+    /// Override scan_codes to implement adaptive filtering for multi-bit codes
+    size_t scan_codes(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* simi,
+            idx_t* idxi,
+            size_t k) const override {
+        size_t ex_bits = ivf_rabitq.rabitq.nb_bits - 1;
+
+        // For 1-bit codes, use default implementation
+        if (ex_bits == 0 || rabitq_dc == nullptr) {
+            return InvertedListScanner::scan_codes(
+                    list_size, codes, ids, simi, idxi, k);
+        }
+
+        // Multi-bit: Two-stage search with adaptive filtering
+        size_t nup = 0;
+
+        for (size_t j = 0; j < list_size; j++) {
+            if (sel != nullptr) {
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                if (!sel->is_member(id)) {
+                    codes += code_size;
+                    continue;
+                }
+            }
+
+            // Stage 1: Compute lower bound using 1-bit codes
+            float lower_bound = rabitq_dc->lower_bound_distance(codes);
+
+            // Stage 2: Adaptive filtering
+            // L2 (min-heap): filter if lower_bound < simi[0]
+            // IP (max-heap): filter if lower_bound > simi[0]
+            // Note: Using simi[0] directly (not cached) enables more aggressive
+            // filtering as the heap is updated with better candidates
+            bool is_promising = keep_max ? (lower_bound > simi[0])
+                                         : (lower_bound < simi[0]);
+
+            if (is_promising) {
+                // Lower bound is promising, compute full distance
+                float dis = distance_to_code(codes);
+
+                // Check if distance improves heap
+                bool improves_heap =
+                        keep_max ? (dis > simi[0]) : (dis < simi[0]);
+
+                if (improves_heap) {
+                    int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    if (keep_max) {
+                        minheap_replace_top(k, simi, idxi, dis, id);
+                    } else {
+                        maxheap_replace_top(k, simi, idxi, dis, id);
+                    }
+                    nup++;
+                }
+            }
+            codes += code_size;
+        }
+        return nup;
+    }
+
     void internal_try_setup_dc() {
         if (!query_vector.empty() && !reconstructed_centroid.empty()) {
             // both query_vector and centroid are available!
@@ -202,6 +267,9 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     qb, reconstructed_centroid.data(), centered));
 
             dc->set_query(query_vector.data());
+
+            // Try to cast to RaBitQDistanceComputer for multi-bit support
+            rabitq_dc = dynamic_cast<RaBitQDistanceComputer*>(dc.get());
         }
     }
 };

@@ -61,6 +61,8 @@ FactorsData compute_factors_from_intermediates(
         size_t d,
         MetricType metric_type) {
     constexpr float epsilon = std::numeric_limits<float>::epsilon();
+    constexpr float kConstEpsilon =
+            1.9f; // Error bound constant from RaBitQ paper
     const float inv_d_sqrt =
             (d == 0) ? 1.0f : (1.0f / std::sqrt(static_cast<float>(d)));
 
@@ -77,6 +79,35 @@ FactorsData compute_factors_from_intermediates(
             ? (norm_L2sqr - or_L2sqr)
             : norm_L2sqr;
     factors.dp_multiplier = inv_dp_oO * sqrt_norm_L2;
+
+    // Compute error bound for 1-bit quantization
+    const float xu_cb_norm_sqr = static_cast<float>(d) * 0.25f;
+    const float ip_resi_xucb = 0.5f * dp_oO;
+
+    float tmp_error = 0.0f;
+    if (std::abs(ip_resi_xucb) > epsilon) {
+        const float ratio_sq =
+                (norm_L2sqr * xu_cb_norm_sqr) / (ip_resi_xucb * ip_resi_xucb);
+        if (ratio_sq > 1.0f) {
+            if (d == 1) {
+                tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                        std::sqrt(ratio_sq - 1.0f);
+            } else {
+                tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                        std::sqrt((ratio_sq - 1.0f) /
+                                  static_cast<float>(d - 1));
+            }
+        }
+    }
+
+    // Apply metric-specific multiplier
+    if (metric_type == MetricType::METRIC_L2) {
+        factors.f_error = 2.0f * tmp_error;
+    } else if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+        factors.f_error = 1.0f * tmp_error;
+    } else {
+        factors.f_error = 0.0f;
+    }
 
     return factors;
 }
