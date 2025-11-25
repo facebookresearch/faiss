@@ -1009,14 +1009,9 @@ void train_Uniform(
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        int o = int(rs_arg * n);
-        if (o < 0) {
-            o = 0;
-        }
-        if (o > n - o) {
-            o = n / 2;
-        }
-        // Use nth_element (O(n)) instead of sort (O(n log n))
+        int temp = int(rs_arg * n);
+        int o = temp < 0 ? 0 : (temp > n / 2 ? n / 2 : temp);
+
         std::nth_element(x_copy.begin(), x_copy.begin() + o, x_copy.end());
         vmin = x_copy[o];
         std::nth_element(
