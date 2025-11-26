@@ -16,7 +16,6 @@ Then we check that both refined results return identical ids and (nearly)
 identical distances.
 """
 
-import os
 import unittest
 import faiss
 import numpy as np
@@ -320,10 +319,8 @@ class TestIndexRefinePanorama(unittest.TestCase):
         index = self.create_panorama(d, base_cfg, nlevels, xt=xt, xb=xb)
 
         D_before, I_before = index.search(xq, k)
-        faiss.write_index(index, "index.bin")
-        index_after = faiss.read_index("index.bin")
+        index_after = faiss.deserialize_index(faiss.serialize_index(index))
         D_after, I_after = index_after.search(xq, k)
-        os.unlink("index.bin")
 
         np.testing.assert_array_equal(I_before, I_after)
         np.testing.assert_array_equal(D_before, D_after)
