@@ -1340,6 +1340,9 @@ int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
     while (i < k_size) {
         svbool_t pg_iter = svwhilelt_b32_u64(i, k_size);
 
+        // Prefetch data 2 vector iterations ahead to hide memory latency.
+        // Value of 2 was chosen based on performance benchmarking results,
+        // which showed optimal performance compared to other values (1, 3, 4).
         const size_t prefetch_iterations = 2;
         size_t prefetch_idx = i + prefetch_iterations * lanes;
         if (prefetch_idx < k_size) {
