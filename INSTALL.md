@@ -144,6 +144,7 @@ Several options can be passed to CMake, among which:
   - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
     are `ON` and `OFF`),
   - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
+    Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),

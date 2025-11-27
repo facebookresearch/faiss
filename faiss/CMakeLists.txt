@@ -371,6 +371,8 @@ if(FAISS_ENABLE_SVS)
   target_link_libraries(faiss_avx512 PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_avx512_spr PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_sve PUBLIC svs::svs_runtime)
+
+  install(DIRECTORY ${svs_SOURCE_DIR}/lib/ DESTINATION ${CMAKE_INSTALL_LIBDIR} FILES_MATCHING PATTERN "libsvs_runtime.so*")
 endif()
 
 # Handle `#include <faiss/foo.h>`.
