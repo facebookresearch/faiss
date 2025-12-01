@@ -21,6 +21,7 @@
 #include <faiss/Index.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/AdaptiveLock.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
 
@@ -63,7 +64,9 @@ struct Neighbor {
 };
 
 struct Nhood {
-    std::mutex lock;
+    static constexpr int kSpinLockLimit = 200;
+    AdaptiveLock lock;
+
     std::vector<Neighbor> pool; // candidate pool (a max heap)
     int M;                      // number of new neighbors to be operated
 

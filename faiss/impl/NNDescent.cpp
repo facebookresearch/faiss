@@ -17,13 +17,14 @@
 
 namespace faiss {
 
-using LockGuard = std::lock_guard<std::mutex>;
+using LockGuard = std::lock_guard<AdaptiveLock>;
 
 namespace nndescent {
 
 void gen_random(std::mt19937& rng, int* addr, const int size, const int N);
 
-Nhood::Nhood(int l, int s, std::mt19937& rng, int N) {
+Nhood::Nhood(int l, int s, std::mt19937& rng, int N)
+        : lock{l < kSpinLockLimit} {
     M = s;
     nn_new.resize(s * 2);
     gen_random(rng, nn_new.data(), (int)nn_new.size(), N);
@@ -31,6 +32,7 @@ Nhood::Nhood(int l, int s, std::mt19937& rng, int N) {
 
 /// Copy operator
 Nhood& Nhood::operator=(const Nhood& other) {
+    lock.set_use_spinlock(other.pool.capacity() < kSpinLockLimit);
     M = other.M;
     std::copy(
             other.nn_new.begin(),
@@ -42,7 +44,8 @@ Nhood& Nhood::operator=(const Nhood& other) {
 }
 
 /// Copy constructor
-Nhood::Nhood(const Nhood& other) {
+Nhood::Nhood(const Nhood& other)
+        : lock{other.pool.capacity() < kSpinLockLimit} {
     M = other.M;
     std::copy(
             other.nn_new.begin(),
