@@ -97,7 +97,6 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
     """
 
     # Find all chunk files and sort them
-    chunk_pattern = os.path.join(chunk_folder, "chunk_*.bvecs")
     chunk_files = []
     for entry in os.scandir(chunk_folder):
         if entry.is_file() and entry.name.startswith("chunk_") and entry.name.endswith(".bvecs"):
