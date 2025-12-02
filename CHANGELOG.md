@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.13.1] - 2025-12-02
+
+
+Added
+- add dataset DINO10B (#4686)
+- Implement multi-bit RaBitQ quantization (nb_bits 2-9) (#4679)
+- Add copyright header to test_flat_l2_panorama.py (#4688)
+- Integrate Panorama into `IndexHNSWFlatPanorama` (#4621)
+- Implement `IndexFlatL2Panorama` (#4645)
+
+
+Changed
+- clamping variable used for computing percentile (#4687)
+- Remove unused variable
+- Revert D85902427 (#4690)
+- Optimize ScalarQuantizer (#4652)
+- Update comment to clarify useFloat16 in GpuClonerOptions.h (#4682)
+- facebook-hte-SharedPtrFromNew in StandardGpuResources.cpp (#4680)
+
+
+Fixed
+- Fix deprecated this capture in faiss/gpu/GpuIcmEncoder.cu +1
+- Refactor sharding to not oom (#4678)
+- Fix significant GOMP barrier overhead in exhaustive_L2sqr_blas. (#4663)
+- Fix typos in tests and contrib directories (#4672)
+
+
+
 ## [1.13.0] - 2025-11-11
 
 
