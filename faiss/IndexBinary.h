@@ -49,7 +49,7 @@ struct IndexBinary {
     /** Perform training on a representative set of vectors.
      *
      * @param n      nb of training vectors
-     * @param x      training vecors, size n * d / 8
+     * @param x      training vectors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
     virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
@@ -172,14 +172,14 @@ struct IndexBinary {
      *
      * This function may not be defined for some indexes.
      * @param key         id of the vector to reconstruct
-     * @param recons      reconstucted vector (size d / 8)
+     * @param recons      reconstructed vector (size d / 8)
      */
     virtual void reconstruct(idx_t key, uint8_t* recons) const;
 
     /** Reconstruct vectors i0 to i0 + ni - 1.
      *
      * This function may not be defined for some indexes.
-     * @param recons      reconstucted vectors (size ni * d / 8)
+     * @param recons      reconstructed vectors (size ni * d / 8)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const;
 

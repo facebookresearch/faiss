@@ -331,7 +331,7 @@ void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {
 /*
     Check that the encoder is a single vector transform followed by a LSH
     that just does thresholding.
-    If this is not the case, the linear transform + threhsolds of the IndexLSH
+    If this is not the case, the linear transform + thresholds of the IndexLSH
     should be merged into the VectorTransform (which is feasible).
 */
 

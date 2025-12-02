@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/impl/Panorama.h>
 
 namespace faiss {
 
@@ -66,7 +67,7 @@ struct IndexFlat : IndexFlatCodes {
 
     FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
-    /* The stanadlone codec interface (just memcopies in this case) */
+    /* The standalone codec interface (just memcopies in this case) */
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
@@ -97,6 +98,76 @@ struct IndexFlatL2 : IndexFlat {
     void sync_l2norms();
     // clear L2 norms
     void clear_l2norms();
+};
+
+struct IndexFlatPanorama : IndexFlat {
+    const size_t batch_size;
+    const size_t n_levels;
+    std::vector<float> cum_sums;
+    Panorama pano;
+
+    /**
+     * @param d dimensionality of the input vectors
+     * @param metric metric type
+     * @param n_levels number of Panorama levels
+     * @param batch_size batch size for Panorama storage
+     */
+    explicit IndexFlatPanorama(
+            idx_t d,
+            MetricType metric,
+            size_t n_levels,
+            size_t batch_size)
+            : IndexFlat(d, metric),
+              batch_size(batch_size),
+              n_levels(n_levels),
+              pano(code_size, n_levels, batch_size) {
+        FAISS_THROW_IF_NOT(metric == METRIC_L2);
+    }
+
+    void add(idx_t n, const float* x) override;
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
+    void reset() override;
+
+    void reconstruct(idx_t key, float* recons) const override;
+
+    void reconstruct_n(idx_t i, idx_t n, float* recons) const override;
+
+    size_t remove_ids(const IDSelector& sel) override;
+
+    void merge_from(Index& otherIndex, idx_t add_id) override;
+
+    void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids)
+            override;
+
+    void permute_entries(const idx_t* perm);
+};
+
+struct IndexFlatL2Panorama : IndexFlatPanorama {
+    /**
+     * @param d dimensionality of the input vectors
+     * @param n_levels number of Panorama levels
+     * @param batch_size batch size for Panorama storage
+     */
+    explicit IndexFlatL2Panorama(
+            idx_t d,
+            size_t n_levels,
+            size_t batch_size = 512)
+            : IndexFlatPanorama(d, METRIC_L2, n_levels, batch_size) {}
 };
 
 /// optimized version for 1D "vectors".

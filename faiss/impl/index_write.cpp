@@ -71,7 +71,7 @@
  * or deprecated fields), the fourcc can be replaced. New code should
  * be able to read the old fourcc and fill in new classes.
  *
- * TODO: in this file, the read functions that encouter errors may
+ * TODO: in this file, the read functions that encounter errors may
  * leak memory.
  **************************************************************/
 
@@ -396,11 +396,18 @@ static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
     WRITEVECTOR(nnd->final_graph);
 }
 
-static void write_RaBitQuantizer(const RaBitQuantizer* rabitq, IOWriter* f) {
+// Write RaBitQuantizer for 1-bit format (backward compatible)
+static void write_RaBitQuantizer(
+        const RaBitQuantizer* rabitq,
+        IOWriter* f,
+        bool multi_bit) {
     // don't care about rabitq->centroid
     WRITE1(rabitq->d);
     WRITE1(rabitq->code_size);
     WRITE1(rabitq->metric_type);
+    if (multi_bit) {
+        WRITE1(rabitq->nb_bits);
+    }
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
@@ -432,6 +439,18 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         // eg. for a storage component of HNSW that is set to nullptr
         uint32_t h = fourcc("null");
         WRITE1(h);
+    } else if (
+            const IndexFlatL2Panorama* idxpan =
+                    dynamic_cast<const IndexFlatL2Panorama*>(idx)) {
+        uint32_t h = fourcc("IxFP");
+        WRITE1(h);
+        WRITE1(idxpan->d);
+        WRITE1(idxpan->n_levels);
+        WRITE1(idxpan->batch_size);
+        WRITE1(idxpan->ntotal);
+        WRITE1(idxpan->is_trained);
+        WRITEVECTOR(idxpan->codes);
+        WRITEVECTOR(idxpan->cum_sums);
     } else if (const IndexFlat* idxf = dynamic_cast<const IndexFlat*>(idx)) {
         uint32_t h =
                 fourcc(idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI"
@@ -886,7 +905,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexRowwiseMinMax* imm =
                     dynamic_cast<const IndexRowwiseMinMax*>(idx)) {
-        // IndexRowwiseMinmaxFloat
+        // IndexRowwiseMinMaxFloat
         uint32_t h = fourcc("IRMf");
         WRITE1(h);
         write_index_header(imm, f);
@@ -894,7 +913,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexRowwiseMinMaxFP16* imm_2 =
                     dynamic_cast<const IndexRowwiseMinMaxFP16*>(idx)) {
-        // IndexRowwiseMinmaxHalf
+        // IndexRowwiseMinMaxHalf
         uint32_t h = fourcc("IRMh");
         WRITE1(h);
         write_index_header(imm_2, f);
@@ -905,7 +924,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("Irfs");
         WRITE1(h);
         write_index_header(idx, f);
-        write_RaBitQuantizer(&idxqfs->rabitq, f);
+        write_RaBitQuantizer(&idxqfs->rabitq, f, false);
         WRITEVECTOR(idxqfs->center);
         WRITE1(idxqfs->qb);
         WRITEVECTOR(idxqfs->factors_storage);
@@ -916,20 +935,36 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITEVECTOR(idxqfs->codes);
     } else if (
             const IndexRaBitQ* idxq = dynamic_cast<const IndexRaBitQ*>(idx)) {
-        uint32_t h = fourcc("Ixrq");
-        WRITE1(h);
-        write_index_header(idx, f);
-        write_RaBitQuantizer(&idxq->rabitq, f);
+        // Use different fourcc codes for 1-bit vs multi-bit
+        if (idxq->rabitq.nb_bits == 1) {
+            uint32_t h = fourcc("Ixrq"); // 1-bit (backward compatible)
+            WRITE1(h);
+            write_index_header(idx, f);
+            write_RaBitQuantizer(&idxq->rabitq, f, false);
+        } else {
+            uint32_t h = fourcc("Ixrr"); // multi-bit (new format)
+            WRITE1(h);
+            write_index_header(idx, f);
+            write_RaBitQuantizer(&idxq->rabitq, f, true);
+        }
         WRITEVECTOR(idxq->codes);
         WRITEVECTOR(idxq->center);
         WRITE1(idxq->qb);
     } else if (
             const IndexIVFRaBitQ* ivrq =
                     dynamic_cast<const IndexIVFRaBitQ*>(idx)) {
-        uint32_t h = fourcc("Iwrq");
-        WRITE1(h);
-        write_ivf_header(ivrq, f);
-        write_RaBitQuantizer(&ivrq->rabitq, f);
+        // Use different fourcc codes for 1-bit vs multi-bit
+        if (ivrq->rabitq.nb_bits == 1) {
+            uint32_t h = fourcc("Iwrq"); // 1-bit (backward compatible)
+            WRITE1(h);
+            write_ivf_header(ivrq, f);
+            write_RaBitQuantizer(&ivrq->rabitq, f, false);
+        } else {
+            uint32_t h = fourcc("Iwrr"); // multi-bit (new format)
+            WRITE1(h);
+            write_ivf_header(ivrq, f);
+            write_RaBitQuantizer(&ivrq->rabitq, f, true);
+        }
         WRITE1(ivrq->code_size);
         WRITE1(ivrq->by_residual);
         WRITE1(ivrq->qb);
@@ -940,7 +975,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("Iwrf");
         WRITE1(h);
         write_ivf_header(ivrqfs, f);
-        write_RaBitQuantizer(&ivrqfs->rabitq, f);
+        write_RaBitQuantizer(&ivrqfs->rabitq, f, false);
         WRITE1(ivrqfs->by_residual);
         WRITE1(ivrqfs->code_size);
         WRITE1(ivrqfs->bbs);

@@ -11,12 +11,15 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
+#include <omp.h>
 #include <cstring>
+#include <numeric>
 
 namespace faiss {
 
@@ -518,5 +521,167 @@ void IndexFlat1D::search(
         }
     done:;
     }
+}
+
+/**************************************************************
+ * shared flat Panorama search code
+ **************************************************************/
+
+namespace {
+
+template <bool use_radius, typename BlockHandler>
+inline void flat_pano_search_core(
+        const IndexFlatPanorama& index,
+        BlockHandler& handler,
+        idx_t n,
+        const float* x,
+        float radius,
+        const SearchParameters* params) {
+    using SingleResultHandler = typename BlockHandler::SingleResultHandler;
+
+    IDSelector* sel = params ? params->sel : nullptr;
+    bool use_sel = sel != nullptr;
+
+    [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
+    size_t n_batches = (index.ntotal + index.batch_size - 1) / index.batch_size;
+
+#pragma omp parallel num_threads(nt)
+    {
+        SingleResultHandler res(handler);
+
+        std::vector<float> query_cum_norms(index.n_levels + 1);
+        std::vector<float> exact_distances(index.batch_size);
+        std::vector<uint32_t> active_indices(index.batch_size);
+
+#pragma omp for
+        for (int64_t i = 0; i < n; i++) {
+            const float* xi = x + i * index.d;
+            index.pano.compute_query_cum_sums(xi, query_cum_norms.data());
+
+            PanoramaStats local_stats;
+            local_stats.reset();
+
+            res.begin(i);
+
+            for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
+                size_t batch_start = batch_no * index.batch_size;
+
+                float threshold;
+                if constexpr (use_radius) {
+                    threshold = radius;
+                } else {
+                    threshold = res.heap_dis[0];
+                }
+
+                size_t num_active =
+                        index.pano
+                                .progressive_filter_batch<CMax<float, int64_t>>(
+                                        index.codes.data(),
+                                        index.cum_sums.data(),
+                                        xi,
+                                        query_cum_norms.data(),
+                                        batch_no,
+                                        index.ntotal,
+                                        sel,
+                                        nullptr,
+                                        use_sel,
+                                        active_indices,
+                                        exact_distances,
+                                        threshold,
+                                        local_stats);
+
+                for (size_t j = 0; j < num_active; j++) {
+                    res.add_result(
+                            exact_distances[active_indices[j]],
+                            batch_start + active_indices[j]);
+                }
+            }
+
+            res.end();
+            indexPanorama_stats.add(local_stats);
+        }
+    }
+}
+
+} // anonymous namespace
+
+/***************************************************
+ * IndexFlatPanorama
+ ***************************************************/
+
+void IndexFlatPanorama::add(idx_t n, const float* x) {
+    size_t offset = ntotal;
+    ntotal += n;
+    size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+
+    codes.resize(num_batches * batch_size * code_size);
+    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+
+    const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
+    pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
+    pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+}
+
+void IndexFlatPanorama::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(batch_size >= k);
+
+    HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
+            size_t(n), distances, labels, size_t(k), nullptr);
+
+    flat_pano_search_core<false>(*this, handler, n, x, 0.0f, params);
+}
+
+void IndexFlatPanorama::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
+            result, radius, nullptr);
+
+    flat_pano_search_core<true>(*this, handler, n, x, radius, params);
+}
+
+void IndexFlatPanorama::reset() {
+    IndexFlat::reset();
+    cum_sums.clear();
+}
+
+void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
+    pano.reconstruct(key, recons, codes.data());
+}
+
+void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
+    Index::reconstruct_n(i, n, recons);
+}
+
+size_t IndexFlatPanorama::remove_ids(const IDSelector& /* sel */) {
+    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatPanorama");
+    return 0;
+}
+
+void IndexFlatPanorama::merge_from(
+        Index& /* otherIndex */,
+        idx_t /* add_id */) {
+    FAISS_THROW_MSG("merge_from not implemented for IndexFlatPanorama");
+}
+
+void IndexFlatPanorama::add_sa_codes(
+        idx_t /* n */,
+        const uint8_t* /* codes_in */,
+        const idx_t* /* xids */) {
+    FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatPanorama");
+}
+
+void IndexFlatPanorama::permute_entries(const idx_t* /* perm */) {
+    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatPanorama");
 }
 } // namespace faiss

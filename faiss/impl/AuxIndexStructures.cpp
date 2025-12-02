@@ -36,7 +36,7 @@ RangeSearchResult::RangeSearchResult(size_t nq, bool alloc_lims) : nq(nq) {
 /// for each query
 void RangeSearchResult::do_allocation() {
     // works only if all the partial results are aggregated
-    // simulatenously
+    // simultaneously
     FAISS_THROW_IF_NOT(labels == nullptr && distances == nullptr);
     size_t ofs = 0;
     for (int i = 0; i < nq; i++) {
@@ -86,7 +86,7 @@ void BufferList::append_buffer() {
     wp = 0;
 }
 
-/// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
+/// copy elements ofs:ofs+n-1 seen as linear data in the buffers to
 /// tables dest_ids, dest_dis
 void BufferList::copy_range(
         size_t ofs,

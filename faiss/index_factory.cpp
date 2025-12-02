@@ -193,8 +193,6 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     return nbits;
 }
 
-const std::string rabitq_pattern = "(RaBitQ)";
-
 /***************************************************************
  * Parse VectorTransform
  */
@@ -457,8 +455,11 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
-    if (match(rabitq_pattern)) {
-        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
+    // IndexIVFRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([0-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il, nb_bits);
     }
     if (match("RaBitQfs(_[0-9]+)?")) {
         int bbs = mres_to_int(sm[1], 32, 1);
@@ -567,6 +568,18 @@ Index* parse_other_indexes(
     // IndexFlat
     if (description == "Flat") {
         return new IndexFlat(d, metric);
+    }
+
+    // IndexFlatL2Panorama
+    if (match("FlatL2Panorama([0-9]+)(_[0-9]+)?")) {
+        FAISS_THROW_IF_NOT(metric == METRIC_L2);
+        int nlevels = std::stoi(sm[1].str());
+        if (sm[2].length() > 0) {
+            int batch_size = std::stoi(sm[2].str().substr(1));
+            return new IndexFlatL2Panorama(d, nlevels, (size_t)batch_size);
+        } else {
+            return new IndexFlatL2Panorama(d, nlevels);
+        }
     }
 
     // IndexLSH
@@ -685,9 +698,11 @@ Index* parse_other_indexes(
         }
     }
 
-    // IndexRaBitQ
-    if (match(rabitq_pattern)) {
-        return new IndexRaBitQ(d, metric);
+    // IndexRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([0-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexRaBitQ(d, metric, nb_bits);
     }
 
     // IndexRaBitQFastScan

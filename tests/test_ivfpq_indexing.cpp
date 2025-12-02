@@ -28,7 +28,7 @@ TEST(IVFPQ, accuracy) {
     // make the index object and train it
     faiss::IndexFlatL2 coarse_quantizer(d);
 
-    // a reasonable number of cetroids to index nb vectors
+    // a reasonable number of centroids to index nb vectors
     int ncentroids = 25;
 
     faiss::IndexIVFPQ index(&coarse_quantizer, d, ncentroids, 16, 8);

@@ -49,7 +49,7 @@ struct ResidualQuantizer : AdditiveQuantizer {
      *  first element of the beam (faster but less accurate) */
     static const int Train_top_beam = 1024;
 
-    /** set this bit to *not* autmatically compute the codebook tables
+    /** set this bit to *not* automatically compute the codebook tables
      * after training */
     static const int Skip_codebook_tables = 2048;
 

@@ -321,7 +321,7 @@ struct Codec6bit {
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
-        // // for the reference, maybe, it becomes used oned day.
+        // // for the reference, maybe, it becomes used one day.
         // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
         // const uint32_t* data32 = (const uint32_t*)data16;
         // const uint64_t val = *data32 + ((uint64_t)data16[2] << 32);
@@ -1009,16 +1009,13 @@ void train_Uniform(
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        // TODO just do a quickselect
-        std::sort(x_copy.begin(), x_copy.end());
-        int o = int(rs_arg * n);
-        if (o < 0) {
-            o = 0;
-        }
-        if (o > n - o) {
-            o = n / 2;
-        }
+        int temp = int(rs_arg * n);
+        int o = temp < 0 ? 0 : (temp > n / 2 ? n / 2 : temp);
+
+        std::nth_element(x_copy.begin(), x_copy.begin() + o, x_copy.end());
         vmin = x_copy[o];
+        std::nth_element(
+                x_copy.begin(), x_copy.begin() + (n - 1 - o), x_copy.end());
         vmax = x_copy[n - 1 - o];
 
     } else if (rs == ScalarQuantizer::RS_optim) {

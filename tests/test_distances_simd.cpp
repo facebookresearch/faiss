@@ -234,7 +234,7 @@ TEST(TestFvecL1, manhattan_distance) {
         auto distance = faiss::fvec_L1(x.data(), y.data(), x.size());
 
         ASSERT_EQ(distance, true_distance)
-                << "Mismatching fvec_Linf results for nrows = " << nrows;
+                << "Mismatching fvec_L1 results for nrows = " << nrows;
     }
 }
 

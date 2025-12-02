@@ -3,6 +3,94 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.13.0] - 2025-11-11
+
+
+Added
+- 2cf82cabf2b2150ca76b9949377b484f109a94d1 Implement PanoramaStats (#4628)
+- 859127cd0b5e9f2ee52e095211202b0f5dbb6414 Implement serialization for `IndexIVFFlatPanorama` (#4636)
+- 7744239dc59c0cc9c665949f0d533daac40e567a Add getter/setter for balanced_bins in PCAMatrix C API issue #4617 (#4630)
+- e6510bd00478d563e380604374f41a27e8697ce6 Add immediate notification when autoclose label is applied (#4624)
+- f983e3ab69c46ecb7728395613ace22729bbd4a8 Integrate Panorama into `IndexIVFFlatPanorama` (#4606)
+- 3af3e00103079554b1071d2dcea7ccedc9693a44 Implementation of IndexIVFRaBitQFastScan (#4596)
+- f58fd4c8ca0fdf6c230c062ed70b93586ae9ec28 Add InvertedListScanner for IVFPQFastScan (#4537)
+- 01d394e5837f10c6270c7284c9f5e306c5cd87c4 RaBitQ Fast Scan (#4595)
+- 752832cac9c4038f52916a0ed2a839401671ce00 Add missing Thrust includes (#4597)
+- 6470b8d9d0f9c0adc71df6d5a1ce64199be85305 Simplify RaBitQ slightly, improving speed and recall (#4550)
+- bc3e3a1ef1464f1b90c6aa4ba4f075582e4f539a RaBitQ: SIMD helper simplification, use faster popcount for doc-side sum (#4573)
+- b7c88eaff82766c69cd3ab7a3a57fa4d4efb603f Microbenchmarks for rabitq_simd.h (#4572)
+- 786e4051fc7940825e8f6f5247bc269f4bc8bd11 RabitQ test coverage for SIMD codepaths (#4571)
+- fa5532734e40dbf66b571634ff597fe314ace054 Adding Idx tags in extended APIs (#4532)
+- fbbb290a5762e265a501324b3bfeb04c1cb5b006 Set NN Descent Metric From CAGRA Params (#4540)
+- 514b44fca8542bafe8640adcbf1cccce1900f74c OSS changes: Enable ROCm to work with Faiss on BUCK (#4485)
+
+
+Changed
+- a9cc039aed084bfb824a84eb7fc749ff0e84370c Upgrade cuVS to 25.10 and build pkg with CUDA=12.6 (#4639)
+- 6ca45d23a7c10761d380daa6b4029c347f30e4ef Optimize IVFRaBitQFastScan query factors: n*nlist to n*nprobe (#4643)
+- 49df7737f868eeb75df450718fc1155d93c43d35 Update GitHub workflow to use clang-format-21 (#4644)
+- a0bd7aac694cd43e3ba0a371cbd7bacf31ded564 clang-format | Format fbsource with clang-format 21.
+- 595c8aa8a23815abd3682a2c08b0b359b37eb621 Allow unaligned fast-scan (#4623)
+- 4fab13c9c67b5402343ca722c83ff7a65a9a48ba Upgrade Faiss OSS side to numpy2 (#4523)
+- 2505168e1870318126aee2ac2cb416b1fe55376f Expose Remaining IVF-PQ params for CAGRA (#4593)
+- 1ed2611c032fe2c509b0f781ee8eee3760142e52 Remove unused imports from faiss directory files (#4565)
+- e5de66e2c24c319e73df22858b520fcfa269d300 Use Development.Module component in CMake FindPython (#4549)
+- 3c7235c6c7040c1c09e39095cc60d794f73b4a35 Update Install Docs with Correct cuVS Version (#4547)
+- f361df8385ccbf9c47b85a6f8e45c71f8f656283 Use c++11 only in headers (#4421)
+- dd637c98d60f51b96c9d2457ebfa319e3f881a47 Change extended API suffix from `Ex` to `_ex` (#4530)
+
+
+Fixed
+- ff1a2d4f6eaf4216c74e6006bf55791cf135b767 Fix typos in core library (root + impl/) (#4670)
+- d94c33065a240e460603352770ec6aa2dc70b8cf chore: fix typos in some files (#4669)
+- 5d9f8d484cffd0961c374c1c7253c8c406b889df Fix additional typos found in second review (#4667)
+- 451ca8429d39f82ed6a933ac874068fa5f13252c Fix typos in documentation, tutorials, and C API (#4666)
+- d0d066e430ec0711121926cadaaeb85fd3cbad1f Fix typos in comments and documentation (#4664)
+- 3ffec120fe411495939dc070e8588afb1db1b7b1 Fix typos in comments and documentation (#4662)
+- 2af54a46bb0dd3a5ba84388c0830f44067bf6e53 Fix typos in comments and documentation (#4661)
+- ec877e794e26cc0778e3665349060e3c224dcb8c Fix typos in comments and documentation (#4660)
+- 3de200f5afb0452b934458c1b235860b4f2089ee try to fix nightly (#4657)
+- 18f5574a50416ab9b61d4806cc802166663912b7 typo: SIFT -> GIST (#4642)
+- 675661b4d363b0eba314d38624324b16b548883f Fix IndexIVFRaBitQFastScan nprobe handling in search_with_parameters (#4629)
+- 64b1f3a04cf730c78f43bb071fcc6afa1b48a992 Fix autoclose workflow - add GH_REPO for immediate notification
+- e5fee1015a90dd3667c0d1f7d866bbc2c023c475 Fix IVFFlatPanorama bench (#4622)
+- 70df32b2e989e0c47c04cfd78be3221c79c8d408 Fix IndexIVFRaBitQFastScan by overriding search_preassigned (#4618)
+- 61c1c76929809914240b9407162f54513cd2b7db Fix nightly build on windows due to c++20 initializer (#4612)
+- 513eabc91d52a9ebc11545ba0b21f3fd1ca99b32 Replace static constexpr with inline constexpr in header (#4613)
+- 97dc014472480ff23dd0bf77c5aa46c073d59687 fix: initializing order of gpu compile options (#4581)
+- dbc75506150e923abdaf4d09baf4fac56a20740e Fix ARM64 compilation error in IndexRaBitQFastScan (#4611)
+- 484dd97ce07ed56129660cccba1d634f765e73ea Add IndexBinaryIDMap2 support to index binary factory (#4603)
+- 041ac84318dac299739e568fafee318317ede6ef Fix memory bloat in IndexBinaryHash search due to argument copying in dispatch_HammingComputer (#4600)
+- 2964a374dbe5d9359cb0f794f73cc334d95c3ac4 Fix nightly by updating mkl version (#4604)
+- 7f7b518df5f1a21fd4591ed68222c26532580467 Unable to import faiss in python in AIX (#4602)
+- 266b71285aabfe3ca66715b7878b1d8fd1e472f7 Added code to catch 'ModuleNotFoundError' exception (#4577)
+- 3b14dad6d9ac48a0764e5ba01a45bca1d7d738ee Fix AIX compilation issue while building python extension (#4587)
+- 1deba7b90f21d952c86affe79721a06ec5800907 Add attribute validation to prevent silent failures in SWIG wrappers (#4583)
+- 3671c61af1455d50c169e5ddd5d6a18d81174c3a more formatting (#4568)
+- d98ff432b98a4d7bea770c0cc221d8a0dab2e4a9 Fix FAISS build with ROCm7 (#4567)
+- 50b3eb48d26b32a2beedb570d1fcf7757830bfcb add "override" to overriden destructors (#4566)
+- 2135e5a28d0f2a932dd02b64b566ac1a52266540 add missing explicit specifier (#4564)
+- 0031d61da81dab33579f7481f6773549ca816fa8 Revert D80734790 (#4563)
+- ee6b7ddd9df954492b597b49b63e8760923317b7 add #pragma once to some header files (#4562)
+- 8b83ebbf6271b713264671fcd128c33def70e8d3 fix python blank space lints (#4560)
+- f46ac530b534f98b8cd5b78373e9ccabad0fdee4 Fix missing object reference in Faiss python wrapper for IndexIVFRaBitQ (#4554)
+- 69f1ac0f0fa635812fdba5180074981f5d7ba2de resolve Open Source requirement violations (#4551)
+- dca887a656e943352bcf1cae6dbaaf6771ac272e Remove unused include from IVFlib.cpp (#4534)
+- 3b3bf5e4e53eb0846fd1109432773a25a879b01b bugfix: add a macro guard for avx512 operation (#4539)
+- fe5e77f1cb0bd26a5a86d9fc1e99f0b2ecacab93 Remove unnecessary std::move on temporaries to fix `-Wpessimizing-move` warnings in DeviceTensor-inl.cuh (#4545)
+- 2fca92f477063a1188a1cf52d3414b3eba05936b fix test_binary_cagra tests failure (#4546)
+- 8d9d3bea7c2d9879e6ce4919d1a25954ef533c8f Remove unused includes from AutoTune.cpp (#4533)
+- 75be84d086190cfda8a516a5f276b5ba0e8cc706 Remove unused imports from fbcode/faiss (#4543)
+- 5c61ed8c94296d0ca97cecd53cbcef91f63e2de4 Fix E302 lint errors: Add required blank lines before class definitions (#4541)
+- daceaac99aeb9dfc8577a0dc6f47c3f6f9b39055 replace type(x) == y with isinstance(x, y) (#4542)
+
+
+Deprecated
+- 2705d7a5d30f121ffc7553d2d7087fce1a448d6b Delete rocm runner for now until it is fixed (#4658)
+- f9ccd582f9a9b8400428625d1ff3217ae83422b9 Remove invalid assertion checking #neighbors == graph degree (#4528)
+
+
+
 ## [1.12.0] - 2025-08-11
 
 

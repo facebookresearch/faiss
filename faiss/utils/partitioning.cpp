@@ -140,7 +140,7 @@ typename C::T partition_fuzzy_median3(
     using T = typename C::T;
 
     // here we use bissection with a median of 3 to find the threshold and
-    // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
+    // compress the arrays afterwards. So it's a n*log(n) algorithm rather than
     // qselect's O(n) but it avoids shuffling around the array.
 
     FAISS_THROW_IF_NOT(n >= 3);
@@ -350,7 +350,7 @@ int simd_compress_array(
         }
     }
 
-    // handle remaining, only striclty lt ones.
+    // handle remaining, only strictly lt ones.
     for (; i0 + 15 < n; i0 += 16) {
         simd16uint16 v(vals + i0);
         simd16uint16 max2 = max_func<C>(v, thr16);
@@ -506,7 +506,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
     uint64_t t2 = get_cy();
 
-    partition_stats.bissect_cycles += t1 - t0;
+    partition_stats.bisect_cycles += t1 - t0;
     partition_stats.compress_cycles += t2 - t1;
 
     return thresh;
@@ -662,7 +662,7 @@ uint16_t simd_partition_fuzzy_with_bounds_histogram(
         }
     }
 
-    IFV printf("end bissection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_eq);
+    IFV printf("end bisection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_eq);
 
     if (!C::is_max) {
         if (n_eq == 0) {
@@ -762,7 +762,7 @@ typename C::T partition_fuzzy(
             vals, ids, n, q_min, q_max, q_out);
 }
 
-// explicit template instanciations
+// explicit template instantiations
 
 template float partition_fuzzy<CMin<float, int64_t>>(
         float* vals,

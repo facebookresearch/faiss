@@ -73,7 +73,7 @@ struct ClusteringIterationStats {
  * points to the centroids. Therefore, at each iteration the centroids
  * are added to the index.
  *
- * On output, the centoids table is set to the latest version
+ * On output, the centroids table is set to the latest version
  * of the centroids and they are also added to the index. If the
  * centroids table it is not empty on input, it is also used for
  * initialization.
@@ -109,7 +109,7 @@ struct Clustering : ClusteringParameters {
 
     /** run with encoded vectors
      *
-     * win addition to train()'s parameters takes a codec as parameter
+     * in addition to train()'s parameters takes a codec as parameter
      * to decode the input vectors.
      *
      * @param codec      codec used to decode the vectors (nullptr =

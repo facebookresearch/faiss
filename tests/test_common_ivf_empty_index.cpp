@@ -36,7 +36,7 @@ std::vector<float> get_random_vectors(size_t n, int seed) {
     return x;
 }
 
-/** InvetedLists implementation that dispatches the search to an InvertedList
+/** InvertedLists implementation that dispatches the search to an InvertedList
  * object that is passed in at query time */
 
 struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
@@ -142,7 +142,7 @@ TEST(COMMON, test_common_trained_index) {
         new_I[i] = I;
     }
 
-    // compare with reference reslt
+    // compare with reference result
     for (int i = 0; i < N; i++) {
         ASSERT_EQ(ref_I[i], new_I[i]);
     }

@@ -138,7 +138,7 @@ struct LocalSearchQuantizer : AdditiveQuantizer {
     /** Add some perturbation to codebooks
      *
      * @param T         temperature of simulated annealing
-     * @param stddev    standard derivations of each dimension in training data
+     * @param stddev    standard deviations of each dimension in training data
      */
     void perturb_codebooks(
             float T,

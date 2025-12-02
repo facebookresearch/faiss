@@ -154,7 +154,7 @@ IndexNSG* clone_IndexNSG(const IndexNSG* insg) {
     TRYCLONE(IndexNSGPQ, insg)
     TRYCLONE(IndexNSGSQ, insg)
     TRYCLONE(IndexNSG, insg) {
-        FAISS_THROW_MSG("clone not supported for this type of IndexNNDescent");
+        FAISS_THROW_MSG("clone not supported for this type of IndexNSG");
     }
 }
 
@@ -276,6 +276,7 @@ Index* Cloner::clone_Index(const Index* index) {
     // IndexFlat
     TRYCLONE(IndexFlat1D, index)
     TRYCLONE(IndexFlatL2, index)
+    TRYCLONE(IndexFlatL2Panorama, index)
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
 

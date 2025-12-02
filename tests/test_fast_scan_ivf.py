@@ -393,7 +393,7 @@ class TestIVFImplem12(unittest.TestCase):
     def test_by_residual_odd_dim(self):
         self.do_test(True, d=30)
 
-    # testin single query
+    # testing single query
     def test_no_residual_single_query(self):
         self.do_test(False, nq=1)
 
@@ -594,11 +594,11 @@ class TestReconstruct(unittest.TestCase):
     def test_by_residual(self):
         self.do_test(by_residual=True)
 
-    def do_test_generic(self, factory_string, 
-                        by_residual=False, metric=faiss.METRIC_L2): 
+    def do_test_generic(self, factory_string,
+                        by_residual=False, metric=faiss.METRIC_L2):
         d = 32
         ds = datasets.SyntheticDataset(d, 250, 200, 10)
-        index = faiss.index_factory(ds.d, factory_string, metric) 
+        index = faiss.index_factory(ds.d, factory_string, metric)
         if "IVF" in factory_string:
             index.by_residual = by_residual
             index.make_direct_map(True)
@@ -618,7 +618,7 @@ class TestReconstruct(unittest.TestCase):
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
         codes2 = index2.sa_encode(ds.get_database()[120:130])
         np.testing.assert_array_equal(codes, codes2)
-        
+
 
     def test_ivfpq_residual(self):
         self.do_test_generic("IVF20,PQ16x4fs", by_residual=True)
