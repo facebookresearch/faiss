@@ -1,0 +1,155 @@
+name: Index serialization backward compatibility test
+
+on:
+  workflow_call:
+
+env:
+  OMP_NUM_THREADS: '10'
+  MKL_THREADING_LAYER: GNU
+
+jobs:
+  # Scenario 1: CMake writes files, then Conda reads them
+  cmake-write-conda-read:
+    name: CMake Write -> Conda Read
+    runs-on: ubuntu-latest
+    env:
+      # run_id does not change if we re-run the job, so this is safe for
+      # the partway-failure-rerun scenario.
+      SHARED_DATA_DIR: /tmp/faiss-serialization-backward-compatibility-${{ github.run_id }}-cmake-write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 1: Build with CMake and write files
+      - name: Build with CMake
+        uses: ./.github/actions/build_cmake
+        with:
+          upload_artifacts: 'false'
+
+      - name: Create shared data directory
+        shell: bash
+        run: |
+          mkdir -p ${{ env.SHARED_DATA_DIR }}
+          chmod 777 ${{ env.SHARED_DATA_DIR }}
+
+      - name: Run CMake writer (write Faiss index and metadata)
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          $CONDA/bin/python tests/index_io_backward_compatibility/cmake_writer.py ${{ env.SHARED_DATA_DIR }}
+
+      - name: Verify files were written
+        shell: bash
+        run: |
+          echo "Files created by CMake build:"
+          ls -lh ${{ env.SHARED_DATA_DIR }}
+
+      # Step 2: Install conda faiss-cpu and read files
+      - name: Clean cmake-built packages
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          # Remove packages that conflict with faiss-cpu
+          conda remove -y numpy scipy pytest gflags swig cmake make mkl mkl-devel || true
+
+      - name: Install faiss-cpu from pytorch channel
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          conda list
+          conda install -y -c pytorch faiss-cpu=1.13.1
+          conda list
+
+      - name: Run Conda reader (read Faiss index and verify)
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          python tests/index_io_backward_compatibility/conda_reader.py ${{ env.SHARED_DATA_DIR }}
+
+      - name: Upload artifacts from cmake->conda test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmake-write-conda-read-data
+          path: ${{ env.SHARED_DATA_DIR }}
+
+  # Scenario 2: Conda writes files, then CMake reads them
+  conda-write-cmake-read:
+    name: Conda Write -> CMake Read
+    runs-on: ubuntu-latest
+    env:
+      SHARED_DATA_DIR: /tmp/faiss-serialization-backward-compatibility-${{ github.run_id }}-conda-write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      # Step 1: Install conda faiss-cpu package and write files
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.11'
+          miniforge-version: latest
+
+      - name: Install faiss-cpu from pytorch channel
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          # Install pre-built faiss-cpu
+          conda install -y -c pytorch faiss-cpu=1.13.1
+          conda list
+
+      - name: Create shared data directory
+        shell: bash
+        run: |
+          mkdir -p ${{ env.SHARED_DATA_DIR }}
+          chmod 777 ${{ env.SHARED_DATA_DIR }}
+
+      - name: Run Conda writer (write Faiss index and metadata)
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          python tests/index_io_backward_compatibility/conda_writer.py ${{ env.SHARED_DATA_DIR }}
+
+      - name: Verify files were written
+        shell: bash
+        run: |
+          echo "Files created by Conda build:"
+          ls -lh ${{ env.SHARED_DATA_DIR }}
+
+      # Step 2: Rebuild with CMake and read files
+      - name: Clean conda artifacts
+        shell: bash
+        run: |
+          # Uninstall conda-built faiss to avoid conflicts
+          eval "$(conda shell.bash hook)"
+          conda activate
+          conda uninstall -y faiss-cpu || true
+
+      - name: Build with CMake
+        uses: ./.github/actions/build_cmake
+        with:
+          setup_conda: 'false'
+          upload_artifacts: 'false'
+
+      - name: Run CMake reader (read Faiss index and verify)
+        shell: bash
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate
+          $CONDA/bin/python tests/index_io_backward_compatibility/cmake_reader.py ${{ env.SHARED_DATA_DIR }}
+
+      - name: Upload artifacts from conda->cmake test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conda-write-cmake-read-data
+          path: ${{ env.SHARED_DATA_DIR }}
