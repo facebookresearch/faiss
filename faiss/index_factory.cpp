@@ -486,6 +486,11 @@ IndexHNSW* parse_IndexHNSW(
         return new IndexHNSWFlat(d, hnsw_M, mt);
     }
 
+    if (match("FlatPanorama([0-9]+)?")) {
+        int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
+        return new IndexHNSWFlatPanorama(d, hnsw_M, nlevels, mt);
+    }
+
     if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = std::stoi(sm[1].str());
         int nbit = mres_to_int(sm[2], 8, 1);

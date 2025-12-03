@@ -86,6 +86,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
 
     float bias;
     void set_query(const float* x) final {
+        q = x;
         // this is quite sub-optimal for multiple queries
         aq.compute_LUT(1, x, LUT.data());
         if (is_IP) {
