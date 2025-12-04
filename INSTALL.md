@@ -75,6 +75,43 @@ If you are having problems using a package built by conda-forge, please raise
 an [issue](https://github.com/conda-forge/faiss-split-feedstock/issues) on the
 conda-forge package "feedstock".
 
+## Installing from source with uv (Experimental)
+
+**Note:** This is an experimental installation method. For production use, we recommend using conda packages or following the standard manual build instructions below.
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver written in Rust. After building Faiss from source (see [Building from source](#building-from-source) below), you can use `uv` to install the Python package instead of `pip`.
+
+### Automated installation script
+
+The easiest way to build and install Faiss with `uv` is to use the provided automation script:
+
+``` shell
+$ ./install_with_uv.sh
+```
+
+This script automatically:
+- Checks for required dependencies (cmake, make, swig, uv)
+- Installs `uv` if not found
+- **Automatically detects GPU** (CUDA or ROCm) and enables GPU support if available
+- Configures the build with CMake
+- Builds the C++ library
+- Builds the Python bindings
+- Installs the Python package with `uv`
+
+**Tested platforms (CPU-only):**
+- Linux x86_64 (Ubuntu 22.04, Debian Bookworm)
+- Linux ARM64 (Ubuntu 22.04)
+- macOS (Intel and Apple Silicon)
+
+You can customize the installation with options:
+
+``` shell
+$ ./install_with_uv.sh --help          # Show all options
+$ ./install_with_uv.sh --python /path/to/python3  # Specify Python
+$ ./install_with_uv.sh --gpu           # Force enable GPU support
+```
+
+
 # Building from source
 
 Faiss can be built from source using CMake.
@@ -208,6 +245,22 @@ $ (cd build/faiss/python && python setup.py install)
 
 The first command builds the python bindings for Faiss, while the second one
 generates and installs the python package.
+
+Alternatively, you can use `uv` (see [Installing from source with uv](#installing-from-source-with-uv) above) or `pip` to install the built package:
+
+``` shell
+$ make -C build -j swigfaiss
+$ cd build/faiss/python
+$ python -m pip install .
+```
+
+Or with `uv`:
+
+``` shell
+$ make -C build -j swigfaiss
+$ cd build/faiss/python
+$ uv pip install .
+```
 
 
 ## Step 4: Installing the C++ library and headers (optional)
