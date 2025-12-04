@@ -81,6 +81,20 @@ conda-forge package "feedstock".
 
 [uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver written in Rust. After building Faiss from source (see [Building from source](#building-from-source) below), you can use `uv` to install the Python package instead of `pip`.
 
+### Prerequisites
+
+Before running the installation script, ensure you have:
+
+- **C++17 compiler** (gcc/clang with OpenMP support)
+- **CMake** (3.17 or higher)
+- **make**
+- **Python 3** with pip
+- **swig** (for Python bindings)
+- **BLAS implementation** (OpenBLAS, Intel MKL, or system BLAS - required for performance)
+- **OpenMP** (for macOS: `brew install libomp`)
+
+The script will automatically install `uv` if it's not found, and will install `numpy` in your virtual environment if needed.
+
 ### Automated installation script
 
 The easiest way to build and install Faiss with `uv` is to use the provided automation script:
