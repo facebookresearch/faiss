@@ -16,10 +16,19 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  setup_conda:
+    description: 'Setup miniconda environment.'
+    required: false
+    default: 'true'
+  upload_artifacts:
+    description: 'Upload test artifacts. Prevents collisions when multiple jobs need to run build_cmake.'
+    required: false
+    default: 'true'
 runs:
   using: composite
   steps:
     - name: Setup miniconda
+      if: inputs.setup_conda == 'true'
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
@@ -186,7 +195,7 @@ runs:
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
-      if: always()
+      if: inputs.upload_artifacts == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}

@@ -70,7 +70,7 @@ GpuIcmEncoder::GpuIcmEncoder(
 GpuIcmEncoder::~GpuIcmEncoder() {}
 
 void GpuIcmEncoder::set_binary_term() {
-    auto fn = [=](int idx, IcmEncoderImpl* encoder) {
+    auto fn = [lsq = lsq](int idx, IcmEncoderImpl* encoder) {
         encoder->setBinaryTerm(lsq->codebooks.data());
     };
     shards->runOnShards(fn);

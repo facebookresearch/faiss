@@ -193,8 +193,6 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     return nbits;
 }
 
-const std::string rabitq_pattern = "(RaBitQ)";
-
 /***************************************************************
  * Parse VectorTransform
  */
@@ -457,8 +455,11 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
-    if (match(rabitq_pattern)) {
-        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
+    // IndexIVFRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([0-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il, nb_bits);
     }
     if (match("RaBitQfs(_[0-9]+)?")) {
         int bbs = mres_to_int(sm[1], 32, 1);
@@ -702,9 +703,11 @@ Index* parse_other_indexes(
         }
     }
 
-    // IndexRaBitQ
-    if (match(rabitq_pattern)) {
-        return new IndexRaBitQ(d, metric);
+    // IndexRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([0-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexRaBitQ(d, metric, nb_bits);
     }
 
     // IndexRaBitQFastScan

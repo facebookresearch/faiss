@@ -607,11 +607,20 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
     return pq;
 }
 
-static void read_RaBitQuantizer(RaBitQuantizer* rabitq, IOReader* f) {
+static void read_RaBitQuantizer(
+        RaBitQuantizer* rabitq,
+        IOReader* f,
+        bool multi_bit) {
     // don't care about rabitq->centroid
     READ1(rabitq->d);
     READ1(rabitq->code_size);
     READ1(rabitq->metric_type);
+
+    if (multi_bit) {
+        READ1(rabitq->nb_bits);
+    } else {
+        rabitq->nb_bits = 1;
+    }
 }
 
 void read_direct_map(DirectMap* dm, IOReader* f) {
@@ -1294,7 +1303,7 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("Irfs")) {
         IndexRaBitQFastScan* idxqfs = new IndexRaBitQFastScan();
         read_index_header(idxqfs, f);
-        read_RaBitQuantizer(&idxqfs->rabitq, f);
+        read_RaBitQuantizer(&idxqfs->rabitq, f, false);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
         READVECTOR(idxqfs->factors_storage);
@@ -1315,25 +1324,59 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("Ixrq")) {
         IndexRaBitQ* idxq = new IndexRaBitQ();
         read_index_header(idxq, f);
-        read_RaBitQuantizer(&idxq->rabitq, f);
+        read_RaBitQuantizer(&idxq->rabitq, f, false);
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
+
+        // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
+        idxq->code_size = idxq->rabitq.code_size;
+        idx = idxq;
+    } else if (h == fourcc("Ixrr")) {
+        // Ixrr = multi-bit format (new)
+        IndexRaBitQ* idxq = new IndexRaBitQ();
+        read_index_header(idxq, f);
+        read_RaBitQuantizer(&idxq->rabitq, f, true); // Reads nb_bits from file
+        READVECTOR(idxq->codes);
+        READVECTOR(idxq->center);
+        READ1(idxq->qb);
+
         idxq->code_size = idxq->rabitq.code_size;
         idx = idxq;
     } else if (h == fourcc("Iwrq")) {
         IndexIVFRaBitQ* ivrq = new IndexIVFRaBitQ();
         read_ivf_header(ivrq, f);
-        read_RaBitQuantizer(&ivrq->rabitq, f);
+        read_RaBitQuantizer(&ivrq->rabitq, f, false);
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
+
+        // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
+        // Update rabitq to match nb_bits
+        ivrq->rabitq.code_size =
+                ivrq->rabitq.compute_code_size(ivrq->d, ivrq->rabitq.nb_bits);
+        ivrq->code_size = ivrq->rabitq.code_size;
+        read_InvertedLists(ivrq, f, io_flags);
+        idx = ivrq;
+    } else if (h == fourcc("Iwrr")) {
+        // Iwrr = multi-bit format (new)
+        IndexIVFRaBitQ* ivrq = new IndexIVFRaBitQ();
+        read_ivf_header(ivrq, f);
+        read_RaBitQuantizer(&ivrq->rabitq, f, true); // Reads nb_bits from file
+        READ1(ivrq->code_size);
+        READ1(ivrq->by_residual);
+        READ1(ivrq->qb);
+
+        // Update rabitq to match nb_bits
+        ivrq->rabitq.code_size =
+                ivrq->rabitq.compute_code_size(ivrq->d, ivrq->rabitq.nb_bits);
+        ivrq->code_size = ivrq->rabitq.code_size;
         read_InvertedLists(ivrq, f, io_flags);
         idx = ivrq;
     } else if (h == fourcc("Iwrf")) {
         IndexIVFRaBitQFastScan* ivrqfs = new IndexIVFRaBitQFastScan();
         read_ivf_header(ivrqfs, f);
-        read_RaBitQuantizer(&ivrqfs->rabitq, f);
+        read_RaBitQuantizer(&ivrqfs->rabitq, f, false);
         READ1(ivrqfs->by_residual);
         READ1(ivrqfs->code_size);
         READ1(ivrqfs->bbs);
