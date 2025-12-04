@@ -371,8 +371,13 @@ void IndexRefinePanorama::search(
 
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
+
+    std::unique_ptr<idx_t[]> del1;
+    std::unique_ptr<float[]> del2;
     idx_t* base_labels = new idx_t[n * k_base];
     float* base_distances = new float[n * k_base];
+    del1.reset(base_labels);
+    del2.reset(base_distances);
 
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
