@@ -15,7 +15,6 @@ Paper: https://www.arxiv.org/pdf/2510.00566
 """
 
 import unittest
-import tempfile
 import os
 
 import faiss
