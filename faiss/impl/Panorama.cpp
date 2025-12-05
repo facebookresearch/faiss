@@ -147,4 +147,47 @@ void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
         memcpy(dest, src, copy_size);
     }
 }
+
+void Panorama::copy_entry(
+        uint8_t* dest_codes,
+        uint8_t* src_codes,
+        float* dest_cum_sums,
+        float* src_cum_sums,
+        size_t dest_idx,
+        size_t src_idx) const {
+    // Calculate positions
+    size_t src_batch_no = src_idx / batch_size;
+    size_t src_pos_in_batch = src_idx % batch_size;
+    size_t dest_batch_no = dest_idx / batch_size;
+    size_t dest_pos_in_batch = dest_idx % batch_size;
+
+    // Calculate offsets
+    size_t src_batch_offset = src_batch_no * batch_size * code_size;
+    size_t dest_batch_offset = dest_batch_no * batch_size * code_size;
+    size_t src_cumsum_batch_offset = src_batch_no * batch_size * (n_levels + 1);
+    size_t dest_cumsum_batch_offset =
+            dest_batch_no * batch_size * (n_levels + 1);
+
+    for (size_t level = 0; level < n_levels; level++) {
+        // Copy code
+        size_t level_offset = level * level_width * batch_size;
+        size_t actual_level_width =
+                std::min(level_width, code_size - level * level_width);
+
+        const uint8_t* src = src_codes + src_batch_offset + level_offset +
+                src_pos_in_batch * actual_level_width;
+        uint8_t* dest = dest_codes + dest_batch_offset + level_offset +
+                dest_pos_in_batch * actual_level_width;
+        memcpy(dest, src, actual_level_width);
+
+        // Copy cum_sums
+        size_t cumsum_level_offset = level * batch_size;
+
+        const size_t src_offset = src_cumsum_batch_offset +
+                cumsum_level_offset + src_pos_in_batch;
+        size_t dest_offset = dest_cumsum_batch_offset + cumsum_level_offset +
+                dest_pos_in_batch;
+        dest_cum_sums[dest_offset] = src_cum_sums[src_offset];
+    }
+}
 } // namespace faiss
