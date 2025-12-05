@@ -44,9 +44,9 @@ int faiss_VectorTransform_train(
         idx_t n,
         const float* x);
 
-/** apply the random rotation, return new allocated matrix
- * @param     x size n * d_in
- * @return    size n * d_out
+/** Apply the transformation and return the result in a newly allocated matrix
+ * @param     x input vectors, size n * d_in
+ * @return    output vectors, size n * d_out
  */
 float* faiss_VectorTransform_apply(
         const FaissVectorTransform* vt,
