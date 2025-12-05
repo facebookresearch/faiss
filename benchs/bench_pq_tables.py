@@ -73,5 +73,5 @@ for have_threads in False, True:
                     res = run_bench(M * dsub, dsub, nbit, metric)
                     allres.append(res)
         allres = np.array(allres)
-        print("formated result:")
+        print("formatted result:")
         print(format_tab(allres))
