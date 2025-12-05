@@ -830,7 +830,7 @@
     </briefdescription>
     <detaileddescription>
 <para>Inverted Lists that are organized by blocks.</para>
-<para>Different from the regular inverted lists, the codes are organized by blocks of size block_size bytes that reprsent a set of n_per_block. Therefore, code allocations are always rounded up to block_size bytes. The codes are also aligned on 32-byte boundaries for use with SIMD.</para>
+<para>Different from the regular inverted lists, the codes are organized by blocks of size block_size bytes that represent a set of n_per_block. Therefore, code allocations are always rounded up to block_size bytes. The codes are also aligned on 32-byte boundaries for use with SIMD.</para>
 <para>To avoid misinterpretations, the code_size is set to (size_t)(-1), even if arguably the amount of memory consumed by code is block_size / n_per_block.</para>
 <para>The writing functions add_entries and update_entries operate on block-aligned data. </para>
     </detaileddescription>

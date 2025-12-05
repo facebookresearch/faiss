@@ -94,7 +94,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>does an AND operation on the the two given <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>&apos;s is_membership results. </para>
+<para>does an AND operation on the two given <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>&apos;s is_membership results. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">

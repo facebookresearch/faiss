@@ -293,7 +293,7 @@
 <codeline lineno="20"><highlight class="comment">/**<sp/>Inverted<sp/>Lists<sp/>that<sp/>are<sp/>organized<sp/>by<sp/>blocks.</highlight></codeline>
 <codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="22"><highlight class="comment"><sp/>*<sp/>Different<sp/>from<sp/>the<sp/>regular<sp/>inverted<sp/>lists,<sp/>the<sp/>codes<sp/>are<sp/>organized<sp/>by<sp/>blocks</highlight></codeline>
-<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>of<sp/>size<sp/>block_size<sp/>bytes<sp/>that<sp/>reprsent<sp/>a<sp/>set<sp/>of<sp/>n_per_block.<sp/>Therefore,<sp/>code</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>of<sp/>size<sp/>block_size<sp/>bytes<sp/>that<sp/>represent<sp/>a<sp/>set<sp/>of<sp/>n_per_block.<sp/>Therefore,<sp/>code</highlight></codeline>
 <codeline lineno="24"><highlight class="comment"><sp/>*<sp/>allocations<sp/>are<sp/>always<sp/>rounded<sp/>up<sp/>to<sp/>block_size<sp/>bytes.<sp/>The<sp/>codes<sp/>are<sp/>also</highlight></codeline>
 <codeline lineno="25"><highlight class="comment"><sp/>*<sp/>aligned<sp/>on<sp/>32-byte<sp/>boundaries<sp/>for<sp/>use<sp/>with<sp/>SIMD.</highlight></codeline>
 <codeline lineno="26"><highlight class="comment"><sp/>*</highlight></codeline>
