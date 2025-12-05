@@ -20,7 +20,7 @@ struct IDSelector;
 /** Inverted Lists that are organized by blocks.
  *
  * Different from the regular inverted lists, the codes are organized by blocks
- * of size block_size bytes that reprsent a set of n_per_block. Therefore, code
+ * of size block_size bytes that represent a set of n_per_block. Therefore, code
  * allocations are always rounded up to block_size bytes. The codes are also
  * aligned on 32-byte boundaries for use with SIMD.
  *

@@ -53,7 +53,7 @@ void DirectMap::set_type(
             for (long ofs = 0; ofs < list_size; ofs++) {
                 FAISS_THROW_IF_NOT_MSG(
                         0 <= idlist[ofs] && idlist[ofs] < ntotal,
-                        "direct map supported only for seuquential ids");
+                        "direct map supported only for sequential ids");
                 array[idlist[ofs]] = lo_build(key, ofs);
             }
         } else if (new_type == Hashtable) {
