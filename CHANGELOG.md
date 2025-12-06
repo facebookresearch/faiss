@@ -386,12 +386,12 @@ Changed
 - Improve naming due to codemod (#4063)
 - Improve naming due to codemod (#4064)
 - Improve naming due to codemod (#4065)
-- separare the github build into two conditions (#4066)
+- separate the github build into two conditions (#4066)
 - Improve naming due to codemod (#4070)
 - improve naming due to codemod (#4067)
 - improve naming due to codemod (#4071)
 - improve naming due to codemod (#4072)
-- fix nightily build (#4080)
+- fix nightly build (#4080)
 - Change github action workflows name (#4083)
 - Resolve Packaging Issues (#4044)
 - Update __init__.py (#4086)
@@ -474,7 +474,7 @@ Deprecated
 - faster hnsw CPU index training (#3822)
 - Some small improvements. (#3692)
 - First attempt at LSH matching with nbits (#3679)
-- Set verbosoe before train (#3619)
+- Set verbose before train (#3619)
 - Remove duplicate NegativeDistanceComputer instances (#3450)
 - interrupt for NNDescent (#3432)
 - Get rid of redundant instructions in ScalarQuantizer (#3430)
@@ -486,11 +486,11 @@ Deprecated
 - Skip HNSWPQ sdc init with new io flag (#3250)
 
 ### Fixed
-- FIx a bug for a non-simdlib code of ResidualQuantizer (#3868)
+- Fix a bug for a non-simdlib code of ResidualQuantizer (#3868)
 - assign_index should default to null (#3855)
-- Fix an incorrectly counted the number of computed distances for HNSW (#3840)
+- Fix incorrectly counted the number of computed distances for HNSW (#3840)
 - Add error for overflowing nbits during PQ construction (#3833)
-- Fix radius search with HSNW and IP (#3698)
+- Fix radius search with HNSW and IP (#3698)
 - fix algorithm of spreading vectors over shards (#3374)
 - Fix IndexBinary.assign Python method (#3384)
 - Few fixes in bench_fw to enable IndexFromCodec (#3383)
@@ -558,7 +558,7 @@ Deprecated
 - Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
 
 ### Fixed
-- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- HNSW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
 - Faiss GPU IVF large query batch fix
 - Faiss + Torch fixes, re-enable k = 2048
 - Fix the number of distance computations to match max_codes parameter
@@ -599,7 +599,7 @@ Deprecated
 - Implementation of Local Search Quantization (by @KinglittleQ)
 
 ### Changed
-- The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
+- The order of xb and xq was different between `faiss.knn` and `faiss.knn_gpu`.
 Also the metric argument was called distance_type.
 - The typed vectors (LongVector, LongLongVector, etc.) of the SWIG interface have
 been deprecated. They have been replaced with Int32Vector, Int64Vector, etc. (by h-vetinari)
@@ -730,7 +730,7 @@ propagated.
 - Support for IMI2x16 (4B virtual centroids).
 - Support for k = 2048 search on GPU (instead of 1024).
 - Support for renaming an ondisk invertedlists.
-- Support for nterrupting computations with interrupt signal (ctrl-C) in python.
+- Support for interrupting computations with interrupt signal (ctrl-C) in python.
 - Simplified build system (with --with-cuda/--with-cuda-arch options).
 
 ### Changed

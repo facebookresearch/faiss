@@ -229,7 +229,7 @@ bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
     }
 }
 
-// implemnent iterator on top of get_codes / get_ids
+// implement iterator on top of get_codes / get_ids
 namespace {
 
 struct CodeArrayIterator : InvertedListsIterator {

@@ -31,3 +31,9 @@ make -C _build -j$(nproc) faiss faiss_avx2 faiss_avx512 faiss_c faiss_c_avx2 fai
 
 cmake --install _build --prefix $PREFIX
 cmake --install _build --prefix _libfaiss_stage/
+
+# Copy SVS runtime if it exists
+if [ -d "_build/_deps/svs-src/lib" ]; then
+    cp -P _build/_deps/svs-src/lib/libsvs_runtime.so* $PREFIX/lib/ || true
+    cp -P _build/_deps/svs-src/lib/libsvs_runtime.so* _libfaiss_stage/lib/ || true
+fi

@@ -131,7 +131,7 @@ struct IDSelectorAll : IDSelector {
     virtual ~IDSelectorAll() {}
 };
 
-/// does an AND operation on the the two given IDSelector's is_membership
+/// does an AND operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorAnd : IDSelector {
     const IDSelector* lhs;
@@ -144,7 +144,7 @@ struct IDSelectorAnd : IDSelector {
     virtual ~IDSelectorAnd() {}
 };
 
-/// does an OR operation on the the two given IDSelector's is_membership
+/// does an OR operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorOr : IDSelector {
     const IDSelector* lhs;
@@ -157,7 +157,7 @@ struct IDSelectorOr : IDSelector {
     virtual ~IDSelectorOr() {}
 };
 
-/// does an XOR operation on the the two given IDSelector's is_membership
+/// does an XOR operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorXOr : IDSelector {
     const IDSelector* lhs;
