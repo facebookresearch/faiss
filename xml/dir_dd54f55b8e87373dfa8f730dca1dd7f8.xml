@@ -40,6 +40,7 @@
     <innerfile refid="ResultHandler_8h">ResultHandler.h</innerfile>
     <innerfile refid="ScalarQuantizer_8h">ScalarQuantizer.h</innerfile>
     <innerfile refid="simd__result__handlers_8h">simd_result_handlers.h</innerfile>
+    <innerfile refid="svs__io_8h">svs_io.h</innerfile>
     <innerfile refid="ThreadedIndex-inl_8h">ThreadedIndex-inl.h</innerfile>
     <innerfile refid="ThreadedIndex_8h">ThreadedIndex.h</innerfile>
     <innerfile refid="zerocopy__io_8h">zerocopy_io.h</innerfile>

@@ -7,6 +7,7 @@
     <innerdir refid="dir_dd54f55b8e87373dfa8f730dca1dd7f8">faiss/impl</innerdir>
     <innerdir refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad">faiss/invlists</innerdir>
     <innerdir refid="dir_17d03c0b48df2002720ab53d8fded289">faiss/python</innerdir>
+    <innerdir refid="dir_51108e9799b33ddabac525d49cc3884e">faiss/svs</innerdir>
     <innerdir refid="dir_8ad259f5ae9600a74caf331497f5b251">faiss/utils</innerdir>
     <innerfile refid="AutoTune_8h">AutoTune.h</innerfile>
     <innerfile refid="clone__index_8h">clone_index.h</innerfile>

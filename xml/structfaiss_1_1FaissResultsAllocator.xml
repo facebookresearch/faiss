@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FaissResultsAllocator" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::FaissResultsAllocator</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">svs_runtime::ResultsAllocator</basecompoundref>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="structfaiss_1_1FaissResultsAllocator_1a856f851361a6dc78e9f245913428874f" prot="private" static="no">
+        <type><ref refid="structfaiss_1_1OutputBufferConverter" kindref="compound">OutputBufferConverter</ref>&lt; size_t, <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref> &gt;</type>
+        <definition>using faiss::FaissResultsAllocator::LabelsConverter =  OutputBufferConverter&lt;size_t, faiss::idx_t&gt;</definition>
+        <argsstring></argsstring>
+        <name>LabelsConverter</name>
+        <qualifiedname>faiss::FaissResultsAllocator::LabelsConverter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="258" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="258" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FaissResultsAllocator_1a0a158db5a8cf1bb1358a8e6268afe148" prot="private" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">faiss::RangeSearchResult</ref> *</type>
+        <definition>faiss::RangeSearchResult* faiss::FaissResultsAllocator::result</definition>
+        <argsstring></argsstring>
+        <name>result</name>
+        <qualifiedname>faiss::FaissResultsAllocator::result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="257" column="30" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="257" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FaissResultsAllocator_1a22ebea75c255135e8d623ded8df77d74" prot="private" static="no" mutable="yes">
+        <type><ref refid="structfaiss_1_1OutputBufferConverter" kindref="compound">LabelsConverter</ref></type>
+        <definition>LabelsConverter faiss::FaissResultsAllocator::labels_converter</definition>
+        <argsstring></argsstring>
+        <name>labels_converter</name>
+        <qualifiedname>faiss::FaissResultsAllocator::labels_converter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="259" column="29" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="259" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FaissResultsAllocator_1a397c4c0b3f70f84bcb9cbc15cb351a60" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FaissResultsAllocator::FaissResultsAllocator</definition>
+        <argsstring>(faiss::RangeSearchResult *result)</argsstring>
+        <name>FaissResultsAllocator</name>
+        <qualifiedname>faiss::FaissResultsAllocator::FaissResultsAllocator</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">faiss::RangeSearchResult</ref> *</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="232" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="232" bodyend="234"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FaissResultsAllocator_1a90db8072231667d791a595c5e1f7a311" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>svs_runtime::SearchResultsStorage</type>
+        <definition>svs_runtime::SearchResultsStorage faiss::FaissResultsAllocator::allocate</definition>
+        <argsstring>(std::span&lt; size_t &gt; result_counts) const override</argsstring>
+        <name>allocate</name>
+        <qualifiedname>faiss::FaissResultsAllocator::allocate</qualifiedname>
+        <param>
+          <type>std::span&lt; size_t &gt;</type>
+          <declname>result_counts</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="236" column="39" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="236" bodyend="254"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::FaissResultsAllocator</label>
+        <link refid="structfaiss_1_1FaissResultsAllocator"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>svs_runtime::ResultsAllocator</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FaissResultsAllocator</label>
+        <link refid="structfaiss_1_1FaissResultsAllocator"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>svs_runtime::ResultsAllocator</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="231" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="231" bodyend="260"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FaissResultsAllocator_1a90db8072231667d791a595c5e1f7a311" prot="public" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>allocate</name></member>
+      <member refid="structfaiss_1_1FaissResultsAllocator_1a397c4c0b3f70f84bcb9cbc15cb351a60" prot="public" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>FaissResultsAllocator</name></member>
+      <member refid="structfaiss_1_1FaissResultsAllocator_1a22ebea75c255135e8d623ded8df77d74" prot="private" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>labels_converter</name></member>
+      <member refid="structfaiss_1_1FaissResultsAllocator_1a856f851361a6dc78e9f245913428874f" prot="private" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>LabelsConverter</name></member>
+      <member refid="structfaiss_1_1FaissResultsAllocator_1a0a158db5a8cf1bb1358a8e6268afe148" prot="private" virt="non-virtual"><scope>faiss::FaissResultsAllocator</scope><name>result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

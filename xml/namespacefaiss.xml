@@ -37,6 +37,8 @@
     <innerclass refid="structfaiss_1_1DummyScaler" prot="public">faiss::DummyScaler</innerclass>
     <innerclass refid="structfaiss_1_1EnumeratedVectors" prot="public">faiss::EnumeratedVectors</innerclass>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
+    <innerclass refid="structfaiss_1_1FaissIDFilter" prot="public">faiss::FaissIDFilter</innerclass>
+    <innerclass refid="structfaiss_1_1FaissResultsAllocator" prot="public">faiss::FaissResultsAllocator</innerclass>
     <innerclass refid="structfaiss_1_1FastScanDistancePostProcessing" prot="public">faiss::FastScanDistancePostProcessing</innerclass>
     <innerclass refid="structfaiss_1_1FastScanStats" prot="public">faiss::FastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1FileIOReader" prot="public">faiss::FileIOReader</innerclass>
@@ -168,6 +170,12 @@
     <innerclass refid="structfaiss_1_1IndexShardsIVF" prot="public">faiss::IndexShardsIVF</innerclass>
     <innerclass refid="structfaiss_1_1IndexShardsTemplate" prot="public">faiss::IndexShardsTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexSplitVectors" prot="public">faiss::IndexSplitVectors</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSVSFlat" prot="public">faiss::IndexSVSFlat</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSVSVamana" prot="public">faiss::IndexSVSVamana</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSVSVamanaLeanVec" prot="public">faiss::IndexSVSVamanaLeanVec</innerclass>
+    <innerclass refid="structfaiss_1_1IndexSVSVamanaLVQ" prot="public">faiss::IndexSVSVamanaLVQ</innerclass>
+    <innerclass refid="structfaiss_1_1InputBufferConverter" prot="public">faiss::InputBufferConverter</innerclass>
+    <innerclass refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37" prot="public">faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</innerclass>
     <innerclass refid="structfaiss_1_1InterruptCallback" prot="public">faiss::InterruptCallback</innerclass>
     <innerclass refid="structfaiss_1_1IntersectionCriterion" prot="public">faiss::IntersectionCriterion</innerclass>
     <innerclass refid="structfaiss_1_1InvertedLists" prot="public">faiss::InvertedLists</innerclass>
@@ -208,6 +216,8 @@
     <innerclass refid="structfaiss_1_1OperatingPoint" prot="public">faiss::OperatingPoint</innerclass>
     <innerclass refid="structfaiss_1_1OperatingPoints" prot="public">faiss::OperatingPoints</innerclass>
     <innerclass refid="structfaiss_1_1OPQMatrix" prot="public">faiss::OPQMatrix</innerclass>
+    <innerclass refid="structfaiss_1_1OutputBufferConverter" prot="public">faiss::OutputBufferConverter</innerclass>
+    <innerclass refid="structfaiss_1_1OutputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same_a6814903930b03e09cd49b3c9c013253" prot="public">faiss::OutputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</innerclass>
     <innerclass refid="structfaiss_1_1Panorama" prot="public">faiss::Panorama</innerclass>
     <innerclass refid="structfaiss_1_1PanoramaStats" prot="public">faiss::PanoramaStats</innerclass>
     <innerclass refid="structfaiss_1_1ParameterRange" prot="public">faiss::ParameterRange</innerclass>
@@ -259,6 +269,7 @@
     <innerclass refid="structfaiss_1_1SearchParametersPQ" prot="public">faiss::SearchParametersPQ</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public">faiss::SearchParametersResidualCoarseQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1SearchParametersSVSVamana" prot="public">faiss::SearchParametersSVSVamana</innerclass>
     <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint16" prot="public">faiss::simd32uint16</innerclass>
@@ -305,6 +316,7 @@
     <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1svs__io">faiss::svs_io</innernamespace>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912f" prot="public" static="no" strong="no">
         <type></type>
@@ -448,6 +460,81 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/MetricType.h" line="23" column="1" bodyfile="faiss/MetricType.h" bodystart="23" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="enum" id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdb" prot="public" static="no" strong="no">
+        <type></type>
+        <name>SVSStorageKind</name>
+        <qualifiedname>faiss::SVSStorageKind</qualifiedname>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba56599f815f2506be7ca14eae7b495d8e" prot="public">
+          <name>SVS_FP32</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba51944c756d00df8139199280ae22028c" prot="public">
+          <name>SVS_FP16</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba3552df1dc66226ecd592ac875377b323" prot="public">
+          <name>SVS_SQI8</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba89c7b4b29a9ada1cccf041f64dd60c85" prot="public">
+          <name>SVS_LVQ4x0</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba20d0fa592c651e39c32a303ed0af677f" prot="public">
+          <name>SVS_LVQ4x4</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba5a27aef13039ced0a05fcdd16083ca08" prot="public">
+          <name>SVS_LVQ4x8</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbade7d538232505b7e0bf7dc1f14e93384" prot="public">
+          <name>SVS_LeanVec4x4</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbaa4c96e5d67b47b154cfab5d98782e8a6" prot="public">
+          <name>SVS_LeanVec4x8</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbaa3595eff7c3a8fa754683b55991834f3" prot="public">
+          <name>SVS_LeanVec8x8</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="41" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="41" bodyend="51"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
@@ -4104,6 +4191,173 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/MetricType.h" line="50" column="16" bodyfile="faiss/MetricType.h" bodystart="50" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>svs_runtime::MetricType</type>
+        <definition>svs_runtime::MetricType faiss::to_svs_metric</definition>
+        <argsstring>(faiss::MetricType metric)</argsstring>
+        <name>to_svs_metric</name>
+        <qualifiedname>faiss::to_svs_metric</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">faiss::MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="62" column="32" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="62" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4b0faf1e9d9da1c14b118bdef8116f48" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FaissIDFilter" kindref="compound">FaissIDFilter</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FaissIDFilter &gt; faiss::make_faiss_id_filter</definition>
+        <argsstring>(const SearchParameters *params=nullptr)</argsstring>
+        <name>make_faiss_id_filter</name>
+        <qualifiedname>faiss::make_faiss_id_filter</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="84" column="24" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="84" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a59dea145469ceef3a7710a7163d3e4ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::convert_input_buffer</definition>
+        <argsstring>(std::span&lt; const U &gt; data)</argsstring>
+        <name>convert_input_buffer</name>
+        <qualifiedname>faiss::convert_input_buffer</qualifiedname>
+        <param>
+          <type>std::span&lt; const U &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="203" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="203" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4c2998ae0350150fa20fb1657d15c174" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::convert_input_buffer</definition>
+        <argsstring>(const U *data, size_t size)</argsstring>
+        <name>convert_input_buffer</name>
+        <qualifiedname>faiss::convert_input_buffer</qualifiedname>
+        <param>
+          <type>const U *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="212" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="212" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae1e679f47d92aec25aa00069e6e2155a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::convert_output_buffer</definition>
+        <argsstring>(std::span&lt; U &gt; data)</argsstring>
+        <name>convert_output_buffer</name>
+        <qualifiedname>faiss::convert_output_buffer</qualifiedname>
+        <param>
+          <type>std::span&lt; U &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="218" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="218" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a86baa07840a69f553dddac10efa5dcf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::convert_output_buffer</definition>
+        <argsstring>(U *data, size_t size)</argsstring>
+        <name>convert_output_buffer</name>
+        <qualifiedname>faiss::convert_output_buffer</qualifiedname>
+        <param>
+          <type>U *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="227" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="227" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af80a4ca99b16b97df605594f16257643" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>svs_runtime::StorageKind</type>
+        <definition>svs_runtime::StorageKind faiss::to_svs_storage_kind</definition>
+        <argsstring>(SVSStorageKind kind)</argsstring>
+        <name>to_svs_storage_kind</name>
+        <qualifiedname>faiss::to_svs_storage_kind</qualifiedname>
+        <param>
+          <type>SVSStorageKind</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="53" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="53" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

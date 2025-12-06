@@ -9,6 +9,7 @@
     <includes local="no">vector</includes>
     <includedby refid="index__read__utils_8h" local="no">faiss/impl/index_read_utils.h</includedby>
     <includedby refid="mapped__io_8h" local="no">faiss/impl/mapped_io.h</includedby>
+    <includedby refid="svs__io_8h" local="no">faiss/impl/svs_io.h</includedby>
     <includedby refid="zerocopy__io_8h" local="no">faiss/impl/zerocopy_io.h</includedby>
     <includedby refid="InvertedListsIOHook_8h" local="no">faiss/invlists/InvertedListsIOHook.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
@@ -59,7 +60,9 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -67,26 +70,30 @@
         <link refid="mapped__io_8h_source"/>
       </node>
       <node id="4">
+        <label>faiss/impl/svs_io.h</label>
+        <link refid="svs__io_8h_source"/>
+      </node>
+      <node id="5">
         <label>faiss/impl/zerocopy_io.h</label>
         <link refid="zerocopy__io_8h_source"/>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>

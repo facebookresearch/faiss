@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacesvs_1_1runtime" kind="namespace" language="C++">
+    <compoundname>svs::runtime</compoundname>
+    <innernamespace refid="namespacesvs_1_1runtime_1_1v0" inline="yes">svs::runtime::v0</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="50" column="1"/>
+  </compounddef>
+</doxygen>

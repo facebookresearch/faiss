@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SearchParametersSVSVamana" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SearchParametersSVSVamana</compoundname>
+    <basecompoundref refid="structfaiss_1_1SearchParameters" prot="public" virt="non-virtual">faiss::SearchParameters</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersSVSVamana_1a1c733f93149c8449792c2d3a6905b857" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::SearchParametersSVSVamana::search_window_size</definition>
+        <argsstring></argsstring>
+        <name>search_window_size</name>
+        <qualifiedname>faiss::SearchParametersSVSVamana::search_window_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="36" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParametersSVSVamana_1ab80b155d04947eb7d92a7d2a3b972373" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::SearchParametersSVSVamana::search_buffer_capacity</definition>
+        <argsstring></argsstring>
+        <name>search_buffer_capacity</name>
+        <qualifiedname>faiss::SearchParametersSVSVamana::search_buffer_capacity</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSVamana.h" line="37" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>IDSelector* faiss::SearchParameters::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <qualifiedname>faiss::SearchParameters::sel</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+<para>if non-null, only these IDs will be considered during search. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Index.h" line="88" column="16" bodyfile="faiss/Index.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersSVSVamana</label>
+        <link refid="structfaiss_1_1SearchParametersSVSVamana"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="2">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::SearchParametersSVSVamana</label>
+        <link refid="structfaiss_1_1SearchParametersSVSVamana"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/svs/IndexSVSVamana.h" line="35" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="35" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SearchParametersSVSVamana_1ab80b155d04947eb7d92a7d2a3b972373" prot="public" virt="non-virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>search_buffer_capacity</name></member>
+      <member refid="structfaiss_1_1SearchParametersSVSVamana_1a1c733f93149c8449792c2d3a6905b857" prot="public" virt="non-virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>search_window_size</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" virt="non-virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1SearchParameters_1a8642013315dc5f9e4e6dd603c89b29ae" prot="public" virt="virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>~SearchParameters</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

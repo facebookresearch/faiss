@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1svs__io_1_1ReaderStreambuf" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::svs_io::ReaderStreambuf</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::streambuf</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a2bdd68a8b44293587c89899965c42c53" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+        <definition>IOReader* faiss::svs_io::ReaderStreambuf::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::r</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="55" column="14" bodyfile="faiss/impl/svs_io.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a07de7b2b8c93aa433809bd2d0c347772" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char faiss::svs_io::ReaderStreambuf::single_char_buffer</definition>
+        <argsstring></argsstring>
+        <name>single_char_buffer</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::single_char_buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="56" column="10" bodyfile="faiss/impl/svs_io.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1ae6a4bdafcd696b06a5e189458aca29dc" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</definition>
+        <argsstring>(IOReader *rr)</argsstring>
+        <name>ReaderStreambuf</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>rr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="58" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1af24ec95f2bf9a3f9a7038b1ae427a079" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::svs_io::ReaderStreambuf::~ReaderStreambuf</definition>
+        <argsstring>() override</argsstring>
+        <name>~ReaderStreambuf</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::~ReaderStreambuf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="59" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1aba3e9de84351b353b89c31f2949ae676" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int_type</type>
+        <definition>int_type faiss::svs_io::ReaderStreambuf::underflow</definition>
+        <argsstring>() override</argsstring>
+        <name>underflow</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::underflow</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="62" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a5c9aba033bdf897b2f9a049a5548c9ee" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::streamsize</type>
+        <definition>std::streamsize faiss::svs_io::ReaderStreambuf::xsgetn</definition>
+        <argsstring>(char *s, std::streamsize n) override</argsstring>
+        <name>xsgetn</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::xsgetn</qualifiedname>
+        <param>
+          <type>char *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>std::streamsize</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="63" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::svs_io::ReaderStreambuf</label>
+        <link refid="structfaiss_1_1svs__io_1_1ReaderStreambuf"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::streambuf</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::IOReader</label>
+        <link refid="structfaiss_1_1IOReader"/>
+      </node>
+      <node id="1">
+        <label>faiss::svs_io::ReaderStreambuf</label>
+        <link refid="structfaiss_1_1svs__io_1_1ReaderStreambuf"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>r</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::streambuf</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/svs_io.h" line="54" column="1" bodyfile="faiss/impl/svs_io.h" bodystart="54" bodyend="64"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a2bdd68a8b44293587c89899965c42c53" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>r</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1ae6a4bdafcd696b06a5e189458aca29dc" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>ReaderStreambuf</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a07de7b2b8c93aa433809bd2d0c347772" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>single_char_buffer</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1aba3e9de84351b353b89c31f2949ae676" prot="protected" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>underflow</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a5c9aba033bdf897b2f9a049a5548c9ee" prot="protected" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>xsgetn</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1af24ec95f2bf9a3f9a7038b1ae427a079" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>~ReaderStreambuf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

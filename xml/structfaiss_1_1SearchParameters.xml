@@ -9,6 +9,7 @@
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPQ" prot="public" virt="non-virtual">faiss::SearchParametersPQ</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersPreTransform" prot="public" virt="non-virtual">faiss::SearchParametersPreTransform</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public" virt="non-virtual">faiss::SearchParametersResidualCoarseQuantizer</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1SearchParametersSVSVamana" prot="public" virt="non-virtual">faiss::SearchParametersSVSVamana</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1gpu_1_1SearchParametersCagra" prot="public" virt="non-virtual">faiss::gpu::SearchParametersCagra</derivedcompoundref>
     <includes refid="Index_8h" local="no">Index.h</includes>
     <sectiondef kind="public-attrib">
@@ -112,6 +113,12 @@
         </childnode>
       </node>
       <node id="11">
+        <label>faiss::SearchParametersSVSVamana</label>
+        <link refid="structfaiss_1_1SearchParametersSVSVamana"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
         <label>faiss::gpu::SearchParametersCagra</label>
         <link refid="structfaiss_1_1gpu_1_1SearchParametersCagra"/>
         <childnode refid="1" relation="public-inheritance">

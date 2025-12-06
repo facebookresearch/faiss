@@ -40,6 +40,9 @@
     <includedby refid="kmeans1d_8h" local="no">faiss/impl/kmeans1d.h</includedby>
     <includedby refid="residual__quantizer__encode__steps_8h" local="no">faiss/impl/residual_quantizer_encode_steps.h</includedby>
     <includedby refid="index__factory_8h" local="no">faiss/index_factory.h</includedby>
+    <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
+    <includedby refid="IndexSVSFlat_8h" local="no">faiss/svs/IndexSVSFlat.h</includedby>
+    <includedby refid="IndexSVSVamana_8h" local="no">faiss/svs/IndexSVSVamana.h</includedby>
     <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
     <incdepgraph>
       <node id="1">
@@ -222,6 +225,12 @@
         <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="86" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+        <childnode refid="91" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -803,6 +812,34 @@
         <link refid="python__callbacks_8h_source"/>
       </node>
       <node id="86">
+        <label>faiss/svs/IndexSVSFaissUtils.h</label>
+        <link refid="IndexSVSFaissUtils_8h_source"/>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+      </node>
+      <node id="87">
+        <label>faiss/svs/IndexSVSFlat.h</label>
+        <link refid="IndexSVSFlat_8h_source"/>
+      </node>
+      <node id="88">
+        <label>faiss/svs/IndexSVSVamana.h</label>
+        <link refid="IndexSVSVamana_8h_source"/>
+        <childnode refid="89" relation="include">
+        </childnode>
+        <childnode refid="90" relation="include">
+        </childnode>
+      </node>
+      <node id="89">
+        <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
+        <link refid="IndexSVSVamanaLVQ_8h_source"/>
+      </node>
+      <node id="90">
+        <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
+        <link refid="IndexSVSVamanaLeanVec_8h_source"/>
+      </node>
+      <node id="91">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>

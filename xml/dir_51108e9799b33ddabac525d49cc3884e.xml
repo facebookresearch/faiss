@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_51108e9799b33ddabac525d49cc3884e" kind="dir">
+    <compoundname>faiss/svs</compoundname>
+    <innerfile refid="IndexSVSFaissUtils_8h">IndexSVSFaissUtils.h</innerfile>
+    <innerfile refid="IndexSVSFlat_8h">IndexSVSFlat.h</innerfile>
+    <innerfile refid="IndexSVSVamana_8h">IndexSVSVamana.h</innerfile>
+    <innerfile refid="IndexSVSVamanaLeanVec_8h">IndexSVSVamanaLeanVec.h</innerfile>
+    <innerfile refid="IndexSVSVamanaLVQ_8h">IndexSVSVamanaLVQ.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/svs/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1OutputBufferConverter" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::OutputBufferConverter</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>typename U</type>
+      </param>
+      <param>
+        <type>typename</type>
+        <defval>void</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1OutputBufferConverter_1a13ad2379c7cda3bd11d268065739c355" prot="private" static="no" mutable="no">
+        <type>std::span&lt; U &gt;</type>
+        <definition>std::span&lt;U&gt; faiss::OutputBufferConverter&lt; T, U, typename &gt;::data_span</definition>
+        <argsstring></argsstring>
+        <name>data_span</name>
+        <qualifiedname>faiss::OutputBufferConverter::data_span</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="175" column="15" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1OutputBufferConverter_1a350104b8e891e5c32514e62cbf5cf9ab" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt;T&gt; faiss::OutputBufferConverter&lt; T, U, typename &gt;::buffer</definition>
+        <argsstring></argsstring>
+        <name>buffer</name>
+        <qualifiedname>faiss::OutputBufferConverter::buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="176" column="17" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1OutputBufferConverter_1a2fac14864c80cbc9dd2ffcafe20328b0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OutputBufferConverter&lt; T, U, typename &gt;::OutputBufferConverter</definition>
+        <argsstring>(std::span&lt; U &gt; data={})</argsstring>
+        <name>OutputBufferConverter</name>
+        <qualifiedname>faiss::OutputBufferConverter::OutputBufferConverter</qualifiedname>
+        <param>
+          <type>std::span&lt; U &gt;</type>
+          <declname>data</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="153" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="153" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OutputBufferConverter_1a113cab65fdae75bafd375f1730541e61" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OutputBufferConverter&lt; T, U, typename &gt;::~OutputBufferConverter</definition>
+        <argsstring>()</argsstring>
+        <name>~OutputBufferConverter</name>
+        <qualifiedname>faiss::OutputBufferConverter::~OutputBufferConverter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="159" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="159" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OutputBufferConverter_1a5506c7b5c022ee029249f0f32f5cca41" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OutputBufferConverter&lt; T, U, typename &gt;::operator T*</definition>
+        <argsstring>()</argsstring>
+        <name>operator T*</name>
+        <qualifiedname>faiss::OutputBufferConverter::operator T*</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="167" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="167" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1OutputBufferConverter_1a9e3f87def3de6e4003940dbaa1ab6de6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::OutputBufferConverter&lt; T, U, typename &gt;::operator std::span&lt; T &gt;</definition>
+        <argsstring>()</argsstring>
+        <name>operator std::span&lt; T &gt;</name>
+        <qualifiedname>faiss::OutputBufferConverter::span&lt; T &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="170" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="170" bodyend="172"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="152" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="152" bodyend="177"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a350104b8e891e5c32514e62cbf5cf9ab" prot="private" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>buffer</name></member>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a13ad2379c7cda3bd11d268065739c355" prot="private" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>data_span</name></member>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a9e3f87def3de6e4003940dbaa1ab6de6" prot="public" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>operator std::span&lt; T &gt;</name></member>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a5506c7b5c022ee029249f0f32f5cca41" prot="public" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>operator T*</name></member>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a2fac14864c80cbc9dd2ffcafe20328b0" prot="public" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>OutputBufferConverter</name></member>
+      <member refid="structfaiss_1_1OutputBufferConverter_1a113cab65fdae75bafd375f1730541e61" prot="public" virt="non-virtual"><scope>faiss::OutputBufferConverter</scope><name>~OutputBufferConverter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

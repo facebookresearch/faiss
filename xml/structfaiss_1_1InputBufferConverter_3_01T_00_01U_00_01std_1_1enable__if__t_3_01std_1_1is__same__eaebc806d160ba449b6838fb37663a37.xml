@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>typename U</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a6a1a359d5116e34a952b975c612ed556" prot="private" static="no" mutable="no">
+        <type>std::span&lt; const U &gt;</type>
+        <definition>std::span&lt;const U&gt; faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::data_span</definition>
+        <argsstring></argsstring>
+        <name>data_span</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::data_span</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="148" column="15" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a15ecb6e7006fcf88a4eac818d107a884" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::InputBufferConverter</definition>
+        <argsstring>(std::span&lt; const U &gt; data={})</argsstring>
+        <name>InputBufferConverter</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::InputBufferConverter</qualifiedname>
+        <param>
+          <type>std::span&lt; const U &gt;</type>
+          <declname>data</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="131" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="131" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac09e429d618ecf02c58d16c1640e1ce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator T*</definition>
+        <argsstring>()</argsstring>
+        <name>operator T*</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator T*</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="132" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="132" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac2e353a7009eab27f2d659f882411ecf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator const T *</definition>
+        <argsstring>() const</argsstring>
+        <name>operator const T *</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator const T *</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="135" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="135" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a22389928e6cfeeda7db256858c9e9cd8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator std::span&lt; T &gt;</definition>
+        <argsstring>()</argsstring>
+        <name>operator std::span&lt; T &gt;</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::span&lt; T &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="138" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="138" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1aed0e70b2475c2933b10c2e52be1150d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::operator std::span&lt; const T &gt;</definition>
+        <argsstring>() const</argsstring>
+        <name>operator std::span&lt; const T &gt;</name>
+        <qualifiedname>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;::span&lt; const T &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="142" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="142" bodyend="145"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="124" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="130" bodyend="149"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a6a1a359d5116e34a952b975c612ed556" prot="private" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>data_span</name></member>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a15ecb6e7006fcf88a4eac818d107a884" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>InputBufferConverter</name></member>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac2e353a7009eab27f2d659f882411ecf" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>operator const T *</name></member>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1aed0e70b2475c2933b10c2e52be1150d3" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>operator std::span&lt; const T &gt;</name></member>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a22389928e6cfeeda7db256858c9e9cd8" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>operator std::span&lt; T &gt;</name></member>
+      <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac09e429d618ecf02c58d16c1640e1ce4" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>operator T*</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

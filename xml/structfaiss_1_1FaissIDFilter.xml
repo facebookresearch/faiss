@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FaissIDFilter" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::FaissIDFilter</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">svs_runtime::IDFilter</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1FaissIDFilter_1a32cfc44b24f8fa372248d434b209bb43" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">faiss::IDSelector</ref> &amp;</type>
+        <definition>const faiss::IDSelector&amp; faiss::FaissIDFilter::selector</definition>
+        <argsstring></argsstring>
+        <name>selector</name>
+        <qualifiedname>faiss::FaissIDFilter::selector</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="81" column="29" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FaissIDFilter_1a93120ab71700f73a5de1b65e21e5ef2f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FaissIDFilter::FaissIDFilter</definition>
+        <argsstring>(const faiss::IDSelector &amp;sel)</argsstring>
+        <name>FaissIDFilter</name>
+        <qualifiedname>faiss::FaissIDFilter::FaissIDFilter</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">faiss::IDSelector</ref> &amp;</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="74" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FaissIDFilter_1abcc56b3b4fb9df4c1fd33b77acd5d7d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::FaissIDFilter::is_member</definition>
+        <argsstring>(size_t id) const override</argsstring>
+        <name>is_member</name>
+        <qualifiedname>faiss::FaissIDFilter::is_member</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="76" column="10" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="76" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::FaissIDFilter</label>
+        <link refid="structfaiss_1_1FaissIDFilter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>svs_runtime::IDFilter</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::FaissIDFilter</label>
+        <link refid="structfaiss_1_1FaissIDFilter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>svs_runtime::IDFilter</label>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="73" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="73" bodyend="82"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FaissIDFilter_1a93120ab71700f73a5de1b65e21e5ef2f" prot="public" virt="non-virtual"><scope>faiss::FaissIDFilter</scope><name>FaissIDFilter</name></member>
+      <member refid="structfaiss_1_1FaissIDFilter_1abcc56b3b4fb9df4c1fd33b77acd5d7d3" prot="public" virt="non-virtual"><scope>faiss::FaissIDFilter</scope><name>is_member</name></member>
+      <member refid="structfaiss_1_1FaissIDFilter_1a32cfc44b24f8fa372248d434b209bb43" prot="private" virt="non-virtual"><scope>faiss::FaissIDFilter</scope><name>selector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
