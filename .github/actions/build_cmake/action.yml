@@ -16,6 +16,10 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  svs:
+    description: 'Enable SVS support.'
+    required: false
+    default: OFF
   setup_conda:
     description: 'Setup miniconda environment.'
     required: false
@@ -139,6 +143,7 @@ runs:
               -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_SVS=${{ inputs.svs }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
@@ -198,7 +203,7 @@ runs:
       if: inputs.upload_artifacts == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
+        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}-svs=${{ inputs.svs }}
         path: test-results
     - name: Check installed packages channel
       shell: bash
