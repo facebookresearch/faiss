@@ -60,7 +60,7 @@ class SVS : public ::testing::Test {
 };
 
 // LVQ/LeanVec tests are only executed if LVQ/LeanVec support is available
-class SVS_LL : public SVS {
+class SVSLL : public SVS {
    protected:
     void SetUp() override {
         if (!faiss::IndexSVSVamana::is_lvq_leanvec_enabled()) {
@@ -72,7 +72,7 @@ class SVS_LL : public SVS {
 
 // Consistency checks for behavior if LVQ/LeanVec are not available
 // Only runs if LVQ/LeanVec is NOT available
-class SVS_NoLL : public SVS {
+class SVSNoLL : public SVS {
    protected:
     void SetUp() override {
         if (faiss::IndexSVSVamana::is_lvq_leanvec_enabled()) {
