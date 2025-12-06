@@ -95,4 +95,21 @@ struct IndexRefineFlat : IndexRefine {
             const SearchParameters* params = nullptr) const override;
 };
 
+/** Version where the search calls search_subset, allowing for Panorama
+ * refinement. */
+struct IndexRefinePanorama : IndexRefine {
+    explicit IndexRefinePanorama(Index* base_index, Index* refine_index)
+            : IndexRefine(base_index, refine_index) {}
+
+    IndexRefinePanorama() : IndexRefine() {}
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+};
+
 } // namespace faiss

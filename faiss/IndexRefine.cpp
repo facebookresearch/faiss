@@ -341,4 +341,53 @@ void IndexRefineFlat::search(
     }
 }
 
+/***************************************************
+ * IndexRefinePanorama
+ ***************************************************/
+
+void IndexRefinePanorama::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params_in) const {
+    const IndexRefineSearchParameters* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IndexRefineSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(
+                params, "IndexRefineFlat params have incorrect type");
+    }
+
+    idx_t k_base = (params != nullptr) ? idx_t(k * params->k_factor)
+                                       : idx_t(k * k_factor);
+    SearchParameters* base_index_params =
+            (params != nullptr) ? params->base_index_params : nullptr;
+
+    FAISS_THROW_IF_NOT(k_base >= k);
+
+    FAISS_THROW_IF_NOT(base_index);
+    FAISS_THROW_IF_NOT(refine_index);
+
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(is_trained);
+
+    std::unique_ptr<idx_t[]> del1;
+    std::unique_ptr<float[]> del2;
+    idx_t* base_labels = new idx_t[n * k_base];
+    float* base_distances = new float[n * k_base];
+    del1.reset(base_labels);
+    del2.reset(base_distances);
+
+    base_index->search(
+            n, x, k_base, base_distances, base_labels, base_index_params);
+
+    for (int i = 0; i < n * k_base; i++) {
+        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    }
+
+    refine_index->search_subset(
+            n, x, k_base, base_labels, k, distances, labels);
+}
+
 } // namespace faiss
