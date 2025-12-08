@@ -201,6 +201,13 @@ typedef uint64_t size_t;
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
 
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
+
 %}
 
 /********************************************************
@@ -225,7 +232,7 @@ typedef uint64_t size_t;
             PyErr_SetString(PyExc_RuntimeError, e.what());
         }
         SWIG_fail;
-    } catch(std::bad_alloc & ba) {
+    } catch(std::bad_alloc&) {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
         SWIG_fail;
@@ -649,6 +656,15 @@ struct faiss::simd16uint16 {};
 
 %include <faiss/utils/approx_topk/mode.h>
 
+#ifdef FAISS_ENABLE_SVS
+%ignore faiss::to_svs_storage_kind;
+
+%include  <faiss/svs/IndexSVSVamana.h>
+%include  <faiss/svs/IndexSVSFlat.h>
+%include  <faiss/svs/IndexSVSVamanaLVQ.h>
+%include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif // FAISS_ENABLE_SVS
+
 #ifdef GPU_WRAPPER
 
 // quiet SWIG warnings
@@ -779,6 +795,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+#ifdef FAISS_ENABLE_SVS
+    DOWNCAST ( IndexSVSFlat )
+    DOWNCAST ( IndexSVSVamanaLeanVec )
+    DOWNCAST ( IndexSVSVamanaLVQ )
+    DOWNCAST ( IndexSVSVamana )
+#endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

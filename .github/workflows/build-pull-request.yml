@@ -144,3 +144,18 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+  linux-x86_64-svs:
+    name: Linux x86_64 w/ SVS (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          svs: ON
+  index-io-backward-compatibility:
+    needs: linux-x86_64-cmake
+    name: Index serialization backward compatibility
+    uses: ./.github/workflows/index-io-backward-compatibility.yml

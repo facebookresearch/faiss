@@ -372,7 +372,7 @@ OnDiskInvertedLists::~OnDiskInvertedLists() {
     if (ptr != nullptr) {
         int err = munmap(ptr, totsize);
         if (err != 0) {
-            fprintf(stderr, "mumap error: %s", strerror(errno));
+            fprintf(stderr, "munmap error: %s", strerror(errno));
         }
     }
     delete locks;

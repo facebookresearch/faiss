@@ -23,7 +23,7 @@
  *
  *   http://corpus-texmex.irisa.fr/
  *
- * and unzip it to the sudirectory sift1M.
+ * and unzip it to the subdirectory sift1M.
  **/
 
 /*****************************************************

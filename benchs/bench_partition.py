@@ -59,7 +59,7 @@ def do_partition(n, qin, maxval=65536, seed=123, id_type='int64'):
 
     print(
         f"times {times.mean():.3f} µs (± {times.std():.4f} µs) nerr={nerr} "
-        f"bissect {stats.bissect_cycles / 1e6:.3f} Mcy "
+        f"bisect {stats.bissect_cycles / 1e6:.3f} Mcy "
         f"compress {stats.compress_cycles / 1e6:.3f} Mcy"
     )
 
