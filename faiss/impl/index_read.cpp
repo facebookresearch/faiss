@@ -1201,6 +1201,7 @@ Index* read_index(IOReader* f, int io_flags) {
             }
         }
         read_HNSW(&idxhnsw->hnsw, f);
+        idxhnsw->hnsw.is_panorama = false;
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
@@ -1603,6 +1604,7 @@ IndexBinary* read_index_binary(IOReader* f, int io_flags) {
         IndexBinaryHNSW* idxhnsw = new IndexBinaryHNSW();
         read_index_binary_header(idxhnsw, f);
         read_HNSW(&idxhnsw->hnsw, f);
+        idxhnsw->hnsw.is_panorama = false;
         idxhnsw->storage = read_index_binary(f, io_flags);
         idxhnsw->own_fields = true;
         idx = idxhnsw;

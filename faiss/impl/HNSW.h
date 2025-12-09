@@ -146,6 +146,9 @@ struct HNSW {
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
+    /// use Panorama progressive pruning in search
+    bool is_panorama = false;
+
     // methods that initialize the tree sizes
 
     /// initialize the assign_probas and cum_nneighbor_per_level to
