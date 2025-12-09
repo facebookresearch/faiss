@@ -745,7 +745,7 @@ void IndexFlatPanorama::search_subset(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(batch_size == 1);
 
-    int nt = std::min(int(n), omp_get_max_threads());
+    [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
     {
