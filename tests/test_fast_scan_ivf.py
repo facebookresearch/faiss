@@ -4,9 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import os
 import unittest
-import tempfile
 
 import numpy as np
 import faiss
@@ -821,18 +819,11 @@ class TestIVFAQFastScan(unittest.TestCase):
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        D1, I1 = index.search(ds.get_queries(), 1)
+        _, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        _, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,LSQ4x4fs_Nlsq2x4')
@@ -929,16 +920,9 @@ class TestIVFPAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,PLSQ2x3x4fsr_Nlsq2x4')
