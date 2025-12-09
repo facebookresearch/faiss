@@ -12,5 +12,5 @@ namespace gpu {
 
 WARP_SELECT_IMPL(float, true, 1024, 8);
 
-}
+} // namespace gpu
 } // namespace faiss
