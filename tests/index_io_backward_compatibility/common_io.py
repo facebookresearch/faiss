@@ -101,6 +101,17 @@ INDEX_TYPES = [
     "FlatL2Panorama8_256",
 ]
 
+INDEX_BINARY_TYPES = [
+    "BIVF10",
+    "BFlat",
+    "BHNSW32",
+    "BIVF128_BHNSW32",
+    "BHash12",
+    "BHash5x6",
+    "IDMap2,BFlat",
+    "BFlat,IDMap2",
+]
+
 
 def sanitize_index_key(index_key: str) -> str:
     return (
@@ -149,6 +160,32 @@ def create_and_populate_index(
     return index
 
 
+def create_and_populate_binary_index(
+    index_key: str, xb: np.ndarray
+) -> faiss.IndexBinary:
+    d = xb.shape[1] * 8
+    index = faiss.index_binary_factory(d, index_key)
+    print(f"Created binary index type: {type(index).__name__}")
+
+    if not index.is_trained:
+        print("Training binary index...")
+        index.train(xb)
+
+    print(f"Adding {xb.shape[0]} vectors to binary index")
+    # IDMap indexes require add_with_ids() instead of add()
+    if "IDMap" in index_key:
+        ids = np.arange(xb.shape[0], dtype=np.int64)
+        print(
+            f"Using add_with_ids() with IDs from 0 to {xb.shape[0] - 1}"
+        )
+        index.add_with_ids(xb, ids)
+    else:
+        index.add(xb)
+
+    print(f"Binary index now contains {index.ntotal} vectors")
+    return index
+
+
 def write_index(
     index: faiss.Index, output_dir: str, filename: str
 ) -> None:
@@ -163,10 +200,30 @@ def write_index(
     faiss.write_index(index, index_path)
 
 
+def write_binary_index(
+    index: faiss.IndexBinary, output_dir: str, filename: str
+) -> None:
+    index_path = os.path.join(output_dir, filename)
+
+    # Delete existing file if present
+    if os.path.exists(index_path):
+        print(f"Deleting existing binary index file: {index_path}")
+        os.remove(index_path)
+
+    print(f"Writing binary index to: {index_path}")
+    faiss.write_index_binary(index, index_path)
+
+
 def read_index(input_dir: str, filename: str) -> faiss.Index:
     index_path = os.path.join(input_dir, filename)
     print(f"Loading index from: {index_path}")
     return faiss.read_index(index_path)
+
+
+def read_binary_index(input_dir: str, filename: str) -> faiss.IndexBinary:
+    index_path = os.path.join(input_dir, filename)
+    print(f"Loading binary index from: {index_path}")
+    return faiss.read_index_binary(index_path)
 
 
 def test_index_file(index_info: dict, input_dir: str) -> dict:
@@ -202,6 +259,39 @@ def test_index_file(index_info: dict, input_dir: str) -> dict:
         }
 
 
+def test_binary_index_file(index_info: dict, input_dir: str) -> dict:
+    index_key = index_info["index_key"]
+    filename = index_info["filename"]
+
+    try:
+        print(f"Testing binary: {index_key}")
+
+        index = read_binary_index(input_dir, filename)
+        print(f"Binary index type: {type(index).__name__}")
+        print(f"Binary index contains {index.ntotal} vectors")
+
+        # Delete index file after successful verification
+        index_path = os.path.join(input_dir, filename)
+        print(f"Deleting binary index file: {index_path}")
+        os.remove(index_path)
+
+        return {
+            "index_key": index_key,
+            "index_type": type(index).__name__,
+            "status": "success",
+            "ntotal": int(index.ntotal),
+        }
+
+    except Exception as e:
+        print(f"ERROR: Failed to process binary {index_key}: {e}")
+        traceback.print_exc()
+        return {
+            "index_key": index_key,
+            "status": "failed",
+            "error": str(e),
+        }
+
+
 def test_write_index_type(
     index_key: str, output_dir: str, xb: np.ndarray, writer: str
 ) -> dict:
@@ -224,6 +314,36 @@ def test_write_index_type(
 
     except Exception as e:
         print(f"ERROR: Failed to process {index_key}: {e}")
+        traceback.print_exc()
+        return {
+            "index_key": index_key,
+            "status": "failed",
+            "error": str(e),
+        }
+
+
+def test_write_binary_index_type(
+    index_key: str, output_dir: str, xb: np.ndarray, writer: str
+) -> dict:
+    try:
+        print(f"Testing binary: {index_key}")
+
+        index = create_and_populate_binary_index(index_key, xb)
+
+        safe_key = sanitize_index_key(index_key)
+        filename = f"{writer}_{safe_key}.faissindex"
+        write_binary_index(index, output_dir, filename)
+
+        return {
+            "index_key": index_key,
+            "index_type": type(index).__name__,
+            "status": "success",
+            "ntotal": int(index.ntotal),
+            "filename": filename,
+        }
+
+    except Exception as e:
+        print(f"ERROR: Failed to process binary {index_key}: {e}")
         traceback.print_exc()
         return {
             "index_key": index_key,
@@ -271,6 +391,55 @@ def write_test_all_files(
         return 1
 
     print("\nAll index types serialized successfully")
+
+    # Now write binary indexes
+    print(
+        f"\n{writer.capitalize()} Writer: "
+        "Testing binary index serialization"
+    )
+    print(f"\nGenerating binary vectors: {nb} database vectors, dimension {d}")
+    assert d % 8 == 0
+    np.random.seed(seed)
+    xb_binary = np.random.randint(256, size=(nb, int(d / 8))).astype('uint8')
+    write_vectors(output_dir, xb_binary, f"vectors_db_binary_{writer}.npy")
+
+    binary_results = []
+    for index_key in INDEX_BINARY_TYPES:
+        result = test_write_binary_index_type(
+            index_key, output_dir, xb_binary, writer
+        )
+        binary_results.append(result)
+
+    write_metadata(
+        output_dir,
+        f"{writer}_binary_metadata.json",
+        writer,
+        d,
+        nb,
+        binary_results,
+    )
+
+    binary_success_count = sum(
+        1 for r in binary_results if r["status"] == "success"
+    )
+    binary_fail_count = len(binary_results) - binary_success_count
+
+    print(f"{writer.capitalize()} Writer: Binary Summary")
+    print(f"Total binary index types tested: {len(INDEX_BINARY_TYPES)}")
+    print(f"Successful: {binary_success_count}")
+    print(f"Failed: {binary_fail_count}")
+
+    if binary_fail_count > 0:
+        print("\nSome binary index types failed to serialize")
+        for result in binary_results:
+            if result["status"] == "failed":
+                print(
+                    f"  - {result['index_key']}: "
+                    f"{result.get('error', 'Unknown error')}"
+                )
+        return 1
+
+    print("\nAll binary index types serialized successfully")
     return 0
 
 
@@ -329,6 +498,67 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
 
     print("\nAll index types deserialized and searched successfully")
     print(f"Index serialization compatibility verified: {writer} → {reader}")
+
+    # Now read binary indexes
+    print(f"\n{reader} Reader: Testing binary index deserialization")
+    binary_metadata = read_metadata(
+        input_dir, f"{writer}_binary_metadata.json"
+    )
+
+    print(f"Binary metadata from {writer} build:")
+    print_metadata(binary_metadata)
+
+    binary_results = []
+    binary_success_count = 0
+    binary_fail_count = 0
+    for index_info in binary_metadata["results"]:
+        if index_info["status"] != "success":
+            print(
+                f"\nSkipping binary {index_info['index_key']} "
+                f"(failed during {writer} writing)"
+            )
+            continue
+
+        result = test_binary_index_file(index_info, input_dir)
+        binary_results.append(result)
+
+        if result["status"] == "success":
+            binary_success_count += 1
+        else:
+            binary_fail_count += 1
+
+    print(f"{reader} Reader: Binary Summary")
+    print(f"Total binary index types tested: {len(binary_results)}")
+    print(f"Successful: {binary_success_count}")
+    print(f"Failed: {binary_fail_count}")
+
+    # Clean up remaining files
+    cleanup_files(
+        [
+            os.path.join(input_dir, f"{writer}_binary_metadata.json"),
+            os.path.join(input_dir, f"vectors_db_binary_{writer}.npy"),
+        ]
+    )
+
+    if binary_fail_count > 0:
+        print(
+            "\nSome binary index types failed to deserialize/search. "
+            "Malformed fourcc indicates extra non-backward-compatible bytes "
+            "being written."
+        )
+        for result in binary_results:
+            if result["status"] == "failed":
+                print(
+                    f"  - {result['index_key']}: "
+                    f"{result.get('error', 'Unknown error')}"
+                )
+        return 1
+
+    print("\nAll binary index types deserialized and searched successfully")
+    print(
+        f"Binary index serialization compatibility verified: "
+        f"{writer} → {reader}"
+    )
     return 0
 
 
