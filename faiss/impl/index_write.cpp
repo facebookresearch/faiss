@@ -336,7 +336,7 @@ void write_ProductQuantizer(const ProductQuantizer* pq, const char* fname) {
     write_ProductQuantizer(pq, &writer);
 }
 
-static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
+static void write_HNSW(const HNSW* hnsw, IOWriter* f, bool extrabyte) {
     WRITEVECTOR(hnsw->assign_probas);
     WRITEVECTOR(hnsw->cum_nneighbor_per_level);
     WRITEVECTOR(hnsw->levels);
@@ -347,6 +347,9 @@ static void write_HNSW(const HNSW* hnsw, IOWriter* f) {
     WRITE1(hnsw->max_level);
     WRITE1(hnsw->efConstruction);
     WRITE1(hnsw->efSearch);
+    if (extrabyte) {
+        WRITE1(hnsw->is_panorama); // should be backwards incompatible. test it.
+    }
 
     // // deprecated field
     // WRITE1(hnsw->upper_beam);
@@ -848,7 +851,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITE1(idx_hnsw_cagra->num_base_level_search_entrypoints);
             WRITE1(idx_hnsw_cagra->numeric_type_);
         }
-        write_HNSW(&idxhnsw->hnsw, f);
+        write_HNSW(&idxhnsw->hnsw, f, false);
         if (io_flags & IO_FLAG_SKIP_STORAGE) {
             uint32_t n4 = fourcc("null");
             WRITE1(n4);
@@ -1204,7 +1207,7 @@ void write_index_binary(const IndexBinary* idx, IOWriter* f) {
             WRITE1(idxcagra->num_base_level_search_entrypoints);
         }
 
-        write_HNSW(&idxhnsw->hnsw, f);
+        write_HNSW(&idxhnsw->hnsw, f, true);
         write_index_binary(idxhnsw->storage, f);
     } else if (
             const IndexBinaryIDMap* idxmap =
