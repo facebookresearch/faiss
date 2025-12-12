@@ -763,6 +763,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexFlatL2 )
     DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )
+    DOWNCAST ( IndexRefinePanorama )
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
