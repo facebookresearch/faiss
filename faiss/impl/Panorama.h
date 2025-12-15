@@ -73,6 +73,15 @@ struct Panorama {
     void compute_query_cum_sums(const float* query, float* query_cum_sums)
             const;
 
+    /// Copy single entry (code and cum_sum) from one location to another.
+    void copy_entry(
+            uint8_t* dest_codes,
+            uint8_t* src_codes,
+            float* dest_cum_sums,
+            float* src_cum_sums,
+            size_t dest_idx,
+            size_t src_idx) const;
+
     /// Panorama's core progressive filtering algorithm:
     /// Process vectors in batches for cache efficiency. For each batch:
     /// 1. Apply ID selection filter and initialize distances
