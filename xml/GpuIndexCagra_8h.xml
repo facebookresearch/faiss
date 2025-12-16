@@ -507,7 +507,7 @@
 <codeline lineno="99"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Note:<sp/>if<sp/>`dim`<sp/>is<sp/>not<sp/>multiple<sp/>of<sp/>`pq_dim`,<sp/>a<sp/>random<sp/>rotation<sp/>is<sp/>always</highlight></codeline>
 <codeline lineno="100"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>applied<sp/>to<sp/>the<sp/>input<sp/>data<sp/>and<sp/>queries<sp/>to<sp/>transform<sp/>the<sp/>working<sp/>space</highlight></codeline>
 <codeline lineno="101"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>from<sp/>`dim`<sp/>to<sp/>`rot_dim`,<sp/>which<sp/>may<sp/>be<sp/>slightly<sp/>larger<sp/>than<sp/>the<sp/>original</highlight></codeline>
-<codeline lineno="102"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>space<sp/>and<sp/>and<sp/>is<sp/>a<sp/>multiple<sp/>of<sp/>`pq_dim`<sp/>(`rot_dim<sp/>%<sp/>pq_dim<sp/>==<sp/>0`).</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>space<sp/>and<sp/>is<sp/>a<sp/>multiple<sp/>of<sp/>`pq_dim`<sp/>(`rot_dim<sp/>%<sp/>pq_dim<sp/>==<sp/>0`).</highlight></codeline>
 <codeline lineno="103"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>However,<sp/>this<sp/>transform<sp/>is<sp/>not<sp/>necessary<sp/>when<sp/>`dim`<sp/>is<sp/>multiple<sp/>of</highlight></codeline>
 <codeline lineno="104"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>`pq_dim`</highlight></codeline>
 <codeline lineno="105"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/><sp/><sp/>(`dim<sp/>==<sp/>rot_dim`,<sp/>hence<sp/>no<sp/>need<sp/>in<sp/>adding<sp/>&quot;extra&quot;<sp/>data<sp/>columns<sp/>/</highlight></codeline>
