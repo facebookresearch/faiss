@@ -160,6 +160,7 @@
     <innerclass refid="structfaiss_1_1IndexRandom" prot="public">faiss::IndexRandom</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefine" prot="public">faiss::IndexRefine</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineFlat" prot="public">faiss::IndexRefineFlat</innerclass>
+    <innerclass refid="structfaiss_1_1IndexRefinePanorama" prot="public">faiss::IndexRefinePanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexRefineSearchParameters" prot="public">faiss::IndexRefineSearchParameters</innerclass>
     <innerclass refid="classfaiss_1_1IndexReplicasTemplate" prot="public">faiss::IndexReplicasTemplate</innerclass>
     <innerclass refid="structfaiss_1_1IndexResidualQuantizer" prot="public">faiss::IndexResidualQuantizer</innerclass>

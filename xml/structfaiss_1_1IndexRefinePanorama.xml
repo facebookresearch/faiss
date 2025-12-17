@@ -1,61 +1,53 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1IndexNSGSQ" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::IndexNSGSQ</compoundname>
-    <basecompoundref refid="structfaiss_1_1IndexNSG" prot="public" virt="non-virtual">faiss::IndexNSG</basecompoundref>
-    <includes refid="IndexNSG_8h" local="no">IndexNSG.h</includes>
+  <compounddef id="structfaiss_1_1IndexRefinePanorama" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexRefinePanorama</compoundname>
+    <basecompoundref refid="structfaiss_1_1IndexRefine" prot="public" virt="non-virtual">faiss::IndexRefine</basecompoundref>
+    <includes refid="IndexRefine_8h" local="no">IndexRefine.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexNSGSQ_1a38c9f220980eaa347a1c8e74431f4b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefinePanorama_1a754e1ba1c52e523522d8f6539ba69ec4" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexNSGSQ::IndexNSGSQ</definition>
+        <definition>faiss::IndexRefinePanorama::IndexRefinePanorama</definition>
+        <argsstring>(Index *base_index, Index *refine_index)</argsstring>
+        <name>IndexRefinePanorama</name>
+        <qualifiedname>faiss::IndexRefinePanorama::IndexRefinePanorama</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>base_index</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>refine_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="101" column="14" bodyfile="faiss/IndexRefine.h" bodystart="101" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexRefinePanorama_1a8e94dffef7fb47c7de622b8cef8d7447" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::IndexRefinePanorama::IndexRefinePanorama</definition>
         <argsstring>()</argsstring>
-        <name>IndexNSGSQ</name>
-        <qualifiedname>faiss::IndexNSGSQ::IndexNSGSQ</qualifiedname>
+        <name>IndexRefinePanorama</name>
+        <qualifiedname>faiss::IndexRefinePanorama::IndexRefinePanorama</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="101" column="5"/>
+        <location file="faiss/IndexRefine.h" line="104" column="5" bodyfile="faiss/IndexRefine.h" bodystart="104" bodyend="104"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSGSQ_1a525943edbd1fa3df0a3824404b40ab8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::IndexNSGSQ::IndexNSGSQ</definition>
-        <argsstring>(int d, ScalarQuantizer::QuantizerType qtype, int M, MetricType metric=METRIC_L2)</argsstring>
-        <name>IndexNSGSQ</name>
-        <qualifiedname>faiss::IndexNSGSQ::IndexNSGSQ</qualifiedname>
-        <param>
-          <type>int</type>
-          <declname>d</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
-          <declname>qtype</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>M</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
-          <declname>metric</declname>
-          <defval><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="102" column="5"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a5f8d4dc0ef239c5d6d29252c728dd9fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefinePanorama_1a62501725f45a52db9a2df76a95c2281e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::build</definition>
-        <argsstring>(idx_t n, const float *x, idx_t *knn_graph, int GK)</argsstring>
-        <name>build</name>
-        <qualifiedname>faiss::IndexNSG::build</qualifiedname>
+        <definition>void faiss::IndexRefinePanorama::search</definition>
+        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>search</name>
+        <qualifiedname>faiss::IndexRefinePanorama::search</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexRefine_1a3e058732a4f1c613319568d8f11bac4e">search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -65,27 +57,122 @@
           <declname>x</declname>
         </param>
         <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>knn_graph</declname>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>k</declname>
         </param>
         <param>
-          <type>int</type>
-          <declname>GK</declname>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>query n vectors of dimension d to the index.</para>
+<para>return at most k vectors. If there are not enough results for a query, the result array is padded with -1s.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors to search, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of extracted vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output pairwise distances, size n*k </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels of the NNs, size n*k </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="56" column="10"/>
+        <location file="faiss/IndexRefine.h" line="106" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a9fc38a1c373f96d845364143ff933207" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::add</definition>
+        <definition>void faiss::IndexRefine::train</definition>
+        <argsstring>(idx_t n, const float *x) override</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::IndexRefine::train</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Perform training on a representative set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>nb of training vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>training vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="43" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexRefine::add</definition>
         <argsstring>(idx_t n, const float *x) override</argsstring>
         <name>add</name>
-        <qualifiedname>faiss::IndexNSG::add</qualifiedname>
+        <qualifiedname>faiss::IndexRefine::add</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1a1b5e9ac70adbce0897dd6c8276ad96f2">add</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -120,40 +207,31 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="58" column="10"/>
+        <location file="faiss/IndexRefine.h" line="45" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a024c25f4757df14fb741ca9a6fb4cfcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::train</definition>
-        <argsstring>(idx_t n, const float *x) override</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::IndexNSG::train</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532">train</reimplements>
-        <reimplementedby refid="structfaiss_1_1IndexNSGPQ_1afa79e49f634ed87c0f597b9d9fc2f111">train</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
+        <definition>void faiss::IndexRefine::reset</definition>
+        <argsstring>() override</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::IndexRefine::reset</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
         <briefdescription>
-<para>Trains the storage if needed. </para>
+<para>removes all elements from the database. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="61" column="10"/>
+        <location file="faiss/IndexRefine.h" line="47" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a84e2a955e1a1a939b934e4e8be849943" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a0b8e378d2a5f040f7c82e2ddcc1f27c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::search</definition>
-        <argsstring>(idx_t n, const float *x, idx_t k, float *distances, idx_t *labels, const SearchParameters *params=nullptr) const override</argsstring>
-        <name>search</name>
-        <qualifiedname>faiss::IndexNSG::search</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a4bec1a04796e20ea0bfa24bad5b246e3">search</reimplements>
+        <definition>void faiss::IndexRefine::range_search</definition>
+        <argsstring>(idx_t n, const float *x, float radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const override</argsstring>
+        <name>range_search</name>
+        <qualifiedname>faiss::IndexRefine::range_search</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba">range_search</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -163,16 +241,12 @@
           <declname>x</declname>
         </param>
         <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>k</declname>
+          <type>float</type>
+          <declname>radius</declname>
         </param>
         <param>
-          <type>float *</type>
-          <declname>distances</declname>
-        </param>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>labels</declname>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
+          <declname>result</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
@@ -180,20 +254,55 @@
           <defval>nullptr</defval>
         </param>
         <briefdescription>
-<para>entry point for search </para>
         </briefdescription>
         <detaileddescription>
+<para>query n vectors of dimension d to the index.</para>
+<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors to search, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>radius</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>search radius </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>result table </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="64" column="10"/>
+        <location file="faiss/IndexRefine.h" line="57" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::reconstruct</definition>
+        <definition>void faiss::IndexRefine::reconstruct</definition>
         <argsstring>(idx_t key, float *recons) const override</argsstring>
         <name>reconstruct</name>
-        <qualifiedname>faiss::IndexNSG::reconstruct</qualifiedname>
+        <qualifiedname>faiss::IndexRefine::reconstruct</qualifiedname>
         <reimplements refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c">reconstruct</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
@@ -228,49 +337,105 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="72" column="10"/>
+        <location file="faiss/IndexRefine.h" line="65" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a88fbd9b8c4fc905a51ba202c1a447e34" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>void faiss::IndexNSG::reset</definition>
-        <argsstring>() override</argsstring>
-        <name>reset</name>
-        <qualifiedname>faiss::IndexNSG::reset</qualifiedname>
-        <reimplements refid="structfaiss_1_1Index_1a849361f5f0ab0aba8d419c86f2594191">reset</reimplements>
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a4f4fa1a53bd9603ea000e556cbd6940f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexRefine::sa_code_size</definition>
+        <argsstring>() const override</argsstring>
+        <name>sa_code_size</name>
+        <qualifiedname>faiss::IndexRefine::sa_code_size</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415">sa_code_size</reimplements>
         <briefdescription>
-<para>removes all elements from the database. </para>
         </briefdescription>
         <detaileddescription>
+<para>size of the produced codes in bytes </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="74" column="10"/>
+        <location file="faiss/IndexRefine.h" line="69" column="12"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexNSG_1aeba92394231e269fd0ffd8fe1e6240ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1a8f7cc71fbded7eaf35bcccf41603085d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexNSG::check_knn_graph</definition>
-        <argsstring>(const idx_t *knn_graph, idx_t n, int K) const</argsstring>
-        <name>check_knn_graph</name>
-        <qualifiedname>faiss::IndexNSG::check_knn_graph</qualifiedname>
-        <param>
-          <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
-          <declname>knn_graph</declname>
-        </param>
+        <definition>void faiss::IndexRefine::sa_encode</definition>
+        <argsstring>(idx_t n, const float *x, uint8_t *bytes) const override</argsstring>
+        <name>sa_encode</name>
+        <qualifiedname>faiss::IndexRefine::sa_encode</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c">sa_encode</reimplements>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
         </param>
         <param>
-          <type>int</type>
-          <declname>K</declname>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>bytes</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>encode a set of vectors</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size n * d </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>bytes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output encoded vectors, size n * <ref refid="structfaiss_1_1IndexRefine_1a4f4fa1a53bd9603ea000e556cbd6940f" kindref="member">sa_code_size()</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="76" column="10"/>
+        <location file="faiss/IndexRefine.h" line="71" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::IndexRefine::sa_decode</definition>
+        <argsstring>(idx_t n, const uint8_t *bytes, float *x) const override</argsstring>
+        <name>sa_decode</name>
+        <qualifiedname>faiss::IndexRefine::sa_decode</qualifiedname>
+        <reimplements refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7">sa_decode</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>bytes</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The sa_decode decodes from the index_refine, which is assumed to be more accurate </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="75" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -461,88 +626,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/Index.h" line="199" column="18" bodyfile="faiss/Index.h" bodystart="199" bodyend="217"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::range_search</definition>
-        <argsstring>(idx_t n, const float *x, float radius, RangeSearchResult *result, const SearchParameters *params=nullptr) const</argsstring>
-        <name>range_search</name>
-        <qualifiedname>faiss::Index::range_search</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexFlat_1af3c56bae3b28baeb3e50aed74006a319">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1ac0874451b339054470272d4eea5d62ff">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a3c9714bf7fb9a2268ac4f3a46c286151">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a1f8213db15661df4339ec9ce4e2244a9">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlatDedup_1a4a3599498e1c2d548836cc049056609e">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5374e209bc7577e848577c1d21fb5260">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a97da3c2d6eeba361a5af60a6a07e62e9">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRefine_1a0b8e378d2a5f040f7c82e2ddcc1f27c0">range_search</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c">range_search</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>float</type>
-          <declname>radius</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> *</type>
-          <declname>result</declname>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>query n vectors of dimension d to the index.</para>
-<para>return all vectors with distance &lt; radius. Note that many indexes do not implement the range_search (only the k-NN search is mandatory).</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>n</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>x</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>input vectors to search, size n * d </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>radius</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>search radius </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>result</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>result table </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="230" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1098,173 +1181,6 @@
         </inbodydescription>
         <location file="faiss/Index.h" line="369" column="30"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>size_t</type>
-        <definition>virtual size_t faiss::Index::sa_code_size</definition>
-        <argsstring>() const</argsstring>
-        <name>sa_code_size</name>
-        <qualifiedname>faiss::Index::sa_code_size</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a89b7f3a7b35db764bc071aa5ab302b1d">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexLattice_1ac7c27786912bed039ef8d05a82db0acb">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1ad803358238737eda7f185b486e6081fe">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRefine_1a4f4fa1a53bd9603ea000e556cbd6940f">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a4fa54c45e907f5bb75b7c3dd46a24b9a">sa_code_size</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1a656e29f7f050b80cde5ca7e8b56eb960">sa_code_size</reimplementedby>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>size of the produced codes in bytes </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="374" column="20"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::sa_encode</definition>
-        <argsstring>(idx_t n, const float *x, uint8_t *bytes) const</argsstring>
-        <name>sa_encode</name>
-        <qualifiedname>faiss::Index::sa_encode</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1Index2Layer_1a205db18d83af2fc98faab3f0066e8c9f">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1a32fa884e35be46b3244b90012bdcc016">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFastScan_1a57ce48e11490ead0689aee9df3a502be">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVF_1a9d28b314ee008589eb41ce2823a088b6">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexLattice_1abbe02fd8270a854f7b25285d9a0a5752">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexLSH_1aac0eb8b22431e490a28fdc566a461af5">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPQ_1a438591a838aad52cd69e021c7b93110f">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a5fc4aff1479e447435e1f08b2a88d1d6">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1afbcc303ffecc074f1665af171f692054">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRefine_1a8f7cc71fbded7eaf35bcccf41603085d">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a7f4963d9ea750a494151478fc56df10a">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1ab2dfc5e5adcbfa9fcf5ecd30ddd407a8">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1ae8c5ed4f9c2145aa074986bf1be3af46">sa_encode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexNeuralNetCodec_1a90a9e0e680a9734bf24b029e4218a43c">sa_encode</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const float *</type>
-          <declname>x</declname>
-        </param>
-        <param>
-          <type>uint8_t *</type>
-          <declname>bytes</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>encode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>n</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>x</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>input vectors, size n * d </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>bytes</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>output encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="382" column="18"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type>void</type>
-        <definition>virtual void faiss::Index::sa_decode</definition>
-        <argsstring>(idx_t n, const uint8_t *bytes, float *x) const</argsstring>
-        <name>sa_decode</name>
-        <qualifiedname>faiss::Index::sa_decode</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1Index2Layer_1aefba1e901bddaa812e853a8203b2f0b5">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizer_1af849220ce067392a737dcbca233326ad">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a3b295457588bd7f11782f84683eaff8d">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a1464960b17488f8ee8ae600c07f7b72c">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1adb7494c07ce7812226ad41c8b6dca992">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1a79ceddd914b81c8fa67c6d27e4a3dc12">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1463a1ea2123d2b672e7d74069a711f0">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexLattice_1a3fd27c778f435412336110785ba7124d">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexLSH_1ac1eaeea883e641e50c5b770fb02edc25">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPQ_1a104104a52149ebdcb8ab79dc01180b6e">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPQFastScan_1afe1ce4711953b8a679f83210fee8a30b">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexPreTransform_1a544759849772119156adf601287e50b0">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRaBitQ_1a65ebc38abdff6a6fd9df63fecc775fa9">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRaBitQFastScan_1ac182edfc908e98ee0603c6725dd24e74">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMaxFP16_1a9844bbc4ea9311674b0921108988222d">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexRowwiseMinMax_1ab04e9ffc561f4de77af64d9ab122d58f">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexScalarQuantizer_1a96a5ca50fbdef07c7773bb9a27e860e5">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1ae10ad1a5c025337984277a68f4da4338">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a0ce87a96183a3bbd1b3d70b6fe7e30ce">sa_decode</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexNeuralNetCodec_1a959a2734dcc70267ac5b900fbe0d7825">sa_decode</reimplementedby>
-        <param>
-          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>n</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>bytes</declname>
-        </param>
-        <param>
-          <type>float *</type>
-          <declname>x</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>decode a set of vectors</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>n</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of vectors </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>bytes</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>input encoded vectors, size n * <ref refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" kindref="member">sa_code_size()</ref> </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>x</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>output vectors, size n * d </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/Index.h" line="390" column="18"/>
-      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>virtual void faiss::Index::merge_from</definition>
@@ -1368,163 +1284,81 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a8ef9a38cf4c8876a2d2d2c309125cd68" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref></type>
-        <definition>NSG faiss::IndexNSG::nsg</definition>
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::IndexRefine::base_index</definition>
         <argsstring></argsstring>
-        <name>nsg</name>
-        <qualifiedname>faiss::IndexNSG::nsg</qualifiedname>
+        <name>base_index</name>
+        <qualifiedname>faiss::IndexRefine::base_index</qualifiedname>
         <briefdescription>
-<para>the link structure </para>
+<para>faster index to pre-select the vectors that should be filtered </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="28" column="9" bodyfile="faiss/IndexNSG.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="26" column="11" bodyfile="faiss/IndexRefine.h" bodystart="26" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a6e95ff08dcda324764fead2438ae04aa" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+        <definition>Index* faiss::IndexRefine::refine_index</definition>
+        <argsstring></argsstring>
+        <name>refine_index</name>
+        <qualifiedname>faiss::IndexRefine::refine_index</qualifiedname>
+        <briefdescription>
+<para>refinement index </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexRefine.h" line="29" column="11" bodyfile="faiss/IndexRefine.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1ae7f472c54df7253435355a4f65c3f479" prot="public" static="no" mutable="no">
         <type>bool</type>
-        <definition>bool faiss::IndexNSG::own_fields</definition>
+        <definition>bool faiss::IndexRefine::own_fields</definition>
         <argsstring></argsstring>
         <name>own_fields</name>
-        <qualifiedname>faiss::IndexNSG::own_fields</qualifiedname>
-        <initializer>= false</initializer>
+        <qualifiedname>faiss::IndexRefine::own_fields</qualifiedname>
         <briefdescription>
-<para>the sequential storage </para>
+<para>should the base index be deallocated? </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="31" column="10" bodyfile="faiss/IndexNSG.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="31" column="10" bodyfile="faiss/IndexRefine.h" bodystart="31" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a2223ff2754ef47461d8dbe8fd0161562" prot="public" static="no" mutable="no">
-        <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-        <definition>Index* faiss::IndexNSG::storage</definition>
-        <argsstring></argsstring>
-        <name>storage</name>
-        <qualifiedname>faiss::IndexNSG::storage</qualifiedname>
-        <initializer>= nullptr</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="32" column="11" bodyfile="faiss/IndexNSG.h" bodystart="32" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a48d5640864be98b5db017f7459c2f3fc" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a40b4d1cbf95190426fce28a63179e678" prot="public" static="no" mutable="no">
         <type>bool</type>
-        <definition>bool faiss::IndexNSG::is_built</definition>
+        <definition>bool faiss::IndexRefine::own_refine_index</definition>
         <argsstring></argsstring>
-        <name>is_built</name>
-        <qualifiedname>faiss::IndexNSG::is_built</qualifiedname>
-        <initializer>= false</initializer>
+        <name>own_refine_index</name>
+        <qualifiedname>faiss::IndexRefine::own_refine_index</qualifiedname>
         <briefdescription>
-<para>the index is built or not </para>
+<para>same with the refinement index </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="35" column="10" bodyfile="faiss/IndexNSG.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="32" column="10" bodyfile="faiss/IndexRefine.h" bodystart="32" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1ab42dd8a2ccd955bac425b68fc604d7a9" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexNSG::GK</definition>
+      <memberdef kind="variable" id="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::IndexRefine::k_factor</definition>
         <argsstring></argsstring>
-        <name>GK</name>
-        <qualifiedname>faiss::IndexNSG::GK</qualifiedname>
-        <initializer>= 64</initializer>
-        <briefdescription>
-<para>K of KNN graph for building. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="38" column="9" bodyfile="faiss/IndexNSG.h" bodystart="38" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1aa51ad0b18442396b6df5ee99fefe21c6" prot="public" static="no" mutable="no">
-        <type>char</type>
-        <definition>char faiss::IndexNSG::build_type</definition>
-        <argsstring></argsstring>
-        <name>build_type</name>
-        <qualifiedname>faiss::IndexNSG::build_type</qualifiedname>
-        <initializer>= 0</initializer>
+        <name>k_factor</name>
+        <qualifiedname>faiss::IndexRefine::k_factor</qualifiedname>
+        <initializer>= 1</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>indicate how to build a knn graph<itemizedlist>
-<listitem><para>0: build <ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> with brute force search</para>
-</listitem><listitem><para>1: build <ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> with <ref refid="structfaiss_1_1NNDescent" kindref="compound">NNDescent</ref> </para>
-</listitem></itemizedlist>
-</para>
+<para>factor between k requested in search and the k requested from the base_index (should be &gt;= 1) </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="43" column="10" bodyfile="faiss/IndexNSG.h" bodystart="43" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1ac1fbc1508f8ab8d4675da13048195ff9" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexNSG::nndescent_S</definition>
-        <argsstring></argsstring>
-        <name>nndescent_S</name>
-        <qualifiedname>faiss::IndexNSG::nndescent_S</qualifiedname>
-        <initializer>= 10</initializer>
-        <briefdescription>
-<para>parameters for nndescent </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="46" column="9" bodyfile="faiss/IndexNSG.h" bodystart="46" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a13e6a2f1d8cd072b6005b86320acd3da" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexNSG::nndescent_R</definition>
-        <argsstring></argsstring>
-        <name>nndescent_R</name>
-        <qualifiedname>faiss::IndexNSG::nndescent_R</qualifiedname>
-        <initializer>= 100</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="47" column="9" bodyfile="faiss/IndexNSG.h" bodystart="47" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a8f4fad5145737f8c485aeb4b094d9003" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexNSG::nndescent_L</definition>
-        <argsstring></argsstring>
-        <name>nndescent_L</name>
-        <qualifiedname>faiss::IndexNSG::nndescent_L</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="48" column="9" bodyfile="faiss/IndexNSG.h" bodystart="48" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a30deb28e0190cb7be986cf5e1584ce63" prot="public" static="no" mutable="no">
-        <type>int</type>
-        <definition>int faiss::IndexNSG::nndescent_iter</definition>
-        <argsstring></argsstring>
-        <name>nndescent_iter</name>
-        <qualifiedname>faiss::IndexNSG::nndescent_iter</qualifiedname>
-        <initializer>= 10</initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="49" column="9" bodyfile="faiss/IndexNSG.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/IndexRefine.h" line="36" column="11" bodyfile="faiss/IndexRefine.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -1650,7 +1484,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>SQ index topped with with a <ref refid="structfaiss_1_1NSG" kindref="compound">NSG</ref> structure to access elements more efficiently. </para>
+<para>Version where the search calls search_subset, allowing for <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> refinement. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">
@@ -1658,14 +1492,14 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
       <node id="2">
-        <label>faiss::IndexNSG</label>
-        <link refid="structfaiss_1_1IndexNSG"/>
+        <label>faiss::IndexRefine</label>
+        <link refid="structfaiss_1_1IndexRefine"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexNSGSQ</label>
-        <link refid="structfaiss_1_1IndexNSGSQ"/>
+        <label>faiss::IndexRefinePanorama</label>
+        <link refid="structfaiss_1_1IndexRefinePanorama"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1676,90 +1510,70 @@
         <link refid="structfaiss_1_1Index"/>
       </node>
       <node id="2">
-        <label>faiss::IndexNSG</label>
-        <link refid="structfaiss_1_1IndexNSG"/>
+        <label>faiss::IndexRefine</label>
+        <link refid="structfaiss_1_1IndexRefine"/>
         <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="4" relation="usage">
-          <edgelabel>nsg</edgelabel>
-        </childnode>
         <childnode refid="3" relation="usage">
-          <edgelabel>storage</edgelabel>
+          <edgelabel>base_index</edgelabel>
+          <edgelabel>refine_index</edgelabel>
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexNSGSQ</label>
-        <link refid="structfaiss_1_1IndexNSGSQ"/>
+        <label>faiss::IndexRefinePanorama</label>
+        <link refid="structfaiss_1_1IndexRefinePanorama"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::NSG</label>
-        <link refid="structfaiss_1_1NSG"/>
-        <childnode refid="5" relation="usage">
-          <edgelabel>rng</edgelabel>
-        </childnode>
-      </node>
-      <node id="5">
-        <label>faiss::RandomGenerator</label>
-        <link refid="structfaiss_1_1RandomGenerator"/>
-      </node>
     </collaborationgraph>
-    <location file="faiss/IndexNSG.h" line="100" column="1" bodyfile="faiss/IndexNSG.h" bodystart="100" bodyend="107"/>
+    <location file="faiss/IndexRefine.h" line="100" column="1" bodyfile="faiss/IndexRefine.h" bodystart="100" bodyend="113"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IndexNSG_1a9fc38a1c373f96d845364143ff933207" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>add_ex</name></member>
-      <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>add_sa_codes</name></member>
-      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>add_with_ids_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>assign</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a5f8d4dc0ef239c5d6d29252c728dd9fa" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>build</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1aa51ad0b18442396b6df5ee99fefe21c6" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>build_type</name></member>
-      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>check_compatible_for_merge</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1aeba92394231e269fd0ffd8fe1e6240ea" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>check_knn_graph</name></member>
-      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>component_t</name></member>
-      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>compute_residual</name></member>
-      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>d</name></member>
-      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1ab42dd8a2ccd955bac425b68fc604d7a9" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>GK</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a2c671de0473165fd9372731a2a7065f0" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>IndexNSG</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a055fc2195abfa7237ce15be50d8c385d" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>IndexNSG</name></member>
-      <member refid="structfaiss_1_1IndexNSGSQ_1a38c9f220980eaa347a1c8e74431f4b83" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>IndexNSGSQ</name></member>
-      <member refid="structfaiss_1_1IndexNSGSQ_1a525943edbd1fa3df0a3824404b40ab8e" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>IndexNSGSQ</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a48d5640864be98b5db017f7459c2f3fc" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>is_built</name></member>
-      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>merge_from</name></member>
-      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>metric_type</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a30deb28e0190cb7be986cf5e1584ce63" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>nndescent_iter</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a8f4fad5145737f8c485aeb4b094d9003" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>nndescent_L</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a13e6a2f1d8cd072b6005b86320acd3da" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>nndescent_R</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1ac1fbc1508f8ab8d4675da13048195ff9" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>nndescent_S</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a8ef9a38cf4c8876a2d2d2c309125cd68" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>nsg</name></member>
-      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>ntotal</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a6e95ff08dcda324764fead2438ae04aa" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>own_fields</name></member>
-      <member refid="structfaiss_1_1Index_1a5d69b1965b4cd9d11a57222dfc89b7ba" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>range_search</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>reconstruct_n</name></member>
-      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>remove_ids</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a88fbd9b8c4fc905a51ba202c1a447e34" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1Index_1a5a050b805d4836afdf8f09251ad8b415" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1Index_1af39e4b00d097ac05dc9e31c52bfb9ed7" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>sa_decode</name></member>
-      <member refid="structfaiss_1_1Index_1a16770c0addc888b92deee089d6f97e7c" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a84e2a955e1a1a939b934e4e8be849943" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>search</name></member>
-      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>search_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>search_subset</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a2223ff2754ef47461d8dbe8fd0161562" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>storage</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a024c25f4757df14fb741ca9a6fb4cfcb" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>train_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexNSGSQ</scope><name>~Index</name></member>
-      <member refid="structfaiss_1_1IndexNSG_1a0d323b66b6af8592194344497a1f9422" prot="public" virt="non-virtual"><scope>faiss::IndexNSGSQ</scope><name>~IndexNSG</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a0801c6b9554ce88deb63b72f9e28f7f1" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>add_ex</name></member>
+      <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>add_sa_codes</name></member>
+      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>add_with_ids_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>assign</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a37ee42fdfa98d629a09d23fb0916b972" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>base_index</name></member>
+      <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>check_compatible_for_merge</name></member>
+      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>compute_residual</name></member>
+      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>compute_residual_n</name></member>
+      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a873d71af2ad5894ccda0d2319bf7e3b6" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefine</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a80aa8975ad0091a1d0796e092b4734be" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefine</name></member>
+      <member refid="structfaiss_1_1IndexRefinePanorama_1a754e1ba1c52e523522d8f6539ba69ec4" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefinePanorama</name></member>
+      <member refid="structfaiss_1_1IndexRefinePanorama_1a8e94dffef7fb47c7de622b8cef8d7447" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefinePanorama</name></member>
+      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>k_factor</name></member>
+      <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>merge_from</name></member>
+      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1ae7f472c54df7253435355a4f65c3f479" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>own_fields</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a40b4d1cbf95190426fce28a63179e678" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>own_refine_index</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a0b8e378d2a5f040f7c82e2ddcc1f27c0" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>range_search</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a01356d39a4eda730517a295c2c7bb869" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>reconstruct_batch</name></member>
+      <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a226cf986bc8653321a4a10e6f93e5e88" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>refine_index</name></member>
+      <member refid="structfaiss_1_1Index_1ab70f7d0acb4a2f22857da3b17559ae82" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>remove_ids</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1ad5a9963cdf57b3dec44e9e5204f86e42" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a4f4fa1a53bd9603ea000e556cbd6940f" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>sa_code_size</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1acff97ef10e27f43dc72f5faa21c67a4e" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>sa_decode</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a8f7cc71fbded7eaf35bcccf41603085d" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>sa_encode</name></member>
+      <member refid="structfaiss_1_1IndexRefinePanorama_1a62501725f45a52db9a2df76a95c2281e" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>search</name></member>
+      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>search_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a2c8558fcff4af954a0988348fdbc1c37" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>search_subset</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1a759db97766dcfe29c162e3339d68bd7d" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>train_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>~Index</name></member>
+      <member refid="structfaiss_1_1IndexRefine_1abe2783095540eff63ece8a3bfe7f60b6" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>~IndexRefine</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
