@@ -468,9 +468,15 @@ IndexIVF* parse_IndexIVF(
         uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
         return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il, nb_bits);
     }
-    if (match("RaBitQfs(_[0-9]+)?")) {
-        int bbs = mres_to_int(sm[1], 32, 1);
-        return new IndexIVFRaBitQFastScan(get_q(), d, nlist, mt, bbs, own_il);
+    // Accepts: "RaBitQfs" (default 1-bit, batch size 32)
+    //          "RaBitQfs{nb_bits}" (e.g., "RaBitQfs4")
+    //          "RaBitQfs_64" (1-bit, batch size 64)
+    //          "RaBitQfs{nb_bits}_{bbs}" (e.g., "RaBitQfs4_64")
+    if (match("RaBitQfs([0-9])?(_[0-9]+)?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexIVFRaBitQFastScan(
+                get_q(), d, nlist, mt, bbs, own_il, nb_bits);
     }
     return nullptr;
 }

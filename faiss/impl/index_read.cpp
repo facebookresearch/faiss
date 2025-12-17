@@ -1447,7 +1447,7 @@ Index* read_index(IOReader* f, int io_flags) {
     else if (h == fourcc("Iwrf")) {
         IndexIVFRaBitQFastScan* ivrqfs = new IndexIVFRaBitQFastScan();
         read_ivf_header(ivrqfs, f);
-        read_RaBitQuantizer(&ivrqfs->rabitq, f, false);
+        read_RaBitQuantizer(&ivrqfs->rabitq, f);
         READ1(ivrqfs->by_residual);
         READ1(ivrqfs->code_size);
         READ1(ivrqfs->bbs);
@@ -1456,7 +1456,7 @@ Index* read_index(IOReader* f, int io_flags) {
         READ1(ivrqfs->implem);
         READ1(ivrqfs->qb);
         READ1(ivrqfs->centered);
-        READVECTOR(ivrqfs->factors_storage);
+        READVECTOR(ivrqfs->flat_storage);
 
         // Initialize FastScan base class fields
         const size_t M_fastscan = (ivrqfs->d + 3) / 4;

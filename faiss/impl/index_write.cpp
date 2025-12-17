@@ -1063,7 +1063,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("Iwrf");
         WRITE1(h);
         write_ivf_header(ivrqfs, f);
-        write_RaBitQuantizer(&ivrqfs->rabitq, f, false);
+        write_RaBitQuantizer(&ivrqfs->rabitq, f);
         WRITE1(ivrqfs->by_residual);
         WRITE1(ivrqfs->code_size);
         WRITE1(ivrqfs->bbs);
@@ -1072,7 +1072,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrqfs->implem);
         WRITE1(ivrqfs->qb);
         WRITE1(ivrqfs->centered);
-        WRITEVECTOR(ivrqfs->factors_storage);
+        WRITEVECTOR(ivrqfs->flat_storage);
         write_InvertedLists(ivrqfs->invlists, f);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");
