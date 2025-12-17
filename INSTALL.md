@@ -116,7 +116,7 @@ For more ways to install cuVS 25.10, refer to the [RAPIDS Installation Guide](ht
 
 ### Building with Intel(R) SVS
 
-[Intel(R) Scalable Vector Search (SVS)](https://github.com/intel/svs) is a library for high-performance vector search. Building Faiss with SVS enabled allows using SVS implementations of graph-based indices (e.g., Vamana).
+[Intel(R) Scalable Vector Search (SVS)](https://github.com/intel/ScalableVectorSearch) is a library for high-performance vector search. Building Faiss with SVS enabled allows using SVS implementations of graph-based indices (e.g., Vamana).
 
 The SVS library will be automatically fetched and built by CMake if `FAISS_ENABLE_SVS` is set to `ON`.
 
