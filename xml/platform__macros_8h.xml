@@ -1265,7 +1265,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="115" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="115" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="121" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="121" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a8bf69ed1a28e4db9afeea26ef5d0358e" prot="public" static="no">
         <name>posix_memalign_free</name>
@@ -1276,7 +1276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="116" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="116" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="122" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="122" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a8e7a3bf6003d72a62606f343c2db6245" prot="public" static="no">
         <name>ALIGNED</name>
@@ -1288,7 +1288,38 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="123" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="123" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="130" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="platform__macros_8h_1aec1bc9078e503a72e556dbaba7bd87df" prot="public" static="no">
+        <name>FAISS_PACKED</name>
+        <initializer>__attribute__((packed))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/platform_macros.h" line="131" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="platform__macros_8h_1a5db2a02c2a94ef34720cb33a8fa41e79" prot="public" static="no">
+        <name>FAISS_PACK_STRUCTS_BEGIN</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/platform_macros.h" line="135" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="platform__macros_8h_1af21bb2324a630f7e1e7ec34eecfd564c" prot="public" static="no">
+        <name>FAISS_PACK_STRUCTS_END</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/platform_macros.h" line="136" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="136" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1ad7d30d301b7cb834b0671c66350fdb57" prot="public" static="no">
         <name>FAISS_ALWAYS_INLINE</name>
@@ -1299,7 +1330,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="126" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="126" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="138" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="138" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1ad7da871f62652973e7e79c5445bd31a4" prot="public" static="no">
         <name>FAISS_DEPRECATED</name>
@@ -1310,7 +1341,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="133" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="133" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="145" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="145" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a623b886a145661236460fb8c95129d83" prot="public" static="no">
         <name>FAISS_PRAGMA_IMPRECISE_LOOP</name>
@@ -1320,7 +1351,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="184" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="184" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="196" column="10" bodyfile="faiss/impl/platform_macros.h" bodystart="196" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a0d4be9896374a3068094c050b1fdcb07" prot="public" static="no">
         <name>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</name>
@@ -1330,7 +1361,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="185" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="185" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="197" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="197" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a67c757ea9f8ddbedbacd421c993b5582" prot="public" static="no">
         <name>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</name>
@@ -1340,7 +1371,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="186" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="186" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="198" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="198" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a1cecf34df3997353b021628410b9ef3e" prot="public" static="no">
         <name>Swap2Bytes</name>
@@ -1352,7 +1383,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="199" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="199" bodyend="-1"/>
+        <location file="faiss/impl/platform_macros.h" line="211" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="211" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="platform__macros_8h_1a09e79c0144214aac268e716674e71474" prot="public" static="no">
         <name>Swap4Bytes</name>
@@ -1365,7 +1396,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="201" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="201" bodyend="203"/>
+        <location file="faiss/impl/platform_macros.h" line="213" column="9" bodyfile="faiss/impl/platform_macros.h" bodystart="213" bodyend="215"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -1482,100 +1513,112 @@
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_ALWAYS_INLINE<sp/>__forceinline</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="109"><highlight class="normal"></highlight></codeline>
-<codeline lineno="110"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"><sp/>*<sp/>Linux<sp/>and<sp/>OSX</highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/>*******************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="114"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_API</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>posix_memalign_free<sp/>free</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">//<sp/>aligned<sp/>should<sp/>be<sp/>*in<sp/>front*<sp/>of<sp/>the<sp/>declaration,<sp/>for<sp/>compatibility<sp/>with</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment">//<sp/>windows</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="120"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>SWIG</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ALIGNED(x)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="122"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="123"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ALIGNED(x)<sp/>__attribute__((aligned(x)))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="124"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="125"><highlight class="normal"></highlight></codeline>
-<codeline lineno="126"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_ALWAYS_INLINE<sp/>__attribute__((always_inline))<sp/>inline</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="127"><highlight class="normal"></highlight></codeline>
-<codeline lineno="128"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight></codeline>
-<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)<sp/>||<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_DEPRECATED(msg)<sp/>__attribute__((deprecated(msg)))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_DEPRECATED(msg)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>GCC<sp/>or<sp/>Clang</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"></highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Localized<sp/>enablement<sp/>of<sp/>imprecise<sp/>floating<sp/>point<sp/>operations</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>need<sp/>to<sp/>use<sp/>all<sp/>3<sp/>macros<sp/>to<sp/>cover<sp/>all<sp/>compilers.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_MSC_VER)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="141"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>__pragma(float_control(precise,<sp/>off,<sp/>push))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>__pragma(float_control(pop))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__PPC__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="145"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
-<codeline lineno="146"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize_width(4)<sp/>interleave_count(8)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="147"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="149"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="150"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
-<codeline lineno="152"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize(enable)<sp/>interleave(enable)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="153"><highlight class="normal"></highlight></codeline>
-<codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>off</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="155"><highlight class="normal"></highlight></codeline>
-<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>following<sp/>ifdef<sp/>is<sp/>needed,<sp/>because<sp/>old<sp/>versions<sp/>of<sp/>clang<sp/>(prior<sp/>to<sp/>14)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment">//<sp/>do<sp/>not<sp/>generate<sp/>FMAs<sp/>on<sp/>x86<sp/>unless<sp/>this<sp/>pragma<sp/>is<sp/>used.<sp/>On<sp/>the<sp/>other<sp/>hand,</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="158"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ARM<sp/>does<sp/>not<sp/>support<sp/>the<sp/>following<sp/>pragma<sp/>flag.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO:<sp/>find<sp/>out<sp/>how<sp/>to<sp/>enable<sp/>FMAs<sp/>on<sp/>clang<sp/>10<sp/>and<sp/>earlier.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__x86_64__)<sp/>&amp;&amp;<sp/>(defined(__clang_major__)<sp/>&amp;&amp;<sp/>(__clang_major__<sp/>&gt;<sp/>10))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="161"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="162"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="165"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="168"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__GNUC__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unfortunately,<sp/>GCC<sp/>does<sp/>not<sp/>provide<sp/>a<sp/>pragma<sp/>for<sp/>detecting<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>we<sp/>have<sp/>to<sp/>stick<sp/>to<sp/>GNUC,<sp/>which<sp/>is<sp/>defined<sp/>by<sp/>MANY<sp/>compilers.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>why<sp/>clang/icc<sp/>needs<sp/>to<sp/>be<sp/>checked<sp/>first.</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="173"><highlight class="normal"></highlight></codeline>
-<codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_COMPILER<sp/>check<sp/>for<sp/>the<sp/>classic<sp/>ICC</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_LLVM_COMPILER<sp/>for<sp/>ICX</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
-<codeline lineno="179"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>push_options&quot;)<sp/>\</highlight></codeline>
-<codeline lineno="180"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>optimize<sp/>(\&quot;unroll-loops,associative-math,no-signed-zeros\&quot;)&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="181"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>\</highlight></codeline>
-<codeline lineno="182"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>pop_options&quot;)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="184"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="185"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="186"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="187"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment">//<sp/>MSVC<sp/>uses<sp/>pragma<sp/>pack<sp/>instead<sp/>of<sp/>__attribute__((packed))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Use<sp/>FAISS_PACK_STRUCTS_BEGIN/END<sp/>to<sp/>wrap<sp/>packed<sp/>structure<sp/>definitions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACKED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACK_STRUCTS_BEGIN<sp/>__pragma(pack(push,<sp/>1))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACK_STRUCTS_END<sp/>__pragma(pack(pop))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************</highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/>*<sp/>Linux<sp/>and<sp/>OSX</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*******************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_API</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>posix_memalign_free<sp/>free</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment">//<sp/>aligned<sp/>should<sp/>be<sp/>*in<sp/>front*<sp/>of<sp/>the<sp/>declaration,<sp/>for<sp/>compatibility<sp/>with</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="comment">//<sp/>windows</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>SWIG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ALIGNED(x)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACKED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ALIGNED(x)<sp/>__attribute__((aligned(x)))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACKED<sp/>__attribute__((packed))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="comment">//<sp/>On<sp/>non-Windows,<sp/>FAISS_PACKED<sp/>handles<sp/>packing,<sp/>so<sp/>these<sp/>are<sp/>no-ops</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACK_STRUCTS_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PACK_STRUCTS_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_ALWAYS_INLINE<sp/>__attribute__((always_inline))<sp/>inline</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__GNUC__)<sp/>||<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_DEPRECATED(msg)<sp/>__attribute__((deprecated(msg)))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_DEPRECATED(msg)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>GCC<sp/>or<sp/>Clang</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Localized<sp/>enablement<sp/>of<sp/>imprecise<sp/>floating<sp/>point<sp/>operations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>need<sp/>to<sp/>use<sp/>all<sp/>3<sp/>macros<sp/>to<sp/>cover<sp/>all<sp/>compilers.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(_MSC_VER)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="153"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>__pragma(float_control(precise,<sp/>off,<sp/>push))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>__pragma(float_control(pop))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__clang__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__PPC__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
+<codeline lineno="158"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize_width(4)<sp/>interleave_count(8)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="160"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP<sp/>\</highlight></codeline>
+<codeline lineno="164"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;clang<sp/>loop<sp/>vectorize(enable)<sp/>interleave(enable)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>off</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="comment">//<sp/>the<sp/>following<sp/>ifdef<sp/>is<sp/>needed,<sp/>because<sp/>old<sp/>versions<sp/>of<sp/>clang<sp/>(prior<sp/>to<sp/>14)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="comment">//<sp/>do<sp/>not<sp/>generate<sp/>FMAs<sp/>on<sp/>x86<sp/>unless<sp/>this<sp/>pragma<sp/>is<sp/>used.<sp/>On<sp/>the<sp/>other<sp/>hand,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ARM<sp/>does<sp/>not<sp/>support<sp/>the<sp/>following<sp/>pragma<sp/>flag.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment">//<sp/>TODO:<sp/>find<sp/>out<sp/>how<sp/>to<sp/>enable<sp/>FMAs<sp/>on<sp/>clang<sp/>10<sp/>and<sp/>earlier.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(__x86_64__)<sp/>&amp;&amp;<sp/>(defined(__clang_major__)<sp/>&amp;&amp;<sp/>(__clang_major__<sp/>&gt;<sp/>10))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="174"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;float_control(precise,<sp/>off,<sp/>push)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>_Pragma(&quot;float_control(pop)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(__GNUC__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Unfortunately,<sp/>GCC<sp/>does<sp/>not<sp/>provide<sp/>a<sp/>pragma<sp/>for<sp/>detecting<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment">//<sp/>So,<sp/>we<sp/>have<sp/>to<sp/>stick<sp/>to<sp/>GNUC,<sp/>which<sp/>is<sp/>defined<sp/>by<sp/>MANY<sp/>compilers.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>why<sp/>clang/icc<sp/>needs<sp/>to<sp/>be<sp/>checked<sp/>first.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_COMPILER<sp/>check<sp/>for<sp/>the<sp/>classic<sp/>ICC</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight><highlight class="comment">//<sp/>todo:<sp/>add<sp/>__INTEL_LLVM_COMPILER<sp/>for<sp/>ICX</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="188"><highlight class="normal"></highlight></codeline>
-<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>on</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="190"><highlight class="normal"></highlight></codeline>
-<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************</highlight></codeline>
-<codeline lineno="192"><highlight class="comment"><sp/>*<sp/>BIGENDIAN<sp/>specific<sp/>macros</highlight></codeline>
-<codeline lineno="193"><highlight class="comment"><sp/>*******************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="194"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>!defined(_MSC_VER)<sp/>&amp;&amp;<sp/>\</highlight></codeline>
-<codeline lineno="195"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(defined(__BYTE_ORDER__)<sp/>&amp;&amp;<sp/>(__BYTE_ORDER__<sp/>==<sp/>__ORDER_BIG_ENDIAN__))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="196"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_BIG_ENDIAN</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="197"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="198"><highlight class="normal"></highlight></codeline>
-<codeline lineno="199"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>Swap2Bytes(val)<sp/>((((val)<sp/>&gt;&gt;<sp/>8)<sp/>&amp;<sp/>0x00FF)<sp/>|<sp/>(((val)<sp/>&lt;&lt;<sp/>8)<sp/>&amp;<sp/>0xFF00))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN<sp/>\</highlight></codeline>
+<codeline lineno="191"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>push_options&quot;)<sp/>\</highlight></codeline>
+<codeline lineno="192"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>optimize<sp/>(\&quot;unroll-loops,associative-math,no-signed-zeros\&quot;)&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END<sp/>\</highlight></codeline>
+<codeline lineno="194"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>_Pragma(&quot;GCC<sp/>pop_options&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_LOOP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_PRAGMA_IMPRECISE_FUNCTION_END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="200"><highlight class="normal"></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>Swap4Bytes(val)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="202"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>((((val)<sp/>&gt;&gt;<sp/>24)<sp/>&amp;<sp/>0x000000FF)<sp/>|<sp/>(((val)<sp/>&gt;&gt;<sp/>8)<sp/>&amp;<sp/>0x0000FF00)<sp/>|<sp/>\</highlight></codeline>
-<codeline lineno="203"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/>(((val)<sp/>&lt;&lt;<sp/>8)<sp/>&amp;<sp/>0x00FF0000)<sp/>|<sp/>(((val)<sp/>&lt;&lt;<sp/>24)<sp/>&amp;<sp/>0xFF000000))</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight><highlight class="comment">//<sp/>clang-format<sp/>on</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight><highlight class="comment">/*******************************************************</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/>*<sp/>BIGENDIAN<sp/>specific<sp/>macros</highlight></codeline>
+<codeline lineno="205"><highlight class="comment"><sp/>*******************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>!defined(_MSC_VER)<sp/>&amp;&amp;<sp/>\</highlight></codeline>
+<codeline lineno="207"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(defined(__BYTE_ORDER__)<sp/>&amp;&amp;<sp/>(__BYTE_ORDER__<sp/>==<sp/>__ORDER_BIG_ENDIAN__))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_BIG_ENDIAN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>Swap2Bytes(val)<sp/>((((val)<sp/>&gt;&gt;<sp/>8)<sp/>&amp;<sp/>0x00FF)<sp/>|<sp/>(((val)<sp/>&lt;&lt;<sp/>8)<sp/>&amp;<sp/>0xFF00))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>Swap4Bytes(val)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="214"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>((((val)<sp/>&gt;&gt;<sp/>24)<sp/>&amp;<sp/>0x000000FF)<sp/>|<sp/>(((val)<sp/>&gt;&gt;<sp/>8)<sp/>&amp;<sp/>0x0000FF00)<sp/>|<sp/>\</highlight></codeline>
+<codeline lineno="215"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/>(((val)<sp/>&lt;&lt;<sp/>8)<sp/>&amp;<sp/>0x00FF0000)<sp/>|<sp/>(((val)<sp/>&lt;&lt;<sp/>24)<sp/>&amp;<sp/>0xFF000000))</highlight></codeline>
     </programlisting>
     <location file="faiss/impl/platform_macros.h"/>
   </compounddef>
