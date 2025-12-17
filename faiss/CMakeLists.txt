@@ -356,7 +356,7 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   include(FetchContent)
-  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v1.0.0-dev/svs-cpp-runtime-bindings-1.0.0-NIGHTLY-20251120-808-private.tar.gz")
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.1.0/svs-cpp-runtime-bindings-0.1.0.tar.gz" CACHE STRING "URL to fetch SVS runtime library")
   FetchContent_Declare(
       svs
       URL "${SVS_URL}"
