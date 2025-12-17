@@ -21,7 +21,8 @@ namespace rabitq_utils {
  * These can be stored either embedded in codes (IndexRaBitQ) or separately
  * (IndexRaBitQFastScan).
  */
-struct BaseFactorsData {
+FAISS_PACK_STRUCTS_BEGIN
+struct FAISS_PACKED BaseFactorsData {
     // ||or - c||^2 - ((metric==IP) ? ||or||^2 : 0)
     float or_minus_c_l2sqr = 0;
     float dp_multiplier = 0;
@@ -31,7 +32,7 @@ struct BaseFactorsData {
  * Includes error bound for lower bound computation in two-stage search.
  * Inherits base factors to maintain layout compatibility.
  */
-struct FactorsData : BaseFactorsData {
+struct FAISS_PACKED FactorsData : BaseFactorsData {
     // Error bound for lower bound computation in two-stage search
     // Used in formula: lower_bound = est_distance - f_error * g_error
     // Only allocated when nb_bits > 1
@@ -42,12 +43,13 @@ struct FactorsData : BaseFactorsData {
  * Used to store normalization and scaling factors for the extra bits
  * (ex_bits) that encode magnitude information beyond the sign bit.
  */
-struct ExFactorsData {
+struct FAISS_PACKED ExFactorsData {
     // Additive correction factor for ex-bit reconstruction
     float f_add_ex = 0;
     // Scaling/rescaling factor for ex-bit reconstruction
     float f_rescale_ex = 0;
 };
+FAISS_PACK_STRUCTS_END
 
 /** Query-specific factors computed during search for RaBitQ distance
  * computation. Used by both IndexRaBitQ and IndexRaBitQFastScan
@@ -62,6 +64,9 @@ struct QueryFactorsData {
     float qr_norm_L2sqr = 0;
 
     float int_dot_scale = 1;
+
+    float g_error = 0;
+    std::vector<float> rotated_q;
 };
 
 /** Ideal quantizer radii for quantizers of 1..8 bits, optimized to minimize
@@ -77,13 +82,15 @@ FAISS_API extern const float Z_MAX_BY_QB[8];
  * @param d             dimensionality
  * @param centroid      database centroid (nullptr if not used)
  * @param metric_type   distance metric (L2 or Inner Product)
+ * @param compute_error whether to compute f_error (false for 1-bit mode)
  * @return              computed factors for distance computation
  */
 FactorsData compute_vector_factors(
         const float* x,
         size_t d,
         const float* centroid,
-        MetricType metric_type);
+        MetricType metric_type,
+        bool compute_error = true);
 
 /** Compute intermediate values needed for vector factor computation.
  * Separated out to allow different bit packing strategies while sharing
@@ -110,6 +117,7 @@ void compute_vector_intermediate_values(
  * @param dp_oO         sum of |or_i - c_i|
  * @param d             dimensionality
  * @param metric_type   distance metric
+ * @param compute_error whether to compute f_error (false for 1-bit mode)
  * @return              computed factors
  */
 FactorsData compute_factors_from_intermediates(
@@ -117,7 +125,8 @@ FactorsData compute_factors_from_intermediates(
         float or_L2sqr,
         float dp_oO,
         size_t d,
-        MetricType metric_type);
+        MetricType metric_type,
+        bool compute_error = true);
 
 /** Compute query factors for RaBitQ distance computation.
  * This consolidates the query processing logic shared between implementations.
@@ -172,6 +181,58 @@ void set_bit_standard(uint8_t* code, size_t bit_index);
  */
 void set_bit_fastscan(uint8_t* code, size_t bit_index);
 
+/** Compute adjusted 1-bit distance from normalized LUT distance.
+ * This is the core distance formula shared by all RaBitQ handlers.
+ *
+ * @param normalized_distance  Distance from SIMD LUT lookup (after
+ * normalization)
+ * @param db_factors          Database vector factors (BaseFactorsData or
+ * FactorsData)
+ * @param query_factors       Query factors computed during search
+ * @param centered            Whether centered quantization is used
+ * @param qb                  Number of quantization bits
+ * @param d                   Dimensionality
+ * @return                    Adjusted distance value
+ */
+inline float compute_1bit_adjusted_distance(
+        float normalized_distance,
+        const BaseFactorsData& db_factors,
+        const QueryFactorsData& query_factors,
+        bool centered,
+        size_t qb,
+        size_t d) {
+    float adjusted_distance;
+
+    if (centered) {
+        // For centered mode: normalized_distance contains the raw XOR
+        // contribution. Apply the signed odd integer quantization formula:
+        // int_dot = ((1 << qb) - 1) * d - 2 * xor_dot_product
+        int64_t int_dot = ((1 << qb) - 1) * d;
+        int_dot -= 2 * static_cast<int64_t>(normalized_distance);
+
+        adjusted_distance = query_factors.qr_to_c_L2sqr +
+                db_factors.or_minus_c_l2sqr -
+                2 * db_factors.dp_multiplier * int_dot *
+                        query_factors.int_dot_scale;
+    } else {
+        // For non-centered quantization: use traditional formula
+        float final_dot = normalized_distance - query_factors.c34;
+        adjusted_distance = db_factors.or_minus_c_l2sqr +
+                query_factors.qr_to_c_L2sqr -
+                2 * db_factors.dp_multiplier * final_dot;
+    }
+
+    // Apply inner product correction if needed
+    if (query_factors.qr_norm_L2sqr != 0.0f) {
+        adjusted_distance =
+                -0.5f * (adjusted_distance - query_factors.qr_norm_L2sqr);
+    } else {
+        adjusted_distance = std::max(0.0f, adjusted_distance);
+    }
+
+    return adjusted_distance;
+}
+
 /** Extract multi-bit code on-the-fly from packed ex-bit codes.
  * This inline function extracts a single code value without unpacking the
  * entire array, enabling efficient on-the-fly decoding during distance
@@ -202,6 +263,61 @@ inline int extract_code_inline(
     }
 
     return code_value;
+}
+
+/** Compute full multi-bit distance from sign bits and ex-bit codes.
+ * This is the core distance computation shared by RaBitQFastScan handlers.
+ *
+ * The multi-bit distance combines the sign bit (1-bit) with additional
+ * magnitude bits (ex_bits) to compute a more accurate distance estimate.
+ *
+ * @param sign_bits       unpacked sign bits (1-bit codes in standard format)
+ * @param ex_code         packed ex-bit codes
+ * @param ex_fac          ex-bit factors (f_add_ex, f_rescale_ex)
+ * @param rotated_q       rotated query vector
+ * @param qr_to_c_L2sqr   precomputed ||query_rotated - centroid||^2
+ * @param qr_norm_L2sqr   precomputed ||query_rotated||^2 (0 for L2 metric)
+ * @param d               dimensionality
+ * @param ex_bits         number of extra bits (nb_bits - 1)
+ * @param metric_type     distance metric (L2 or Inner Product)
+ * @return                computed full multi-bit distance
+ */
+inline float compute_full_multibit_distance(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExFactorsData& ex_fac,
+        const float* rotated_q,
+        float qr_to_c_L2sqr,
+        float qr_norm_L2sqr,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    float ex_ip = 0.0f;
+    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
+
+    for (size_t i = 0; i < d; i++) {
+        const size_t byte_idx = i / 8;
+        const size_t bit_offset = i % 8;
+        const bool sign_bit = (sign_bits[byte_idx] >> bit_offset) & 1;
+
+        int ex_code_val = extract_code_inline(ex_code, i, ex_bits);
+
+        int total_code = (sign_bit ? 1 : 0) << ex_bits;
+        total_code += ex_code_val;
+        float reconstructed = static_cast<float>(total_code) + cb;
+
+        ex_ip += rotated_q[i] * reconstructed;
+    }
+
+    float dist = qr_to_c_L2sqr + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+
+    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+        dist = -0.5f * (dist - qr_norm_L2sqr);
+    } else {
+        dist = std::max(0.0f, dist);
+    }
+
+    return dist;
 }
 
 } // namespace rabitq_utils

@@ -16,6 +16,16 @@
 namespace faiss {
 namespace rabitq_utils {
 
+// Verify no unexpected padding in structures used for per-vector storage.
+// These checks ensure compute_per_vector_storage_size() remains accurate.
+static_assert(
+        sizeof(BaseFactorsData) == 8,
+        "BaseFactorsData has unexpected padding");
+static_assert(sizeof(FactorsData) == 12, "FactorsData has unexpected padding");
+static_assert(
+        sizeof(ExFactorsData) == 8,
+        "ExFactorsData has unexpected padding");
+
 // Ideal quantizer radii for quantizers of 1..8 bits, optimized to minimize
 // L2 reconstruction error.
 const float Z_MAX_BY_QB[8] = {
@@ -59,7 +69,8 @@ FactorsData compute_factors_from_intermediates(
         float or_L2sqr,
         float dp_oO,
         size_t d,
-        MetricType metric_type) {
+        MetricType metric_type,
+        bool compute_error) {
     constexpr float epsilon = std::numeric_limits<float>::epsilon();
     constexpr float kConstEpsilon =
             1.9f; // Error bound constant from RaBitQ paper
@@ -80,33 +91,35 @@ FactorsData compute_factors_from_intermediates(
             : norm_L2sqr;
     factors.dp_multiplier = inv_dp_oO * sqrt_norm_L2;
 
-    // Compute error bound for 1-bit quantization
-    const float xu_cb_norm_sqr = static_cast<float>(d) * 0.25f;
-    const float ip_resi_xucb = 0.5f * dp_oO;
+    // Compute error bound only if needed (skip for 1-bit mode)
+    if (compute_error) {
+        const float xu_cb_norm_sqr = static_cast<float>(d) * 0.25f;
+        const float ip_resi_xucb = 0.5f * dp_oO;
 
-    float tmp_error = 0.0f;
-    if (std::abs(ip_resi_xucb) > epsilon) {
-        const float ratio_sq =
-                (norm_L2sqr * xu_cb_norm_sqr) / (ip_resi_xucb * ip_resi_xucb);
-        if (ratio_sq > 1.0f) {
-            if (d == 1) {
-                tmp_error = sqrt_norm_L2 * kConstEpsilon *
-                        std::sqrt(ratio_sq - 1.0f);
-            } else {
-                tmp_error = sqrt_norm_L2 * kConstEpsilon *
-                        std::sqrt((ratio_sq - 1.0f) /
-                                  static_cast<float>(d - 1));
+        float tmp_error = 0.0f;
+        if (std::abs(ip_resi_xucb) > epsilon) {
+            const float ratio_sq = (norm_L2sqr * xu_cb_norm_sqr) /
+                    (ip_resi_xucb * ip_resi_xucb);
+            if (ratio_sq > 1.0f) {
+                if (d == 1) {
+                    tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                            std::sqrt(ratio_sq - 1.0f);
+                } else {
+                    tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                            std::sqrt((ratio_sq - 1.0f) /
+                                      static_cast<float>(d - 1));
+                }
             }
         }
-    }
 
-    // Apply metric-specific multiplier
-    if (metric_type == MetricType::METRIC_L2) {
-        factors.f_error = 2.0f * tmp_error;
-    } else if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
-        factors.f_error = 1.0f * tmp_error;
-    } else {
-        factors.f_error = 0.0f;
+        // Apply metric-specific multiplier
+        if (metric_type == MetricType::METRIC_L2) {
+            factors.f_error = 2.0f * tmp_error;
+        } else if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+            factors.f_error = 1.0f * tmp_error;
+        } else {
+            factors.f_error = 0.0f;
+        }
     }
 
     return factors;
@@ -116,12 +129,13 @@ FactorsData compute_vector_factors(
         const float* x,
         size_t d,
         const float* centroid,
-        MetricType metric_type) {
+        MetricType metric_type,
+        bool compute_error) {
     float norm_L2sqr, or_L2sqr, dp_oO;
     compute_vector_intermediate_values(
             x, d, centroid, norm_L2sqr, or_L2sqr, dp_oO);
     return compute_factors_from_intermediates(
-            norm_L2sqr, or_L2sqr, dp_oO, d, metric_type);
+            norm_L2sqr, or_L2sqr, dp_oO, d, metric_type, compute_error);
 }
 
 QueryFactorsData compute_query_factors(
@@ -144,6 +158,7 @@ QueryFactorsData compute_query_factors(
     } else {
         query_factors.qr_to_c_L2sqr = fvec_norm_L2sqr(query, d);
     }
+    query_factors.g_error = std::sqrt(query_factors.qr_to_c_L2sqr);
 
     // Rotate the query (subtract centroid)
     rotated_q.resize(d);

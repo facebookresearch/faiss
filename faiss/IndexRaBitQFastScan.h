@@ -20,6 +20,8 @@
 namespace faiss {
 
 // Import shared utilities from RaBitQUtils
+using rabitq_utils::BaseFactorsData;
+using rabitq_utils::ExFactorsData;
 using rabitq_utils::FactorsData;
 using rabitq_utils::QueryFactorsData;
 
@@ -40,9 +42,15 @@ struct IndexRaBitQFastScan : IndexFastScan {
     /// Center of all points (same as IndexRaBitQ)
     std::vector<float> center;
 
-    /// Extracted factors storage for batch processing
-    /// Size: ntotal, stores factors separately from packed codes
-    std::vector<FactorsData> factors_storage;
+    /// Per-vector auxiliary data (1-bit codes stored separately in `codes`)
+    ///
+    /// 1-bit codes (sign bits) are stored in the inherited `codes` array from
+    /// IndexFastScan in packed FastScan format for SIMD processing.
+    ///
+    /// This flat_storage holds per-vector factors and extra-bit codes:
+    /// Layout for 1-bit: [BaseFactorsData (8 bytes)]
+    /// Layout for multi-bit: [FactorsData (12B)][ex_codes][ExFactorsData (8B)]
+    std::vector<uint8_t> flat_storage;
 
     /// Default number of bits to quantize a query with
     uint8_t qb = 8;
@@ -55,7 +63,8 @@ struct IndexRaBitQFastScan : IndexFastScan {
     explicit IndexRaBitQFastScan(
             idx_t d,
             MetricType metric = METRIC_L2,
-            int bbs = 32);
+            int bbs = 32,
+            uint8_t nb_bits = 1);
 
     /// build from an existing IndexRaBitQ
     explicit IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs = 32);
@@ -65,6 +74,9 @@ struct IndexRaBitQFastScan : IndexFastScan {
     void add(idx_t n, const float* x) override;
 
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
+
+    /// Compute storage size per vector in flat_storage
+    size_t compute_per_vector_storage_size() const;
 
     void compute_float_LUT(
             float* lut,
@@ -83,7 +95,7 @@ struct IndexRaBitQFastScan : IndexFastScan {
             const SearchParameters* params = nullptr) const override;
 
     /// Override to create RaBitQ-specific handlers
-    void* make_knn_handler(
+    SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,
             int /*impl*/,
             idx_t n,
@@ -108,6 +120,8 @@ struct IndexRaBitQFastScan : IndexFastScan {
  * - Direct heap integration (no intermediate result storage)
  * - Batch-level computation of normalizers and query factors
  * - Preserves exact mathematical equivalence to original RaBitQ distances
+ * - Runtime boolean for multi-bit support
+ *
  * @tparam C Comparator type (CMin/CMax) for heap operations
  * @tparam with_id_map Whether to use id mapping (similar to HeapHandler)
  */
@@ -122,7 +136,8 @@ struct RaBitQHeapHandler
     int64_t* heap_labels;  // [nq * k]
     const size_t nq, k;
     const FastScanDistancePostProcessing&
-            context; // Processing context with query offset
+            context;         // Processing context with query offset
+    const bool is_multi_bit; // Runtime flag for multi-bit mode
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
@@ -137,13 +152,22 @@ struct RaBitQHeapHandler
             float* distances,
             int64_t* labels,
             const IDSelector* sel_in,
-            const FastScanDistancePostProcessing& context);
+            const FastScanDistancePostProcessing& context,
+            bool multi_bit);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final;
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
 
     void begin(const float* norms);
 
     void end();
+
+   private:
+    /// Compute full multi-bit distance for a candidate vector (multi-bit only)
+    float compute_full_multibit_distance(size_t db_idx, size_t q) const;
+
+    /// Compute lower bound using 1-bit distance and error bound (multi-bit
+    /// only)
+    float compute_lower_bound(float dist_1bit, size_t db_idx, size_t q) const;
 };
 
 } // namespace faiss

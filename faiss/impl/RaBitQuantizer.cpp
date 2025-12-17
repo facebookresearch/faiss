@@ -110,7 +110,7 @@ void RaBitQuantizer::compute_codes_core(
 
         // Use shared utilities for computing factors
         FactorsData factors_data = rabitq_utils::compute_vector_factors(
-                x_row, d, centroid_in, metric_type);
+                x_row, d, centroid_in, metric_type, ex_bits > 0);
 
         // Write appropriate factors based on nb_bits
         if (ex_bits == 0) {
@@ -326,44 +326,17 @@ float RaBitQDistanceComputerNotQ::distance_to_code_full(const uint8_t* code) {
     const ExFactorsData* ex_fac = reinterpret_cast<const ExFactorsData*>(
             ex_code + (d * ex_bits + 7) / 8);
 
-    // Compute inner product with on-the-fly code extraction
-    // OPTIMIZATION: Extract codes during dot product loop instead of unpacking
-    // all codes first. This eliminates buffer allocation, reduces memory
-    // accesses, and improves cache locality (5-10x speedup expected).
-    float ex_ip = 0;
-    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
-
-    for (size_t i = 0; i < d; i++) {
-        // Get sign bit from 1-bit codes (0 or 1)
-        bool sign_bit = rabitq_utils::extract_bit_standard(binary_data, i);
-
-        // Extract magnitude code on-the-fly (no unpacking required)
-        int ex_code_val =
-                rabitq_utils::extract_code_inline(ex_code, i, ex_bits);
-
-        // Form total code: total_code = sign_bit * 2^ex_bits + ex_code
-        int total_code = (sign_bit ? 1 : 0) << ex_bits;
-        total_code += ex_code_val;
-
-        // Reconstruction: u_cb[i] = total_code[i] + cb
-        float reconstructed = static_cast<float>(total_code) + cb;
-
-        // Compute contribution to inner product
-        ex_ip += rotated_q[i] * reconstructed;
-    }
-
-    // Compute refined distance using ex-bits factors
-    // L2^2 = ||query||^2 + ||db||^2 - 2*dot(query,db)
-    //      = qr_to_c_L2sqr + f_add_ex + f_rescale_ex * ex_ip
-    float refined_dist = query_fac.qr_to_c_L2sqr + ex_fac->f_add_ex +
-            ex_fac->f_rescale_ex * ex_ip;
-
-    if (metric_type == MetricType::METRIC_L2) {
-        return refined_dist;
-    } else {
-        // 2 * (or, q) = (||or - q||^2 - ||q||^2 - ||or||^2)
-        return -0.5f * (refined_dist - query_fac.qr_norm_L2sqr);
-    }
+    // Call shared utility directly with rotated_q pointer
+    return rabitq_utils::compute_full_multibit_distance(
+            binary_data,
+            ex_code,
+            *ex_fac,
+            rotated_q.data(),
+            query_fac.qr_to_c_L2sqr,
+            query_fac.qr_norm_L2sqr,
+            d,
+            ex_bits,
+            metric_type);
 }
 
 void RaBitQDistanceComputerNotQ::set_query(const float* x) {
@@ -517,47 +490,17 @@ float RaBitQDistanceComputerQ::distance_to_code_full(const uint8_t* code) {
     const ExFactorsData* ex_fac = reinterpret_cast<const ExFactorsData*>(
             ex_code + (d * ex_bits + 7) / 8);
 
-    // Compute inner product with on-the-fly code extraction
-    // OPTIMIZATION: Extract codes during dot product loop instead of unpacking
-    // all codes first. This eliminates buffer allocation, reduces memory
-    // accesses, and improves cache locality (5-10x speedup expected).
-    float ex_ip = 0;
-    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
-
-    for (size_t i = 0; i < d; i++) {
-        // Get sign bit from 1-bit codes (0 or 1)
-        bool sign_bit = rabitq_utils::extract_bit_standard(binary_data, i);
-
-        // Extract magnitude code on-the-fly (no unpacking required)
-        int ex_code_val =
-                rabitq_utils::extract_code_inline(ex_code, i, ex_bits);
-
-        // Form total code: total_code = sign_bit * 2^ex_bits + ex_code
-        int total_code = (sign_bit ? 1 : 0) << ex_bits;
-        total_code += ex_code_val;
-
-        // Reconstruction: u_cb[i] = total_code[i] + cb
-        float reconstructed = static_cast<float>(total_code) + cb;
-
-        // Compute contribution to inner product using FLOAT query
-        // CRITICAL: Must use rotated_q (float) instead of rotated_qq
-        // (quantized) because ex_factors were precomputed during encoding using
-        // float residuals. Using the same precision at search time maintains
-        // encoding/search consistency.
-        ex_ip += rotated_q[i] * reconstructed;
-    }
-
-    // Compute refined distance using ex-bits factors
-    // L2^2 = ||query||^2 + ||db||^2 - 2*dot(query,db)
-    //      = qr_to_c_L2sqr + f_add_ex + f_rescale_ex * ex_ip
-    float refined_dist = query_fac.qr_to_c_L2sqr + ex_fac->f_add_ex +
-            ex_fac->f_rescale_ex * ex_ip;
-
-    if (metric_type == MetricType::METRIC_L2) {
-        return refined_dist;
-    } else {
-        return -0.5f * (refined_dist - query_fac.qr_norm_L2sqr);
-    }
+    // Call shared utility directly with rotated_q pointer
+    return rabitq_utils::compute_full_multibit_distance(
+            binary_data,
+            ex_code,
+            *ex_fac,
+            rotated_q.data(),
+            query_fac.qr_to_c_L2sqr,
+            query_fac.qr_norm_L2sqr,
+            d,
+            ex_bits,
+            metric_type);
 }
 
 // Use shared constant from RaBitQUtils
