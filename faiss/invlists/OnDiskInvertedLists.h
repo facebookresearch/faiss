@@ -121,7 +121,7 @@ struct OnDiskInvertedLists : InvertedLists {
 
     LockLevels* locks;
 
-    // encapsulates the threads that are busy prefeteching
+    // encapsulates the threads that are busy prefetching
     struct OngoingPrefetch;
     OngoingPrefetch* pf;
     int prefetch_nthread;

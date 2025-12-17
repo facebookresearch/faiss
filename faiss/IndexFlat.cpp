@@ -103,13 +103,22 @@ namespace {
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
     idx_t nb;
-    const float* q;
     const float* b;
     size_t ndis;
+    size_t npartial_dot_products;
 
     float distance_to_code(const uint8_t* code) final {
         ndis++;
         return fvec_L2sqr(q, (float*)code, d);
+    }
+
+    float partial_dot_product(
+            const idx_t i,
+            const uint32_t offset,
+            const uint32_t num_components) final override {
+        npartial_dot_products++;
+        return fvec_inner_product(
+                q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -119,12 +128,13 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
-                      storage.code_size),
+                      storage.code_size,
+                      q),
               d(storage.d),
               nb(storage.ntotal),
-              q(q),
               b(storage.get_xb()),
-              ndis(0) {}
+              ndis(0),
+              npartial_dot_products(0) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -161,6 +171,50 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         dis1 = dp1;
         dis2 = dp2;
         dis3 = dp3;
+    }
+
+    void partial_dot_product_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dp0,
+            float& dp1,
+            float& dp2,
+            float& dp3,
+            const uint32_t offset,
+            const uint32_t num_components) final override {
+        npartial_dot_products += 4;
+
+        // compute first, assign next
+        const float* __restrict y0 =
+                reinterpret_cast<const float*>(codes + idx0 * code_size);
+        const float* __restrict y1 =
+                reinterpret_cast<const float*>(codes + idx1 * code_size);
+        const float* __restrict y2 =
+                reinterpret_cast<const float*>(codes + idx2 * code_size);
+        const float* __restrict y3 =
+                reinterpret_cast<const float*>(codes + idx3 * code_size);
+
+        float dp0_ = 0;
+        float dp1_ = 0;
+        float dp2_ = 0;
+        float dp3_ = 0;
+        fvec_inner_product_batch_4(
+                q + offset,
+                y0 + offset,
+                y1 + offset,
+                y2 + offset,
+                y3 + offset,
+                num_components,
+                dp0_,
+                dp1_,
+                dp2_,
+                dp3_);
+        dp0 = dp0_;
+        dp1 = dp1_;
+        dp2 = dp2_;
+        dp3 = dp3_;
     }
 };
 
@@ -663,15 +717,44 @@ void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
     Index::reconstruct_n(i, n, recons);
 }
 
-size_t IndexFlatPanorama::remove_ids(const IDSelector& /* sel */) {
-    FAISS_THROW_MSG("remove_ids not implemented for IndexFlatPanorama");
-    return 0;
+size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            // should be removed
+        } else {
+            if (i > j) {
+                pano.copy_entry(
+                        codes.data(),
+                        codes.data(),
+                        cum_sums.data(),
+                        cum_sums.data(),
+                        j,
+                        i);
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        size_t num_batches = (ntotal + batch_size - 1) / batch_size;
+        codes.resize(num_batches * batch_size * code_size);
+        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+    }
+    return nremove;
 }
 
-void IndexFlatPanorama::merge_from(
-        Index& /* otherIndex */,
-        idx_t /* add_id */) {
-    FAISS_THROW_MSG("merge_from not implemented for IndexFlatPanorama");
+void IndexFlatPanorama::merge_from(Index& otherIndex, idx_t add_id) {
+    FAISS_THROW_IF_NOT_MSG(add_id == 0, "cannot set ids in FlatPanorama index");
+    check_compatible_for_merge(otherIndex);
+    IndexFlatPanorama* other = static_cast<IndexFlatPanorama*>(&otherIndex);
+
+    std::vector<float> buffer(other->ntotal * code_size);
+    otherIndex.reconstruct_n(0, other->ntotal, buffer.data());
+
+    add(other->ntotal, buffer.data());
+    other->reset();
 }
 
 void IndexFlatPanorama::add_sa_codes(
@@ -681,7 +764,21 @@ void IndexFlatPanorama::add_sa_codes(
     FAISS_THROW_MSG("add_sa_codes not implemented for IndexFlatPanorama");
 }
 
-void IndexFlatPanorama::permute_entries(const idx_t* /* perm */) {
-    FAISS_THROW_MSG("permute_entries not implemented for IndexFlatPanorama");
+void IndexFlatPanorama::permute_entries(const idx_t* perm) {
+    MaybeOwnedVector<uint8_t> new_codes(codes.size());
+    std::vector<float> new_cum_sums(cum_sums.size());
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        pano.copy_entry(
+                new_codes.data(),
+                codes.data(),
+                new_cum_sums.data(),
+                cum_sums.data(),
+                i,
+                perm[i]);
+    }
+
+    std::swap(codes, new_codes);
+    std::swap(cum_sums, new_cum_sums);
 }
 } // namespace faiss

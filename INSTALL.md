@@ -12,13 +12,13 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.13.0
+$ conda install -c pytorch faiss-cpu=1.13.1
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.13.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.13.1
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.13.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.13.1
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,7 +34,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.13.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.13.1
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.6)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=12.6'
@@ -114,6 +114,12 @@ conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.10 'cuda-version=1
 ```
 For more ways to install cuVS 25.10, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
+### Building with Intel(R) SVS
+
+[Intel(R) Scalable Vector Search (SVS)](https://github.com/intel/ScalableVectorSearch) is a library for high-performance vector search. Building Faiss with SVS enabled allows using SVS implementations of graph-based indices (e.g., Vamana).
+
+The SVS library will be automatically fetched and built by CMake if `FAISS_ENABLE_SVS` is set to `ON`.
+
 ## Step 1: invoking CMake
 
 ``` shell
@@ -137,6 +143,8 @@ Several options can be passed to CMake, among which:
   are `ON` and `OFF`),
   - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
     are `ON` and `OFF`),
+  - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
+    Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),

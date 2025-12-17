@@ -113,7 +113,7 @@ class DatasetAssignDistributedGPU(clustering.DatasetAssign):
         torch.distributed.reduce(sum_per_centroid, 0)
 
         if rank == 0:
-            # gather deos not support tensors of different sizes
+            # gather does not support tensors of different sizes
             # should be implemented with point-to-point communication
             assert np.all(self.sizes == self.sizes[0])
             device = self.device

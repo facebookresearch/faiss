@@ -15,8 +15,6 @@ Paper: https://www.arxiv.org/pdf/2510.00566
 """
 
 import unittest
-import tempfile
-import os
 
 import faiss
 import numpy as np
@@ -535,10 +533,8 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         index = self.create_panorama(d, nlist, nlevels, xt, xb, nprobe=32)
 
         D_before, I_before = index.search(xq, k)
-        faiss.write_index(index, "index.bin")
-        index_after = faiss.read_index("index.bin")
+        index_after = faiss.deserialize_index(faiss.serialize_index(index))
         D_after, I_after = index_after.search(xq, k)
-        os.unlink("index.bin")
 
         np.testing.assert_array_equal(I_before, I_after)
         np.testing.assert_array_equal(D_before, D_after)
