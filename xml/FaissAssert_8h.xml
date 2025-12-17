@@ -165,7 +165,7 @@
         </childnode>
         <childnode refid="79" relation="include">
         </childnode>
-        <childnode refid="82" relation="include">
+        <childnode refid="80" relation="include">
         </childnode>
         <childnode refid="83" relation="include">
         </childnode>
@@ -693,6 +693,8 @@
         </childnode>
         <childnode refid="81" relation="include">
         </childnode>
+        <childnode refid="82" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/FaissAssert.h</label>
@@ -709,7 +711,7 @@
         </childnode>
         <childnode refid="100" relation="include">
         </childnode>
-        <childnode refid="82" relation="include">
+        <childnode refid="80" relation="include">
         </childnode>
         <childnode refid="83" relation="include">
         </childnode>
@@ -732,7 +734,7 @@
         <childnode refid="114" relation="include">
         </childnode>
       </node>
-      <node id="82">
+      <node id="80">
         <label>faiss/impl/HNSW.h</label>
         <link refid="HNSW_8h_source"/>
         <childnode refid="46" relation="include">
@@ -796,7 +798,7 @@
         <childnode refid="39" relation="include">
         </childnode>
       </node>
-      <node id="80">
+      <node id="81">
         <label>faiss/impl/RaBitQuantizer.h</label>
         <link refid="RaBitQuantizer_8h_source"/>
         <childnode refid="21" relation="include">
@@ -818,7 +820,7 @@
         <childnode refid="43" relation="include">
         </childnode>
       </node>
-      <node id="81">
+      <node id="82">
         <label>faiss/impl/ScalarQuantizer.h</label>
         <link refid="ScalarQuantizer_8h_source"/>
         <childnode refid="23" relation="include">
@@ -863,7 +865,7 @@
         </childnode>
         <childnode refid="59" relation="include">
         </childnode>
-        <childnode refid="82" relation="include">
+        <childnode refid="80" relation="include">
         </childnode>
         <childnode refid="103" relation="include">
         </childnode>
