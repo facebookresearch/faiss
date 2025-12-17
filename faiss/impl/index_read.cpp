@@ -1126,13 +1126,19 @@ Index* read_index(IOReader* f, int io_flags) {
         read_index_header(imiq, f);
         read_ProductQuantizer(&imiq->pq, f);
         idx = imiq;
-    } else if (h == fourcc("IxRF")) {
+    } else if (h == fourcc("IxRF") || h == fourcc("IxRP")) {
         IndexRefine* idxrf = new IndexRefine();
         read_index_header(idxrf, f);
         idxrf->base_index = read_index(f, io_flags);
         idxrf->refine_index = read_index(f, io_flags);
         READ1(idxrf->k_factor);
-        if (dynamic_cast<IndexFlat*>(idxrf->refine_index)) {
+        if (h == fourcc("IxRP")) {
+            // then make a RefineFlatPanorama with it
+            IndexRefine* idxrf_old = idxrf;
+            idxrf = new IndexRefinePanorama();
+            *idxrf = *idxrf_old;
+            delete idxrf_old;
+        } else if (dynamic_cast<IndexFlat*>(idxrf->refine_index)) {
             // then make a RefineFlat with it
             IndexRefine* idxrf_old = idxrf;
             idxrf = new IndexRefineFlat();

@@ -304,6 +304,29 @@ struct Index {
             float* recons,
             const SearchParameters* params = nullptr) const;
 
+    /** Similar to search, but operates on a potentially different subset
+     * of the dataset for each query.
+     *
+     * The default implementation fails with an assertion, as it is
+     * not supported by all indexes.
+     *
+     * @param n           number of vectors
+     * @param x           input vectors, size n * d
+     * @param k_base      number of vectors to search from
+     * @param base_labels ids of the vectors to search from
+     * @param k           desired number of results per query
+     * @param distances   output pairwise distances, size n*k
+     * @param labels      output labels of the NNs, size n*k
+     */
+    virtual void search_subset(
+            idx_t n,
+            const float* x,
+            idx_t k_base,
+            const idx_t* base_labels,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const;
+
     /** Computes a residual vector after indexing encoding.
      *
      * The residual vector is the difference between a vector and the

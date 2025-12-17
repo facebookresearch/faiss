@@ -197,6 +197,7 @@ add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, {2: [0], 1: [0]})
+add_ref_in_constructor(IndexRefinePanorama, {2: [0, 1]})
 add_ref_in_constructor(IndexRefine, {2: [0, 1]})
 
 add_ref_in_constructor(IndexBinaryIVF, 0)

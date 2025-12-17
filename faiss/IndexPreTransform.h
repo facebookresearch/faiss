@@ -57,6 +57,15 @@ struct IndexPreTransform : Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void search_subset(
+            idx_t n,
+            const float* x,
+            idx_t k_base,
+            const idx_t* base_labels,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
+
     /* range search, no attempt is done to change the radius */
     void range_search(
             idx_t n,
