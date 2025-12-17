@@ -617,8 +617,7 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
 static void read_RaBitQuantizer(
         RaBitQuantizer* rabitq,
         IOReader* f,
-        bool multi_bit) {
-    // don't care about rabitq->centroid
+        bool multi_bit = true) {
     READ1(rabitq->d);
     READ1(rabitq->code_size);
     READ1(rabitq->metric_type);
@@ -1310,16 +1309,16 @@ Index* read_index(IOReader* f, int io_flags) {
     } else if (h == fourcc("Irfs")) {
         IndexRaBitQFastScan* idxqfs = new IndexRaBitQFastScan();
         read_index_header(idxqfs, f);
-        read_RaBitQuantizer(&idxqfs->rabitq, f, false);
+        read_RaBitQuantizer(&idxqfs->rabitq, f, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
-        READVECTOR(idxqfs->factors_storage);
+        READVECTOR(idxqfs->flat_storage);
+
         READ1(idxqfs->bbs);
         READ1(idxqfs->ntotal2);
         READ1(idxqfs->M2);
         READ1(idxqfs->code_size);
 
-        // Need to initialize the FastScan base class fields
         const size_t M_fastscan = (idxqfs->d + 3) / 4;
         constexpr size_t nbits_fastscan = 4;
         idxqfs->M = M_fastscan;

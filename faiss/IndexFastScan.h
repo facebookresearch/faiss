@@ -15,13 +15,8 @@ namespace faiss {
 
 struct CodePacker;
 struct NormTableScaler;
-
-// Forward declarations for result handlers
-namespace simd_result_handlers {
-template <class C, bool with_id_map>
-struct ResultHandlerCompare;
-}
 struct IDSelector;
+struct SIMDResultHandlerToFloat;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
@@ -141,10 +136,10 @@ struct IndexFastScan : Index {
      * @param distances    output distances array
      * @param labels       output labels array
      * @param sel          optional ID selector
-     * @param query_offset query offset for batch processing
+     * @param context      processing context for distance post-processing
      * @return             pointer to created handler (never returns nullptr)
      */
-    virtual void* make_knn_handler(
+    virtual SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,
             int impl,
             idx_t n,

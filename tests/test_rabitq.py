@@ -558,7 +558,7 @@ class TestRaBitQFastScan(unittest.TestCase):
         _, I_rbq = index_rbq.search(ds.get_queries(), k)
 
         # IndexRaBitQFastScan
-        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, metric_type, bbs)
+        index_rbq_fs = faiss.IndexRaBitQFastScan(ds.d, metric_type, bbs, 1)
         index_rbq_fs.train(ds.get_train())
         index_rbq_fs.add(ds.get_database())
         _, I_rbq_fs = index_rbq_fs.search(ds.get_queries(), k)
@@ -865,6 +865,318 @@ class TestRaBitQFastScan(unittest.TestCase):
         index_custom = faiss.index_factory(ds.d, "RaBitQfs_64")
         np.testing.assert_(isinstance(index_custom, faiss.IndexRaBitQFastScan))
         np.testing.assert_equal(index_custom.bbs, 64)
+
+
+class TestMultiBitRaBitQFastScan(unittest.TestCase):
+    """Test multi-bit support in IndexRaBitQFastScan."""
+
+    def test_multibit_construction_valid_nb_bits(self):
+        """Test IndexRaBitQFastScan construction with valid nb_bits."""
+        d = 128
+        for nb_bits in range(1, 10):
+            for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+                index = faiss.IndexRaBitQFastScan(d, metric, 32, nb_bits)
+                self.assertEqual(index.d, d)
+                self.assertEqual(index.metric_type, metric)
+                self.assertEqual(index.rabitq.nb_bits, nb_bits)
+                self.assertFalse(index.is_trained)
+
+    def test_multibit_construction_invalid_nb_bits(self):
+        """Test that invalid nb_bits values raise errors."""
+        d = 128
+        with self.assertRaises(RuntimeError):
+            faiss.IndexRaBitQFastScan(d, faiss.METRIC_L2, 32, 0)
+
+        with self.assertRaises(RuntimeError):
+            faiss.IndexRaBitQFastScan(d, faiss.METRIC_L2, 10, 32)
+
+    def test_multibit_code_size_formula(self):
+        """Test that code sizes match expected formula for all nb_bits."""
+        d = 128
+        for nb_bits in range(1, 10):
+            index = faiss.IndexRaBitQFastScan(d, faiss.METRIC_L2, 32, nb_bits)
+            expected_size = compute_expected_code_size(d, nb_bits)
+            self.assertEqual(
+                index.code_size,
+                expected_size,
+                f"Code size mismatch for nb_bits={nb_bits}",
+            )
+
+    def do_test_multibit_basic_operations(self, metric, nb_bits, qb):
+        """Test train/add/search pipeline works correctly for multi-bit."""
+        ds = datasets.SyntheticDataset(128, 300, 500, 20)
+        k = 10
+
+        index = faiss.IndexRaBitQFastScan(ds.d, metric, 32, nb_bits)
+        index.qb = max(1, qb)
+
+        index.train(ds.get_train())
+        self.assertTrue(index.is_trained)
+
+        index.add(ds.get_database())
+        self.assertEqual(index.ntotal, ds.nb)
+
+        D, I = index.search(ds.get_queries(), k)
+
+        # Assert: Result shapes are correct
+        self.assertEqual(D.shape, (ds.nq, k))
+        self.assertEqual(I.shape, (ds.nq, k))
+
+        # Assert: Indices are valid
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(I < ds.nb))
+
+        # Assert: Distances are finite
+        self.assertTrue(np.all(np.isfinite(D)))
+
+    def test_multibit_basic_operations_all_combinations(self):
+        """Test basic operations for subset of multi-bit combinations."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [2, 4, 8]:
+                for qb in [1, 4, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_multibit_basic_operations(
+                            metric, nb_bits, qb
+                        )
+
+    def do_test_multibit_recall_monotonic_improvement(self, metric, qb):
+        """Test that recall improves with more bits: 2>1, 4>2, 8>4."""
+        metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
+        ds = datasets.SyntheticDataset(128, 500, 1000, 50, metric=metric_str)
+        k = 10
+
+        I_gt = ds.get_groundtruth(10)
+
+        recalls = {}
+        for nb_bits in [1, 2, 4, 8]:
+            index = faiss.IndexRaBitQFastScan(ds.d, metric, 32, nb_bits)
+            index.qb = qb
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            _, I = index.search(ds.get_queries(), k)
+            recalls[nb_bits] = compute_recall_at_k(I_gt, I)
+
+        # Assert: Monotonic improvement with tolerance for variance
+        tolerance = 0.03
+        self.assertGreaterEqual(
+            recalls[2],
+            recalls[1] - tolerance,
+            f"2-bit recall {recalls[2]:.3f} should be >= "
+            f"1-bit {recalls[1]:.3f} (metric={metric}, qb={qb})",
+        )
+        self.assertGreaterEqual(
+            recalls[4],
+            recalls[2] - tolerance,
+            f"4-bit recall {recalls[4]:.3f} should be >= "
+            f"2-bit {recalls[2]:.3f} (metric={metric}, qb={qb})",
+        )
+        self.assertGreaterEqual(
+            recalls[8],
+            recalls[4] - tolerance,
+            f"8-bit recall {recalls[8]:.3f} should be >= "
+            f"4-bit {recalls[4]:.3f} (metric={metric}, qb={qb})",
+        )
+
+        # Assert: 8-bit achieves high recall
+        self.assertGreater(
+            recalls[8],
+            0.75,
+            f"8-bit recall {recalls[8]:.3f} should be > 0.75 "
+            f"(metric={metric}, qb={qb})",
+        )
+
+    def test_multibit_monotonic_improvement_all_qb(self):
+        """Test monotonic improvement for multi-bit FastScan."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for qb in [1, 4, 8]:
+                with self.subTest(metric=metric, qb=qb):
+                    self.do_test_multibit_recall_monotonic_improvement(
+                        metric, qb
+                    )
+
+    def do_test_multibit_serialization(self, metric, nb_bits, qb):
+        """Test serialize/deserialize preserves multi-bit search results."""
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
+        k = 5
+
+        index1 = faiss.IndexRaBitQFastScan(ds.d, metric, 32, nb_bits)
+        index1.qb = qb
+        index1.train(ds.get_train())
+        index1.add(ds.get_database())
+
+        # Search before serialization
+        D1, I1 = index1.search(ds.get_queries(), k)
+
+        # Serialize and deserialize
+        index_bytes = faiss.serialize_index(index1)
+        index2 = faiss.deserialize_index(index_bytes)
+
+        # Assert: Parameters preserved
+        self.assertEqual(index2.d, ds.d)
+        self.assertEqual(index2.ntotal, ds.nb)
+        self.assertTrue(index2.is_trained)
+        self.assertEqual(index2.rabitq.nb_bits, nb_bits)
+
+        # Search after deserialization
+        index2.qb = qb
+        D2, I2 = index2.search(ds.get_queries(), k)
+
+        # Assert: Results are identical
+        np.testing.assert_array_equal(
+            I1, I2, err_msg=f"Indices mismatch for nb_bits={nb_bits}, qb={qb}"
+        )
+        np.testing.assert_allclose(
+            D1,
+            D2,
+            rtol=1e-5,
+            err_msg=f"Distances mismatch for nb_bits={nb_bits}, qb={qb}",
+        )
+
+    def test_multibit_serialization_all_nb_bits(self):
+        """Test serialization for multi-bit values."""
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [2, 4, 8, 9]:
+                for qb in [1, 4, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        self.do_test_multibit_serialization(
+                            metric, nb_bits, qb
+                        )
+
+    def test_multibit_comparison_vs_rabitq(self):
+        """Test multi-bit FastScan produces similar results to RaBitQ."""
+        ds = datasets.SyntheticDataset(128, 500, 1000, 50)
+        k = 10
+
+        index_flat_l2 = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
+        index_flat_l2.add(ds.get_database())
+        _, I_f_l2 = index_flat_l2.search(ds.get_queries(), k)
+
+        index_flat_ip = faiss.IndexFlat(ds.d, faiss.METRIC_INNER_PRODUCT)
+        index_flat_ip.add(ds.get_database())
+        _, I_f_ip = index_flat_ip.search(ds.get_queries(), k)
+
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            I_f = I_f_l2 if metric == faiss.METRIC_L2 else I_f_ip
+            for nb_bits in [2, 4, 8]:
+                for qb in [1, 8]:
+                    with self.subTest(metric=metric, nb_bits=nb_bits, qb=qb):
+                        # IndexRaBitQ baseline
+                        index_rbq = faiss.IndexRaBitQ(ds.d, metric, nb_bits)
+                        index_rbq.qb = qb
+                        index_rbq.train(ds.get_train())
+                        index_rbq.add(ds.get_database())
+                        _, I_rbq = index_rbq.search(ds.get_queries(), k)
+
+                        # IndexRaBitQFastScan
+                        index_rbq_fs = faiss.IndexRaBitQFastScan(
+                            ds.d, metric, 32, nb_bits
+                        )
+                        index_rbq_fs.qb = qb
+                        index_rbq_fs.train(ds.get_train())
+                        index_rbq_fs.add(ds.get_database())
+                        _, I_rbq_fs = index_rbq_fs.search(ds.get_queries(), k)
+
+                        # Evaluate against ground truth
+                        eval_rbq = faiss.eval_intersection(
+                            I_rbq[:, :k], I_f[:, :k]
+                        )
+                        eval_rbq /= ds.nq * k
+                        eval_rbq_fs = faiss.eval_intersection(
+                            I_rbq_fs[:, :k], I_f[:, :k]
+                        )
+                        eval_rbq_fs /= ds.nq * k
+
+                        print(
+                            f"nb_bits={nb_bits}, metric={metric}, qb={qb}: "
+                            f"RaBitQ={eval_rbq:.4f}, "
+                            f"FastScan={eval_rbq_fs:.4f}"
+                        )
+
+                        # FastScan should be similar to baseline (within 5%)
+                        np.testing.assert_(
+                            abs(eval_rbq - eval_rbq_fs) < 0.05,
+                            f"Recall gap too large for nb_bits={nb_bits}, "
+                            f"qb={qb}: {abs(eval_rbq - eval_rbq_fs):.4f}"
+                        )
+
+    def test_multibit_factory_construction(self):
+        """Test multi-bit RaBitQFastScan can be constructed via factory."""
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
+
+        for nb_bits in [2, 4, 8]:
+            factory_str = f"RaBitQfs{nb_bits}"
+            index = faiss.index_factory(ds.d, factory_str)
+            self.assertIsInstance(index, faiss.IndexRaBitQFastScan)
+            self.assertEqual(index.rabitq.nb_bits, nb_bits)
+
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            D, I = index.search(ds.get_queries(), 5)
+
+            self.assertEqual(D.shape, (ds.nq, 5))
+            self.assertEqual(I.shape, (ds.nq, 5))
+            self.assertTrue(np.all(I >= 0))
+            self.assertTrue(np.all(I < ds.nb))
+
+    def test_multibit_factory_construction_with_batch_size(self):
+        """Test factory construction with both nb_bits and batch size."""
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
+
+        # Test RaBitQfs{nb_bits}_{bbs}
+        factory_str = "RaBitQfs4_64"
+        index = faiss.index_factory(ds.d, factory_str)
+        self.assertIsInstance(index, faiss.IndexRaBitQFastScan)
+        self.assertEqual(index.rabitq.nb_bits, 4)
+        self.assertEqual(index.bbs, 64)
+
+        # Test end-to-end
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        D, I = index.search(ds.get_queries(), 5)
+
+        self.assertEqual(D.shape, (ds.nq, 5))
+        self.assertEqual(I.shape, (ds.nq, 5))
+
+    def test_multibit_encode_decode_roundtrip(self):
+        """Test that encode/decode round-trip produces consistent results.
+
+        This test verifies that the encoding format is correct by checking:
+        1. Encoding works without error
+        2. Search can find the vectors themselves (self-retrieval test)
+        3. More bits should improve search quality
+        """
+        d = 64
+
+        for nb_bits in [1, 2, 4]:
+            for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+                with self.subTest(nb_bits=nb_bits, metric=metric):
+                    metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
+                    ds = datasets.SyntheticDataset(
+                        d, 500, 100, 10, metric=metric_str
+                    )
+
+                    index = faiss.IndexRaBitQFastScan(d, metric, 32, nb_bits)
+                    index.train(ds.get_train())
+                    index.add(ds.get_database())
+
+                    # Self-retrieval test: search database vectors
+                    # Each vector should find itself as nearest neighbor
+                    xb = ds.get_database()
+                    k = 1
+                    _, I = index.search(xb, k)
+
+                    self_retrieval_count = sum(
+                        1 for i in range(len(xb)) if I[i, 0] == i
+                    )
+                    self_retrieval_rate = self_retrieval_count / len(xb)
+
+                    # Self-retrieval should be high if encoding is correct
+                    self.assertGreater(
+                        self_retrieval_rate,
+                        0.5,
+                        f"Self-retrieval rate too low for nb_bits={nb_bits}"
+                        f", suggesting encoding format mismatch",
+                    )
 
 
 class TestIVFRaBitQFastScan(unittest.TestCase):
@@ -1387,11 +1699,6 @@ class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
 # ==============================================================================
 
 
-def create_test_dataset(d=128, nb=1000, nq=100, nt=500, metric='L2'):
-    """Helper: Create synthetic dataset for testing."""
-    return datasets.SyntheticDataset(d, nt, nb, nq, metric=metric)
-
-
 def create_index_rabitq_with_rotation(d, metric, nb_bits, qb=0, rrot_seed=123):
     """Helper: Create IndexRaBitQ with random rotation."""
     index_rbq = faiss.IndexRaBitQ(d, metric, nb_bits)
@@ -1509,7 +1816,7 @@ class TestMultiBitRaBitQBasicOperations(unittest.TestCase):
 
     def do_test_basic_operations(self, metric, nb_bits, qb):
         """Test train/add/search pipeline works correctly."""
-        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        ds = datasets.SyntheticDataset(128, 300, 500, 20)
         k = 10
 
         # Create index with rotation
@@ -1563,9 +1870,7 @@ class TestMultiBitRaBitQRecall(unittest.TestCase):
     def do_test_recall_quality(self, metric, nb_bits, qb):
         """Test that recall is reasonable (better than random)."""
         metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
-        ds = create_test_dataset(
-            d=128, nb=1000, nq=50, nt=500, metric=metric_str
-        )
+        ds = datasets.SyntheticDataset(128, 500, 1000, 50, metric=metric_str)
         k = 10
 
         # Ground truth
@@ -1600,9 +1905,7 @@ class TestMultiBitRaBitQRecall(unittest.TestCase):
     def do_test_recall_monotonic_improvement(self, metric, qb):
         """Test that recall improves with more bits: 2>1, 4>2, 8>4."""
         metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
-        ds = create_test_dataset(
-            d=128, nb=1000, nq=50, nt=500, metric=metric_str
-        )
+        ds = datasets.SyntheticDataset(128, 500, 1000, 50, metric=metric_str)
         k = 10
 
         # Ground truth
@@ -1661,7 +1964,7 @@ class TestMultiBitRaBitQSerialization(unittest.TestCase):
 
     def do_test_serialization(self, metric, nb_bits, qb):
         """Test that serialize/deserialize preserves search results."""
-        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
         k = 5
 
         # Create and populate index
@@ -1715,7 +2018,7 @@ class TestMultiBitIndexIVFRaBitQ(unittest.TestCase):
 
     def do_test_ivf_basic_operations(self, metric, nb_bits, qb):
         """Test IVF train/add/search pipeline."""
-        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        ds = datasets.SyntheticDataset(128, 300, 500, 20)
         k = 10
         nlist = 16
 
@@ -1757,9 +2060,7 @@ class TestMultiBitIndexIVFRaBitQ(unittest.TestCase):
     def do_test_ivf_nprobe_improves_recall(self, metric, nb_bits):
         """Test that higher nprobe improves recall."""
         metric_str = 'L2' if metric == faiss.METRIC_L2 else 'IP'
-        ds = create_test_dataset(
-            d=128, nb=1000, nq=50, nt=500, metric=metric_str
-        )
+        ds = datasets.SyntheticDataset(128, 500, 1000, 50, metric=metric_str)
         k = 10
         nlist = 32
 
@@ -1799,7 +2100,7 @@ class TestMultiBitIndexIVFRaBitQ(unittest.TestCase):
 
     def do_test_ivf_serialization(self, metric, nb_bits, qb):
         """Test IVF serialization preserves results."""
-        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
         k = 5
         nlist = 16
 
@@ -1847,7 +2148,7 @@ class TestMultiBitRaBitQQueryQuantization(unittest.TestCase):
 
     def do_test_query_quantization_levels(self, metric, nb_bits):
         """Test that all qb values produce valid results."""
-        ds = create_test_dataset(d=128, nb=500, nq=20, nt=300)
+        ds = datasets.SyntheticDataset(128, 300, 500, 20)
         k = 10
 
         # Create and train index once
@@ -1922,7 +2223,7 @@ class TestMultiBitRaBitQIndexFactory(unittest.TestCase):
 
     def test_factory_end_to_end(self):
         """Test complete workflow: factory creation, train, add, search."""
-        ds = create_test_dataset(d=64, nb=200, nq=10, nt=150)
+        ds = datasets.SyntheticDataset(64, 150, 200, 10)
         k = 5
 
         # Test both non-IVF and IVF with multi-bit

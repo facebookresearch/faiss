@@ -407,8 +407,7 @@ static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
 static void write_RaBitQuantizer(
         const RaBitQuantizer* rabitq,
         IOWriter* f,
-        bool multi_bit) {
-    // don't care about rabitq->centroid
+        bool multi_bit = true) {
     WRITE1(rabitq->d);
     WRITE1(rabitq->code_size);
     WRITE1(rabitq->metric_type);
@@ -939,10 +938,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("Irfs");
         WRITE1(h);
         write_index_header(idx, f);
-        write_RaBitQuantizer(&idxqfs->rabitq, f, false);
+        write_RaBitQuantizer(&idxqfs->rabitq, f);
         WRITEVECTOR(idxqfs->center);
         WRITE1(idxqfs->qb);
-        WRITEVECTOR(idxqfs->factors_storage);
+        WRITEVECTOR(idxqfs->flat_storage);
         WRITE1(idxqfs->bbs);
         WRITE1(idxqfs->ntotal2);
         WRITE1(idxqfs->M2);

@@ -199,7 +199,7 @@ void estimators_from_tables_generic(
 } // anonymous namespace
 
 // Default implementation of make_knn_handler with centralized fallback logic
-void* IndexFastScan::make_knn_handler(
+SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         bool is_max,
         int impl,
         idx_t n,
