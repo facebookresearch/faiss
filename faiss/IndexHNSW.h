@@ -16,6 +16,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -164,20 +165,11 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
 
     /// Inline for performance - called frequently in search hot path.
     const float* get_cum_sum(idx_t i) const {
-        return cum_sums.data() + i * (num_panorama_levels + 1);
+        return cum_sums.data() + i * (pano.n_levels + 1);
     }
 
-    /// Compute cumulative sums for a vector (used both for database points and
-    /// queries).
-    static void compute_cum_sums(
-            const float* x,
-            float* dst_cum_sums,
-            int d,
-            int num_panorama_levels,
-            int panorama_level_width);
-
     std::vector<float> cum_sums;
-    const size_t panorama_level_width;
+    Panorama pano;
     const size_t num_panorama_levels;
 };
 
