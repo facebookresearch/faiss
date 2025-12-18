@@ -5228,7 +5228,7 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1b7b8f6f66494ef011b7d7f420bf7d61" kind="variable"><name>rabitq</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a2a98d9a22252ad88b413e434d3c2fcaf" kind="variable"><name>qb</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a6876c2d4d378426e839fb9486e9eb39d" kind="variable"><name>centered</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a31be8b2c2be430ae578cd2e67fe37da4" kind="variable"><name>factors_storage</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0c24e985e415e01d13ea858db51d3e39" kind="variable"><name>flat_storage</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a7a5b4bc9d80aea0270de58493c4eb3d4" kind="variable"><name>bbs</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a3eeb2caa1304b5366d5c1a3a3cdb289d" kind="variable"><name>M</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1aece546e9a73d5d57d276f206b98f6732" kind="variable"><name>nbits</name></member>
@@ -5262,12 +5262,13 @@
     <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" kind="variable"><name>cp</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" kind="variable"><name>clustering_index</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a7175f15d3a7466eee42b9ed54bed6146" kind="function"><name>IndexIVFRaBitQFastScan</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a71cb43fa66741d5c2f6b0c2ceea4b8bf" kind="function"><name>IndexIVFRaBitQFastScan</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a6c529dbd5c950f5ad9108f4ba200777c" kind="function"><name>IndexIVFRaBitQFastScan</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a51b5d8ab24ed009c4c9830e8e112027f" kind="function"><name>IndexIVFRaBitQFastScan</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0140783b48115a1596c486ce0738966f" kind="function"><name>train_encoder</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1aab365da27d3d8796efeb2569dd23dd2f" kind="function"><name>encode_vectors</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a37704d0bc79d9511db2032109d637555" kind="function"><name>reconstruct_from_offset</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1463a1ea2123d2b672e7d74069a711f0" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ae1013ee474cdad64e150de031c50ab36" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ae2461eb5b9a699eb6885b85dd2bbe989" kind="function"><name>lookup_table_is_3d</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1e2ad8e8007fa1009219b0472d3e50c1" kind="function"><name>compute_LUT</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a478a27e31f57e091cbab939970ad0ff7" kind="function"><name>search_preassigned</name></member>
@@ -5328,9 +5329,8 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ab154d71d13d876c830efb057f9be2879" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a7d8298179ea35a8e23af9b3690feb4c7" kind="function"><name>code_packing_stride</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a8408b6f5bdb36b3bbfdcb6f161ef1685" kind="function"><name>encode_vector_to_fastscan</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a92a8a5e99c29f22cba4a66d672055201" kind="function"><name>compute_residual_LUT</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ad3aa203a01f60ac53aaa2c85ad767824" kind="function"><name>decode_fastscan_to_residual</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1aed68df958bbb5dbceee34b04529a0707" kind="function"><name>decode_fastscan_to_residual</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -7900,6 +7900,7 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0eada9675ce7d782e3b2c2f3a27770ee" kind="variable"><name>current_list_no</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a554434ff1f1932a1f710e197c9059536" kind="variable"><name>probe_indices</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1af75a248943818623a84fda51e3a9d51f" kind="variable"><name>context</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a9aa050e3991d44b3722d96d67d8f770e" kind="variable"><name>is_multibit</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" kind="variable"><name>disable</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae405b46f96ddedee11e885b6f48da53c" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ac59281f8df63e80195754e9cb1671bab" kind="variable"><name>j0</name></member>
@@ -7912,8 +7913,8 @@
     <member refid="structfaiss_1_1SIMDResultHandler_1a4dec96ca2dd655d818ccd616cbfe6e3e" kind="variable"><name>is_CMax</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" kind="variable"><name>sizeof_ids</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" kind="variable"><name>with_fields</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a5327b0858ae395acc63b482d324be5d5" kind="function"><name>IVFRaBitQHeapHandler</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a3035b167cc5195564e7440c70967b71d" kind="function"><name>handle</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1ae22b1bb64eeb29234ceabca5cd4d4516" kind="function"><name>IVFRaBitQHeapHandler</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0a17c9c294f0f3727f57769718a1c6a7" kind="function"><name>handle</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a820fcc9c37393bae8a0169961b12b3d4" kind="function"><name>set_list_context</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a753255ac8237196d937bf255cdbb6cf6" kind="function"><name>begin</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a65879cd13a0c459210dfa70a45bc77fb" kind="function"><name>end</name></member>
@@ -7922,6 +7923,8 @@
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7e8b69c9da2beedf65b673b61f1a488b" kind="function"><name>adjust_id</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af034cd3142a4e9bab30aab7c81a5161c" kind="function"><name>get_lt_mask</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7242b05f6297ae26519d5a90e07403a8" kind="function"><name>num_updates</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a323039af9cacaba6a4f1685ad081b6c8" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0a91f6d2a4f608f6fa665fb5694df5f5" kind="function"><name>compute_lower_bound</name></member>
   </compound>
   <compound refid="structfaiss_1_1IVFRaBitQSearchParameters" kind="struct"><name>faiss::IVFRaBitQSearchParameters</name>
     <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1ab74a8949016b84fa05db0b41fc152e08" kind="variable"><name>qb</name></member>
