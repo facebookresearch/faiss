@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RaBitQStats" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RaBitQStats</compoundname>
+    <includes refid="RaBitQStats_8h" local="no">RaBitQStats.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQStats_1a1198b5d12c8b57050b74c6a512ff7cb2" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::RaBitQStats::n_1bit_evaluations</definition>
+        <argsstring></argsstring>
+        <name>n_1bit_evaluations</name>
+        <qualifiedname>faiss::RaBitQStats::n_1bit_evaluations</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of candidates evaluated using 1-bit (lower bound) distance. This is the first stage of two-stage search in multi-bit mode. Always 0 in 1-bit mode (stats not tracked). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQStats.h" line="38" column="12" bodyfile="faiss/impl/RaBitQStats.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1RaBitQStats_1a63386bc81f7e54b99fe4b22b81d731bb" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::RaBitQStats::n_multibit_evaluations</definition>
+        <argsstring></argsstring>
+        <name>n_multibit_evaluations</name>
+        <qualifiedname>faiss::RaBitQStats::n_multibit_evaluations</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of candidates that passed 1-bit filtering and required full multi-bit distance computation (second stage). Always 0 in 1-bit mode (stats not tracked). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQStats.h" line="43" column="12" bodyfile="faiss/impl/RaBitQStats.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::RaBitQStats::reset</definition>
+        <argsstring>()</argsstring>
+        <name>reset</name>
+        <qualifiedname>faiss::RaBitQStats::reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQStats.h" line="45" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double faiss::RaBitQStats::skip_percentage</definition>
+        <argsstring>() const</argsstring>
+        <name>skip_percentage</name>
+        <qualifiedname>faiss::RaBitQStats::skip_percentage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute percentage of candidates skipped (filtered out by 1-bit stage). Returns 0 if no candidates were evaluated (including 1-bit mode). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQStats.h" line="49" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Statistics for RaBitQ multi-bit two-stage search.</para>
+<para>These stats are ONLY collected for multi-bit mode (nb_bits &gt; 1). In 1-bit mode, there is no two-stage filtering - all candidates are evaluated with a single distance computation, so there is nothing meaningful to track. For 1-bit mode, both counters remain 0.</para>
+<para>Multi-bit mode uses a two-stage search: Stage 1: Compute 1-bit lower bound distance for all candidates Stage 2: Compute full multi-bit distance only for promising candidates</para>
+<para>The <ref refid="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" kindref="member">skip_percentage()</ref> metric measures filtering effectiveness: how many candidates were filtered out by the 1-bit lower bound without needing the more expensive multi-bit distance computation.</para>
+<para>WARNING: Statistics are not robust to internal threading nor to concurrent RaBitQ searches. Use these values in a single-threaded context to accurately gauge RaBitQ&apos;s filtering effectiveness. Call reset() before search, then read stats after search completes. </para>
+    </detaileddescription>
+    <location file="faiss/impl/RaBitQStats.h" line="34" column="1" bodyfile="faiss/impl/RaBitQStats.h" bodystart="34" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RaBitQStats_1a1198b5d12c8b57050b74c6a512ff7cb2" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_1bit_evaluations</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a63386bc81f7e54b99fe4b22b81d731bb" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>n_multibit_evaluations</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" prot="public" virt="non-virtual"><scope>faiss::RaBitQStats</scope><name>skip_percentage</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -247,6 +247,7 @@
     <innerclass refid="structfaiss_1_1RaBitQDistanceComputer" prot="public">faiss::RaBitQDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQHeapHandler" prot="public">faiss::RaBitQHeapHandler</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQSearchParameters" prot="public">faiss::RaBitQSearchParameters</innerclass>
+    <innerclass refid="structfaiss_1_1RaBitQStats" prot="public">faiss::RaBitQStats</innerclass>
     <innerclass refid="structfaiss_1_1RaBitQuantizer" prot="public">faiss::RaBitQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
@@ -794,6 +795,21 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ProductQuantizer.h" line="189" column="22" declfile="faiss/impl/ProductQuantizer.h" declline="189" declcolumn="22"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" prot="public" static="no" extern="yes" mutable="no">
+        <type>FAISS_API <ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref></type>
+        <definition>FAISS_API RaBitQStats faiss::rabitq_stats</definition>
+        <argsstring></argsstring>
+        <name>rabitq_stats</name>
+        <qualifiedname>faiss::rabitq_stats</qualifiedname>
+        <briefdescription>
+<para>Global stats for RaBitQ indexes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQStats.h" line="54" column="30" declfile="faiss/impl/RaBitQStats.h" declline="54" declcolumn="30"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>

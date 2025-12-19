@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="16" column="13" bodyfile="faiss/IndexRaBitQ.h" bodystart="16" bodyend="-1"/>
+        <location file="faiss/IndexRaBitQ.h" line="17" column="13" bodyfile="faiss/IndexRaBitQ.h" bodystart="17" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1RaBitQSearchParameters_1aa187665aa973c9e45f756b75629f7a85" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexRaBitQ.h" line="17" column="10" bodyfile="faiss/IndexRaBitQ.h" bodystart="17" bodyend="-1"/>
+        <location file="faiss/IndexRaBitQ.h" line="18" column="10" bodyfile="faiss/IndexRaBitQ.h" bodystart="18" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -86,7 +86,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexRaBitQ.h" line="15" column="1" bodyfile="faiss/IndexRaBitQ.h" bodystart="15" bodyend="18"/>
+    <location file="faiss/IndexRaBitQ.h" line="16" column="1" bodyfile="faiss/IndexRaBitQ.h" bodystart="16" bodyend="19"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RaBitQSearchParameters_1aa187665aa973c9e45f756b75629f7a85" prot="public" virt="non-virtual"><scope>faiss::RaBitQSearchParameters</scope><name>centered</name></member>
       <member refid="structfaiss_1_1RaBitQSearchParameters_1a78be39f298ece447149a52debd8e0e79" prot="public" virt="non-virtual"><scope>faiss::RaBitQSearchParameters</scope><name>qb</name></member>

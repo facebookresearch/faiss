@@ -22,7 +22,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="200" column="9" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="203" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="201" column="9" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="204" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a68797712fe708c5fcd8de53111ef8ee4" prot="public" static="no">
         <type>typename C::TI</type>
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="188" column="38" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="188" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="189" column="38" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="189" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1ab85f989b74c90134263cf433b4e7804d" prot="public" static="no" mutable="no">
         <type>float *</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="189" column="15" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="189" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="190" column="15" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="190" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1acccb85143dd268bce07693fd986a97f7" prot="public" static="no" mutable="no">
         <type>int64_t *</type>
@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="190" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="190" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="191" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="191" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a51780093e06c7f4494892b5fcd21ee31" prot="public" static="no" mutable="no">
         <type>const size_t</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="191" column="22" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="191" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="192" column="22" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1aaab02b20e8118c653c3aaf553dd4a81f" prot="public" static="no" mutable="no">
         <type>const size_t</type>
@@ -108,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="191" column="25" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="191" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="192" column="25" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0eada9675ce7d782e3b2c2f3a27770ee" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -123,7 +123,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="192" column="16" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="192" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="193" column="16" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a554434ff1f1932a1f710e197c9059536" prot="public" static="no" mutable="no">
         <type>std::vector&lt; int &gt;</type>
@@ -137,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="194" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="194" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="195" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="195" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1af75a248943818623a84fda51e3a9d51f" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="196" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="196" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="197" column="17" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="197" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a9aa050e3991d44b3722d96d67d8f770e" prot="public" static="no" mutable="no">
         <type>const bool</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="197" column="20" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="197" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="198" column="20" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="198" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -388,7 +388,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="205" column="9"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="206" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0a17c9c294f0f3727f57769718a1c6a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -420,7 +420,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="214" column="14"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="215" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a820fcc9c37393bae8a0169961b12b3d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -444,7 +444,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="218" column="14"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="219" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a753255ac8237196d937bf255cdbb6cf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -463,7 +463,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="221" column="14"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="222" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a65879cd13a0c459210dfa70a45bc77fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -478,7 +478,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="223" column="14"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="224" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7366fd76db0d66840a68bc91da8ba6ea" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -662,7 +662,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="232" column="15"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="233" column="15"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0a91f6d2a4f608f6fa665fb5694df5f5" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -710,7 +710,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="242" column="15"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="243" column="15"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -911,7 +911,7 @@
         <link refid="structfaiss_1_1simd256bit"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQFastScan.h" line="186" column="5" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="187" bodyend="247"/>
+    <location file="faiss/IndexIVFRaBitQFastScan.h" line="187" column="5" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="188" bodyend="248"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7e8b69c9da2beedf65b673b61f1a488b" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler</scope><name>adjust_id</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a06a5cf2fb3b5529b9533ab935b1176e9" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler</scope><name>adjust_with_origin</name></member>

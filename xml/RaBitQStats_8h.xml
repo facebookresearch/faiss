@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="RaBitQStats_8h" kind="file" language="C++">
+    <compoundname>RaBitQStats.h</compoundname>
+    <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includes local="no">cstddef</includes>
+    <includedby refid="IndexIVFRaBitQ_8h" local="no">faiss/IndexIVFRaBitQ.h</includedby>
+    <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
+    <includedby refid="IndexRaBitQ_8h" local="no">faiss/IndexRaBitQ.h</includedby>
+    <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>faiss/impl/RaBitQStats.h</label>
+        <link refid="RaBitQStats_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="4">
+        <label>cstdio</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/IndexIVFRaBitQ.h</label>
+        <link refid="IndexIVFRaBitQ_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/IndexRaBitQ.h</label>
+        <link refid="IndexRaBitQ_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/IndexRaBitQFastScan.h</label>
+        <link refid="IndexRaBitQFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/RaBitQStats.h</label>
+        <link refid="RaBitQStats_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structfaiss_1_1RaBitQStats" prot="public">faiss::RaBitQStats</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="15"><highlight class="comment">///<sp/>Statistics<sp/>for<sp/>RaBitQ<sp/>multi-bit<sp/>two-stage<sp/>search.</highlight></codeline>
+<codeline lineno="16"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">///<sp/>These<sp/>stats<sp/>are<sp/>ONLY<sp/>collected<sp/>for<sp/>multi-bit<sp/>mode<sp/>(nb_bits<sp/>&gt;<sp/>1).</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">///<sp/>In<sp/>1-bit<sp/>mode,<sp/>there<sp/>is<sp/>no<sp/>two-stage<sp/>filtering<sp/>-<sp/>all<sp/>candidates<sp/>are</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">///<sp/>evaluated<sp/>with<sp/>a<sp/>single<sp/>distance<sp/>computation,<sp/>so<sp/>there<sp/>is<sp/>nothing</highlight></codeline>
+<codeline lineno="20"><highlight class="comment">///<sp/>meaningful<sp/>to<sp/>track.<sp/>For<sp/>1-bit<sp/>mode,<sp/>both<sp/>counters<sp/>remain<sp/>0.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">///<sp/>Multi-bit<sp/>mode<sp/>uses<sp/>a<sp/>two-stage<sp/>search:</highlight></codeline>
+<codeline lineno="23"><highlight class="comment">///<sp/><sp/><sp/>Stage<sp/>1:<sp/>Compute<sp/>1-bit<sp/>lower<sp/>bound<sp/>distance<sp/>for<sp/>all<sp/>candidates</highlight></codeline>
+<codeline lineno="24"><highlight class="comment">///<sp/><sp/><sp/>Stage<sp/>2:<sp/>Compute<sp/>full<sp/>multi-bit<sp/>distance<sp/>only<sp/>for<sp/>promising<sp/>candidates</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="26"><highlight class="comment">///<sp/>The<sp/>skip_percentage()<sp/>metric<sp/>measures<sp/>filtering<sp/>effectiveness:</highlight></codeline>
+<codeline lineno="27"><highlight class="comment">///<sp/>how<sp/>many<sp/>candidates<sp/>were<sp/>filtered<sp/>out<sp/>by<sp/>the<sp/>1-bit<sp/>lower<sp/>bound</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">///<sp/>without<sp/>needing<sp/>the<sp/>more<sp/>expensive<sp/>multi-bit<sp/>distance<sp/>computation.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="30"><highlight class="comment">///<sp/>WARNING:<sp/>Statistics<sp/>are<sp/>not<sp/>robust<sp/>to<sp/>internal<sp/>threading<sp/>nor<sp/>to</highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>concurrent<sp/>RaBitQ<sp/>searches.<sp/>Use<sp/>these<sp/>values<sp/>in<sp/>a<sp/>single-threaded</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>context<sp/>to<sp/>accurately<sp/>gauge<sp/>RaBitQ&apos;s<sp/>filtering<sp/>effectiveness.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment">///<sp/>Call<sp/>reset()<sp/>before<sp/>search,<sp/>then<sp/>read<sp/>stats<sp/>after<sp/>search<sp/>completes.</highlight></codeline>
+<codeline lineno="34" refid="structfaiss_1_1RaBitQStats" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Number<sp/>of<sp/>candidates<sp/>evaluated<sp/>using<sp/>1-bit<sp/>(lower<sp/>bound)<sp/>distance.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>This<sp/>is<sp/>the<sp/>first<sp/>stage<sp/>of<sp/>two-stage<sp/>search<sp/>in<sp/>multi-bit<sp/>mode.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Always<sp/>0<sp/>in<sp/>1-bit<sp/>mode<sp/>(stats<sp/>not<sp/>tracked).</highlight></codeline>
+<codeline lineno="38" refid="structfaiss_1_1RaBitQStats_1a1198b5d12c8b57050b74c6a512ff7cb2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RaBitQStats_1a1198b5d12c8b57050b74c6a512ff7cb2" kindref="member">n_1bit_evaluations</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Number<sp/>of<sp/>candidates<sp/>that<sp/>passed<sp/>1-bit<sp/>filtering<sp/>and<sp/>required</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>full<sp/>multi-bit<sp/>distance<sp/>computation<sp/>(second<sp/>stage).</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Always<sp/>0<sp/>in<sp/>1-bit<sp/>mode<sp/>(stats<sp/>not<sp/>tracked).</highlight></codeline>
+<codeline lineno="43" refid="structfaiss_1_1RaBitQStats_1a63386bc81f7e54b99fe4b22b81d731bb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RaBitQStats_1a63386bc81f7e54b99fe4b22b81d731bb" kindref="member">n_multibit_evaluations</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset();</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Compute<sp/>percentage<sp/>of<sp/>candidates<sp/>skipped<sp/>(filtered<sp/>out<sp/>by<sp/>1-bit<sp/>stage).</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>0<sp/>if<sp/>no<sp/>candidates<sp/>were<sp/>evaluated<sp/>(including<sp/>1-bit<sp/>mode).</highlight></codeline>
+<codeline lineno="49" refid="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" kindref="member">skip_percentage</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="52"><highlight class="comment">///<sp/>Global<sp/>stats<sp/>for<sp/>RaBitQ<sp/>indexes</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"></highlight><highlight class="comment">//<sp/>NOLINTNEXTLINE(facebook-avoid-non-const-global-variables)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RaBitQStats" kindref="compound">RaBitQStats</ref><sp/><ref refid="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" kindref="member">rabitq_stats</ref>;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/RaBitQStats.h"/>
+  </compounddef>
+</doxygen>

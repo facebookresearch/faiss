@@ -9216,6 +9216,12 @@
     <member refid="structfaiss_1_1RaBitQSearchParameters_1aa187665aa973c9e45f756b75629f7a85" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" kind="variable"><name>sel</name></member>
   </compound>
+  <compound refid="structfaiss_1_1RaBitQStats" kind="struct"><name>faiss::RaBitQStats</name>
+    <member refid="structfaiss_1_1RaBitQStats_1a1198b5d12c8b57050b74c6a512ff7cb2" kind="variable"><name>n_1bit_evaluations</name></member>
+    <member refid="structfaiss_1_1RaBitQStats_1a63386bc81f7e54b99fe4b22b81d731bb" kind="variable"><name>n_multibit_evaluations</name></member>
+    <member refid="structfaiss_1_1RaBitQStats_1a071b8230bddb32d8ab04dfde726e7f9f" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1RaBitQStats_1a086092ba49b691ce3d79fd78bbbf37cb" kind="function"><name>skip_percentage</name></member>
+  </compound>
   <compound refid="structfaiss_1_1RaBitQuantizer" kind="struct"><name>faiss::RaBitQuantizer</name>
     <member refid="structfaiss_1_1RaBitQuantizer_1a20997370b2bffaf0ae8ec79cec16bbb0" kind="variable"><name>centroid</name></member>
     <member refid="structfaiss_1_1RaBitQuantizer_1ac5bbf60e15a32d80ee98b52db5e2e13f" kind="variable"><name>metric_type</name></member>
@@ -11058,6 +11064,7 @@
     <member refid="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" kind="variable"><name>hnsw_stats</name></member>
     <member refid="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" kind="variable"><name>indexPanorama_stats</name></member>
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
+    <member refid="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" kind="variable"><name>rabitq_stats</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
     <member refid="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" kind="variable"><name>simd_result_handlers_accept_virtual</name></member>
     <member refid="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" kind="variable"><name>index2layer_sa_encode_bs</name></member>
@@ -11363,17 +11370,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d158" kind="namespace"><name>faiss::@158</name>
+  <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d167" kind="namespace"><name>faiss::@167</name>
+  <compound refid="namespacefaiss_1_1_0d168" kind="namespace"><name>faiss::@168</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d186" kind="namespace"><name>faiss::@186</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d188" kind="namespace"><name>faiss::@188</name>
+  <compound refid="namespacefaiss_1_1_0d187" kind="namespace"><name>faiss::@187</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d189" kind="namespace"><name>faiss::@189</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -11961,6 +11968,8 @@
   <compound refid="ProductQuantizer_8h" kind="file"><name>ProductQuantizer.h</name>
   </compound>
   <compound refid="Quantizer_8h" kind="file"><name>Quantizer.h</name>
+  </compound>
+  <compound refid="RaBitQStats_8h" kind="file"><name>RaBitQStats.h</name>
   </compound>
   <compound refid="RaBitQuantizer_8h" kind="file"><name>RaBitQuantizer.h</name>
   </compound>
