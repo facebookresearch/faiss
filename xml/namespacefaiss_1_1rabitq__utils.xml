@@ -2,10 +2,10 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1rabitq__utils" kind="namespace" language="C++">
     <compoundname>faiss::rabitq_utils</compoundname>
-    <innerclass refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData" prot="public">faiss::rabitq_utils::BaseFactorsData</innerclass>
-    <innerclass refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" prot="public">faiss::rabitq_utils::ExFactorsData</innerclass>
-    <innerclass refid="structfaiss_1_1rabitq__utils_1_1FactorsData" prot="public">faiss::rabitq_utils::FactorsData</innerclass>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" prot="public">faiss::rabitq_utils::ExtraBitsFactors</innerclass>
     <innerclass refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" prot="public">faiss::rabitq_utils::QueryFactorsData</innerclass>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" prot="public">faiss::rabitq_utils::SignBitFactors</innerclass>
+    <innerclass refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" prot="public">faiss::rabitq_utils::SignBitFactorsWithError</innerclass>
     <sectiondef kind="var">
       <memberdef kind="variable" id="RaBitQUtils_8h_1a6d8f1381f334033fce7b24083624c200" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API const float</type>
@@ -20,13 +20,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="75" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="75" declcolumn="30"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="81" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="81" declcolumn="30"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="RaBitQUtils_8h_1a5de923dd9dbbd4d5283f62ae889dbd46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref></type>
-        <definition>FactorsData faiss::rabitq_utils::compute_vector_factors</definition>
+      <memberdef kind="function" id="RaBitQUtils_8h_1acd13d8ea72089c8b929681b422023f2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref></type>
+        <definition>SignBitFactorsWithError faiss::rabitq_utils::compute_vector_factors</definition>
         <argsstring>(const float *x, size_t d, const float *centroid, MetricType metric_type, bool compute_error=true)</argsstring>
         <name>compute_vector_factors</name>
         <qualifiedname>faiss::rabitq_utils::compute_vector_factors</qualifiedname>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="88" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="88" declcolumn="13"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="94" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="94" declcolumn="25"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a331fb43e107f687e17ccd9d3c7c59a80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -191,11 +191,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="106" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="106" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="112" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="112" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="RaBitQUtils_8h_1a37fe960c0a4174d541b3eb1aa4d14dd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref></type>
-        <definition>FactorsData faiss::rabitq_utils::compute_factors_from_intermediates</definition>
+      <memberdef kind="function" id="RaBitQUtils_8h_1ae2ce53f865a2754f82b416b803b8df7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref></type>
+        <definition>SignBitFactorsWithError faiss::rabitq_utils::compute_factors_from_intermediates</definition>
         <argsstring>(float norm_L2sqr, float or_L2sqr, float dp_oO, size_t d, MetricType metric_type, bool compute_error=true)</argsstring>
         <name>compute_factors_from_intermediates</name>
         <qualifiedname>faiss::rabitq_utils::compute_factors_from_intermediates</qualifiedname>
@@ -282,7 +282,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="123" column="13" declfile="faiss/impl/RaBitQUtils.h" declline="123" declcolumn="13"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="129" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="129" declcolumn="25"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a9a5a3bbed90878c9ffc93e8651e730f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref></type>
@@ -397,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="144" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="144" declcolumn="18"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="150" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="150" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a421d9c2001db5a8d4bf07c6209ccaf56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -440,7 +440,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="161" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="161" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="167" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="167" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a25c2a02b5726381eb9ef994adab75592" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -483,7 +483,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="170" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="170" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="176" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="176" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a5b048fb1446148b1da2df5976b54a7e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -523,7 +523,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="176" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="176" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="182" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="182" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1aba390a0849a8f08f12e5356afbd66f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -563,12 +563,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="182" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="182" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="188" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="188" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="RaBitQUtils_8h_1a58086b8471cb98fb09d913c296f950b4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="RaBitQUtils_8h_1a63efa56aca52ce9b6902cd89961de18d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::rabitq_utils::compute_1bit_adjusted_distance</definition>
-        <argsstring>(float normalized_distance, const BaseFactorsData &amp;db_factors, const QueryFactorsData &amp;query_factors, bool centered, size_t qb, size_t d)</argsstring>
+        <argsstring>(float normalized_distance, const SignBitFactors &amp;db_factors, const QueryFactorsData &amp;query_factors, bool centered, size_t qb, size_t d)</argsstring>
         <name>compute_1bit_adjusted_distance</name>
         <qualifiedname>faiss::rabitq_utils::compute_1bit_adjusted_distance</qualifiedname>
         <param>
@@ -576,7 +576,7 @@
           <declname>normalized_distance</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData" kindref="compound">BaseFactorsData</ref> &amp;</type>
+          <type>const <ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref> &amp;</type>
           <declname>db_factors</declname>
         </param>
         <param>
@@ -612,7 +612,7 @@
 <parametername>db_factors</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Database vector factors (<ref refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData" kindref="compound">BaseFactorsData</ref> or <ref refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kindref="compound">FactorsData</ref>) </para>
+<para>Database vector factors (<ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref> or <ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref>) </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -654,7 +654,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="197" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="197" bodyend="234"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="203" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="203" bodyend="240"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -709,12 +709,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="246" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="246" bodyend="266"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="252" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="252" bodyend="272"/>
       </memberdef>
-      <memberdef kind="function" id="RaBitQUtils_8h_1a50be1c9b738d127ddaa3423b815bc647" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::rabitq_utils::compute_full_multibit_distance</definition>
-        <argsstring>(const uint8_t *sign_bits, const uint8_t *ex_code, const ExFactorsData &amp;ex_fac, const float *rotated_q, float qr_to_c_L2sqr, float qr_norm_L2sqr, size_t d, size_t ex_bits, MetricType metric_type)</argsstring>
+        <argsstring>(const uint8_t *sign_bits, const uint8_t *ex_code, const ExtraBitsFactors &amp;ex_fac, const float *rotated_q, float qr_to_c_L2sqr, float qr_norm_L2sqr, size_t d, size_t ex_bits, MetricType metric_type)</argsstring>
         <name>compute_full_multibit_distance</name>
         <qualifiedname>faiss::rabitq_utils::compute_full_multibit_distance</qualifiedname>
         <param>
@@ -726,7 +726,7 @@
           <declname>ex_code</declname>
         </param>
         <param>
-          <type>const <ref refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" kindref="compound">ExFactorsData</ref> &amp;</type>
+          <type>const <ref refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" kindref="compound">ExtraBitsFactors</ref> &amp;</type>
           <declname>ex_fac</declname>
         </param>
         <param>
@@ -837,7 +837,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="285" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="285" bodyend="321"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="291" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="291" bodyend="327"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

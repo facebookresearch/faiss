@@ -243,10 +243,6 @@
     <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1aa072c959d1cd882af33c7a570ac25f55" kind="function"><name>~AutoTuneCriterion</name></member>
   </compound>
-  <compound refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData" kind="struct"><name>faiss::rabitq_utils::BaseFactorsData</name>
-    <member refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData_1acc6b68a5379047ada799faf85df42845" kind="variable"><name>or_minus_c_l2sqr</name></member>
-    <member refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData_1a8aa577c9f1217dd81a1147c5edecf8bb" kind="variable"><name>dp_multiplier</name></member>
-  </compound>
   <compound refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kind="struct"><name>faiss::detail::simdlib::binary_func_impl</name>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1a6180a6deaf9be9dec43180b1e0fb2c79" kind="typedef"><name>Telem</name></member>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1aace4f2f06cc6d165c442682afb1d5450" kind="typedef"><name>Uelem</name></member>
@@ -691,14 +687,9 @@
     <member refid="structfaiss_1_1EnumeratedVectors_1a80c0f4e4cf5394b7fd2e7b91fab16538" kind="function"><name>find_nn</name></member>
     <member refid="structfaiss_1_1EnumeratedVectors_1a849f82c1f0e1335eaf5385ebe3434af4" kind="function"><name>~EnumeratedVectors</name></member>
   </compound>
-  <compound refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData" kind="struct"><name>faiss::rabitq_utils::ExFactorsData</name>
-    <member refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData_1adebaaa2062071c49c061de17c15e79ca" kind="variable"><name>f_add_ex</name></member>
-    <member refid="structfaiss_1_1rabitq__utils_1_1ExFactorsData_1a76d1e0ee14bd9738456209497bb9698c" kind="variable"><name>f_rescale_ex</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1rabitq__utils_1_1FactorsData" kind="struct"><name>faiss::rabitq_utils::FactorsData</name>
-    <member refid="structfaiss_1_1rabitq__utils_1_1FactorsData_1aa4135969d2c71d5a218c154ffd1a71a5" kind="variable"><name>f_error</name></member>
-    <member refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData_1acc6b68a5379047ada799faf85df42845" kind="variable"><name>or_minus_c_l2sqr</name></member>
-    <member refid="structfaiss_1_1rabitq__utils_1_1BaseFactorsData_1a8aa577c9f1217dd81a1147c5edecf8bb" kind="variable"><name>dp_multiplier</name></member>
+  <compound refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" kind="struct"><name>faiss::rabitq_utils::ExtraBitsFactors</name>
+    <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a91cea21a92ab442abcb050f4391a8638" kind="variable"><name>f_add_ex</name></member>
+    <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a1c18eede2ca5d6c31d729aa2f191d35e" kind="variable"><name>f_rescale_ex</name></member>
   </compound>
   <compound refid="classfaiss_1_1FaissException" kind="class"><name>faiss::FaissException</name>
     <member refid="classfaiss_1_1FaissException_1a1b84d206c53a24cd8126dbfa30f5523e" kind="variable"><name>msg</name></member>
@@ -9796,6 +9787,15 @@
     <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a9c90bb4a3f24e459bc6ead596772a34a" kind="function"><name>operator=</name></member>
     <member refid="structfaiss_1_1ivflib_1_1ShardingFunction_1a7b7240ba0a89dde1a872fd38190da8dc" kind="function"><name>operator=</name></member>
   </compound>
+  <compound refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kind="struct"><name>faiss::rabitq_utils::SignBitFactors</name>
+    <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a2f5be890fbdd4f2508314cddb986d680" kind="variable"><name>or_minus_c_l2sqr</name></member>
+    <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a3ac369475e51bc132906371b84f6e8d9" kind="variable"><name>dp_multiplier</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kind="struct"><name>faiss::rabitq_utils::SignBitFactorsWithError</name>
+    <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError_1a954d9ea58c9f1025150be64b43b9295c" kind="variable"><name>f_error</name></member>
+    <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a2f5be890fbdd4f2508314cddb986d680" kind="variable"><name>or_minus_c_l2sqr</name></member>
+    <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a3ac369475e51bc132906371b84f6e8d9" kind="variable"><name>dp_multiplier</name></member>
+  </compound>
   <compound refid="structfaiss_1_1simd16uint16" kind="struct"><name>faiss::simd16uint16</name>
     <member refid="structfaiss_1_1simd16uint16_1ab55c9dbcc50e95d98bdde9ca6820570b" kind="variable"><name>data</name></member>
     <member refid="structfaiss_1_1simd256bit_1a0061ab97fb706619dbb1db084d89c57e" kind="variable"><name>i</name></member>
@@ -11603,22 +11603,22 @@
   <compound refid="namespacefaiss_1_1rabitq__multibit" kind="namespace"><name>faiss::rabitq_multibit</name>
     <member refid="RaBitQuantizerMultiBit_8h_1a05089f9fecd23f4172b3e0d9ee972eca" kind="function"><name>compute_optimal_scaling_factor</name></member>
     <member refid="RaBitQuantizerMultiBit_8h_1add4a7c267f250fbe142a25be2051f7cf" kind="function"><name>pack_multibit_codes</name></member>
-    <member refid="RaBitQuantizerMultiBit_8h_1af28b054f7f92ff39b8ae0ff4bbefcf3f" kind="function"><name>compute_ex_factors</name></member>
-    <member refid="RaBitQuantizerMultiBit_8h_1ad93489422454c70a5a96dc426c48d152" kind="function"><name>quantize_ex_bits</name></member>
+    <member refid="RaBitQuantizerMultiBit_8h_1aa0a802e564ecb401dc10c4839f6b69a9" kind="function"><name>compute_ex_factors</name></member>
+    <member refid="RaBitQuantizerMultiBit_8h_1a9b91bbee519d9589ccc32ae70aa96775" kind="function"><name>quantize_ex_bits</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq__utils" kind="namespace"><name>faiss::rabitq_utils</name>
     <member refid="RaBitQUtils_8h_1a6d8f1381f334033fce7b24083624c200" kind="variable"><name>Z_MAX_BY_QB</name></member>
-    <member refid="RaBitQUtils_8h_1a5de923dd9dbbd4d5283f62ae889dbd46" kind="function"><name>compute_vector_factors</name></member>
+    <member refid="RaBitQUtils_8h_1acd13d8ea72089c8b929681b422023f2d" kind="function"><name>compute_vector_factors</name></member>
     <member refid="RaBitQUtils_8h_1a331fb43e107f687e17ccd9d3c7c59a80" kind="function"><name>compute_vector_intermediate_values</name></member>
-    <member refid="RaBitQUtils_8h_1a37fe960c0a4174d541b3eb1aa4d14dd1" kind="function"><name>compute_factors_from_intermediates</name></member>
+    <member refid="RaBitQUtils_8h_1ae2ce53f865a2754f82b416b803b8df7f" kind="function"><name>compute_factors_from_intermediates</name></member>
     <member refid="RaBitQUtils_8h_1a9a5a3bbed90878c9ffc93e8651e730f7" kind="function"><name>compute_query_factors</name></member>
     <member refid="RaBitQUtils_8h_1a421d9c2001db5a8d4bf07c6209ccaf56" kind="function"><name>extract_bit_standard</name></member>
     <member refid="RaBitQUtils_8h_1a25c2a02b5726381eb9ef994adab75592" kind="function"><name>extract_bit_fastscan</name></member>
     <member refid="RaBitQUtils_8h_1a5b048fb1446148b1da2df5976b54a7e0" kind="function"><name>set_bit_standard</name></member>
     <member refid="RaBitQUtils_8h_1aba390a0849a8f08f12e5356afbd66f64" kind="function"><name>set_bit_fastscan</name></member>
-    <member refid="RaBitQUtils_8h_1a58086b8471cb98fb09d913c296f950b4" kind="function"><name>compute_1bit_adjusted_distance</name></member>
+    <member refid="RaBitQUtils_8h_1a63efa56aca52ce9b6902cd89961de18d" kind="function"><name>compute_1bit_adjusted_distance</name></member>
     <member refid="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" kind="function"><name>extract_code_inline</name></member>
-    <member refid="RaBitQUtils_8h_1a50be1c9b738d127ddaa3423b815bc647" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" kind="function"><name>compute_full_multibit_distance</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rq__encode__steps" kind="namespace"><name>faiss::rq_encode_steps</name>
     <member refid="residual__quantizer__encode__steps_8h_1a8f562c038b63180c6cb8c11bd900dd5c" kind="function"><name>refine_beam_mp</name></member>

@@ -210,7 +210,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="61" column="10"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="62" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1aee80494414b88ac1ccf8aa3aeb1bca0d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -240,7 +240,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="63" column="10"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="64" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a733cdb4c3e88c41f1dd9be63efff3267" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -286,7 +286,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="78" column="10"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="79" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a3157fded0bb1a02ad828cd88f4d53b96" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -316,7 +316,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="80" column="10"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="81" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1RaBitQuantizer_1a116ab5a9ce353a8a564e2c1d516546d5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -345,7 +345,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizer.h" line="89" column="31"/>
+        <location file="faiss/impl/RaBitQuantizer.h" line="90" column="31"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -376,7 +376,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/RaBitQuantizer.h" line="24" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="24" bodyend="93"/>
+    <location file="faiss/impl/RaBitQuantizer.h" line="24" column="1" bodyfile="faiss/impl/RaBitQuantizer.h" bodystart="24" bodyend="94"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RaBitQuantizer_1a20997370b2bffaf0ae8ec79cec16bbb0" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>centroid</name></member>
       <member refid="structfaiss_1_1Quantizer_1a25120fac0a15262b52e54391cc642850" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>code_size</name></member>

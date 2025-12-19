@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::rabitq_utils::ExtraBitsFactors</compoundname>
+    <includes refid="RaBitQUtils_8h" local="no">RaBitQUtils.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a91cea21a92ab442abcb050f4391a8638" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::ExtraBitsFactors::f_add_ex</definition>
+        <argsstring></argsstring>
+        <name>f_add_ex</name>
+        <qualifiedname>faiss::rabitq_utils::ExtraBitsFactors::f_add_ex</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="54" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a1c18eede2ca5d6c31d729aa2f191d35e" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::rabitq_utils::ExtraBitsFactors::f_rescale_ex</definition>
+        <argsstring></argsstring>
+        <name>f_rescale_ex</name>
+        <qualifiedname>faiss::rabitq_utils::ExtraBitsFactors::f_rescale_ex</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="56" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Additional factors for multi-bit RaBitQ (nb_bits &gt; 1). Used to store normalization and scaling factors for the refinement bits that encode additional precision beyond the sign bit. </para>
+    </detaileddescription>
+    <location file="faiss/impl/RaBitQUtils.h" line="52" column="1" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="52" bodyend="57"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a91cea21a92ab442abcb050f4391a8638" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::ExtraBitsFactors</scope><name>f_add_ex</name></member>
+      <member refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors_1a1c18eede2ca5d6c31d729aa2f191d35e" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::ExtraBitsFactors</scope><name>f_rescale_ex</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
