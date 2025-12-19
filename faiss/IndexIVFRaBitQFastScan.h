@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/simd_result_handlers.h>

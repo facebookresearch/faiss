@@ -13,6 +13,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexIVF.h>
 
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {

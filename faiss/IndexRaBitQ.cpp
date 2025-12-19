@@ -103,8 +103,15 @@ struct Run_search_with_dc_res {
                 resi.begin(q);
                 dc_base->set_query(xq + d * q);
 
+                // Stats tracking for multi-bit two-stage search only
+                // n_1bit_evaluations: candidates evaluated using 1-bit lower
+                // bound n_multibit_evaluations: candidates requiring full
+                // multi-bit distance
+                size_t local_1bit_evaluations = 0;
+                size_t local_multibit_evaluations = 0;
+
                 if (ex_bits == 0) {
-                    // 1-bit: Standard single-stage search
+                    // 1-bit: Standard single-stage search (no stats tracking)
                     for (size_t i = 0; i < ntotal; i++) {
                         if (res.is_in_selection(i)) {
                             float dis = (*dc_base)(i);
@@ -132,6 +139,8 @@ struct Run_search_with_dc_res {
                             const uint8_t* code =
                                     index->codes.data() + i * index->code_size;
 
+                            local_1bit_evaluations++;
+
                             // Stage 1: Compute 1-bit lower bound
                             float lower_bound = dc->lower_bound_distance(code);
 
@@ -141,11 +150,12 @@ struct Run_search_with_dc_res {
                             // lower_bound > resi.threshold Note: Using
                             // resi.threshold directly (not cached) enables more
                             // aggressive filtering as the heap is updated
-                            bool should_compute_full = is_similarity
+                            bool should_refine = is_similarity
                                     ? (lower_bound > resi.threshold)
                                     : (lower_bound < resi.threshold);
 
-                            if (should_compute_full) {
+                            if (should_refine) {
+                                local_multibit_evaluations++;
                                 // Compute full multi-bit distance
                                 float dist_full =
                                         dc->distance_to_code_full(code);
@@ -154,6 +164,13 @@ struct Run_search_with_dc_res {
                         }
                     }
                 }
+
+                // Update global stats atomically
+#pragma omp atomic
+                rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
+#pragma omp atomic
+                rabitq_stats.n_multibit_evaluations +=
+                        local_multibit_evaluations;
 
                 resi.end();
             }

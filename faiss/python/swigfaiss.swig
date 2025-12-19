@@ -195,6 +195,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -631,6 +632,7 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQStats.h>
 %include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
