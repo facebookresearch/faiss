@@ -630,6 +630,13 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
     }
 
     size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
+
+    // Stats tracking for two-stage search
+    // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
+    // n_multibit_evaluations: candidates requiring full multi-bit distance
+    size_t local_1bit_evaluations = 0;
+    size_t local_multibit_evaluations = 0;
+
     // Process each candidate vector in the SIMD batch
     for (size_t j = 0; j < max_positions; j++) {
         const int64_t result_id = this->adjust_id(b, j);
@@ -646,6 +653,9 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
                 index->flat_storage.data() + result_id * storage_size;
 
         if (is_multibit) {
+            // Track candidates actually considered for two-stage filtering
+            local_1bit_evaluations++;
+
             // Multi-bit: use FactorsData and two-stage search
             const FactorsData& full_factors =
                     *reinterpret_cast<const FactorsData*>(base_ptr);
@@ -671,6 +681,8 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
                     : (lower_bound < heap_dis[0]); // L2: keep if better
 
             if (should_refine) {
+                local_multibit_evaluations++;
+
                 // Compute local_offset: position within current inverted list
                 size_t local_offset = this->j0 + b * 32 + j;
 
@@ -685,7 +697,6 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
                 }
             }
         } else {
-            // 1-bit: direct distance computation and heap update
             const auto& db_factors =
                     *reinterpret_cast<const BaseFactorsData*>(base_ptr);
 
@@ -705,6 +716,12 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
             }
         }
     }
+
+    // Update global stats atomically
+#pragma omp atomic
+    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
+#pragma omp atomic
+    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
 }
 
 template <class C>

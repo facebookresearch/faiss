@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {
