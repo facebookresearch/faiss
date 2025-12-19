@@ -22,8 +22,8 @@
 namespace faiss {
 namespace rabitq_multibit {
 
-using rabitq_utils::ExFactorsData;
-using rabitq_utils::FactorsData;
+using rabitq_utils::ExtraBitsFactors;
+using rabitq_utils::SignBitFactorsWithError;
 
 constexpr float kTightStart[9] =
         {0.0f, 0.15f, 0.20f, 0.52f, 0.59f, 0.71f, 0.75f, 0.77f, 0.81f};
@@ -197,7 +197,7 @@ void compute_ex_factors(
         size_t ex_bits,
         float norm,
         double ipnorm,
-        ExFactorsData& ex_factors,
+        ExtraBitsFactors& ex_factors,
         MetricType metric_type) {
     FAISS_THROW_IF_NOT_MSG(
             metric_type == MetricType::METRIC_L2 ||
@@ -277,7 +277,7 @@ void quantize_ex_bits(
         size_t d,
         size_t nb_bits,
         uint8_t* ex_code,
-        ExFactorsData& ex_factors,
+        ExtraBitsFactors& ex_factors,
         MetricType metric_type,
         const float* centroid) {
     const size_t ex_bits = nb_bits - 1;
