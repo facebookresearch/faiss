@@ -216,6 +216,12 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         // Multi-bit: Two-stage search with adaptive filtering
         size_t nup = 0;
 
+        // Stats tracking for multi-bit two-stage search
+        // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
+        // n_multibit_evaluations: candidates requiring full multi-bit distance
+        size_t local_1bit_evaluations = 0;
+        size_t local_multibit_evaluations = 0;
+
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
@@ -225,6 +231,8 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                 }
             }
 
+            local_1bit_evaluations++;
+
             // Stage 1: Compute lower bound using 1-bit codes
             float lower_bound = rabitq_dc->lower_bound_distance(codes);
 
@@ -233,10 +241,11 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             // IP (max-heap): filter if lower_bound > simi[0]
             // Note: Using simi[0] directly (not cached) enables more aggressive
             // filtering as the heap is updated with better candidates
-            bool is_promising = keep_max ? (lower_bound > simi[0])
-                                         : (lower_bound < simi[0]);
+            bool should_refine = keep_max ? (lower_bound > simi[0])
+                                          : (lower_bound < simi[0]);
 
-            if (is_promising) {
+            if (should_refine) {
+                local_multibit_evaluations++;
                 // Lower bound is promising, compute full distance
                 float dis = distance_to_code(codes);
 
@@ -256,6 +265,13 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             }
             codes += code_size;
         }
+
+        // Update global stats atomically
+#pragma omp atomic
+        rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
+#pragma omp atomic
+        rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
+
         return nup;
     }
 

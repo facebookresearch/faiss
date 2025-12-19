@@ -541,6 +541,12 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
     // Get storage size once
     const size_t storage_size = rabitq_index->compute_per_vector_storage_size();
 
+    // Stats tracking for multi-bit two-stage search only
+    // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
+    // n_multibit_evaluations: candidates requiring full multi-bit distance
+    size_t local_1bit_evaluations = 0;
+    size_t local_multibit_evaluations = 0;
+
     // Process distances in batch
     for (size_t i = 0; i < max_vectors; i++) {
         const size_t db_idx = base_db_idx + i;
@@ -553,6 +559,9 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
                 rabitq_index->flat_storage.data() + db_idx * storage_size;
 
         if (is_multi_bit) {
+            // Track candidates actually considered for two-stage filtering
+            local_1bit_evaluations++;
+
             const FactorsData& full_factors =
                     *reinterpret_cast<const FactorsData*>(base_ptr);
 
@@ -574,6 +583,7 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
                     : (lower_bound < heap_dis[0]); // L2: keep if better
 
             if (should_refine) {
+                local_multibit_evaluations++;
                 float dist_full = compute_full_multibit_distance(db_idx, q);
 
                 if (Cfloat::cmp(heap_dis[0], dist_full)) {
@@ -602,6 +612,12 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
             }
         }
     }
+
+    // Update global stats atomically
+#pragma omp atomic
+    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
+#pragma omp atomic
+    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
 }
 
 template <class C, bool with_id_map>
