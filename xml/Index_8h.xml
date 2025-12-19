@@ -874,7 +874,7 @@
       </memberdef>
       <memberdef kind="define" id="Index_8h_1abaa30cb4993a34c8e9b3b5057529613a" prot="public" static="no">
         <name>FAISS_VERSION_PATCH</name>
-        <initializer>1</initializer>
+        <initializer>2</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -946,7 +946,7 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MAJOR<sp/>1</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_MINOR<sp/>13</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_VERSION_PATCH<sp/>2</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal"></highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Macro<sp/>to<sp/>combine<sp/>the<sp/>version<sp/>components<sp/>into<sp/>a<sp/>single<sp/>string</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>FAISS_STRINGIFY</highlight><highlight class="normal"></highlight></codeline>
