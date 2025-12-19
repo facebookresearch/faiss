@@ -628,7 +628,9 @@ inline void flat_pano_search_core(
                 }
 
                 size_t num_active = with_metric_type(
-                        index.metric_type, [&]<MetricType M>() {
+                        index.metric_type, [&](auto metric_tag) {
+                            constexpr MetricType M =
+                                    decltype(metric_tag)::value;
                             return index.pano.progressive_filter_batch<
                                     CMax<float, int64_t>,
                                     M>(
