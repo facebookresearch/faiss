@@ -76,7 +76,7 @@ void compute_ex_factors(
         size_t ex_bits,
         float norm,
         double ipnorm,
-        rabitq_utils::ExFactorsData& ex_factors,
+        rabitq_utils::ExtraBitsFactors& ex_factors,
         MetricType metric_type);
 
 /**
@@ -104,7 +104,7 @@ void quantize_ex_bits(
         size_t d,
         size_t nb_bits,
         uint8_t* ex_code,
-        rabitq_utils::ExFactorsData& ex_factors,
+        rabitq_utils::ExtraBitsFactors& ex_factors,
         MetricType metric_type,
         const float* centroid = nullptr);
 

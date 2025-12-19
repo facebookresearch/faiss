@@ -24,11 +24,12 @@ size_t IndexRaBitQFastScan::compute_per_vector_storage_size() const {
     const size_t ex_bits = rabitq.nb_bits - 1;
 
     if (ex_bits == 0) {
-        // 1-bit: only BaseFactorsData
-        return sizeof(rabitq_utils::BaseFactorsData);
+        // 1-bit: only SignBitFactors
+        return sizeof(rabitq_utils::SignBitFactors);
     } else {
-        // Multi-bit: FactorsData + ExFactorsData + ex-codes
-        return sizeof(FactorsData) + sizeof(ExFactorsData) +
+        // Multi-bit: SignBitFactorsWithError + ExtraBitsFactors +
+        // mag-codes
+        return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
                 (d * ex_bits + 7) / 8;
     }
 }
@@ -279,19 +280,23 @@ void IndexRaBitQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
             }
         }
 
-        FactorsData factors = rabitq_utils::compute_vector_factors(
+        SignBitFactorsWithError factors = rabitq_utils::compute_vector_factors(
                 x_row, d, centroid_data, metric_type, ex_bits > 0);
 
         if (ex_bits == 0) {
-            // 1-bit: store only BaseFactorsData (8 bytes)
-            memcpy(code + bit_pattern_size, &factors, sizeof(BaseFactorsData));
+            // 1-bit: store only SignBitFactors (8 bytes)
+            memcpy(code + bit_pattern_size, &factors, sizeof(SignBitFactors));
         } else {
-            // Multi-bit: store full FactorsData (12 bytes)
-            memcpy(code + bit_pattern_size, &factors, sizeof(FactorsData));
+            // Multi-bit: store full SignBitFactorsWithError (12 bytes)
+            memcpy(code + bit_pattern_size,
+                   &factors,
+                   sizeof(SignBitFactorsWithError));
 
-            // Add ex-codes and ExFactorsData using precomputed residual
-            uint8_t* ex_code = code + bit_pattern_size + sizeof(FactorsData);
-            ExFactorsData ex_factors_temp;
+            // Add mag-codes and ExtraBitsFactors using precomputed
+            // residual
+            uint8_t* ex_code =
+                    code + bit_pattern_size + sizeof(SignBitFactorsWithError);
+            ExtraBitsFactors ex_factors_temp;
 
             rabitq_multibit::quantize_ex_bits(
                     residual.data(),
@@ -304,7 +309,7 @@ void IndexRaBitQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
 
             memcpy(ex_code + ex_code_size,
                    &ex_factors_temp,
-                   sizeof(ExFactorsData));
+                   sizeof(ExtraBitsFactors));
         }
     }
 }
@@ -438,8 +443,8 @@ void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
 
         // Extract factors directly from embedded codes
         const uint8_t* factors_ptr = code + bit_pattern_size;
-        const rabitq_utils::BaseFactorsData* fac =
-                reinterpret_cast<const rabitq_utils::BaseFactorsData*>(
+        const rabitq_utils::SignBitFactors* fac =
+                reinterpret_cast<const rabitq_utils::SignBitFactors*>(
                         factors_ptr);
 
         for (size_t j = 0; j < d; j++) {
@@ -562,8 +567,8 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
             // Track candidates actually considered for two-stage filtering
             local_1bit_evaluations++;
 
-            const FactorsData& full_factors =
-                    *reinterpret_cast<const FactorsData*>(base_ptr);
+            const SignBitFactorsWithError& full_factors =
+                    *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
 
             float dist_1bit = rabitq_utils::compute_1bit_adjusted_distance(
                     normalized_distance,
@@ -592,8 +597,8 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
                 }
             }
         } else {
-            const rabitq_utils::BaseFactorsData& db_factors =
-                    *reinterpret_cast<const rabitq_utils::BaseFactorsData*>(
+            const rabitq_utils::SignBitFactors& db_factors =
+                    *reinterpret_cast<const rabitq_utils::SignBitFactors*>(
                             base_ptr);
 
             float adjusted_distance =
@@ -642,12 +647,12 @@ float RaBitQHeapHandler<C, with_id_map>::compute_lower_bound(
         float dist_1bit,
         size_t db_idx,
         size_t q) const {
-    // Access f_error directly from FactorsData in flat storage
+    // Access f_error directly from SignBitFactorsWithError in flat storage
     const size_t storage_size = rabitq_index->compute_per_vector_storage_size();
     const uint8_t* base_ptr =
             rabitq_index->flat_storage.data() + db_idx * storage_size;
-    const FactorsData& db_factors =
-            *reinterpret_cast<const FactorsData*>(base_ptr);
+    const SignBitFactorsWithError& db_factors =
+            *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
     float f_error = db_factors.f_error;
 
     // Get g_error from query factors (query-dependent error term)
@@ -674,9 +679,9 @@ float RaBitQHeapHandler<C, with_id_map>::compute_full_multibit_distance(
             rabitq_index->flat_storage.data() + db_idx * storage_size;
 
     const size_t ex_code_size = (dim * ex_bits + 7) / 8;
-    const uint8_t* ex_code = base_ptr + sizeof(FactorsData);
-    const ExFactorsData& ex_fac = *reinterpret_cast<const ExFactorsData*>(
-            base_ptr + sizeof(FactorsData) + ex_code_size);
+    const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
+    const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
+            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
 
     // Get query factors reference (avoid copying)
     const rabitq_utils::QueryFactorsData& query_factors =
