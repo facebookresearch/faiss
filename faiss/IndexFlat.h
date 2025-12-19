@@ -121,8 +121,7 @@ struct IndexFlatPanorama : IndexFlat {
               batch_size(batch_size),
               n_levels(n_levels),
               pano(code_size, n_levels, batch_size) {
-        FAISS_THROW_IF_NOT(
-                metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
+        FAISS_THROW_IF_NOT(metric == METRIC_L2);
     }
 
     void add(idx_t n, const float* x) override;
