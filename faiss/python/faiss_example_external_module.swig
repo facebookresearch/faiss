@@ -40,8 +40,6 @@ typedef uint64_t size_t;
 
 // This means: assume what's declared in these .h files is provided
 // by the Faiss module.
-%ignore faiss::metric_type_constant;
-%ignore faiss::with_metric_type;
 %import(module="faiss") "faiss/MetricType.h"
 %import(module="faiss") "faiss/impl/IDSelector.h"
 

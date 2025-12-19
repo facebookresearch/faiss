@@ -65,6 +65,7 @@ constexpr bool is_similarity_metric(MetricType metric_type) {
 ///       constexpr MetricType M = decltype(metric_tag)::value;
 ///       return compute_distance<M>(x, y);
 ///   });
+#ifndef SWIG
 template <MetricType M>
 struct metric_type_constant {
     static constexpr MetricType value = M;
@@ -104,6 +105,7 @@ inline auto with_metric_type(MetricType metric, LambdaType&& action) {
         }
     }
 }
+#endif // SWIG
 
 } // namespace faiss
 
