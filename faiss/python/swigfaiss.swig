@@ -480,6 +480,8 @@ void gpu_sync_all_devices()
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
 
+%ignore faiss::metric_type_constant;
+%ignore faiss::with_metric_type;
 %include  <faiss/MetricType.h>
 
 %newobject *::get_distance_computer() const;
