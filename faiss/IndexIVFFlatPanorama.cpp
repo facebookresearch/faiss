@@ -108,8 +108,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active = with_metric_type(metric, [&](auto metric_tag) {
-                constexpr MetricType M = decltype(metric_tag)::value;
+            size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
                 return storage->pano.progressive_filter_batch<C, M>(
                         codes,
                         cum_sums_data,
@@ -167,8 +166,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active = with_metric_type(metric, [&](auto metric_tag) {
-                constexpr MetricType M = decltype(metric_tag)::value;
+            size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
                 return storage->pano.progressive_filter_batch<C, M>(
                         codes,
                         cum_sums_data,
