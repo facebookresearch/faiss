@@ -803,6 +803,8 @@
         <link refid="Panorama_8h_source"/>
         <childnode refid="82" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
         <childnode refid="119" relation="include">
         </childnode>
       </node>

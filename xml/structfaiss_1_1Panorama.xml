@@ -167,10 +167,10 @@
         </inbodydescription>
         <location file="faiss/impl/Panorama.h" line="57" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::Panorama::compute_cumulative_sums</definition>
-        <argsstring>(float *cumsum_base, size_t offset, size_t n_entry, const float *vectors)</argsstring>
+        <argsstring>(float *cumsum_base, size_t offset, size_t n_entry, const float *vectors) const</argsstring>
         <name>compute_cumulative_sums</name>
         <qualifiedname>faiss::Panorama::compute_cumulative_sums</qualifiedname>
         <param>
@@ -383,7 +383,7 @@
     <listofallmembers>
       <member refid="structfaiss_1_1Panorama_1a2c2df437f13dae47d220b41a6364d99b" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>batch_size</name></member>
       <member refid="structfaiss_1_1Panorama_1af3a96532780aedf8d83a7534882dfd68" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>code_size</name></member>
-      <member refid="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>compute_cumulative_sums</name></member>
+      <member refid="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>compute_cumulative_sums</name></member>
       <member refid="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>compute_query_cum_sums</name></member>
       <member refid="structfaiss_1_1Panorama_1a800a0a45dbcb83ee4e612cc11567a8f5" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>copy_codes_to_level_layout</name></member>
       <member refid="structfaiss_1_1Panorama_1a890cce5c088cd98066dc5210ccfa31a8" prot="public" virt="non-virtual"><scope>faiss::Panorama</scope><name>copy_entry</name></member>

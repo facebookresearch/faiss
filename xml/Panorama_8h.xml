@@ -10,6 +10,7 @@
     <includes local="no">cstdint</includes>
     <includes local="no">vector</includes>
     <includedby refid="IndexFlat_8h" local="no">faiss/IndexFlat.h</includedby>
+    <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <includedby refid="InvertedLists_8h" local="no">faiss/invlists/InvertedLists.h</includedby>
     <incdepgraph>
       <node id="5">
@@ -388,6 +389,8 @@
         <link refid="Panorama_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
         <childnode refid="15" relation="include">
         </childnode>
       </node>
@@ -532,11 +535,11 @@
 <codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Helper<sp/>method<sp/>to<sp/>compute<sp/>the<sp/>cumulative<sp/>sums<sp/>of<sp/>the<sp/>codes.</highlight></codeline>
 <codeline lineno="64"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>The<sp/>cumsums<sp/>also<sp/>follow<sp/>the<sp/>level-oriented<sp/>batch<sp/>layout<sp/>to<sp/>minimize<sp/>the</highlight></codeline>
 <codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>random<sp/>memory<sp/>accesses.</highlight></codeline>
-<codeline lineno="66" refid="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Panorama_1adb8a167dbd96c6c007612b17dddf1f70" kindref="member">compute_cumulative_sums</ref>(</highlight></codeline>
+<codeline lineno="66" refid="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" kindref="member">compute_cumulative_sums</ref>(</highlight></codeline>
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>cumsum_base,</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>offset,</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n_entry,</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vectors);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vectors)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="72"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Compute<sp/>the<sp/>cumulative<sp/>sums<sp/>of<sp/>the<sp/>query<sp/>vector.</highlight></codeline>
 <codeline lineno="73" refid="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" kindref="member">compute_query_cum_sums</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>query,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>query_cum_sums)</highlight></codeline>
