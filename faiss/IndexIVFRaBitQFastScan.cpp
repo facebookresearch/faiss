@@ -23,9 +23,10 @@
 namespace faiss {
 
 // Import shared utilities from RaBitQUtils
-using rabitq_utils::BaseFactorsData;
-using rabitq_utils::FactorsData;
+using rabitq_utils::ExtraBitsFactors;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::SignBitFactors;
+using rabitq_utils::SignBitFactorsWithError;
 
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
@@ -99,11 +100,11 @@ size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
     const size_t ex_bits = rabitq.nb_bits - 1;
 
     if (ex_bits == 0) {
-        // 1-bit: only BaseFactorsData (8 bytes)
-        return sizeof(BaseFactorsData);
+        // 1-bit: only SignBitFactors (8 bytes)
+        return sizeof(SignBitFactors);
     } else {
-        // Multi-bit: FactorsData + ExFactorsData + ex-codes
-        return sizeof(FactorsData) + sizeof(rabitq_utils::ExFactorsData) +
+        // Multi-bit: SignBitFactorsWithError + ExtraBitsFactors + ex-codes
+        return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
                 (d * ex_bits + 7) / 8;
     }
 }
@@ -190,23 +191,24 @@ void IndexIVFRaBitQFastScan::encode_vectors(
                 }
 
                 // Compute factors (with or without f_error depending on mode)
-                FactorsData factors = rabitq_utils::compute_vector_factors(
-                        xi,
-                        d,
-                        centroid.data(),
-                        rabitq.metric_type,
-                        ex_bits > 0);
+                SignBitFactorsWithError factors =
+                        rabitq_utils::compute_vector_factors(
+                                xi,
+                                d,
+                                centroid.data(),
+                                rabitq.metric_type,
+                                ex_bits > 0);
 
                 if (ex_bits == 0) {
-                    // 1-bit: store only BaseFactorsData (8 bytes)
+                    // 1-bit: store only SignBitFactors (8 bytes)
                     memcpy(fastscan_code + bit_pattern_size,
                            &factors,
-                           sizeof(BaseFactorsData));
+                           sizeof(SignBitFactors));
                 } else {
-                    // Multi-bit: store full FactorsData (12 bytes)
+                    // Multi-bit: store full SignBitFactorsWithError (12 bytes)
                     memcpy(fastscan_code + bit_pattern_size,
                            &factors,
-                           sizeof(FactorsData));
+                           sizeof(SignBitFactorsWithError));
 
                     // Compute residual (needed for quantize_ex_bits)
                     std::vector<float> residual(d);
@@ -217,8 +219,8 @@ void IndexIVFRaBitQFastScan::encode_vectors(
                     // Quantize ex-bits
                     const size_t ex_code_size = (d * ex_bits + 7) / 8;
                     uint8_t* ex_code = fastscan_code + bit_pattern_size +
-                            sizeof(FactorsData);
-                    rabitq_utils::ExFactorsData ex_factors_temp;
+                            sizeof(SignBitFactorsWithError);
+                    ExtraBitsFactors ex_factors_temp;
 
                     rabitq_multibit::quantize_ex_bits(
                             residual.data(),
@@ -231,7 +233,7 @@ void IndexIVFRaBitQFastScan::encode_vectors(
 
                     memcpy(ex_code + ex_code_size,
                            &ex_factors_temp,
-                           sizeof(rabitq_utils::ExFactorsData));
+                           sizeof(ExtraBitsFactors));
                 }
 
                 // Include coarse codes if requested
@@ -452,7 +454,7 @@ void IndexIVFRaBitQFastScan::reconstruct_from_offset(
             const uint8_t* base_ptr =
                     flat_storage.data() + global_id * storage_size;
             const auto& base_factors =
-                    *reinterpret_cast<const BaseFactorsData*>(base_ptr);
+                    *reinterpret_cast<const SignBitFactors*>(base_ptr);
             dp_multiplier = base_factors.dp_multiplier;
         }
     }
@@ -495,7 +497,7 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
 
             const uint8_t* factors_ptr = fastscan_code + bit_pattern_size;
             const auto& base_factors =
-                    *reinterpret_cast<const BaseFactorsData*>(factors_ptr);
+                    *reinterpret_cast<const SignBitFactors*>(factors_ptr);
 
             decode_fastscan_to_residual(
                     fastscan_code, residual.data(), base_factors.dp_multiplier);
@@ -656,9 +658,9 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
             // Track candidates actually considered for two-stage filtering
             local_1bit_evaluations++;
 
-            // Multi-bit: use FactorsData and two-stage search
-            const FactorsData& full_factors =
-                    *reinterpret_cast<const FactorsData*>(base_ptr);
+            // Multi-bit: use SignBitFactorsWithError and two-stage search
+            const SignBitFactorsWithError& full_factors =
+                    *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
 
             // Compute 1-bit adjusted distance using shared helper
             float dist_1bit = rabitq_utils::compute_1bit_adjusted_distance(
@@ -698,7 +700,7 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
             }
         } else {
             const auto& db_factors =
-                    *reinterpret_cast<const BaseFactorsData*>(base_ptr);
+                    *reinterpret_cast<const SignBitFactors*>(base_ptr);
 
             // Compute adjusted distance using shared helper
             float adjusted_distance =
@@ -754,12 +756,12 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::compute_lower_bound(
         size_t db_idx,
         size_t local_q,
         size_t global_q) const {
-    // Access f_error from FactorsData in flat storage
+    // Access f_error from SignBitFactorsWithError in flat storage
     const size_t storage_size = index->compute_per_vector_storage_size();
     const uint8_t* base_ptr =
             index->flat_storage.data() + db_idx * storage_size;
-    const FactorsData& db_factors =
-            *reinterpret_cast<const FactorsData*>(base_ptr);
+    const SignBitFactorsWithError& db_factors =
+            *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
     float f_error = db_factors.f_error;
 
     // Get g_error from query factors
@@ -793,10 +795,9 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
             index->flat_storage.data() + db_idx * storage_size;
 
     const size_t ex_code_size = (dim * ex_bits + 7) / 8;
-    const uint8_t* ex_code = base_ptr + sizeof(FactorsData);
-    const rabitq_utils::ExFactorsData& ex_fac =
-            *reinterpret_cast<const rabitq_utils::ExFactorsData*>(
-                    base_ptr + sizeof(FactorsData) + ex_code_size);
+    const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
+    const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
+            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
 
     // Use local_q to access probe_indices (batch-local), global_q for storage
     size_t probe_rank = probe_indices[local_q];

@@ -25,9 +25,9 @@ namespace faiss {
 struct FastScanDistancePostProcessing;
 
 // Import shared utilities from RaBitQUtils
-using rabitq_utils::BaseFactorsData;
-using rabitq_utils::FactorsData;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::SignBitFactors;
+using rabitq_utils::SignBitFactorsWithError;
 
 /** Fast-scan version of IndexIVFRaBitQ that processes vectors in batches
  * using SIMD operations. Combines the inverted file structure of IVF
@@ -60,9 +60,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// 1-bit codes (sign bits) are stored in the inherited `codes` array from
     /// IndexFastScan in packed FastScan format for SIMD processing.
     ///
-    /// This flat_storage holds per-vector factors and extra-bit codes:
-    /// Layout for 1-bit: [BaseFactorsData (8 bytes)]
-    /// Layout for multi-bit: [FactorsData (12B)][ex_codes][ExFactorsData (8B)]
+    /// This flat_storage holds per-vector factors and refinement-bit codes:
+    /// Layout for 1-bit: [SignBitFactors (8 bytes)]
+    /// Layout for multi-bit: [SignBitFactorsWithError
+    /// (12B)][ref_codes][ExtraBitsFactors (8B)]
     std::vector<uint8_t> flat_storage;
 
     // Constructors

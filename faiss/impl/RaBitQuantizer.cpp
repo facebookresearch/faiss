@@ -21,10 +21,10 @@
 namespace faiss {
 
 // Import shared utilities from RaBitQUtils
-using rabitq_utils::BaseFactorsData;
-using rabitq_utils::ExFactorsData;
-using rabitq_utils::FactorsData;
+using rabitq_utils::ExtraBitsFactors;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::SignBitFactors;
+using rabitq_utils::SignBitFactorsWithError;
 
 RaBitQuantizer::RaBitQuantizer(size_t d, MetricType metric, size_t nb_bits)
         : Quantizer(d, 0), // code_size will be set below
@@ -44,18 +44,20 @@ size_t RaBitQuantizer::compute_code_size(size_t d, size_t num_bits) const {
     size_t ex_bits = num_bits - 1;
 
     // Base: 1-bit codes + base factors
-    // Layout for 1-bit: [binary_code: (d+7)/8 bytes][BaseFactorsData: 8 bytes]
+    // Layout for 1-bit: [binary_code: (d+7)/8 bytes][SignBitFactors: 8 bytes]
     //   base_factors = or_minus_c_l2sqr (4) + dp_multiplier (4)
-    // Layout for multi-bit: [binary_code: (d+7)/8 bytes][FactorsData: 12 bytes]
+    // Layout for multi-bit: [binary_code: (d+7)/8
+    // bytes][SignBitFactorsWithError: 12 bytes]
     //   factors = or_minus_c_l2sqr (4) + dp_multiplier (4) + f_error (4)
     size_t base_size = (d + 7) / 8 +
-            (ex_bits == 0 ? sizeof(BaseFactorsData) : sizeof(FactorsData));
+            (ex_bits == 0 ? sizeof(SignBitFactors)
+                          : sizeof(SignBitFactorsWithError));
 
     // Extra: ex-bit codes + ex factors (only if ex_bits > 0)
     // Layout: [ex_code: (d*ex_bits+7)/8 bytes][ex_factors: 8 bytes]
     size_t ex_size = 0;
     if (ex_bits > 0) {
-        ex_size = (d * ex_bits + 7) / 8 + sizeof(ExFactorsData);
+        ex_size = (d * ex_bits + 7) / 8 + sizeof(ExtraBitsFactors);
     }
 
     return base_size + ex_size;
@@ -99,8 +101,9 @@ void RaBitQuantizer::compute_codes_core(
         const float* x_row = x + i * d;
 
         // Pointer arithmetic for code layout:
-        // For 1-bit: [binary_code: (d+7)/8 bytes][BaseFactorsData: 8 bytes]
-        // For multi-bit: [binary_code: (d+7)/8 bytes][FactorsData: 12 bytes]
+        // For 1-bit: [binary_code: (d+7)/8 bytes][SignBitFactors: 8 bytes]
+        // For multi-bit: [binary_code: (d+7)/8 bytes][SignBitFactorsWithError:
+        // 12 bytes]
         //                [ex_code: (d*ex_bits+7)/8 bytes][ex_factors: 8 bytes]
         uint8_t* binary_code = code;
 
@@ -109,20 +112,22 @@ void RaBitQuantizer::compute_codes_core(
         std::vector<float> residual(d);
 
         // Use shared utilities for computing factors
-        FactorsData factors_data = rabitq_utils::compute_vector_factors(
-                x_row, d, centroid_in, metric_type, ex_bits > 0);
+        SignBitFactorsWithError factors_data =
+                rabitq_utils::compute_vector_factors(
+                        x_row, d, centroid_in, metric_type, ex_bits > 0);
 
         // Write appropriate factors based on nb_bits
         if (ex_bits == 0) {
-            // For 1-bit: write only BaseFactorsData (8 bytes)
-            BaseFactorsData* base_factors =
-                    reinterpret_cast<BaseFactorsData*>(code + (d + 7) / 8);
+            // For 1-bit: write only SignBitFactors (8 bytes)
+            SignBitFactors* base_factors =
+                    reinterpret_cast<SignBitFactors*>(code + (d + 7) / 8);
             base_factors->or_minus_c_l2sqr = factors_data.or_minus_c_l2sqr;
             base_factors->dp_multiplier = factors_data.dp_multiplier;
         } else {
-            // For multi-bit: write full FactorsData (12 bytes)
-            FactorsData* full_factors =
-                    reinterpret_cast<FactorsData*>(code + (d + 7) / 8);
+            // For multi-bit: write full SignBitFactorsWithError (12 bytes)
+            SignBitFactorsWithError* full_factors =
+                    reinterpret_cast<SignBitFactorsWithError*>(
+                            code + (d + 7) / 8);
             *full_factors = factors_data;
         }
 
@@ -145,9 +150,10 @@ void RaBitQuantizer::compute_codes_core(
         // Step 2: Compute ex-bits quantization (if nb_bits > 1)
         if (ex_bits > 0) {
             // Pointer to ex-bit code section
-            uint8_t* ex_code = code + (d + 7) / 8 + sizeof(FactorsData);
+            uint8_t* ex_code =
+                    code + (d + 7) / 8 + sizeof(SignBitFactorsWithError);
             // Pointer to ex-factors section
-            ExFactorsData* ex_factors = reinterpret_cast<ExFactorsData*>(
+            ExtraBitsFactors* ex_factors = reinterpret_cast<ExtraBitsFactors*>(
                     ex_code + (d * ex_bits + 7) / 8);
 
             // Quantize residual to ex-bits (pass centroid for IP metric)
@@ -186,12 +192,13 @@ void RaBitQuantizer::decode_core(
         const uint8_t* binary_data = code;
 
         // Cast to appropriate type based on nb_bits
-        // For 1-bit: use BaseFactorsData (8 bytes)
-        // For multi-bit: use FactorsData (12 bytes, but only first 8 bytes used
-        // for decode)
-        const BaseFactorsData* fac = (ex_bits == 0)
-                ? reinterpret_cast<const BaseFactorsData*>(code + (d + 7) / 8)
-                : reinterpret_cast<const FactorsData*>(code + (d + 7) / 8);
+        // For 1-bit: use SignBitFactors (8 bytes)
+        // For multi-bit: use SignBitFactorsWithError (12 bytes, but only first
+        // 8 bytes used for decode)
+        const SignBitFactors* fac = (ex_bits == 0)
+                ? reinterpret_cast<const SignBitFactors*>(code + (d + 7) / 8)
+                : reinterpret_cast<const SignBitFactorsWithError*>(
+                          code + (d + 7) / 8);
 
         // this is the baseline code
         //
@@ -218,8 +225,8 @@ float RaBitQDistanceComputer::lower_bound_distance(const uint8_t* code) {
 
     // Extract f_error from the code
     size_t size = (d + 7) / 8;
-    const FactorsData* base_fac =
-            reinterpret_cast<const FactorsData*>(code + size);
+    const SignBitFactorsWithError* base_fac =
+            reinterpret_cast<const SignBitFactorsWithError*>(code + size);
     float f_error = base_fac->f_error;
 
     // Compute proper lower bound using RaBitQ error formula:
@@ -263,12 +270,14 @@ float RaBitQDistanceComputerNotQ::distance_to_code_1bit(const uint8_t* code) {
     const uint8_t* binary_data = code;
 
     // Cast to appropriate type based on nb_bits
-    // For 1-bit: use BaseFactorsData (8 bytes)
-    // For multi-bit: use FactorsData (12 bytes) which includes f_error
+    // For 1-bit: use SignBitFactors (8 bytes)
+    // For multi-bit: use SignBitFactorsWithError (12 bytes) which includes
+    // f_error
     size_t ex_bits = nb_bits - 1;
-    const BaseFactorsData* base_fac = (ex_bits == 0)
-            ? reinterpret_cast<const BaseFactorsData*>(code + (d + 7) / 8)
-            : reinterpret_cast<const FactorsData*>(code + (d + 7) / 8);
+    const SignBitFactors* base_fac = (ex_bits == 0)
+            ? reinterpret_cast<const SignBitFactors*>(code + (d + 7) / 8)
+            : reinterpret_cast<const SignBitFactorsWithError*>(
+                      code + (d + 7) / 8);
 
     // this is the baseline code
     //
@@ -321,9 +330,9 @@ float RaBitQDistanceComputerNotQ::distance_to_code_full(const uint8_t* code) {
 
     // Extract pointers to code sections
     const uint8_t* binary_data = code;
-    size_t offset = (d + 7) / 8 + sizeof(FactorsData);
+    size_t offset = (d + 7) / 8 + sizeof(SignBitFactorsWithError);
     const uint8_t* ex_code = code + offset;
-    const ExFactorsData* ex_fac = reinterpret_cast<const ExFactorsData*>(
+    const ExtraBitsFactors* ex_fac = reinterpret_cast<const ExtraBitsFactors*>(
             ex_code + (d * ex_bits + 7) / 8);
 
     // Call shared utility directly with rotated_q pointer
@@ -424,12 +433,13 @@ float RaBitQDistanceComputerQ::distance_to_code_1bit(const uint8_t* code) {
     const uint8_t* binary_data = code;
 
     // Cast to appropriate type based on nb_bits
-    // For 1-bit: use BaseFactorsData (8 bytes)
-    // For multi-bit: use FactorsData (12 bytes) which includes f_error
+    // For 1-bit: use SignBitFactors (8 bytes)
+    // For multi-bit: use SignBitFactorsWithError (12 bytes) which includes
+    // f_error
     size_t ex_bits = nb_bits - 1;
-    const BaseFactorsData* base_fac = (ex_bits == 0)
-            ? reinterpret_cast<const BaseFactorsData*>(code + size)
-            : reinterpret_cast<const FactorsData*>(code + size);
+    const SignBitFactors* base_fac = (ex_bits == 0)
+            ? reinterpret_cast<const SignBitFactors*>(code + size)
+            : reinterpret_cast<const SignBitFactorsWithError*>(code + size);
 
     // this is ||or - c||^2 - (IP ? ||or||^2 : 0)
     float final_dot = 0;
@@ -486,9 +496,9 @@ float RaBitQDistanceComputerQ::distance_to_code_full(const uint8_t* code) {
 
     // Extract pointers to code sections
     const uint8_t* binary_data = code;
-    size_t offset = (d + 7) / 8 + sizeof(FactorsData);
+    size_t offset = (d + 7) / 8 + sizeof(SignBitFactorsWithError);
     const uint8_t* ex_code = code + offset;
-    const ExFactorsData* ex_fac = reinterpret_cast<const ExFactorsData*>(
+    const ExtraBitsFactors* ex_fac = reinterpret_cast<const ExtraBitsFactors*>(
             ex_code + (d * ex_bits + 7) / 8);
 
     // Call shared utility directly with rotated_q pointer
