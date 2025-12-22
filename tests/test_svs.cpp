@@ -272,6 +272,12 @@ TEST_F(SVSLL, LVQ4x0TrainSaveLoadAndAdd) {
     train_save_load_and_add_index(index, test_data, n);
 }
 
+TEST_F(SVSLL, LVQ8x0TrainSaveLoadAndAdd) {
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
+    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
+    train_save_load_and_add_index(index, test_data, n);
+}
+
 TEST_F(SVSLL, LVQ4x4TrainSaveLoadAndAdd) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;
