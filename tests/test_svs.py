@@ -331,6 +331,19 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
         return idx
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSAdapterLVQ8x0(TestSVSAdapter):
+    """Repeat all tests for SVSLVQ8x0 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
+
+    def _create_instance(self):
+        idx = self.target_class(self.d, 64)
+        idx.storage_kind = faiss.SVS_LVQ8x0
+        return idx
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x4(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x4 variant"""
 
@@ -531,6 +544,19 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x0
+        return idx
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSVamanaParametersLVQ8x0(TestSVSVamanaParameters):
+    """Repeat Vamana parameter tests for SVSLVQ8x0 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSVamanaLVQ
+
+    def _create_instance(self):
+        idx = self.target_class(self.d, 64)
+        idx.storage_kind = faiss.SVS_LVQ8x0
         return idx
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)

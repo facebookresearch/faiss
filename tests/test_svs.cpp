@@ -191,6 +191,12 @@ TEST_F(SVSLL, WriteAndReadIndexSVSLVQ4x0) {
     write_and_read_index(index, test_data, n);
 }
 
+TEST_F(SVSLL, WriteAndReadIndexSVSLVQ8x0) {
+    faiss::IndexSVSVamanaLVQ index{d, 64ul};
+    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
+    write_and_read_index(index, test_data, n);
+}
+
 TEST_F(SVSLL, WriteAndReadIndexSVSLVQ4x4) {
     faiss::IndexSVSVamanaLVQ index{d, 64ul};
     index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x4;

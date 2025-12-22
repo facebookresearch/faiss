@@ -43,6 +43,7 @@ enum SVSStorageKind {
     SVS_FP16,
     SVS_SQI8,
     SVS_LVQ4x0,
+    SVS_LVQ8x0,
     SVS_LVQ4x4,
     SVS_LVQ4x8,
     SVS_LeanVec4x4,
@@ -60,6 +61,8 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
             return svs_runtime::StorageKind::SQI8;
         case SVS_LVQ4x0:
             return svs_runtime::StorageKind::LVQ4x0;
+        case SVS_LVQ8x0:
+            return svs_runtime::StorageKind::LVQ8x0;
         case SVS_LVQ4x4:
             return svs_runtime::StorageKind::LVQ4x4;
         case SVS_LVQ4x8:
