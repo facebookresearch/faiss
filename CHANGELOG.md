@@ -3,6 +3,36 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.13.2] - 2025-12-19
+
+Added
+- 033e6acc6995d1adb9ea5317fadff152df3116bc Add RaBitQStats for tracking two-stage search filtering effectiveness (#4723)
+- 64a236744b9ec4ca18d6b5d4e21c898f861a242a Add multi-bit support for IndexIVFRaBitQFastScan (#4722)
+- cd2af8bc37628ac63dad736067200ac1291a77e7 Implement `IndexRefinePanorama` (#4683)
+- 18d20febb579788be74724cd5a0bbc71632f978b Add multi-bit support for IndexRaBitQFastScan (#4721)
+- 7372bc7982e6d15cd2048744094d510ddeb7495b Reapply `IndexHNSWFlatPanorama` with backward compatible serialization (#4692)
+- 1721ebff6de6ed5a8481302123479be9d85059a2 Also add backwards compatible check for binary (#4714)
+- 98bf8b3808ba325660006623afe177951579f3d9 Implement remaining `IndexFlatPanorama` functions (#4694)
+- a695814f4c108a2ba7a82da9ac2b526b1fff118c Enable Intel ScalableVectorSearch support (#4548)
+- d81a08e2409bb0ec2d2d6a2442d4beb7b2a8cbc9 Index serialization backward compatibility test (#4706)
+
+Changed
+- 9a6c02b061c4142a8e566d9d3360326140c95ad8 Rename RaBitQ factor structs for clarity and reorganize tests (#4730)
+- 281a999abab90aed5b145b193aaff043b52045c2 Enable cuVS in Faiss (#4729)
+- 6452d192cfaf67faf21808c285dfad1ec13b3d39 Update SVS binary to v0.1.0 (#4726)
+- 1ea99d8073bfd5d20bfee4d63c4bb049b7d63154 clean up serialization tests (#4700)
+- 89dd5a7b4ec9eb1f8c540828fc93c540f74c6699 Enable `-Wunused-exception-parameter` in faiss/PACKAGE +1
+
+Fixed
+- 5b19fca3f057b837ac898af52a8eb801c4744892 Allow over-writing centroid files to mitigate [S603653] (#4725)
+- 337dfe8043a9bd9b8f4e2f3ec3c23fffb7b02654 Fix typos in demos, benchs, and other directories" (#4719)
+- aea2b6bc8543f8a9b1b38e537cd55bcd9f6eb059 fix(docs): broken link to SVS in INSTALL.md (#4724)
+- 4627695179e304adba1addd342355f366500149c Fix SVS Python tutorial (#4720)
+- ac2e3abe3890fc7eaff06888878915bbda9c25b0 Update c_api install docs for CMake build system (#4702)
+- abc294419ae2d235aea4a15813e168e742e34995 fix broken test due to renaming to avoid lint (#4712)
+- 3d4d59fc3bd1986b31334c1a8bc6192a773b5666 Fix typos in demos, benchs, and other directories (#4709)
+
+
 ## [1.13.1] - 2025-12-02
 
 

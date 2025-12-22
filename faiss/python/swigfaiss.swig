@@ -195,6 +195,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -419,6 +420,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -428,6 +430,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -631,6 +634,7 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQStats.h>
 %include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
