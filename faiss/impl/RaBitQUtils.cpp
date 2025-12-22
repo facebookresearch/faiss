@@ -19,12 +19,14 @@ namespace rabitq_utils {
 // Verify no unexpected padding in structures used for per-vector storage.
 // These checks ensure compute_per_vector_storage_size() remains accurate.
 static_assert(
-        sizeof(BaseFactorsData) == 8,
-        "BaseFactorsData has unexpected padding");
-static_assert(sizeof(FactorsData) == 12, "FactorsData has unexpected padding");
+        sizeof(SignBitFactors) == 8,
+        "SignBitFactors has unexpected padding");
 static_assert(
-        sizeof(ExFactorsData) == 8,
-        "ExFactorsData has unexpected padding");
+        sizeof(SignBitFactorsWithError) == 12,
+        "SignBitFactorsWithError has unexpected padding");
+static_assert(
+        sizeof(ExtraBitsFactors) == 8,
+        "ExtraBitsFactors has unexpected padding");
 
 // Ideal quantizer radii for quantizers of 1..8 bits, optimized to minimize
 // L2 reconstruction error.
@@ -64,7 +66,7 @@ void compute_vector_intermediate_values(
     }
 }
 
-FactorsData compute_factors_from_intermediates(
+SignBitFactorsWithError compute_factors_from_intermediates(
         float norm_L2sqr,
         float or_L2sqr,
         float dp_oO,
@@ -85,7 +87,7 @@ FactorsData compute_factors_from_intermediates(
     const float inv_dp_oO =
             (std::abs(normalized_dp) < epsilon) ? 1.0f : (1.0f / normalized_dp);
 
-    FactorsData factors;
+    SignBitFactorsWithError factors;
     factors.or_minus_c_l2sqr = (metric_type == MetricType::METRIC_INNER_PRODUCT)
             ? (norm_L2sqr - or_L2sqr)
             : norm_L2sqr;
@@ -125,7 +127,7 @@ FactorsData compute_factors_from_intermediates(
     return factors;
 }
 
-FactorsData compute_vector_factors(
+SignBitFactorsWithError compute_vector_factors(
         const float* x,
         size_t d,
         const float* centroid,

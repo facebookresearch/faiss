@@ -60,7 +60,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate
           conda list
-          conda install -y -c pytorch faiss-cpu=1.13.1
+          conda install -y -c pytorch faiss-cpu=1.13.2
           conda list
 
       - name: Run Conda reader (read Faiss index and verify)
@@ -103,7 +103,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate
           # Install pre-built faiss-cpu
-          conda install -y -c pytorch faiss-cpu=1.13.1
+          conda install -y -c pytorch faiss-cpu=1.13.2
           conda list
 
       - name: Create shared data directory

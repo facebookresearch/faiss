@@ -472,7 +472,7 @@ IndexIVF* parse_IndexIVF(
     //          "RaBitQfs{nb_bits}" (e.g., "RaBitQfs4")
     //          "RaBitQfs_64" (1-bit, batch size 64)
     //          "RaBitQfs{nb_bits}_{bbs}" (e.g., "RaBitQfs4_64")
-    if (match("RaBitQfs([0-9])?(_[0-9]+)?")) {
+    if (match("RaBitQfs([1-9])?(_[0-9]+)?")) {
         uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
         int bbs = mres_to_int(sm[2], 32, 1);
         return new IndexIVFRaBitQFastScan(

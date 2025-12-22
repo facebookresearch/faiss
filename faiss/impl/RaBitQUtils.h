@@ -20,9 +20,12 @@ namespace rabitq_utils {
  * Used by both 1-bit and multi-bit RaBitQ variants.
  * These can be stored either embedded in codes (IndexRaBitQ) or separately
  * (IndexRaBitQFastScan).
+ *
+ * For 1-bit mode only - contains the minimal factors needed for distance
+ * estimation using just sign bits.
  */
 FAISS_PACK_STRUCTS_BEGIN
-struct FAISS_PACKED BaseFactorsData {
+struct FAISS_PACKED SignBitFactors {
     // ||or - c||^2 - ((metric==IP) ? ||or||^2 : 0)
     float or_minus_c_l2sqr = 0;
     float dp_multiplier = 0;
@@ -31,8 +34,11 @@ struct FAISS_PACKED BaseFactorsData {
 /** Extended factors for multi-bit RaBitQ (nb_bits > 1).
  * Includes error bound for lower bound computation in two-stage search.
  * Inherits base factors to maintain layout compatibility.
+ *
+ * Used in multi-bit mode - the error bound enables quick filtering of
+ * unlikely candidates in the first stage of two-stage search.
  */
-struct FAISS_PACKED FactorsData : BaseFactorsData {
+struct FAISS_PACKED SignBitFactorsWithError : SignBitFactors {
     // Error bound for lower bound computation in two-stage search
     // Used in formula: lower_bound = est_distance - f_error * g_error
     // Only allocated when nb_bits > 1
@@ -40,13 +46,13 @@ struct FAISS_PACKED FactorsData : BaseFactorsData {
 };
 
 /** Additional factors for multi-bit RaBitQ (nb_bits > 1).
- * Used to store normalization and scaling factors for the extra bits
- * (ex_bits) that encode magnitude information beyond the sign bit.
+ * Used to store normalization and scaling factors for the refinement bits
+ * that encode additional precision beyond the sign bit.
  */
-struct FAISS_PACKED ExFactorsData {
-    // Additive correction factor for ex-bit reconstruction
+struct FAISS_PACKED ExtraBitsFactors {
+    // Additive correction factor for refinement bit reconstruction
     float f_add_ex = 0;
-    // Scaling/rescaling factor for ex-bit reconstruction
+    // Scaling/rescaling factor for refinement bit reconstruction
     float f_rescale_ex = 0;
 };
 FAISS_PACK_STRUCTS_END
@@ -85,7 +91,7 @@ FAISS_API extern const float Z_MAX_BY_QB[8];
  * @param compute_error whether to compute f_error (false for 1-bit mode)
  * @return              computed factors for distance computation
  */
-FactorsData compute_vector_factors(
+SignBitFactorsWithError compute_vector_factors(
         const float* x,
         size_t d,
         const float* centroid,
@@ -120,7 +126,7 @@ void compute_vector_intermediate_values(
  * @param compute_error whether to compute f_error (false for 1-bit mode)
  * @return              computed factors
  */
-FactorsData compute_factors_from_intermediates(
+SignBitFactorsWithError compute_factors_from_intermediates(
         float norm_L2sqr,
         float or_L2sqr,
         float dp_oO,
@@ -186,8 +192,8 @@ void set_bit_fastscan(uint8_t* code, size_t bit_index);
  *
  * @param normalized_distance  Distance from SIMD LUT lookup (after
  * normalization)
- * @param db_factors          Database vector factors (BaseFactorsData or
- * FactorsData)
+ * @param db_factors          Database vector factors (SignBitFactors or
+ * SignBitFactorsWithError)
  * @param query_factors       Query factors computed during search
  * @param centered            Whether centered quantization is used
  * @param qb                  Number of quantization bits
@@ -196,7 +202,7 @@ void set_bit_fastscan(uint8_t* code, size_t bit_index);
  */
 inline float compute_1bit_adjusted_distance(
         float normalized_distance,
-        const BaseFactorsData& db_factors,
+        const SignBitFactors& db_factors,
         const QueryFactorsData& query_factors,
         bool centered,
         size_t qb,
@@ -285,7 +291,7 @@ inline int extract_code_inline(
 inline float compute_full_multibit_distance(
         const uint8_t* sign_bits,
         const uint8_t* ex_code,
-        const ExFactorsData& ex_fac,
+        const ExtraBitsFactors& ex_fac,
         const float* rotated_q,
         float qr_to_c_L2sqr,
         float qr_norm_L2sqr,
