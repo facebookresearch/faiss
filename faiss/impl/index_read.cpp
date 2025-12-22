@@ -1203,8 +1203,8 @@ Index* read_index(IOReader* f, int io_flags) {
             size_t nlevels;
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
-            const_cast<size_t&>(idx_panorama->panorama_level_width) =
-                    (idx_panorama->d + nlevels - 1) / nlevels;
+            const_cast<Panorama&>(idx_panorama->pano) =
+                    Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
         }
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {

@@ -67,7 +67,7 @@ struct Panorama {
             float* cumsum_base,
             size_t offset,
             size_t n_entry,
-            const float* vectors);
+            const float* vectors) const;
 
     /// Compute the cumulative sums of the query vector.
     void compute_query_cum_sums(const float* query, float* query_cum_sums)
