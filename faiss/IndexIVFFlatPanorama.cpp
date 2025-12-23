@@ -12,6 +12,7 @@
 #include <cstdio>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/MetricType.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
@@ -32,10 +33,7 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
         MetricType metric,
         bool own_invlists)
         : IndexIVFFlat(quantizer, d, nlist, metric, false), n_levels(n_levels) {
-    // For now, we only support L2 distance.
-    // Supporting dot product and cosine distance is a trivial addition
-    // left for future work.
-    FAISS_THROW_IF_NOT(metric == METRIC_L2);
+    FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
 
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
@@ -53,6 +51,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     VectorDistance vd;
     const ArrayInvertedListsPanorama* storage;
     using C = typename VectorDistance::C;
+    static constexpr MetricType metric = VectorDistance::metric;
 
     IVFFlatScannerPanorama(
             const VectorDistance& vd,
@@ -109,22 +108,22 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active =
-                    storage->pano
-                            .progressive_filter_batch<CMax<float, int64_t>>(
-                                    codes,
-                                    cum_sums_data,
-                                    xi,
-                                    cum_sums.data(),
-                                    batch_no,
-                                    list_size,
-                                    sel,
-                                    ids,
-                                    use_sel,
-                                    active_indices,
-                                    exact_distances,
-                                    simi[0],
-                                    local_stats);
+            size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
+                return storage->pano.progressive_filter_batch<C, M>(
+                        codes,
+                        cum_sums_data,
+                        xi,
+                        cum_sums.data(),
+                        batch_no,
+                        list_size,
+                        sel,
+                        ids,
+                        use_sel,
+                        active_indices,
+                        exact_distances,
+                        simi[0],
+                        local_stats);
+            });
 
             // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
@@ -167,22 +166,22 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * storage->kBatchSize;
 
-            size_t num_active =
-                    storage->pano
-                            .progressive_filter_batch<CMax<float, int64_t>>(
-                                    codes,
-                                    cum_sums_data,
-                                    xi,
-                                    cum_sums.data(),
-                                    batch_no,
-                                    list_size,
-                                    sel,
-                                    ids,
-                                    use_sel,
-                                    active_indices,
-                                    exact_distances,
-                                    radius,
-                                    local_stats);
+            size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
+                return storage->pano.progressive_filter_batch<C, M>(
+                        codes,
+                        cum_sums_data,
+                        xi,
+                        cum_sums.data(),
+                        batch_no,
+                        list_size,
+                        sel,
+                        ids,
+                        use_sel,
+                        active_indices,
+                        exact_distances,
+                        radius,
+                        local_stats);
+            });
 
             // Add batch survivors to range result.
             for (size_t i = 0; i < num_active; i++) {
