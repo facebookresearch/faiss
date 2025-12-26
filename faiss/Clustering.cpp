@@ -562,6 +562,20 @@ void Clustering::train_encoded(
 
             index.add(k, centroids.data());
             InterruptCallback::check();
+
+            // Early stopping: if objective didn't change, we've converged
+            if (i > 0) {
+                float prev_obj =
+                        iteration_stats[iteration_stats.size() - 2].obj;
+                if (obj == prev_obj) {
+                    if (verbose) {
+                        printf("\n  Converged at iteration %d: "
+                               "objective did not change\n",
+                               i);
+                    }
+                    break;
+                }
+            }
         }
 
         if (verbose) {
