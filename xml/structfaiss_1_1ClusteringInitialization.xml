@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ClusteringInitialization" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ClusteringInitialization</compoundname>
+    <includes refid="ClusteringInitialization_8h" local="no">ClusteringInitialization.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringInitialization_1aab275fd7003b0676edc68eb8fb6546f6" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ClusteringInitialization::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::ClusteringInitialization::d</qualifiedname>
+        <briefdescription>
+<para>vector dimension </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="56" column="12" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringInitialization_1a55068b0a6764556604ad607223dae73f" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::ClusteringInitialization::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <qualifiedname>faiss::ClusteringInitialization::k</qualifiedname>
+        <briefdescription>
+<para>number of centroids to initialize </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="57" column="12" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringInitialization_1a3d3010b30c4d34535760d0fbf12888f3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85" kindref="member">ClusteringInitMethod</ref></type>
+        <definition>ClusteringInitMethod faiss::ClusteringInitialization::method</definition>
+        <argsstring></argsstring>
+        <name>method</name>
+        <qualifiedname>faiss::ClusteringInitialization::method</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85a170e02e86972c2be8559884cc3c12254" kindref="member">ClusteringInitMethod::RANDOM</ref></initializer>
+        <briefdescription>
+<para>Initialization method to use. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="60" column="26" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringInitialization_1a8935dc7b67f3bee62b8b823642ea53ac" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::ClusteringInitialization::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <qualifiedname>faiss::ClusteringInitialization::seed</qualifiedname>
+        <initializer>= 1234</initializer>
+        <briefdescription>
+<para>Random seed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="63" column="13" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringInitialization_1a244ebadcd27f0a3249be8ded7d1a56fe" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::ClusteringInitialization::afkmc2_chain_length</definition>
+        <argsstring></argsstring>
+        <name>afkmc2_chain_length</name>
+        <qualifiedname>faiss::ClusteringInitialization::afkmc2_chain_length</qualifiedname>
+        <initializer>= 50</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Chain length for AFK-MC² (only used when method = AFK_MC2). Longer chains give better approximation to k-means++ but are slower. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="67" column="14" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ClusteringInitialization_1a1f7017b5a5da60799fef0174b9da9b7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::ClusteringInitialization::ClusteringInitialization</definition>
+        <argsstring>(size_t d, size_t k)</argsstring>
+        <name>ClusteringInitialization</name>
+        <qualifiedname>faiss::ClusteringInitialization::ClusteringInitialization</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="69" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ClusteringInitialization_1acaa44c3fbc3f902346d16c67c1fa7c4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ClusteringInitialization::init_centroids</definition>
+        <argsstring>(size_t n, const float *x, float *centroids, size_t n_existing_centroids=0, const float *existing_centroids=nullptr) const</argsstring>
+        <name>init_centroids</name>
+        <qualifiedname>faiss::ClusteringInitialization::init_centroids</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_existing_centroids</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>existing_centroids</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initialize k centroids from n input vectors.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of input vectors </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input vectors, size (n, d), row-major </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>centroids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output centroids, size (k, d), row-major </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>n_existing_centroids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of pre-existing centroids to consider when computing distances (for k-means++ and AFK-MC²). These centroids are not modified. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>existing_centroids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pre-existing centroids, size (n_existing_centroids, d), row-major. New centroids will be selected to be far from these existing ones. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="84" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structfaiss_1_1ClusteringInitialization_1aba72762f494c115e190075893fad22d9" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ClusteringInitialization::init_random</definition>
+        <argsstring>(size_t n, const float *x, float *centroids) const</argsstring>
+        <name>init_random</name>
+        <qualifiedname>faiss::ClusteringInitialization::init_random</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="92" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ClusteringInitialization_1a355fac6e088fc168b5a496fb25581bff" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ClusteringInitialization::init_kmeans_plus_plus</definition>
+        <argsstring>(size_t n, const float *x, float *centroids, size_t n_existing_centroids, const float *existing_centroids) const</argsstring>
+        <name>init_kmeans_plus_plus</name>
+        <qualifiedname>faiss::ClusteringInitialization::init_kmeans_plus_plus</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_existing_centroids</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>existing_centroids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="93" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ClusteringInitialization_1a0742d5fbead8c4a3d0b724fff7703c6c" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ClusteringInitialization::init_afkmc2</definition>
+        <argsstring>(size_t n, const float *x, float *centroids, size_t n_existing_centroids, const float *existing_centroids) const</argsstring>
+        <name>init_afkmc2</name>
+        <qualifiedname>faiss::ClusteringInitialization::init_afkmc2</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>centroids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n_existing_centroids</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>existing_centroids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ClusteringInitialization.h" line="99" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Centroid initialization for k-means clustering.</para>
+<para>This class provides different algorithms for selecting initial centroids before running k-means iterations. Good initialization can significantly improve clustering quality and convergence speed.</para>
+<para>Example usage: <programlisting><codeline><highlight class="normal">ClusteringInitialization<sp/>init(128,<sp/>1000);<sp/><sp/></highlight><highlight class="comment">//<sp/>d=128,<sp/>k=1000</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">init.method<sp/>=<sp/><ref refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85abff4788b470a1b8e198b31154fcfa6a4" kindref="member">ClusteringInitMethod::KMEANS_PLUS_PLUS</ref>;</highlight></codeline>
+<codeline><highlight class="normal">init.seed<sp/>=<sp/>42;</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">std::vector&lt;float&gt;<sp/>centroids(128<sp/>*<sp/>1000);</highlight></codeline>
+<codeline><highlight class="normal">init.init_centroids(n,<sp/>x,<sp/>centroids.data());</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="faiss/impl/ClusteringInitialization.h" line="55" column="1" bodyfile="faiss/impl/ClusteringInitialization.h" bodystart="55" bodyend="105"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a244ebadcd27f0a3249be8ded7d1a56fe" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>afkmc2_chain_length</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a1f7017b5a5da60799fef0174b9da9b7c" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>ClusteringInitialization</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1aab275fd7003b0676edc68eb8fb6546f6" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>d</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a0742d5fbead8c4a3d0b724fff7703c6c" prot="private" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>init_afkmc2</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1acaa44c3fbc3f902346d16c67c1fa7c4e" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>init_centroids</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a355fac6e088fc168b5a496fb25581bff" prot="private" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>init_kmeans_plus_plus</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1aba72762f494c115e190075893fad22d9" prot="private" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>init_random</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a55068b0a6764556604ad607223dae73f" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>k</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a3d3010b30c4d34535760d0fbf12888f3" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>method</name></member>
+      <member refid="structfaiss_1_1ClusteringInitialization_1a8935dc7b67f3bee62b8b823642ea53ac" prot="public" virt="non-virtual"><scope>faiss::ClusteringInitialization</scope><name>seed</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

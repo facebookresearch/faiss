@@ -415,6 +415,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
     <member refid="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4" kind="function"><name>Clustering</name></member>
     <member refid="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff" kind="function"><name>Clustering</name></member>
     <member refid="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" kind="function"><name>train</name></member>
@@ -447,6 +449,20 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ClusteringInitialization" kind="struct"><name>faiss::ClusteringInitialization</name>
+    <member refid="structfaiss_1_1ClusteringInitialization_1aab275fd7003b0676edc68eb8fb6546f6" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a55068b0a6764556604ad607223dae73f" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a3d3010b30c4d34535760d0fbf12888f3" kind="variable"><name>method</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a8935dc7b67f3bee62b8b823642ea53ac" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a244ebadcd27f0a3249be8ded7d1a56fe" kind="variable"><name>afkmc2_chain_length</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a1f7017b5a5da60799fef0174b9da9b7c" kind="function"><name>ClusteringInitialization</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1acaa44c3fbc3f902346d16c67c1fa7c4e" kind="function"><name>init_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1aba72762f494c115e190075893fad22d9" kind="function"><name>init_random</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a355fac6e088fc168b5a496fb25581bff" kind="function"><name>init_kmeans_plus_plus</name></member>
+    <member refid="structfaiss_1_1ClusteringInitialization_1a0742d5fbead8c4a3d0b724fff7703c6c" kind="function"><name>init_afkmc2</name></member>
   </compound>
   <compound refid="structfaiss_1_1ClusteringIterationStats" kind="struct"><name>faiss::ClusteringIterationStats</name>
     <member refid="structfaiss_1_1ClusteringIterationStats_1a3a1ee76ac7d9cfda93284a846679e56a" kind="variable"><name>obj</name></member>
@@ -469,6 +485,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
   </compound>
   <compound refid="structfaiss_1_1CMax" kind="struct"><name>faiss::CMax</name>
     <member refid="structfaiss_1_1CMax_1a4b83239e1d9b4aced927ba7ff4173d00" kind="typedef"><name>T</name></member>
@@ -9038,6 +9056,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0" kind="function"><name>ProgressiveDimClustering</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" kind="function"><name>ProgressiveDimClustering</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" kind="function"><name>train</name></member>
@@ -9059,6 +9079,8 @@
     <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
     <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
     <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a8611a01f2d1c9b35af4871ce53e98160" kind="function"><name>ProgressiveDimClusteringParameters</name></member>
   </compound>
   <compound refid="structfaiss_1_1ProgressiveDimIndexFactory" kind="struct"><name>faiss::ProgressiveDimIndexFactory</name>
@@ -11018,6 +11040,10 @@
     <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" kind="function"><name>search_multi</name></member>
   </compound>
   <compound refid="namespacefaiss" kind="namespace"><name>faiss</name>
+    <member refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85" kind="enum"><name>ClusteringInitMethod</name></member>
+    <member refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85a170e02e86972c2be8559884cc3c12254" kind="enumvalue"><name>RANDOM</name></member>
+    <member refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85abff4788b470a1b8e198b31154fcfa6a4" kind="enumvalue"><name>KMEANS_PLUS_PLUS</name></member>
+    <member refid="namespacefaiss_1ad58caa5fc1ff24471af5f971d4471c85a008b5a29f7f8c8e32023530b9830166a" kind="enumvalue"><name>AFK_MC2</name></member>
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912f" kind="enum"><name>NumericType</name></member>
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fac5c3cac87aecdf173850923b29f8b7fa" kind="enumvalue"><name>Float32</name></member>
     <member refid="namespacefaiss_1a066c8f0f39015edaa88ecd57de2f912fa5f19b796a0b240566043d85e02d89916" kind="enumvalue"><name>Float16</name></member>
@@ -11369,17 +11395,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
+  <compound refid="namespacefaiss_1_1_0d160" kind="namespace"><name>faiss::@160</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d168" kind="namespace"><name>faiss::@168</name>
+  <compound refid="namespacefaiss_1_1_0d169" kind="namespace"><name>faiss::@169</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d187" kind="namespace"><name>faiss::@187</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d189" kind="namespace"><name>faiss::@189</name>
+  <compound refid="namespacefaiss_1_1_0d188" kind="namespace"><name>faiss::@188</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d192" kind="namespace"><name>faiss::@192</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -11872,6 +11898,8 @@
   <compound refid="AdditiveQuantizer_8h" kind="file"><name>AdditiveQuantizer.h</name>
   </compound>
   <compound refid="AuxIndexStructures_8h" kind="file"><name>AuxIndexStructures.h</name>
+  </compound>
+  <compound refid="ClusteringInitialization_8h" kind="file"><name>ClusteringInitialization.h</name>
   </compound>
   <compound refid="code__distance-avx2_8h" kind="file"><name>code_distance-avx2.h</name>
   </compound>

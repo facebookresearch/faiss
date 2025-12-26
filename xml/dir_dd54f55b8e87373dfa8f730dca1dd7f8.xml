@@ -5,6 +5,7 @@
     <innerdir refid="dir_df06d869ac375e073b830f0b1d0f2164">faiss/impl/code_distance</innerdir>
     <innerfile refid="AdditiveQuantizer_8h">AdditiveQuantizer.h</innerfile>
     <innerfile refid="AuxIndexStructures_8h">AuxIndexStructures.h</innerfile>
+    <innerfile refid="ClusteringInitialization_8h">ClusteringInitialization.h</innerfile>
     <innerfile refid="CodePacker_8h">CodePacker.h</innerfile>
     <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
     <innerfile refid="FaissAssert_8h">FaissAssert.h</innerfile>
