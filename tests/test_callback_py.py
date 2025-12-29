@@ -13,9 +13,9 @@ class TestCallbackPy(unittest.TestCase):
         super().setUp()
 
     def test_timeout(self) -> None:
-        n = 1000
-        k = 100
-        d = 128
+        n = 1000000
+        k = 10000
+        d = 384
         niter = 1_000_000_000
 
         x = np.random.rand(n, d).astype('float32')

@@ -14,9 +14,9 @@
 #include <faiss/utils/random.h>
 
 TEST(TestCallback, timeout) {
-    int n = 1000;
-    int k = 100;
-    int d = 128;
+    int n = 1000000;
+    int k = 10000;
+    int d = 384;
     int niter = 1000000000;
     int seed = 42;
 
