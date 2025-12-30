@@ -8624,7 +8624,7 @@
     <member refid="structfaiss_1_1Panorama_1ab721afb080cbcc7bf0af53d71c2f65be" kind="function"><name>compute_cumulative_sums</name></member>
     <member refid="structfaiss_1_1Panorama_1a1880485cda3bb3d1c98b2735de2d8925" kind="function"><name>compute_query_cum_sums</name></member>
     <member refid="structfaiss_1_1Panorama_1a890cce5c088cd98066dc5210ccfa31a8" kind="function"><name>copy_entry</name></member>
-    <member refid="structfaiss_1_1Panorama_1a1f7488e1e588d7a6b717ac6c818f40d0" kind="function"><name>progressive_filter_batch</name></member>
+    <member refid="structfaiss_1_1Panorama_1a703b840b015db4678d9080006cdcedc7" kind="function"><name>progressive_filter_batch</name></member>
     <member refid="structfaiss_1_1Panorama_1ae8c69dd7c911cf621b7110f4ad576819" kind="function"><name>reconstruct</name></member>
   </compound>
   <compound refid="structfaiss_1_1PanoramaStats" kind="struct"><name>faiss::PanoramaStats</name>
@@ -10849,6 +10849,7 @@
     <member refid="structfaiss_1_1VectorDistance_1a61c9d5400239ae177d94be5e119c3fe0" kind="typedef"><name>C</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a9d03eabc89b6e631ba45ec79700e6534" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ab79751e034e79559d9585cf68af061a3" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a97eee3571f070fa007152261b0b5e59b" kind="variable"><name>metric</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ad9bd4b2e4a39ce28f9c3ba0f1308410e" kind="variable"><name>is_similarity</name></member>
     <member refid="structfaiss_1_1VectorDistance_1aaf62cc689beb7e6fb78a27ff2a8ed598" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1VectorDistance_1a407dedbd401cfd90eb673fcc39e82b9d" kind="function"><name>operator()</name></member>
@@ -11200,6 +11201,7 @@
     <member refid="namespacefaiss_1afe521d71f2a4dd6a99b0a5d9fbe19787" kind="function"><name>lo_listno</name></member>
     <member refid="namespacefaiss_1a31e62b2521dd1eeb8632005add40ecbd" kind="function"><name>lo_offset</name></member>
     <member refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kind="function"><name>is_similarity_metric</name></member>
+    <member refid="namespacefaiss_1a987ea96650dd763a87affacd88649fc6" kind="function"><name>with_metric_type</name></member>
     <member refid="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" kind="function"><name>to_svs_metric</name></member>
     <member refid="namespacefaiss_1a4b0faf1e9d9da1c14b118bdef8116f48" kind="function"><name>make_faiss_id_filter</name></member>
     <member refid="namespacefaiss_1a59dea145469ceef3a7710a7163d3e4ab" kind="function"><name>convert_input_buffer</name></member>

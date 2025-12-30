@@ -12,6 +12,8 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/CodePacker.h</label>
@@ -24,6 +26,9 @@
       </node>
       <node id="4">
         <label>cstdio</label>
+      </node>
+      <node id="5">
+        <label>cstdlib</label>
       </node>
     </incdepgraph>
     <invincdepgraph>

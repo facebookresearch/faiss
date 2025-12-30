@@ -10,7 +10,7 @@
         <link refid="Index_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -46,6 +46,8 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/gpu/GpuIcmEncoder.h</label>
@@ -77,28 +79,28 @@
         <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/impl/FaissAssert.h</label>
         <link refid="FaissAssert_8h_source"/>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss/impl/FaissException.h</label>
         <link refid="FaissException_8h_source"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
@@ -128,7 +130,7 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -136,6 +138,8 @@
       <node id="28">
         <label>faiss/impl/Panorama.h</label>
         <link refid="Panorama_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
         <childnode refid="29" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
@@ -154,7 +158,7 @@
       <node id="31">
         <label>faiss/impl/PanoramaStats.h</label>
         <link refid="PanoramaStats_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
       <node id="39">
@@ -176,10 +180,10 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
         <childnode refid="10" relation="include">
@@ -204,7 +208,7 @@
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="37" relation="include">
         </childnode>
@@ -214,7 +218,7 @@
         <link refid="distances_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
@@ -240,7 +244,7 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
@@ -266,13 +270,13 @@
       <node id="13">
         <label>cstdio</label>
       </node>
-      <node id="19">
+      <node id="14">
         <label>cstdlib</label>
       </node>
       <node id="26">
         <label>cstring</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>exception</label>
       </node>
       <node id="36">
@@ -302,7 +306,7 @@
       <node id="30">
         <label>unordered_set</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>utility</label>
       </node>
       <node id="7">

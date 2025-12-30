@@ -23,6 +23,8 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
       </node>
       <node id="28">
         <label>faiss/impl/AuxIndexStructures.h</label>

@@ -14,19 +14,21 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -34,14 +36,14 @@
         <link refid="RaBitQuantizerMultiBit_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss/impl/platform_macros.h</label>
         <link refid="platform__macros_8h_source"/>
         <childnode refid="3" relation="include">
@@ -49,7 +51,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>cstddef</label>
       </node>
       <node id="3">
@@ -58,7 +60,10 @@
       <node id="4">
         <label>cstdio</label>
       </node>
-      <node id="8">
+      <node id="5">
+        <label>cstdlib</label>
+      </node>
+      <node id="9">
         <label>vector</label>
       </node>
     </incdepgraph>
