@@ -22,6 +22,7 @@ template <MetricType mt>
 struct VectorDistance {
     size_t d;
     float metric_arg;
+    static constexpr MetricType metric = mt;
     static constexpr bool is_similarity = is_similarity_metric(mt);
 
     inline float operator()(const float* x, const float* y) const;
