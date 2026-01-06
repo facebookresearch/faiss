@@ -627,22 +627,25 @@ inline void flat_pano_search_core(
                     threshold = res.heap_dis[0];
                 }
 
-                size_t num_active =
-                        index.pano
-                                .progressive_filter_batch<CMax<float, int64_t>>(
-                                        index.codes.data(),
-                                        index.cum_sums.data(),
-                                        xi,
-                                        query_cum_norms.data(),
-                                        batch_no,
-                                        index.ntotal,
-                                        sel,
-                                        nullptr,
-                                        use_sel,
-                                        active_indices,
-                                        exact_distances,
-                                        threshold,
-                                        local_stats);
+                size_t num_active = with_metric_type(
+                        index.metric_type, [&]<MetricType M>() {
+                            return index.pano.progressive_filter_batch<
+                                    CMax<float, int64_t>,
+                                    M>(
+                                    index.codes.data(),
+                                    index.cum_sums.data(),
+                                    xi,
+                                    query_cum_norms.data(),
+                                    batch_no,
+                                    index.ntotal,
+                                    sel,
+                                    nullptr,
+                                    use_sel,
+                                    active_indices,
+                                    exact_distances,
+                                    threshold,
+                                    local_stats);
+                        });
 
                 for (size_t j = 0; j < num_active; j++) {
                     res.add_result(

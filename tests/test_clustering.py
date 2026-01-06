@@ -296,3 +296,23 @@ class TestClustering1D(unittest.TestCase):
         faiss.smawk(nrows, ncols, sp(A), sp(argmins))
         argmins_ref = np.argmin(A, axis=1)
         assert np.array_equal(argmins, argmins_ref)
+
+
+class TestEarlyStopping(unittest.TestCase):
+
+    def test_early_stopping_convergence(self):
+        d = 32
+        n = 1000
+        k = 10
+        max_iter = 1000
+
+        rs = np.random.RandomState(42)
+        x = rs.uniform(size=(n, d)).astype('float32')
+
+        clus = faiss.Clustering(d, k)
+        clus.niter = max_iter
+        index = faiss.IndexFlatL2(d)
+        clus.train(x, index)
+
+        num_iterations = clus.iteration_stats.size()
+        self.assertLess(num_iterations, max_iter)
