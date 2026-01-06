@@ -9,7 +9,9 @@ import logging
 import os
 import sys
 
-from packaging.version import Version
+
+def Version(version_str):
+    return tuple(int(''.join(filter(str.isdigit, part)) or '0') for part in version_str.split('.'))
 
 
 def supported_instruction_sets():
