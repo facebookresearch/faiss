@@ -579,6 +579,9 @@ SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x0") {
         return SVSStorageKind::SVS_LVQ4x0;
     }
+    if (lvq_string == "LVQ8x0") {
+        return SVSStorageKind::SVS_LVQ8x0;
+    }
     if (lvq_string == "LVQ4x4") {
         return SVSStorageKind::SVS_LVQ4x4;
     }
