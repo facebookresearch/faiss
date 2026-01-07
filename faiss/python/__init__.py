@@ -16,6 +16,9 @@ import inspect
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
 
+# Check if GPU module was loaded
+from .loader import gpu_loaded
+
 # additional wrappers
 from faiss import class_wrappers
 from faiss.gpu_wrappers import *
@@ -164,7 +167,7 @@ def add_ref_in_function(function_name, parameter_no):
     setattr(this_module, function_name, replacement_function)
 
 
-if "GPU" in get_compile_options():
+if gpu_loaded:
     add_ref_in_constructor(GpuIndexIVFFlat, 1)
     add_ref_in_constructor(GpuIndexBinaryFlat, 1)
     add_ref_in_constructor(GpuIndexFlat, 1)
@@ -223,7 +226,8 @@ add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
 add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
 
-if "SVS" in get_compile_options():
+# Check if SVS support is compiled in (this comes from the CPU module)
+if hasattr(sys.modules[__name__], 'IndexSVSVamana'):
     add_ref_in_constructor(IndexSVSVamana, 0)
     add_ref_in_constructor(IndexSVSVamanaLVQ, 0)
     add_ref_in_constructor(IndexSVSVamanaLeanVec, 0)
@@ -357,3 +361,20 @@ class TimeoutGuard:
 
     def __exit__(self, exc_type, exc_value, traceback):
         PythonInterruptCallback.reset()
+
+
+##############################################################################
+# Try to load the GPU module if available
+# This must happen AFTER all CPU classes are loaded to avoid circular imports
+##############################################################################
+
+try:
+    logger.info("Attempting to load GPU module.")
+    from .swigfaiss_gpu_module import *
+    logger.info("Successfully loaded GPU module.")
+    # Update the gpu_loaded flag in the loader module
+    import faiss.loader
+    faiss.loader.gpu_loaded = True
+except ImportError as e:
+    logger.info(f"GPU module not available: {e!r}")
+    # gpu_loaded remains False (default value set in loader.py)

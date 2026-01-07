@@ -73,6 +73,10 @@ configure_swigfaiss(swigfaiss_avx512_spr.swig)
 configure_swigfaiss(swigfaiss_sve.swig)
 configure_swigfaiss(faiss_example_external_module.swig)
 
+if(FAISS_ENABLE_GPU)
+  configure_swigfaiss(swigfaiss_gpu_module.swig)
+endif()
+
 if(TARGET faiss)
   # Manually add headers as extra dependencies of swigfaiss.
   set(SWIG_MODULE_swigfaiss_EXTRA_DEPS)
@@ -90,6 +94,12 @@ if(TARGET faiss)
     list(APPEND SWIG_MODULE_faiss_example_external_module_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/${h}")
   endforeach()
+  if(FAISS_ENABLE_GPU)
+    foreach(h ${FAISS_GPU_HEADERS})
+      list(APPEND SWIG_MODULE_swigfaiss_gpu_module_EXTRA_DEPS
+        "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
+    endforeach()
+  endif()
   foreach(h ${FAISS_GPU_HEADERS})
     list(APPEND SWIG_MODULE_swigfaiss_EXTRA_DEPS
       "${faiss_SOURCE_DIR}/faiss/gpu/${h}")
@@ -173,9 +183,23 @@ swig_add_library(faiss_example_external_module
 )
 set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
+if(FAISS_ENABLE_GPU)
+  set_property(SOURCE swigfaiss_gpu_module.swig
+    PROPERTY SWIG_MODULE_NAME swigfaiss_gpu_module)
+  swig_add_library(swigfaiss_gpu_module
+    TYPE SHARED
+    LANGUAGE python
+    SOURCES swigfaiss_gpu_module.swig
+  )
+  set_property(TARGET swigfaiss_gpu_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
+endif()
+
 if(AIX)
   set_target_properties(swigfaiss PROPERTIES SUFFIX .a)
   set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .a)
+  if(FAISS_ENABLE_GPU)
+    set_target_properties(swigfaiss_gpu_module PROPERTIES SUFFIX .a)
+  endif()
 elseif(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
@@ -184,6 +208,9 @@ elseif(NOT WIN32)
   set_target_properties(swigfaiss_avx512_spr PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_sve PROPERTIES SUFFIX .so)
   set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .so)
+  if(FAISS_ENABLE_GPU)
+    set_target_properties(swigfaiss_gpu_module PROPERTIES SUFFIX .so)
+  endif()
 else()
   # we need bigobj for the swig wrapper
   target_compile_options(swigfaiss PRIVATE /bigobj)
@@ -192,6 +219,9 @@ else()
   target_compile_options(swigfaiss_avx512_spr PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+  if(FAISS_ENABLE_GPU)
+    target_compile_options(swigfaiss_gpu_module PRIVATE /bigobj)
+  endif()
 endif()
 
 if(FAISS_ENABLE_SVS)
@@ -201,6 +231,9 @@ if(FAISS_ENABLE_SVS)
   target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  if(FAISS_ENABLE_GPU)
+    target_compile_definitions(swigfaiss_gpu_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  endif()
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -210,6 +243,7 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss_avx512 PRIVATE hip::host)
     target_link_libraries(swigfaiss_avx512_spr PRIVATE hip::host)
     target_link_libraries(faiss_example_external_module PRIVATE hip::host)
+    target_link_libraries(swigfaiss_gpu_module PRIVATE hip::host)
   else()
     find_package(CUDAToolkit REQUIRED)
     if(FAISS_ENABLE_CUVS)
@@ -220,6 +254,7 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(swigfaiss_avx512 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
     target_link_libraries(swigfaiss_avx512_spr PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
     target_link_libraries(swigfaiss_sve PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
+    target_link_libraries(swigfaiss_gpu_module PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
   endif()
 endif()
 
@@ -268,6 +303,16 @@ target_link_libraries(faiss_example_external_module PRIVATE
   faiss
 )
 
+if(FAISS_ENABLE_GPU)
+  target_link_libraries(swigfaiss_gpu_module PRIVATE
+    Python::Module
+    Python::NumPy
+    OpenMP::OpenMP_CXX
+    swigfaiss
+    faiss
+  )
+endif()
+
 # Hack so that python_callbacks.h can be included as
 # `#include <faiss/python/python_callbacks.h>`.
 target_include_directories(swigfaiss PRIVATE ${PROJECT_SOURCE_DIR}/../..)
@@ -276,6 +321,9 @@ target_include_directories(swigfaiss_avx512 PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_avx512_spr PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(swigfaiss_sve PRIVATE ${PROJECT_SOURCE_DIR}/../..)
 target_include_directories(faiss_example_external_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+if(FAISS_ENABLE_GPU)
+  target_include_directories(swigfaiss_gpu_module PRIVATE ${PROJECT_SOURCE_DIR}/../..)
+endif()
 
 find_package(Python REQUIRED
   COMPONENTS Development.Module NumPy
@@ -303,6 +351,9 @@ target_link_libraries(swigfaiss_avx512 PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_avx512_spr PRIVATE faiss_python_callbacks)
 target_link_libraries(swigfaiss_sve PRIVATE faiss_python_callbacks)
 target_link_libraries(faiss_example_external_module PRIVATE faiss_python_callbacks)
+if(FAISS_ENABLE_GPU)
+  target_link_libraries(swigfaiss_gpu_module PRIVATE faiss_python_callbacks)
+endif()
 
 configure_file(setup.py setup.py COPYONLY)
 configure_file(__init__.py __init__.py COPYONLY)

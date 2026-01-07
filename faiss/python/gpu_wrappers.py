@@ -11,6 +11,7 @@
 import numpy as np
 
 from faiss.loader import *
+from faiss.loader import gpu_loaded
 
 
 ###########################################
@@ -22,6 +23,12 @@ def index_cpu_to_gpu_multiple_py(resources, index, co=None, gpus=None):
     """ builds the C++ vectors for the GPU indices and the
     resources. Handles the case where the resources are assigned to
     the list of GPUs """
+    if not gpu_loaded:
+        raise RuntimeError(
+            "GPU module not available. GPU functionality requires the "
+            "swigfaiss_gpu_module to be installed. This module is built when "
+            "FAISS_ENABLE_GPU=ON during compilation."
+        )
     if gpus is None:
         gpus = range(len(resources))
     vres = GpuResourcesVector()
