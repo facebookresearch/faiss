@@ -198,3 +198,7 @@ if not loaded:
         logger.error(message)
 
         sys.exit(1)
+
+# GPU module loading status (will be set to True if GPU module loads in __init__.py)
+gpu_loaded = False
+

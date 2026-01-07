@@ -343,12 +343,7 @@ void gpu_profiler_start();
 void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
-#ifdef GPU_WRAPPER
-
-%include "swigfaiss_gpu.swig"
-
-#else // GPU_WRAPPER
-
+// GPU functionality is in the separate swigfaiss_gpu_module when GPU is enabled
 %{
 int get_num_gpus()
 {
@@ -367,9 +362,6 @@ void gpu_sync_all_devices()
 {
 }
 %}
-
-
-#endif // GPU_WRAPPER
 
 // order matters because includes are not recursive
 
@@ -569,9 +561,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
-#ifdef GPU_WRAPPER
-%include "swigfaiss_gpu_indices.swig"
-#endif
+// GPU index functionality is in the separate swigfaiss_gpu_module
 
 
 
@@ -598,7 +588,7 @@ struct faiss::simd16uint16 {};
     } else
 %enddef
 
-// DOWNCAST_GPU is defined in swigfaiss_gpu.swig
+// GPU downcasting is handled in the separate swigfaiss_gpu_module
 
 #endif
 
@@ -684,16 +674,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
 #endif // FAISS_ENABLE_SVS
-#ifdef GPU_WRAPPER
-#ifdef FAISS_ENABLE_CUVS
-    DOWNCAST_GPU ( GpuIndexCagra )
-    DOWNCAST_GPU ( GpuIndexBinaryCagra )
-#endif
-    DOWNCAST_GPU ( GpuIndexIVFPQ )
-    DOWNCAST_GPU ( GpuIndexIVFFlat )
-    DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
-    DOWNCAST_GPU ( GpuIndexFlat )
-#endif
+    // GPU downcasts are in the separate swigfaiss_gpu_module
     // default for non-recognized classes
     DOWNCAST ( Index )
     if ($1 == NULL)
@@ -718,9 +699,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexBinaryHNSW )
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
-#ifdef GPU_WRAPPER
-    DOWNCAST_GPU ( GpuIndexBinaryFlat )
-#endif
+    // GPU binary downcasts are in the separate swigfaiss_gpu_module
     // default for non-recognized classes
     DOWNCAST ( IndexBinary )
     if ($1 == NULL)
