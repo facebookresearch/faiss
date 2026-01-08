@@ -16,6 +16,7 @@
 #include <cstring>
 #include <memory>
 #include <mutex>
+#include <unordered_set>
 #include <vector>
 
 #include <faiss/MetricType.h>
@@ -169,30 +170,48 @@ struct TimeoutCallback : InterruptCallback {
     static void reset(double timeout_in_seconds);
 };
 
-/// set implementation optimized for fast access.
+/// A fast, reusable Visited Set.
 struct VisitedTable {
     std::vector<uint8_t> visited;
-    uint8_t visno;
+    std::unordered_set<uint32_t> visited_set;
+    uint8_t visno; // 0 if using visited_set, 1..250 if using vector.
 
-    explicit VisitedTable(int size) : visited(size), visno(1) {}
+    explicit VisitedTable(int size, bool use_hashset)
+            : visited(use_hashset ? 0 : size), visno(use_hashset ? 0 : 1) {}
+
+    // The vector strategy is faster for get()/set(), but O(size) to initialize.
+    // advance() is O(1) except every 250 calls, which are O(size).
+    // The hash set strategy is a constant factor slower for get()/set(),
+    // but O(1) to construct and O(visits) to advance.
+    // A size of ~1M seems to be the threshold where the hash set wins.
+    static constexpr int kHashsetSizeThreshold = (1 << 20);
+    explicit VisitedTable(int size)
+            : VisitedTable(size, size >= kHashsetSizeThreshold) {}
 
     /// set flag #no to true
     void set(int no) {
-        visited[no] = visno;
+        if (visno == 0) {
+            visited_set.insert(no);
+        } else {
+            visited[no] = visno;
+        }
     }
 
     /// get flag #no
     bool get(int no) const {
-        return visited[no] == visno;
+        return visno == 0 ? visited_set.count(no) != 0 : visited[no] == visno;
     }
 
     /// reset all flags to false
     void advance() {
-        visno++;
-        if (visno == 250) {
+        if (visno == 0) {
+            visited_set.clear();
+        } else if (visno == 250) {
             // 250 rather than 255 because sometimes we use visno and visno+1
             memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
             visno = 1;
+        } else {
+            ++visno;
         }
     }
 };
