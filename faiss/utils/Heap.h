@@ -642,6 +642,19 @@ void merge_knn_results(
         typename C::T* distances,
         idx_t* labels);
 
+// This function reduces k_base pairs (base_labels, base_distances)
+//   into k pairs (labels, distances).
+// The function is used for the refining process.
+template <class C>
+void reorder_2_heaps(
+        int64_t n,
+        int64_t k,
+        typename C::TI* __restrict labels,
+        float* __restrict distances,
+        int64_t k_base,
+        const typename C::TI* __restrict base_labels,
+        const float* __restrict base_distances);
+
 } // namespace faiss
 
 #endif /* FAISS_Heap_h */
