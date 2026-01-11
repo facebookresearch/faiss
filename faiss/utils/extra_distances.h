@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/IDSelector.h>
 
 #include <faiss/utils/Heap.h>
 
@@ -43,7 +44,8 @@ void knn_extra_metrics(
         float metric_arg,
         size_t k,
         float* distances,
-        int64_t* indexes);
+        int64_t* indexes,
+        const IDSelector* sel = nullptr);
 
 /** get a DistanceComputer that refers to this type of distance and
  *  indexes a flat array of size nb */
