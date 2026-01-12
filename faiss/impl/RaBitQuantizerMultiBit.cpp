@@ -221,33 +221,17 @@ void compute_ex_factors(
 
     // Compute inner products needed for factors
     float l2_sqr = norm * norm;
-    float ip_resi_xucb = fvec_inner_product(residual, xu_cb.data(), d);
 
     // Compute factors
     if (metric_type == MetricType::METRIC_L2) {
-        // For L2, no centroid correction needed in IVF setting
-        // because residual = x - centroid, distance computed in residual space
         ex_factors.f_add_ex = l2_sqr;
         ex_factors.f_rescale_ex = ipnorm_inv * -2.0f * norm;
     } else {
-        // For IP, centroid correction is needed
         float ip_resi_cent = 0;
         if (centroid != nullptr) {
             ip_resi_cent = fvec_inner_product(residual, centroid, d);
         }
-
-        float ip_cent_xucb = 0;
-        if (centroid != nullptr) {
-            ip_cent_xucb = fvec_inner_product(centroid, xu_cb.data(), d);
-        }
-
-        // When ip_resi_xucb is zero, the correction term should be zero
-        float correction_term = 0.0f;
-        if (ip_resi_xucb != 0.0f) {
-            correction_term = l2_sqr * ip_cent_xucb / ip_resi_xucb;
-        }
-
-        ex_factors.f_add_ex = 1 - ip_resi_cent + correction_term;
+        ex_factors.f_add_ex = 1 - ip_resi_cent;
         ex_factors.f_rescale_ex = ipnorm_inv * -norm;
     }
 }
