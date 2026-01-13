@@ -47,7 +47,7 @@ runs:
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
         # Add Intel channel with lowest priority for libsvs-runtime only
         conda config --append channels https://software.repos.intel.com/python/conda
-        conda config --set channel_priority strict
+        conda config --set channel_priority flexible
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
