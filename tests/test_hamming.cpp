@@ -37,7 +37,7 @@ std::stringstream get_correct_hamming_example(
         const size_t code_size,
         std::shared_ptr<std::vector<uint8_t>> a,
         std::shared_ptr<std::vector<uint8_t>> b,
-        std::shared_ptr<std::vector<long>> true_ids,
+        std::shared_ptr<std::vector<faiss::idx_t>> true_ids,
         // regular Hamming (bit-level distances)
         std::shared_ptr<std::vector<int>> true_bit_distances,
         // generalized Hamming (byte-level distances)
@@ -278,7 +278,7 @@ TEST(TestHamming, test_hamming_knn) {
 
     auto a = std::make_shared<std::vector<uint8_t>>();
     auto b = std::make_shared<std::vector<uint8_t>>();
-    auto true_ids = std::make_shared<std::vector<long>>();
+    auto true_ids = std::make_shared<std::vector<faiss::idx_t>>();
     auto true_bit_distances = std::make_shared<std::vector<int>>();
     auto true_byte_distances = std::make_shared<std::vector<int>>();
 
@@ -298,7 +298,7 @@ TEST(TestHamming, test_hamming_knn) {
                 true_byte_distances);
 
         // run test on generalized_hammings_knn_hc
-        std::vector<long> ids_gen(na * k);
+        std::vector<faiss::idx_t> ids_gen(na * k);
         std::vector<int> dist_gen(na * k);
         faiss::int_maxheap_array_t res = {
                 na, k, ids_gen.data(), dist_gen.data()};
@@ -308,7 +308,7 @@ TEST(TestHamming, test_hamming_knn) {
         ASSERT_EQ(dist_gen, *true_byte_distances) << assert_str.str();
 
         // run test on hammings_knn
-        std::vector<long> ids_ham_knn(na * k, 0);
+        std::vector<faiss::idx_t> ids_ham_knn(na * k, 0);
         std::vector<int> dist_ham_knn(na * k, 0);
         res = {na, k, ids_ham_knn.data(), dist_ham_knn.data()};
         faiss::hammings_knn(&res, a->data(), b->data(), nb, code_size, true);
