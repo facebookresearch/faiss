@@ -215,29 +215,6 @@ void RaBitQuantizer::decode_core(
     }
 }
 
-// Implementation of RaBitQDistanceComputer (declared in header)
-
-float RaBitQDistanceComputer::lower_bound_distance(const uint8_t* code) {
-    FAISS_ASSERT(code != nullptr);
-
-    // Compute estimated distance using 1-bit codes
-    float est_distance = distance_to_code_1bit(code);
-
-    // Extract f_error from the code
-    size_t size = (d + 7) / 8;
-    const SignBitFactorsWithError* base_fac =
-            reinterpret_cast<const SignBitFactorsWithError*>(code + size);
-    float f_error = base_fac->f_error;
-
-    // Compute proper lower bound using RaBitQ error formula:
-    // lower_bound = est_distance - f_error * g_error
-    // This guarantees: lower_bound ≤ true_distance
-    float lower_bound = est_distance - (f_error * g_error);
-
-    // Distance cannot be negative
-    return std::max(0.0f, lower_bound);
-}
-
 namespace {
 
 struct RaBitQDistanceComputerNotQ : RaBitQDistanceComputer {

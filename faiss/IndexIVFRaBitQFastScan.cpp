@@ -671,17 +671,18 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
                     index->qb,
                     index->d);
 
-            // Compute lower bound using error bound
-            float lower_bound =
-                    compute_lower_bound(dist_1bit, result_id, local_q, q);
-
             // Adaptive filtering: decide whether to compute full distance
             const bool is_similarity =
                     index->metric_type == MetricType::METRIC_INNER_PRODUCT;
-            bool should_refine = is_similarity
-                    ? (lower_bound > heap_dis[0])  // IP: keep if better
-                    : (lower_bound < heap_dis[0]); // L2: keep if better
 
+            float g_error = query_factors.g_error;
+
+            bool should_refine = rabitq_utils::should_refine_candidate(
+                    dist_1bit,
+                    full_factors.f_error,
+                    g_error,
+                    heap_dis[0],
+                    is_similarity);
             if (should_refine) {
                 local_multibit_evaluations++;
 
@@ -748,36 +749,6 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::end() {
         int64_t* heap_ids = heap_labels + q * k;
         heap_reorder<Cfloat>(k, heap_dis, heap_ids);
     }
-}
-
-template <class C>
-float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::compute_lower_bound(
-        float dist_1bit,
-        size_t db_idx,
-        size_t local_q,
-        size_t global_q) const {
-    // Access f_error from SignBitFactorsWithError in flat storage
-    const size_t storage_size = index->compute_per_vector_storage_size();
-    const uint8_t* base_ptr =
-            index->flat_storage.data() + db_idx * storage_size;
-    const SignBitFactorsWithError& db_factors =
-            *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
-    float f_error = db_factors.f_error;
-
-    // Get g_error from query factors
-    // Use local_q to access probe_indices (batch-local), global_q for storage
-    float g_error = 0.0f;
-    if (context && context->query_factors) {
-        size_t probe_rank = probe_indices[local_q];
-        size_t nprobe = context->nprobe > 0 ? context->nprobe : index->nprobe;
-        size_t storage_idx = global_q * nprobe + probe_rank;
-        g_error = context->query_factors[storage_idx].g_error;
-    }
-
-    // Compute error adjustment: f_error * g_error
-    float error_adjustment = f_error * g_error;
-
-    return dist_1bit - error_adjustment;
 }
 
 template <class C>

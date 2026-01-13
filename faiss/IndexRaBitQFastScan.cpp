@@ -578,14 +578,16 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
                     rabitq_index->qb,
                     rabitq_index->d);
 
-            float lower_bound = compute_lower_bound(dist_1bit, db_idx, q);
-
             // Adaptive filtering: decide whether to compute full distance
             const bool is_similarity = rabitq_index->metric_type ==
                     MetricType::METRIC_INNER_PRODUCT;
-            bool should_refine = is_similarity
-                    ? (lower_bound > heap_dis[0])  // IP: keep if better
-                    : (lower_bound < heap_dis[0]); // L2: keep if better
+            bool should_refine = rabitq_utils::should_refine_candidate(
+                    dist_1bit,
+                    full_factors.f_error,
+                    context.query_factors ? context.query_factors[q].g_error
+                                          : 0.0f,
+                    heap_dis[0],
+                    is_similarity);
 
             if (should_refine) {
                 local_multibit_evaluations++;
