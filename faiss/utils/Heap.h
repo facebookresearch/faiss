@@ -642,6 +642,27 @@ void merge_knn_results(
         typename C::T* distances,
         idx_t* labels);
 
+/** Reduces k_base pairs (base_labels, base_distances) into k pairs
+ * (labels, distances). The function is used for the refining process.
+ *
+ * @param n              number of vectors to process
+ * @param k              number of output nearest neighbors per vector
+ * @param labels         output labels, size (n, k)
+ * @param distances      output distances, size (n, k)
+ * @param k_base         number of input nearest neighbors per vector
+ * @param base_labels    input labels, size (n, k_base)
+ * @param base_distances input distances, size (n, k_base)
+ */
+template <class C>
+void reorder_2_heaps(
+        int64_t n,
+        int64_t k,
+        typename C::TI* __restrict labels,
+        float* __restrict distances,
+        int64_t k_base,
+        const typename C::TI* __restrict base_labels,
+        const float* __restrict base_distances);
+
 } // namespace faiss
 
 #endif /* FAISS_Heap_h */
