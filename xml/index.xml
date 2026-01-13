@@ -11316,6 +11316,7 @@
     <member refid="namespacefaiss_1a8023405f5360828c9a892510a5f4c4ec" kind="function"><name>indirect_heap_pop</name></member>
     <member refid="namespacefaiss_1a8ecaf37c77256e02a946e1572b992ed5" kind="function"><name>indirect_heap_push</name></member>
     <member refid="namespacefaiss_1a5bd0fd59cade66b4d3bda7ba3d59cfd0" kind="function"><name>merge_knn_results</name></member>
+    <member refid="namespacefaiss_1af00254fbe2777989bf02c4b4304773d9" kind="function"><name>reorder_2_heaps</name></member>
     <member refid="namespacefaiss_1a36bf2bb72e8dd3c2e320a6ef89765635" kind="function"><name>cmin_nextafter</name></member>
     <member refid="namespacefaiss_1a6081a16de4c32586093673ee7590731f" kind="function"><name>cmax_nextafter</name></member>
     <member refid="namespacefaiss_1a49b45a342afbbed4b3d58dd42ff19f71" kind="function"><name>cmin_nextafter&lt; float &gt;</name></member>

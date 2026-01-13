@@ -1264,10 +1264,31 @@
 <codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>all_labels,</highlight></codeline>
 <codeline lineno="642"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::T*<sp/>distances,</highlight></codeline>
 <codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>labels);</highlight></codeline>
-<codeline lineno="644"><highlight class="normal"></highlight></codeline>
-<codeline lineno="645"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="646"><highlight class="normal"></highlight></codeline>
-<codeline lineno="647"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="644"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="645"><highlight class="comment">/**<sp/>Reduces<sp/>k_base<sp/>pairs<sp/>(base_labels,<sp/>base_distances)<sp/>into<sp/>k<sp/>pairs</highlight></codeline>
+<codeline lineno="646"><highlight class="comment"><sp/>*<sp/>(labels,<sp/>distances).<sp/>The<sp/>function<sp/>is<sp/>used<sp/>for<sp/>the<sp/>refining<sp/>process.</highlight></codeline>
+<codeline lineno="647"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="648"><highlight class="comment"><sp/>*<sp/>@param<sp/>n<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>to<sp/>process</highlight></codeline>
+<codeline lineno="649"><highlight class="comment"><sp/>*<sp/>@param<sp/>k<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>output<sp/>nearest<sp/>neighbors<sp/>per<sp/>vector</highlight></codeline>
+<codeline lineno="650"><highlight class="comment"><sp/>*<sp/>@param<sp/>labels<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>labels,<sp/>size<sp/>(n,<sp/>k)</highlight></codeline>
+<codeline lineno="651"><highlight class="comment"><sp/>*<sp/>@param<sp/>distances<sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>distances,<sp/>size<sp/>(n,<sp/>k)</highlight></codeline>
+<codeline lineno="652"><highlight class="comment"><sp/>*<sp/>@param<sp/>k_base<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>input<sp/>nearest<sp/>neighbors<sp/>per<sp/>vector</highlight></codeline>
+<codeline lineno="653"><highlight class="comment"><sp/>*<sp/>@param<sp/>base_labels<sp/><sp/><sp/><sp/>input<sp/>labels,<sp/>size<sp/>(n,<sp/>k_base)</highlight></codeline>
+<codeline lineno="654"><highlight class="comment"><sp/>*<sp/>@param<sp/>base_distances<sp/>input<sp/>distances,<sp/>size<sp/>(n,<sp/>k_base)</highlight></codeline>
+<codeline lineno="655"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="656"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>C&gt;</highlight></codeline>
+<codeline lineno="657" refid="namespacefaiss_1af00254fbe2777989bf02c4b4304773d9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1af00254fbe2777989bf02c4b4304773d9" kindref="member">reorder_2_heaps</ref>(</highlight></codeline>
+<codeline lineno="658"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>n,</highlight></codeline>
+<codeline lineno="659"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>k,</highlight></codeline>
+<codeline lineno="660"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>__restrict<sp/>labels,</highlight></codeline>
+<codeline lineno="661"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>distances,</highlight></codeline>
+<codeline lineno="662"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>k_base,</highlight></codeline>
+<codeline lineno="663"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>C::TI*<sp/>__restrict<sp/>base_labels,</highlight></codeline>
+<codeline lineno="664"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>base_distances);</highlight></codeline>
+<codeline lineno="665"><highlight class="normal"></highlight></codeline>
+<codeline lineno="666"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="667"><highlight class="normal"></highlight></codeline>
+<codeline lineno="668"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">/*<sp/>FAISS_Heap_h<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/Heap.h"/>
   </compounddef>

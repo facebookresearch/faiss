@@ -9239,6 +9239,112 @@
         </inbodydescription>
         <location file="faiss/utils/Heap.h" line="636" column="6" declfile="faiss/utils/Heap.h" declline="636" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1af00254fbe2777989bf02c4b4304773d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::reorder_2_heaps</definition>
+        <argsstring>(int64_t n, int64_t k, typename C::TI *__restrict labels, float *__restrict distances, int64_t k_base, const typename C::TI *__restrict base_labels, const float *__restrict base_distances)</argsstring>
+        <name>reorder_2_heaps</name>
+        <qualifiedname>faiss::reorder_2_heaps</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>typename C::TI *__restrict</type>
+          <declname>labels</declname>
+        </param>
+        <param>
+          <type>float *__restrict</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k_base</declname>
+        </param>
+        <param>
+          <type>const typename C::TI *__restrict</type>
+          <declname>base_labels</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>base_distances</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Reduces k_base pairs (base_labels, base_distances) into k pairs (labels, distances). The function is used for the refining process.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors to process </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of output nearest neighbors per vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output labels, size (n, k) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output distances, size (n, k) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>k_base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of input nearest neighbors per vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>base_labels</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input labels, size (n, k_base) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>base_distances</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input distances, size (n, k_base) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/Heap.h" line="657" column="6" declfile="faiss/utils/Heap.h" declline="657" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a36bf2bb72e8dd3c2e320a6ef89765635" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
           <param>
