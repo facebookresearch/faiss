@@ -8,6 +8,7 @@
 #include <faiss/IndexRaBitQ.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/ResultHandler.h>
 #include <memory>
 
@@ -15,6 +16,8 @@ namespace faiss {
 
 // Forward declaration from RaBitQuantizer.cpp
 struct RaBitQDistanceComputer;
+
+using rabitq_utils::SignBitFactorsWithError;
 
 IndexRaBitQ::IndexRaBitQ() = default;
 
@@ -141,19 +144,29 @@ struct Run_search_with_dc_res {
 
                             local_1bit_evaluations++;
 
-                            // Stage 1: Compute 1-bit lower bound
-                            float lower_bound = dc->lower_bound_distance(code);
+                            // Stage 1: Compute distance bound using 1-bit codes
+                            // For L2 (min-heap): use lower_bound (est -
+                            // error) For IP (max-heap): use upper_bound (est
+                            // + error)
+                            float est_distance =
+                                    dc->distance_to_code_1bit(code);
 
-                            // Stage 2: Adaptive filtering using threshold
-                            // For L2 (min-heap): filter if lower_bound <
-                            // resi.threshold For IP (max-heap): filter if
-                            // lower_bound > resi.threshold Note: Using
-                            // resi.threshold directly (not cached) enables more
-                            // aggressive filtering as the heap is updated
-                            bool should_refine = is_similarity
-                                    ? (lower_bound > resi.threshold)
-                                    : (lower_bound < resi.threshold);
+                            // Extract f_error for filtering
+                            size_t code_size_base = (index->d + 7) / 8;
+                            const rabitq_utils::SignBitFactorsWithError*
+                                    base_fac = reinterpret_cast<
+                                            const rabitq_utils::
+                                                    SignBitFactorsWithError*>(
+                                            code + code_size_base);
 
+                            // Stage 2: Adaptive filtering
+                            bool should_refine =
+                                    rabitq_utils::should_refine_candidate(
+                                            est_distance,
+                                            base_fac->f_error,
+                                            dc->g_error,
+                                            resi.threshold,
+                                            is_similarity);
                             if (should_refine) {
                                 local_multibit_evaluations++;
                                 // Compute full multi-bit distance
