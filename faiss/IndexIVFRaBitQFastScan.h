@@ -236,16 +236,6 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 size_t local_q,
                 size_t global_q,
                 size_t local_offset) const;
-
-        /// Compute lower bound using 1-bit distance and error bound (multi-bit
-        /// only)
-        /// @param local_q Batch-local query index (for probe_indices access)
-        /// @param global_q Global query index (for storage indexing)
-        float compute_lower_bound(
-                float dist_1bit,
-                size_t db_idx,
-                size_t local_q,
-                size_t global_q) const;
     };
 };
 
