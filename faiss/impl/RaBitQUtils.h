@@ -239,6 +239,41 @@ inline float compute_1bit_adjusted_distance(
     return adjusted_distance;
 }
 
+/** Determine whether a candidate should be refined in two-stage search.
+ * Consolidates the filtering logic for both L2 and IP metrics.
+ *
+ * For L2 (min-heap): uses lower_bound = est_distance - error_adjustment
+ *   - Skip if lower_bound >= threshold (can't beat current worst)
+ * For IP (max-heap): uses upper_bound = est_distance + error_adjustment
+ *   - Skip if upper_bound <= threshold (can't beat current best)
+ *
+ * @param est_distance     Estimated 1-bit distance
+ * @param f_error          Database vector error factor
+ * @param g_error          Query vector error factor
+ * @param threshold        Current heap threshold (worst result in heap)
+ * @param is_similarity    True for IP metric (max-heap), false for L2
+ * (min-heap)
+ * @return                 True if candidate should be refined with full
+ * multi-bit distance
+ */
+inline bool should_refine_candidate(
+        float est_distance,
+        float f_error,
+        float g_error,
+        float threshold,
+        bool is_similarity) {
+    float error_adjustment = f_error * g_error;
+    if (is_similarity) {
+        // IP (max-heap): use upper bound for filtering
+        float upper_bound = est_distance + error_adjustment;
+        return upper_bound > threshold;
+    } else {
+        // L2 (min-heap): use lower bound for filtering
+        float lower_bound = std::max(0.0f, est_distance - error_adjustment);
+        return lower_bound < threshold;
+    }
+}
+
 /** Extract multi-bit code on-the-fly from packed ex-bit codes.
  * This inline function extracts a single code value without unpacking the
  * entire array, enabling efficient on-the-fly decoding during distance
