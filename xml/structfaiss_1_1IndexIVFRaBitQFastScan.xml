@@ -3659,7 +3659,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQFastScan.h" line="49" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="49" bodyend="250"/>
+    <location file="faiss/IndexIVFRaBitQFastScan.h" line="49" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="49" bodyend="240"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add_core</name></member>

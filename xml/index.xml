@@ -7932,7 +7932,6 @@
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af034cd3142a4e9bab30aab7c81a5161c" kind="function"><name>get_lt_mask</name></member>
     <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a7242b05f6297ae26519d5a90e07403a8" kind="function"><name>num_updates</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a323039af9cacaba6a4f1685ad081b6c8" kind="function"><name>compute_full_multibit_distance</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0a91f6d2a4f608f6fa665fb5694df5f5" kind="function"><name>compute_lower_bound</name></member>
   </compound>
   <compound refid="structfaiss_1_1IVFRaBitQSearchParameters" kind="struct"><name>faiss::IVFRaBitQSearchParameters</name>
     <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1ab74a8949016b84fa05db0b41fc152e08" kind="variable"><name>qb</name></member>
@@ -9179,7 +9178,6 @@
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a5520cfc82e08d38240f1b0096ff57ee9" kind="function"><name>symmetric_dis</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1af17809ad73d49dd0b74141972cd6e8a3" kind="function"><name>distance_to_code_1bit</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" kind="function"><name>distance_to_code_full</name></member>
-    <member refid="structfaiss_1_1RaBitQDistanceComputer_1a9aa8d1e3df5be6a0366c32d24ddab8a9" kind="function"><name>lower_bound_distance</name></member>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a056b42b9fea10cf699e0ba16ea1afdaa" kind="function"><name>distance_to_code</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" kind="function"><name>operator()</name></member>
     <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" kind="function"><name>partial_dot_product</name></member>
@@ -11630,7 +11628,7 @@
   <compound refid="namespacefaiss_1_1rabitq__multibit" kind="namespace"><name>faiss::rabitq_multibit</name>
     <member refid="RaBitQuantizerMultiBit_8h_1a05089f9fecd23f4172b3e0d9ee972eca" kind="function"><name>compute_optimal_scaling_factor</name></member>
     <member refid="RaBitQuantizerMultiBit_8h_1add4a7c267f250fbe142a25be2051f7cf" kind="function"><name>pack_multibit_codes</name></member>
-    <member refid="RaBitQuantizerMultiBit_8h_1aa0a802e564ecb401dc10c4839f6b69a9" kind="function"><name>compute_ex_factors</name></member>
+    <member refid="RaBitQuantizerMultiBit_8h_1a4e89deaffc1ff2c0193ce09748e086f2" kind="function"><name>compute_ex_factors</name></member>
     <member refid="RaBitQuantizerMultiBit_8h_1a9b91bbee519d9589ccc32ae70aa96775" kind="function"><name>quantize_ex_bits</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq__utils" kind="namespace"><name>faiss::rabitq_utils</name>
@@ -11644,6 +11642,7 @@
     <member refid="RaBitQUtils_8h_1a5b048fb1446148b1da2df5976b54a7e0" kind="function"><name>set_bit_standard</name></member>
     <member refid="RaBitQUtils_8h_1aba390a0849a8f08f12e5356afbd66f64" kind="function"><name>set_bit_fastscan</name></member>
     <member refid="RaBitQUtils_8h_1a63efa56aca52ce9b6902cd89961de18d" kind="function"><name>compute_1bit_adjusted_distance</name></member>
+    <member refid="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" kind="function"><name>should_refine_candidate</name></member>
     <member refid="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" kind="function"><name>extract_code_inline</name></member>
     <member refid="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" kind="function"><name>compute_full_multibit_distance</name></member>
   </compound>

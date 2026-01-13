@@ -136,56 +136,52 @@
 <codeline lineno="60"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="61"><highlight class="comment"><sp/>*<sp/>@param<sp/>residual<sp/>Original<sp/>residual<sp/>vector<sp/>(data<sp/>-<sp/>centroid)</highlight></codeline>
 <codeline lineno="62"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/>Centroid<sp/>vector<sp/>(can<sp/>be<sp/>nullptr<sp/>for<sp/>zero<sp/>centroid)</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/>*<sp/>@param<sp/>tmp_code<sp/>Quantized<sp/>ex-bit<sp/>codes<sp/>(unpacked<sp/>integers)</highlight></codeline>
-<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/>Dimensionality</highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_bits<sp/>Number<sp/>of<sp/>extra<sp/>bits</highlight></codeline>
-<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm<sp/>L2<sp/>norm<sp/>of<sp/>residual</highlight></codeline>
-<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>@param<sp/>ipnorm<sp/>Unnormalized<sp/>inner<sp/>product</highlight></codeline>
-<codeline lineno="68"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_factors<sp/>Output<sp/>factors<sp/>structure</highlight></codeline>
-<codeline lineno="69"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/>Distance<sp/>metric<sp/>(L2<sp/>or<sp/>IP)</highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_ex_factors(</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residual,</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*<sp/>tmp_code,</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ex_bits,</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm,</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ipnorm,</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rabitq_utils::ExtraBitsFactors&amp;<sp/>ex_factors,</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type);</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="82"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="83"><highlight class="comment"><sp/>*<sp/>Main<sp/>quantization<sp/>function:<sp/>quantize<sp/>residual<sp/>vector<sp/>to<sp/>ex-bits.</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>Performs<sp/>the<sp/>complete<sp/>multi-bit<sp/>quantization<sp/>pipeline:</highlight></codeline>
-<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>1.<sp/>Normalize<sp/>residual</highlight></codeline>
-<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>2.<sp/>Take<sp/>absolute<sp/>value</highlight></codeline>
-<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>3.<sp/>Find<sp/>optimal<sp/>scaling<sp/>factor</highlight></codeline>
-<codeline lineno="89"><highlight class="comment"><sp/>*<sp/>4.<sp/>Quantize<sp/>to<sp/>ex_bits</highlight></codeline>
-<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>5.<sp/>Handle<sp/>negative<sp/>dimensions<sp/>by<sp/>bit<sp/>flipping</highlight></codeline>
-<codeline lineno="91"><highlight class="comment"><sp/>*<sp/>6.<sp/>Pack<sp/>codes<sp/>into<sp/>byte<sp/>array</highlight></codeline>
-<codeline lineno="92"><highlight class="comment"><sp/>*<sp/>7.<sp/>Compute<sp/>factors<sp/>for<sp/>distance<sp/>computation</highlight></codeline>
-<codeline lineno="93"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="94"><highlight class="comment"><sp/>*<sp/>@param<sp/>residual<sp/>Input<sp/>residual<sp/>vector<sp/>(data<sp/>-<sp/>centroid),<sp/>length<sp/>d</highlight></codeline>
-<codeline lineno="95"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/>Dimensionality</highlight></codeline>
-<codeline lineno="96"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb_bits<sp/>Number<sp/>of<sp/>bits<sp/>per<sp/>dimension<sp/>(2-9)</highlight></codeline>
-<codeline lineno="97"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/>Output<sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
-<codeline lineno="98"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_factors<sp/>Output<sp/>ex-bits<sp/>factors</highlight></codeline>
-<codeline lineno="99"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/>Distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
-<codeline lineno="100"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/>Optional<sp/>centroid<sp/>vector<sp/>(needed<sp/>for<sp/>IP<sp/>metric)</highlight></codeline>
-<codeline lineno="101"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>quantize_ex_bits(</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residual,</highlight></codeline>
-<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits,</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rabitq_utils::ExtraBitsFactors&amp;<sp/>ex_factors,</highlight></codeline>
-<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="110"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>rabitq_multibit</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/>Dimensionality</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm<sp/>L2<sp/>norm<sp/>of<sp/>residual</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*<sp/>@param<sp/>ipnorm<sp/>Unnormalized<sp/>inner<sp/>product</highlight></codeline>
+<codeline lineno="66"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_factors<sp/>Output<sp/>factors<sp/>structure</highlight></codeline>
+<codeline lineno="67"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/>Distance<sp/>metric<sp/>(L2<sp/>or<sp/>IP)</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_ex_factors(</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residual,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ipnorm,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rabitq_utils::ExtraBitsFactors&amp;<sp/>ex_factors,</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="78"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/>*<sp/>Main<sp/>quantization<sp/>function:<sp/>quantize<sp/>residual<sp/>vector<sp/>to<sp/>ex-bits.</highlight></codeline>
+<codeline lineno="80"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>Performs<sp/>the<sp/>complete<sp/>multi-bit<sp/>quantization<sp/>pipeline:</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/>*<sp/>1.<sp/>Normalize<sp/>residual</highlight></codeline>
+<codeline lineno="83"><highlight class="comment"><sp/>*<sp/>2.<sp/>Take<sp/>absolute<sp/>value</highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>3.<sp/>Find<sp/>optimal<sp/>scaling<sp/>factor</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>4.<sp/>Quantize<sp/>to<sp/>ex_bits</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>5.<sp/>Handle<sp/>negative<sp/>dimensions<sp/>by<sp/>bit<sp/>flipping</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>6.<sp/>Pack<sp/>codes<sp/>into<sp/>byte<sp/>array</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>7.<sp/>Compute<sp/>factors<sp/>for<sp/>distance<sp/>computation</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>@param<sp/>residual<sp/>Input<sp/>residual<sp/>vector<sp/>(data<sp/>-<sp/>centroid),<sp/>length<sp/>d</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/>Dimensionality</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb_bits<sp/>Number<sp/>of<sp/>bits<sp/>per<sp/>dimension<sp/>(2-9)</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/>Output<sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_factors<sp/>Output<sp/>ex-bits<sp/>factors</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/>Distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/>Optional<sp/>centroid<sp/>vector<sp/>(needed<sp/>for<sp/>IP<sp/>metric)</highlight></codeline>
+<codeline lineno="97"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>quantize_ex_bits(</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>residual,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rabitq_utils::ExtraBitsFactors&amp;<sp/>ex_factors,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>rabitq_multibit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/RaBitQuantizerMultiBit.h"/>
   </compounddef>

@@ -124,10 +124,10 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="52" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="52" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1aa0a802e564ecb401dc10c4839f6b69a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1a4e89deaffc1ff2c0193ce09748e086f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::rabitq_multibit::compute_ex_factors</definition>
-        <argsstring>(const float *residual, const float *centroid, const int *tmp_code, size_t d, size_t ex_bits, float norm, double ipnorm, rabitq_utils::ExtraBitsFactors &amp;ex_factors, MetricType metric_type)</argsstring>
+        <argsstring>(const float *residual, const float *centroid, size_t d, float norm, double ipnorm, rabitq_utils::ExtraBitsFactors &amp;ex_factors, MetricType metric_type)</argsstring>
         <name>compute_ex_factors</name>
         <qualifiedname>faiss::rabitq_multibit::compute_ex_factors</qualifiedname>
         <param>
@@ -139,16 +139,8 @@
           <declname>centroid</declname>
         </param>
         <param>
-          <type>const int *</type>
-          <declname>tmp_code</declname>
-        </param>
-        <param>
           <type>size_t</type>
           <declname>d</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>ex_bits</declname>
         </param>
         <param>
           <type>float</type>
@@ -188,26 +180,10 @@
 </parameteritem>
 <parameteritem>
 <parameternamelist>
-<parametername>tmp_code</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>Quantized ex-bit codes (unpacked integers) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
 <para>Dimensionality </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>ex_bits</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>Number of extra bits </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -247,7 +223,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="71" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="71" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="69" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="69" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQuantizerMultiBit_8h_1a9b91bbee519d9589ccc32ae70aa96775" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -359,7 +335,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="102" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="102" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQuantizerMultiBit.h" line="98" column="6" declfile="faiss/impl/RaBitQuantizerMultiBit.h" declline="98" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

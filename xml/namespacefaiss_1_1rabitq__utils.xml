@@ -656,6 +656,90 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQUtils.h" line="203" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="203" bodyend="240"/>
       </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::rabitq_utils::should_refine_candidate</definition>
+        <argsstring>(float est_distance, float f_error, float g_error, float threshold, bool is_similarity)</argsstring>
+        <name>should_refine_candidate</name>
+        <qualifiedname>faiss::rabitq_utils::should_refine_candidate</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>est_distance</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f_error</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g_error</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>threshold</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_similarity</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Determine whether a candidate should be refined in two-stage search. Consolidates the filtering logic for both L2 and IP metrics.</para>
+<para>For L2 (min-heap): uses lower_bound = est_distance - error_adjustment<itemizedlist>
+<listitem><para>Skip if lower_bound &gt;= threshold (can&apos;t beat current worst) For IP (max-heap): uses upper_bound = est_distance + error_adjustment</para>
+</listitem><listitem><para>Skip if upper_bound &lt;= threshold (can&apos;t beat current best)</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>est_distance</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Estimated 1-bit distance </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>f_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Database vector error factor </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g_error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Query vector error factor </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>threshold</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current heap threshold (worst result in heap) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>is_similarity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>True for IP metric (max-heap), false for L2 (min-heap) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if candidate should be refined with full multi-bit distance </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="259" column="13" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="259" bodyend="275"/>
+      </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::rabitq_utils::extract_code_inline</definition>
@@ -709,7 +793,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="252" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="252" bodyend="272"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="287" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="287" bodyend="307"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -837,7 +921,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="291" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="291" bodyend="327"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="326" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="326" bodyend="362"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
