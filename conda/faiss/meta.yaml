@@ -56,7 +56,7 @@ outputs:
       host:
         - python {{ python }}
         - libcxx =20.1.1  # [osx and arm64]
-        - libsvs-runtime  # [x86_64 and linux]
+        - libsvs-runtime =0.1.0  # [x86_64 and linux]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12
@@ -70,7 +70,7 @@ outputs:
       run:
         - python {{ python }}
         - libcxx =20.1.1  # [osx and arm64]
-        - libsvs-runtime  # [x86_64 and linux]
+        - libsvs-runtime =0.1.0  # [x86_64 and linux]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl =2024.2.2  # [x86_64]
         - python_abi <3.12

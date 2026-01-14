@@ -53,13 +53,13 @@ outputs:
       host:
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
-        - libsvs-runtime  # [x86_64 and linux]
+        - libsvs-runtime =0.1.0  # [x86_64 and linux]
       run:
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libsvs-runtime  # [x86_64 and linux]
+        - libsvs-runtime =0.1.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
