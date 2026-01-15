@@ -6717,12 +6717,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="23" column="6" declfile="faiss/utils/extra_distances.h" declline="23" declcolumn="6"/>
+        <location file="faiss/utils/extra_distances.h" line="24" column="6" declfile="faiss/utils/extra_distances.h" declline="24" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a787d24f72e03ccc4cb6427eb9135b172" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a48139e7f38831a4333ca6bf1fb6be650" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::knn_extra_metrics</definition>
-        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, size_t k, float *distances, int64_t *indexes)</argsstring>
+        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, MetricType mt, float metric_arg, size_t k, float *distances, int64_t *indexes, const IDSelector *sel=nullptr)</argsstring>
         <name>knn_extra_metrics</name>
         <qualifiedname>faiss::knn_extra_metrics</qualifiedname>
         <param>
@@ -6765,13 +6765,18 @@
           <type>int64_t *</type>
           <declname>indexes</declname>
         </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="36" column="6" declfile="faiss/utils/extra_distances.h" declline="36" declcolumn="6"/>
+        <location file="faiss/utils/extra_distances.h" line="37" column="6" declfile="faiss/utils/extra_distances.h" declline="37" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -6806,7 +6811,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances.h" line="50" column="27" declfile="faiss/utils/extra_distances.h" declline="50" declcolumn="27"/>
+        <location file="faiss/utils/extra_distances.h" line="52" column="27" declfile="faiss/utils/extra_distances.h" declline="52" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint16_t</type>

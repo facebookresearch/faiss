@@ -13,6 +13,7 @@
     <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
     <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
+    <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
     <includedby refid="hamming_8h" local="no">faiss/utils/hamming.h</includedby>
     <incdepgraph>
       <node id="4">
@@ -319,6 +320,8 @@
         </childnode>
         <childnode refid="60" relation="include">
         </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
       </node>
       <node id="40">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
@@ -471,6 +474,10 @@
         <link refid="simdlib__based_8h_source"/>
       </node>
       <node id="60">
+        <label>faiss/utils/extra_distances.h</label>
+        <link refid="extra__distances_8h_source"/>
+      </node>
+      <node id="61">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
