@@ -10,7 +10,7 @@
         <argsstring></argsstring>
         <name>qb</name>
         <qualifiedname>faiss::IVFRaBitQSearchParameters::qb</qualifiedname>
-        <initializer>= 0</initializer>
+        <initializer>= 4</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
