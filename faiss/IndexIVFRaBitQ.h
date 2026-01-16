@@ -19,7 +19,7 @@
 namespace faiss {
 
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
-    uint8_t qb = 0;
+    uint8_t qb = 4;
     bool centered = false;
 };
 
@@ -29,7 +29,7 @@ struct IndexIVFRaBitQ : IndexIVF {
 
     // the default number of bits to quantize a query with.
     // use '0' to disable quantization and use raw fp32 values.
-    uint8_t qb = 0;
+    uint8_t qb = 4;
 
     IndexIVFRaBitQ(
             Index* quantizer,
