@@ -26,3 +26,15 @@ done in parallel on several machines
 (needs not to fit in RAM)
 
 6: load and test the index
+
+
+### Retrieval Benchmark Example
+
+A new example script `demos/retrieval_benchmark.py` demonstrates how to benchmark different index types (`IndexFlatL2`, `IndexIVFFlat`, `IndexHNSWFlat`) for vector retrieval.
+
+To run the benchmark:
+```bash
+python demos/retrieval_benchmark.py
+```
+
+It outputs performance metrics (build time, search time, recall) to `metrics.json`.
