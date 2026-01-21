@@ -115,6 +115,10 @@ void Index::search_subset(
     FAISS_THROW_MSG("search_subset not implemented for this type of index");
 }
 
+void Index::search1(const float*, ResultHandler&, SearchParameters*) const {
+    FAISS_THROW_MSG("search1 not implemented for this type of index");
+}
+
 void Index::compute_residual(const float* x, float* residual, idx_t key) const {
     reconstruct(key, residual);
     for (size_t i = 0; i < d; i++) {

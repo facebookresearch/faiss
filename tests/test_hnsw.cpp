@@ -249,7 +249,7 @@ class HNSWTest : public testing::Test {
 int reference_search_from_candidates(
         const faiss::HNSW& hnsw,
         faiss::DistanceComputer& qdis,
-        faiss::ResultHandler<faiss::HNSW::C>& res,
+        faiss::ResultHandler& res,
         faiss::HNSW::MinimaxHeap& candidates,
         faiss::VisitedTable& vt,
         faiss::HNSWStats& stats,

@@ -14,7 +14,6 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cstdio>
-#include <sstream>
 
 #define FAISS_VERSION_MAJOR 1
 #define FAISS_VERSION_MINOR 13
@@ -55,6 +54,9 @@ namespace faiss {
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+template <typename T, typename TI>
+struct ResultHandlerUnordered;
+using ResultHandler = ResultHandlerUnordered<float, idx_t>;
 
 enum NumericType {
     Float32,
@@ -215,6 +217,12 @@ struct Index {
             FAISS_THROW_MSG("Index::search: unsupported numeric type");
         }
     }
+
+    /** search one vector with a custom result handler */
+    virtual void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const;
 
     /** query n vectors of dimension d to the index.
      *

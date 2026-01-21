@@ -231,9 +231,11 @@ struct Run_search_with_decompress {
 struct Run_search_with_decompress_res {
     using T = void;
 
-    template <class ResultHandler>
-    void f(ResultHandler& res, const IndexFlatCodes* index, const float* xq) {
-        Run_search_with_decompress<ResultHandler> r;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const IndexFlatCodes* index,
+           const float* xq) {
+        Run_search_with_decompress<BlockResultHandler> r;
         dispatch_VectorDistance(
                 index->d,
                 index->metric_type,
@@ -275,6 +277,35 @@ void IndexFlatCodes::range_search(
     const IDSelector* sel = params ? params->sel : nullptr;
     Run_search_with_decompress_res r;
     dispatch_range_ResultHandler(result, radius, metric_type, sel, r, this, x);
+}
+
+void IndexFlatCodes::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params) const {
+    const IDSelector* sel = params ? params->sel : nullptr;
+    Run_search_with_decompress_res r;
+    if (sel) {
+        if (is_similarity_metric(metric_type)) {
+            SingleQueryBlockResultHandler<CMin<float, idx_t>, true> res(
+                    handler, sel);
+            r.f(res, this, x);
+        } else {
+            SingleQueryBlockResultHandler<CMax<float, idx_t>, true> res(
+                    handler, sel);
+            r.f(res, this, x);
+        }
+    } else {
+        if (is_similarity_metric(metric_type)) {
+            SingleQueryBlockResultHandler<CMin<float, idx_t>, false> res(
+                    handler);
+            r.f(res, this, x);
+        } else {
+            SingleQueryBlockResultHandler<CMax<float, idx_t>, false> res(
+                    handler);
+            r.f(res, this, x);
+        }
+    }
 }
 
 } // namespace faiss

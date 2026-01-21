@@ -74,6 +74,12 @@ struct IndexHNSW : Index {
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
+    /** search one vector with a custom result handler */
+    void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
+
     void reconstruct(idx_t key, float* recons) const override;
 
     void reset() override;

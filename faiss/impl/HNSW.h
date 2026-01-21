@@ -45,8 +45,6 @@ struct IndexHNSWFlatPanorama;
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
-template <class C>
-struct ResultHandler;
 
 struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
@@ -212,14 +210,14 @@ struct HNSW {
     HNSWStats search(
             DistanceComputer& qdis,
             const IndexHNSW* index,
-            ResultHandler<C>& res,
+            ResultHandler& res,
             VisitedTable& vt,
             const SearchParameters* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
             DistanceComputer& qdis,
-            ResultHandler<C>& res,
+            ResultHandler& res,
             idx_t nprobe,
             const storage_idx_t* nearest_i,
             const float* nearest_d,
@@ -272,7 +270,7 @@ FAISS_API extern HNSWStats hnsw_stats;
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
-        ResultHandler<HNSW::C>& res,
+        ResultHandler& res,
         HNSW::MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
@@ -288,7 +286,7 @@ int search_from_candidates_panorama(
         const HNSW& hnsw,
         const IndexHNSW* index,
         DistanceComputer& qdis,
-        ResultHandler<HNSW::C>& res,
+        ResultHandler& res,
         HNSW::MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,

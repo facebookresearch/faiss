@@ -27,6 +27,7 @@
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/ResultHandler.h>
 
 namespace faiss {
 
@@ -920,6 +921,52 @@ void IndexIVF::range_search_preassigned(
     stats->ndis += ndis;
 }
 
+void IndexIVF::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params_in) const {
+    const IVFSearchParameters* params = nullptr;
+    const SearchParameters* quantizer_params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const IVFSearchParameters*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
+        quantizer_params = params->quantizer_params;
+    }
+    const size_t nprobe =
+            std::min(nlist, params ? params->nprobe : this->nprobe);
+    size_t nx = 1;
+    std::unique_ptr<idx_t[]> keys(new idx_t[nx * nprobe]);
+    std::unique_ptr<float[]> coarse_dis(new float[nx * nprobe]);
+
+    double t0 = getmillisecs();
+    quantizer->search(
+            nx, x, nprobe, coarse_dis.get(), keys.get(), quantizer_params);
+    indexIVF_stats.quantization_time += getmillisecs() - t0;
+
+    t0 = getmillisecs();
+    invlists->prefetch_lists(keys.get(), nx * nprobe);
+
+    std::unique_ptr<InvertedListScanner> scanner(
+            get_InvertedListScanner(false, nullptr, params));
+    scanner->set_query(x);
+
+    for (idx_t i = 0; i < nprobe; i++) {
+        idx_t key = keys[i];
+        if (key < 0 || invlists->is_empty(key)) {
+            continue;
+        }
+
+        scanner->set_list(key, coarse_dis[i]);
+        InvertedLists::ScopedCodes scodes(invlists, key);
+        InvertedLists::ScopedIds ids(invlists, key);
+        size_t list_size = invlists->list_size(key);
+
+        scanner->scan_codes(list_size, scodes.get(), ids.get(), handler);
+    }
+
+    indexIVF_stats.search_time += getmillisecs() - t0;
+}
+
 InvertedListScanner* IndexIVF::get_InvertedListScanner(
         bool /*store_pairs*/,
         const IDSelector* /* sel */,
@@ -1298,6 +1345,87 @@ IndexIVFStats indexIVF_stats;
  * InvertedListScanner
  *************************************************************************/
 
+namespace {
+
+template <typename C, bool store_pairs, bool use_sel>
+size_t run_scan_codes1(
+        const InvertedListScanner& scanner,
+        size_t list_size,
+        const uint8_t* codes,
+        const idx_t* ids,
+        ResultHandler& handler) {
+    size_t nup = 0;
+    size_t list_no = scanner.list_no;
+    size_t code_size = scanner.code_size;
+    const IDSelector* sel = scanner.sel;
+    for (size_t j = 0; j < list_size; j++) {
+        if (use_sel) {
+            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+            // skip code without computing distance
+            if (!sel->is_member(id)) {
+                codes += code_size;
+                continue;
+            }
+        }
+
+        float dis = scanner.distance_to_code(codes);
+        if (C::cmp(handler.threshold, dis)) {
+            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+            handler.add_result(dis, id);
+            nup++;
+        }
+        codes += code_size;
+    }
+
+    return nup;
+}
+
+template <bool store_pairs, bool use_sel>
+size_t run_scan_codes(
+        const InvertedListScanner& scanner,
+        size_t list_size,
+        const uint8_t* codes,
+        const idx_t* ids,
+        ResultHandler& handler) {
+    if (scanner.keep_max) {
+        return run_scan_codes1<CMin<float, idx_t>, store_pairs, use_sel>(
+                scanner, list_size, codes, ids, handler);
+    } else {
+        return run_scan_codes1<CMax<float, idx_t>, store_pairs, use_sel>(
+                scanner, list_size, codes, ids, handler);
+    }
+}
+
+} // anonymous namespace
+
+size_t InvertedListScanner::scan_codes(
+        size_t list_size,
+        const uint8_t* codes,
+        const idx_t* ids,
+        ResultHandler& handler) const {
+    if (sel == nullptr) {
+        if (store_pairs) {
+            return run_scan_codes<true, false>(
+                    *this, list_size, codes, ids, handler);
+        } else {
+            return run_scan_codes<false, false>(
+                    *this, list_size, codes, ids, handler);
+        }
+    } else {
+        if (store_pairs) {
+            return run_scan_codes<true, true>(
+                    *this, list_size, codes, ids, handler);
+        } else {
+            return run_scan_codes<false, true>(
+                    *this, list_size, codes, ids, handler);
+        }
+    }
+}
+
+void InvertedListScanner::set_list(idx_t list_no_in, float /* coarse_dis */) {
+    this->list_no = list_no_in;
+}
+
 size_t InvertedListScanner::scan_codes(
         size_t list_size,
         const uint8_t* codes,
@@ -1305,46 +1433,15 @@ size_t InvertedListScanner::scan_codes(
         float* simi,
         idx_t* idxi,
         size_t k) const {
-    size_t nup = 0;
-
     if (!keep_max) {
-        for (size_t j = 0; j < list_size; j++) {
-            if (sel != nullptr) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel->is_member(id)) {
-                    codes += code_size;
-                    continue;
-                }
-            }
-
-            float dis = distance_to_code(codes);
-            if (dis < simi[0]) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                maxheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
-            }
-            codes += code_size;
-        }
+        using C = CMax<float, idx_t>;
+        HeapResultHandler<C, false> handler(k, simi, idxi);
+        return scan_codes(list_size, codes, ids, handler);
     } else {
-        for (size_t j = 0; j < list_size; j++) {
-            if (sel != nullptr) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel->is_member(id)) {
-                    codes += code_size;
-                    continue;
-                }
-            }
-
-            float dis = distance_to_code(codes);
-            if (dis > simi[0]) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                minheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
-            }
-            codes += code_size;
-        }
+        using C = CMin<float, idx_t>;
+        HeapResultHandler<C, false> handler(k, simi, idxi);
+        return scan_codes(list_size, codes, ids, handler);
     }
-    return nup;
 }
 
 size_t InvertedListScanner::iterate_codes(
@@ -1386,16 +1483,14 @@ void InvertedListScanner::scan_codes_range(
         const idx_t* ids,
         float radius,
         RangeQueryResult& res) const {
-    for (size_t j = 0; j < list_size; j++) {
-        float dis = distance_to_code(codes);
-        bool keep = !keep_max
-                ? dis < radius
-                : dis > radius; // TODO templatize to remove this test
-        if (keep) {
-            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-            res.add(dis, id);
-        }
-        codes += code_size;
+    if (!keep_max) {
+        using C = CMax<float, idx_t>;
+        RangeResultHandler<C, false> handler(&res, radius);
+        scan_codes(list_size, codes, ids, handler);
+    } else {
+        using C = CMin<float, idx_t>;
+        RangeResultHandler<C, false> handler(&res, radius);
+        scan_codes(list_size, codes, ids, handler);
     }
 }
 

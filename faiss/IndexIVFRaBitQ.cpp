@@ -17,6 +17,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/ResultHandler.h>
 
 namespace faiss {
 
@@ -205,15 +206,13 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
+            ResultHandler& handler) const override {
         size_t ex_bits = ivf_rabitq.rabitq.nb_bits - 1;
 
         // For 1-bit codes, use default implementation
         if (ex_bits == 0 || rabitq_dc == nullptr) {
             return InvertedListScanner::scan_codes(
-                    list_size, codes, ids, simi, idxi, k);
+                    list_size, codes, ids, handler);
         }
 
         // Multi-bit: Two-stage search with adaptive filtering
@@ -254,24 +253,15 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     est_distance,
                     base_fac->f_error,
                     rabitq_dc->g_error,
-                    simi[0],
+                    handler.threshold,
                     keep_max);
             if (should_refine) {
                 local_multibit_evaluations++;
                 // Lower bound is promising, compute full distance
                 float dis = distance_to_code(codes);
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                // Check if distance improves heap
-                bool improves_heap =
-                        keep_max ? (dis > simi[0]) : (dis < simi[0]);
-
-                if (improves_heap) {
-                    int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                    if (keep_max) {
-                        minheap_replace_top(k, simi, idxi, dis, id);
-                    } else {
-                        maxheap_replace_top(k, simi, idxi, dis, id);
-                    }
+                if (handler.add_result(dis, id)) {
                     nup++;
                 }
             }
