@@ -24,6 +24,14 @@ using faiss::gpu::GpuResourcesProvider;
 
 int faiss_index_gpu_to_cpu(const FaissIndex* gpu_index, FaissIndex** p_out) {
     try {
+        if (gpu_index == nullptr) {
+            throw std::invalid_argument("gpu_index cannot be null");
+        }
+
+        if (p_out == nullptr) {
+            throw std::invalid_argument("p_out cannot be null");
+        }
+
         auto cpu_index = faiss::gpu::index_gpu_to_cpu(
                 reinterpret_cast<const Index*>(gpu_index));
         *p_out = reinterpret_cast<FaissIndex*>(cpu_index);
