@@ -10,7 +10,7 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR FAISS_ENABLE_CUVS)
+if(FAISS_ENABLE_CUVS)
   set(CMAKE_CXX_STANDARD 17)
 else()
   set(CMAKE_CXX_STANDARD 20)
@@ -113,6 +113,13 @@ swig_add_library(swigfaiss
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
+
+if(TARGET swigfaiss)
+    set_target_properties(swigfaiss PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+    )
+endif()
 
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 

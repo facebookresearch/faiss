@@ -10,9 +10,43 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <vector>
 
 namespace faiss {
+
+namespace {
+
+/// Helper function to compute cumulative sums by iterating backwards through
+/// levels. This is the core logic shared by compute_cumulative_sums and
+/// compute_query_cum_sums.
+template <typename OffsetFunc>
+inline void compute_cum_sums_impl(
+        const float* vector,
+        float* output,
+        size_t d,
+        size_t n_levels,
+        size_t level_width_floats,
+        OffsetFunc&& get_offset) {
+    // Iterate backwards through levels, accumulating sum as we go.
+    // This avoids computing the suffix sum for each vector, which takes
+    // extra memory.
+    float sum = 0.0f;
+
+    for (int level = n_levels - 1; level >= 0; level--) {
+        size_t start_idx = level * level_width_floats;
+        size_t end_idx = std::min(
+                (level + 1) * level_width_floats, static_cast<size_t>(d));
+
+        for (size_t j = start_idx; j < end_idx; j++) {
+            sum += vector[j] * vector[j];
+        }
+
+        output[get_offset(level)] = std::sqrt(sum);
+    }
+
+    output[get_offset(n_levels)] = 0.0f;
+}
+
+} // namespace
 
 /**************************************************************
  * Panorama structure implementation
@@ -69,64 +103,34 @@ void Panorama::compute_cumulative_sums(
         float* cumsum_base,
         size_t offset,
         size_t n_entry,
-        const float* vectors) {
-    std::vector<float> suffix_sums(d + 1);
-
+        const float* vectors) const {
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
         size_t current_pos = offset + entry_idx;
         size_t batch_no = current_pos / batch_size;
         size_t pos_in_batch = current_pos % batch_size;
 
         const float* vector = vectors + entry_idx * d;
-
-        // Compute suffix sums of squared values.
-        suffix_sums[d] = 0.0f;
-        for (int j = d - 1; j >= 0; j--) {
-            float squared_val = vector[j] * vector[j];
-            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-        }
-
-        // Store cumulative sums in batch-oriented layout.
         size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
 
-        for (size_t level = 0; level < n_levels; level++) {
-            size_t start_idx = level * level_width_floats;
-            size_t cumsum_offset =
-                    cumsum_batch_offset + level * batch_size + pos_in_batch;
-            if (start_idx < d) {
-                cumsum_base[cumsum_offset] = std::sqrt(suffix_sums[start_idx]);
-            } else {
-                cumsum_base[cumsum_offset] = 0.0f;
-            }
-        }
+        auto get_offset = [&](size_t level) {
+            return cumsum_batch_offset + level * batch_size + pos_in_batch;
+        };
 
-        // Last level sum is always 0.
-        size_t cumsum_offset =
-                cumsum_batch_offset + n_levels * batch_size + pos_in_batch;
-        cumsum_base[cumsum_offset] = 0.0f;
+        compute_cum_sums_impl(
+                vector,
+                cumsum_base,
+                d,
+                n_levels,
+                level_width_floats,
+                get_offset);
     }
 }
 
 void Panorama::compute_query_cum_sums(const float* query, float* query_cum_sums)
         const {
-    std::vector<float> suffix_sums(d + 1);
-    suffix_sums[d] = 0.0f;
-
-    for (int j = d - 1; j >= 0; j--) {
-        float squared_val = query[j] * query[j];
-        suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-    }
-
-    for (size_t level = 0; level < n_levels; level++) {
-        size_t start_idx = level * level_width_floats;
-        if (start_idx < d) {
-            query_cum_sums[level] = std::sqrt(suffix_sums[start_idx]);
-        } else {
-            query_cum_sums[level] = 0.0f;
-        }
-    }
-
-    query_cum_sums[n_levels] = 0.0f;
+    auto get_offset = [](size_t level) { return level; };
+    compute_cum_sums_impl(
+            query, query_cum_sums, d, n_levels, level_width_floats, get_offset);
 }
 
 void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)

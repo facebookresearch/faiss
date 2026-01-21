@@ -15,9 +15,12 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {
+
+using rabitq_utils::SignBitFactorsWithError;
 
 IndexIVFRaBitQ::IndexIVFRaBitQ(
         Index* quantizer,
@@ -233,17 +236,26 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
             local_1bit_evaluations++;
 
-            // Stage 1: Compute lower bound using 1-bit codes
-            float lower_bound = rabitq_dc->lower_bound_distance(codes);
+            // Stage 1: Compute distance bound using 1-bit codes
+            // For L2 (min-heap): use lower_bound to safely skip if it's
+            //                    already worse than heap worst
+            // For IP (max-heap): use upper_bound because with a lower bound,
+            //                    we can't safely skip any candidate
+            float est_distance = rabitq_dc->distance_to_code_1bit(codes);
 
-            // Stage 2: Adaptive filtering
-            // L2 (min-heap): filter if lower_bound < simi[0]
-            // IP (max-heap): filter if lower_bound > simi[0]
-            // Note: Using simi[0] directly (not cached) enables more aggressive
-            // filtering as the heap is updated with better candidates
-            bool should_refine = keep_max ? (lower_bound > simi[0])
-                                          : (lower_bound < simi[0]);
+            // Extract f_error and g_error for filtering
+            size_t code_size_base = (ivf_rabitq.d + 7) / 8;
+            const rabitq_utils::SignBitFactorsWithError* base_fac =
+                    reinterpret_cast<
+                            const rabitq_utils::SignBitFactorsWithError*>(
+                            codes + code_size_base);
 
+            bool should_refine = rabitq_utils::should_refine_candidate(
+                    est_distance,
+                    base_fac->f_error,
+                    rabitq_dc->g_error,
+                    simi[0],
+                    keep_max);
             if (should_refine) {
                 local_multibit_evaluations++;
                 // Lower bound is promising, compute full distance

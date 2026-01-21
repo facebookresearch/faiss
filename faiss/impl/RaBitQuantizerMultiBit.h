@@ -60,9 +60,7 @@ void pack_multibit_codes(
  *
  * @param residual Original residual vector (data - centroid)
  * @param centroid Centroid vector (can be nullptr for zero centroid)
- * @param tmp_code Quantized ex-bit codes (unpacked integers)
  * @param d Dimensionality
- * @param ex_bits Number of extra bits
  * @param norm L2 norm of residual
  * @param ipnorm Unnormalized inner product
  * @param ex_factors Output factors structure
@@ -71,9 +69,7 @@ void pack_multibit_codes(
 void compute_ex_factors(
         const float* residual,
         const float* centroid,
-        const int* tmp_code,
         size_t d,
-        size_t ex_bits,
         float norm,
         double ipnorm,
         rabitq_utils::ExtraBitsFactors& ex_factors,
