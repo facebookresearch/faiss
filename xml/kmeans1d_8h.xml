@@ -14,8 +14,6 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
       </node>
       <node id="3">
         <label>faiss/MetricType.h</label>
@@ -58,7 +56,7 @@
         <link refid="kmeans1d_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="13">
@@ -81,11 +79,8 @@
       <node id="9">
         <label>exception</label>
       </node>
-      <node id="15">
-        <label>functional</label>
-      </node>
       <node id="14">
-        <label>sstream</label>
+        <label>functional</label>
       </node>
       <node id="10">
         <label>string</label>

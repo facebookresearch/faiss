@@ -18,8 +18,6 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
       </node>
       <node id="5">
         <label>faiss/MetricType.h</label>
@@ -86,9 +84,6 @@
       </node>
       <node id="11">
         <label>exception</label>
-      </node>
-      <node id="15">
-        <label>sstream</label>
       </node>
       <node id="2">
         <label>stdint.h</label>

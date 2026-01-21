@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="52" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="52" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="50" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersHNSW_1ae3b677b9eb7554502912e60797dc5c2f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="53" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="53" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="51" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersHNSW_1a7e0cb8fd6ab25707248a9de030baf744" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="54" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="52" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="52" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="88" column="16" bodyfile="faiss/Index.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/Index.h" line="90" column="16" bodyfile="faiss/Index.h" bodystart="90" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="56" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="56" bodyend="56"/>
+        <location file="faiss/impl/HNSW.h" line="54" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="54" bodyend="54"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -117,7 +117,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/HNSW.h" line="51" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="51" bodyend="57"/>
+    <location file="faiss/impl/HNSW.h" line="49" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="49" bodyend="55"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParametersHNSW_1a7e0cb8fd6ab25707248a9de030baf744" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>bounded_queue</name></member>
       <member refid="structfaiss_1_1SearchParametersHNSW_1ae3b677b9eb7554502912e60797dc5c2f" prot="public" virt="non-virtual"><scope>faiss::SearchParametersHNSW</scope><name>check_relative_distance</name></member>

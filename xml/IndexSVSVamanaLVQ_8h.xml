@@ -13,8 +13,6 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
       </node>
       <node id="4">
         <label>faiss/MetricType.h</label>
@@ -26,16 +24,16 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="17">
         <label>faiss/impl/AuxIndexStructures.h</label>
         <link refid="AuxIndexStructures_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
         <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -70,10 +68,10 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="22">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -88,30 +86,30 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="15">
         <label>faiss/svs/IndexSVSFaissUtils.h</label>
         <link refid="IndexSVSFaissUtils_8h_source"/>
-        <childnode refid="17" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="23" relation="include">
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
         <childnode refid="27" relation="include">
-        </childnode>
-        <childnode refid="28" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -121,11 +119,11 @@
         <link refid="IndexSVSVamana_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -134,10 +132,10 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="25">
+      <node id="24">
         <label>algorithm</label>
       </node>
-      <node id="26">
+      <node id="25">
         <label>concepts</label>
       </node>
       <node id="5">
@@ -149,40 +147,37 @@
       <node id="7">
         <label>cstdlib</label>
       </node>
-      <node id="20">
+      <node id="19">
         <label>cstring</label>
       </node>
       <node id="10">
         <label>exception</label>
       </node>
-      <node id="29">
+      <node id="28">
         <label>iostream</label>
       </node>
-      <node id="21">
+      <node id="20">
         <label>memory</label>
       </node>
-      <node id="22">
+      <node id="21">
         <label>mutex</label>
       </node>
-      <node id="27">
+      <node id="26">
         <label>span</label>
       </node>
-      <node id="15">
-        <label>sstream</label>
-      </node>
-      <node id="19">
+      <node id="18">
         <label>stdint.h</label>
       </node>
       <node id="11">
         <label>string</label>
       </node>
-      <node id="17">
+      <node id="16">
         <label>svs/runtime/api_defs.h</label>
       </node>
-      <node id="28">
+      <node id="27">
         <label>type_traits</label>
       </node>
-      <node id="24">
+      <node id="23">
         <label>unordered_set</label>
       </node>
       <node id="12">

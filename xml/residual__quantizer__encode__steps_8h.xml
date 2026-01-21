@@ -16,8 +16,6 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
       </node>
       <node id="5">
         <label>faiss/MetricType.h</label>
@@ -72,10 +70,10 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="14">
         <label>faiss/utils/approx_topk/mode.h</label>
         <link refid="mode_8h_source"/>
       </node>
@@ -90,9 +88,6 @@
       </node>
       <node id="10">
         <label>exception</label>
-      </node>
-      <node id="14">
-        <label>sstream</label>
       </node>
       <node id="11">
         <label>string</label>

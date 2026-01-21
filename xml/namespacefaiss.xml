@@ -60,6 +60,7 @@
     <innerclass refid="structfaiss_1_1HCounterState" prot="public">faiss::HCounterState</innerclass>
     <innerclass refid="structfaiss_1_1HeapArray" prot="public">faiss::HeapArray</innerclass>
     <innerclass refid="structfaiss_1_1HeapBlockResultHandler" prot="public">faiss::HeapBlockResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1HeapResultHandler" prot="public">faiss::HeapResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBuckets" prot="public">faiss::HeapWithBuckets</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public">faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming16" prot="public">faiss::HeapWithBucketsForHamming16</innerclass>
@@ -253,6 +254,7 @@
     <innerclass refid="structfaiss_1_1RandomGenerator" prot="public">faiss::RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1RandomRotationMatrix" prot="public">faiss::RandomRotationMatrix</innerclass>
     <innerclass refid="structfaiss_1_1RangeQueryResult" prot="public">faiss::RangeQueryResult</innerclass>
+    <innerclass refid="structfaiss_1_1RangeResultHandler" prot="public">faiss::RangeResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1RangeSearchBlockResultHandler" prot="public">faiss::RangeSearchBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1RangeSearchPartialResult" prot="public">faiss::RangeSearchPartialResult</innerclass>
     <innerclass refid="structfaiss_1_1RangeSearchResult" prot="public">faiss::RangeSearchResult</innerclass>
@@ -265,7 +267,8 @@
     <innerclass refid="structfaiss_1_1ReservoirTopN" prot="public">faiss::ReservoirTopN</innerclass>
     <innerclass refid="structfaiss_1_1ResidualCoarseQuantizer" prot="public">faiss::ResidualCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1ResidualQuantizer" prot="public">faiss::ResidualQuantizer</innerclass>
-    <innerclass refid="structfaiss_1_1ResultHandler" prot="public">faiss::ResultHandler</innerclass>
+    <innerclass refid="structfaiss_1_1ResultHandlerT" prot="public">faiss::ResultHandlerT</innerclass>
+    <innerclass refid="structfaiss_1_1ResultHandlerUnordered" prot="public">faiss::ResultHandlerUnordered</innerclass>
     <innerclass refid="structfaiss_1_1ScalarQuantizer" prot="public">faiss::ScalarQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1SearchParameters" prot="public">faiss::SearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersHNSW" prot="public">faiss::SearchParametersHNSW</innerclass>
@@ -286,6 +289,7 @@
     <innerclass refid="structfaiss_1_1SIMDResultHandlerToFloat" prot="public">faiss::SIMDResultHandlerToFloat</innerclass>
     <innerclass refid="structfaiss_1_1SimulatedAnnealingOptimizer" prot="public">faiss::SimulatedAnnealingOptimizer</innerclass>
     <innerclass refid="structfaiss_1_1SimulatedAnnealingParameters" prot="public">faiss::SimulatedAnnealingParameters</innerclass>
+    <innerclass refid="structfaiss_1_1SingleQueryBlockResultHandler" prot="public">faiss::SingleQueryBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1SliceInvertedLists" prot="public">faiss::SliceInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1SplitMix64RandomGenerator" prot="public">faiss::SplitMix64RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1StopWordsInvertedLists" prot="public">faiss::StopWordsInvertedLists</innerclass>
@@ -397,7 +401,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="59" column="1" bodyfile="faiss/Index.h" bodystart="59" bodyend="64"/>
+        <location file="faiss/Index.h" line="61" column="1" bodyfile="faiss/Index.h" bodystart="61" bodyend="66"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1afd12191c638da74760ff397cf319752c" prot="public" static="no" strong="no">
         <type></type>
@@ -579,6 +583,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespacefaiss_1a33b1dcce3a5a4c296a1f4553c3299ddd" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandlerUnordered</ref>&lt; float, <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
+        <definition>typedef ResultHandlerUnordered&lt; float, idx_t &gt; faiss::ResultHandler</definition>
+        <argsstring></argsstring>
+        <name>ResultHandler</name>
+        <qualifiedname>faiss::ResultHandler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="49" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
         <definition>using faiss::IndexIDMap = typedef IndexIDMapTemplate&lt;Index&gt;</definition>
@@ -647,7 +665,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="82" column="1" bodyfile="faiss/IndexIVF.h" bodystart="82" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="79" column="1" bodyfile="faiss/IndexIVF.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1af3735e1903da947aaa2d79389d4ddfd0" prot="public" static="no">
         <type><ref refid="classfaiss_1_1IndexReplicasTemplate" kindref="compound">IndexReplicasTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -804,7 +822,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="270" column="28" declfile="faiss/impl/HNSW.h" declline="270" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="268" column="28" declfile="faiss/impl/HNSW.h" declline="268" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -861,7 +879,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="624" column="22" bodyfile="faiss/utils/distances.h" bodystart="286" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="624" declcolumn="22"/>
+        <location file="faiss/impl/ResultHandler.h" line="705" column="22" bodyfile="faiss/utils/distances.h" bodystart="286" bodyend="-1" declfile="faiss/impl/ResultHandler.h" declline="705" declcolumn="22"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
@@ -1067,7 +1085,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="550" column="23" declfile="faiss/IndexIVF.h" declline="550" declcolumn="23"/>
+        <location file="faiss/IndexIVF.h" line="560" column="23" declfile="faiss/IndexIVF.h" declline="560" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a28374b20fb3fd40e3abc21c78135c3a7" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IndexIVFStats" kindref="compound">IndexIVFStats</ref></type>
@@ -1081,7 +1099,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="568" column="32" declfile="faiss/IndexIVF.h" declline="568" declcolumn="32"/>
+        <location file="faiss/IndexIVF.h" line="578" column="32" declfile="faiss/IndexIVF.h" declline="578" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a3aebb977a33e268e5eddf7ad361598f9" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1IVFFastScanStats" kindref="compound">IVFFastScanStats</ref></type>
@@ -1713,10 +1731,10 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="61" column="13" declfile="faiss/impl/FaissException.h" declline="61" declcolumn="13"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a0d5c378cec0f199ee147ee8c6acf5d27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::search_from_candidates</definition>
-        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, ResultHandler&lt; HNSW::C &gt; &amp;res, HNSW::MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
+        <argsstring>(const HNSW &amp;hnsw, DistanceComputer &amp;qdis, ResultHandler &amp;res, HNSW::MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
         <name>search_from_candidates</name>
         <qualifiedname>faiss::search_from_candidates</qualifiedname>
         <param>
@@ -1728,7 +1746,7 @@
           <declname>qdis</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">HNSW::C</ref> &gt; &amp;</type>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
           <declname>res</declname>
         </param>
         <param>
@@ -1763,12 +1781,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="272" column="5" declfile="faiss/impl/HNSW.h" declline="272" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="270" column="5" declfile="faiss/impl/HNSW.h" declline="270" declcolumn="5"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a68d1efb8727b9a1e41fdb037dd794e57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a5a6ff3b3d4b0a632c286a9967c420718" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::search_from_candidates_panorama</definition>
-        <argsstring>(const HNSW &amp;hnsw, const IndexHNSW *index, DistanceComputer &amp;qdis, ResultHandler&lt; HNSW::C &gt; &amp;res, HNSW::MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
+        <argsstring>(const HNSW &amp;hnsw, const IndexHNSW *index, DistanceComputer &amp;qdis, ResultHandler &amp;res, HNSW::MinimaxHeap &amp;candidates, VisitedTable &amp;vt, HNSWStats &amp;stats, int level, int nres_in=0, const SearchParameters *params=nullptr)</argsstring>
         <name>search_from_candidates_panorama</name>
         <qualifiedname>faiss::search_from_candidates_panorama</qualifiedname>
         <param>
@@ -1784,7 +1802,7 @@
           <declname>qdis</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1ResultHandler" kindref="compound">ResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">HNSW::C</ref> &gt; &amp;</type>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
           <declname>res</declname>
         </param>
         <param>
@@ -1820,7 +1838,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="287" column="5" declfile="faiss/impl/HNSW.h" declline="287" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="285" column="5" declfile="faiss/impl/HNSW.h" declline="285" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -1854,7 +1872,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="299" column="11" declfile="faiss/impl/HNSW.h" declline="299" declcolumn="11"/>
+        <location file="faiss/impl/HNSW.h" line="297" column="11" declfile="faiss/impl/HNSW.h" declline="297" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::priority_queue&lt; HNSW::Node &gt;</type>
@@ -1892,7 +1910,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="306" column="21" declfile="faiss/impl/HNSW.h" declline="306" declcolumn="21"/>
+        <location file="faiss/impl/HNSW.h" line="304" column="21" declfile="faiss/impl/HNSW.h" declline="304" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1939,7 +1957,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="314" column="6" declfile="faiss/impl/HNSW.h" declline="314" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="312" column="6" declfile="faiss/impl/HNSW.h" declline="312" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3553,7 +3571,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="627" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="627" bodyend="664"/>
+        <location file="faiss/impl/ResultHandler.h" line="708" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="708" bodyend="745"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -3601,7 +3619,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="667" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="667" bodyend="694"/>
+        <location file="faiss/impl/ResultHandler.h" line="748" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="748" bodyend="775"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f255b2339b7fb86093b14e279b27fe1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -3619,7 +3637,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="66" column="15" bodyfile="faiss/Index.h" bodystart="66" bodyend="79"/>
+        <location file="faiss/Index.h" line="68" column="15" bodyfile="faiss/Index.h" bodystart="68" bodyend="81"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a022125ed76333d0954255b73d5521bbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>

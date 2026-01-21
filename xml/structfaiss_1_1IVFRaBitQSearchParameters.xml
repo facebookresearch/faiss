@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="72" column="12" bodyfile="faiss/IndexIVF.h" bodystart="72" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="69" column="12" bodyfile="faiss/IndexIVF.h" bodystart="69" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1a788469f3fe0e143365f6d5637e249a1b" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="73" column="12" bodyfile="faiss/IndexIVF.h" bodystart="73" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="70" column="12" bodyfile="faiss/IndexIVF.h" bodystart="70" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1aa2506404e1b9a40cd3f76dd4c903c922" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref> *</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="74" column="22" bodyfile="faiss/IndexIVF.h" bodystart="74" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="71" column="22" bodyfile="faiss/IndexIVF.h" bodystart="71" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersIVF_1af9194acd1c6c94c1d2edaf26ce54a9d8" prot="public" static="no" mutable="no">
         <type>void *</type>
@@ -95,7 +95,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="76" column="10" bodyfile="faiss/IndexIVF.h" bodystart="76" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="73" column="10" bodyfile="faiss/IndexIVF.h" bodystart="73" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -111,7 +111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Index.h" line="88" column="16" bodyfile="faiss/Index.h" bodystart="88" bodyend="-1"/>
+        <location file="faiss/Index.h" line="90" column="16" bodyfile="faiss/Index.h" bodystart="90" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -16,8 +16,6 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss/IndexRowwiseMinMax.h</label>
@@ -86,9 +84,6 @@
       </node>
       <node id="10">
         <label>exception</label>
-      </node>
-      <node id="14">
-        <label>sstream</label>
       </node>
       <node id="11">
         <label>string</label>

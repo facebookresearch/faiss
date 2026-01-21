@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ResultHandlerUnordered" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::ResultHandlerUnordered</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>typename TI</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" static="no" mutable="no">
+        <type>T</type>
+        <definition>T faiss::ResultHandlerUnordered&lt; T, TI &gt;::threshold</definition>
+        <argsstring></argsstring>
+        <name>threshold</name>
+        <qualifiedname>faiss::ResultHandlerUnordered::threshold</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="30" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1ResultHandlerUnordered_1ab45ce5bc55959438c08d17c785c22320" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool faiss::ResultHandlerUnordered&lt; T, TI &gt;::add_result</definition>
+        <argsstring>(T dis, TI idx)=0</argsstring>
+        <name>add_result</name>
+        <qualifiedname>faiss::ResultHandlerUnordered::add_result</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1SingleQueryBlockResultHandler_1_1SingleResultHandler_1ab7eed24e823e5261745cbeb128e44185">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1Top1BlockResultHandler_1_1SingleResultHandler_1a8d918544348ba16d33943a92a53da093">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HeapResultHandler_1ae9eeac3c217d4cd935e8c05a276057f7">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HeapResultHandler_1ae9eeac3c217d4cd935e8c05a276057f7">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RangeResultHandler_1a0a30d7847cfeeb4ccbbd0a83de578f89">add_result</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ReservoirTopN_1a06f4e644d760c48c93402a1beb8e31e8">add_result</reimplementedby>
+        <param>
+          <type>T</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>TI</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="33" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ResultHandlerUnordered_1abdb19c231ff11313ea9eaf72d6dd3631" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::ResultHandlerUnordered&lt; T, TI &gt;::~ResultHandlerUnordered</definition>
+        <argsstring>()</argsstring>
+        <name>~ResultHandlerUnordered</name>
+        <qualifiedname>faiss::ResultHandlerUnordered::~ResultHandlerUnordered</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="35" column="13" bodyfile="faiss/impl/ResultHandler.h" bodystart="35" bodyend="35"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/ResultHandler.h" line="28" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="28" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1ab45ce5bc55959438c08d17c785c22320" prot="public" virt="pure-virtual"><scope>faiss::ResultHandlerUnordered</scope><name>add_result</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" virt="non-virtual"><scope>faiss::ResultHandlerUnordered</scope><name>threshold</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1abdb19c231ff11313ea9eaf72d6dd3631" prot="public" virt="virtual"><scope>faiss::ResultHandlerUnordered</scope><name>~ResultHandlerUnordered</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

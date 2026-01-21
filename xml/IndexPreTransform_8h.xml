@@ -14,15 +14,13 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
       </node>
       <node id="1">
         <label>faiss/IndexPreTransform.h</label>
         <link refid="IndexPreTransform_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -35,10 +33,10 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="14">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="16" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -91,10 +89,7 @@
       <node id="9">
         <label>exception</label>
       </node>
-      <node id="14">
-        <label>sstream</label>
-      </node>
-      <node id="16">
+      <node id="15">
         <label>stdint.h</label>
       </node>
       <node id="10">

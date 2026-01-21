@@ -21,8 +21,6 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
       </node>
       <node id="4">
         <label>faiss/MetricType.h</label>
@@ -66,10 +64,10 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="16">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -83,7 +81,7 @@
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -109,10 +107,7 @@
       <node id="11">
         <label>exception</label>
       </node>
-      <node id="16">
-        <label>sstream</label>
-      </node>
-      <node id="18">
+      <node id="17">
         <label>stdint.h</label>
       </node>
       <node id="12">

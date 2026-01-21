@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1RangeResultHandler" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::RangeResultHandler</compoundname>
+    <basecompoundref refid="structfaiss_1_1ResultHandlerT" prot="public" virt="non-virtual">faiss::ResultHandlerT&lt; C &gt;</basecompoundref>
+    <derivedcompoundref refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler" prot="public" virt="non-virtual">faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</derivedcompoundref>
+    <templateparamlist>
+      <param>
+        <type>class C</type>
+      </param>
+      <param>
+        <type>bool</type>
+        <declname>use_sel</declname>
+        <defname>use_sel</defname>
+        <defval>false</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1RangeResultHandler_1a7e5a0a7461020406f5714ee97026e5b7" prot="public" static="no">
+        <type>typename C::T</type>
+        <definition>using faiss::RangeResultHandler&lt; C, use_sel &gt;::T =  typename C::T</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <qualifiedname>faiss::RangeResultHandler::T</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="564" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="564" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structfaiss_1_1RangeResultHandler_1a732918eec88ea4e8aade5a5c075dc079" prot="public" static="no">
+        <type>typename C::TI</type>
+        <definition>using faiss::RangeResultHandler&lt; C, use_sel &gt;::TI =  typename C::TI</definition>
+        <argsstring></argsstring>
+        <name>TI</name>
+        <qualifiedname>faiss::RangeResultHandler::TI</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="565" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="565" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1RangeResultHandler_1a48ebbc12e00ce7f4f0bacf3b7e991af1" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> *</type>
+        <definition>RangeQueryResult* faiss::RangeResultHandler&lt; C, use_sel &gt;::qr</definition>
+        <argsstring></argsstring>
+        <name>qr</name>
+        <qualifiedname>faiss::RangeResultHandler::qr</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="568" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="568" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" static="no" mutable="no">
+        <type>C::T</type>
+        <definition>C::T  faiss::ResultHandlerUnordered&lt; C::T , C::TI  &gt;::threshold</definition>
+        <argsstring></argsstring>
+        <name>threshold</name>
+        <qualifiedname>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;::threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="30" column="7" bodyfile="faiss/impl/ResultHandler.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1RangeResultHandler_1a86c1b657cb6a4ba2bc089e5f649a70ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::RangeResultHandler&lt; C, use_sel &gt;::RangeResultHandler</definition>
+        <argsstring>(RangeQueryResult *qr, T threshold)</argsstring>
+        <name>RangeResultHandler</name>
+        <qualifiedname>faiss::RangeResultHandler::RangeResultHandler</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeQueryResult" kindref="compound">RangeQueryResult</ref> *</type>
+          <declname>qr</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>threshold</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="570" column="5" bodyfile="faiss/impl/ResultHandler.h" bodystart="570" bodyend="572"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1RangeResultHandler_1a0a30d7847cfeeb4ccbbd0a83de578f89" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool faiss::RangeResultHandler&lt; C, use_sel &gt;::add_result</definition>
+        <argsstring>(T dis, TI idx) final</argsstring>
+        <name>add_result</name>
+        <qualifiedname>faiss::RangeResultHandler::add_result</qualifiedname>
+        <reimplements refid="structfaiss_1_1ResultHandlerUnordered_1ab45ce5bc55959438c08d17c785c22320">add_result</reimplements>
+        <param>
+          <type>T</type>
+          <declname>dis</declname>
+        </param>
+        <param>
+          <type>TI</type>
+          <declname>idx</declname>
+        </param>
+        <briefdescription>
+<para>add one result for query i </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/ResultHandler.h" line="575" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="575" bodyend="580"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerUnordered"/>
+      </node>
+      <node id="1">
+        <label>faiss::RangeResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1RangeResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss::RangeSearchBlockResultHandler&lt; C, use_sel &gt;::SingleResultHandler</label>
+        <link refid="structfaiss_1_1RangeSearchBlockResultHandler_1_1SingleResultHandler"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::ResultHandlerT&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerT"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::ResultHandlerUnordered&lt; C::T, C::TI &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerUnordered"/>
+      </node>
+      <node id="6">
+        <label>faiss::BufferList</label>
+        <link refid="structfaiss_1_1BufferList"/>
+      </node>
+      <node id="4">
+        <label>faiss::RangeQueryResult</label>
+        <link refid="structfaiss_1_1RangeQueryResult"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>pres</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::RangeResultHandler&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1RangeResultHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>qr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::RangeSearchPartialResult</label>
+        <link refid="structfaiss_1_1RangeSearchPartialResult"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>res</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::RangeSearchResult</label>
+        <link refid="structfaiss_1_1RangeSearchResult"/>
+      </node>
+      <node id="2">
+        <label>faiss::ResultHandlerT&lt; C &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerT"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/ResultHandler.h" line="563" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="563" bodyend="581"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1RangeResultHandler_1a0a30d7847cfeeb4ccbbd0a83de578f89" prot="public" virt="virtual"><scope>faiss::RangeResultHandler</scope><name>add_result</name></member>
+      <member refid="structfaiss_1_1RangeResultHandler_1a48ebbc12e00ce7f4f0bacf3b7e991af1" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>qr</name></member>
+      <member refid="structfaiss_1_1RangeResultHandler_1a86c1b657cb6a4ba2bc089e5f649a70ce" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>RangeResultHandler</name></member>
+      <member refid="structfaiss_1_1ResultHandlerT_1a03408188595f8f8a35a29b58c4fdfa0d" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>ResultHandlerT</name></member>
+      <member refid="structfaiss_1_1RangeResultHandler_1a7e5a0a7461020406f5714ee97026e5b7" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>T</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1a1ada12ca763782120f2c1b8bc47c2584" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>threshold</name></member>
+      <member refid="structfaiss_1_1RangeResultHandler_1a732918eec88ea4e8aade5a5c075dc079" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>TI</name></member>
+      <member refid="structfaiss_1_1ResultHandlerT_1a5547e43a22995bd449d279eb2536cc5a" prot="public" virt="virtual"><scope>faiss::RangeResultHandler</scope><name>~ResultHandlerT</name></member>
+      <member refid="structfaiss_1_1ResultHandlerUnordered_1abdb19c231ff11313ea9eaf72d6dd3631" prot="public" virt="virtual"><scope>faiss::RangeResultHandler</scope><name>~ResultHandlerUnordered</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
