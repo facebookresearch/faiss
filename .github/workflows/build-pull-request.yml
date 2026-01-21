@@ -38,6 +38,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Build and Test (cmake)
         uses: ./.github/actions/build_cmake
+      - name: Build C++ demos
+        run: |
+          make -C build demo_diversity_result_handler
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
     needs: linux-x86_64-cmake
