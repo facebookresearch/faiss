@@ -8,7 +8,9 @@
 #include <faiss/IndexIVFRaBitQFastScan.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdio>
+#include <memory>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
@@ -697,6 +699,7 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
                 if (Cfloat::cmp(heap_dis[0], dist_full)) {
                     heap_replace_top<Cfloat>(
                             k, heap_dis, heap_ids, dist_full, result_id);
+                    nup++;
                 }
             }
         } else {
@@ -716,6 +719,7 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
             if (Cfloat::cmp(heap_dis[0], adjusted_distance)) {
                 heap_replace_top<Cfloat>(
                         k, heap_dis, heap_ids, adjusted_distance, result_id);
+                nup++;
             }
         }
     }
@@ -794,6 +798,144 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
             dim,
             ex_bits,
             index->metric_type);
+}
+
+/*********************************************************
+ * IVFRaBitQFastScanScanner implementation
+ *********************************************************/
+
+namespace {
+
+/// Provides IVF scanner interface using FastScan's SIMD batch processing.
+/// Note: distance_to_code() not supported due to packed code format.
+struct IVFRaBitQFastScanScanner : InvertedListScanner {
+    static constexpr int impl = 10;
+    static constexpr size_t nq = 1;
+
+    const IndexIVFRaBitQFastScan& index;
+
+    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint16_t> biases;
+    /// [scale, offset] for converting uint16 to float
+    std::array<float, 2> normalizers{};
+
+    const float* xi = nullptr;
+
+    QueryFactorsData query_factors;
+    FastScanDistancePostProcessing context;
+
+    IVFRaBitQFastScanScanner(
+            const IndexIVFRaBitQFastScan& index,
+            bool store_pairs,
+            const IDSelector* sel)
+            : InvertedListScanner(store_pairs, sel), index(index) {
+        this->keep_max = is_similarity_metric(index.metric_type);
+    }
+
+    void set_query(const float* query) override {
+        this->xi = query;
+    }
+
+    void set_list(idx_t list_no, float coarse_dis) override {
+        this->list_no = list_no;
+
+        IndexIVFFastScan::CoarseQuantized cq{
+                .nprobe = 1,
+                .dis = &coarse_dis,
+                .ids = &list_no,
+        };
+
+        // Set up context for use in scan_codes
+        context = FastScanDistancePostProcessing{};
+        context.query_factors = &query_factors;
+        context.nprobe = 1;
+
+        index.compute_LUT_uint8(
+                1, xi, cq, dis_tables, biases, &normalizers[0], context);
+    }
+
+    float distance_to_code(const uint8_t* /* code */) const override {
+        FAISS_THROW_MSG("distance_to_code not implemented for FastScan");
+    }
+
+    size_t scan_codes(
+            size_t ntotal,
+            const uint8_t* codes,
+            const idx_t* ids,
+            float* distances,
+            idx_t* labels,
+            size_t k) const override {
+        // initialize the current iteration heap to the worst possible value of
+        // the prior loop
+        std::vector<float> curr_dists(k, distances[0]);
+        std::vector<idx_t> curr_labels(k, labels[0]);
+
+        std::unique_ptr<SIMDResultHandlerToFloat> handler(
+                index.make_knn_handler(
+                        !keep_max,
+                        impl,
+                        nq,
+                        k,
+                        curr_dists.data(),
+                        curr_labels.data(),
+                        sel,
+                        context,
+                        &normalizers[0]));
+
+        int qmap1[1] = {0};
+        handler->q_map = qmap1;
+        handler->begin(&normalizers[0]);
+
+        const uint8_t* LUT = dis_tables.get();
+        handler->dbias = biases.get();
+        handler->ntotal = ntotal;
+        handler->id_map = ids;
+
+        // RaBitQ needs list context for factor lookup
+        std::vector<int> probe_map = {0};
+        handler->set_list_context(list_no, probe_map);
+
+        pq4_accumulate_loop(
+                1,
+                roundup(ntotal, index.bbs),
+                index.bbs,
+                static_cast<int>(index.M2),
+                codes,
+                LUT,
+                *handler,
+                nullptr);
+
+        // Combine results across iterations
+        handler->end();
+        if (keep_max) {
+            minheap_addn(
+                    k,
+                    distances,
+                    labels,
+                    curr_dists.data(),
+                    curr_labels.data(),
+                    k);
+        } else {
+            maxheap_addn(
+                    k,
+                    distances,
+                    labels,
+                    curr_dists.data(),
+                    curr_labels.data(),
+                    k);
+        }
+
+        return handler->num_updates();
+    }
+};
+
+} // anonymous namespace
+
+InvertedListScanner* IndexIVFRaBitQFastScan::get_InvertedListScanner(
+        bool store_pairs,
+        const IDSelector* sel,
+        const IVFSearchParameters*) const {
+    return new IVFRaBitQFastScanScanner(*this, store_pairs, sel);
 }
 
 } // namespace faiss
