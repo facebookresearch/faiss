@@ -875,7 +875,7 @@ void IndexHNSW2Level::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            VisitedTable vt(ntotal, /*use_hashset=*/false);
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
 
