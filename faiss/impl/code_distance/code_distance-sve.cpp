@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
 #ifdef __ARM_FEATURE_SVE
 
 #include <arm_sve.h>
@@ -15,7 +13,7 @@
 #include <type_traits>
 
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/code_distance/code_distance-generic.h>
+#include <faiss/impl/code_distance/code_distance.h>
 
 namespace faiss {
 
