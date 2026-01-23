@@ -562,6 +562,7 @@
         <name>num_updates</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::num_updates</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1a3171b7d4f38381c179b9895f10335968">num_updates</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1aef92a2b15388a3df231bd48e2749b2bd">num_updates</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

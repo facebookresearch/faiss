@@ -2341,6 +2341,7 @@
         <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ae53b30d0de4d9a4802a4dc4c197ec0da">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1a6823f74b43ca206168ba052ae4f2457d">get_InvertedListScanner</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a288b6b1be641ea412553e6ccf6ebc182">get_InvertedListScanner</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a4fa10466c25166b23ee309e05b46dc99">get_InvertedListScanner</reimplementedby>
         <param>
           <type>bool</type>
           <declname>store_pairs</declname>

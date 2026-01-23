@@ -1054,6 +1054,37 @@
         </inbodydescription>
         <location file="faiss/IndexIVFRaBitQFastScan.h" line="158" column="30"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFRaBitQFastScan_1a4fa10466c25166b23ee309e05b46dc99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
+        <definition>InvertedListScanner * faiss::IndexIVFRaBitQFastScan::get_InvertedListScanner</definition>
+        <argsstring>(bool store_pairs=false, const IDSelector *sel=nullptr, const IVFSearchParameters *params=nullptr) const override</argsstring>
+        <name>get_InvertedListScanner</name>
+        <qualifiedname>faiss::IndexIVFRaBitQFastScan::get_InvertedListScanner</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba">get_InvertedListScanner</reimplements>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
+          <declname>params</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get an <ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> for single-query scanning. This provides compatibility with the standard IVF search interface </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="171" column="25"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a35721a1942a7ff74692d73fbb76ec123" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexIVFFastScan::init_fastscan</definition>
@@ -2257,45 +2288,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="326" column="10"/>
-      </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
-        <definition>virtual InvertedListScanner * faiss::IndexIVF::get_InvertedListScanner</definition>
-        <argsstring>(bool store_pairs=false, const IDSelector *sel=nullptr, const IVFSearchParameters *params=nullptr) const</argsstring>
-        <name>get_InvertedListScanner</name>
-        <qualifiedname>faiss::IndexIVF::get_InvertedListScanner</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1a8589f41322e872f3acc9f7c40b35176b">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizer_1a468051ca8c1cc358f43c1b4324d27f3c">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlat_1a9b5ad8fe0e670f803a9292d6af2966fa">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFFlatPanorama_1a892bca2b82d19902f792cc09d7711eb6">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFPQ_1aa1458e74c1724fcb1595f8d45e5b5e8c">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQ_1ae53b30d0de4d9a4802a4dc4c197ec0da">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFSpectralHash_1a6823f74b43ca206168ba052ae4f2457d">get_InvertedListScanner</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFScalarQuantizer_1a288b6b1be641ea412553e6ccf6ebc182">get_InvertedListScanner</reimplementedby>
-        <param>
-          <type>bool</type>
-          <declname>store_pairs</declname>
-          <defval>false</defval>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
-          <declname>sel</declname>
-          <defval>nullptr</defval>
-        </param>
-        <param>
-          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
-          <declname>params</declname>
-          <defval>nullptr</defval>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Get a scanner for this index (store_pairs means ignore labels)</para>
-<para>The default search implementation uses this to compute the distances. Use sel instead of params-&gt;sel, because sel is initialized with params-&gt;sel, but may get overridden by <ref refid="structfaiss_1_1IndexIVF" kindref="compound">IndexIVF</ref>&apos;s internal logic. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="337" column="33"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a3b3270dcfa248dc30117644382a54e39" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3688,7 +3680,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFRaBitQFastScan.h" line="49" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="49" bodyend="240"/>
+    <location file="faiss/IndexIVFRaBitQFastScan.h" line="49" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="49" bodyend="252"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>add_core</name></member>
@@ -3727,7 +3719,7 @@
       <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0c24e985e415e01d13ea858db51d3e39" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>flat_storage</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_InvertedListScanner</name></member>
+      <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a4fa10466c25166b23ee309e05b46dc99" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_InvertedListScanner</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_list_size</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a014f9cb133b921d93d6892e4b28e4c53" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>implem</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>Index</name></member>
