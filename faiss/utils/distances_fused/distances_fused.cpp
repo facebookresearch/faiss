@@ -8,6 +8,7 @@
 #include <faiss/utils/distances_fused/distances_fused.h>
 
 #include <faiss/impl/platform_macros.h> // NOLINT
+#include <faiss/utils/simd_levels.h>
 
 #include <faiss/utils/distances_fused/avx512.h> // NOLINT
 #include <faiss/utils/distances_fused/simdlib_based.h>
@@ -28,9 +29,13 @@ bool exhaustive_L2sqr_fused_cmax(
     }
 
 #ifdef __AVX512F__
-    // avx512 kernel
-    return exhaustive_L2sqr_fused_cmax_AVX512(x, y, d, nx, ny, res, y_norms);
-#elif defined(__AVX2__) || defined(__aarch64__)
+    // Runtime check: only use AVX512 if the CPU supports it
+    if (SIMDConfig::level >= SIMDLevel::AVX512) {
+        return exhaustive_L2sqr_fused_cmax_AVX512(
+                x, y, d, nx, ny, res, y_norms);
+    }
+#endif
+#if defined(__AVX2__) || defined(__aarch64__)
     // avx2 or arm neon kernel
     return exhaustive_L2sqr_fused_cmax_simdlib(x, y, d, nx, ny, res, y_norms);
 #else
