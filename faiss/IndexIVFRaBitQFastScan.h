@@ -15,7 +15,7 @@
 #include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/Heap.h>
 
@@ -190,10 +190,18 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
      * - Uses runtime boolean for multi-bit mode
      *
      * @tparam C Comparator type (CMin/CMax) for heap operations
+     * @tparam SL_IN SIMD level for compile-time dispatch
      */
-    template <class C>
+    template <class C, SIMDLevel SL_IN>
     struct IVFRaBitQHeapHandler
-            : simd_result_handlers::ResultHandlerCompare<C, true> {
+            : simd_result_handlers::ResultHandlerCompare<C, true, SL_IN> {
+        static constexpr SIMDLevel SL = SL_IN;
+        static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+        using simd16uint16 = simd16uint16<SL256>;
+
+        using RHC = simd_result_handlers::ResultHandlerCompare<C, true, SL>;
+        using RHC::normalizers;
+
         const IndexIVFRaBitQFastScan* index;
         float* heap_distances; // [nq * k]
         int64_t* heap_labels;  // [nq * k]
@@ -221,8 +229,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 const FastScanDistancePostProcessing* ctx = nullptr,
                 bool multibit = false);
 
-        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)
-                override;
+        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1);
 
         /// Override base class virtual method to receive context information
         void set_list_context(size_t list_no, const std::vector<int>& probe_map)
@@ -232,7 +239,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
 
         void end() override;
 
-        size_t num_updates() override {
+        size_t num_updates() const override {
             return nup;
         }
 

@@ -254,15 +254,18 @@ class TestRemoveFastScan(unittest.TestCase):
         index.train(ds.get_train())
 
         index.reset()
+        # add only 1 out of 3 vectors in the database
         tokeep = [i % 3 == 0 for i in range(ds.nb)]
         if with_ids:
             index.add_with_ids(ds.get_database()[tokeep], np.arange(ds.nb)[tokeep])
             faiss.extract_index_ivf(index).nprobe = 5
         else:
             index.add(ds.get_database()[tokeep])
+        ref_ntotal = index.ntotal
         _, Iref = index.search(ds.get_queries(), 5)
 
         index.reset()
+        # add everything then remove a set of ids
         if with_ids:
             index.add_with_ids(ds.get_database(), np.arange(ds.nb))
             index.set_direct_map_type(direct_map_type)
@@ -270,6 +273,7 @@ class TestRemoveFastScan(unittest.TestCase):
         else:
             index.add(ds.get_database())
         index.remove_ids(np.where(np.logical_not(tokeep))[0])
+        self.assertEqual(index.ntotal, ref_ntotal)
         _, Inew = index.search(ds.get_queries(), 5)
         np.testing.assert_array_equal(Inew, Iref)
 

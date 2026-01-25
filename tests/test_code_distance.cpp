@@ -21,7 +21,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 #include <faiss/utils/simd_levels.h>
 
 size_t nMismatches(

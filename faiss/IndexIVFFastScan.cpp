@@ -18,10 +18,10 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/RaBitQUtils.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/LookupTableScaler.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
@@ -166,9 +166,6 @@ void IndexIVFFastScan::add_with_ids(
         return idx[a] < idx[b];
     });
 
-    // Get stride for packing codes with potential embedded metadata
-    size_t pack_stride = code_packing_stride();
-
     // TODO parallelize
     idx_t i0 = 0;
     while (i0 < n) {
@@ -206,7 +203,7 @@ void IndexIVFFastScan::add_with_ids(
                 bbs,
                 M2,
                 bil->codes[list_no].data(),
-                pack_stride);
+                code_packing_stride());
 
         i0 = i1;
     }
@@ -396,28 +393,6 @@ void IndexIVFFastScan::range_search(
 
 namespace {
 
-template <class C>
-ResultHandlerCompare<C, true>* make_knn_handler_fixC(
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const float* normalizers) {
-    using HeapHC = HeapHandler<C, true>;
-    using ReservoirHC = ReservoirHandler<C, true>;
-    using SingleResultHC = SingleResultHandler<C, true>;
-
-    if (k == 1) {
-        return new SingleResultHC(n, 0, distances, labels, sel);
-    } else if (impl % 2 == 0) {
-        return new HeapHC(n, 0, k, distances, labels, sel, normalizers);
-    } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, 0, k, 2 * k, distances, labels, sel);
-    }
-}
-
 using CoarseQuantized = IndexIVFFastScan::CoarseQuantized;
 
 struct CoarseQuantizedWithBuffer : CoarseQuantized {
@@ -502,15 +477,16 @@ SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
         float* distances,
         idx_t* labels,
         const IDSelector* sel,
-        const FastScanDistancePostProcessing&,
+        const FastScanDistancePostProcessing& context,
         const float* normalizers) const {
-    if (is_max) {
-        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
-    } else {
-        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
+    bool use_reservoir = (impl % 2 == 1);
+    int norm_scale = context.norm_scaler ? context.norm_scaler->nscale : -1;
+    auto* handler = pq4_make_ivf_knn_handler(
+            is_max, use_reservoir, n, k, distances, labels, norm_scale, sel);
+    if (normalizers) {
+        handler->normalizers = normalizers;
     }
+    return handler;
 }
 
 void IndexIVFFastScan::search_dispatch_implem(
@@ -726,16 +702,12 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     }
 
     size_t ndis = 0, nlist_visited = 0;
+    int norm_scale = context.norm_scaler ? context.norm_scaler->nscale : -1;
 
     if (!multiple_threads) { // single thread
-        std::unique_ptr<SIMDResultHandlerToFloat> handler;
-        if (is_max) {
-            handler.reset(new RangeHandler<CMax<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        } else {
-            handler.reset(new RangeHandler<CMin<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        }
+        std::unique_ptr<SIMDResultHandlerToFloat> handler(
+                pq4_make_ivf_range_handler(
+                        is_max, rres, radius, norm_scale, sel));
         if (impl == 12) {
             search_implem_12(
                     n, x, *handler.get(), cq, &ndis, &nlist_visited, context);
@@ -760,16 +732,9 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                 if (!cq_i.done()) {
                     cq_i.quantize_slice(quantizer, x, quantizer_params);
                 }
-                std::unique_ptr<SIMDResultHandlerToFloat> handler;
-                if (is_max) {
-                    handler.reset(new PartialRangeHandler<
-                                  CMax<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                } else {
-                    handler.reset(new PartialRangeHandler<
-                                  CMin<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                }
+                std::unique_ptr<SIMDResultHandlerToFloat> handler(
+                        pq4_make_ivf_partial_range_handler(
+                                is_max, pres, radius, i0, i1, norm_scale, sel));
 
                 if (impl == 12 || impl == 13) {
                     search_implem_12(
@@ -981,10 +946,6 @@ void IndexIVFFastScan::search_implem_10(
     handler.begin(skip & 16 ? nullptr : normalizers.get());
     size_t nprobe = cq.nprobe;
 
-    // Allocate probe_map once and reuse it
-    std::vector<int> probe_map;
-    probe_map.reserve(1);
-
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* LUT = nullptr;
         qmap1[0] = i;
@@ -1016,20 +977,12 @@ void IndexIVFFastScan::search_implem_10(
             handler.ntotal = ls;
             handler.id_map = ids.get();
 
-            // Set context information for handlers that need additional data
-            probe_map.resize(1);
-            probe_map[0] = static_cast<int>(j);
+            // Set list context for IVF handlers that need it (e.g., RaBitQ)
+            std::vector<int> probe_map = {static_cast<int>(j)};
             handler.set_list_context(list_no, probe_map);
 
-            pq4_accumulate_loop(
-                    1,
-                    roundup(ls, bbs),
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT,
-                    handler,
-                    context.norm_scaler);
+            handler.accumulate_loop(
+                    1, roundup(ls, bbs), bbs, M2, codes.get(), LUT);
 
             ndis += ls;
             nlist_visited++;
@@ -1101,8 +1054,6 @@ void IndexIVFFastScan::search_implem_12(
     size_t ndis = 0, nlist_visited = 0;
 
     // Allocate vectors once and reuse them
-    std::vector<int> probe_map;
-    probe_map.reserve(actual_qbs2);
 
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
@@ -1163,24 +1114,16 @@ void IndexIVFFastScan::search_implem_12(
         handler.q_map = q_map.data();
         handler.id_map = ids.get();
 
-        // Set context information for handlers that need additional data
-        // All queries in this batch access the same list_no, but each
-        // query has its own probe rank (qc.rank)
-        probe_map.resize(nc);
+        // Set list context for IVF handlers that need it (e.g., RaBitQ)
+        // Build probe indices from qcs[i].rank
+        std::vector<int> probe_indices(nc);
         for (size_t i = i0; i < i1; i++) {
-            const QC& qc = qcs[i];
-            probe_map[i - i0] = qc.rank;
+            probe_indices[i - i0] = qcs[i].rank;
         }
-        handler.set_list_context(list_no, probe_map);
+        handler.set_list_context(list_no, probe_indices);
 
-        pq4_accumulate_loop_qbs(
-                qbs_for_list,
-                list_size,
-                M2,
-                codes.get(),
-                LUT.get(),
-                handler,
-                context.norm_scaler);
+        handler.accumulate_loop_qbs(
+                qbs_for_list, list_size, M2, codes.get(), LUT.get());
         // prepare for next loop
         i0 = i1;
     }
@@ -1336,10 +1279,6 @@ void IndexIVFFastScan::search_implem_14(
         std::set<int> q_set;
         uint64_t t_copy_pack = 0, t_scan = 0;
 
-        // Allocate probe_map once per thread and reuse it
-        std::vector<int> probe_map;
-        probe_map.reserve(actual_qbs2);
-
 #pragma omp for schedule(dynamic)
         for (idx_t cluster = 0; cluster < ses.size(); cluster++) {
             size_t i0 = ses[cluster].start;
@@ -1386,24 +1325,16 @@ void IndexIVFFastScan::search_implem_14(
             handler->q_map = q_map.data();
             handler->id_map = ids.get();
 
-            // Set context information for handlers that need additional data
-            // All queries in this batch access the same list_no, but each
-            // query has its own probe rank (qc.rank)
-            probe_map.resize(nc);
+            // Set list context for IVF handlers that need it (e.g., RaBitQ)
+            // Build probe indices from qcs[i].rank
+            std::vector<int> probe_indices(nc);
             for (size_t i = i0; i < i1; i++) {
-                const QC& qc = qcs[i];
-                probe_map[i - i0] = qc.rank;
+                probe_indices[i - i0] = qcs[i].rank;
             }
-            handler->set_list_context(list_no, probe_map);
+            handler->set_list_context(list_no, probe_indices);
 
-            pq4_accumulate_loop_qbs(
-                    qbs_for_list,
-                    list_size,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    *handler.get(),
-                    context.norm_scaler);
+            handler->accumulate_loop_qbs(
+                    qbs_for_list, list_size, M2, codes.get(), LUT.get());
         }
 
         // labels is in-place for HeapHC

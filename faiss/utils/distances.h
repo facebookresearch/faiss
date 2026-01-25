@@ -559,7 +559,7 @@ void compute_PQ_dis_tables_dsub2(
  */
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 
-/* same statically */
+/* specialized version for each SIMD level */
 template <SIMDLevel>
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
 

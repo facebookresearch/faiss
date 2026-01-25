@@ -11,8 +11,35 @@
 
 namespace faiss {
 
-// Forward declarations
-struct NormTableScaler;
+/**
+ * Norm table scaling for Additive Quantizer fast-scan operations.
+ * This class holds the norm scale parameter used by factory functions
+ * to select the appropriate SIMD scaler at runtime.
+ *
+ * For SIMD code paths, the templated DummyScaler<SL> and Scaler2x4bit<SL>
+ * from LookupTableScaler.h are used internally by the handlers.
+ */
+struct NormTableScaler {
+    /// Number of sub-quantizer indices used for norm scaling (typically 0 or 2)
+    int nscale;
+
+    explicit NormTableScaler(int nscale_in) : nscale(nscale_in) {}
+    virtual ~NormTableScaler() = default;
+
+    /// Scale a single distance value (for non-SIMD fallback paths)
+    /// Default implementation applies the norm scale factor.
+    virtual float scale_one(float x) const {
+        // The scale factor is 2^(4*nscale) - 1, which is the maximum value
+        // representable by nscale 4-bit indices.
+        // For nscale=2: factor = 255 (0xFF)
+        // For nscale=0: factor = 0 (no scaling, return x unchanged)
+        if (nscale <= 0) {
+            return x;
+        }
+        float factor = static_cast<float>((1 << (4 * nscale)) - 1);
+        return x * factor;
+    }
+};
 
 namespace rabitq_utils {
 struct QueryFactorsData;

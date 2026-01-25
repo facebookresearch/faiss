@@ -9,12 +9,11 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
-struct NormTableScaler;
-struct SIMDResultHandlerToFloat;
 struct Quantizer;
 
 /** Fast scan version of IVFPQ and IVFAQ. Works for 4-bit PQ/AQ for now.

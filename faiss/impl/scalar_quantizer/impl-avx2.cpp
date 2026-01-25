@@ -32,6 +32,7 @@ namespace faiss {
 
 namespace scalar_quantizer {
 
+using simd8float32 = simd8float32<SIMDLevel::AVX2>;
 /****************************************** Specialization of codecs */
 
 template <>

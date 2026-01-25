@@ -14,7 +14,7 @@
 #include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/simdlib.h>
 
@@ -126,11 +126,16 @@ struct IndexRaBitQFastScan : IndexFastScan {
  *
  * @tparam C Comparator type (CMin/CMax) for heap operations
  * @tparam with_id_map Whether to use id mapping (similar to HeapHandler)
+ * @tparam SL_IN SIMD level for compile-time dispatch
  */
-template <class C, bool with_id_map = false>
+template <class C, bool with_id_map, SIMDLevel SL_IN>
 struct RaBitQHeapHandler
-        : simd_result_handlers::ResultHandlerCompare<C, with_id_map> {
-    using RHC = simd_result_handlers::ResultHandlerCompare<C, with_id_map>;
+        : simd_result_handlers::ResultHandlerCompare<C, with_id_map, SL_IN> {
+    static constexpr SIMDLevel SL = SL_IN;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd16uint16 = simd16uint16<SL256>;
+
+    using RHC = simd_result_handlers::ResultHandlerCompare<C, with_id_map, SL>;
     using RHC::normalizers;
 
     const IndexRaBitQFastScan* rabitq_index;
@@ -157,7 +162,7 @@ struct RaBitQHeapHandler
             const FastScanDistancePostProcessing& context,
             bool multi_bit);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1);
 
     void begin(const float* norms);
 
@@ -171,5 +176,17 @@ struct RaBitQHeapHandler
     /// only)
     float compute_lower_bound(float dist_1bit, size_t db_idx, size_t q) const;
 };
+
+// Forward declaration for factory function
+PQ4CodeScanner* make_rabitq_flat_knn_handler(
+        const IndexRaBitQFastScan* index,
+        bool is_max,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* labels,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit);
 
 } // namespace faiss

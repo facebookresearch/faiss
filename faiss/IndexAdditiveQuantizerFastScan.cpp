@@ -13,9 +13,9 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/ResidualQuantizer.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/LookupTableScaler.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
 

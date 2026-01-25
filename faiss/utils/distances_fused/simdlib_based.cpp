@@ -56,7 +56,11 @@ float dot_product(
 //   simultaneously.
 // NY_POINTS_PER_LOOP is the number of y points that get processed
 //   simultaneously.
-template <size_t DIM, size_t NX_POINTS_PER_LOOP, size_t NY_POINTS_PER_LOOP>
+template <
+        size_t DIM,
+        size_t NX_POINTS_PER_LOOP,
+        size_t NY_POINTS_PER_LOOP,
+        SIMDLevel simd_level>
 void kernel(
         const float* const __restrict x,
         const float* const __restrict y,
@@ -68,11 +72,21 @@ void kernel(
     const size_t ny_p =
             (ny / (8 * NY_POINTS_PER_LOOP)) * (8 * NY_POINTS_PER_LOOP);
 
+#if defined(COMPILE_SIMD_AVX2)
+    using simd8float32 = simd8float32<SIMDLevel::AVX2>;
+    using simd8uint32 = simd8uint32<SIMDLevel::AVX2>;
+#endif
+
+#if defined(COMPILE_SIMD_ARM_NEON)
+    using simd8float32 = simd8float32<SIMDLevel::ARM_NEON>;
+    using simd8uint32 = simd8uint32<SIMDLevel::ARM_NEON>;
+#endif
+
     // compute
     const float* const __restrict xd_0 = x + i * DIM;
 
     // prefetch the next point
-#if defined(__AVX2__)
+#if defined(COMPILE_SIMD_AVX2)
     _mm_prefetch((const char*)(xd_0 + DIM * sizeof(float)), _MM_HINT_NTA);
 #endif
 
@@ -220,7 +234,11 @@ void kernel(
     }
 }
 
-template <size_t DIM, size_t NX_POINTS_PER_LOOP, size_t NY_POINTS_PER_LOOP>
+template <
+        size_t DIM,
+        size_t NX_POINTS_PER_LOOP,
+        size_t NY_POINTS_PER_LOOP,
+        SIMDLevel SL>
 void exhaustive_L2sqr_fused_cmax(
         const float* const __restrict x,
         const float* const __restrict y,
@@ -261,12 +279,12 @@ void exhaustive_L2sqr_fused_cmax(
     // the main loop.
 #pragma omp parallel for schedule(dynamic)
     for (int64_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
-        kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP>(
+        kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP, SL>(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
     }
 
     for (size_t i = nx_p; i < nx; i++) {
-        kernel<DIM, 1, NY_POINTS_PER_LOOP>(
+        kernel<DIM, 1, NY_POINTS_PER_LOOP, SL>(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
     }
 
@@ -278,6 +296,7 @@ void exhaustive_L2sqr_fused_cmax(
 
 } // namespace
 
+template <SIMDLevel SL>
 bool exhaustive_L2sqr_fused_cmax_simdlib(
         const float* x,
         const float* y,
@@ -290,13 +309,14 @@ bool exhaustive_L2sqr_fused_cmax_simdlib(
     // An acceptable dimensionality value is limited by the number of
     // available registers.
 
-#define DISPATCH(DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP)    \
-    case DIM: {                                                  \
-        exhaustive_L2sqr_fused_cmax<                             \
-                DIM,                                             \
-                NX_POINTS_PER_LOOP,                              \
-                NY_POINTS_PER_LOOP>(x, y, nx, ny, res, y_norms); \
-        return true;                                             \
+#define DISPATCH(DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP, SL) \
+    case DIM: {                                                   \
+        exhaustive_L2sqr_fused_cmax<                              \
+                DIM,                                              \
+                NX_POINTS_PER_LOOP,                               \
+                NY_POINTS_PER_LOOP,                               \
+                SL>(x, y, nx, ny, res, y_norms);                  \
+        return true;                                              \
     }
 
     // faiss/benchs/bench_quantizer.py was used for benchmarking
@@ -310,42 +330,60 @@ bool exhaustive_L2sqr_fused_cmax_simdlib(
 #if defined(__AVX2__)
     // It was possible to tweak these parameters on x64 machine.
     switch (d) {
-        DISPATCH(1, 6, 1)
-        DISPATCH(2, 6, 1)
-        DISPATCH(3, 6, 1)
-        DISPATCH(4, 8, 1)
-        DISPATCH(5, 8, 1)
-        DISPATCH(6, 8, 1)
-        DISPATCH(7, 8, 1)
-        DISPATCH(8, 8, 1)
-        DISPATCH(9, 8, 1)
-        DISPATCH(10, 8, 1)
-        DISPATCH(11, 8, 1)
-        DISPATCH(12, 8, 1)
-        DISPATCH(13, 6, 1)
-        DISPATCH(14, 6, 1)
-        DISPATCH(15, 6, 1)
-        DISPATCH(16, 6, 1)
+        DISPATCH(1, 6, 1, SL)
+        DISPATCH(2, 6, 1, SL)
+        DISPATCH(3, 6, 1, SL)
+        DISPATCH(4, 8, 1, SL)
+        DISPATCH(5, 8, 1, SL)
+        DISPATCH(6, 8, 1, SL)
+        DISPATCH(7, 8, 1, SL)
+        DISPATCH(8, 8, 1, SL)
+        DISPATCH(9, 8, 1, SL)
+        DISPATCH(10, 8, 1, SL)
+        DISPATCH(11, 8, 1, SL)
+        DISPATCH(12, 8, 1, SL)
+        DISPATCH(13, 6, 1, SL)
+        DISPATCH(14, 6, 1, SL)
+        DISPATCH(15, 6, 1, SL)
+        DISPATCH(16, 6, 1, SL)
     }
 #else
     // Please feel free to alter 2nd and 3rd parameters if you have access
     // to ARM-based machine so that you are able to benchmark this code.
     // Or to enable other dimensions.
     switch (d) {
-        DISPATCH(1, 4, 2)
-        DISPATCH(2, 2, 2)
-        DISPATCH(3, 2, 2)
-        DISPATCH(4, 2, 1)
-        DISPATCH(5, 1, 1)
-        DISPATCH(6, 1, 1)
-        DISPATCH(7, 1, 1)
-        DISPATCH(8, 1, 1)
+        DISPATCH(1, 4, 2, SL)
+        DISPATCH(2, 2, 2, SL)
+        DISPATCH(3, 2, 2, SL)
+        DISPATCH(4, 2, 1, SL)
+        DISPATCH(5, 1, 1, SL)
+        DISPATCH(6, 1, 1, SL)
+        DISPATCH(7, 1, 1, SL)
+        DISPATCH(8, 1, 1, SL)
     }
 #endif
 
     return false;
 #undef DISPATCH
 }
+
+template bool exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::AVX2>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms);
+
+template bool exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::ARM_NEON>(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms);
 
 } // namespace faiss
 

@@ -26,6 +26,25 @@ enum class SIMDLevel {
     COUNT
 };
 
+/***************************************************************
+ * Helper to select appropriate 256-bit SIMD level
+ *
+ * For 256-bit SIMD types (simd16uint16, simd32uint8, etc.), we need to map:
+ * - AVX512 -> AVX2 (256-bit ops use AVX2 instructions; simd16uint16<AVX512>
+ *   doesn't exist, only simd32uint16<AVX512> for 512-bit)
+ * - AVX2 -> AVX2
+ * - NONE -> NONE (use emulated scalar implementation)
+ * - ARM_NEON -> ARM_NEON
+ *
+ * This allows code templated on SL to use correct 256-bit types regardless
+ * of whether SL is AVX512 or AVX2.
+ ***************************************************************/
+template <SIMDLevel SL>
+struct simd256_level_selector {
+    static constexpr SIMDLevel value =
+            (SL == SIMDLevel::AVX512) ? SIMDLevel::AVX2 : SL;
+};
+
 std::optional<std::string> to_string(SIMDLevel level);
 
 std::optional<SIMDLevel> to_simd_level(const std::string& level_str);

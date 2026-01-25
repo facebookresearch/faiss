@@ -20,8 +20,15 @@
 namespace faiss {
 
 /// no-op handler
+template <SIMDLevel SL>
 struct DummyScaler {
     static constexpr int nscale = 0;
+    // Use appropriate 256-bit SIMD level (AVX512 -> AVX2)
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd32uint8 = simd32uint8<SL256>;
+    using simd16uint16 = simd16uint16<SL256>;
+
+    explicit DummyScaler(int x = -1) {}
 
     inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
@@ -39,6 +46,10 @@ struct DummyScaler {
     }
 
 #ifdef __AVX512F__
+
+    using simd64uint8 = simd64uint8<SIMDLevel::AVX512>;
+    using simd32uint16 = simd32uint16<SIMDLevel::AVX512>;
+
     inline simd64uint8 lookup(const simd64uint8&, const simd64uint8&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
         return simd64uint8(0);
@@ -64,12 +75,17 @@ struct DummyScaler {
 
 /// consumes 2x4 bits to encode a norm as a scalar additive quantizer
 /// the norm is scaled because its range is larger than other components
-struct NormTableScaler {
+template <SIMDLevel SL>
+struct Scaler2x4bit {
+    // Use appropriate 256-bit SIMD level (AVX512 -> AVX2)
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd32uint8 = simd32uint8<SL256>;
+    using simd16uint16 = simd16uint16<SL256>;
     static constexpr int nscale = 2;
     int scale_int;
     simd16uint16 scale_simd;
 
-    explicit NormTableScaler(int scale) : scale_int(scale), scale_simd(scale) {}
+    explicit Scaler2x4bit(int scale) : scale_int(scale), scale_simd(scale) {}
 
     inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
             const {
@@ -85,6 +101,9 @@ struct NormTableScaler {
     }
 
 #ifdef __AVX512F__
+    using simd64uint8 = simd64uint8<SIMDLevel::AVX512>;
+    using simd32uint16 = simd32uint16<SIMDLevel::AVX512>;
+
     inline simd64uint8 lookup(const simd64uint8& lut, const simd64uint8& c)
             const {
         return lut.lookup_4_lanes(c);

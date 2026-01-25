@@ -225,6 +225,9 @@ typename C::T partition_fuzzy_median3(
 
 namespace simd_partitioning {
 
+using simd16uint16 = simd16uint16<SIMDLevel::NONE>;
+using simd32uint8 = simd32uint8<SIMDLevel::NONE>;
+
 void find_minimax(
         const uint16_t* vals,
         size_t n,

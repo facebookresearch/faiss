@@ -64,7 +64,10 @@ void accum_and_store_tab(
     // do accumulation in registers using SIMD.
     // It is possible that compiler may be smart enough so that
     //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_NEON)
+#if defined(COMPILE_SIMD_AVX2)
+    using simd8float32 = simd8float32<SIMDLevel::AVX2>;
+#endif
     const size_t K8 = (K / (8 * NK)) * (8 * NK);
 
     // process in chunks of size (8 * NK) floats
@@ -119,7 +122,10 @@ void accum_and_add_tab(
     // do accumulation in registers using SIMD.
     // It is possible that compiler may be smart enough so that
     //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_NEON)
+#if defined(COMPILE_SIMD_AVX2)
+    using simd8float32 = simd8float32<SIMDLevel::AVX2>;
+#endif
     const size_t K8 = (K / (8 * NK)) * (8 * NK);
 
     // process in chunks of size (8 * NK) floats
@@ -177,7 +183,10 @@ void accum_and_finalize_tab(
     // do accumulation in registers using SIMD.
     // It is possible that compiler may be smart enough so that
     //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_NEON)
+#if defined(COMPILE_SIMD_AVX2)
+    using simd8float32 = simd8float32<SIMDLevel::AVX2>;
+#endif
     const size_t K8 = (K / (8 * NK)) * (8 * NK);
 
     // process in chunks of size (8 * NK) floats
