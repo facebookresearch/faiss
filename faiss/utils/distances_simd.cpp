@@ -311,7 +311,7 @@ int fvec_madd_and_argmin(
  * Vector to vector functions
  *********************************************************/
 
-// TODO: currently only non-SIMD version implemented
+// TODO: Move to dynamic dispatch
 
 void fvec_sub(size_t d, const float* a, const float* b, float* c) {
     size_t i;

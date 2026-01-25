@@ -11,13 +11,12 @@
 #include <cassert>
 #include <cstdio>
 
-#include <memory>
-
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/simdlib.h>
+#include <memory>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -183,13 +182,13 @@ bool IndexIVFPQFastScan::lookup_table_is_3d() const {
     return by_residual && metric_type == METRIC_L2;
 }
 
-void IndexIVFPQFastScan::compute_LUT(
+template <SIMDLevel SL>
+void IndexIVFPQFastScan::compute_LUT_helper(
         size_t n,
         const float* x,
         const CoarseQuantized& cq,
         AlignedTable<float>& dis_tables,
-        AlignedTable<float>& biases,
-        const FastScanDistancePostProcessing&) const {
+        AlignedTable<float>& biases) const {
     size_t dim12 = pq.ksub * pq.M;
     size_t d = pq.d;
     size_t nprobe = cq.nprobe;
@@ -212,8 +211,7 @@ void IndexIVFPQFastScan::compute_LUT(
                     idx_t cij = cq.ids[ij];
 
                     if (cij >= 0) {
-                        // TODO avoid dynamic dispatch
-                        fvec_madd(
+                        fvec_madd<SL>(
                                 dim12,
                                 precomputed_table.get() + cij * dim12,
                                 -2,
@@ -399,6 +397,16 @@ InvertedListScanner* IndexIVFPQFastScan::get_InvertedListScanner(
         const IDSelector* sel,
         const IVFSearchParameters*) const {
     return new IVFPQFastScanScanner(*this, store_pairs, sel);
+}
+
+void IndexIVFPQFastScan::compute_LUT(
+        size_t n,
+        const float* x,
+        const CoarseQuantized& cq,
+        AlignedTable<float>& dis_tables,
+        AlignedTable<float>& biases,
+        const FastScanDistancePostProcessing&) const {
+    DISPATCH_SIMDLevel(compute_LUT_helper, n, x, cq, dis_tables, biases);
 }
 
 } // namespace faiss

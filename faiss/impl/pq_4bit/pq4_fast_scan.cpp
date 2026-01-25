@@ -9,12 +9,6 @@
 #include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
-#ifdef __x86_64__
-#ifdef __AVX2__
-#error "this should not be compiled with AVX2"
-#endif
-#endif
-
 #include <faiss/impl/pq_4bit/kernels_simd256.h>
 
 #include <faiss/impl/pq_4bit/dispatching.h>
@@ -402,6 +396,8 @@ int pq4_preferred_qbs(int n) {
 
 /**************************** Dispatching  */
 
+#ifdef COMPILE_SIMD_NONE
+
 template <>
 PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, false>(KNN_ARGS_LIST) {
     return make_pq4_scanner_1<SIMDLevel::NONE, false>(KNN_ARGS_LIST_2);
@@ -421,6 +417,7 @@ template <>
 PQ4CodeScanner* make_pq4_scanner<SIMDLevel::NONE, true>(PRES_ARGS_LIST) {
     return make_pq4_scanner_1<SIMDLevel::NONE, true>(PRES_ARGS_LIST_2);
 }
+#endif // COMPILE_SIMD_NONE
 
 template <bool with_id_map>
 PQ4CodeScanner* make_knn_scanner(
@@ -433,22 +430,31 @@ PQ4CodeScanner* make_knn_scanner(
         float* dis,
         idx_t* ids,
         const IDSelector* sel) {
-#ifdef COMPILE_SIMD_AVX512
-    if (SIMDConfig::level == SIMDLevel::AVX512) {
-        return make_pq4_scanner<SIMDLevel::AVX512, with_id_map>(
-                is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
-    } else
+// code for dynamic dispatching is commented out
+#ifdef COMPILE_SIMD_AVX512F
+    //  if (SIMDConfig::level == SIMDLevel::AVX512F) {
+    return make_pq4_scanner<SIMDLevel::AVX512F, with_id_map>(
+            is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
+    //  } else
 #endif
 #ifdef COMPILE_SIMD_AVX2
-            if (SIMDConfig::level == SIMDLevel::AVX2) {
-        return make_pq4_scanner<SIMDLevel::AVX2, with_id_map>(
-                is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
-    } else
+    //         if (SIMDConfig::level == SIMDLevel::AVX2) {
+    return make_pq4_scanner<SIMDLevel::AVX2, with_id_map>(
+            is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
+    // } else
 #endif
+#ifdef COMPILE_SIMD_NEON
+    //         if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+    return make_pq4_scanner<SIMDLevel::ARM_NEON, with_id_map>(
+            is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
+    // } else
+#endif
+#ifdef COMPILE_SIMD_NONE
     {
         return make_pq4_scanner<SIMDLevel::NONE, with_id_map>(
                 is_max, ns, ur, nq, ntotal, k, dis, ids, sel);
     }
+#endif
 }
 
 PQ4CodeScanner* pq4_make_flat_knn_handler(
@@ -488,22 +494,30 @@ PQ4CodeScanner* pq4_make_ivf_range_handler(
         float radius,
         int norm_scale,
         const IDSelector* sel) {
-#ifdef COMPILE_SIMD_AVX512
-    if (SIMDConfig::level == SIMDLevel::AVX512) {
-        return make_pq4_scanner<SIMDLevel::AVX512, true>(
-                is_max, norm_scale, &rres, radius, 0, sel);
-    } else
+#ifdef COMPILE_SIMD_AVX512F
+    // if (SIMDConfig::level == SIMDLevel::AVX512F) {
+    return make_pq4_scanner<SIMDLevel::AVX512F, true>(
+            is_max, norm_scale, &rres, radius, 0, sel);
+    // } else
 #endif
 #ifdef COMPILE_SIMD_AVX2
-            if (SIMDConfig::level == SIMDLevel::AVX2) {
-        return make_pq4_scanner<SIMDLevel::AVX2, true>(
-                is_max, norm_scale, &rres, radius, 0, sel);
-    } else
+    //         if (SIMDConfig::level == SIMDLevel::AVX2) {
+    return make_pq4_scanner<SIMDLevel::AVX2, true>(
+            is_max, norm_scale, &rres, radius, 0, sel);
+    // } else
 #endif
+#ifdef COMPILE_SIMD_NEON
+    //         if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+    return make_pq4_scanner<SIMDLevel::ARM_NEON, true>(
+            is_max, norm_scale, &rres, radius, 0, sel);
+    // } else
+#endif
+#ifdef COMPILE_SIMD_NONE
     {
         return make_pq4_scanner<SIMDLevel::NONE, true>(
                 is_max, norm_scale, &rres, radius, 0, sel);
     }
+#endif
 }
 
 PQ4CodeScanner* pq4_make_ivf_partial_range_handler(
@@ -514,22 +528,30 @@ PQ4CodeScanner* pq4_make_ivf_partial_range_handler(
         idx_t i1,
         int norm_scale,
         const IDSelector* sel) {
-#ifdef COMPILE_SIMD_AVX512
-    if (SIMDConfig::level == SIMDLevel::AVX512) {
-        return make_pq4_scanner<SIMDLevel::AVX512, true>(
-                is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
-    } else
+#ifdef COMPILE_SIMD_AVX512F
+    // if (SIMDConfig::level == SIMDLevel::AVX512F) {
+    return make_pq4_scanner<SIMDLevel::AVX512F, true>(
+            is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    // } else
 #endif
 #ifdef COMPILE_SIMD_AVX2
-            if (SIMDConfig::level == SIMDLevel::AVX2) {
-        return make_pq4_scanner<SIMDLevel::AVX2, true>(
-                is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
-    } else
+    //        if (SIMDConfig::level == SIMDLevel::AVX2) {
+    return make_pq4_scanner<SIMDLevel::AVX2, true>(
+            is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    // } else
 #endif
+#ifdef COMPILE_SIMD_NEON
+    //        if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+    return make_pq4_scanner<SIMDLevel::ARM_NEON, true>(
+            is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
+    // } else
+#endif
+#ifdef COMPILE_SIMD_NONE
     {
         return make_pq4_scanner<SIMDLevel::NONE, true>(
                 is_max, norm_scale, &pres, radius, 0, i0, i1, sel);
     }
+#endif
 }
 
 } // namespace faiss

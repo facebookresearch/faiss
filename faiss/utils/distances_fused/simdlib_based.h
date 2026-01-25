@@ -10,7 +10,6 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simd_levels.h>
 
 #if defined(__AVX2__) || defined(__aarch64__)
 

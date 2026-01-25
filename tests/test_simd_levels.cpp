@@ -262,7 +262,7 @@ TEST(SIMDLevel, get_level_name_from_enum) {
     EXPECT_EQ("ARM_NEON", to_string(faiss::SIMDLevel::ARM_NEON).value_or(""));
 
     int actual_num_simd_levels = static_cast<int>(faiss::SIMDLevel::COUNT);
-    EXPECT_EQ(4, actual_num_simd_levels);
+    EXPECT_EQ(5, actual_num_simd_levels);
     // Check that all SIMD levels have a name (except for COUNT which is not a
     // real SIMD level)
     for (int i = 0; i < actual_num_simd_levels - 1; ++i) {

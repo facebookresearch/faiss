@@ -557,7 +557,9 @@ void compute_PQ_dis_tables_dsub2(
  * @param b   size n
  * @param c   result table, size n
  */
+#ifndef SWIG // Linking errors if included in SWIG.
 void fvec_madd(size_t n, const float* a, float bf, const float* b, float* c);
+#endif
 
 /* specialized version for each SIMD level */
 template <SIMDLevel>

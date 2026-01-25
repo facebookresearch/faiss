@@ -13,6 +13,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -87,6 +88,15 @@ struct IndexIVFPQFastScan : IndexIVFFastScan {
             bool store_pairs,
             const IDSelector* sel,
             const IVFSearchParameters*) const override;
+
+   protected:
+    template <SIMDLevel SL>
+    void compute_LUT_helper(
+            size_t n,
+            const float* x,
+            const CoarseQuantized& cq,
+            AlignedTable<float>& dis_tables,
+            AlignedTable<float>& biases) const;
 };
 
 } // namespace faiss

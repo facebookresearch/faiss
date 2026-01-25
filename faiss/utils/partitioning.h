@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -50,7 +51,23 @@ void simd_histogram_8(
         int shift,
         int* hist);
 
+template <SIMDLevel SL>
+void simd_histogram_8(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+
 /** same for 16-bin histogram */
+void simd_histogram_16(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+
+template <SIMDLevel SL>
 void simd_histogram_16(
         const uint16_t* data,
         int n,
