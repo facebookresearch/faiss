@@ -14,7 +14,7 @@
 
 #include <faiss/impl/platform_macros.h>
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/utils/simd_impl/simdlib_avx2.h>
 
 namespace faiss {
 
