@@ -8,18 +8,98 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/scalar_quantizer/codecs.h>
+#include <faiss/impl/scalar_quantizer/quantizers.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
 namespace scalar_quantizer {
 
+/*******************************************************************
+ * Similarities: accumulates the element-wise similarities
+ *******************************************************************/
+
+template <SIMDLevel>
+struct SimilarityL2 {};
+
+template <SIMDLevel>
+struct SimilarityIP {};
+
+template <>
+struct SimilarityL2<SIMDLevel::NONE> {
+    static constexpr SIMDLevel SIMD_LEVEL = SIMDLevel::NONE;
+    static constexpr int simdwidth = 1;
+    static constexpr MetricType metric_type = METRIC_L2;
+
+    const float *y, *yi;
+
+    explicit SimilarityL2(const float* y) : y(y) {}
+
+    /******* scalar accumulator *******/
+
+    float accu;
+
+    FAISS_ALWAYS_INLINE void begin() {
+        accu = 0;
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_component(float x) {
+        float tmp = *yi++ - x;
+        accu += tmp * tmp;
+    }
+
+    FAISS_ALWAYS_INLINE void add_component_2(float x1, float x2) {
+        float tmp = x1 - x2;
+        accu += tmp * tmp;
+    }
+
+    FAISS_ALWAYS_INLINE float result() {
+        return accu;
+    }
+};
+
+template <>
+struct SimilarityIP<SIMDLevel::NONE> {
+    static constexpr int simdwidth = 1;
+    static constexpr SIMDLevel SIMD_LEVEL = SIMDLevel::NONE;
+    static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
+    const float *y, *yi;
+
+    float accu;
+
+    explicit SimilarityIP(const float* y) : y(y) {}
+
+    FAISS_ALWAYS_INLINE void begin() {
+        accu = 0;
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_component(float x) {
+        accu += *yi++ * x;
+    }
+
+    FAISS_ALWAYS_INLINE void add_component_2(float x1, float x2) {
+        accu += x1 * x2;
+    }
+
+    FAISS_ALWAYS_INLINE float result() {
+        return accu;
+    }
+};
+
+/*******************************************************************
+ * Distance computers: compute distances between a query and a code
+ *******************************************************************/
+
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
 
-template <class Quantizer, class Similarity, int SIMDWIDTH>
+template <class Quantizer, class Similarity, SIMDLevel level>
 struct DCTemplate : SQDistanceComputer {};
 
 template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
@@ -63,112 +143,15 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#if defined(USE_AVX512_F16C)
-
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 16>
-        : SQDistanceComputer { // Update to handle 16 lanes
-    using Sim = Similarity;
-
-    Quantizer quant;
-
-    DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
-
-    float compute_distance(const float* x, const uint8_t* code) const {
-        Similarity sim(x);
-        sim.begin_16();
-        for (size_t i = 0; i < quant.d; i += 16) {
-            simd16float32 xi = quant.reconstruct_16_components(code, i);
-            sim.add_16_components(xi);
-        }
-        return sim.result_16();
-    }
-
-    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        Similarity sim(nullptr);
-        sim.begin_16();
-        for (size_t i = 0; i < quant.d; i += 16) {
-            simd16float32 x1 = quant.reconstruct_16_components(code1, i);
-            simd16float32 x2 = quant.reconstruct_16_components(code2, i);
-            sim.add_16_components_2(x1, x2);
-        }
-        return sim.result_16();
-    }
-
-    void set_query(const float* x) final {
-        q = x;
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
-    }
-};
-
-#elif defined(USE_F16C) || defined(USE_NEON)
-
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity;
-
-    Quantizer quant;
-
-    DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
-
-    float compute_distance(const float* x, const uint8_t* code) const {
-        Similarity sim(x);
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 xi = quant.reconstruct_8_components(code, i);
-            sim.add_8_components(xi);
-        }
-        return sim.result_8();
-    }
-
-    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        Similarity sim(nullptr);
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 x1 = quant.reconstruct_8_components(code1, i);
-            simd8float32 x2 = quant.reconstruct_8_components(code2, i);
-            sim.add_8_components_2(x1, x2);
-        }
-        return sim.result_8();
-    }
-
-    void set_query(const float* x) final {
-        q = x;
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
-    }
-};
-
-#endif
-
 /*******************************************************************
  * DistanceComputerByte: computes distances in the integer domain
  *******************************************************************/
 
-template <class Similarity, int SIMDWIDTH>
+template <class Similarity, SIMDLevel>
 struct DistanceComputerByte : SQDistanceComputer {};
 
 template <class Similarity>
-struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
+struct DistanceComputerByte<Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     using Sim = Similarity;
 
     int d;
@@ -211,171 +194,84 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
     }
 };
 
-#if defined(__AVX512F__)
+/*******************************************************************
+ * select_distance_computer: runtime selection of template
+ * specialization
+ *******************************************************************/
 
-template <class Similarity>
-struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
-    using Sim = Similarity;
+template <class Sim>
+SQDistanceComputer* select_distance_computer(
+        QuantizerType qtype,
+        size_t d,
+        const std::vector<float>& trained) {
+    constexpr SIMDLevel SL = Sim::SIMD_LEVEL;
+    constexpr QScaling NU = QScaling::NON_UNIFORM;
+    constexpr QScaling U = QScaling::UNIFORM;
+    switch (qtype) {
+        case ScalarQuantizer::QT_8bit_uniform:
+            return new DCTemplate<QuantizerT<Codec8bit<SL>, U, SL>, Sim, SL>(
+                    d, trained);
 
-    int d;
-    std::vector<uint8_t> tmp;
+        case ScalarQuantizer::QT_4bit_uniform:
+            return new DCTemplate<QuantizerT<Codec4bit<SL>, U, SL>, Sim, SL>(
+                    d, trained);
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+        case ScalarQuantizer::QT_8bit:
+            return new DCTemplate<QuantizerT<Codec8bit<SL>, NU, SL>, Sim, SL>(
+                    d, trained);
 
-    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        __m512i accu = _mm512_setzero_si512();
-        for (int i = 0; i < d; i += 32) { // Process 32 bytes at a time
-            __m512i c1 = _mm512_cvtepu8_epi16(
-                    _mm256_loadu_si256((__m256i*)(code1 + i)));
-            __m512i c2 = _mm512_cvtepu8_epi16(
-                    _mm256_loadu_si256((__m256i*)(code2 + i)));
-            __m512i prod32;
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                prod32 = _mm512_madd_epi16(c1, c2);
-            } else {
-                __m512i diff = _mm512_sub_epi16(c1, c2);
-                prod32 = _mm512_madd_epi16(diff, diff);
-            }
-            accu = _mm512_add_epi32(accu, prod32);
-        }
-        // Horizontally add elements of accu
-        return _mm512_reduce_add_epi32(accu);
+        case ScalarQuantizer::QT_6bit:
+            return new DCTemplate<QuantizerT<Codec6bit<SL>, NU, SL>, Sim, SL>(
+                    d, trained);
+
+        case ScalarQuantizer::QT_4bit:
+            return new DCTemplate<QuantizerT<Codec4bit<SL>, NU, SL>, Sim, SL>(
+                    d, trained);
+
+        case ScalarQuantizer::QT_fp16:
+            return new DCTemplate<QuantizerFP16<SL>, Sim, SL>(d, trained);
+
+        case ScalarQuantizer::QT_bf16:
+            return new DCTemplate<QuantizerBF16<SL>, Sim, SL>(d, trained);
+
+        case ScalarQuantizer::QT_8bit_direct:
+            return new DCTemplate<Quantizer8bitDirect<SL>, Sim, SL>(d, trained);
+        case ScalarQuantizer::QT_8bit_direct_signed:
+            return new DCTemplate<Quantizer8bitDirectSigned<SL>, Sim, SL>(
+                    d, trained);
     }
+    FAISS_THROW_MSG("unknown qtype");
+    return nullptr;
+}
 
-    void set_query(const float* x) final {
-        for (int i = 0; i < d; i++) {
-            tmp[i] = int(x[i]);
-        }
+template <SIMDLevel SL>
+SQDistanceComputer* select_distance_computer_1(
+        MetricType metric_type,
+        QuantizerType qtype,
+        size_t d,
+        const std::vector<float>& trained) {
+    if (metric_type == METRIC_L2) {
+        return select_distance_computer<SimilarityL2<SL>>(qtype, d, trained);
+    } else if (metric_type == METRIC_INNER_PRODUCT) {
+        return select_distance_computer<SimilarityIP<SL>>(qtype, d, trained);
+    } else {
+        FAISS_THROW_MSG("unsuppored metric type");
     }
+}
 
-    int compute_distance(const float* x, const uint8_t* code) {
-        set_query(x);
-        return compute_code_distance(tmp.data(), code);
-    }
+// prevent implicit instantiation of the template
+extern template SQDistanceComputer* select_distance_computer_1<SIMDLevel::AVX2>(
+        MetricType metric_type,
+        QuantizerType qtype,
+        size_t d,
+        const std::vector<float>& trained);
 
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_code_distance(tmp.data(), code);
-    }
-};
-
-#elif defined(__AVX2__)
-
-template <class Similarity>
-struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity;
-
-    int d;
-    std::vector<uint8_t> tmp;
-
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
-
-    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        // __m256i accu = _mm256_setzero_ps ();
-        __m256i accu = _mm256_setzero_si256();
-        for (int i = 0; i < d; i += 16) {
-            // load 16 bytes, convert to 16 uint16_t
-            __m256i c1 = _mm256_cvtepu8_epi16(
-                    _mm_loadu_si128((__m128i*)(code1 + i)));
-            __m256i c2 = _mm256_cvtepu8_epi16(
-                    _mm_loadu_si128((__m128i*)(code2 + i)));
-            __m256i prod32;
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                prod32 = _mm256_madd_epi16(c1, c2);
-            } else {
-                __m256i diff = _mm256_sub_epi16(c1, c2);
-                prod32 = _mm256_madd_epi16(diff, diff);
-            }
-            accu = _mm256_add_epi32(accu, prod32);
-        }
-        __m128i sum = _mm256_extractf128_si256(accu, 0);
-        sum = _mm_add_epi32(sum, _mm256_extractf128_si256(accu, 1));
-        sum = _mm_hadd_epi32(sum, sum);
-        sum = _mm_hadd_epi32(sum, sum);
-        return _mm_cvtsi128_si32(sum);
-    }
-
-    void set_query(const float* x) final {
-        /*
-        for (int i = 0; i < d; i += 8) {
-            __m256 xi = _mm256_loadu_ps (x + i);
-            __m256i ci = _mm256_cvtps_epi32(xi);
-        */
-        for (int i = 0; i < d; i++) {
-            tmp[i] = int(x[i]);
-        }
-    }
-
-    int compute_distance(const float* x, const uint8_t* code) {
-        set_query(x);
-        return compute_code_distance(tmp.data(), code);
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_code_distance(tmp.data(), code);
-    }
-};
-
-#endif
-
-#ifdef USE_NEON
-
-template <class Similarity>
-struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity;
-
-    int d;
-    std::vector<uint8_t> tmp;
-
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
-
-    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        int accu = 0;
-        for (int i = 0; i < d; i++) {
-            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
-                accu += int(code1[i]) * code2[i];
-            } else {
-                int diff = int(code1[i]) - code2[i];
-                accu += diff * diff;
-            }
-        }
-        return accu;
-    }
-
-    void set_query(const float* x) final {
-        for (int i = 0; i < d; i++) {
-            tmp[i] = int(x[i]);
-        }
-    }
-
-    int compute_distance(const float* x, const uint8_t* code) {
-        set_query(x);
-        return compute_code_distance(tmp.data(), code);
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_code_distance(tmp.data(), code);
-    }
-};
-
-#endif
+extern template SQDistanceComputer* select_distance_computer_1<
+        SIMDLevel::AVX512>(
+        MetricType metric_type,
+        QuantizerType qtype,
+        size_t d,
+        const std::vector<float>& trained);
 
 } // namespace scalar_quantizer
 } // namespace faiss
