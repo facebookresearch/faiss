@@ -61,7 +61,7 @@ struct SIMDConfig {
 
 #ifdef COMPILE_SIMD_AVX512
 #define DISPATCH_SIMDLevel_AVX512(f, ...) \
-    case SIMDLevel::AVX512F:              \
+    case SIMDLevel::AVX512:               \
         return f<SIMDLevel::AVX512>(__VA_ARGS__)
 #else
 #define DISPATCH_SIMDLevel_AVX512(f, ...)
