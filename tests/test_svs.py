@@ -596,24 +596,21 @@ class TestSVSLeanVecOOD(unittest.TestCase):
         self.tq = np.random.rand(1000, self.d).astype("float32")
 
     def test_svs_leanvec_ood_training(self):
-        # test passing training_x
+        self.assertIsNone(self.idx.training_data)
         self.idx.train(self.x, xq_train=self.tq)
+        self.assertIsNotNone(self.idx.training_data)
 
     def test_svs_leanvec_ood_training_smaller(self):
-        # test passing smaller training_x
         self.idx.train(self.x, xq_train=self.tq[:500])
 
     def test_svs_leanvec_ood_training_wrong_dim(self):
-        # test passing wrong training dimensionality
         wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
-        with self.assertRaises((RuntimeError, ValueError)):
+        with self.assertRaises(AssertionError):
             self.idx.train(self.x, xq_train=wrong_dim)
 
     def test_svs_leanvec_ood_training_wrong_type(self):
-        # test passing wrong numeric_type
-        wrong_type = np.random.rand(1000, self.d).astype("float64")
-        with self.assertRaises((TypeError, ValueError)):
-            self.idx.train(self.x, xq_train=wrong_type)
+        with self.assertRaises(TypeError):
+            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
 
 
 if __name__ == "__main__":

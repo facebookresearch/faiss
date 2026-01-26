@@ -360,7 +360,7 @@ def handle_Index(the_class):
         n_train_q, train_q = 0, None
         if xq_train is not None:
             if numeric_type != faiss.Float32:
-                raise ValueError(
+                raise TypeError(
                     "xq_train is only supported for numeric_type faiss.Float32"
                 )
             n_train_q, d_train = xq_train.shape
