@@ -18,8 +18,10 @@
 # limitations under the License.
 #
 
-import numpy as np
 import unittest
+
+import numpy as np
+
 import faiss
 
 _SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
@@ -27,7 +29,9 @@ _SKIP_REASON = "SVS support not compiled in"
 
 # Check if LVQ/LeanVec support is available
 _SKIP_SVS_LL = _SKIP_SVS or not faiss.IndexSVSVamana.is_lvq_leanvec_enabled()
-_SKIP_SVS_LL_REASON = "LVQ/LeanVec support not available on this platform or build configuration"
+_SKIP_SVS_LL_REASON = (
+    "LVQ/LeanVec support not available on this platform or build configuration"
+)
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -38,7 +42,9 @@ class TestSVSAdapter(unittest.TestCase):
 
     def _create_instance(self) -> "faiss.IndexSVSVamana | faiss.IndexSVSFlat":
         """Create an instance of the SVS index"""
-        self.assertIsNotNone(self.target_class, "target_class must be configured in setUpClass()")
+        self.assertIsNotNone(
+            self.target_class, "target_class must be configured in setUpClass()"
+        )
         return self.target_class(self.d, 64)
 
     @classmethod
@@ -51,8 +57,8 @@ class TestSVSAdapter(unittest.TestCase):
         self.nb = 1000
         self.nq = 100
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def test_svs_construction(self):
         """Test construction and basic properties"""
@@ -224,7 +230,7 @@ class TestSVSAdapter(unittest.TestCase):
         index = self._create_instance()
 
         # Test wrong dimension
-        wrong_dim_data = np.random.random((100, self.d + 1)).astype('float32')
+        wrong_dim_data = np.random.random((100, self.d + 1)).astype("float32")
         with self.assertRaises(AssertionError):
             index.add(wrong_dim_data)
 
@@ -256,6 +262,7 @@ class TestSVSAdapter(unittest.TestCase):
         D, _ = index.search(self.xq, 4)
         self.assertEqual(D.shape, (self.nq, 4))
 
+
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSFactory(unittest.TestCase):
     """Test that SVS factory works correctly"""
@@ -283,6 +290,7 @@ class TestSVSFactory(unittest.TestCase):
         self.assertEqual(index.graph_max_degree, 24)
         self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
 
+
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSFactoryLVQLeanVec(unittest.TestCase):
     """Test that SVS factory works correctly for LVQ and LeanVec"""
@@ -304,18 +312,22 @@ class TestSVSFactoryLVQLeanVec(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
         return idx
 
+
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterSQI8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
         return idx
+
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x0(TestSVSAdapter):
@@ -330,6 +342,7 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
+
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x4(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x4 variant"""
@@ -343,6 +356,7 @@ class TestSVSAdapterLVQ4x4(TestSVSAdapter):
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
 
+
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSAdapterLVQ4x8(TestSVSAdapter):
     """Repeat all tests for SVSLVQ4x8 variant"""
@@ -355,6 +369,7 @@ class TestSVSAdapterLVQ4x8(TestSVSAdapter):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
+
 
 class TestSVSAdapterFlat(TestSVSAdapter):
     """Repeat all tests for SVSFlat variant"""
@@ -418,15 +433,15 @@ class TestSVSVamanaParameters(unittest.TestCase):
 
     def _create_instance(self):
         """Create an instance of the SVS Vamana index"""
-        return self.target_class(self.d ,64)
+        return self.target_class(self.d, 64)
 
     def setUp(self):
         self.d = 32
         self.nb = 500  # Smaller dataset for parameter tests
         self.nq = 50
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def test_vamana_parameter_setting(self):
         """Test that all Vamana parameters can be set and retrieved"""
@@ -507,18 +522,22 @@ class TestSVSVamanaParameters(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
         return idx
 
+
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
         return idx
+
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
@@ -533,6 +552,7 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_LVQ4x0
         return idx
 
+
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVSLVQ4x4 variant"""
@@ -545,6 +565,7 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_LVQ4x4
         return idx
+
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
@@ -559,5 +580,41 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
-if __name__ == '__main__':
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSLeanVecOOD(unittest.TestCase):
+    """Test out-of-distribution training for LeanVec SVS indices"""
+
+    def setUp(self):
+        self.d = 256
+        self.idx = faiss.IndexSVSVamanaLeanVec(
+            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
+        )
+        self.idx.alpha = 0.95
+
+        self.x = np.random.rand(1000, self.d).astype("float32")
+        self.tq = np.random.rand(1000, self.d).astype("float32")
+
+    def test_svs_leanvec_ood_training(self):
+        # test passing training_x
+        self.idx.train(self.x, xq_train=self.tq)
+
+    def test_svs_leanvec_ood_training_smaller(self):
+        # test passing smaller training_x
+        self.idx.train(self.x, xq_train=self.tq[:500])
+
+    def test_svs_leanvec_ood_training_wrong_dim(self):
+        # test passing wrong training dimensionality
+        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
+        with self.assertRaises((RuntimeError, ValueError)):
+            self.idx.train(self.x, xq_train=wrong_dim)
+
+    def test_svs_leanvec_ood_training_wrong_type(self):
+        # test passing wrong numeric_type
+        wrong_type = np.random.rand(1000, self.d).astype("float64")
+        with self.assertRaises((TypeError, ValueError)):
+            self.idx.train(self.x, xq_train=wrong_type)
+
+
+if __name__ == "__main__":
     unittest.main()
