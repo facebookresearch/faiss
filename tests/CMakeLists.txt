@@ -38,6 +38,7 @@ set(FAISS_TEST_SRC
   test_hamming.cpp
   test_mmap.cpp
   test_zerocopy.cpp
+  test_custom_result_handler.cpp
 )
 
 if(FAISS_ENABLE_SVS)

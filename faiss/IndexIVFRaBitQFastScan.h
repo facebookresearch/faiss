@@ -166,6 +166,13 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             const FastScanDistancePostProcessing& context,
             const float* normalizers = nullptr) const override;
 
+    /// Get an InvertedListScanner for single-query scanning.
+    /// This provides compatibility with the standard IVF search interface
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr,
+            const IVFSearchParameters* params = nullptr) const override;
+
     /** SIMD result handler for IndexIVFRaBitQFastScan that applies
      * RaBitQ-specific distance corrections during batch processing.
      *
@@ -197,6 +204,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         const FastScanDistancePostProcessing*
                 context;        // Processing context with query factors
         const bool is_multibit; // Whether to use multi-bit two-stage search
+        size_t nup = 0;         // Number of heap updates
 
         // Use float-based comparator for heap operations
         using Cfloat = typename std::conditional<
@@ -223,6 +231,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         void begin(const float* norms) override;
 
         void end() override;
+
+        size_t num_updates() override {
+            return nup;
+        }
 
        private:
         /// Compute full multi-bit distance for a candidate vector (multi-bit
