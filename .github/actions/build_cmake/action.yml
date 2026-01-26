@@ -77,6 +77,11 @@ runs:
           conda install -y -q libcuvs=25.10 'cuda-version=12.6' cuda-toolkit=12.6 gxx_linux-64=13.4.0 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
+        # install SVS runtime for SVS builds
+        if [ "${{ inputs.svs }}" = "ON" ]; then
+          conda install -y -q libsvs-runtime -c https://software.repos.intel.com/python/conda -c conda-forge
+        fi
+
         # install test packages
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           : # skip torch install via conda, we need to install via pip to get
