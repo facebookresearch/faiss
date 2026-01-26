@@ -15,6 +15,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -62,7 +63,8 @@ struct Run_knn_extra_metrics {
            size_t ny,
            size_t k,
            float* distances,
-           int64_t* labels) {
+           int64_t* labels,
+           const IDSelector* sel = nullptr) {
         size_t d = vd.d;
         using C = typename VD::C;
         size_t check_period = InterruptCallback::get_period_hint(ny * d);
@@ -82,10 +84,12 @@ struct Run_knn_extra_metrics {
                 // maxheap_heapify(k, simi, idxi);
                 heap_heapify<C>(k, simi, idxi);
                 for (j = 0; j < ny; j++) {
-                    float disij = vd(x_i, y_j);
+                    if (!sel || sel->is_member(j)) {
+                        float disij = vd(x_i, y_j);
 
-                    if (C::cmp(simi[0], disij)) {
-                        heap_replace_top<C>(k, simi, idxi, disij, j);
+                        if (C::cmp(simi[0], disij)) {
+                            heap_replace_top<C>(k, simi, idxi, disij, j);
+                        }
                     }
                     y_j += d;
                 }
@@ -183,10 +187,11 @@ void knn_extra_metrics(
         float metric_arg,
         size_t k,
         float* distances,
-        int64_t* indexes) {
+        int64_t* indexes,
+        const IDSelector* sel) {
     Run_knn_extra_metrics run;
     dispatch_VectorDistance(
-            d, mt, metric_arg, run, x, y, nx, ny, k, distances, indexes);
+            d, mt, metric_arg, run, x, y, nx, ny, k, distances, indexes, sel);
 }
 
 FlatCodesDistanceComputer* get_extra_distance_computer(

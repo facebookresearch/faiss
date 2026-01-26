@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/impl/AdditiveQuantizer.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/utils/AlignedTable.h>
 
@@ -101,7 +102,8 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const float* x,
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
-            AlignedTable<float>& biases) const override;
+            AlignedTable<float>& biases,
+            const FastScanDistancePostProcessing& context) const override;
 };
 
 struct IndexIVFLocalSearchQuantizerFastScan

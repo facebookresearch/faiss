@@ -282,7 +282,7 @@ def main():
 
     group = parser.add_argument_group('dataset options')
     aa('--nq', type=int, default=int(10e5),
-       help="nb queries (queries will be duplicated if below that number")
+       help="nb queries (queries will be duplicated if below that number)")
     aa('--db', default='bigann10M', help='dataset')
 
     group = parser.add_argument_group('index options')
@@ -311,7 +311,7 @@ def main():
         help="how to search"
     )
     aa('--ivf_quant_nlist', type=int, default=1024,
-       help="nb of invlists for IVF quantizer")
+       help="nb of inverted lists for IVF quantizer")
     aa('--batch_size', type=int, default=-1,
        help="batch size for tiled CPU / GPU computation (-1= no tiling)")
     aa('--n_autotune', type=int, default=300,
@@ -540,7 +540,7 @@ def main():
     op.all_experiments = []
     op.platform = {
         "loadavg": open("/proc/loadavg", "r").readlines(),
-        "procesor": [l for l in open("/proc/cpuinfo") if "model name" in l][0],
+        "processor": [l for l in open("/proc/cpuinfo") if "model name" in l][0],
         "GPU": list(os.popen("nvidia-smi", "r")),
         "mem": open("/proc/meminfo", "r").readlines(),
         "pid": os.getpid()

@@ -379,7 +379,7 @@ class TestSearchParams(unittest.TestCase):
 
         Dnew, Inew = index.search(ds.get_queries(), 10, params=params)
 
-        # make sure rhe parameter does indeed change the result...
+        # make sure the parameter does indeed change the result...
         self.assertFalse(np.all(Inew == I0))
 
         for param_name, value in ps_params.items():

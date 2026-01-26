@@ -12,6 +12,7 @@
 
 #include <cinttypes>
 #include <cstring>
+#include <typeinfo>
 
 namespace faiss {
 

@@ -34,7 +34,7 @@ namespace faiss {
  *
  *  Dong, Wei, Charikar Moses, and Kai Li, WWW 2011
  *
- * This implmentation is heavily influenced by the efanna
+ * This implementation is heavily influenced by the efanna
  * implementation by Cong Fu and the KGraph library by Wei Dong
  * (https://github.com/ZJULearning/efanna_graph)
  * (https://github.com/aaalgo/kgraph)
@@ -117,7 +117,7 @@ struct NNDescent {
     /// Perform local join on each node
     void join(DistanceComputer& qdis);
 
-    /// Sample new neighbors for each node to peform local join later
+    /// Sample new neighbors for each node to perform local join later
     void update();
 
     /// Sample a small number of points to evaluate the quality of KNNG built

@@ -805,8 +805,8 @@ struct simd32uint8 {
         uint8_t bytes[32];
         store(bytes);
         detail::simdlib::bin(
-                const_cast<const char(&)[32]>(
-                        reinterpret_cast<char(&)[32]>(bytes)),
+                const_cast<const char (&)[32]>(
+                        reinterpret_cast<char (&)[32]>(bytes)),
                 bits);
     }
 

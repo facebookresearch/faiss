@@ -141,7 +141,7 @@ void smawk(
 namespace {
 
 class CostCalculator {
-    // The reuslt would be inaccurate if we use float
+    // The result would be inaccurate if we use float
     std::vector<double> cumsum;
     std::vector<double> cumsum2;
 

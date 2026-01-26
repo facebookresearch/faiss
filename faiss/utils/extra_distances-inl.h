@@ -22,6 +22,7 @@ template <MetricType mt>
 struct VectorDistance {
     size_t d;
     float metric_arg;
+    static constexpr MetricType metric = mt;
     static constexpr bool is_similarity = is_similarity_metric(mt);
 
     inline float operator()(const float* x, const float* y) const;
@@ -190,7 +191,7 @@ inline float VectorDistance<METRIC_GOWER>::operator()(
 
 /***************************************************************************
  * Dispatching function that takes a metric type and a consumer object
- * the consumer object should contain a retun type T and a operation template
+ * the consumer object should contain a return type T and a operation template
  * function f() that is called to perform the operation. The first argument
  * of the function is the VectorDistance object. The rest are passed in as is.
  **************************************************************************/

@@ -23,6 +23,7 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
@@ -97,6 +98,7 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
 
     TRYCLONE(IndexIVFFlatDedup, ivf)
     TRYCLONE(IndexIVFFlat, ivf)
+    TRYCLONE(IndexIVFFlatPanorama, ivf)
 
     TRYCLONE(IndexIVFSpectralHash, ivf)
 
@@ -127,6 +129,7 @@ IndexIDMap* clone_IndexIDMap(const IndexIDMap* im) {
 
 IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW2Level, ihnsw)
+    TRYCLONE(IndexHNSWFlatPanorama, ihnsw)
     TRYCLONE(IndexHNSWFlat, ihnsw)
     TRYCLONE(IndexHNSWPQ, ihnsw)
     TRYCLONE(IndexHNSWSQ, ihnsw)
@@ -152,7 +155,7 @@ IndexNSG* clone_IndexNSG(const IndexNSG* insg) {
     TRYCLONE(IndexNSGPQ, insg)
     TRYCLONE(IndexNSGSQ, insg)
     TRYCLONE(IndexNSG, insg) {
-        FAISS_THROW_MSG("clone not supported for this type of IndexNNDescent");
+        FAISS_THROW_MSG("clone not supported for this type of IndexNSG");
     }
 }
 
@@ -274,6 +277,7 @@ Index* Cloner::clone_Index(const Index* index) {
     // IndexFlat
     TRYCLONE(IndexFlat1D, index)
     TRYCLONE(IndexFlatL2, index)
+    TRYCLONE(IndexFlatL2Panorama, index)
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
 

@@ -99,11 +99,13 @@ typedef uint64_t size_t;
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/utils/simdlib.h>
 #include <faiss/impl/simd_result_handlers.h>
 
@@ -169,6 +171,8 @@ typedef uint64_t size_t;
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/utils/NeuralNet.h>
+#include <faiss/impl/Panorama.h>
+#include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -177,6 +181,7 @@ typedef uint64_t size_t;
 #endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
+#include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/hamming_distance/common.h>
@@ -191,8 +196,19 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQStats.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
+
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
 
 %}
 
@@ -218,7 +234,7 @@ typedef uint64_t size_t;
             PyErr_SetString(PyExc_RuntimeError, e.what());
         }
         SWIG_fail;
-    } catch(std::bad_alloc & ba) {
+    } catch(std::bad_alloc&) {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
         SWIG_fail;
@@ -405,6 +421,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -414,6 +431,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -484,7 +502,11 @@ void gpu_sync_all_devices()
 
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
+
+%ignore faiss::IndexFlatPanorama::pano;
+
 %include  <faiss/IndexFlat.h>
+%include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
 
 %include  <faiss/utils/extra_distances.h>
@@ -499,6 +521,8 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
 %include  <faiss/impl/CodePacker.h>
+%include  <faiss/impl/Panorama.h>
+%include  <faiss/impl/PanoramaStats.h>
 
 %include  <faiss/VectorTransform.h>
 %include  <faiss/IndexPreTransform.h>
@@ -534,6 +558,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexNNDescent.h>
 
 %include  <faiss/IndexIVFFlat.h>
+%include  <faiss/IndexIVFFlatPanorama.h>
 
 %warnfilter(509) faiss::nsg::Graph< int >::at(int,int);
 
@@ -564,6 +589,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
+%include  <faiss/impl/FastScanDistancePostProcessing.h>
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
@@ -610,8 +636,12 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQStats.h>
+%include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
+%include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
+%include <faiss/IndexIVFRaBitQFastScan.h>
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -631,6 +661,15 @@ struct faiss::simd16uint16 {};
 
 
 %include <faiss/utils/approx_topk/mode.h>
+
+#ifdef FAISS_ENABLE_SVS
+%ignore faiss::to_svs_storage_kind;
+
+%include  <faiss/svs/IndexSVSVamana.h>
+%include  <faiss/svs/IndexSVSFlat.h>
+%include  <faiss/svs/IndexSVSVamanaLVQ.h>
+%include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
 
@@ -704,8 +743,10 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexRaBitQFastScan )
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
+    DOWNCAST ( IndexIVFRaBitQFastScan )
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
@@ -720,12 +761,15 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFLocalSearchQuantizerFastScan )
     DOWNCAST ( IndexIVFProductResidualQuantizerFastScan )
     DOWNCAST ( IndexIVFProductLocalSearchQuantizerFastScan )
+    DOWNCAST ( IndexIVFFlatPanorama )
     DOWNCAST ( IndexIVFFlatDedup )
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlatIP )
     DOWNCAST ( IndexFlatL2 )
+    DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )
+    DOWNCAST ( IndexRefinePanorama )
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
@@ -745,6 +789,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexLattice )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
+    DOWNCAST ( IndexHNSWFlatPanorama )
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
@@ -758,6 +803,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+#ifdef FAISS_ENABLE_SVS
+    DOWNCAST ( IndexSVSFlat )
+    DOWNCAST ( IndexSVSVamanaLeanVec )
+    DOWNCAST ( IndexSVSVamanaLVQ )
+    DOWNCAST ( IndexSVSVamana )
+#endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )

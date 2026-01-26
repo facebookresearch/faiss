@@ -31,7 +31,6 @@
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
-#include <raft/distance/distance_types.hpp>
 #include <raft/linalg/unary_op.cuh>
 
 namespace faiss {

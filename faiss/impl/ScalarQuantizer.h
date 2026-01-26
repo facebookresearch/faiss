@@ -40,7 +40,7 @@ struct ScalarQuantizer : Quantizer {
     QuantizerType qtype = QT_8bit;
 
     /** The uniform encoder can estimate the range of representable
-     * values of the unform encoder using different statistics. Here
+     * values of the uniform encoder using different statistics. Here
      * rs = rangestat_arg */
 
     // rangestat_arg.
@@ -98,9 +98,7 @@ struct ScalarQuantizer : Quantizer {
     SQuantizer* select_quantizer() const;
 
     struct SQDistanceComputer : FlatCodesDistanceComputer {
-        const float* q;
-
-        SQDistanceComputer() : q(nullptr) {}
+        SQDistanceComputer() : FlatCodesDistanceComputer(nullptr) {}
 
         virtual float query_to_code(const uint8_t* code) const = 0;
 

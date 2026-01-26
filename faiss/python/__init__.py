@@ -173,6 +173,7 @@ if "GPU" in get_compile_options():
 
 add_ref_in_constructor(IndexIVFFlat, 0)
 add_ref_in_constructor(IndexIVFFlatDedup, 0)
+add_ref_in_constructor(IndexIVFFlatPanorama, 0)
 add_ref_in_constructor(IndexPreTransform, {2: [0, 1], 1: [0]})
 add_ref_in_method(IndexPreTransform, 'prepend_transform', 0)
 add_ref_in_constructor(IndexIVFPQ, 0)
@@ -196,6 +197,7 @@ add_ref_in_constructor(IndexHNSW, 0)
 add_ref_in_method(IndexShards, 'add_shard', 0)
 add_ref_in_method(IndexBinaryShards, 'add_shard', 0)
 add_ref_in_constructor(IndexRefineFlat, {2: [0], 1: [0]})
+add_ref_in_constructor(IndexRefinePanorama, {2: [0, 1]})
 add_ref_in_constructor(IndexRefine, {2: [0, 1]})
 
 add_ref_in_constructor(IndexBinaryIVF, 0)
@@ -219,6 +221,13 @@ add_ref_in_constructor(IDSelectorXOr, slice(2))
 add_ref_in_constructor(IndexIVFIndependentQuantizer, slice(3))
 
 add_ref_in_constructor(IndexIVFRaBitQ, 0)
+add_ref_in_constructor(IndexIVFRaBitQFastScan, 0)
+
+if "SVS" in get_compile_options():
+    add_ref_in_constructor(IndexSVSVamana, 0)
+    add_ref_in_constructor(IndexSVSVamanaLVQ, 0)
+    add_ref_in_constructor(IndexSVSVamanaLeanVec, 0)
+    add_ref_in_constructor(IndexSVSFlat, 0)
 
 # seems really marginal...
 # remove_ref_from_method(IndexReplicas, 'removeIndex', 0)

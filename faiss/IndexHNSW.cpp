@@ -276,7 +276,7 @@ void hnsw_search(
                 res.begin(i);
                 dis->set_query(x + i * index->d);
 
-                HNSWStats stats = hnsw.search(*dis, res, vt, params);
+                HNSWStats stats = hnsw.search(*dis, index, res, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;
@@ -331,6 +331,14 @@ void IndexHNSW::range_search(
             result->distances[i] = -result->distances[i];
         }
     }
+}
+
+void IndexHNSW::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params) const {
+    SingleQueryBlockResultHandler<HNSW::C, false> bres(handler);
+    hnsw_search(this, 1, x, bres, params);
 }
 
 void IndexHNSW::add(idx_t n, const float* x) {
@@ -450,7 +458,9 @@ void IndexHNSW::search_level_0(
             vt.advance();
         }
 #pragma omp critical
-        { hnsw_stats.combine(search_stats); }
+        {
+            hnsw_stats.combine(search_stats);
+        }
     }
     if (is_similarity_metric(this->metric_type)) {
 // we need to revert the negated distances
@@ -645,6 +655,59 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
                   M) {
     own_fields = true;
     is_trained = true;
+}
+
+/**************************************************************
+ * IndexHNSWFlatPanorama implementation
+ **************************************************************/
+
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
+        : IndexHNSWFlat(), cum_sums(), pano(0, 1, 1), num_panorama_levels(0) {}
+
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
+        int d,
+        int M,
+        int num_panorama_levels,
+        MetricType metric)
+        : IndexHNSWFlat(d, M, metric),
+          cum_sums(),
+          pano(d * sizeof(float), num_panorama_levels, 1),
+          num_panorama_levels(num_panorama_levels) {
+    // For now, we only support L2 distance.
+    // Supporting dot product and cosine distance is a trivial addition
+    // left for future work.
+    FAISS_THROW_IF_NOT(metric == METRIC_L2);
+
+    // Enable Panorama search mode.
+    // This is not ideal, but is still more simple than making a subclass of
+    // HNSW and overriding the search logic.
+    hnsw.is_panorama = true;
+}
+
+void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
+    idx_t n0 = ntotal;
+    cum_sums.resize((ntotal + n) * (pano.n_levels + 1));
+    pano.compute_cumulative_sums(cum_sums.data(), n0, n, x);
+    IndexHNSWFlat::add(n, x);
+}
+
+void IndexHNSWFlatPanorama::reset() {
+    cum_sums.clear();
+    IndexHNSWFlat::reset();
+}
+
+void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
+    std::vector<float> new_cum_sums(ntotal * (pano.n_levels + 1));
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        idx_t src = perm[i];
+        memcpy(&new_cum_sums[i * (pano.n_levels + 1)],
+               &cum_sums[src * (pano.n_levels + 1)],
+               (pano.n_levels + 1) * sizeof(float));
+    }
+
+    std::swap(cum_sums, new_cum_sums);
+    IndexHNSWFlat::permute_entries(perm);
 }
 
 /**************************************************************

@@ -227,7 +227,11 @@ void IndexBinaryHNSW::search(
         for (idx_t i = 0; i < n; i++) {
             res.begin(i);
             dis->set_query((float*)(x + i * code_size));
-            hnsw.search(*dis, res, vt);
+            // Given that IndexBinaryHNSW is not an IndexHNSW, we pass nullptr
+            // as the index parameter. This state does not get used in the
+            // search function, as it is merely there to to enable Panorama
+            // execution for IndexHNSWFlatPanorama.
+            hnsw.search(*dis, nullptr, res, vt);
             res.end();
         }
     }
@@ -290,7 +294,9 @@ struct FlatHammingDis : DistanceComputer {
 
     ~FlatHammingDis() override {
 #pragma omp critical
-        { hnsw_stats.ndis += ndis; }
+        {
+            hnsw_stats.ndis += ndis;
+        }
     }
 };
 

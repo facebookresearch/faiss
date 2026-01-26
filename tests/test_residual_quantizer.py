@@ -974,7 +974,7 @@ def precomp_codebooks(codebooks):
 
 
 ############################################################
-# Reference imelementation of table-based beam search (use_beam_LUT=1)
+# Reference implementation of table-based beam search (use_beam_LUT=1)
 ############################################################
 
 def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,

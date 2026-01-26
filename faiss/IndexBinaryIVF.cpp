@@ -492,12 +492,13 @@ void search_knn_hamming_count(
 
     std::vector<HCounterState<HammingComputer>> cs;
     for (size_t i = 0; i < nx; ++i) {
-        cs.push_back(HCounterState<HammingComputer>(
-                all_counters.data() + i * nBuckets,
-                all_ids_per_dis.get() + i * nBuckets * k,
-                x + i * ivf->code_size,
-                ivf->d,
-                k));
+        cs.push_back(
+                HCounterState<HammingComputer>(
+                        all_counters.data() + i * nBuckets,
+                        all_ids_per_dis.get() + i * nBuckets * k,
+                        x + i * ivf->code_size,
+                        ivf->d,
+                        k));
     }
 
     size_t nlistv = 0, ndis = 0;

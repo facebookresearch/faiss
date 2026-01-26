@@ -23,12 +23,14 @@ set(FAISS_SRC
   IndexIVF.cpp
   IndexIVFAdditiveQuantizer.cpp
   IndexIVFFlat.cpp
+  IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
   IndexIVFPQR.cpp
   IndexIVFRaBitQ.cpp
+  IndexIVFRaBitQFastScan.cpp
   IndexIVFSpectralHash.cpp
   IndexLSH.cpp
   IndexNNDescent.cpp
@@ -41,6 +43,7 @@ set(FAISS_SRC
   IndexPQFastScan.cpp
   IndexPreTransform.cpp
   IndexRaBitQ.cpp
+  IndexRaBitQFastScan.cpp
   IndexRefine.cpp
   IndexReplicas.cpp
   IndexRowwiseMinMax.cpp
@@ -54,6 +57,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AuxIndexStructures.cpp
+  impl/ClusteringInitialization.cpp
   impl/CodePacker.cpp
   impl/IDSelector.cpp
   impl/FaissException.cpp
@@ -63,6 +67,9 @@ set(FAISS_SRC
   impl/ProductQuantizer.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
+  impl/RaBitQuantizerMultiBit.cpp
+  impl/RaBitQStats.cpp
+  impl/RaBitQUtils.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
@@ -79,6 +86,8 @@ set(FAISS_SRC
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
+  impl/Panorama.cpp
+  impl/PanoramaStats.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
@@ -99,6 +108,16 @@ set(FAISS_SRC
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
 )
+
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_SRC
+    svs/IndexSVSFlat.cpp
+    svs/IndexSVSVamana.cpp
+    svs/IndexSVSVamanaLVQ.cpp
+    svs/IndexSVSVamanaLeanVec.cpp
+    impl/svs_io.cpp
+  )
+endif()
 
 set(FAISS_HEADERS
   AutoTune.h
@@ -121,12 +140,14 @@ set(FAISS_HEADERS
   IndexIVFAdditiveQuantizer.h
   IndexIVFIndependentQuantizer.h
   IndexIVFFlat.h
+  IndexIVFFlatPanorama.h
   IndexIVFPQ.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
   IndexIVFPQR.h
   IndexIVFRaBitQ.h
+  IndexIVFRaBitQFastScan.h
   IndexIVFSpectralHash.h
   IndexLSH.h
   IndexNeuralNetCodec.h
@@ -141,6 +162,7 @@ set(FAISS_HEADERS
   IndexRefine.h
   IndexReplicas.h
   IndexRaBitQ.h
+  IndexRaBitQFastScan.h
   IndexRowwiseMinMax.h
   IndexScalarQuantizer.h
   IndexShards.h
@@ -154,6 +176,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/ClusteringInitialization.h
   impl/CodePacker.h
   impl/IDSelector.h
   impl/DistanceComputer.h
@@ -163,14 +186,20 @@ set(FAISS_HEADERS
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
   impl/LookupTableScaler.h
+  impl/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
+  impl/Panorama.h
+  impl/PanoramaStats.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
   impl/RaBitQuantizer.h
+  impl/RaBitQuantizerMultiBit.h
+  impl/RaBitQStats.h
+  impl/RaBitQUtils.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
@@ -240,6 +269,15 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
 )
+
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_HEADERS
+    svs/IndexSVSFlat.h
+    svs/IndexSVSVamana.h
+    svs/IndexSVSVamanaLVQ.h
+    svs/IndexSVSVamanaLeanVec.h
+  )
+endif()
 
 if(NOT WIN32)
   list(APPEND FAISS_SRC invlists/OnDiskInvertedLists.cpp)
@@ -320,6 +358,27 @@ if(NOT WIN32)
   endif()
 endif()
 
+if(FAISS_ENABLE_SVS)
+  include(FetchContent)
+  set(SVS_URL "https://github.com/intel/ScalableVectorSearch/releases/download/v0.1.0/svs-cpp-runtime-bindings-0.1.0.tar.gz" CACHE STRING "URL to fetch SVS runtime library")
+  FetchContent_Declare(
+      svs
+      URL "${SVS_URL}"
+  )
+  FetchContent_MakeAvailable(svs)
+  list(APPEND CMAKE_PREFIX_PATH "${svs_SOURCE_DIR}")
+  find_package(svs_runtime REQUIRED)
+  #target_compile_options(svs::svs INTERFACE "-DSVS_ENABLE_OMP=1")
+
+  target_link_libraries(faiss PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512 PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_avx512_spr PUBLIC svs::svs_runtime)
+  target_link_libraries(faiss_sve PUBLIC svs::svs_runtime)
+
+  install(DIRECTORY ${svs_SOURCE_DIR}/lib/ DESTINATION ${CMAKE_INSTALL_LIBDIR} FILES_MATCHING PATTERN "libsvs_runtime.so*")
+endif()
+
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -347,6 +406,14 @@ if(WIN32)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_sve PRIVATE FAISS_MAIN_LIB)
+endif()
+
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
 endif()
 
 if(WIN32)

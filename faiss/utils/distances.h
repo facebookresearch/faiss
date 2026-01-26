@@ -324,7 +324,7 @@ void knn_inner_product(
  *  vector y, for the L2 distance
  * @param x    query vectors, size nx * d
  * @param y    database vectors, size ny * d
- * @param res  result heap strcture, which also provides k. Sorted on output
+ * @param res  result heap structure, which also provides k. Sorted on output
  * @param y_norm2    (optional) norms for the y vectors (nullptr or size ny)
  * @param sel  search in this subset of vectors
  */
@@ -389,7 +389,7 @@ void knn_inner_products_by_idx(
  * @param x    query vectors, size nx * d
  * @param y    database vectors, size (max(ids) + 1) * d
  * @param subset subset of database vectors to consider, size (nx, nsubset)
- * @param res  rIDesult structure
+ * @param res  result structure
  * @param ld_subset stride for the subset array. -1: use nsubset, 0: all queries
  * process the same subset
  */

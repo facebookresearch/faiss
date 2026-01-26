@@ -14,11 +14,10 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cstdio>
-#include <sstream>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 12
-#define FAISS_VERSION_PATCH 0
+#define FAISS_VERSION_MINOR 13
+#define FAISS_VERSION_PATCH 2
 
 // Macro to combine the version components into a single string
 #ifndef FAISS_STRINGIFY
@@ -55,6 +54,9 @@ namespace faiss {
 struct IDSelector;
 struct RangeSearchResult;
 struct DistanceComputer;
+template <typename T, typename TI>
+struct ResultHandlerUnordered;
+using ResultHandler = ResultHandlerUnordered<float, idx_t>;
 
 enum NumericType {
     Float32,
@@ -78,7 +80,7 @@ inline size_t get_numeric_type_size(NumericType numeric_type) {
     }
 }
 
-/** Parent class for the optional search paramenters.
+/** Parent class for the optional search parameters.
  *
  * Sub-classes with additional search parameters should inherit this class.
  * Ownership of the object fields is always to the caller.
@@ -125,7 +127,7 @@ struct Index {
     /** Perform training on a representative set of vectors
      *
      * @param n      nb of training vectors
-     * @param x      training vecors, size n * d
+     * @param x      training vectors, size n * d
      */
     virtual void train(idx_t n, const float* x);
 
@@ -216,6 +218,12 @@ struct Index {
         }
     }
 
+    /** search one vector with a custom result handler */
+    virtual void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const;
+
     /** query n vectors of dimension d to the index.
      *
      * return all vectors with distance < radius. Note that many
@@ -258,7 +266,7 @@ struct Index {
      *
      * this function may not be defined for some indexes
      * @param key         id of the vector to reconstruct
-     * @param recons      reconstucted vector (size d)
+     * @param recons      reconstructed vector (size d)
      */
     virtual void reconstruct(idx_t key, float* recons) const;
 
@@ -268,7 +276,7 @@ struct Index {
      * this function may not be defined for some indexes
      * @param n           number of vectors to reconstruct
      * @param keys        ids of the vectors to reconstruct (size n)
-     * @param recons      reconstucted vector (size n * d)
+     * @param recons      reconstructed vector (size n * d)
      */
     virtual void reconstruct_batch(idx_t n, const idx_t* keys, float* recons)
             const;
@@ -278,7 +286,7 @@ struct Index {
      * this function may not be defined for some indexes
      * @param i0          index of the first vector in the sequence
      * @param ni          number of vectors in the sequence
-     * @param recons      reconstucted vector (size ni * d)
+     * @param recons      reconstructed vector (size ni * d)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, float* recons) const;
 
@@ -303,6 +311,29 @@ struct Index {
             idx_t* labels,
             float* recons,
             const SearchParameters* params = nullptr) const;
+
+    /** Similar to search, but operates on a potentially different subset
+     * of the dataset for each query.
+     *
+     * The default implementation fails with an assertion, as it is
+     * not supported by all indexes.
+     *
+     * @param n           number of vectors
+     * @param x           input vectors, size n * d
+     * @param k_base      number of vectors to search from
+     * @param base_labels ids of the vectors to search from
+     * @param k           desired number of results per query
+     * @param distances   output pairwise distances, size n*k
+     * @param labels      output labels of the NNs, size n*k
+     */
+    virtual void search_subset(
+            idx_t n,
+            const float* x,
+            idx_t k_base,
+            const idx_t* base_labels,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const;
 
     /** Computes a residual vector after indexing encoding.
      *

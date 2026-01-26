@@ -106,7 +106,7 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
                                 distance_candidate,
                                 _CMP_LE_OS);
 
-                        // // blend seems to be slower that min
+                        // // blend seems to be slower than min
                         // const __m256 min_distances_new = _mm256_blendv_ps(
                         //         distance_candidate,
                         //         min_distances_i[j][p],
@@ -120,7 +120,7 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
                                                 min_indices_i[j][p]),
                                         comparison));
 
-                        // // blend seems to be slower that min
+                        // // blend seems to be slower than min
                         // const __m256 max_distances_new = _mm256_blendv_ps(
                         //         min_distances_i[j][p],
                         //         distance_candidate,

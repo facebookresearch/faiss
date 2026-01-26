@@ -16,7 +16,7 @@
  * object that abstracts the medium.
  *
  * The read functions return objects that should be deallocated with
- * delete. All references within these objectes are owned by the
+ * delete. All references within these objects are owned by the
  * object.
  */
 

@@ -26,7 +26,7 @@ class Quantizer:
 
     def train(self, x):
         """
-        takes a n-by-d array and peforms training
+        takes a n-by-d array and performs training
         """
         pass
 

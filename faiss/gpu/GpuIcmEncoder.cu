@@ -24,9 +24,10 @@ struct IcmEncoderShards {
             workers;
 
     void add(IcmEncoderImpl* encoder) {
-        workers.emplace_back(std::make_pair(
-                std::unique_ptr<IcmEncoderImpl>(encoder),
-                std::unique_ptr<WorkerThread>(new WorkerThread)));
+        workers.emplace_back(
+                std::make_pair(
+                        std::unique_ptr<IcmEncoderImpl>(encoder),
+                        std::unique_ptr<WorkerThread>(new WorkerThread)));
     }
 
     IcmEncoderImpl* at(int idx) {
@@ -69,7 +70,7 @@ GpuIcmEncoder::GpuIcmEncoder(
 GpuIcmEncoder::~GpuIcmEncoder() {}
 
 void GpuIcmEncoder::set_binary_term() {
-    auto fn = [=](int idx, IcmEncoderImpl* encoder) {
+    auto fn = [lsq = lsq](int idx, IcmEncoderImpl* encoder) {
         encoder->setBinaryTerm(lsq->codebooks.data());
     };
     shards->runOnShards(fn);

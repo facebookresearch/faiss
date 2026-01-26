@@ -4,9 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import os
 import unittest
-import tempfile
 
 import numpy as np
 import faiss
@@ -393,7 +391,7 @@ class TestIVFImplem12(unittest.TestCase):
     def test_by_residual_odd_dim(self):
         self.do_test(True, d=30)
 
-    # testin single query
+    # testing single query
     def test_no_residual_single_query(self):
         self.do_test(False, nq=1)
 
@@ -594,11 +592,11 @@ class TestReconstruct(unittest.TestCase):
     def test_by_residual(self):
         self.do_test(by_residual=True)
 
-    def do_test_generic(self, factory_string, 
-                        by_residual=False, metric=faiss.METRIC_L2): 
+    def do_test_generic(self, factory_string,
+                        by_residual=False, metric=faiss.METRIC_L2):
         d = 32
         ds = datasets.SyntheticDataset(d, 250, 200, 10)
-        index = faiss.index_factory(ds.d, factory_string, metric) 
+        index = faiss.index_factory(ds.d, factory_string, metric)
         if "IVF" in factory_string:
             index.by_residual = by_residual
             index.make_direct_map(True)
@@ -618,7 +616,7 @@ class TestReconstruct(unittest.TestCase):
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
         codes2 = index2.sa_encode(ds.get_database()[120:130])
         np.testing.assert_array_equal(codes, codes2)
-        
+
 
     def test_ivfpq_residual(self):
         self.do_test_generic("IVF20,PQ16x4fs", by_residual=True)
@@ -821,18 +819,11 @@ class TestIVFAQFastScan(unittest.TestCase):
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        D1, I1 = index.search(ds.get_queries(), 1)
+        _, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        _, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,LSQ4x4fs_Nlsq2x4')
@@ -929,16 +920,9 @@ class TestIVFPAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,PLSQ2x3x4fsr_Nlsq2x4')

@@ -8,12 +8,12 @@
 #pragma once
 
 #include <queue>
-#include <unordered_set>
 #include <vector>
 
 #include <omp.h>
 
 #include <faiss/Index.h>
+#include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
@@ -21,6 +21,10 @@
 #include <faiss/utils/random.h>
 
 namespace faiss {
+
+// Forward declarations to avoid circular dependency.
+struct IndexHNSW;
+struct IndexHNSWFlatPanorama;
 
 /** Implementation of the Hierarchical Navigable Small World
  * datastructure.
@@ -31,7 +35,7 @@ namespace faiss {
  *  Yu. A. Malkov, D. A. Yashunin, arXiv 2017
  *
  * This implementation is heavily influenced by the NMSlib
- * implementation by Yury Malkov and Leonid Boystov
+ * implementation by Yury Malkov and Leonid Boytsov
  * (https://github.com/searchivarius/nmslib)
  *
  * The HNSW object stores only the neighbor link structure, see
@@ -41,8 +45,6 @@ namespace faiss {
 struct VisitedTable;
 struct DistanceComputer; // from AuxIndexStructures
 struct HNSWStats;
-template <class C>
-struct ResultHandler;
 
 struct SearchParametersHNSW : SearchParameters {
     int efSearch = 16;
@@ -61,7 +63,7 @@ struct HNSW {
 
     typedef std::pair<float, storage_idx_t> Node;
 
-    /** Heap structure that allows fast
+    /** Heap structure that allows fast access and updates.
      */
     struct MinimaxHeap {
         int n;
@@ -87,7 +89,7 @@ struct HNSW {
         int count_below(float thresh);
     };
 
-    /// to sort pairs of (id, distance) from nearest to fathest or the reverse
+    /// to sort pairs of (id, distance) from nearest to farthest or the reverse
     struct NodeDistCloser {
         float d;
         int id;
@@ -146,6 +148,9 @@ struct HNSW {
     /// use bounded queue during exploration
     bool search_bounded_queue = true;
 
+    /// use Panorama progressive pruning in search
+    bool is_panorama = false;
+
     // methods that initialize the tree sizes
 
     /// initialize the assign_probas and cum_nneighbor_per_level to
@@ -160,7 +165,7 @@ struct HNSW {
     /// nb of neighbors for this level
     int nb_neighbors(int layer_no) const;
 
-    /// cumumlative nb up to (and excluding) this level
+    /// cumulative nb up to (and excluding) this level
     int cum_nb_neighbors(int layer_no) const;
 
     /// range of entries in the neighbors table of vertex no at layer_no
@@ -196,17 +201,23 @@ struct HNSW {
             VisitedTable& vt,
             bool keep_max_size_level0 = false);
 
-    /// search interface for 1 point, single thread
+    /// Search interface for 1 point, single thread
+    ///
+    /// NOTE: We pass a reference to the index itself to allow for additional
+    /// state information to be passed (used for Panorama progressive pruning).
+    /// The alternative would be to override both HNSW::search and
+    /// HNSWIndex::search, which would be a nuisance of code duplication.
     HNSWStats search(
             DistanceComputer& qdis,
-            ResultHandler<C>& res,
+            const IndexHNSW* index,
+            ResultHandler& res,
             VisitedTable& vt,
             const SearchParameters* params = nullptr) const;
 
     /// search only in level 0 from a given vertex
     void search_level_0(
             DistanceComputer& qdis,
-            ResultHandler<C>& res,
+            ResultHandler& res,
             idx_t nprobe,
             const storage_idx_t* nearest_i,
             const float* nearest_d,
@@ -259,7 +270,23 @@ FAISS_API extern HNSWStats hnsw_stats;
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
-        ResultHandler<HNSW::C>& res,
+        ResultHandler& res,
+        HNSW::MinimaxHeap& candidates,
+        VisitedTable& vt,
+        HNSWStats& stats,
+        int level,
+        int nres_in = 0,
+        const SearchParameters* params = nullptr);
+
+/// Equivalent to `search_from_candidates`, but applies pruning with progressive
+/// refinement bounds.
+/// This is used in `IndexHNSWFlatPanorama` to improve the search performance
+/// for higher dimensional vectors.
+int search_from_candidates_panorama(
+        const HNSW& hnsw,
+        const IndexHNSW* index,
+        DistanceComputer& qdis,
+        ResultHandler& res,
         HNSW::MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,

@@ -139,7 +139,7 @@ void HeapArray<C>::per_line_extrema(T* out_val, TI* out_ids) const {
     }
 }
 
-// explicit instanciations
+// explicit instantiations
 
 template struct HeapArray<CMin<float, int64_t>>;
 template struct HeapArray<CMax<float, int64_t>>;
@@ -238,7 +238,7 @@ void merge_knn_results(
     }
 }
 
-// explicit instanciations
+// explicit instantiations
 #define INSTANTIATE(C, distance_t)                                \
     template void merge_knn_results<int64_t, C<distance_t, int>>( \
             size_t,                                               \
@@ -253,5 +253,51 @@ INSTANTIATE(CMin, float);
 INSTANTIATE(CMax, float);
 INSTANTIATE(CMin, int32_t);
 INSTANTIATE(CMax, int32_t);
+
+/**********************************************************
+ * reorder_2_heaps
+ **********************************************************/
+
+template <class C>
+void reorder_2_heaps(
+        int64_t n,
+        int64_t k,
+        typename C::TI* __restrict labels,
+        float* __restrict distances,
+        int64_t k_base,
+        const typename C::TI* __restrict base_labels,
+        const float* __restrict base_distances) {
+#pragma omp parallel for if (n > 1)
+    for (int64_t i = 0; i < n; i++) {
+        typename C::TI* idxo = labels + i * k;
+        float* diso = distances + i * k;
+        const typename C::TI* idxi = base_labels + i * k_base;
+        const float* disi = base_distances + i * k_base;
+
+        heap_heapify<C>(k, diso, idxo, disi, idxi, k);
+        if (k_base != k) { // add remaining elements
+            heap_addn<C>(k, diso, idxo, disi + k, idxi + k, k_base - k);
+        }
+        heap_reorder<C>(k, diso, idxo);
+    }
+}
+
+template void reorder_2_heaps<CMax<float, int64_t>>(
+        int64_t n,
+        int64_t k,
+        int64_t* __restrict labels,
+        float* __restrict distances,
+        int64_t k_base,
+        const int64_t* __restrict base_labels,
+        const float* __restrict base_distances);
+
+template void reorder_2_heaps<CMin<float, int64_t>>(
+        int64_t n,
+        int64_t k,
+        int64_t* __restrict labels,
+        float* __restrict distances,
+        int64_t k_base,
+        const int64_t* __restrict base_labels,
+        const float* __restrict base_distances);
 
 } // namespace faiss

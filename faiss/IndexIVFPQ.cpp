@@ -25,13 +25,11 @@
 
 #include <faiss/utils/hamming.h>
 
-#include <faiss/impl/FaissAssert.h>
-
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-
 #include <faiss/impl/ProductQuantizer.h>
-
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/code_distance/code_distance.h>
 
 namespace faiss {
@@ -762,52 +760,31 @@ struct QueryTables {
     }
 };
 
-// This way of handling the selector is not optimal since all distances
-// are computed even if the id would filter it out.
 template <class C, bool use_sel>
-struct KnnSearchResults {
-    idx_t key;
+struct WrappedSearchResult {
+    ResultHandler& res;
+    size_t nup = 0;
+    idx_t list_no;
+
     const idx_t* ids;
     const IDSelector* sel;
 
-    // heap params
-    size_t k;
-    float* heap_sim;
-    idx_t* heap_ids;
-
-    size_t nup;
+    WrappedSearchResult(
+            idx_t list_no,
+            const idx_t* ids,
+            const IDSelector* sel,
+            ResultHandler& res)
+            : res(res), list_no(list_no), ids(ids), sel(sel) {}
 
     inline bool skip_entry(idx_t j) {
         return use_sel && !sel->is_member(ids[j]);
     }
 
     inline void add(idx_t j, float dis) {
-        if (C::cmp(heap_sim[0], dis)) {
-            idx_t id = ids ? ids[j] : lo_build(key, j);
-            heap_replace_top<C>(k, heap_sim, heap_ids, dis, id);
+        if (C::cmp(res.threshold, dis)) {
+            idx_t id = ids ? ids[j] : lo_build(this->list_no, j);
+            res.add_result(dis, id);
             nup++;
-        }
-    }
-};
-
-template <class C, bool use_sel>
-struct RangeSearchResults {
-    idx_t key;
-    const idx_t* ids;
-    const IDSelector* sel;
-
-    // wrapped result structure
-    float radius;
-    RangeQueryResult& rres;
-
-    inline bool skip_entry(idx_t j) {
-        return use_sel && !sel->is_member(ids[j]);
-    }
-
-    inline void add(idx_t j, float dis) {
-        if (C::cmp(radius, dis)) {
-            idx_t id = ids ? ids[j] : lo_build(key, j);
-            rres.add(dis, id);
         }
     }
 };
@@ -1163,7 +1140,9 @@ struct IVFPQScannerT : QueryTables {
         }
 
 #pragma omp critical
-        { indexIVFPQ_stats.n_hamming_pass += n_hamming_pass; }
+        {
+            indexIVFPQ_stats.n_hamming_pass += n_hamming_pass;
+        }
     }
 
     template <class SearchResultType>
@@ -1237,17 +1216,12 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
             size_t ncode,
             const uint8_t* codes,
             const idx_t* ids,
-            float* heap_sim,
-            idx_t* heap_ids,
-            size_t k) const override {
-        KnnSearchResults<C, use_sel> res = {
-                /* key */ this->key,
-                /* ids */ this->store_pairs ? nullptr : ids,
-                /* sel */ this->sel,
-                /* k */ k,
-                /* heap_sim */ heap_sim,
-                /* heap_ids */ heap_ids,
-                /* nup */ 0};
+            ResultHandler& handler) const override {
+        WrappedSearchResult<C, use_sel> res(
+                this->key,
+                this->store_pairs ? nullptr : ids,
+                this->sel,
+                handler);
 
         if (this->polysemous_ht > 0) {
             assert(precompute_mode == 2);
@@ -1262,33 +1236,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
             FAISS_THROW_MSG("bad precomp mode");
         }
         return res.nup;
-    }
-
-    void scan_codes_range(
-            size_t ncode,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float radius,
-            RangeQueryResult& rres) const override {
-        RangeSearchResults<C, use_sel> res = {
-                /* key */ this->key,
-                /* ids */ this->store_pairs ? nullptr : ids,
-                /* sel */ this->sel,
-                /* radius */ radius,
-                /* rres */ rres};
-
-        if (this->polysemous_ht > 0) {
-            assert(precompute_mode == 2);
-            this->scan_list_polysemous(ncode, codes, res);
-        } else if (precompute_mode == 2) {
-            this->scan_list_with_table(ncode, codes, res);
-        } else if (precompute_mode == 1) {
-            this->scan_list_with_pointer(ncode, codes, res);
-        } else if (precompute_mode == 0) {
-            this->scan_on_the_fly_dist(ncode, codes, res);
-        } else {
-            FAISS_THROW_MSG("bad precomp mode");
-        }
     }
 };
 

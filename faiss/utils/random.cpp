@@ -91,7 +91,7 @@ uint64_t SplitMix64RandomGenerator::next() {
  *  more than 1-100 billion values. */
 
 /* Generate a set of random floating point values such that x[i] in [0,1]
-   multi-threading. For this reason, we rely on re-entreant functions.  */
+   multi-threading. For this reason, we rely on re-entrant functions.  */
 void float_rand(float* x, size_t n, int64_t seed) {
     // only try to parallelize on large enough arrays
     const size_t nblock = n < 1024 ? 1 : 1024;

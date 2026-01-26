@@ -321,7 +321,7 @@ struct Codec6bit {
     static FAISS_ALWAYS_INLINE __m256
     decode_8_components(const uint8_t* code, int i) {
         // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
-        // // for the reference, maybe, it becomes used oned day.
+        // // for the reference, maybe, it becomes used one day.
         // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
         // const uint32_t* data32 = (const uint32_t*)data16;
         // const uint64_t val = *data32 + ((uint64_t)data16[2] << 32);
@@ -1009,16 +1009,13 @@ void train_Uniform(
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        // TODO just do a quickselect
-        std::sort(x_copy.begin(), x_copy.end());
-        int o = int(rs_arg * n);
-        if (o < 0) {
-            o = 0;
-        }
-        if (o > n - o) {
-            o = n / 2;
-        }
+        int temp = int(rs_arg * n);
+        int o = temp < 0 ? 0 : (temp > n / 2 ? n / 2 : temp);
+
+        std::nth_element(x_copy.begin(), x_copy.begin() + o, x_copy.end());
         vmin = x_copy[o];
+        std::nth_element(
+                x_copy.begin(), x_copy.begin() + (n - 1 - o), x_copy.end());
         vmax = x_copy[n - 1 - o];
 
     } else if (rs == ScalarQuantizer::RS_optim) {
@@ -2164,50 +2161,6 @@ struct IVFSQScannerIP : InvertedListScanner {
     float distance_to_code(const uint8_t* code) const final {
         return accu0 + dc.query_to_code(code);
     }
-
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
-        size_t nup = 0;
-
-        for (size_t j = 0; j < list_size; j++, codes += code_size) {
-            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
-                continue;
-            }
-
-            float accu = accu0 + dc.query_to_code(codes);
-
-            if (accu > simi[0]) {
-                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
-                minheap_replace_top(k, simi, idxi, accu, id);
-                nup++;
-            }
-        }
-        return nup;
-    }
-
-    void scan_codes_range(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float radius,
-            RangeQueryResult& res) const override {
-        for (size_t j = 0; j < list_size; j++, codes += code_size) {
-            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
-                continue;
-            }
-
-            float accu = accu0 + dc.query_to_code(codes);
-            if (accu > radius) {
-                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
-                res.add(accu, id);
-            }
-        }
-    }
 };
 
 /* use_sel = 0: don't check selector
@@ -2262,49 +2215,6 @@ struct IVFSQScannerL2 : InvertedListScanner {
 
     float distance_to_code(const uint8_t* code) const final {
         return dc.query_to_code(code);
-    }
-
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++, codes += code_size) {
-            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
-                continue;
-            }
-
-            float dis = dc.query_to_code(codes);
-
-            if (dis < simi[0]) {
-                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
-                maxheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
-            }
-        }
-        return nup;
-    }
-
-    void scan_codes_range(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float radius,
-            RangeQueryResult& res) const override {
-        for (size_t j = 0; j < list_size; j++, codes += code_size) {
-            if (use_sel && !sel->is_member(use_sel == 1 ? ids[j] : j)) {
-                continue;
-            }
-
-            float dis = dc.query_to_code(codes);
-            if (dis < radius) {
-                int64_t id = store_pairs ? (list_no << 32 | j) : ids[j];
-                res.add(dis, id);
-            }
-        }
     }
 };
 

@@ -8,8 +8,6 @@
 import numpy as np
 import unittest
 import faiss
-import tempfile
-import os
 
 from common_faiss_tests import get_dataset_2
 
@@ -52,13 +50,13 @@ class TestHNSW(unittest.TestCase):
         lims, D, I = index.range_search(self.xq, radius)
 
         nmiss = 0
-        # check if returned resutls are a subset of the reference results
+        # check if returned results are a subset of the reference results
         for i in range(len(self.xq)):
             ref = Iref[lims_ref[i]: lims_ref[i + 1]]
             new = I[lims[i]: lims[i + 1]]
             self.assertLessEqual(set(new), set(ref))
             nmiss += len(ref) - len(new)
-        # currenly we miss 405 / 6019 neighbors
+        # currently we miss 405 / 6019 neighbors
         self.assertLessEqual(nmiss, lims_ref[-1] * 0.1)
 
     def test_hnsw_unbounded_queue(self):
@@ -280,14 +278,7 @@ class TestNSG(unittest.TestCase):
         return knn_graph
 
     def subtest_io_and_clone(self, index, Dnsg, Insg):
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
 
         Dnsg2, Insg2 = index2.search(self.xq, 1)
         np.testing.assert_array_equal(Dnsg2, Dnsg)
@@ -306,8 +297,6 @@ class TestNSG(unittest.TestCase):
 
     def subtest_add(self, build_type, thresh, metric=faiss.METRIC_L2):
         d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
 
         flat_index = faiss.IndexFlat(d, metric)
         flat_index.add(self.xb)
@@ -381,8 +370,6 @@ class TestNSG(unittest.TestCase):
     def test_reset(self):
         """test IndexNSG.reset()"""
         d = self.xq.shape[1]
-        metrics = {faiss.METRIC_L2: 'L2',
-                   faiss.METRIC_INNER_PRODUCT: 'IP'}
 
         metric = faiss.METRIC_L2
         flat_index = faiss.IndexFlat(d, metric)
@@ -546,14 +533,7 @@ class TestNNDescent(unittest.TestCase):
         self.assertGreaterEqual(recalls, 450)  # 462
 
         # do some IO tests
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, tmpfile)
-            index2 = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
 
         D2, I2 = index2.search(self.xq, 1)
         np.testing.assert_array_equal(D2, D)
@@ -592,10 +572,6 @@ class TestNNDescentKNNG(unittest.TestCase):
         self.subtest(32, 10, faiss.METRIC_INNER_PRODUCT)
 
     def subtest(self, d, K, metric):
-        metric_names = {faiss.METRIC_L1: 'L1',
-                        faiss.METRIC_L2: 'L2',
-                        faiss.METRIC_INNER_PRODUCT: 'IP'}
-
         nb = 1000
         _, xb, _ = get_dataset_2(d, 0, nb, 0)
 
