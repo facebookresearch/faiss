@@ -27,6 +27,7 @@
 #include <faiss/svs/IndexSVSFaissUtils.h>
 
 #include <svs/runtime/api_defs.h>
+#include <svs/runtime/dynamic_vamana_index.h>
 
 #include <iostream>
 
