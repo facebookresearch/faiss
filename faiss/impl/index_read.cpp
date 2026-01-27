@@ -1389,7 +1389,7 @@ Index* read_index(IOReader* f, int io_flags) {
 #ifdef FAISS_ENABLE_SVS
     else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
-        IndexSVSVamana* svs;
+        IndexSVSVamana* svs = nullptr;
         if (h == fourcc("ILVQ")) {
             svs = new IndexSVSVamanaLVQ();
         } else if (h == fourcc("ISVL")) {
@@ -1440,8 +1440,8 @@ Index* read_index(IOReader* f, int io_flags) {
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
-            idx = svs;
         }
+        idx = svs;
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrf")) {

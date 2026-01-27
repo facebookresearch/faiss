@@ -610,28 +610,33 @@ Index* parse_svs_datatype(
     std::smatch sm;
 
     if (datatype_string.empty()) {
-        if (index_type == "Vamana")
+        if (index_type == "Vamana") {
             return new IndexSVSVamana(d, std::stoul(arg_string), mt);
-        if (index_type == "Flat")
+        }
+        if (index_type == "Flat") {
             return new IndexSVSFlat(d, mt);
+        }
         FAISS_ASSERT(!"Unspported SVS index type");
     }
     if (re_match(datatype_string, "FP16", sm)) {
-        if (index_type == "Vamana")
+        if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
+        }
         FAISS_ASSERT(!"Unspported SVS index type for Float16");
     }
     if (re_match(datatype_string, "SQI8", sm)) {
-        if (index_type == "Vamana")
+        if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+        }
         FAISS_ASSERT(!"Unspported SVS index type for SQI8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
-        if (index_type == "Vamana")
+        if (index_type == "Vamana") {
             return new IndexSVSVamanaLVQ(
                     d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
+        }
         FAISS_ASSERT(!"Unspported SVS index type for LVQ");
     }
     if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
@@ -639,13 +644,14 @@ Index* parse_svs_datatype(
                 sm[2].length() > 0 ? sm[2].str().substr(1) : "0";
         int leanvec_d = std::stoul(leanvec_d_string);
 
-        if (index_type == "Vamana")
+        if (index_type == "Vamana") {
             return new IndexSVSVamanaLeanVec(
                     d,
                     std::stoul(arg_string),
                     mt,
                     leanvec_d,
                     parse_leanvec(sm[1].str()));
+        }
         FAISS_ASSERT(!"Unspported SVS index type for LeanVec");
     }
     return nullptr;
@@ -659,7 +665,6 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
         return parse_svs_datatype("Flat", "", datatype_string, d, mt);
     }
     if (re_match(code_string, "Vamana([0-9]+)(,.+)?", sm)) {
-        Index* index{nullptr};
         std::string degree_string = sm[1].str();
         std::string datatype_string =
                 sm[2].length() > 0 ? sm[2].str().substr(1) : "";
