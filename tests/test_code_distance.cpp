@@ -21,7 +21,8 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
+#include <faiss/utils/simd_levels.h>
 
 size_t nMismatches(
         const std::vector<float>& ref,
@@ -80,8 +81,10 @@ void test(
     for (size_t k = 0; k < 10; k++) {
 #pragma omp parallel for schedule(guided)
         for (size_t i = 0; i < n; i++) {
-            resultsRef[i] =
-                    faiss::distance_single_code_generic<faiss::PQDecoder8>(
+            resultsRef[i] = faiss::PQCodeDistance<
+                    faiss::PQDecoder8,
+                    faiss::SIMDLevel::NONE>::
+                    distance_single_code(
                             subq, 8, lookup.data(), codes.data() + subq * i);
         }
     }
@@ -94,8 +97,10 @@ void test(
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
             for (size_t i = 0; i < n; i++) {
-                resultsNewGeneric1x[i] =
-                        faiss::distance_single_code_generic<faiss::PQDecoder8>(
+                resultsNewGeneric1x[i] = faiss::PQCodeDistance<
+                        faiss::PQDecoder8,
+                        faiss::SIMDLevel::NONE>::
+                        distance_single_code(
                                 subq,
                                 8,
                                 lookup.data(),
@@ -117,18 +122,21 @@ void test(
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
             for (size_t i = 0; i < n; i += 4) {
-                faiss::distance_four_codes_generic<faiss::PQDecoder8>(
-                        subq,
-                        8,
-                        lookup.data(),
-                        codes.data() + subq * (i + 0),
-                        codes.data() + subq * (i + 1),
-                        codes.data() + subq * (i + 2),
-                        codes.data() + subq * (i + 3),
-                        resultsNewGeneric4x[i + 0],
-                        resultsNewGeneric4x[i + 1],
-                        resultsNewGeneric4x[i + 2],
-                        resultsNewGeneric4x[i + 3]);
+                faiss::PQCodeDistance<
+                        faiss::PQDecoder8,
+                        faiss::SIMDLevel::NONE>::
+                        distance_four_codes(
+                                subq,
+                                8,
+                                lookup.data(),
+                                codes.data() + subq * (i + 0),
+                                codes.data() + subq * (i + 1),
+                                codes.data() + subq * (i + 2),
+                                codes.data() + subq * (i + 3),
+                                resultsNewGeneric4x[i + 0],
+                                resultsNewGeneric4x[i + 1],
+                                resultsNewGeneric4x[i + 2],
+                                resultsNewGeneric4x[i + 3]);
             }
         }
 
@@ -147,8 +155,10 @@ void test(
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
             for (size_t i = 0; i < n; i++) {
-                resultsNewCustom1x[i] =
-                        faiss::distance_single_code<faiss::PQDecoder8>(
+                resultsNewCustom1x[i] = faiss::PQCodeDistance<
+                        faiss::PQDecoder8,
+                        faiss::SIMDLevel::NONE>::
+                        distance_single_code(
                                 subq,
                                 8,
                                 lookup.data(),
@@ -170,18 +180,21 @@ void test(
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
             for (size_t i = 0; i < n; i += 4) {
-                faiss::distance_four_codes<faiss::PQDecoder8>(
-                        subq,
-                        8,
-                        lookup.data(),
-                        codes.data() + subq * (i + 0),
-                        codes.data() + subq * (i + 1),
-                        codes.data() + subq * (i + 2),
-                        codes.data() + subq * (i + 3),
-                        resultsNewCustom4x[i + 0],
-                        resultsNewCustom4x[i + 1],
-                        resultsNewCustom4x[i + 2],
-                        resultsNewCustom4x[i + 3]);
+                faiss::PQCodeDistance<
+                        faiss::PQDecoder8,
+                        faiss::SIMDLevel::NONE>::
+                        distance_four_codes(
+                                subq,
+                                8,
+                                lookup.data(),
+                                codes.data() + subq * (i + 0),
+                                codes.data() + subq * (i + 1),
+                                codes.data() + subq * (i + 2),
+                                codes.data() + subq * (i + 3),
+                                resultsNewCustom4x[i + 0],
+                                resultsNewCustom4x[i + 1],
+                                resultsNewCustom4x[i + 2],
+                                resultsNewCustom4x[i + 3]);
             }
         }
 

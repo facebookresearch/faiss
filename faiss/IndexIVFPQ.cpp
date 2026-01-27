@@ -30,7 +30,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 
 namespace faiss {
 
@@ -436,7 +436,8 @@ void initialize_IVFPQ_precomputed_table(
 
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
             pq.compute_inner_prod_table(centroid.data(), tab);
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd<SIMDLevel::NONE>(
+                    pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     } else if (use_precomputed_table == 2) {
         const MultiIndexQuantizer* miq =
@@ -463,7 +464,8 @@ void initialize_IVFPQ_precomputed_table(
 
         for (size_t i = 0; i < cpq.ksub; i++) {
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd<SIMDLevel::NONE>(
+                    pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     }
 }
@@ -655,7 +657,7 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd(
+            fvec_madd<SIMDLevel::NONE>(
                     pq.M * pq.ksub,
                     ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
                     -2.0,
@@ -691,7 +693,8 @@ struct QueryTables {
 
                 if (polysemous_ht == 0) {
                     // sum up with query-specific table
-                    fvec_madd(Mf * pq.ksub, pc, -2.0, qtab, ltab);
+                    fvec_madd<SIMDLevel::NONE>(
+                            Mf * pq.ksub, pc, -2.0, qtab, ltab);
                     ltab += Mf * pq.ksub;
                     qtab += Mf * pq.ksub;
                 } else {
@@ -794,8 +797,9 @@ struct WrappedSearchResult {
  * The scanning functions call their favorite precompute_*
  * function to precompute the tables they need.
  *****************************************************/
-template <typename IDType, MetricType METRIC_TYPE, class PQDecoder>
+template <typename IDType, MetricType METRIC_TYPE, class PQCodeDistance>
 struct IVFPQScannerT : QueryTables {
+    using PQDecoder = typename PQCodeDistance::PQDecoder;
     const uint8_t* list_codes;
     const IDType* list_ids;
     size_t list_size;
@@ -871,7 +875,7 @@ struct IVFPQScannerT : QueryTables {
                 float distance_1 = 0;
                 float distance_2 = 0;
                 float distance_3 = 0;
-                distance_four_codes<PQDecoder>(
+                PQCodeDistance::distance_four_codes(
                         pq.M,
                         pq.nbits,
                         sim_table,
@@ -894,7 +898,7 @@ struct IVFPQScannerT : QueryTables {
 
         if (counter >= 1) {
             float dis = dis0 +
-                    distance_single_code<PQDecoder>(
+                    PQCodeDistance::distance_single_code(
                                 pq.M,
                                 pq.nbits,
                                 sim_table,
@@ -903,7 +907,7 @@ struct IVFPQScannerT : QueryTables {
         }
         if (counter >= 2) {
             float dis = dis0 +
-                    distance_single_code<PQDecoder>(
+                    PQCodeDistance::distance_single_code(
                                 pq.M,
                                 pq.nbits,
                                 sim_table,
@@ -912,7 +916,7 @@ struct IVFPQScannerT : QueryTables {
         }
         if (counter >= 3) {
             float dis = dis0 +
-                    distance_single_code<PQDecoder>(
+                    PQCodeDistance::distance_single_code(
                                 pq.M,
                                 pq.nbits,
                                 sim_table,
@@ -1078,7 +1082,7 @@ struct IVFPQScannerT : QueryTables {
                 float distance_1 = dis0;
                 float distance_2 = dis0;
                 float distance_3 = dis0;
-                distance_four_codes<PQDecoder>(
+                PQCodeDistance::distance_four_codes(
                         pq.M,
                         pq.nbits,
                         sim_table,
@@ -1109,7 +1113,7 @@ struct IVFPQScannerT : QueryTables {
             n_hamming_pass++;
 
             float dis = dis0 +
-                    distance_single_code<PQDecoder>(
+                    PQCodeDistance::distance_single_code(
                                 pq.M,
                                 pq.nbits,
                                 sim_table,
@@ -1129,7 +1133,7 @@ struct IVFPQScannerT : QueryTables {
                 n_hamming_pass++;
 
                 float dis = dis0 +
-                        distance_single_code<PQDecoder>(
+                        PQCodeDistance::distance_single_code(
                                     pq.M,
                                     pq.nbits,
                                     sim_table,
@@ -1176,8 +1180,8 @@ struct IVFPQScannerT : QueryTables {
  *
  * use_sel: store or ignore the IDSelector
  */
-template <MetricType METRIC_TYPE, class C, class PQDecoder, bool use_sel>
-struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
+template <MetricType METRIC_TYPE, class C, class PQCodeDistance, bool use_sel>
+struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDistance>,
                       InvertedListScanner {
     int precompute_mode;
     const IDSelector* sel;
@@ -1187,7 +1191,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
             bool store_pairs,
             int precompute_mode,
             const IDSelector* sel)
-            : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>(ivfpq, nullptr),
+            : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDistance>(ivfpq, nullptr),
               precompute_mode(precompute_mode),
               sel(sel) {
         this->store_pairs = store_pairs;
@@ -1207,7 +1211,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
     float distance_to_code(const uint8_t* code) const override {
         assert(precompute_mode == 2);
         float dis = this->dis0 +
-                distance_single_code<PQDecoder>(
+                PQCodeDistance::distance_single_code(
                             this->pq.M, this->pq.nbits, this->sim_table, code);
         return dis;
     }
@@ -1239,7 +1243,9 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
     }
 };
 
-template <class PQDecoder, bool use_sel>
+/** follow 3 stages of template dispatching  */
+
+template <class PQCodeDistance, bool use_sel>
 InvertedListScanner* get_InvertedListScanner1(
         const IndexIVFPQ& index,
         bool store_pairs,
@@ -1248,32 +1254,47 @@ InvertedListScanner* get_InvertedListScanner1(
         return new IVFPQScanner<
                 METRIC_INNER_PRODUCT,
                 CMin<float, idx_t>,
-                PQDecoder,
+                PQCodeDistance,
                 use_sel>(index, store_pairs, 2, sel);
     } else if (index.metric_type == METRIC_L2) {
         return new IVFPQScanner<
                 METRIC_L2,
                 CMax<float, idx_t>,
-                PQDecoder,
+                PQCodeDistance,
                 use_sel>(index, store_pairs, 2, sel);
     }
     return nullptr;
 }
 
-template <bool use_sel>
+template <bool use_sel, SIMDLevel SL>
 InvertedListScanner* get_InvertedListScanner2(
         const IndexIVFPQ& index,
         bool store_pairs,
         const IDSelector* sel) {
     if (index.pq.nbits == 8) {
-        return get_InvertedListScanner1<PQDecoder8, use_sel>(
-                index, store_pairs, sel);
+        return get_InvertedListScanner1<
+                PQCodeDistance<PQDecoder8, SL>,
+                use_sel>(index, store_pairs, sel);
     } else if (index.pq.nbits == 16) {
-        return get_InvertedListScanner1<PQDecoder16, use_sel>(
-                index, store_pairs, sel);
+        return get_InvertedListScanner1<
+                PQCodeDistance<PQDecoder16, SL>,
+                use_sel>(index, store_pairs, sel);
     } else {
-        return get_InvertedListScanner1<PQDecoderGeneric, use_sel>(
-                index, store_pairs, sel);
+        return get_InvertedListScanner1<
+                PQCodeDistance<PQDecoderGeneric, SL>,
+                use_sel>(index, store_pairs, sel);
+    }
+}
+
+template <SIMDLevel SL>
+InvertedListScanner* get_InvertedListScanner3(
+        const IndexIVFPQ& index,
+        bool store_pairs,
+        const IDSelector* sel) {
+    if (sel) {
+        return get_InvertedListScanner2<true, SL>(index, store_pairs, sel);
+    } else {
+        return get_InvertedListScanner2<false, SL>(index, store_pairs, sel);
     }
 }
 
@@ -1283,12 +1304,7 @@ InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    if (sel) {
-        return get_InvertedListScanner2<true>(*this, store_pairs, sel);
-    } else {
-        return get_InvertedListScanner2<false>(*this, store_pairs, sel);
-    }
-    return nullptr;
+    DISPATCH_SIMDLevel(get_InvertedListScanner3, *this, store_pairs, sel);
 }
 
 IndexIVFPQStats indexIVFPQ_stats;

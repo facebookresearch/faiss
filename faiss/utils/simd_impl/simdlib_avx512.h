@@ -13,8 +13,8 @@
 #include <immintrin.h>
 
 #include <faiss/impl/platform_macros.h>
-
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/utils/simd_impl/simdlib_avx2.h>
+#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 
@@ -27,7 +27,9 @@ namespace faiss {
  */
 
 /// 512-bit representation without interpretation as a vector
-struct simd512bit {
+template <>
+struct simd512bit<SIMDLevel::AVX512> {
+    using simd512bitN = simd512bit<SIMDLevel::AVX512>;
     union {
         __m512i i;
         __m512 f;
@@ -43,14 +45,16 @@ struct simd512bit {
             : i(_mm512_loadu_si512((__m512i const*)x)) {}
 
     // sets up a lower half of the register while keeping upper one as zero
-    explicit simd512bit(simd256bit lo)
+    explicit simd512bit(simd256bit<SIMDLevel::AVX2> lo)
             : simd512bit(_mm512_inserti32x8(
                       _mm512_castsi256_si512(lo.i),
                       _mm256_setzero_si256(),
                       1)) {}
 
     // constructs from lower and upper halves
-    explicit simd512bit(simd256bit lo, simd256bit hi)
+    explicit simd512bit(
+            simd256bit<SIMDLevel::AVX2> lo,
+            simd256bit<SIMDLevel::AVX2> hi)
             : simd512bit(_mm512_inserti32x8(
                       _mm512_castsi256_si512(lo.i),
                       hi.i,
@@ -89,7 +93,9 @@ struct simd512bit {
 };
 
 /// vector of 32 elements in uint16
-struct simd32uint16 : simd512bit {
+template <>
+struct simd32uint16<SIMDLevel::AVX512> : simd512bit<SIMDLevel::AVX512> {
+    using simd32uint16N = simd32uint16<SIMDLevel::AVX512>;
     simd32uint16() {}
 
     explicit simd32uint16(__m512i i) : simd512bit(i) {}
@@ -103,10 +109,13 @@ struct simd32uint16 : simd512bit {
     explicit simd32uint16(const uint16_t* x) : simd512bit((const void*)x) {}
 
     // sets up a lower half of the register
-    explicit simd32uint16(simd256bit lo) : simd512bit(lo) {}
+    explicit simd32uint16(simd256bit<SIMDLevel::AVX2> lo) : simd512bit(lo) {}
 
     // constructs from lower and upper halves
-    explicit simd32uint16(simd256bit lo, simd256bit hi) : simd512bit(lo, hi) {}
+    explicit simd32uint16(
+            simd256bit<SIMDLevel::AVX2> lo,
+            simd256bit<SIMDLevel::AVX2> hi)
+            : simd512bit(lo, hi) {}
 
     std::string elements_to_string(const char* fmt) const {
         uint16_t bytes[32];
@@ -133,60 +142,60 @@ struct simd32uint16 : simd512bit {
         i = _mm512_set1_epi16((short)x);
     }
 
-    simd32uint16 operator*(const simd32uint16& other) const {
-        return simd32uint16(_mm512_mullo_epi16(i, other.i));
+    simd32uint16 operator*(const simd32uint16N& other) const {
+        return simd32uint16N(_mm512_mullo_epi16(i, other.i));
     }
 
     // shift must be known at compile time
-    simd32uint16 operator>>(const int shift) const {
-        return simd32uint16(_mm512_srli_epi16(i, shift));
+    simd32uint16N operator>>(const int shift) const {
+        return simd32uint16N(_mm512_srli_epi16(i, shift));
     }
 
     // shift must be known at compile time
-    simd32uint16 operator<<(const int shift) const {
-        return simd32uint16(_mm512_slli_epi16(i, shift));
+    simd32uint16N operator<<(const int shift) const {
+        return simd32uint16N(_mm512_slli_epi16(i, shift));
     }
 
-    simd32uint16 operator+=(simd32uint16 other) {
+    simd32uint16N operator+=(simd32uint16N other) {
         i = _mm512_add_epi16(i, other.i);
         return *this;
     }
 
-    simd32uint16 operator-=(simd32uint16 other) {
+    simd32uint16N operator-=(simd32uint16N other) {
         i = _mm512_sub_epi16(i, other.i);
         return *this;
     }
 
-    simd32uint16 operator+(simd32uint16 other) const {
-        return simd32uint16(_mm512_add_epi16(i, other.i));
+    simd32uint16N operator+(simd32uint16N other) const {
+        return simd32uint16N(_mm512_add_epi16(i, other.i));
     }
 
-    simd32uint16 operator-(simd32uint16 other) const {
-        return simd32uint16(_mm512_sub_epi16(i, other.i));
+    simd32uint16N operator-(simd32uint16N other) const {
+        return simd32uint16N(_mm512_sub_epi16(i, other.i));
     }
 
-    simd32uint16 operator&(simd512bit other) const {
-        return simd32uint16(_mm512_and_si512(i, other.i));
+    simd32uint16N operator&(simd512bit other) const {
+        return simd32uint16N(_mm512_and_si512(i, other.i));
     }
 
-    simd32uint16 operator|(simd512bit other) const {
-        return simd32uint16(_mm512_or_si512(i, other.i));
+    simd32uint16N operator|(simd512bit other) const {
+        return simd32uint16N(_mm512_or_si512(i, other.i));
     }
 
-    simd32uint16 operator^(simd512bit other) const {
-        return simd32uint16(_mm512_xor_si512(i, other.i));
+    simd32uint16N operator^(simd512bit other) const {
+        return simd32uint16N(_mm512_xor_si512(i, other.i));
     }
 
-    simd32uint16 operator~() const {
-        return simd32uint16(_mm512_xor_si512(i, _mm512_set1_epi32(-1)));
+    simd32uint16N operator~() const {
+        return simd32uint16N(_mm512_xor_si512(i, _mm512_set1_epi32(-1)));
     }
 
-    simd16uint16 low() const {
-        return simd16uint16(_mm512_castsi512_si256(i));
+    simd16uint16<SIMDLevel::AVX2> low() const {
+        return simd16uint16<SIMDLevel::AVX2>(_mm512_castsi512_si256(i));
     }
 
-    simd16uint16 high() const {
-        return simd16uint16(_mm512_extracti32x8_epi32(i, 1));
+    simd16uint16<SIMDLevel::AVX2> high() const {
+        return simd16uint16<SIMDLevel::AVX2>(_mm512_extracti32x8_epi32(i, 1));
     }
 
     // for debugging only
@@ -196,23 +205,27 @@ struct simd32uint16 : simd512bit {
         return tab[i];
     }
 
-    void accu_min(simd32uint16 incoming) {
+    void accu_min(simd32uint16N incoming) {
         i = _mm512_min_epu16(i, incoming.i);
     }
 
-    void accu_max(simd32uint16 incoming) {
+    void accu_max(simd32uint16N incoming) {
         i = _mm512_max_epu16(i, incoming.i);
     }
 };
 
 // decompose in 128-lanes: a = (a0, a1, a2, a3), b = (b0, b1, b2, b3)
 // return (a0 + a1 + a2 + a3, b0 + b1 + b2 + b3)
-inline simd16uint16 combine4x2(simd32uint16 a, simd32uint16 b) {
+inline simd16uint16<SIMDLevel::AVX2> combine4x2(
+        simd32uint16<SIMDLevel::AVX512> a,
+        simd32uint16<SIMDLevel::AVX512> b) {
     return combine2x2(a.low(), b.low()) + combine2x2(a.high(), b.high());
 }
 
 // vector of 32 unsigned 8-bit integers
-struct simd64uint8 : simd512bit {
+template <>
+struct simd64uint8<SIMDLevel::AVX512> : simd512bit<SIMDLevel::AVX512> {
+    using simd64uint8N = simd64uint8<SIMDLevel::AVX512>;
     simd64uint8() {}
 
     explicit simd64uint8(__m512i i) : simd512bit(i) {}
@@ -222,12 +235,15 @@ struct simd64uint8 : simd512bit {
     explicit simd64uint8(uint8_t x) : simd512bit(_mm512_set1_epi8(x)) {}
 
     // sets up a lower half of the register
-    explicit simd64uint8(simd256bit lo) : simd512bit(lo) {}
+    explicit simd64uint8(simd256bit<SIMDLevel::AVX2> lo) : simd512bit(lo) {}
 
     // constructs from lower and upper halves
-    explicit simd64uint8(simd256bit lo, simd256bit hi) : simd512bit(lo, hi) {}
+    explicit simd64uint8(
+            simd256bit<SIMDLevel::AVX2> lo,
+            simd256bit<SIMDLevel::AVX2> hi)
+            : simd512bit(lo, hi) {}
 
-    explicit simd64uint8(simd512bit x) : simd512bit(x) {}
+    explicit simd64uint8(simd512bit<SIMDLevel::AVX512> x) : simd512bit(x) {}
 
     explicit simd64uint8(const uint8_t* x) : simd512bit((const void*)x) {}
 
@@ -256,31 +272,31 @@ struct simd64uint8 : simd512bit {
         i = _mm512_set1_epi8((char)x);
     }
 
-    simd64uint8 operator&(simd512bit other) const {
+    simd64uint8N operator&(simd512bit other) const {
         return simd64uint8(_mm512_and_si512(i, other.i));
     }
 
-    simd64uint8 operator+(simd64uint8 other) const {
+    simd64uint8N operator+(simd64uint8N other) const {
         return simd64uint8(_mm512_add_epi8(i, other.i));
     }
 
-    simd64uint8 lookup_4_lanes(simd64uint8 idx) const {
+    simd64uint8N lookup_4_lanes(simd64uint8N idx) const {
         return simd64uint8(_mm512_shuffle_epi8(i, idx.i));
     }
 
     // extract + 0-extend lane
     // this operation is slow (3 cycles)
-    simd32uint16 lane0_as_uint16() const {
+    simd32uint16<SIMDLevel::AVX512> lane0_as_uint16() const {
         __m256i x = _mm512_extracti32x8_epi32(i, 0);
-        return simd32uint16(_mm512_cvtepu8_epi16(x));
+        return simd32uint16<SIMDLevel::AVX512>(_mm512_cvtepu8_epi16(x));
     }
 
-    simd32uint16 lane1_as_uint16() const {
+    simd32uint16<SIMDLevel::AVX512> lane1_as_uint16() const {
         __m256i x = _mm512_extracti32x8_epi32(i, 1);
-        return simd32uint16(_mm512_cvtepu8_epi16(x));
+        return simd32uint16<SIMDLevel::AVX512>(_mm512_cvtepu8_epi16(x));
     }
 
-    simd64uint8 operator+=(simd64uint8 other) {
+    simd64uint8N operator+=(simd64uint8N other) {
         i = _mm512_add_epi8(i, other.i);
         return *this;
     }
@@ -290,6 +306,51 @@ struct simd64uint8 : simd512bit {
         ALIGNED(64) uint8_t tab[64];
         store(tab);
         return tab[i];
+    }
+};
+
+template <>
+struct simd16float32<SIMDLevel::AVX512> : simd512bit<SIMDLevel::AVX512> {
+    using simd16float32N = simd16float32<SIMDLevel::AVX512>;
+    simd16float32() {}
+
+    explicit simd16float32(simd512bit x) : simd512bit(x) {}
+
+    explicit simd16float32(__m512 x) : simd512bit(x) {}
+
+    explicit simd16float32(float x) : simd512bit(_mm512_set1_ps(x)) {}
+
+    explicit simd16float32(const float* x)
+            : simd16float32(_mm512_loadu_ps(x)) {}
+
+    simd16float32N operator*(simd16float32N other) const {
+        return simd16float32(_mm512_mul_ps(f, other.f));
+    }
+
+    simd16float32N operator+(simd16float32N other) const {
+        return simd16float32N(_mm512_add_ps(f, other.f));
+    }
+
+    simd16float32N operator-(simd16float32N other) const {
+        return simd16float32N(_mm512_sub_ps(f, other.f));
+    }
+
+    simd16float32N& operator+=(const simd16float32N& other) {
+        f = _mm512_add_ps(f, other.f);
+        return *this;
+    }
+
+    std::string tostring() const {
+        float tab[16];
+        storeu((void*)tab);
+        char res[1000];
+        char* ptr = res;
+        for (int i = 0; i < 16; i++) {
+            ptr += sprintf(ptr, "%g,", tab[i]);
+        }
+        // strip last ,
+        ptr[-1] = 0;
+        return std::string(res);
     }
 };
 

@@ -115,16 +115,16 @@ std::string get_compile_options() {
     options += "OPTIMIZE ";
 #endif
 
-#ifdef __AVX512F__
-    options += "AVX512 ";
-#elif defined(__AVX2__)
+#ifdef COMPILE_SIMD_AVX2
     options += "AVX2 ";
-#elif defined(__ARM_FEATURE_SVE)
-    options += "SVE NEON ";
-#elif defined(__aarch64__)
+#endif
+
+#ifdef COMPILE_SIMD_AVX512F
+    options += "AVX512F ";
+#endif
+
+#ifdef COMPILE_SIMD_NEON
     options += "NEON ";
-#else
-    options += "GENERIC ";
 #endif
 
 #ifdef FAISS_ENABLE_SVS
