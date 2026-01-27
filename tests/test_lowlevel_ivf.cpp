@@ -24,6 +24,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_levels.h>
 
 using namespace faiss;
 
@@ -391,26 +392,56 @@ TEST(TestLowLevelIVF, IVFPQFSr_IP) {
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS_L2) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs", METRIC_L2, 0.90);
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS_IP) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs", METRIC_INNER_PRODUCT, 0.90);
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS2_L2) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs2", METRIC_L2, 0.90);
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS2_IP) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs2", METRIC_INNER_PRODUCT, 0.90);
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS4_L2) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs4", METRIC_L2, 0.90);
 }
 
 TEST(TestLowLevelIVF, IVFRaBitQFS4_IP) {
+    // RaBitQ FastScan requires AVX2 or AVX512 - no ARM_NEON implementation yet
+    if (!SIMDConfig::is_simd_level_available(SIMDLevel::AVX2) &&
+        !SIMDConfig::is_simd_level_available(SIMDLevel::AVX512)) {
+        GTEST_SKIP() << "RaBitQ FastScan requires AVX2 or AVX512";
+    }
     test_fastscan_scanner("RR,IVF32,RaBitQfs4", METRIC_INNER_PRODUCT, 0.90);
 }
 

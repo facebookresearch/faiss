@@ -7,6 +7,37 @@
 
 #pragma once
 
+#include <faiss/utils/simd_levels.h>
+
+namespace faiss {
+
+// 256-bit representations
+
+template <SIMDLevel SL>
+struct simd256bit {};
+
+template <SIMDLevel SL>
+struct simd16uint16 : simd256bit<SL> {};
+template <SIMDLevel SL>
+struct simd32uint8 : simd256bit<SL> {};
+template <SIMDLevel SL>
+struct simd8uint32 : simd256bit<SL> {};
+template <SIMDLevel SL>
+struct simd8float32 : simd256bit<SL> {};
+
+// 512-bit representations (currently only supported on AVX512)
+template <SIMDLevel SL>
+struct simd512bit {};
+
+template <SIMDLevel SL>
+struct simd32uint16 : simd512bit<SL> {};
+template <SIMDLevel SL>
+struct simd64uint8 : simd512bit<SL> {};
+template <SIMDLevel SL>
+struct simd16float32 : simd512bit<SL> {};
+
+} // namespace faiss
+
 /** Abstractions for 256-bit registers
  *
  * The objective is to separate the different interpretations of the same
@@ -14,16 +45,16 @@
  * functions.
  */
 
-#if defined(__AVX512F__)
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 
-#include <faiss/utils/simd_impl/simdlib_avx2.h>
+// simdlib_avx2.h is included in simdlib_avx512.h
 #include <faiss/utils/simd_impl/simdlib_avx512.h>
 
-#elif defined(__AVX2__)
+#elif defined(__AVX2__) && defined(COMPILE_SIMD_AVX2)
 
 #include <faiss/utils/simd_impl/simdlib_avx2.h>
 
-#elif defined(__aarch64__)
+#elif defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
 
 #include <faiss/utils/simd_impl/simdlib_neon.h>
 
@@ -33,10 +64,10 @@
 
 #else
 
-// emulated = all operations are implemented as scalars
-#include <faiss/utils/simd_impl/simdlib_emulated.h>
-
 // FIXME: make a SSE version
 // is this ever going to happen? We will probably rather implement AVX512
 
 #endif
+
+// emulated = all operations are implemented as scalars
+#include <faiss/utils/simd_impl/simdlib_emulated.h>

@@ -14,6 +14,8 @@
 
 namespace faiss {
 
+struct FastScanDistancePostProcessing;
+
 /** Fast scan version of IndexPQ. Works for 4-bit PQ for now.
  *
  * The codes are not stored sequentially but grouped in blocks of size bbs.

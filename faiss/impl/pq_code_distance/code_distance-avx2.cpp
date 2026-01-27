@@ -10,7 +10,7 @@
 #include <immintrin.h>
 
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78782
 #if defined(__GNUC__) && __GNUC__ < 9

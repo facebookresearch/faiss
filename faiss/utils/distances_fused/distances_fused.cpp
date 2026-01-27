@@ -35,9 +35,14 @@ bool exhaustive_L2sqr_fused_cmax(
                 x, y, d, nx, ny, res, y_norms);
     }
 #endif
-#if defined(__AVX2__) || defined(__aarch64__)
-    // avx2 or arm neon kernel
-    return exhaustive_L2sqr_fused_cmax_simdlib(x, y, d, nx, ny, res, y_norms);
+#if defined(__AVX2__)
+    // avx2 kernel
+    return exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::AVX2>(
+            x, y, d, nx, ny, res, y_norms);
+#elif defined(__aarch64__) && defined(COMPILE_SIMD_ARM_NEON)
+    // arm neon kernel
+    return exhaustive_L2sqr_fused_cmax_simdlib<SIMDLevel::ARM_NEON>(
+            x, y, d, nx, ny, res, y_norms);
 #else
     // not supported, please use a general-purpose kernel
     return false;

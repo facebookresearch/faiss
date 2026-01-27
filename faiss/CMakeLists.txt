@@ -221,11 +221,11 @@ set(FAISS_HEADERS
   impl/residual_quantizer_encode_steps.h
   impl/simd_result_handlers.h
   impl/zerocopy_io.h
-  impl/code_distance/code_distance.h
-  impl/code_distance/code_distance-generic.h
-  impl/code_distance/code_distance-avx2.h
-  impl/code_distance/code_distance-avx512.h
-  impl/code_distance/code_distance-sve.h
+  impl/pq_code_distance/code_distance.h
+  impl/pq_code_distance/code_distance-generic.h
+  impl/pq_code_distance/code_distance-avx2.h
+  impl/pq_code_distance/code_distance-avx512.h
+  impl/pq_code_distance/code_distance-sve.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h

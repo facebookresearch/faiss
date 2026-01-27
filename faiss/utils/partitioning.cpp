@@ -225,6 +225,9 @@ typename C::T partition_fuzzy_median3(
 
 namespace simd_partitioning {
 
+using simd16uint16 = simd16uint16<SIMDLevel::NONE>;
+using simd32uint8 = simd32uint8<SIMDLevel::NONE>;
+
 void find_minimax(
         const uint16_t* vals,
         size_t n,
@@ -816,11 +819,18 @@ template uint16_t partition_fuzzy<CMax<uint16_t, int>>(
  * Histogram subroutines
  ******************************************************************/
 
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
 /// FIXME when MSB of uint16 is set
 // this code does not compile properly with GCC 7.4.0
 
 namespace {
+
+// Concrete SIMD type aliases for this translation unit.
+// The global simd16uint16, simd32uint8, etc. are template classes,
+// and we need concrete types for these histogram functions.
+using simd16uint16 = faiss::simd16uint16<SIMDLevel::NONE>;
+using simd32uint8 = faiss::simd32uint8<SIMDLevel::NONE>;
+using simd8uint32 = faiss::simd8uint32<SIMDLevel::NONE>;
 
 /************************************************************
  * 8 bins
@@ -1012,7 +1022,7 @@ void compute_accu2_16(
         simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
         lt8 = lt8 ^ simd16uint16(0xff00);
 
-        a1 = a1 & lt8;
+        a1 = a1 & simd32uint8(lt8);
 
         a2_0 += a1 & mask1;
         a2_1 += shiftr_16(a1, 1) & mask1;
@@ -1157,7 +1167,7 @@ void simd_histogram_8(
         return;
     }
 
-    simd16uint16 a16;
+    faiss::simd16uint16<SIMDLevel::NONE> a16;
 
 #define DISPATCH(s)                                                     \
     case s:                                                             \
@@ -1215,7 +1225,7 @@ void simd_histogram_16(
         return;
     }
 
-    simd16uint16 a16;
+    faiss::simd16uint16<SIMDLevel::NONE> a16;
 
 #define DISPATCH(s)                                                       \
     case s:                                                               \

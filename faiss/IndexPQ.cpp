@@ -19,7 +19,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/code_distance.h>
 
 namespace faiss {
 

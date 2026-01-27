@@ -308,20 +308,75 @@ int fvec_madd_and_argmin(
     DISPATCH_SIMDLevel(fvec_madd_and_argmin, n, a, bf, b, c);
 }
 
+/*********************************************************
+ * Vector to vector functions
+ *********************************************************/
+
+// TODO: currently only non-SIMD version implemented
+
+void fvec_sub(size_t d, const float* a, const float* b, float* c) {
+    size_t i;
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32<SIMDLevel::NONE> ci, ai, bi;
+        ai.loadu(a + i);
+        bi.loadu(b + i);
+        ci = ai - bi;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] - b[i];
+    }
+}
+
+void fvec_add(size_t d, const float* a, const float* b, float* c) {
+    size_t i;
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32<SIMDLevel::NONE> ci, ai, bi;
+        ai.loadu(a + i);
+        bi.loadu(b + i);
+        ci = ai + bi;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] + b[i];
+    }
+}
+
+void fvec_add(size_t d, const float* a, float b, float* c) {
+    size_t i;
+    simd8float32<SIMDLevel::NONE> bv(b);
+    for (i = 0; i + 7 < d; i += 8) {
+        simd8float32<SIMDLevel::NONE> ci, ai;
+        ai.loadu(a + i);
+        ci = ai + bv;
+        ci.storeu(c + i);
+    }
+    // finish non-multiple of 8 remainder
+    for (; i < d; i++) {
+        c[i] = a[i] + b;
+    }
+}
+
 /***************************************************************************
  * PQ tables computations
  ***************************************************************************/
 
 namespace {
 
+// TODO dispatch to optimized code
+
 /// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
 template <bool is_inner_product>
 void pq2_8cents_table(
-        const simd8float32 centroids[8],
-        const simd8float32 x,
+        const simd8float32<SIMDLevel::NONE> centroids[8],
+        const simd8float32<SIMDLevel::NONE> x,
         float* out,
         size_t ldo,
         size_t nout = 4) {
+    using simd8float32 = simd8float32<SIMDLevel::NONE>;
+
     simd8float32 ips[4];
 
     for (int i = 0; i < 4; i++) {
@@ -363,16 +418,18 @@ void pq2_8cents_table(
     }
 }
 
-simd8float32 load_simd8float32_partial(const float* x, int n) {
+simd8float32<SIMDLevel::NONE> load_simd8float32_partial(const float* x, int n) {
     ALIGNED(32) float tmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     float* wp = tmp;
     for (int i = 0; i < n; i++) {
         *wp++ = *x++;
     }
-    return simd8float32(tmp);
+    return simd8float32<SIMDLevel::NONE>(tmp);
 }
 
 } // anonymous namespace
+
+// TODO dispatch to optimized code
 
 void compute_PQ_dis_tables_dsub2(
         size_t d,
@@ -384,6 +441,7 @@ void compute_PQ_dis_tables_dsub2(
         float* dis_tables) {
     size_t M = d / 2;
     FAISS_THROW_IF_NOT(ksub % 8 == 0);
+    using simd8float32 = simd8float32<SIMDLevel::NONE>;
 
     for (size_t m0 = 0; m0 < M; m0 += 4) {
         int m1 = std::min(M, m0 + 4);
@@ -426,55 +484,6 @@ void compute_PQ_dis_tables_dsub2(
                 }
             }
         }
-    }
-}
-
-/*********************************************************
- * Vector to vector functions
- *********************************************************/
-
-void fvec_sub(size_t d, const float* a, const float* b, float* c) {
-    size_t i;
-    for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
-        ai.loadu(a + i);
-        bi.loadu(b + i);
-        ci = ai - bi;
-        ci.storeu(c + i);
-    }
-    // finish non-multiple of 8 remainder
-    for (; i < d; i++) {
-        c[i] = a[i] - b[i];
-    }
-}
-
-void fvec_add(size_t d, const float* a, const float* b, float* c) {
-    size_t i;
-    for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
-        ai.loadu(a + i);
-        bi.loadu(b + i);
-        ci = ai + bi;
-        ci.storeu(c + i);
-    }
-    // finish non-multiple of 8 remainder
-    for (; i < d; i++) {
-        c[i] = a[i] + b[i];
-    }
-}
-
-void fvec_add(size_t d, const float* a, float b, float* c) {
-    size_t i;
-    simd8float32 bv(b);
-    for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai;
-        ai.loadu(a + i);
-        ci = ai + bv;
-        ci.storeu(c + i);
-    }
-    // finish non-multiple of 8 remainder
-    for (; i < d; i++) {
-        c[i] = a[i] + b;
     }
 }
 

@@ -29,6 +29,9 @@ namespace scalar_quantizer {
 
 /******************************** Codec specializations */
 
+using simd16float32 = simd16float32<SIMDLevel::AVX512>;
+using simd64uint8 = simd64uint8<SIMDLevel::AVX512>;
+
 template <>
 struct Codec8bit<SIMDLevel::AVX512> : Codec8bit<SIMDLevel::NONE> {
     static FAISS_ALWAYS_INLINE simd16float32

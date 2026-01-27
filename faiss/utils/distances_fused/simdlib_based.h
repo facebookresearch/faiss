@@ -9,15 +9,16 @@
 
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/platform_macros.h>
-
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/simd_levels.h>
 
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
 
 namespace faiss {
 
 // Returns true if the fused kernel is available and the data was processed.
 // Returns false if the fused kernel is not available.
+template <SIMDLevel SL>
 bool exhaustive_L2sqr_fused_cmax_simdlib(
         const float* x,
         const float* y,
