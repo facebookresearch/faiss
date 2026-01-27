@@ -10,7 +10,9 @@
 #include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/pq_4bit/decompose_qbs.h>
 #include <faiss/impl/pq_4bit/LookupTableScaler.h>
+#include <faiss/impl/pq_4bit/kernels_common.h>
 #include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
 namespace faiss {
@@ -467,9 +469,29 @@ void kernel_accumulate_block_avx512_nqx(
     }
 }
 
-// Note: kernel_accumulate_block is defined in kernels_simd256.h.
-// The AVX512-optimized versions (kernel_accumulate_block_avx512_nq1 and
-// kernel_accumulate_block_avx512_nqx) are called from there when SL=AVX512.
-// decompose_qbs.h is also included from kernels_simd256.h.
+template <int NQ, class ResultHandler, class Scaler>
+void kernel_accumulate_block_avx512(
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res,
+        const Scaler& scaler) {
+    if constexpr (NQ == 1) {
+        kernel_accumulate_block_avx512_nq1<ResultHandler, Scaler>(
+                nsq, codes, LUT, res, scaler);
+    } else {
+        kernel_accumulate_block_avx512_nqx<NQ, ResultHandler, Scaler>(
+                nsq, codes, LUT, res, scaler);
+    }
+}
 
+/*
+kernel_accumulate_block_avx512_nq1 --- is the only specialized avx512 kernel and
+others functions can be routed to avx2 kernel.
+
+    to remove:
+        kernel_accumulate_block_bb
+        accumulate_fixed_blocks_bb
+        pq4_accumulate_loop_fixed_scaler
+*/
 } // namespace faiss

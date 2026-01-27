@@ -340,6 +340,9 @@ namespace std {
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
 
+%ignore faiss::SIMDConfig::level_names;
+%include <faiss/utils/simd_levels.h>
+
 int get_num_gpus();
 void gpu_profiler_start();
 void gpu_profiler_stop();

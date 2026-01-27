@@ -10,6 +10,14 @@
 // decompose q set of queries into fixed-size blocks. This code is common
 // between 256 and 512-bit SIMD
 
+#include <cstddef>
+#include <cstdint>
+
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
+#include <faiss/utils/simd_levels.h>
+
+namespace faiss {
+
 // handle at most 4 blocks of queries
 template <int QBS, class ResultHandler, class Scaler>
 void accumulate_q_4step(
@@ -27,7 +35,7 @@ void accumulate_q_4step(
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
     for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
-        FixedStorageHandler<SQ, 2, SL> res2;
+        simd_result_handlers::FixedStorageHandler<SQ, 2, SL> res2;
         const uint8_t* LUT = LUT0;
         kernel_accumulate_block<Q1>(nsq, codes, LUT, res2, scaler);
         LUT += Q1 * nsq * 16;
@@ -177,3 +185,5 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
         codes += 32 * nsq / 2;
     }
 }
+
+} // namespace faiss

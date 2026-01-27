@@ -113,8 +113,8 @@ void refine_beam_mp(
         float* out_distances,
         RefineBeamMemoryPool& pool);
 
-#ifndef SWIG
-extern template void refine_beam_LUT_mp<SIMDLevel::AVX2>(
+template <SIMDLevel SL>
+void refine_beam_LUT_mp(
         const ResidualQuantizer& rq,
         size_t n,
         const float* query_norms, // size n
@@ -123,17 +123,6 @@ extern template void refine_beam_LUT_mp<SIMDLevel::AVX2>(
         int32_t* out_codes,
         float* out_distances,
         RefineBeamLUTMemoryPool& pool);
-
-extern template void refine_beam_LUT_mp<SIMDLevel::ARM_NEON>(
-        const ResidualQuantizer& rq,
-        size_t n,
-        const float* query_norms, // size n
-        const float* query_cp,    //
-        int out_beam_size,
-        int32_t* out_codes,
-        float* out_distances,
-        RefineBeamLUTMemoryPool& pool);
-#endif
 
 // this is for use_beam_LUT == 0 in
 // compute_codes_add_centroids_mp_lut0() call
@@ -153,17 +142,9 @@ void compute_codes_add_centroids_mp_lut0(
         const float* centroids,
         ComputeCodesAddCentroidsLUT0MemoryPool& pool);
 
-// prevent implicit instantiation
-// SWIG claims to support extern template but these produce syntax errors.
-#ifndef SWIG
-extern template void compute_codes_add_centroids_mp_lut1<SIMDLevel::AVX2>(
-        const ResidualQuantizer& rq,
-        const float* x,
-        uint8_t* codes_out,
-        size_t n,
-        const float* centroids,
-        ComputeCodesAddCentroidsLUT1MemoryPool& pool);
-extern template void compute_codes_add_centroids_mp_lut1<SIMDLevel::ARM_NEON>(
+struct ComputeCodesAddCentroidsLUT1MemoryPool;
+
+void compute_codes_add_centroids_mp_lut1(
         const ResidualQuantizer& rq,
         const float* x,
         uint8_t* codes_out,
@@ -171,21 +152,14 @@ extern template void compute_codes_add_centroids_mp_lut1<SIMDLevel::ARM_NEON>(
         const float* centroids,
         ComputeCodesAddCentroidsLUT1MemoryPool& pool);
 
-extern template void compute_codes_add_centroids_mp_lut1<SIMDLevel::AVX2>(
+template <SIMDLevel SL>
+void compute_codes_add_centroids_mp_lut1(
         const ResidualQuantizer& rq,
         const float* x,
         uint8_t* codes_out,
         size_t n,
         const float* centroids,
         ComputeCodesAddCentroidsLUT1MemoryPool& pool);
-extern template void compute_codes_add_centroids_mp_lut1<SIMDLevel::ARM_NEON>(
-        const ResidualQuantizer& rq,
-        const float* x,
-        uint8_t* codes_out,
-        size_t n,
-        const float* centroids,
-        ComputeCodesAddCentroidsLUT1MemoryPool& pool);
-#endif
 
 } // namespace rq_encode_steps
 

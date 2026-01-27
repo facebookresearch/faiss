@@ -210,7 +210,8 @@ void beam_search_encode_step_tab(
         int32_t* new_codes,   // n * new_beam_size * (m + 1)
         float* new_distances, // n * new_beam_size
         ApproxTopK_mode_t approx_topk_mode) {
-    beam_search_encode_step_tab<SIMDLevel::NONE>(
+    DISPATCH_SIMDLevel(
+            beam_search_encode_step_tab,
             K,
             n,
             beam_size,
@@ -419,8 +420,14 @@ void compute_codes_add_centroids_mp_lut1(
         size_t n,
         const float* centroids,
         ComputeCodesAddCentroidsLUT1MemoryPool& pool) {
-    compute_codes_add_centroids_mp_lut1<SIMDLevel::NONE>(
-            rq, x, codes_out, n, centroids, pool);
+    DISPATCH_SIMDLevel(
+            compute_codes_add_centroids_mp_lut1,
+            rq,
+            x,
+            codes_out,
+            n,
+            centroids,
+            pool);
 }
 
 } // namespace rq_encode_steps

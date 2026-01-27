@@ -354,4 +354,38 @@ struct simd16float32<SIMDLevel::AVX512> : simd512bit<SIMDLevel::AVX512> {
     }
 };
 
+// Simple 256-bit aliases for compatibility with PQ 4-bit kernels
+// These reuse the existing AVX2 implementations for simplicity
+template <>
+struct simd16uint16<SIMDLevel::AVX512> : simd16uint16<SIMDLevel::AVX2> {
+    using simd16uint16<SIMDLevel::AVX2>::simd16uint16;
+
+    simd16uint16(const simd16uint16<SIMDLevel::AVX2>& x)
+            : simd16uint16<SIMDLevel::AVX2>(x) {}
+};
+
+template <>
+struct simd32uint8<SIMDLevel::AVX512> : simd32uint8<SIMDLevel::AVX2> {
+    using simd32uint8<SIMDLevel::AVX2>::simd32uint8;
+
+    simd32uint8(const simd32uint8<SIMDLevel::AVX2>& x)
+            : simd32uint8<SIMDLevel::AVX2>(x) {}
+};
+
+template <>
+struct simd8float32<SIMDLevel::AVX512> : simd8float32<SIMDLevel::AVX2> {
+    using simd8float32<SIMDLevel::AVX2>::simd8float32;
+
+    simd8float32(const simd8float32<SIMDLevel::AVX2>& x)
+            : simd8float32<SIMDLevel::AVX2>(x) {}
+};
+
+template <>
+struct simd8uint32<SIMDLevel::AVX512> : simd8uint32<SIMDLevel::AVX2> {
+    using simd8uint32<SIMDLevel::AVX2>::simd8uint32;
+
+    simd8uint32(const simd8uint32<SIMDLevel::AVX2>& x)
+            : simd8uint32<SIMDLevel::AVX2>(x) {}
+};
+
 } // namespace faiss

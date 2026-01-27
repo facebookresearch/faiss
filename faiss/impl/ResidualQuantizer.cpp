@@ -456,7 +456,7 @@ void ResidualQuantizer::compute_codes_add_centroids(
                     cent,
                     pool0);
         } else if (use_beam_LUT == 1) {
-            compute_codes_add_centroids_mp_lut1<SIMDLevel::NONE>(
+            compute_codes_add_centroids_mp_lut1(
                     *this,
                     x + i0 * d,
                     codes_out + i0 * code_size,
@@ -501,7 +501,8 @@ void ResidualQuantizer::refine_beam_LUT(
         float* out_distances) const {
     RefineBeamLUTMemoryPool pool;
 
-    refine_beam_LUT_mp<SIMDLevel::NONE>(
+    DISPATCH_SIMDLevel(
+            refine_beam_LUT_mp,
             *this,
             n,
             query_norms,

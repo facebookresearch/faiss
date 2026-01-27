@@ -29,15 +29,6 @@ template void beam_search_encode_step_tab<SIMDLevel::AVX2>(
 
 namespace rq_encode_steps {
 
-// use_beam_LUT == 1
-template void compute_codes_add_centroids_mp_lut1<SIMDLevel::AVX2>(
-        const ResidualQuantizer& rq,
-        const float* x,
-        uint8_t* codes_out,
-        size_t n,
-        const float* centroids,
-        ComputeCodesAddCentroidsLUT1MemoryPool& pool);
-
 template void refine_beam_LUT_mp<SIMDLevel::AVX2>(
         const ResidualQuantizer& rq,
         size_t n,

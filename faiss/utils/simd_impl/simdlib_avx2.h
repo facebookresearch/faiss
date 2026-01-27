@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <immintrin.h>
 #include <cstdint>
 #include <string>
 
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/simdlib.h>
 #include <immintrin.h>
 

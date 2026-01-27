@@ -106,8 +106,8 @@ extern SIMDConfig simd_config;
 
 #define DISPATCH_SIMDLevel(f, ...)                   \
     switch (SIMDConfig::level) {                     \
-        DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \
         DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);   \
+        DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \
         DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__); \
         case SIMDLevel::NONE:                        \
             return f<SIMDLevel::NONE>(__VA_ARGS__);  \

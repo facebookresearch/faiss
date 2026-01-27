@@ -378,6 +378,24 @@ void initialize_IVFPQ_precomputed_table(
         AlignedTable<float>& precomputed_table,
         bool by_residual,
         bool verbose) {
+    DISPATCH_SIMDLevel(
+            initialize_IVFPQ_precomputed_table,
+            use_precomputed_table,
+            quantizer,
+            pq,
+            precomputed_table,
+            by_residual,
+            verbose);
+}
+
+template <SIMDLevel SL>
+void initialize_IVFPQ_precomputed_table(
+        int& use_precomputed_table,
+        const Index* quantizer,
+        const ProductQuantizer& pq,
+        AlignedTable<float>& precomputed_table,
+        bool by_residual,
+        bool verbose) {
     size_t nlist = quantizer->ntotal;
     size_t d = quantizer->d;
     FAISS_THROW_IF_NOT(d == pq.d);
@@ -436,8 +454,7 @@ void initialize_IVFPQ_precomputed_table(
 
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
             pq.compute_inner_prod_table(centroid.data(), tab);
-            fvec_madd<SIMDLevel::NONE>(
-                    pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd<SL>(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     } else if (use_precomputed_table == 2) {
         const MultiIndexQuantizer* miq =
@@ -464,8 +481,7 @@ void initialize_IVFPQ_precomputed_table(
 
         for (size_t i = 0; i < cpq.ksub; i++) {
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
-            fvec_madd<SIMDLevel::NONE>(
-                    pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd<SL>(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     }
 }
@@ -644,6 +660,11 @@ struct QueryTables {
      *****************************************************/
 
     float precompute_list_tables_L2() {
+        DISPATCH_SIMDLevel(precompute_list_tables_L2);
+    }
+
+    template <SIMDLevel SL>
+    float precompute_list_tables_L2() {
         float dis0 = 0;
 
         if (use_precomputed_table == 0 || use_precomputed_table == -1) {
@@ -657,7 +678,7 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd<SIMDLevel::NONE>(
+            fvec_madd<SL>(
                     pq.M * pq.ksub,
                     ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
                     -2.0,
@@ -693,13 +714,12 @@ struct QueryTables {
 
                 if (polysemous_ht == 0) {
                     // sum up with query-specific table
-                    fvec_madd<SIMDLevel::NONE>(
-                            Mf * pq.ksub, pc, -2.0, qtab, ltab);
+                    fvec_madd<SL>(Mf * pq.ksub, pc, -2.0, qtab, ltab);
                     ltab += Mf * pq.ksub;
                     qtab += Mf * pq.ksub;
                 } else {
                     for (int m = cm * Mf; m < (cm + 1) * Mf; m++) {
-                        q_code[m] = fvec_madd_and_argmin(
+                        q_code[m] = fvec_madd_and_argmin<SL>(
                                 pq.ksub, pc, -2, qtab, ltab);
                         pc += pq.ksub;
                         ltab += pq.ksub;

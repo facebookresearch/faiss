@@ -313,7 +313,8 @@ int fvec_madd_and_argmin(
  *********************************************************/
 
 // TODO: Move to dynamic dispatch
-
+// dynamic dispatch is blocked due to the following error:
+// error: 'simd8float32<faiss::SIMDLevel::AVX2>::loadu' is not a member
 void fvec_sub(size_t d, const float* a, const float* b, float* c) {
     size_t i;
     for (i = 0; i + 7 < d; i += 8) {
@@ -368,14 +369,14 @@ namespace {
 // TODO dispatch to optimized code
 
 /// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
-template <bool is_inner_product>
+template <bool is_inner_product, SIMDLevel SL>
 void pq2_8cents_table(
-        const simd8float32<SIMDLevel::NONE> centroids[8],
-        const simd8float32<SIMDLevel::NONE> x,
+        const simd8float32<SL> centroids[8],
+        const simd8float32<SL> x,
         float* out,
         size_t ldo,
         size_t nout = 4) {
-    using simd8float32 = simd8float32<SIMDLevel::NONE>;
+    using simd8float32 = simd8float32<SL>;
 
     simd8float32 ips[4];
 
@@ -418,13 +419,14 @@ void pq2_8cents_table(
     }
 }
 
-simd8float32<SIMDLevel::NONE> load_simd8float32_partial(const float* x, int n) {
+template <SIMDLevel SL>
+simd8float32<SL> load_simd8float32_partial(const float* x, int n) {
     ALIGNED(32) float tmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     float* wp = tmp;
     for (int i = 0; i < n; i++) {
         *wp++ = *x++;
     }
-    return simd8float32<SIMDLevel::NONE>(tmp);
+    return simd8float32<SL>(tmp);
 }
 
 } // anonymous namespace
@@ -463,7 +465,7 @@ void compute_PQ_dis_tables_dsub2(
                 if (m1 == m0 + 4) {
                     xi.loadu(x + i * d + m0 * 2);
                 } else {
-                    xi = load_simd8float32_partial(
+                    xi = load_simd8float32_partial<SIMDLevel::NONE>(
                             x + i * d + m0 * 2, 2 * (m1 - m0));
                 }
 

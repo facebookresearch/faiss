@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cstdlib>
-
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/simdlib.h>
 
 /*******************************************
@@ -45,7 +43,7 @@ struct DummyScaler {
         return simd16uint16(0);
     }
 
-#ifdef __AVX512F__
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 
     using simd64uint8 = simd64uint8<SIMDLevel::AVX512>;
     using simd32uint16 = simd32uint16<SIMDLevel::AVX512>;
@@ -100,7 +98,7 @@ struct Scaler2x4bit {
         return (simd16uint16(res) >> 8) * scale_simd;
     }
 
-#ifdef __AVX512F__
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
     using simd64uint8 = simd64uint8<SIMDLevel::AVX512>;
     using simd32uint16 = simd32uint16<SIMDLevel::AVX512>;
 

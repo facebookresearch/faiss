@@ -7,7 +7,7 @@
 
 #include <faiss/utils/simd_levels.h>
 
-#ifdef COMPILE_SIMD_NEON
+#ifdef COMPILE_SIMD_ARM_NEON
 
 #ifndef __aarch64__
 #error "this can only run on aarch64"
@@ -42,4 +42,4 @@ PQ4CodeScanner* make_pq4_scanner<SIMDLevel::ARM_NEON, true>(PRES_ARGS_LIST) {
 
 } // namespace faiss
 
-#endif // COMPILE_SIMD_NEON
+#endif // COMPILE_SIMD_ARM_NEON

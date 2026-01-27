@@ -12,12 +12,14 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/platform_macros.h>
+#include <faiss/impl/pq_4bit/LookupTableScaler.h>
 #include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
-#include <faiss/impl/pq_4bit/kernels_simd256.h>
+#include <faiss/impl/pq_4bit/kernels_common.h>
 
 namespace faiss {
+using namespace simd_result_handlers;
 
 /** Mix-in class that manages both an SIMD result hander and offers the actual
  * scanning routines. */
@@ -69,14 +71,18 @@ PQ4CodeScanner* make_handler_2(
         const IDSelector* sel) {
     if (k == 1) {
         return new ScannerMixIn<
-                SingleResultHandler<C, with_id_map, SL>,
+                faiss::simd_result_handlers::
+                        SingleResultHandler<C, with_id_map, SL>,
                 Scaler>(norm_scale, nq, ntotal, dis, ids, sel);
     } else if (use_reservoir) {
-        return new ScannerMixIn<ReservoirHandler<C, with_id_map, SL>, Scaler>(
-                norm_scale, nq, ntotal, k, 2 * k, dis, ids, sel);
+        return new ScannerMixIn<
+                faiss::simd_result_handlers::
+                        ReservoirHandler<C, with_id_map, SL>,
+                Scaler>(norm_scale, nq, ntotal, k, 2 * k, dis, ids, sel);
     } else {
-        return new ScannerMixIn<HeapHandler<C, with_id_map, SL>, Scaler>(
-                norm_scale, nq, ntotal, k, dis, ids, sel);
+        return new ScannerMixIn<
+                faiss::simd_result_handlers::HeapHandler<C, with_id_map, SL>,
+                Scaler>(norm_scale, nq, ntotal, k, dis, ids, sel);
     }
 }
 
@@ -87,8 +93,9 @@ PQ4CodeScanner* make_handler_2(
         float radius,
         size_t ntotal,
         const IDSelector* sel) {
-    return new ScannerMixIn<RangeHandler<C, with_id_map, SL>, Scaler>(
-            norm_scale, rres, radius, ntotal, sel);
+    return new ScannerMixIn<
+            faiss::simd_result_handlers::RangeHandler<C, with_id_map, SL>,
+            Scaler>(norm_scale, rres, radius, ntotal, sel);
 }
 
 template <SIMDLevel SL, bool with_id_map, class C, class Scaler>
@@ -100,8 +107,10 @@ PQ4CodeScanner* make_handler_2(
         size_t q0,
         size_t q1,
         const IDSelector* sel) {
-    return new ScannerMixIn<PartialRangeHandler<C, with_id_map, SL>, Scaler>(
-            norm_scale, pres, radius, ntotal, q0, q1, sel);
+    return new ScannerMixIn<
+            faiss::simd_result_handlers::
+                    PartialRangeHandler<C, with_id_map, SL>,
+            Scaler>(norm_scale, pres, radius, ntotal, q0, q1, sel);
 }
 
 // this function dispatches runtime -> template parameters. It is generic for

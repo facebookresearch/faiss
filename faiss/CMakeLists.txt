@@ -109,7 +109,6 @@ set(FAISS_SRC
   utils/utils.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
-  utils/distances_fused/simdlib_based.cpp
 )
 
 if(FAISS_ENABLE_SVS)
@@ -262,7 +261,6 @@ set(FAISS_HEADERS
   utils/utils.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
-  utils/distances_fused/simdlib_based.h
   utils/approx_topk/approx_topk.h
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h

@@ -6,9 +6,9 @@
 import os
 import time
 from collections import defaultdict
+import numpy as np
 
 import faiss
-import numpy as np
 from faiss.contrib.datasets import SyntheticDataset
 
 
@@ -26,14 +26,15 @@ index = faiss.index_factory(ds.d, "PQ16x4fs")
 index.train(ds.get_train())
 index.add(ds.get_database())
 
+simd_levels = [
+    faiss.SIMDLevel_NONE, faiss.SIMDLevel_AVX2, faiss.SIMDLevel_AVX512
+]
 
 if False:
     faiss.omp_set_num_threads(1)
     print("PID=", os.getpid())
     input("press enter to continue")
-    # for simd_level in faiss.NONE, faiss.AVX2, faiss.AVX512F:
-    for simd_level in faiss.AVX2, faiss.AVX512F:
-
+    for simd_level in simd_levels:
         faiss.SIMDConfig.set_level(simd_level)
         print("simd_level=", faiss.SIMDConfig.get_level_name())
         for _ in range(1000):
@@ -42,8 +43,7 @@ if False:
 times = defaultdict(list)
 
 for _ in range(10):
-    for simd_level in (faiss.SIMDLevel_NONE, faiss.SIMDLevel_AVX2,
-                       faiss.SIMDLevel_AVX512F):
+    for simd_level in simd_levels:
         faiss.SIMDConfig.set_level(simd_level)
 
         t0 = time.time()

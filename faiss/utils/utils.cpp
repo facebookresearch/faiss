@@ -123,7 +123,7 @@ std::string get_compile_options() {
     options += "AVX512F ";
 #endif
 
-#ifdef COMPILE_SIMD_NEON
+#ifdef COMPILE_SIMD_ARM_NEON
     options += "NEON ";
 #endif
 

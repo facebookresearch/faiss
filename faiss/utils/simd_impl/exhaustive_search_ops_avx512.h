@@ -7,19 +7,17 @@
 
 #pragma once
 
-#include <faiss/impl/ResultHandler.h>
-#include <faiss/impl/platform_macros.h>
-#include <faiss/utils/Heap.h>
-#include <faiss/utils/simd_levels.h>
+#include <cstddef>
+#include <cstdint>
 
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
+#include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/simd_impl/exhaustive_search_ops_avx2.h>
 
 namespace faiss {
 
-// Returns true if the fused kernel is available and the data was processed.
-// Returns false if the fused kernel is not available.
-template <SIMDLevel SL>
-bool exhaustive_L2sqr_fused_cmax_simdlib(
+template <SIMDLevel>
+void exhaustive_L2sqr_blas_simd_avx512_with_avx2_fallback(
         const float* x,
         const float* y,
         size_t d,
@@ -29,5 +27,3 @@ bool exhaustive_L2sqr_fused_cmax_simdlib(
         const float* y_norms);
 
 } // namespace faiss
-
-#endif
