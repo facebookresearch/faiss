@@ -191,7 +191,7 @@ struct PQCodeDistance<PQDecoder8, SIMDLevel::AVX512> {
 };
 
 // explicit template instanciations
-// template struct PQCodeDistance<PQDecoder8, SIMDLevel::AVX512F>;
+// template struct PQCodeDistance<PQDecoder8, SIMDLevel::AVX512>;
 
 // these two will automatically use the generic implementation
 template struct PQCodeDistance<PQDecoder16, SIMDLevel::AVX512>;
