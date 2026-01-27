@@ -559,9 +559,15 @@ PQ4CodeScanner* make_ivf_rabitq_handler(
                 is_max, index, nq, k, distances, labels, context, multibit);
     } else
 #endif
+#ifdef COMPILE_SIMD_ARM_NEON
+            if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+        return make_ivf_rabitq_handler_impl<SIMDLevel::ARM_NEON>(
+                is_max, index, nq, k, distances, labels, context, multibit);
+    } else
+#endif
     {
         FAISS_THROW_MSG(
-                "IVF RaBitQ FastScan requires SIMD support (AVX2 or AVX512)");
+                "IVF RaBitQ FastScan requires SIMD support (AVX2, AVX512, or ARM_NEON)");
     }
 }
 

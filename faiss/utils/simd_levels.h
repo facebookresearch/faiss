@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/impl/FaissAssert.h>
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -22,6 +23,7 @@ enum class SIMDLevel {
     AVX512,
     // arm & aarch64
     ARM_NEON,
+    ARM_SVE,
 
     COUNT
 };
@@ -68,6 +70,10 @@ struct SIMDConfig {
     static bool is_simd_level_available(SIMDLevel level);
 };
 
+#ifndef SWIG // SWIG does not understand extern.
+extern SIMDConfig simd_config;
+#endif
+
 /*********************** x86 SIMD */
 
 #ifdef COMPILE_SIMD_AVX2
@@ -98,15 +104,15 @@ struct SIMDConfig {
 
 /* dispatch function f to f<SIMDLevel> */
 
-#define DISPATCH_SIMDLevel(f, ...)                       \
-    switch (SIMDConfig::level) {                         \
-        case SIMDLevel::NONE:                            \
-            return f<SIMDLevel::NONE>(__VA_ARGS__);      \
-            DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \
-            DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);   \
-            DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__); \
-        default:                                         \
-            FAISS_ASSERT(!"Invalid SIMD level");         \
+#define DISPATCH_SIMDLevel(f, ...)                   \
+    switch (SIMDConfig::level) {                     \
+        DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \
+        DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);   \
+        DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__); \
+        case SIMDLevel::NONE:                        \
+            return f<SIMDLevel::NONE>(__VA_ARGS__);  \
+        default:                                     \
+            FAISS_ASSERT(!"Invalid SIMD level");     \
     }
 
 } // namespace faiss

@@ -7,10 +7,10 @@
 
 #include <faiss/utils/distances_fused/distances_fused.h>
 
-#include <faiss/impl/platform_macros.h> // NOLINT
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/simd_levels.h> // NOLINT(facebook-unused-include-check) used in #ifdef __AVX512F__
 
-#include <faiss/utils/distances_fused/avx512.h> // NOLINT
+#include <faiss/utils/distances_fused/avx512.h>
 #include <faiss/utils/distances_fused/simdlib_based.h>
 
 namespace faiss {

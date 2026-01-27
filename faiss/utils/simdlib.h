@@ -45,16 +45,16 @@ struct simd16float32 : simd512bit<SL> {};
  * functions.
  */
 
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if defined(__AVX512F__)
 
 // simdlib_avx2.h is included in simdlib_avx512.h
 #include <faiss/utils/simd_impl/simdlib_avx512.h>
 
-#elif defined(__AVX2__) && defined(COMPILE_SIMD_AVX2)
+#elif defined(__AVX2__)
 
 #include <faiss/utils/simd_impl/simdlib_avx2.h>
 
-#elif defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
+#elif defined(__aarch64__)
 
 #include <faiss/utils/simd_impl/simdlib_neon.h>
 

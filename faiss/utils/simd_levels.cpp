@@ -146,6 +146,8 @@ std::optional<std::string> to_string(SIMDLevel level) {
             return "AVX512";
         case SIMDLevel::ARM_NEON:
             return "ARM_NEON";
+        case SIMDLevel::ARM_SVE:
+            return "ARM_SVE";
         case SIMDLevel::COUNT:
         default:
             return std::nullopt;
@@ -164,6 +166,9 @@ std::optional<SIMDLevel> to_simd_level(const std::string& level_str) {
     }
     if (level_str == "ARM_NEON") {
         return SIMDLevel::ARM_NEON;
+    }
+    if (level_str == "ARM_SVE") {
+        return SIMDLevel::ARM_SVE;
     }
 
     return std::nullopt;
