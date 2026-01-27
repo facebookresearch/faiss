@@ -67,16 +67,27 @@ struct SIMDConfig {
 #define DISPATCH_SIMDLevel_AVX512(f, ...)
 #endif
 
+/*********************** ARM SIMD */
+
+#ifdef COMPILE_SIMD_ARM_NEON
+#define DISPATCH_SIMDLevel_ARM_NEON(f, ...) \
+    case SIMDLevel::ARM_NEON:               \
+        return f<SIMDLevel::ARM_NEON>(__VA_ARGS__)
+#else
+#define DISPATCH_SIMDLevel_ARM_NEON(f, ...)
+#endif
+
 /* dispatch function f to f<SIMDLevel> */
 
-#define DISPATCH_SIMDLevel(f, ...)                     \
-    switch (SIMDConfig::level) {                       \
-        case SIMDLevel::NONE:                          \
-            return f<SIMDLevel::NONE>(__VA_ARGS__);    \
-            DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);   \
-            DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__); \
-        default:                                       \
-            FAISS_ASSERT(!"Invalid SIMD level");       \
+#define DISPATCH_SIMDLevel(f, ...)                       \
+    switch (SIMDConfig::level) {                         \
+        case SIMDLevel::NONE:                            \
+            return f<SIMDLevel::NONE>(__VA_ARGS__);      \
+            DISPATCH_SIMDLevel_AVX2(f, __VA_ARGS__);     \
+            DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);   \
+            DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__); \
+        default:                                         \
+            FAISS_ASSERT(!"Invalid SIMD level");         \
     }
 
 } // namespace faiss

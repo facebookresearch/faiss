@@ -126,10 +126,9 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 
 #if defined(__aarch64__) && defined(__ARM_NEON) && \
         defined(COMPILE_SIMD_ARM_NEON)
-    // ARM NEON is standard on aarch64, so we can assume it's available
+    // ARM NEON is standard on aarch64
     supported_simd_levels().insert(SIMDLevel::ARM_NEON);
     detected_level = SIMDLevel::ARM_NEON;
-
     // TODO: Add ARM SVE detection when needed
     // For now, we default to ARM_NEON as it's universally supported on aarch64
 #endif
