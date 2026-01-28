@@ -24,6 +24,7 @@
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_levels.h>
 
 using namespace faiss;
 
@@ -334,44 +335,84 @@ void test_fastscan_scanner(
 
 } // anonymous namespace
 
+using test_param_tuple = std::
+        tuple<const char*, std::optional<faiss::MetricType>, faiss::SIMDLevel>;
+
+template <typename... Args>
+std::vector<std::tuple<const char*, std::optional<MetricType>>>
+create_index_variants(
+        std::initializer_list<
+                std::tuple<const char*, std::optional<MetricType>>> variants) {
+    return std::vector<std::tuple<const char*, std::optional<MetricType>>>(
+            variants);
+}
+
 /*************************************************************
  * Test entry points
  *************************************************************/
 
-TEST(TestLowLevelIVF, IVFFlatL2) {
-    test_lowlevel_access("IVF32,Flat", METRIC_L2);
+class LowLevelIVFTest : public ::testing::TestWithParam<test_param_tuple> {
+   protected:
+    void SetUp() override {
+        faiss::SIMDLevel simd_level = std::get<2>(GetParam());
+        faiss::SIMDConfig::set_level(simd_level);
+    }
+};
+
+std::vector<faiss::SIMDLevel> GetSupportedSIMDLevels() {
+    std::vector<faiss::SIMDLevel> supported_levels = {faiss::SIMDLevel::NONE};
+
+    for (int level = static_cast<int>(faiss::SIMDLevel::NONE) + 1;
+         level < static_cast<int>(faiss::SIMDLevel::COUNT);
+         level++) {
+        faiss::SIMDLevel simd_level = static_cast<faiss::SIMDLevel>(level);
+        if (faiss::SIMDConfig::is_simd_level_available(simd_level)) {
+            supported_levels.push_back(simd_level);
+        }
+    }
+
+    EXPECT_TRUE(supported_levels.size() > 0);
+
+    return std::vector<faiss::SIMDLevel>(
+            supported_levels.begin(), supported_levels.end());
 }
 
-TEST(TestLowLevelIVF, PCAIVFFlatL2) {
-    test_lowlevel_access("PCAR16,IVF32,Flat", METRIC_L2);
+std::vector<std::tuple<const char*, std::optional<MetricType>>>
+generate_index_info_low_level_access() {
+    return create_index_variants({
+            {"IVF32,Flat", METRIC_L2},
+            {"PCAR16,IVF32,Flat", METRIC_L2},
+            {"IVF32,Flat", METRIC_INNER_PRODUCT},
+            {"IVF32,SQ8", METRIC_L2},
+            {"IVF32,SQ8", METRIC_INNER_PRODUCT},
+            {"IVF32,PQ4np", METRIC_L2},
+            {"IVF32,PQ4np", METRIC_INNER_PRODUCT},
+            {"IVF32,RaBitQ", METRIC_L2},
+            {"IVF32,RQ16x8", METRIC_L2},
+    });
 }
 
-TEST(TestLowLevelIVF, IVFFlatIP) {
-    test_lowlevel_access("IVF32,Flat", METRIC_INNER_PRODUCT);
+::testing::internal::ParamGenerator<test_param_tuple> GenerateTestParam(
+        const std::vector<std::tuple<const char*, std::optional<MetricType>>>&
+                indexInfo) {
+    std::vector<test_param_tuple> test_params;
+    std::vector<faiss::SIMDLevel> supported_levels = GetSupportedSIMDLevels();
+
+    for (auto& index : indexInfo) {
+        auto index_key = std::get<0>(index);
+        auto metricInfo = std::get<1>(index);
+        for (auto& simd_level : supported_levels) {
+            test_params.push_back(
+                    std::make_tuple(index_key, metricInfo, simd_level));
+        }
+    }
+
+    return ::testing::ValuesIn(test_params);
 }
 
-TEST(TestLowLevelIVF, IVFSQL2) {
-    test_lowlevel_access("IVF32,SQ8", METRIC_L2);
-}
-
-TEST(TestLowLevelIVF, IVFSQIP) {
-    test_lowlevel_access("IVF32,SQ8", METRIC_INNER_PRODUCT);
-}
-
-TEST(TestLowLevelIVF, IVFPQL2) {
-    test_lowlevel_access("IVF32,PQ4np", METRIC_L2);
-}
-
-TEST(TestLowLevelIVF, IVFPQIP) {
-    test_lowlevel_access("IVF32,PQ4np", METRIC_INNER_PRODUCT);
-}
-
-TEST(TestLowLevelIVF, IVFRaBitQ) {
-    test_lowlevel_access("IVF32,RaBitQ", METRIC_L2);
-}
-
-TEST(TestLowLevelIVF, IVFRQ) {
-    test_lowlevel_access("IVF32,RQ16x8", METRIC_L2);
+TEST_P(LowLevelIVFTest, LowLevelAccess) {
+    auto [index_key, metric, simd_level] = GetParam();
+    test_lowlevel_access(index_key, metric.value());
 }
 
 TEST(TestLowLevelIVF, IVFPQFS_L2) {
@@ -413,6 +454,11 @@ TEST(TestLowLevelIVF, IVFRaBitQFS4_L2) {
 TEST(TestLowLevelIVF, IVFRaBitQFS4_IP) {
     test_fastscan_scanner("RR,IVF32,RaBitQfs4", METRIC_INNER_PRODUCT, 0.90);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+        IVFVariants,
+        LowLevelIVFTest,
+        GenerateTestParam(generate_index_info_low_level_access()));
 
 /*************************************************************
  * Same for binary (a bit simpler)
@@ -558,9 +604,30 @@ void test_lowlevel_access_binary(const char* index_key) {
 
 } // anonymous namespace
 
-TEST(TestLowLevelIVF, IVFBinary) {
-    test_lowlevel_access_binary("BIVF32");
+class IVFBinaryTest : public ::testing::TestWithParam<test_param_tuple> {
+   protected:
+    void SetUp() override {
+        faiss::SIMDLevel simd_level = std::get<2>(GetParam());
+        faiss::SIMDConfig::set_level(simd_level);
+    }
+};
+
+TEST_P(IVFBinaryTest, IVFBinary) {
+    auto [index_key, metric, simd_level] = GetParam();
+    test_lowlevel_access_binary(index_key);
 }
+
+std::vector<std::tuple<const char*, std::optional<MetricType>>>
+generate_index_info_ivf_binary_variants() {
+    return create_index_variants({
+            {"BIVF32", std::nullopt},
+    });
+}
+
+INSTANTIATE_TEST_SUITE_P(
+        IVFBinaryVariants,
+        IVFBinaryTest,
+        GenerateTestParam(generate_index_info_ivf_binary_variants()));
 
 namespace {
 
@@ -715,6 +782,27 @@ void test_threaded_search(const char* index_key, MetricType metric) {
 
 } // namespace
 
-TEST(TestLowLevelIVF, ThreadedSearch) {
-    test_threaded_search("IVF32,Flat", METRIC_L2);
+class ThreadedSearchTest : public ::testing::TestWithParam<test_param_tuple> {
+   protected:
+    void SetUp() override {
+        faiss::SIMDLevel simd_level = std::get<2>(GetParam());
+        faiss::SIMDConfig::set_level(simd_level);
+    }
+};
+
+std::vector<std::tuple<const char*, std::optional<MetricType>>>
+generate_index_info_threaded_search_variants() {
+    return create_index_variants({
+            {"IVF32,Flat", METRIC_L2},
+    });
 }
+
+TEST_P(ThreadedSearchTest, ThreadedSearch) {
+    auto [index_key, metric, simd_level] = GetParam();
+    test_threaded_search(index_key, metric.value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+        ThreadedSearchVariants,
+        ThreadedSearchTest,
+        GenerateTestParam(generate_index_info_threaded_search_variants()));

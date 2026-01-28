@@ -74,6 +74,7 @@ set(FAISS_SRC
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
+  impl/scalar_quantizer/training.cpp
   impl/index_read.cpp
   impl/index_write.cpp
   impl/io.cpp
@@ -83,7 +84,9 @@ set(FAISS_SRC
   impl/pq4_fast_scan.cpp
   impl/pq4_fast_scan_search_1.cpp
   impl/pq4_fast_scan_search_qbs.cpp
-  impl/residual_quantizer_encode_steps.cpp
+  impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.cpp
+  impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps-avx2.cpp
+  impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps-neon.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
@@ -106,7 +109,6 @@ set(FAISS_SRC
   utils/utils.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
-  utils/distances_fused/simdlib_based.cpp
 )
 
 if(FAISS_ENABLE_SVS)
@@ -203,6 +205,11 @@ set(FAISS_HEADERS
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
+  impl/scalar_quantizer/codecs.h
+  impl/scalar_quantizer/distance_computers.h
+  impl/scalar_quantizer/quantizers.h
+  impl/scalar_quantizer/similarities.h
+  impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
   impl/index_read_utils.h
@@ -212,14 +219,14 @@ set(FAISS_HEADERS
   impl/lattice_Zn.h
   impl/platform_macros.h
   impl/pq4_fast_scan.h
-  impl/residual_quantizer_encode_steps.h
+  impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h
   impl/simd_result_handlers.h
   impl/zerocopy_io.h
-  impl/code_distance/code_distance.h
-  impl/code_distance/code_distance-generic.h
-  impl/code_distance/code_distance-avx2.h
-  impl/code_distance/code_distance-avx512.h
-  impl/code_distance/code_distance-sve.h
+  impl/pq_code_distance/code_distance.h
+  impl/pq_code_distance/code_distance-generic.h
+  impl/pq_code_distance/code_distance-avx2.h
+  impl/pq_code_distance/code_distance-avx512.h
+  impl/pq_code_distance/code_distance-sve.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
@@ -254,7 +261,6 @@ set(FAISS_HEADERS
   utils/utils.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
-  utils/distances_fused/simdlib_based.h
   utils/approx_topk/approx_topk.h
   utils/approx_topk/avx2-inl.h
   utils/approx_topk/generic.h

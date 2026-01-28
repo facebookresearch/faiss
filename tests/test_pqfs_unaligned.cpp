@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <faiss/IndexIVF.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/random.h>
 

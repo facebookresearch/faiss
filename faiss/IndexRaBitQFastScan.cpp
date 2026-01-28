@@ -9,7 +9,10 @@
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/dispatching.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/rabitq_dispatching.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
 #include <cmath>
@@ -484,227 +487,64 @@ void IndexRaBitQFastScan::search(
     }
 }
 
-// Template implementations for RaBitQHeapHandler
-template <class C, bool with_id_map>
-RaBitQHeapHandler<C, with_id_map>::RaBitQHeapHandler(
+// Factory function with runtime SIMD dispatch
+// Template specializations are in rabitq-avx2.cpp and rabitq-avx512.cpp
+PQ4CodeScanner* make_rabitq_flat_knn_handler(
         const IndexRaBitQFastScan* index,
-        size_t nq_val,
-        size_t k_val,
+        bool is_max,
+        size_t nq,
+        size_t k,
         float* distances,
         int64_t* labels,
-        const IDSelector* sel_in,
-        const FastScanDistancePostProcessing& ctx,
-        bool multi_bit)
-        : RHC(nq_val, index->ntotal, sel_in),
-          rabitq_index(index),
-          heap_distances(distances),
-          heap_labels(labels),
-          nq(nq_val),
-          k(k_val),
-          context(ctx),
-          is_multi_bit(multi_bit) {
-    // Initialize heaps for all queries in constructor
-    // This allows us to support direct normalizer assignment
-#pragma omp parallel for if (nq > 100)
-    for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
-        float* heap_dis = heap_distances + q * k;
-        int64_t* heap_ids = heap_labels + q * k;
-        heap_heapify<Cfloat>(k, heap_dis, heap_ids);
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit) {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512) {
+        return make_rabitq_flat_knn_handler_impl<SIMDLevel::AVX512>(
+                index,
+                is_max,
+                nq,
+                k,
+                distances,
+                labels,
+                sel,
+                context,
+                multi_bit);
+    } else
+#endif
+#ifdef COMPILE_SIMD_AVX2
+            if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return make_rabitq_flat_knn_handler_impl<SIMDLevel::AVX2>(
+                index,
+                is_max,
+                nq,
+                k,
+                distances,
+                labels,
+                sel,
+                context,
+                multi_bit);
+    } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+            if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+        return make_rabitq_flat_knn_handler_impl<SIMDLevel::ARM_NEON>(
+                index,
+                is_max,
+                nq,
+                k,
+                distances,
+                labels,
+                sel,
+                context,
+                multi_bit);
+    } else
+#endif
+    {
+        FAISS_THROW_MSG(
+                "RaBitQ FastScan requires SIMD support (AVX2, AVX512, or ARM_NEON)");
     }
-}
-
-template <class C, bool with_id_map>
-void RaBitQHeapHandler<C, with_id_map>::handle(
-        size_t q,
-        size_t b,
-        simd16uint16 d0,
-        simd16uint16 d1) {
-    ALIGNED(32) uint16_t d32tab[32];
-    d0.store(d32tab);
-    d1.store(d32tab + 16);
-
-    // Get heap pointers and query factors (computed once per batch)
-    float* const heap_dis = heap_distances + q * k;
-    int64_t* const heap_ids = heap_labels + q * k;
-
-    // Access query factors from query_factors pointer
-    rabitq_utils::QueryFactorsData query_factors_data = {};
-    if (context.query_factors != nullptr) {
-        query_factors_data = context.query_factors[q];
-    }
-
-    // Compute normalizers once per batch
-    const float one_a = normalizers ? (1.0f / normalizers[2 * q]) : 1.0f;
-    const float bias = normalizers ? normalizers[2 * q + 1] : 0.0f;
-
-    // Compute loop bounds to avoid redundant bounds checking
-    const size_t base_db_idx = this->j0 + b * 32;
-    const size_t max_vectors = (base_db_idx < rabitq_index->ntotal)
-            ? std::min<size_t>(32, rabitq_index->ntotal - base_db_idx)
-            : 0;
-
-    // Get storage size once
-    const size_t storage_size = rabitq_index->compute_per_vector_storage_size();
-
-    // Stats tracking for multi-bit two-stage search only
-    // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
-    // n_multibit_evaluations: candidates requiring full multi-bit distance
-    size_t local_1bit_evaluations = 0;
-    size_t local_multibit_evaluations = 0;
-
-    // Process distances in batch
-    for (size_t i = 0; i < max_vectors; i++) {
-        const size_t db_idx = base_db_idx + i;
-
-        // Normalize distance from LUT lookup
-        const float normalized_distance = d32tab[i] * one_a + bias;
-
-        // Access factors from flat storage
-        const uint8_t* base_ptr =
-                rabitq_index->flat_storage.data() + db_idx * storage_size;
-
-        if (is_multi_bit) {
-            // Track candidates actually considered for two-stage filtering
-            local_1bit_evaluations++;
-
-            const SignBitFactorsWithError& full_factors =
-                    *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
-
-            float dist_1bit = rabitq_utils::compute_1bit_adjusted_distance(
-                    normalized_distance,
-                    full_factors,
-                    query_factors_data,
-                    rabitq_index->centered,
-                    rabitq_index->qb,
-                    rabitq_index->d);
-
-            // Adaptive filtering: decide whether to compute full distance
-            const bool is_similarity = rabitq_index->metric_type ==
-                    MetricType::METRIC_INNER_PRODUCT;
-            bool should_refine = rabitq_utils::should_refine_candidate(
-                    dist_1bit,
-                    full_factors.f_error,
-                    context.query_factors ? context.query_factors[q].g_error
-                                          : 0.0f,
-                    heap_dis[0],
-                    is_similarity);
-
-            if (should_refine) {
-                local_multibit_evaluations++;
-                float dist_full = compute_full_multibit_distance(db_idx, q);
-
-                if (Cfloat::cmp(heap_dis[0], dist_full)) {
-                    heap_replace_top<Cfloat>(
-                            k, heap_dis, heap_ids, dist_full, db_idx);
-                }
-            }
-        } else {
-            const rabitq_utils::SignBitFactors& db_factors =
-                    *reinterpret_cast<const rabitq_utils::SignBitFactors*>(
-                            base_ptr);
-
-            float adjusted_distance =
-                    rabitq_utils::compute_1bit_adjusted_distance(
-                            normalized_distance,
-                            db_factors,
-                            query_factors_data,
-                            rabitq_index->centered,
-                            rabitq_index->qb,
-                            rabitq_index->d);
-
-            // Add to heap if better than current worst
-            if (Cfloat::cmp(heap_dis[0], adjusted_distance)) {
-                heap_replace_top<Cfloat>(
-                        k, heap_dis, heap_ids, adjusted_distance, db_idx);
-            }
-        }
-    }
-
-    // Update global stats atomically
-#pragma omp atomic
-    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
-}
-
-template <class C, bool with_id_map>
-void RaBitQHeapHandler<C, with_id_map>::begin(const float* norms) {
-    normalizers = norms;
-    // Heap initialization is now done in constructor
-}
-
-template <class C, bool with_id_map>
-void RaBitQHeapHandler<C, with_id_map>::end() {
-// Reorder final results
-#pragma omp parallel for if (nq > 100)
-    for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
-        float* heap_dis = heap_distances + q * k;
-        int64_t* heap_ids = heap_labels + q * k;
-        heap_reorder<Cfloat>(k, heap_dis, heap_ids);
-    }
-}
-
-template <class C, bool with_id_map>
-float RaBitQHeapHandler<C, with_id_map>::compute_lower_bound(
-        float dist_1bit,
-        size_t db_idx,
-        size_t q) const {
-    // Access f_error directly from SignBitFactorsWithError in flat storage
-    const size_t storage_size = rabitq_index->compute_per_vector_storage_size();
-    const uint8_t* base_ptr =
-            rabitq_index->flat_storage.data() + db_idx * storage_size;
-    const SignBitFactorsWithError& db_factors =
-            *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
-    float f_error = db_factors.f_error;
-
-    // Get g_error from query factors (query-dependent error term)
-    float g_error = 0.0f;
-    if (context.query_factors != nullptr) {
-        g_error = context.query_factors[q].g_error;
-    }
-
-    // Compute error adjustment: f_error * g_error
-    float error_adjustment = f_error * g_error;
-
-    return dist_1bit - error_adjustment;
-}
-
-template <class C, bool with_id_map>
-float RaBitQHeapHandler<C, with_id_map>::compute_full_multibit_distance(
-        size_t db_idx,
-        size_t q) const {
-    const size_t ex_bits = rabitq_index->rabitq.nb_bits - 1;
-    const size_t dim = rabitq_index->d;
-
-    const size_t storage_size = rabitq_index->compute_per_vector_storage_size();
-    const uint8_t* base_ptr =
-            rabitq_index->flat_storage.data() + db_idx * storage_size;
-
-    const size_t ex_code_size = (dim * ex_bits + 7) / 8;
-    const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
-    const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
-            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
-
-    // Get query factors reference (avoid copying)
-    const rabitq_utils::QueryFactorsData& query_factors =
-            context.query_factors[q];
-
-    // Get sign bits from FastScan packed format
-    std::vector<uint8_t> unpacked_code(rabitq_index->code_size);
-    CodePackerPQ4 packer(rabitq_index->M2, rabitq_index->bbs);
-    packer.unpack_1(rabitq_index->codes.get(), db_idx, unpacked_code.data());
-    const uint8_t* sign_bits = unpacked_code.data();
-
-    return rabitq_utils::compute_full_multibit_distance(
-            sign_bits,
-            ex_code,
-            ex_fac,
-            query_factors.rotated_q.data(),
-            query_factors.qr_to_c_L2sqr,
-            query_factors.qr_norm_L2sqr,
-            dim,
-            ex_bits,
-            rabitq_index->metric_type);
 }
 
 // Implementation of virtual make_knn_handler method
@@ -718,16 +558,10 @@ SIMDResultHandlerToFloat* IndexRaBitQFastScan::make_knn_handler(
         idx_t* labels,
         const IDSelector* sel,
         const FastScanDistancePostProcessing& context) const {
-    // Use runtime boolean for multi-bit mode
     const bool multi_bit = rabitq.nb_bits > 1;
 
-    if (is_max) {
-        return new RaBitQHeapHandler<CMax<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, context, multi_bit);
-    } else {
-        return new RaBitQHeapHandler<CMin<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, context, multi_bit);
-    }
+    return make_rabitq_flat_knn_handler(
+            this, is_max, n, k, distances, labels, sel, context, multi_bit);
 }
 
 } // namespace faiss

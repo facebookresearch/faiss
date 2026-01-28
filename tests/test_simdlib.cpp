@@ -11,74 +11,43 @@
 
 using namespace faiss;
 
-TEST(TestSIMDLib, TestCmpltAndBlendInplace) {
-    simd8float32 lowestValues(0, 1, 2, 3, 4, 5, 6, 7);
-    simd8uint32 lowestIndices(0, 1, 2, 3, 4, 5, 6, 7);
+template <typename T, typename U>
+void TestCmpltAndBlendInplaceTemplate() {
+    T lowestValues(0, 1, 2, 3, 4, 5, 6, 7);
+    U lowestIndices(0, 1, 2, 3, 4, 5, 6, 7);
 
-    simd8float32 candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
-    simd8uint32 candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
+    T candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
+    U candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
     cmplt_and_blend_inplace(
             candidateValues0, candidateIndices0, lowestValues, lowestIndices);
 
-    simd8float32 candidateValues1(6, 6, 6, 6, 6, 6, 6, 6);
-    simd8uint32 candidateIndices1(20, 21, 22, 23, 24, 25, 26, 27);
+    T candidateValues1(6, 6, 6, 6, 6, 6, 6, 6);
+    U candidateIndices1(20, 21, 22, 23, 24, 25, 26, 27);
     cmplt_and_blend_inplace(
             candidateValues1, candidateIndices1, lowestValues, lowestIndices);
 
-    simd8float32 candidateValues2(0, 1, 2, 3, 4, 5, 5, 5);
-    simd8uint32 candidateIndices2(30, 31, 32, 33, 34, 35, 36, 37);
+    T candidateValues2(0, 1, 2, 3, 4, 5, 5, 5);
+    U candidateIndices2(30, 31, 32, 33, 34, 35, 36, 37);
     cmplt_and_blend_inplace(
             candidateValues2, candidateIndices2, lowestValues, lowestIndices);
 
-    simd8float32 expectedValues(0, 1, 2, 3, 4, 5, 5, 5);
-    simd8uint32 expectedIndices(0, 1, 2, 3, 4, 5, 16, 17);
+    T expectedValues(0, 1, 2, 3, 4, 5, 5, 5);
+    U expectedIndices(0, 1, 2, 3, 4, 5, 16, 17);
     ASSERT_TRUE(lowestValues.is_same_as(expectedValues));
     ASSERT_TRUE(lowestIndices.is_same_as(expectedIndices));
 }
 
-TEST(TestSIMDLib, TestCmpltMinMaxFloat) {
-    simd8float32 minValues(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8uint32 minIndices(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8float32 maxValues(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8uint32 maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
+template <typename T, typename U>
+void TestCmpltMinMaxFloatTemplate() {
+    T minValues(0, 0, 0, 0, 0, 0, 0, 0);
+    U minIndices(0, 0, 0, 0, 0, 0, 0, 0);
+    T maxValues(0, 0, 0, 0, 0, 0, 0, 0);
+    U maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
 
-    simd8float32 candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
-    simd8uint32 candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
-    simd8float32 currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
-    simd8uint32 currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
-
-    cmplt_min_max_fast(
-            candidateValues0,
-            candidateIndices0,
-            currentValues0,
-            currentIndices0,
-            minValues,
-            minIndices,
-            maxValues,
-            maxIndices);
-
-    simd8float32 expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
-    simd8uint32 expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
-    ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
-    ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
-
-    simd8float32 expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
-    // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
-    simd8uint32 expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
-    ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
-    ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
-}
-
-TEST(TestSIMDLib, TestCmpltMinMaxInt) {
-    simd8uint32 minValues(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8uint32 minIndices(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8uint32 maxValues(0, 0, 0, 0, 0, 0, 0, 0);
-    simd8uint32 maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
-
-    simd8uint32 candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
-    simd8uint32 candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
-    simd8uint32 currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
-    simd8uint32 currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
+    T candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
+    U candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
+    T currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
+    U currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
 
     cmplt_min_max_fast(
             candidateValues0,
@@ -90,25 +59,60 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt) {
             maxValues,
             maxIndices);
 
-    simd8uint32 expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
-    simd8uint32 expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
+    T expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
+    U expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
     ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
     ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
 
-    simd8uint32 expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
+    T expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
     // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
-    simd8uint32 expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
+    U expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
     ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
     ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
 }
 
-TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
-    simd16uint16 minValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    simd16uint16 minIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    simd16uint16 maxValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    simd16uint16 maxIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+template <typename T, typename U>
+void TestCmpltMinMaxIntTemplate() {
+    T minValues(0, 0, 0, 0, 0, 0, 0, 0);
+    T minIndices(0, 0, 0, 0, 0, 0, 0, 0);
+    T maxValues(0, 0, 0, 0, 0, 0, 0, 0);
+    T maxIndices(0, 0, 0, 0, 0, 0, 0, 0);
 
-    simd16uint16 candidateValues0(
+    T candidateValues0(5, 5, 5, 5, 5, 5, 5, 5);
+    T candidateIndices0(10, 11, 12, 13, 14, 15, 16, 17);
+    T currentValues0(0, 1, 2, 3, 4, 5, 6, 7);
+    T currentIndices0(0, 1, 2, 3, 4, 5, 6, 7);
+
+    cmplt_min_max_fast(
+            candidateValues0,
+            candidateIndices0,
+            currentValues0,
+            currentIndices0,
+            minValues,
+            minIndices,
+            maxValues,
+            maxIndices);
+
+    T expectedMinValues(0, 1, 2, 3, 4, 5, 5, 5);
+    T expectedMinIndices(0, 1, 2, 3, 4, 5, 16, 17);
+    ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
+    ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
+
+    T expectedMaxValues(5, 5, 5, 5, 5, 5, 6, 7);
+    // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
+    T expectedMaxIndices(10, 11, 12, 13, 14, 15, 6, 7);
+    ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
+    ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
+}
+
+template <typename T>
+void TestCmpltMinMaxInt16Template() {
+    T minValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    T minIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    T maxValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    T maxIndices(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    T candidateValues0(
             5,
             5,
             5,
@@ -125,7 +129,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             1005,
             1005,
             1005);
-    simd16uint16 candidateIndices0(
+    T candidateIndices0(
             10,
             11,
             12,
@@ -142,7 +146,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             1015,
             1016,
             1017);
-    simd16uint16 currentValues0(
+    T currentValues0(
             0,
             1,
             2,
@@ -159,7 +163,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             1005,
             1006,
             1007);
-    simd16uint16 currentIndices0(
+    T currentIndices0(
             0,
             1,
             2,
@@ -187,7 +191,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             maxValues,
             maxIndices);
 
-    simd16uint16 expectedMinValues(
+    T expectedMinValues(
             0,
             1,
             2,
@@ -204,7 +208,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             1005,
             1005,
             1005);
-    simd16uint16 expectedMinIndices(
+    T expectedMinIndices(
             0,
             1,
             2,
@@ -224,7 +228,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
     ASSERT_TRUE(minValues.is_same_as(expectedMinValues));
     ASSERT_TRUE(minIndices.is_same_as(expectedMinIndices));
 
-    simd16uint16 expectedMaxValues(
+    T expectedMaxValues(
             5,
             5,
             5,
@@ -242,7 +246,7 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
             1006,
             1007);
     // the result is not 10,11,12,13,14,5,6,7 because it is _fast version
-    simd16uint16 expectedMaxIndices(
+    T expectedMaxIndices(
             10,
             11,
             12,
@@ -262,3 +266,44 @@ TEST(TestSIMDLib, TestCmpltMinMaxInt16) {
     ASSERT_TRUE(maxValues.is_same_as(expectedMaxValues));
     ASSERT_TRUE(maxIndices.is_same_as(expectedMaxIndices));
 }
+
+#define TEST_SIMD_LEVEL(level)                                          \
+    TEST(TestSIMDLib, TestCmpltAndBlendInplace##level) {                \
+        TestCmpltAndBlendInplaceTemplate<                               \
+                simd8float32<SIMDLevel::level>,                         \
+                simd8uint32<SIMDLevel::level>>();                       \
+    }                                                                   \
+    TEST(TestSIMDLib, TestCmpltMinMaxFloatInplace##level) {             \
+        TestCmpltMinMaxFloatTemplate<                                   \
+                simd8float32<SIMDLevel::level>,                         \
+                simd8uint32<SIMDLevel::level>>();                       \
+    }                                                                   \
+    TEST(TestSIMDLib, TestCmpltMinMaxIntInplace##level) {               \
+        TestCmpltMinMaxIntTemplate<                                     \
+                simd8uint32<SIMDLevel::level>,                          \
+                simd8uint32<SIMDLevel::level>>();                       \
+    }                                                                   \
+    TEST(TestSIMDLib, TestCmpltMinMaxInt16Inplace##level) {             \
+        TestCmpltMinMaxInt16Template<simd16uint16<SIMDLevel::level>>(); \
+    }
+
+#if defined(__x86_64__)
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__) && \
+        defined(__AVX512VL__) && defined(__AVX512BW__) &&   \
+        defined(__AVX512DQ__) && defined(__AVX512CD__)
+TEST_SIMD_LEVEL(AVX512)
+#endif // COMPILE_SIMD_AVX512 && __AVX512__
+
+#if defined(COMPILE_SIMD_AVX2) && defined(__AVX2__)
+TEST_SIMD_LEVEL(AVX2)
+#endif // COMPILE_SIMD_AVX2 && __AVX2__
+
+#elif defined(__aarch64__)
+
+#if defined(COMPILE_SIMD_ARM_NEON) && defined(__ARM_NEON)
+TEST_SIMD_LEVEL(ARM_NEON)
+#endif // COMPILE_SIMD_ARM_NEON && __ARM_NEON
+
+#endif // __aarch64__
+
+TEST_SIMD_LEVEL(NONE)

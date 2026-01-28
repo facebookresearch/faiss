@@ -16,10 +16,13 @@
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/pq_4bit/dispatching.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
+#include <faiss/impl/pq_4bit/rabitq_dispatching.h>
+#include <faiss/impl/pq_4bit/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -529,6 +532,45 @@ void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
     }
 }
 
+/*********************************************************
+ * Factory function for IVF RaBitQ handlers with runtime SIMD dispatch
+ * Template specializations are in rabitq-avx2.cpp and rabitq-avx512.cpp
+ *********************************************************/
+
+/// Runtime SIMD dispatch factory function
+PQ4CodeScanner* make_ivf_rabitq_handler(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* labels,
+        const FastScanDistancePostProcessing* context,
+        bool multibit) {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512) {
+        return make_ivf_rabitq_handler_impl<SIMDLevel::AVX512>(
+                is_max, index, nq, k, distances, labels, context, multibit);
+    } else
+#endif
+#ifdef COMPILE_SIMD_AVX2
+            if (SIMDConfig::level == SIMDLevel::AVX2) {
+        return make_ivf_rabitq_handler_impl<SIMDLevel::AVX2>(
+                is_max, index, nq, k, distances, labels, context, multibit);
+    } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+            if (SIMDConfig::level == SIMDLevel::ARM_NEON) {
+        return make_ivf_rabitq_handler_impl<SIMDLevel::ARM_NEON>(
+                is_max, index, nq, k, distances, labels, context, multibit);
+    } else
+#endif
+    {
+        FAISS_THROW_MSG(
+                "IVF RaBitQ FastScan requires SIMD support (AVX2, AVX512, or ARM_NEON)");
+    }
+}
+
 // Implementation of virtual make_knn_handler method
 SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
         bool is_max,
@@ -543,261 +585,8 @@ SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
     const size_t ex_bits = rabitq.nb_bits - 1;
     const bool is_multibit = ex_bits > 0;
 
-    if (is_max) {
-        return new IVFRaBitQHeapHandler<CMax<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    } else {
-        return new IVFRaBitQHeapHandler<CMin<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    }
-}
-
-/*********************************************************
- * IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler implementation
- *********************************************************/
-
-template <class C>
-IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::IVFRaBitQHeapHandler(
-        const IndexIVFRaBitQFastScan* idx,
-        size_t nq_val,
-        size_t k_val,
-        float* distances,
-        int64_t* labels,
-        const FastScanDistancePostProcessing* ctx,
-        bool multibit)
-        : simd_result_handlers::ResultHandlerCompare<C, true>(
-                  nq_val,
-                  0,
-                  nullptr),
-          index(idx),
-          heap_distances(distances),
-          heap_labels(labels),
-          nq(nq_val),
-          k(k_val),
-          context(ctx),
-          is_multibit(multibit) {
-    current_list_no = 0;
-    probe_indices.clear();
-
-    // Initialize heaps in constructor (standard pattern from HeapHandler)
-    for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
-        float* heap_dis = heap_distances + q * k;
-        int64_t* heap_ids = heap_labels + q * k;
-        heap_heapify<Cfloat>(k, heap_dis, heap_ids);
-    }
-}
-
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
-        size_t q,
-        size_t b,
-        simd16uint16 d0,
-        simd16uint16 d1) {
-    // Store the original local query index before adjust_with_origin changes it
-    size_t local_q = q;
-    this->adjust_with_origin(q, d0, d1);
-
-    ALIGNED(32) uint16_t d32tab[32];
-    d0.store(d32tab);
-    d1.store(d32tab + 16);
-
-    float* const heap_dis = heap_distances + q * k;
-    int64_t* const heap_ids = heap_labels + q * k;
-
-    FAISS_THROW_IF_NOT_FMT(
-            !probe_indices.empty() && local_q < probe_indices.size(),
-            "set_list_context() must be called before handle() - probe_indices size: %zu, local_q: %zu, global_q: %zu",
-            probe_indices.size(),
-            local_q,
-            q);
-
-    // Access query factors directly from array via ProcessingContext
-    if (!context || !context->query_factors) {
-        FAISS_THROW_MSG(
-                "Query factors not available: FastScanDistancePostProcessing with query_factors required");
-    }
-
-    // Use probe_rank from probe_indices for compact storage indexing
-    size_t probe_rank = probe_indices[local_q];
-    size_t nprobe = context->nprobe > 0 ? context->nprobe : index->nprobe;
-    size_t storage_idx = q * nprobe + probe_rank;
-
-    const auto& query_factors = context->query_factors[storage_idx];
-
-    const float one_a =
-            this->normalizers ? (1.0f / this->normalizers[2 * q]) : 1.0f;
-    const float bias = this->normalizers ? this->normalizers[2 * q + 1] : 0.0f;
-
-    uint64_t idx_base = this->j0 + b * 32;
-    if (idx_base >= this->ntotal) {
-        return;
-    }
-
-    size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
-
-    // Stats tracking for two-stage search
-    // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
-    // n_multibit_evaluations: candidates requiring full multi-bit distance
-    size_t local_1bit_evaluations = 0;
-    size_t local_multibit_evaluations = 0;
-
-    // Process each candidate vector in the SIMD batch
-    for (size_t j = 0; j < max_positions; j++) {
-        const int64_t result_id = this->adjust_id(b, j);
-
-        if (result_id < 0) {
-            continue;
-        }
-
-        const float normalized_distance = d32tab[j] * one_a + bias;
-
-        // Get database factors from flat_storage
-        const size_t storage_size = index->compute_per_vector_storage_size();
-        const uint8_t* base_ptr =
-                index->flat_storage.data() + result_id * storage_size;
-
-        if (is_multibit) {
-            // Track candidates actually considered for two-stage filtering
-            local_1bit_evaluations++;
-
-            // Multi-bit: use SignBitFactorsWithError and two-stage search
-            const SignBitFactorsWithError& full_factors =
-                    *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
-
-            // Compute 1-bit adjusted distance using shared helper
-            float dist_1bit = rabitq_utils::compute_1bit_adjusted_distance(
-                    normalized_distance,
-                    full_factors,
-                    query_factors,
-                    index->centered,
-                    index->qb,
-                    index->d);
-
-            // Adaptive filtering: decide whether to compute full distance
-            const bool is_similarity =
-                    index->metric_type == MetricType::METRIC_INNER_PRODUCT;
-
-            float g_error = query_factors.g_error;
-
-            bool should_refine = rabitq_utils::should_refine_candidate(
-                    dist_1bit,
-                    full_factors.f_error,
-                    g_error,
-                    heap_dis[0],
-                    is_similarity);
-            if (should_refine) {
-                local_multibit_evaluations++;
-
-                // Compute local_offset: position within current inverted list
-                size_t local_offset = this->j0 + b * 32 + j;
-
-                // Compute full multi-bit distance
-                float dist_full = compute_full_multibit_distance(
-                        result_id, local_q, q, local_offset);
-
-                // Update heap if this distance is better
-                if (Cfloat::cmp(heap_dis[0], dist_full)) {
-                    heap_replace_top<Cfloat>(
-                            k, heap_dis, heap_ids, dist_full, result_id);
-                    nup++;
-                }
-            }
-        } else {
-            const auto& db_factors =
-                    *reinterpret_cast<const SignBitFactors*>(base_ptr);
-
-            // Compute adjusted distance using shared helper
-            float adjusted_distance =
-                    rabitq_utils::compute_1bit_adjusted_distance(
-                            normalized_distance,
-                            db_factors,
-                            query_factors,
-                            index->centered,
-                            index->qb,
-                            index->d);
-
-            if (Cfloat::cmp(heap_dis[0], adjusted_distance)) {
-                heap_replace_top<Cfloat>(
-                        k, heap_dis, heap_ids, adjusted_distance, result_id);
-                nup++;
-            }
-        }
-    }
-
-    // Update global stats atomically
-#pragma omp atomic
-    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
-}
-
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::set_list_context(
-        size_t list_no,
-        const std::vector<int>& probe_map) {
-    current_list_no = list_no;
-    probe_indices = probe_map;
-}
-
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::begin(
-        const float* norms) {
-    this->normalizers = norms;
-}
-
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::end() {
-#pragma omp parallel for
-    for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
-        float* heap_dis = heap_distances + q * k;
-        int64_t* heap_ids = heap_labels + q * k;
-        heap_reorder<Cfloat>(k, heap_dis, heap_ids);
-    }
-}
-
-template <class C>
-float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
-        compute_full_multibit_distance(
-                size_t db_idx,
-                size_t local_q,
-                size_t global_q,
-                size_t local_offset) const {
-    const size_t ex_bits = index->rabitq.nb_bits - 1;
-    const size_t dim = index->d;
-
-    const size_t storage_size = index->compute_per_vector_storage_size();
-    const uint8_t* base_ptr =
-            index->flat_storage.data() + db_idx * storage_size;
-
-    const size_t ex_code_size = (dim * ex_bits + 7) / 8;
-    const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
-    const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
-            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
-
-    // Use local_q to access probe_indices (batch-local), global_q for storage
-    size_t probe_rank = probe_indices[local_q];
-    size_t nprobe = context->nprobe > 0 ? context->nprobe : index->nprobe;
-    size_t storage_idx = global_q * nprobe + probe_rank;
-    const auto& query_factors = context->query_factors[storage_idx];
-
-    size_t list_no = current_list_no;
-    InvertedLists::ScopedCodes list_codes(index->invlists, list_no);
-
-    std::vector<uint8_t> unpacked_code(index->code_size);
-    CodePackerPQ4 packer(index->M2, index->bbs);
-    packer.unpack_1(list_codes.get(), local_offset, unpacked_code.data());
-    const uint8_t* sign_bits = unpacked_code.data();
-
-    return rabitq_utils::compute_full_multibit_distance(
-            sign_bits,
-            ex_code,
-            ex_fac,
-            query_factors.rotated_q.data(),
-            query_factors.qr_to_c_L2sqr,
-            query_factors.qr_norm_L2sqr,
-            dim,
-            ex_bits,
-            index->metric_type);
+    return make_ivf_rabitq_handler(
+            is_max, this, n, k, distances, labels, &context, is_multibit);
 }
 
 /*********************************************************
@@ -895,15 +684,13 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         std::vector<int> probe_map = {0};
         handler->set_list_context(list_no, probe_map);
 
-        pq4_accumulate_loop(
+        handler->accumulate_loop(
                 1,
                 roundup(ntotal, index.bbs),
                 index.bbs,
                 static_cast<int>(index.M2),
                 codes,
-                LUT,
-                *handler,
-                nullptr);
+                LUT);
 
         // Combine results across iterations
         handler->end();

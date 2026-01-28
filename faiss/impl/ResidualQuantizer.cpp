@@ -17,7 +17,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -500,7 +500,9 @@ void ResidualQuantizer::refine_beam_LUT(
         int32_t* out_codes,
         float* out_distances) const {
     RefineBeamLUTMemoryPool pool;
-    refine_beam_LUT_mp(
+
+    DISPATCH_SIMDLevel(
+            refine_beam_LUT_mp,
             *this,
             n,
             query_norms,

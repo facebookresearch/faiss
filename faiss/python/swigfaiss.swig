@@ -107,7 +107,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/utils/simdlib.h>
-#include <faiss/impl/simd_result_handlers.h>
+// #include <faiss/impl/pq_4bit/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -165,7 +165,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
-#include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
@@ -339,6 +339,9 @@ namespace std {
 %include <faiss/utils/partitioning.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
+
+%ignore faiss::SIMDConfig::level_names;
+%include <faiss/utils/simd_levels.h>
 
 int get_num_gpus();
 void gpu_profiler_start();
@@ -516,7 +519,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/Quantizer.h>
 %include  <faiss/impl/ProductQuantizer.h>
 %include  <faiss/impl/AdditiveQuantizer.h>
-%include  <faiss/impl/residual_quantizer_encode_steps.h>
+%include  <faiss/impl/residual_quantizer_encode_steps/residual_quantizer_encode_steps.h>
 %include  <faiss/impl/ResidualQuantizer.h>
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
@@ -590,14 +593,21 @@ void gpu_sync_all_devices()
 %include  <faiss/Index2Layer.h>
 
 %include  <faiss/impl/FastScanDistancePostProcessing.h>
+
+// Ignore make_knn_handler methods as they return internal SIMD types
+%ignore faiss::IndexFastScan::make_knn_handler;
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
 
 // NOTE(matthijs) let's not go into wrapping simdlib
-struct faiss::simd16uint16 {};
+// struct faiss::simd16uint16 {};
 
-%include  <faiss/impl/simd_result_handlers.h>
+// %include  <faiss/impl/pq_4bit/simd_result_handlers.h>
+// Ignore methods that use SIMDResultHandlerToFloat (internal SIMD types)
+%ignore faiss::IndexIVFFastScan::make_knn_handler;
+%ignore faiss::IndexIVFFastScan::search_implem_10;
+%ignore faiss::IndexIVFFastScan::search_implem_12;
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -639,6 +649,11 @@ struct faiss::simd16uint16 {};
 %include <faiss/impl/RaBitQStats.h>
 %include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
+
+// Ignore internal SIMD dispatch functions (use PQ4CodeScanner which SWIG doesn't know about)
+%ignore faiss::make_rabitq_flat_knn_handler;
+%ignore faiss::make_ivf_rabitq_handler;
+
 %include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
 %include <faiss/IndexIVFRaBitQFastScan.h>
@@ -839,7 +854,6 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexBinaryIVF )
     DOWNCAST ( IndexBinaryFlat )
     DOWNCAST ( IndexBinaryFromFloat )
-    DOWNCAST ( IndexBinaryHNSWCagra )
     DOWNCAST ( IndexBinaryHNSW )
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )

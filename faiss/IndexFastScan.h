@@ -9,14 +9,13 @@
 
 #include <faiss/Index.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/pq_4bit/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
 struct IDSelector;
-struct SIMDResultHandlerToFloat;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
