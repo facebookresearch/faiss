@@ -125,10 +125,12 @@ struct IndexBinaryIVF : IndexBinary {
             int32_t* distances,
             idx_t* labels,
             bool store_pairs,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params = nullptr,
+            const IDSelector* sel = nullptr) const;
 
     virtual BinaryInvertedListScanner* get_InvertedListScanner(
-            bool store_pairs = false) const;
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr) const;
 
     /** assign the vectors, then call search_preassign */
     void search(
@@ -222,6 +224,19 @@ struct IndexBinaryIVF : IndexBinary {
 };
 
 struct BinaryInvertedListScanner {
+    bool store_pairs;
+    const IDSelector* sel;
+    idx_t list_no;
+    const uint8_t* query_vector;
+
+    BinaryInvertedListScanner(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr)
+            : store_pairs(store_pairs),
+              sel(sel),
+              list_no(-1),
+              query_vector(nullptr) {}
+
     /// from now on we handle this query.
     virtual void set_query(const uint8_t* query_vector) = 0;
 
