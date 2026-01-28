@@ -14,6 +14,7 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 
 #include <faiss/IndexFlat.h>
@@ -410,6 +411,10 @@ void search_knn_hamming_heap(
     idx_t nprobe = params ? params->nprobe : ivf->nprobe;
     nprobe = std::min((idx_t)ivf->nlist, nprobe);
     idx_t max_codes = params ? params->max_codes : ivf->max_codes;
+    const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
+    if (max_codes == 0) {
+        max_codes = unlimited_list_size;
+    }
     MetricType metric_type = ivf->metric_type;
 
     // almost verbatim copy from IndexIVF::search_preassigned
@@ -458,6 +463,10 @@ void search_knn_hamming_heap(
                 nlistv++;
 
                 size_t list_size = ivf->invlists->list_size(key);
+                size_t list_size_max = max_codes - nscan;
+                if (list_size > list_size_max) {
+                    list_size = list_size_max;
+                }
                 InvertedLists::ScopedCodes scodes(ivf->invlists, key);
                 std::unique_ptr<InvertedLists::ScopedIds> sids;
                 const idx_t* ids = nullptr;
@@ -472,7 +481,7 @@ void search_knn_hamming_heap(
                         list_size, scodes.get(), ids, simi, idxi, k);
 
                 nscan += list_size;
-                if (max_codes && nscan >= max_codes) {
+                if (nscan >= max_codes) {
                     break;
                 }
             }
@@ -546,6 +555,10 @@ void search_knn_hamming_count(
 
             nlistv++;
             size_t list_size = ivf->invlists->list_size(key);
+            size_t list_size_max = max_codes - nscan;
+            if (list_size > list_size_max) {
+                list_size = list_size_max;
+            }
             InvertedLists::ScopedCodes scodes(ivf->invlists, key);
             const uint8_t* list_vecs = scodes.get();
             const idx_t* ids =
@@ -562,7 +575,7 @@ void search_knn_hamming_count(
             }
 
             nscan += list_size;
-            if (max_codes && nscan >= max_codes) {
+            if (nscan >= max_codes) {
                 break;
             }
         }
