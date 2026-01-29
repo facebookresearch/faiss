@@ -22,6 +22,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/expanded_scanners.h>
 #include <faiss/utils/bf16.h>
 #include <faiss/utils/fp16.h>
 #include <faiss/utils/utils.h>
@@ -2128,7 +2129,7 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
 
 namespace {
 
-template <class DCClass, int use_sel>
+template <class DCClass>
 struct IVFSQScannerIP : InvertedListScanner {
     DCClass dc;
     bool by_residual;
@@ -2161,13 +2162,23 @@ struct IVFSQScannerIP : InvertedListScanner {
     float distance_to_code(const uint8_t* code) const final {
         return accu0 + dc.query_to_code(code);
     }
+
+    // redefining the scan_codes allows to inline the distance_to_code
+    size_t scan_codes(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const override {
+        return run_scan_codes_fix_C<CMin<float, idx_t>>(
+                *this, list_size, codes, ids, handler);
+    }
 };
 
 /* use_sel = 0: don't check selector
  * = 1: check on ids[j]
  * = 2: check in j directly (normally ids is nullptr and store_pairs)
  */
-template <class DCClass, int use_sel>
+template <class DCClass>
 struct IVFSQScannerL2 : InvertedListScanner {
     DCClass dc;
 
@@ -2216,31 +2227,17 @@ struct IVFSQScannerL2 : InvertedListScanner {
     float distance_to_code(const uint8_t* code) const final {
         return dc.query_to_code(code);
     }
-};
 
-template <class DCClass, int use_sel>
-InvertedListScanner* sel3_InvertedListScanner(
-        const ScalarQuantizer* sq,
-        const Index* quantizer,
-        bool store_pairs,
-        const IDSelector* sel,
-        bool r) {
-    if (DCClass::Sim::metric_type == METRIC_L2) {
-        return new IVFSQScannerL2<DCClass, use_sel>(
-                sq->d,
-                sq->trained,
-                sq->code_size,
-                quantizer,
-                store_pairs,
-                sel,
-                r);
-    } else if (DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
-        return new IVFSQScannerIP<DCClass, use_sel>(
-                sq->d, sq->trained, sq->code_size, store_pairs, sel, r);
-    } else {
-        FAISS_THROW_MSG("unsupported metric type");
+    // redefining the scan_codes allows to inline the distance_to_code
+    size_t scan_codes(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const {
+        return run_scan_codes_fix_C<CMax<float, idx_t>>(
+                *this, list_size, codes, ids, handler);
     }
-}
+};
 
 template <class DCClass>
 InvertedListScanner* sel2_InvertedListScanner(
@@ -2249,17 +2246,20 @@ InvertedListScanner* sel2_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         bool r) {
-    if (sel) {
-        if (store_pairs) {
-            return sel3_InvertedListScanner<DCClass, 2>(
-                    sq, quantizer, store_pairs, sel, r);
-        } else {
-            return sel3_InvertedListScanner<DCClass, 1>(
-                    sq, quantizer, store_pairs, sel, r);
-        }
+    if (DCClass::Sim::metric_type == METRIC_L2) {
+        return new IVFSQScannerL2<DCClass>(
+                sq->d,
+                sq->trained,
+                sq->code_size,
+                quantizer,
+                store_pairs,
+                sel,
+                r);
+    } else if (DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
+        return new IVFSQScannerIP<DCClass>(
+                sq->d, sq->trained, sq->code_size, store_pairs, sel, r);
     } else {
-        return sel3_InvertedListScanner<DCClass, 0>(
-                sq, quantizer, store_pairs, sel, r);
+        FAISS_THROW_MSG("unsupported metric type");
     }
 }
 
