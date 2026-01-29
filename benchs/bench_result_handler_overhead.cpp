@@ -25,7 +25,8 @@ namespace {
 
 constexpr int nb = 100000;
 constexpr int nq = 1000;
-constexpr int nrun = 5;
+constexpr int nrun = 100;
+constexpr float min_run_len_ms = 2000.0;
 
 struct IndexData {
     std::unique_ptr<Index> index;
@@ -65,7 +66,7 @@ std::pair<double, double> run_search(
         data.index->search(
                 nq, data.xq.data(), k, distances.data(), labels.data());
         search_times.push_back(indexIVF_stats.search_time);
-        if (getmillisecs() - t0 > 2000.0) {
+        if (getmillisecs() - t0 > min_run_len_ms) {
             break;
         }
     }
@@ -113,11 +114,11 @@ void print_results_table(
         const std::string& index_factory,
         int d,
         const std::vector<BenchmarkResult>& results) {
-    std::vector<int> ks_list = {1, 4, 16, 64};
-    std::vector<int> nprobes_list = {1, 4, 16, 64};
+    std::vector<int> ks_list = {1, 4, 16};
+    std::vector<int> nprobes_list = {1, 4, 16};
 
     std::map<std::pair<int, int>, std::pair<double, double>> result_map;
-    for (const auto& r : results) {
+    for (const auto& r : results) {        
         result_map[{r.k, r.nprobe}] = {r.mean_time, r.std_time};
     }
 
@@ -155,39 +156,33 @@ void print_results_table(
 } // namespace faiss
 
 int main() {
-    /*
-    std::vector<std::string> indexes = {
-            "IVF256,SQ4", "IVF256,RaBitQ", "IVF256,SQfp16"};
-    std::vector<int> dims = {32, 64, 128};
-    std::vector<int> ks = {1, 4, 16, 64};
-    std::vector<int> nprobes = {1, 4, 16, 64};
-*/
-    std::vector<std::string> indexes = {
-            "IVF256,SQ4",
+
+    std::vector<std::pair<int, std::string> > indexes = {        
+            {64, "IVF256,SQ4"}, {256, "IVF256,RaBitQ"}, {16, "IVF256,SQfp16"}, // 256 bit types 
+            {128, "IVF256,SQ4"}, {512, "IVF256,RaBitQ"}, {32, "IVF256,SQfp16"}, // 512 bit types 
     };
-    std::vector<int> dims = {32};
     std::vector<int> ks = {1, 4, 16};
     std::vector<int> nprobes = {1, 4, 16};
 
-    for (const auto& index_factory : indexes) {
-        for (int d : dims) {
-            std::cout << "Building " << index_factory << " d=" << d << "..."
-                      << std::flush;
-            faiss::IndexData data =
-                    faiss::build_index(d, index_factory.c_str());
-            std::cout << " done\n";
+    for (const auto p : indexes) {
+        std::string index_factory = p.second; 
+        int d = p.first; 
+        std::cout << "Building " << index_factory << " d=" << d << "..."
+                    << std::flush;
+        faiss::IndexData data =
+                faiss::build_index(d, index_factory.c_str());
+        std::cout << " done\n";
 
-            std::vector<faiss::BenchmarkResult> results;
-            for (int k : ks) {
-                for (int nprobe : nprobes) {
-                    auto [mean, std] = faiss::run_search(
-                            data, d, k, nprobe, index_factory.c_str());
-                    results.push_back({index_factory, d, k, nprobe, mean, std});
-                }
+        std::vector<faiss::BenchmarkResult> results;
+        for (int k : ks) {
+            for (int nprobe : nprobes) {
+                auto [mean, std] = faiss::run_search(
+                        data, d, k, nprobe, index_factory.c_str());
+                results.push_back({index_factory, d, k, nprobe, mean, std});
             }
 
-            faiss::print_results_table(index_factory, d, results);
         }
+        faiss::print_results_table(index_factory, d, results);
     }
 
     return 0;
