@@ -2163,15 +2163,15 @@ struct IVFSQScannerIP : InvertedListScanner {
         return accu0 + dc.query_to_code(code);
     }
 
-    // redefining the scan_codes allows to inline the distance_to_code 
-    size_t scan_codes(    
+    // redefining the scan_codes allows to inline the distance_to_code
+    size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const override {
-        return run_scan_codes_fix_C<CMin<float, idx_t>>(*this, list_size, codes, ids, handler);
+        return run_scan_codes_fix_C<CMin<float, idx_t>>(
+                *this, list_size, codes, ids, handler);
     }
-        
 };
 
 /* use_sel = 0: don't check selector
@@ -2228,15 +2228,15 @@ struct IVFSQScannerL2 : InvertedListScanner {
         return dc.query_to_code(code);
     }
 
-    // redefining the scan_codes allows to inline the distance_to_code 
-    size_t scan_codes(    
+    // redefining the scan_codes allows to inline the distance_to_code
+    size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const {
-        return run_scan_codes_fix_C<CMax<float, idx_t>>(*this, list_size, codes, ids, handler);
+        return run_scan_codes_fix_C<CMax<float, idx_t>>(
+                *this, list_size, codes, ids, handler);
     }
-    
 };
 
 template <class DCClass>

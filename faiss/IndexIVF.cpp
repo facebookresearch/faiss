@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include <faiss/IndexIVF.h>
 
 #include <omp.h>
@@ -28,8 +27,6 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/expanded_scanners.h>
-
-
 
 namespace faiss {
 
@@ -1347,8 +1344,7 @@ IndexIVFStats indexIVF_stats;
  * InvertedListScanner
  *************************************************************************/
 
-
-// this gets expanded in expanded_scanners 
+// this gets expanded in expanded_scanners
 
 size_t InvertedListScanner::scan_codes(
         size_t list_size,

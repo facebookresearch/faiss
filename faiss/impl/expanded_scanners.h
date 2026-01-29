@@ -7,14 +7,17 @@
 
 #pragma once
 
-#include <cstdio> 
+#include <cstdio>
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/ResultHandler.h>
 
-/* This is the inner loop of the inverted list scanners. The default version that is defined in IndexIVF.cpp works fine but it cannot inline the distance computation code 
- * by calling one or another of the run_scan_codes_* variants with the exact ScannerType and by setting distance_to_code to be a final function, the code can be inlined. 
- * The speed difference matters for very small distance computations (eg. SQ or RabitQ) */
+/* This is the inner loop of the inverted list scanners. The default version
+ * that is defined in IndexIVF.cpp works fine but it cannot inline the distance
+ * computation code by calling one or another of the run_scan_codes_* variants
+ * with the exact ScannerType and by setting distance_to_code to be a final
+ * function, the code can be inlined. The speed difference matters for very
+ * small distance computations (eg. SQ or RabitQ) */
 
 namespace faiss {
 
@@ -42,7 +45,7 @@ size_t run_scan_codes1(
             }
         }
 
-        float dis = scanner.distance_to_code(codes); // will be inlined if final 
+        float dis = scanner.distance_to_code(codes); // will be inlined if final
         if (C::cmp(threshold, dis)) {
             int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
             handler.add_result(dis, id);
@@ -62,12 +65,18 @@ size_t run_scan_codes_fix_store_pairs_fix_use_sel(
         const uint8_t* codes,
         const idx_t* ids,
         ResultHandler& handler) {
-    if (scanner.keep_max) {      
-        return run_scan_codes1<ScannerType, CMin<float, idx_t>, store_pairs, use_sel>(
-                scanner, list_size, codes, ids, handler);
+    if (scanner.keep_max) {
+        return run_scan_codes1<
+                ScannerType,
+                CMin<float, idx_t>,
+                store_pairs,
+                use_sel>(scanner, list_size, codes, ids, handler);
     } else {
-        return run_scan_codes1<ScannerType, CMax<float, idx_t>, store_pairs, use_sel>(
-                scanner, list_size, codes, ids, handler);
+        return run_scan_codes1<
+                ScannerType,
+                CMax<float, idx_t>,
+                store_pairs,
+                use_sel>(scanner, list_size, codes, ids, handler);
     }
 }
 
@@ -78,7 +87,7 @@ size_t run_scan_codes_fix_C_fix_use_sel(
         const uint8_t* codes,
         const idx_t* ids,
         ResultHandler& handler) {
-    if (scanner.store_pairs) {      
+    if (scanner.store_pairs) {
         return run_scan_codes1<ScannerType, C, true, use_sel>(
                 scanner, list_size, codes, ids, handler);
     } else {
@@ -95,7 +104,7 @@ size_t run_scan_codes_fix_C(
         const idx_t* ids,
         ResultHandler& handler) {
     if (scanner.sel) {
-        if (scanner.store_pairs) {      
+        if (scanner.store_pairs) {
             return run_scan_codes1<ScannerType, C, true, true>(
                     scanner, list_size, codes, ids, handler);
         } else {
@@ -103,7 +112,7 @@ size_t run_scan_codes_fix_C(
                     scanner, list_size, codes, ids, handler);
         }
     } else {
-        if (scanner.store_pairs) {      
+        if (scanner.store_pairs) {
             return run_scan_codes1<ScannerType, C, true, false>(
                     scanner, list_size, codes, ids, handler);
         } else {
@@ -112,7 +121,6 @@ size_t run_scan_codes_fix_C(
         }
     }
 }
-
 
 template <class ScannerType>
 size_t run_scan_codes(
@@ -124,22 +132,21 @@ size_t run_scan_codes(
     if (scanner.sel == nullptr) {
         if (scanner.store_pairs) {
             return run_scan_codes_fix_store_pairs_fix_use_sel<true, false>(
-                scanner, list_size, codes, ids, handler);
+                    scanner, list_size, codes, ids, handler);
         } else {
             return run_scan_codes_fix_store_pairs_fix_use_sel<false, false>(
-                scanner, list_size, codes, ids, handler);
+                    scanner, list_size, codes, ids, handler);
         }
     } else {
         if (scanner.store_pairs) {
             return run_scan_codes_fix_store_pairs_fix_use_sel<true, true>(
-                scanner, list_size, codes, ids, handler);
+                    scanner, list_size, codes, ids, handler);
         } else {
             return run_scan_codes_fix_store_pairs_fix_use_sel<false, true>(
-                scanner, list_size, codes, ids, handler);
+                    scanner, list_size, codes, ids, handler);
         }
     }
 }
-
 
 } // anonymous namespace
 

@@ -16,8 +16,8 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <vector>
 #include <map>
+#include <vector>
 
 namespace faiss {
 
@@ -60,7 +60,7 @@ std::pair<double, double> run_search(
 
     // Timed runs - stop if total time exceeds 2 seconds
     double t0 = getmillisecs();
-    std::vector<double> search_times; 
+    std::vector<double> search_times;
     for (int run = 0; run < nrun; run++) {
         indexIVF_stats.reset();
         data.index->search(
@@ -83,7 +83,9 @@ std::pair<double, double> run_search(
         double t_us = t / nq * 1000.0;
         sq_sum += (t_us - mean) * (t_us - mean);
     }
-    double std = search_times.size() > 1 ? std::sqrt(sq_sum / (search_times.size() - 1)) : 0.0;
+    double std = search_times.size() > 1
+            ? std::sqrt(sq_sum / (search_times.size() - 1))
+            : 0.0;
 
     return {mean, std};
 }
@@ -118,11 +120,13 @@ void print_results_table(
     std::vector<int> nprobes_list = {1, 4, 16};
 
     std::map<std::pair<int, int>, std::pair<double, double>> result_map;
-    for (const auto& r : results) {        
+    for (const auto& r : results) {
         result_map[{r.k, r.nprobe}] = {r.mean_time, r.std_time};
     }
 
-    std::cout << "\n" << index_factory << " d=" << d << " (time in us/query, mean ± stddev)\n";
+    std::cout << "\n"
+              << index_factory << " d=" << d
+              << " (time in us/query, mean ± stddev)\n";
     std::cout << std::string(76, '-') << "\n";
 
     std::cout << std::setw(8) << "k \\ np"
@@ -139,8 +143,8 @@ void print_results_table(
             auto it = result_map.find({k, np});
             if (it != result_map.end()) {
                 std::ostringstream oss;
-                oss << std::fixed << std::setprecision(1)
-                    << it->second.first << " ± " << it->second.second;
+                oss << std::fixed << std::setprecision(1) << it->second.first
+                    << " ± " << it->second.second;
                 std::cout << std::setw(16) << oss.str() << " |";
             } else {
                 std::cout << std::setw(16) << "N/A"
@@ -156,21 +160,23 @@ void print_results_table(
 } // namespace faiss
 
 int main() {
-
-    std::vector<std::pair<int, std::string> > indexes = {        
-            {64, "IVF256,SQ4"}, {256, "IVF256,RaBitQ"}, {16, "IVF256,SQfp16"}, // 256 bit types 
-            {128, "IVF256,SQ4"}, {512, "IVF256,RaBitQ"}, {32, "IVF256,SQfp16"}, // 512 bit types 
+    std::vector<std::pair<int, std::string>> indexes = {
+            {64, "IVF256,SQ4"},
+            {256, "IVF256,RaBitQ"},
+            {16, "IVF256,SQfp16"}, // 256 bit types
+            {128, "IVF256,SQ4"},
+            {512, "IVF256,RaBitQ"},
+            {32, "IVF256,SQfp16"}, // 512 bit types
     };
     std::vector<int> ks = {1, 4, 16};
     std::vector<int> nprobes = {1, 4, 16};
 
     for (const auto p : indexes) {
-        std::string index_factory = p.second; 
-        int d = p.first; 
+        std::string index_factory = p.second;
+        int d = p.first;
         std::cout << "Building " << index_factory << " d=" << d << "..."
-                    << std::flush;
-        faiss::IndexData data =
-                faiss::build_index(d, index_factory.c_str());
+                  << std::flush;
+        faiss::IndexData data = faiss::build_index(d, index_factory.c_str());
         std::cout << " done\n";
 
         std::vector<faiss::BenchmarkResult> results;
@@ -180,7 +186,6 @@ int main() {
                         data, d, k, nprobe, index_factory.c_str());
                 results.push_back({index_factory, d, k, nprobe, mean, std});
             }
-
         }
         faiss::print_results_table(index_factory, d, results);
     }
