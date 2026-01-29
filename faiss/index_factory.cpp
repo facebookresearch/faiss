@@ -642,7 +642,7 @@ Index* parse_svs_datatype(
     if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
         std::string leanvec_d_string =
                 sm[2].length() > 0 ? sm[2].str().substr(1) : "0";
-        int leanvec_d = std::stoul(leanvec_d_string);
+        int leanvec_d = static_cast<int>(std::stoul(leanvec_d_string));
 
         if (index_type == "Vamana") {
             return new IndexSVSVamanaLeanVec(
