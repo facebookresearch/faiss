@@ -8,3 +8,7 @@
 add_executable(bench_ivf_selector EXCLUDE_FROM_ALL bench_ivf_selector.cpp)
 target_link_libraries(bench_ivf_selector PRIVATE faiss)
 
+add_executable(bench_result_handler_overhead EXCLUDE_FROM_ALL
+  bench_result_handler_overhead.cpp)
+target_link_libraries(bench_result_handler_overhead
+  PRIVATE faiss OpenMP::OpenMP_CXX)
