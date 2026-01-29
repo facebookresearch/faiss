@@ -7,16 +7,17 @@
 
 #include <faiss/AutoTune.h>
 #include <faiss/Index.h>
+#include <faiss/IndexIVF.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 #include <omp.h>
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <map>
-#include <memory>
 #include <vector>
+#include <map>
 
 namespace faiss {
 
@@ -36,10 +37,11 @@ struct BenchmarkResult {
     int d;
     int k;
     int nprobe;
-    double time_per_query_us;
+    double mean_time;
+    double std_time;
 };
 
-double run_search(
+std::pair<double, double> run_search(
         IndexData& data,
         int d,
         int k,
@@ -57,19 +59,32 @@ double run_search(
 
     // Timed runs - stop if total time exceeds 2 seconds
     double t0 = getmillisecs();
-    int effective_runs = 0;
+    std::vector<double> search_times; 
     for (int run = 0; run < nrun; run++) {
+        indexIVF_stats.reset();
         data.index->search(
                 nq, data.xq.data(), k, distances.data(), labels.data());
-        effective_runs++;
+        search_times.push_back(indexIVF_stats.search_time);
         if (getmillisecs() - t0 > 2000.0) {
             break;
         }
     }
-    double t1 = getmillisecs();
 
-    double time_per_query_us = (t1 - t0) / effective_runs / nq * 1000.0;
-    return time_per_query_us;
+    // Compute mean and std (in us/query)
+    double sum = 0.0;
+    for (double t : search_times) {
+        sum += t;
+    }
+    double mean = sum / search_times.size() / nq * 1000.0;
+
+    double sq_sum = 0.0;
+    for (double t : search_times) {
+        double t_us = t / nq * 1000.0;
+        sq_sum += (t_us - mean) * (t_us - mean);
+    }
+    double std = search_times.size() > 1 ? std::sqrt(sq_sum / (search_times.size() - 1)) : 0.0;
+
+    return {mean, std};
 }
 
 IndexData build_index(int d, const char* factory_string) {
@@ -101,31 +116,33 @@ void print_results_table(
     std::vector<int> ks_list = {1, 4, 16, 64};
     std::vector<int> nprobes_list = {1, 4, 16, 64};
 
-    std::map<std::pair<int, int>, double> result_map;
+    std::map<std::pair<int, int>, std::pair<double, double>> result_map;
     for (const auto& r : results) {
-        result_map[{r.k, r.nprobe}] = r.time_per_query_us;
+        result_map[{r.k, r.nprobe}] = {r.mean_time, r.std_time};
     }
 
-    std::cout << "\n" << index_factory << " d=" << d << " (time in us/query)\n";
-    std::cout << std::string(60, '-') << "\n";
+    std::cout << "\n" << index_factory << " d=" << d << " (time in us/query, mean ± stddev)\n";
+    std::cout << std::string(76, '-') << "\n";
 
     std::cout << std::setw(8) << "k \\ np"
               << " |";
     for (int np : nprobes_list) {
-        std::cout << std::setw(10) << np << " |";
+        std::cout << std::setw(16) << np << " |";
     }
     std::cout << "\n";
-    std::cout << std::string(60, '-') << "\n";
+    std::cout << std::string(76, '-') << "\n";
 
     for (int k : ks_list) {
         std::cout << std::setw(8) << k << " |";
         for (int np : nprobes_list) {
             auto it = result_map.find({k, np});
             if (it != result_map.end()) {
-                std::cout << std::setw(10) << std::fixed << std::setprecision(1)
-                          << it->second << " |";
+                std::ostringstream oss;
+                oss << std::fixed << std::setprecision(1)
+                    << it->second.first << " ± " << it->second.second;
+                std::cout << std::setw(16) << oss.str() << " |";
             } else {
-                std::cout << std::setw(10) << "N/A"
+                std::cout << std::setw(16) << "N/A"
                           << " |";
             }
         }
@@ -163,9 +180,9 @@ int main() {
             std::vector<faiss::BenchmarkResult> results;
             for (int k : ks) {
                 for (int nprobe : nprobes) {
-                    double time_us = faiss::run_search(
+                    auto [mean, std] = faiss::run_search(
                             data, d, k, nprobe, index_factory.c_str());
-                    results.push_back({index_factory, d, k, nprobe, time_us});
+                    results.push_back({index_factory, d, k, nprobe, mean, std});
                 }
             }
 

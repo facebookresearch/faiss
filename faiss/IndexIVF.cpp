@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// -*- c++ -*-
 
 #include <faiss/IndexIVF.h>
 
@@ -28,6 +27,9 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/expanded_scanners.h>
+
+
 
 namespace faiss {
 
@@ -1345,81 +1347,15 @@ IndexIVFStats indexIVF_stats;
  * InvertedListScanner
  *************************************************************************/
 
-namespace {
 
-template <typename C, bool store_pairs, bool use_sel>
-size_t run_scan_codes1(
-        const InvertedListScanner& scanner,
-        size_t list_size,
-        const uint8_t* codes,
-        const idx_t* ids,
-        ResultHandler& handler) {
-    size_t nup = 0;
-    size_t list_no = scanner.list_no;
-    size_t code_size = scanner.code_size;
-    const IDSelector* sel = scanner.sel;
-    for (size_t j = 0; j < list_size; j++) {
-        if (use_sel) {
-            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-            // skip code without computing distance
-            if (!sel->is_member(id)) {
-                codes += code_size;
-                continue;
-            }
-        }
-
-        float dis = scanner.distance_to_code(codes);
-        if (C::cmp(handler.threshold, dis)) {
-            int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-            handler.add_result(dis, id);
-            nup++;
-        }
-        codes += code_size;
-    }
-
-    return nup;
-}
-
-template <bool store_pairs, bool use_sel>
-size_t run_scan_codes(
-        const InvertedListScanner& scanner,
-        size_t list_size,
-        const uint8_t* codes,
-        const idx_t* ids,
-        ResultHandler& handler) {
-    if (scanner.keep_max) {
-        return run_scan_codes1<CMin<float, idx_t>, store_pairs, use_sel>(
-                scanner, list_size, codes, ids, handler);
-    } else {
-        return run_scan_codes1<CMax<float, idx_t>, store_pairs, use_sel>(
-                scanner, list_size, codes, ids, handler);
-    }
-}
-
-} // anonymous namespace
+// this gets expanded in expanded_scanners 
 
 size_t InvertedListScanner::scan_codes(
         size_t list_size,
         const uint8_t* codes,
         const idx_t* ids,
         ResultHandler& handler) const {
-    if (sel == nullptr) {
-        if (store_pairs) {
-            return run_scan_codes<true, false>(
-                    *this, list_size, codes, ids, handler);
-        } else {
-            return run_scan_codes<false, false>(
-                    *this, list_size, codes, ids, handler);
-        }
-    } else {
-        if (store_pairs) {
-            return run_scan_codes<true, true>(
-                    *this, list_size, codes, ids, handler);
-        } else {
-            return run_scan_codes<false, true>(
-                    *this, list_size, codes, ids, handler);
-        }
-    }
+    return run_scan_codes(*this, list_size, codes, ids, handler);
 }
 
 void InvertedListScanner::set_list(idx_t list_no_in, float /* coarse_dis */) {

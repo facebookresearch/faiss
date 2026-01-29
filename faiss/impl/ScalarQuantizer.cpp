@@ -2216,6 +2216,9 @@ struct IVFSQScannerL2 : InvertedListScanner {
     float distance_to_code(const uint8_t* code) const final {
         return dc.query_to_code(code);
     }
+
+    
+
 };
 
 template <class DCClass, int use_sel>
