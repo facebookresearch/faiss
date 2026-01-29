@@ -18,6 +18,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/expanded_scanners.h>
 
 namespace faiss {
 
@@ -197,8 +198,18 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// compute a single query-to-code distance
-    float distance_to_code(const uint8_t* code) const override {
+    float distance_to_code(const uint8_t* code) const final {
         return dc->distance_to_code(code);
+    }
+
+    // redefiniing the scan_codes allows to inline the distance_to_code
+    // (this is unlikely to matter because it contains a virtual function call)
+    size_t scan_codes_1bit(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const {
+        return run_scan_codes(*this, list_size, codes, ids, handler);
     }
 
     /// Override scan_codes to implement adaptive filtering for multi-bit codes
@@ -211,8 +222,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
         // For 1-bit codes, use default implementation
         if (ex_bits == 0 || rabitq_dc == nullptr) {
-            return InvertedListScanner::scan_codes(
-                    list_size, codes, ids, handler);
+            return scan_codes_1bit(list_size, codes, ids, handler);
         }
 
         // Multi-bit: Two-stage search with adaptive filtering
