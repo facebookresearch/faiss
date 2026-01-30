@@ -107,6 +107,7 @@ set(FAISS_SRC
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
+  factory_tools.cpp
 )
 
 if(FAISS_ENABLE_SVS)
