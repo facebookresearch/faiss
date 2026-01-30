@@ -48,6 +48,11 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
+# DD-only tests: require Dynamic Dispatch (SIMDConfig)
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  list(APPEND FAISS_TEST_SRC test_simd_levels.cpp)
+endif()
+
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
 if(FAISS_ENABLE_SVS)
