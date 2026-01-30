@@ -984,6 +984,36 @@ def handle_IndexBinary(the_class):
         I = rev_swig_ptr(res.labels, nd).copy()
         return lims, D, I
 
+
+    def replacement_search_and_reconstruct(self, x, k, *, params=None, D=None, I=None, R=None):
+        n, d = x.shape
+        x = _check_dtype_uint8(x)
+        assert d == self.code_size
+        assert k > 0
+
+        if D is None:
+            D = np.empty((n, k), dtype=np.int32)
+        else:
+            assert D.shape == (n, k)
+
+        if I is None:
+            I = np.empty((n, k), dtype=np.int64)
+        else:
+            assert I.shape == (n, k)
+
+        if R is None:
+            R = np.empty((n, k, self.code_size), dtype=np.uint8)
+        else:
+            assert R.shape == (n, k, self.code_size)
+
+        self.search_and_reconstruct_c(
+            n, swig_ptr(x),
+            k, swig_ptr(D),
+            swig_ptr(I), swig_ptr(R),
+            params
+        )
+        return D, I, R
+
     def replacement_range_search_preassigned(self, x, thresh, Iq, Dq, *, params=None):
         n, d = x.shape
         x = _check_dtype_uint8(x)
@@ -1066,6 +1096,8 @@ def handle_IndexBinary(the_class):
                    replacement_search_preassigned, ignore_missing=True)
     replace_method(the_class, 'range_search_preassigned',
                    replacement_range_search_preassigned, ignore_missing=True)
+    replace_method(the_class, 'search_and_reconstruct',
+                   replacement_search_and_reconstruct, ignore_missing=True)
 
 
 def handle_VectorTransform(the_class):

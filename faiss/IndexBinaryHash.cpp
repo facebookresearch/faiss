@@ -13,11 +13,17 @@
 #include <cstdio>
 #include <unordered_set>
 
+#include <algorithm> // for std::swap
+#include <cassert>
+#include <cstring> // for memmove
+
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+
+#include <faiss/utils/heap_triple.h>
 
 namespace faiss {
 
@@ -195,6 +201,81 @@ void search_single_query(
             index.code_size, r, &index, &q, &res, &n0, &nlist, &ndis);
 }
 
+/* tri-heap that also stores a pointer to the code */
+struct KnnSearchRecons {
+    using C = CMax<int32_t, idx_t>; // same ordering as search()
+    HeapTriple<C>& heap;
+
+    KnnSearchRecons(HeapTriple<C>& h) : heap(h) {}
+
+    inline void add(int32_t dis, idx_t id, const uint8_t* code) {
+        heap.push(dis, id, code);
+    }
+};
+
+/* Identical to the search_single_query_template
+ * except that we forward the code pointer to add() */
+template <class HammingComputer>
+void search_single_query_recons_template(
+        const IndexBinaryHash& index,
+        const uint8_t* q,
+        KnnSearchRecons& res,
+        size_t& n0,
+        size_t& nlist,
+        size_t& ndis) {
+    const size_t code_size = index.code_size;
+    const uint64_t mask =
+            (index.b == 64) ? (uint64_t)(-1) : ((uint64_t)1 << index.b) - 1;
+    // handle overflow for b=64
+    const uint64_t qhash = *((uint64_t*)q) & mask;
+
+    HammingComputer hc(q, code_size);
+    FlipEnumerator fe(index.b, index.nflip);
+
+    do {
+        uint64_t h = qhash ^ fe.x;
+        auto it = index.invlists.find(h);
+        if (it == index.invlists.end())
+            continue;
+
+        const auto& il = it->second;
+        const uint8_t* codes = il.vecs.data();
+
+        if (il.ids.empty()) {
+            n0++;
+            continue;
+        }
+
+        for (size_t i = 0; i < il.ids.size(); ++i) {
+            int32_t dis = hc.hamming(codes);
+            res.add(dis, il.ids[i], codes);
+            codes += code_size;
+        }
+        nlist++;
+        ndis += il.ids.size();
+    } while (fe.next());
+}
+
+struct Run_search_single_query_recons {
+    using T = void;
+    template <class HammingComputer, class... Args>
+    void f(Args*... args) {
+        search_single_query_recons_template<HammingComputer>(*args...);
+    }
+};
+
+static inline void search_single_query_recons(
+        const IndexBinaryHash& index,
+        const uint8_t* q,
+        KnnSearchRecons& res,
+        size_t& n0,
+        size_t& nlist,
+        size_t& ndis) {
+    Run_search_single_query_recons R;
+    dispatch_HammingComputer(
+            index.code_size, R, &index, &q, &res, &n0, &nlist, &ndis);
+}
+
 } // anonymous namespace
 
 void IndexBinaryHash::range_search(
@@ -254,6 +335,71 @@ void IndexBinaryHash::search(
 
         heap_reorder<HeapForL2>(k, simi, idxi);
     }
+    indexBinaryHash_stats.nq += n;
+    indexBinaryHash_stats.n0 += n0;
+    indexBinaryHash_stats.nlist += nlist;
+    indexBinaryHash_stats.ndis += ndis;
+}
+
+void IndexBinaryHash::reconstruct(idx_t id, uint8_t* dst) const {
+    for (const auto& kv : invlists) {
+        const InvertedList& il = kv.second;
+        for (size_t i = 0; i < il.ids.size(); ++i) {
+            if (il.ids[i] == id) {
+                memcpy(dst, il.vecs.data() + i * code_size, code_size);
+                return;
+            }
+        }
+    }
+    // not found → fill with 0xff like IndexBinaryIVF
+    memset(dst, 0xff, code_size);
+}
+
+void IndexBinaryHash::search_and_reconstruct(
+        idx_t n,
+        const uint8_t* x,
+        idx_t k,
+        int32_t* distances,
+        idx_t* labels,
+        uint8_t* recons,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+    FAISS_THROW_IF_NOT(k > 0);
+
+    using Heap = CMax<int32_t, idx_t>;
+    size_t n0 = 0, nlist = 0, ndis = 0;
+
+#pragma omp parallel for if (n > 100) reduction(+ : n0, nlist, ndis)
+    for (idx_t qi = 0; qi < n; ++qi) {
+        int32_t* simi = distances + qi * k;
+        idx_t* idxi = labels + qi * k;
+        std::unique_ptr<const uint8_t*[]> ptrs(new const uint8_t*[k]);
+
+        // Initialize heap with worst possible values (CMax neutral = max value)
+        HeapTriple<Heap> heap(k, simi, idxi, ptrs.get());
+        heap.heapify();
+
+        // Search using the SAME heap instance
+        KnnSearchRecons res(heap);
+        const uint8_t* q = x + qi * code_size;
+        search_single_query_recons(*this, q, res, n0, nlist, ndis);
+
+        // Sort results
+        heap.reorder();
+
+        // Copy reconstructions
+        uint8_t* dst = recons + qi * k * code_size;
+        for (idx_t j = 0; j < k; ++j) {
+            if (idxi[j] < 0 || ptrs[j] == nullptr)
+                memset(dst + j * code_size, 0xff, code_size);
+            else {
+                memcpy(dst + j * code_size, ptrs[j], code_size);
+            }
+        }
+    }
+
+    // Update global stats
     indexBinaryHash_stats.nq += n;
     indexBinaryHash_stats.n0 += n0;
     indexBinaryHash_stats.nlist += nlist;
