@@ -7,7 +7,7 @@
 
 // -*- c++ -*-
 
-#include <faiss/cppcontrib/factory_tools.h>
+#include <faiss/factory_tools.h>
 
 #include <map>
 
