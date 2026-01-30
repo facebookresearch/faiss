@@ -105,6 +105,7 @@ set(FAISS_SRC
   utils/random.cpp
   utils/sorting.cpp
   utils/utils.cpp
+  utils/simd_levels.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
@@ -259,6 +260,7 @@ set(FAISS_HEADERS
   utils/simdlib_neon.h
   utils/simdlib_ppc64.h
   utils/utils.h
+  utils/simd_levels.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_based.h
