@@ -7,47 +7,46 @@
 
 #pragma once
 
-#include <faiss/impl/platform_macros.h>
-#include <cstdint>
-
-#ifdef __SSE__
-#include <immintrin.h>
-#endif
-
-#ifdef __aarch64__
-#include <arm_neon.h>
-#endif
+#include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/utils/simdlib.h>
 
 namespace faiss {
+
 namespace scalar_quantizer {
+
+/*******************************************************************
+ * Codec: converts between values in [0, 1] and an index in a code
+ * array. The "i" parameter is the vector component index (not byte
+ * index).
+ */
 
 struct Codec8bit {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
-            int i) {
+            size_t i) {
         code[i] = (int)(255 * x);
     }
 
     static FAISS_ALWAYS_INLINE float decode_component(
             const uint8_t* code,
-            int i) {
+            size_t i) {
         return (code[i] + 0.5f) / 255.0f;
     }
 
 #if defined(__AVX512F__)
-    static FAISS_ALWAYS_INLINE __m512
-    decode_16_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd16float32
+    decode_16_components(const uint8_t* code, size_t i) {
         const __m128i c16 = _mm_loadu_si128((__m128i*)(code + i));
         const __m512i i32 = _mm512_cvtepu8_epi32(c16);
         const __m512 f16 = _mm512_cvtepi32_ps(i32);
         const __m512 half_one_255 = _mm512_set1_ps(0.5f / 255.f);
         const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
-        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+        return simd16float32(_mm512_fmadd_ps(f16, one_255, half_one_255));
     }
 #elif defined(__AVX2__)
-    static FAISS_ALWAYS_INLINE __m256
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
 
         const __m128i i8 = _mm_set1_epi64x(c8);
@@ -55,20 +54,20 @@ struct Codec8bit {
         const __m256 f8 = _mm256_cvtepi32_ps(i32);
         const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
         const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return _mm256_fmadd_ps(f8, one_255, half_one_255);
+        return simd8float32(_mm256_fmadd_ps(f8, one_255, half_one_255));
     }
 #endif
 
 #ifdef USE_NEON
-    static FAISS_ALWAYS_INLINE float32x4x2_t
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
             result[j] = decode_component(code, i + j);
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return {res1, res2};
+        return simd8float32(float32x4x2_t{res1, res2});
     }
 #endif
 };
@@ -77,19 +76,19 @@ struct Codec4bit {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
-            int i) {
+            size_t i) {
         code[i / 2] |= (int)(x * 15.0) << ((i & 1) << 2);
     }
 
     static FAISS_ALWAYS_INLINE float decode_component(
             const uint8_t* code,
-            int i) {
+            size_t i) {
         return (((code[i / 2] >> ((i & 1) << 2)) & 0xf) + 0.5f) / 15.0f;
     }
 
 #if defined(__AVX512F__)
-    static FAISS_ALWAYS_INLINE __m512
-    decode_16_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd16float32
+    decode_16_components(const uint8_t* code, size_t i) {
         uint64_t c8 = *(uint64_t*)(code + (i >> 1));
         uint64_t mask = 0x0f0f0f0f0f0f0f0f;
         uint64_t c8ev = c8 & mask;
@@ -104,11 +103,11 @@ struct Codec4bit {
         __m512 f16 = _mm512_cvtepi32_ps(i16);
         const __m512 half_one_255 = _mm512_set1_ps(0.5f / 15.f);
         const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
-        return _mm512_fmadd_ps(f16, one_255, half_one_255);
+        return simd16float32(_mm512_fmadd_ps(f16, one_255, half_one_255));
     }
 #elif defined(__AVX2__)
-    static FAISS_ALWAYS_INLINE __m256
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
         uint32_t c4ev = c4 & mask;
@@ -125,20 +124,20 @@ struct Codec4bit {
         __m256 half = _mm256_set1_ps(0.5f);
         f8 = _mm256_add_ps(f8, half);
         __m256 one_255 = _mm256_set1_ps(1.f / 15.f);
-        return _mm256_mul_ps(f8, one_255);
+        return simd8float32(_mm256_mul_ps(f8, one_255));
     }
 #endif
 
 #ifdef USE_NEON
-    static FAISS_ALWAYS_INLINE float32x4x2_t
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
             result[j] = decode_component(code, i + j);
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return {res1, res2};
+        return simd8float32(float32x4x2_t{res1, res2});
     }
 #endif
 };
@@ -147,7 +146,7 @@ struct Codec6bit {
     static FAISS_ALWAYS_INLINE void encode_component(
             float x,
             uint8_t* code,
-            int i) {
+            size_t i) {
         int bits = (int)(x * 63.0);
         code += (i >> 2) * 3;
         switch (i & 3) {
@@ -165,13 +164,15 @@ struct Codec6bit {
             case 3:
                 code[2] |= bits << 2;
                 break;
+            default:
+                break;
         }
     }
 
     static FAISS_ALWAYS_INLINE float decode_component(
             const uint8_t* code,
-            int i) {
-        uint8_t bits;
+            size_t i) {
+        uint8_t bits = 0;
         code += (i >> 2) * 3;
         switch (i & 3) {
             case 0:
@@ -188,14 +189,16 @@ struct Codec6bit {
             case 3:
                 bits = code[2] >> 2;
                 break;
+            default:
+                break;
         }
         return (bits + 0.5f) / 63.0f;
     }
 
 #if defined(__AVX512F__)
 
-    static FAISS_ALWAYS_INLINE __m512
-    decode_16_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd16float32
+    decode_16_components(const uint8_t* code, size_t i) {
         // pure AVX512 implementation (not necessarily the fastest).
         // see:
         // https://github.com/zilliztech/knowhere/blob/main/thirdparty/faiss/faiss/impl/ScalarQuantizerCodec_avx512.h
@@ -236,7 +239,7 @@ struct Codec6bit {
                 _mm512_cvtepi32_ps(_mm512_cvtepi16_epi32(shuffled_shifted));
         const __m512 half_one_255 = _mm512_set1_ps(0.5f / 63.f);
         const __m512 one_255 = _mm512_set1_ps(1.f / 63.f);
-        return _mm512_fmadd_ps(f8, one_255, half_one_255);
+        return simd16float32(_mm512_fmadd_ps(f8, one_255, half_one_255));
 
         // clang-format on
     }
@@ -264,8 +267,8 @@ struct Codec6bit {
         return c5;
     }
 
-    static FAISS_ALWAYS_INLINE __m256
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
         // // for the reference, maybe, it becomes used one day.
         // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
@@ -285,21 +288,21 @@ struct Codec6bit {
         // not obviously faster
         const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
         const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
-        return _mm256_fmadd_ps(f8, one_255, half_one_255);
+        return simd8float32(_mm256_fmadd_ps(f8, one_255, half_one_255));
     }
 
 #endif
 
 #ifdef USE_NEON
-    static FAISS_ALWAYS_INLINE float32x4x2_t
-    decode_8_components(const uint8_t* code, int i) {
+    static FAISS_ALWAYS_INLINE simd8float32
+    decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
             result[j] = decode_component(code, i + j);
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return {res1, res2};
+        return simd8float32(float32x4x2_t{res1, res2});
     }
 #endif
 };
