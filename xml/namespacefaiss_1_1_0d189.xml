@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="namespacefaiss_1_1_0d188" kind="namespace" language="C++">
+  <compounddef id="namespacefaiss_1_1_0d189" kind="namespace" language="C++">
     <compoundname>faiss</compoundname>
     <briefdescription>
     </briefdescription>

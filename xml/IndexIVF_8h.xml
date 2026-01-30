@@ -24,6 +24,7 @@
     <includedby refid="IndexShardsIVF_8h" local="no">faiss/IndexShardsIVF.h</includedby>
     <includedby refid="GpuIndexCagra_8h" local="no">faiss/gpu/GpuIndexCagra.h</includedby>
     <includedby refid="GpuIndexIVF_8h" local="no">faiss/gpu/GpuIndexIVF.h</includedby>
+    <includedby refid="expanded__scanners_8h" local="no">faiss/impl/expanded_scanners.h</includedby>
     <includedby refid="index__read__utils_8h" local="no">faiss/impl/index_read_utils.h</includedby>
     <includedby refid="OnDiskInvertedLists_8h" local="no">faiss/invlists/OnDiskInvertedLists.h</includedby>
     <incdepgraph>
@@ -344,6 +345,8 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
       </node>
       <node id="6">
         <label>faiss/IndexIVFAdditiveQuantizer.h</label>
@@ -462,10 +465,14 @@
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
       <node id="28">
+        <label>faiss/impl/expanded_scanners.h</label>
+        <link refid="expanded__scanners_8h_source"/>
+      </node>
+      <node id="29">
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="29">
+      <node id="30">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
