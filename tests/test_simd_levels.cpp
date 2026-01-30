@@ -140,7 +140,8 @@ TEST(SIMDConfig, simd_level_auto_detect_architecture_only) {
     EXPECT_TRUE(
             detected_level == faiss::SIMDLevel::AVX2 ||
             detected_level == faiss::SIMDLevel::AVX512);
-#elif defined(__aarch64__) && defined(__ARM_NEON)
+#elif defined(__aarch64__) && defined(__ARM_NEON) && \
+        defined(COMPILE_SIMD_ARM_NEON)
     EXPECT_TRUE(detected_level == faiss::SIMDLevel::ARM_NEON);
 #else
     EXPECT_EQ(detected_level, faiss::SIMDLevel::NONE);

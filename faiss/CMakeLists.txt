@@ -3,6 +3,19 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# =============================================================================
+# SIMD FILE REGISTRY
+# Keep in sync with Buck's SIMD_FILES in xplat.bzl
+# =============================================================================
+set(FAISS_SIMD_AVX2_SRC
+  utils/simd_impl/distances_avx2.cpp
+)
+set(FAISS_SIMD_AVX512_SRC
+  utils/simd_impl/distances_avx512.cpp
+)
+set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+# =============================================================================
+
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
@@ -365,6 +378,31 @@ if(NOT WIN32)
     # No valid -march, so specify -march=armv8-a+sve as the default
     target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
   endif()
+endif()
+
+# =============================================================================
+# Dynamic Dispatch Target
+# =============================================================================
+add_library(faiss_dd ${FAISS_SRC} ${FAISS_SIMD_SRC})
+if(NOT FAISS_OPT_LEVEL STREQUAL "dd")
+  set_target_properties(faiss_dd PROPERTIES EXCLUDE_FROM_ALL TRUE)
+endif()
+if(NOT WIN32)
+  target_compile_definitions(faiss_dd PRIVATE
+    FAISS_ENABLE_DD COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+  # Baseline flags for common files (prevents auto-vectorization)
+  target_compile_options(faiss_dd PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4 -mno-avx -mno-avx2>)
+  # Per-file SIMD flags
+  set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
+    TARGET_DIRECTORY faiss_dd
+    PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+  )
+  set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
+    TARGET_DIRECTORY faiss_dd
+    PROPERTIES COMPILE_OPTIONS
+      "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+  )
 endif()
 
 if(FAISS_ENABLE_SVS)

@@ -24,7 +24,6 @@ set(FAISS_TEST_SRC
   test_simdlib.cpp
   test_approx_topk.cpp
   test_RCQ_cropping.cpp
-  test_distances_simd.cpp
   test_heap.cpp
   test_code_distance.cpp
   test_hnsw.cpp
@@ -44,13 +43,17 @@ set(FAISS_TEST_SRC
   test_custom_result_handler.cpp
 )
 
-if(FAISS_ENABLE_SVS)
-  list(APPEND FAISS_TEST_SRC test_svs.cpp)
-endif()
-
 # DD-only tests: require Dynamic Dispatch (SIMDConfig)
 if(FAISS_OPT_LEVEL STREQUAL "dd")
-  list(APPEND FAISS_TEST_SRC test_simd_levels.cpp)
+  list(APPEND FAISS_TEST_SRC
+    test_distances_simd.cpp
+    test_simd_levels.cpp
+    test_simd_perf.cpp
+  )
+endif()
+
+if(FAISS_ENABLE_SVS)
+  list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
