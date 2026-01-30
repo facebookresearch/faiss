@@ -60,13 +60,6 @@ inline float VectorDistance<METRIC_Linf>::operator()(
         const float* x,
         const float* y) const {
     return fvec_Linf(x, y, d);
-    /*
-        float vmax = 0;
-        for (size_t i = 0; i < d; i++) {
-            float diff = fabs (x[i] - y[i]);
-            if (diff > vmax) vmax = diff;
-        }
-     return vmax;*/
 }
 
 template <>

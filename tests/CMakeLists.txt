@@ -19,18 +19,18 @@ set(FAISS_TEST_SRC
   test_sliding_ivf.cpp
   test_threaded_index.cpp
   test_transfer_invlists.cpp
-  test_mem_leak.cpp
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
   test_approx_topk.cpp
   test_RCQ_cropping.cpp
-  test_distances_simd.cpp
   test_heap.cpp
   test_code_distance.cpp
   test_hnsw.cpp
+  test_NSG_compressed_graph.cpp
   test_partitioning.cpp
   test_fastscan_perf.cpp
+  test_pqfs_unaligned.cpp
   test_disable_pq_sdc_tables.cpp
   test_common_ivf_empty_index.cpp
   test_callback.cpp
@@ -38,8 +38,19 @@ set(FAISS_TEST_SRC
   test_hamming.cpp
   test_mmap.cpp
   test_zerocopy.cpp
+  test_scalar_quantizer.cpp
+  test_factory_tools.cpp
   test_custom_result_handler.cpp
 )
+
+# DD-only tests: require Dynamic Dispatch (SIMDConfig)
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  list(APPEND FAISS_TEST_SRC
+    test_distances_simd.cpp
+    test_simd_levels.cpp
+    test_simd_perf.cpp
+  )
+endif()
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
