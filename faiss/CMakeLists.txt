@@ -74,6 +74,7 @@ set(FAISS_SRC
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
+  impl/scalar_quantizer/training.cpp
   impl/index_read.cpp
   impl/index_write.cpp
   impl/io.cpp
@@ -107,6 +108,7 @@ set(FAISS_SRC
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
+  factory_tools.cpp
 )
 
 if(FAISS_ENABLE_SVS)
@@ -203,6 +205,11 @@ set(FAISS_HEADERS
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
+  impl/scalar_quantizer/codecs.h
+  impl/scalar_quantizer/distance_computers.h
+  impl/scalar_quantizer/quantizers.h
+  impl/scalar_quantizer/similarities.h
+  impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
   impl/index_read_utils.h
