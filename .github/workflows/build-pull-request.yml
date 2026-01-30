@@ -71,6 +71,17 @@ jobs:
         uses: ./.github/actions/build_cmake
         with:
           opt_level: avx512_spr
+  linux-x86_64-DD-cmake:
+    name: Linux x86_64 Dynamic Dispatch (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: faiss-aws-m7i.large
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          opt_level: dd
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
     needs: linux-x86_64-cmake
