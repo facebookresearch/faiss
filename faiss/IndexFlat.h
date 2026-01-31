@@ -121,7 +121,8 @@ struct IndexFlatPanorama : IndexFlat {
               batch_size(batch_size),
               n_levels(n_levels),
               pano(code_size, n_levels, batch_size) {
-        FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
+        FAISS_THROW_IF_NOT(
+                metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
     }
 
     void add(idx_t n, const float* x) override;
@@ -189,7 +190,8 @@ struct IndexFlatIPPanorama : IndexFlatPanorama {
             idx_t d,
             size_t n_levels,
             size_t batch_size = 512)
-            : IndexFlatPanorama(d, METRIC_INNER_PRODUCT, n_levels, batch_size) {}
+            : IndexFlatPanorama(d, METRIC_INNER_PRODUCT, n_levels, batch_size) {
+    }
 };
 
 /// optimized version for 1D "vectors".

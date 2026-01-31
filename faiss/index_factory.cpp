@@ -708,8 +708,8 @@ Index* parse_other_indexes(
         }
     }
 
-     // IndexFlatIPPanorama
-     if (match("FlatIPPanorama([0-9]+)(_[0-9]+)?")) {
+    // IndexFlatIPPanorama
+    if (match("FlatIPPanorama([0-9]+)(_[0-9]+)?")) {
         FAISS_THROW_IF_NOT(metric == METRIC_INNER_PRODUCT);
         int nlevels = std::stoi(sm[1].str());
         if (sm[2].length() > 0) {

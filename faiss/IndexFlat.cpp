@@ -906,8 +906,7 @@ void IndexFlatPanorama::search_subset(
                             cauchy_schwarz_bound =
                                     2.0f * cum_sum * query_cum_norms[level + 1];
                         }
-                        float bound =
-                                exact_distance - cauchy_schwarz_bound;
+                        float bound = exact_distance - cauchy_schwarz_bound;
 
                         // Prune using Cauchy-Schwarz bound
                         bool should_prune = false;
