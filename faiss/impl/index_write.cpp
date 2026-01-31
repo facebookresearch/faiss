@@ -446,9 +446,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         uint32_t h = fourcc("null");
         WRITE1(h);
     } else if (
-            const IndexFlatL2Panorama* idxpan =
-                    dynamic_cast<const IndexFlatL2Panorama*>(idx)) {
-        uint32_t h = fourcc("IxFP");
+            const IndexFlatPanorama* idxpan =
+                    dynamic_cast<const IndexFlatPanorama*>(idx)) {
+        uint32_t h = fourcc(idxpan->metric_type == METRIC_L2 ? "IxFP" : "IxFp");
         WRITE1(h);
         WRITE1(idxpan->d);
         WRITE1(idxpan->n_levels);
