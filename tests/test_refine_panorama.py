@@ -128,7 +128,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
 
             prev_ratio_dims_scanned = float("inf")
             for nlevels in [1, 2, 4, 8, 16, 32]:
-                with self.subTest(nlevels=nlevels, metric=metric):
+                with self.subTest(metric=metric, nlevels=nlevels):
                     faiss.cvar.indexPanorama_stats.reset()
                     index = self.create_panorama(
                         d, base_cfg, nlevels, xt=xt, xb=xb, metric=metric)
@@ -140,7 +140,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
                                     prev_ratio_dims_scanned)
                     prev_ratio_dims_scanned = ratio_dims_scanned
 
-        faiss.omp_set_num_threads(nt_threads)
+            faiss.omp_set_num_threads(nt_threads)
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
@@ -148,7 +148,7 @@ class TestIndexRefinePanorama(unittest.TestCase):
 
         for metric in self.METRICS:
             for d, nlevels in test_cases:
-                with self.subTest(d=d, nlevels=nlevels, metric=metric):
+                with self.subTest(metric=metric, d=d, nlevels=nlevels):
                     nb, nt, nq, k = 5000, 7000, 10, 5
                     xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=789)
 
@@ -413,38 +413,41 @@ class TestIndexRefinePanorama(unittest.TestCase):
         xq = np.ones((nq, d)).astype("float32")
 
         for metric in self.METRICS:
-            # Create base flat index for comparison
-            index_base = faiss.IndexFlat(d, metric)
-            index_base.add(xb)
-            D_base, I_base = index_base.search(xq, k)
+            with self.subTest(metric=metric):
+                # Create base flat index for comparison
+                index_base = faiss.IndexFlat(d, metric)
+                index_base.add(xb)
+                D_base, I_base = index_base.search(xq, k)
 
-            nt = faiss.omp_get_max_threads()
-            faiss.omp_set_num_threads(1)
+                nt = faiss.omp_get_max_threads()
+                faiss.omp_set_num_threads(1)
 
-            # Force k_base = nb
-            k_factor = nb // k  # 500000 // 10 = 50000
-            params = faiss.IndexRefineSearchParameters(
-                k_factor=float(k_factor))
+                # Force k_base = nb
+                k_factor = nb // k  # 500000 // 10 = 50000
+                params = faiss.IndexRefineSearchParameters(
+                    k_factor=float(k_factor))
 
-            ratios = []
-            nlevels_list = [1, 2, 4, 8, 16, 32]
-            for nlevels in nlevels_list:
-                with self.subTest(nlevels=nlevels, metric=metric):
-                    refine_index = faiss.index_factory(
-                        d, f"Flat{'L2' if metric == faiss.METRIC_L2 else 'IP'}Panorama{nlevels}_1", metric)
-                    refine_index.add(xb)
-                    index = faiss.IndexRefinePanorama(index_base, refine_index)
+                ratios = []
+                nlevels_list = [1, 2, 4, 8, 16, 32]
+                for nlevels in nlevels_list:
+                    with self.subTest(nlevels=nlevels):
+                        refine_index = faiss.index_factory(
+                            d, f"Flat{'L2' if metric == faiss.METRIC_L2 else 'IP'}Panorama{nlevels}_1", metric)
+                        refine_index.add(xb)
+                        index = faiss.IndexRefinePanorama(
+                            index_base, refine_index)
 
-                    faiss.cvar.indexPanorama_stats.reset()
-                    D, I = index.search(xq, k, params=params)
-                    self.assert_search_results_equal(D_base, I_base, D, I, atol=1e-4)
+                        faiss.cvar.indexPanorama_stats.reset()
+                        D, I = index.search(xq, k, params=params)
+                        self.assert_search_results_equal(
+                            D_base, I_base, D, I, atol=1e-4)
 
-                    ratios.append(
-                        faiss.cvar.indexPanorama_stats.ratio_dims_scanned)
+                        ratios.append(
+                            faiss.cvar.indexPanorama_stats.ratio_dims_scanned)
 
-            expected_ratios = [1 / nlevels for nlevels in nlevels_list]
+                expected_ratios = [1 / nlevels for nlevels in nlevels_list]
 
-            # Extra low toleance for point-wise Panorama refinement
-            np.testing.assert_allclose(ratios, expected_ratios, atol=1e-5)
+                # Extra low toleance for point-wise Panorama refinement
+                np.testing.assert_allclose(ratios, expected_ratios, atol=1e-5)
 
-            faiss.omp_set_num_threads(nt)
+                faiss.omp_set_num_threads(nt)
