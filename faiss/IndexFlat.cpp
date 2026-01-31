@@ -806,7 +806,12 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    dispatch_metric_compare(metric_type, [&]<typename C>() {
+    with_metric_type(metric_type, [&]<MetricType M>() {
+        constexpr bool is_sim = is_similarity_metric(M);
+        using C = std::conditional_t<
+                is_sim,
+                CMin<float, int64_t>,
+                CMax<float, int64_t>>;
         using SingleResultHandler =
                 typename HeapBlockResultHandler<C, false>::SingleResultHandler;
         HeapBlockResultHandler<C, false> handler(
@@ -860,7 +865,12 @@ void IndexFlatPanorama::search_subset(
 
                     size_t cum_sum_offset = (n_levels + 1) * idx;
                     float cum_sum = cum_sums[cum_sum_offset];
-                    float exact_distance = cum_sum * cum_sum + query_cum_norm;
+                    float exact_distance;
+                    if constexpr (is_sim) {
+                        exact_distance = 0.0f;
+                    } else {
+                        exact_distance = cum_sum * cum_sum + query_cum_norm;
+                    }
                     cum_sum_offset++;
 
                     const float* x_ptr = xi;
@@ -881,16 +891,32 @@ void IndexFlatPanorama::search_subset(
                                 d - level * pano.level_width_floats);
                         float dot_product = fvec_inner_product(
                                 x_ptr, p_ptr, actual_level_width);
-                        exact_distance -= 2 * dot_product;
+                        if constexpr (is_sim) {
+                            exact_distance += dot_product;
+                        } else {
+                            exact_distance -= 2 * dot_product;
+                        }
 
                         float cum_sum = cum_sums[cum_sum_offset];
-                        float cauchy_schwarz_bound =
-                                2.0f * cum_sum * query_cum_norms[level + 1];
-                        float lower_bound =
+                        float cauchy_schwarz_bound;
+                        if constexpr (is_sim) {
+                            cauchy_schwarz_bound =
+                                    -cum_sum * query_cum_norms[level + 1];
+                        } else {
+                            cauchy_schwarz_bound =
+                                    2.0f * cum_sum * query_cum_norms[level + 1];
+                        }
+                        float bound =
                                 exact_distance - cauchy_schwarz_bound;
 
                         // Prune using Cauchy-Schwarz bound
-                        if (lower_bound > res.heap_dis[0]) {
+                        bool should_prune = false;
+                        if constexpr (is_sim) {
+                            should_prune = bound < res.heap_dis[0];
+                        } else {
+                            should_prune = bound > res.heap_dis[0];
+                        }
+                        if (should_prune) {
                             pruned = true;
                             break;
                         }
