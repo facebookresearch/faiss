@@ -27,32 +27,32 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/utils/Tensor.cuh>
 
-#include <cuvs/distance/distance.h>
+#include <cuvs/distance/distance.hpp>
 
 #pragma GCC visibility push(default)
 namespace faiss {
 namespace gpu {
 
-inline cuvsDistanceType metricFaissToCuvs(
+inline cuvs::distance::DistanceType metricFaissToCuvs(
         MetricType metric,
         bool exactDistance) {
     switch (metric) {
         case MetricType::METRIC_INNER_PRODUCT:
-            return cuvsDistanceType::InnerProduct;
+            return cuvs::distance::DistanceType::InnerProduct;
         case MetricType::METRIC_L2:
-            return cuvsDistanceType::L2Expanded;
+            return cuvs::distance::DistanceType::L2Expanded;
         case MetricType::METRIC_L1:
-            return cuvsDistanceType::L1;
+            return cuvs::distance::DistanceType::L1;
         case MetricType::METRIC_Linf:
-            return cuvsDistanceType::Linf;
+            return cuvs::distance::DistanceType::Linf;
         case MetricType::METRIC_Lp:
-            return cuvsDistanceType::LpUnexpanded;
+            return cuvs::distance::DistanceType::LpUnexpanded;
         case MetricType::METRIC_Canberra:
-            return cuvsDistanceType::Canberra;
+            return cuvs::distance::DistanceType::Canberra;
         case MetricType::METRIC_BrayCurtis:
-            return cuvsDistanceType::BrayCurtis;
+            return cuvs::distance::DistanceType::BrayCurtis;
         case MetricType::METRIC_JensenShannon:
-            return cuvsDistanceType::JensenShannon;
+            return cuvs::distance::DistanceType::JensenShannon;
         default:
             RAFT_FAIL("Distance type not supported");
     }

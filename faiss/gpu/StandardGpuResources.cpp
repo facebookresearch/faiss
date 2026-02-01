@@ -23,9 +23,9 @@
 
 #if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device/managed_memory_resource.hpp>
-#include <rmm/mr/device/per_device_resource.hpp>
-#include <rmm/mr/host/pinned_memory_resource.hpp>
+#include <rmm/mr/managed_memory_resource.hpp>
+#include <rmm/mr/per_device_resource.hpp>
+#include <rmm/mr/pinned_host_memory_resource.hpp>
 #include <memory>
 #endif
 
@@ -93,7 +93,7 @@ StandardGpuResourcesImpl::StandardGpuResourcesImpl()
         :
 #if defined USE_NVIDIA_CUVS
           mmr_(new rmm::mr::managed_memory_resource),
-          pmr_(new rmm::mr::pinned_memory_resource),
+          pmr_(new rmm::mr::pinned_host_memory_resource),
 #endif
           pinnedMemAlloc_(nullptr),
           pinnedMemAllocSize_(0),
@@ -164,7 +164,7 @@ StandardGpuResourcesImpl::~StandardGpuResourcesImpl() {
 
     if (pinnedMemAlloc_) {
 #if defined USE_NVIDIA_CUVS
-        pmr_->deallocate(pinnedMemAlloc_, pinnedMemAllocSize_);
+        pmr_->deallocate_sync(pinnedMemAlloc_, pinnedMemAllocSize_);
 #else
         auto err = cudaFreeHost(pinnedMemAlloc_);
         FAISS_ASSERT_FMT(
@@ -350,7 +350,7 @@ void StandardGpuResourcesImpl::initializeForDevice(int device) {
         // pinned memory allocation
         if (defaultStreams_.empty() && pinnedMemSize_ > 0) {
             try {
-                pinnedMemAlloc_ = pmr_->allocate(pinnedMemSize_);
+                pinnedMemAlloc_ = pmr_->allocate_sync(pinnedMemSize_);
             } catch (const std::bad_alloc& rmm_ex) {
                 FAISS_THROW_MSG("CUDA memory allocation error");
             }
@@ -549,7 +549,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             rmm::mr::device_memory_resource* current_mr =
                     rmm::mr::get_per_device_resource(
                             rmm::cuda_device_id{adjReq.device});
-            p = current_mr->allocate_async(adjReq.size, adjReq.stream);
+            p = current_mr->allocate(adjReq.stream, adjReq.size);
             adjReq.mr = current_mr;
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
@@ -584,7 +584,7 @@ void* StandardGpuResourcesImpl::allocMemory(const AllocRequest& req) {
             // TODO: change this to use the current device resource once RMM has
             // a way to retrieve a "guaranteed" managed memory resource for a
             // device.
-            p = mmr_->allocate_async(adjReq.size, adjReq.stream);
+            p = mmr_->allocate(adjReq.stream, adjReq.size);
             adjReq.mr = mmr_.get();
         } catch (const std::bad_alloc& rmm_ex) {
             FAISS_THROW_MSG("CUDA memory allocation error");
@@ -648,7 +648,7 @@ void StandardGpuResourcesImpl::deallocMemory(int device, void* p) {
             req.space == MemorySpace::Device ||
             req.space == MemorySpace::Unified) {
 #if defined USE_NVIDIA_CUVS
-        req.mr->deallocate_async(p, req.size, req.stream);
+        req.mr->deallocate(req.stream, p, req.size);
 #else
         auto err = cudaFree(p);
         FAISS_ASSERT_FMT(
