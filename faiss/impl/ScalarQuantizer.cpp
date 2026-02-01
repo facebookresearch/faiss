@@ -64,6 +64,18 @@ namespace faiss {
 #endif
 #endif
 
+#if defined(__riscv) && defined(__riscv_vector)
+#if defined(__GNUC__) && __GNUC__ < 12
+#warning \
+        "Cannot enable RVV optimizations in scalar quantizer if the compiler is GCC<12"
+#else
+#define USE_RVV
+
+#include <riscv_vector.h>
+#warning "✅Compiling with RVV support"
+#endif
+#endif
+
 namespace {
 
 typedef ScalarQuantizer::QuantizerType QuantizerType;
@@ -124,6 +136,19 @@ struct Codec8bit {
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
         return {res1, res2};
+    }
+#endif
+
+#ifdef USE_RVV
+    static FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    decode_8_components(const uint8_t* code, int i) {
+        float result[8] = {};
+        for (size_t j = 0; j < 8; j++) {
+            result[j] = decode_component(code, i + j);
+        }
+        vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);
+        vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
     }
 #endif
 };
@@ -194,6 +219,19 @@ struct Codec4bit {
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
         return {res1, res2};
+    }
+#endif
+
+#ifdef USE_RVV
+    static FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    decode_8_components(const uint8_t* code, int i) {
+        float result[8] = {};
+        for (size_t j = 0; j < 8; j++) {
+            result[j] = decode_component(code, i + j);
+        }
+        vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);
+        vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
     }
 #endif
 };
@@ -357,6 +395,19 @@ struct Codec6bit {
         return {res1, res2};
     }
 #endif
+
+#ifdef USE_RVV
+    static FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    decode_8_components(const uint8_t* code, int i) {
+        float result[8] = {};
+        for (size_t j = 0; j < 8; j++) {
+            result[j] = decode_component(code, i + j);
+        }
+        vfloat32m1_t res1 = __riscv_vle32_v_f32m1(result, 4);
+        vfloat32m1_t res2 = __riscv_vle32_v_f32m1(result + 4, 4);
+        return __riscv_vcreate_v_f32m1x2(res1, res2);
+    }
+#endif
 };
 
 /*******************************************************************
@@ -472,6 +523,35 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 
 #endif
 
+#ifdef USE_RVV
+
+template <class Codec>
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
+                      d,
+                      trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        vfloat32m1x2_t xi = Codec::decode_8_components(code, i);
+        return __riscv_vcreate_v_f32m1x2(
+                __riscv_vfmacc_vv_f32m1(
+                        __riscv_vfmv_v_f_f32m1(this->vmin, 4),
+                        __riscv_vget_v_f32m1x2_f32m1(xi, 0),
+                        __riscv_vfmv_v_f_f32m1(this->vdiff, 4),
+                        4),
+                __riscv_vfmacc_vv_f32m1(
+                        __riscv_vfmv_v_f_f32m1(this->vmin, 4),
+                        __riscv_vget_v_f32m1x2_f32m1(xi, 1),
+                        __riscv_vfmv_v_f_f32m1(this->vdiff, 4),
+                        4));
+    }
+};
+
+#endif
+
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
         : ScalarQuantizer::SQuantizer {
@@ -580,6 +660,42 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
 
 #endif
 
+#ifdef USE_RVV
+
+template <class Codec>
+struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
+        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
+    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::NON_UNIFORM,
+                      1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        vfloat32m1x2_t xi = Codec::decode_8_components(code, i);
+
+        vfloat32m1_t vmin_0 = __riscv_vle32_v_f32m1(this->vmin + i, 4);
+        vfloat32m1_t vmin_1 = __riscv_vle32_v_f32m1(this->vmin + i + 4, 4);
+        vfloat32m1_t vdiff_0 = __riscv_vle32_v_f32m1(this->vdiff + i, 4);
+        vfloat32m1_t vdiff_1 = __riscv_vle32_v_f32m1(this->vdiff + i + 4, 4);
+
+        return __riscv_vcreate_v_f32m1x2(
+                __riscv_vfmacc_vv_f32m1(
+                        vmin_0,
+                        __riscv_vget_v_f32m1x2_f32m1(xi, 0),
+                        vdiff_0,
+                        4),
+                __riscv_vfmacc_vv_f32m1(
+                        vmin_1,
+                        __riscv_vget_v_f32m1x2_f32m1(xi, 1),
+                        vdiff_1,
+                        4));
+    }
+};
+
+#endif
+
 /*******************************************************************
  * FP16 quantizer
  *******************************************************************/
@@ -655,6 +771,29 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
         uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 * i));
         return {vcvt_f32_f16(vreinterpret_f16_u16(codei.val[0])),
                 vcvt_f32_f16(vreinterpret_f16_u16(codei.val[1]))};
+    }
+};
+#endif
+
+#ifdef USE_RVV
+
+template <>
+struct QuantizerFP16<8> : QuantizerFP16<1> {
+    QuantizerFP16(size_t d, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        const uint16_t* base = reinterpret_cast<const uint16_t*>(code);
+        vuint16mf2_t u16_val0 = __riscv_vle16_v_u16mf2(base + 4 * i, 4);
+        vuint16mf2_t u16_val1 = __riscv_vle16_v_u16mf2(base + 4 * i + 4, 4);
+
+        vfloat32m1_t f32_val0 = __riscv_vfwcvt_f_f_v_f32m1(
+                __riscv_vreinterpret_v_u16mf2_f16mf2(u16_val0), 4);
+        vfloat32m1_t f32_val1 = __riscv_vfwcvt_f_f_v_f32m1(
+                __riscv_vreinterpret_v_u16mf2_f16mf2(u16_val1), 4);
+
+        return __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
     }
 };
 #endif
@@ -736,6 +875,34 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
         return {vreinterpretq_f32_u32(vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
                 vreinterpretq_f32_u32(
                         vshlq_n_u32(vmovl_u16(codei.val[1]), 16))};
+    }
+};
+#endif
+
+#ifdef USE_RVV
+
+template <>
+struct QuantizerBF16<8> : QuantizerBF16<1> {
+    QuantizerBF16(size_t d, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        const uint16_t* base = reinterpret_cast<const uint16_t*>(code);
+
+        vuint16mf2_t u16_val0 = __riscv_vle16_v_u16mf2(base + 4 * i, 4);
+        vuint16mf2_t u16_val1 = __riscv_vle16_v_u16mf2(base + 4 * i + 4, 4);
+
+        vuint32m1_t u32_val0 = __riscv_vzext_vf2_u32m1(u16_val0, 4);
+        vuint32m1_t u32_val1 = __riscv_vzext_vf2_u32m1(u16_val1, 4);
+
+        vuint32m1_t shifted0 = __riscv_vsll_vx_u32m1(u32_val0, 16, 4);
+        vuint32m1_t shifted1 = __riscv_vsll_vx_u32m1(u32_val1, 16, 4);
+
+        vfloat32m1_t f32_val0 = __riscv_vreinterpret_v_u32m1_f32m1(shifted0);
+        vfloat32m1_t f32_val1 = __riscv_vreinterpret_v_u32m1_f32m1(shifted1);
+
+        return __riscv_vcreate_v_f32m1x2(f32_val0, f32_val1);
     }
 };
 #endif
@@ -823,6 +990,37 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
     }
 };
 
+#endif
+
+#ifdef USE_RVV
+
+template <>
+struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
+    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        const uint8_t* base = code + i;
+
+        vuint8mf4_t u8_val = __riscv_vle8_v_u8mf4(base, 8);
+
+        vuint16mf2_t u16_val = __riscv_vzext_vf2_u16mf2(u8_val, 8);
+
+        vuint16mf2_t u16_val_0 =
+                __riscv_vslideup_vx_u16mf2(u16_val, u16_val, 0, 4);
+        vuint16mf2_t u16_val_1 =
+                __riscv_vslideup_vx_u16mf2(u16_val, u16_val, 4, 4);
+
+        vuint32m1_t u32_val_0 = __riscv_vzext_vf2_u32m1(u16_val_0, 4);
+        vuint32m1_t u32_val_1 = __riscv_vzext_vf2_u32m1(u16_val_1, 4);
+
+        vfloat32m1_t f32_val_0 = __riscv_vreinterpret_v_u32m1_f32m1(u32_val_0);
+        vfloat32m1_t f32_val_1 = __riscv_vreinterpret_v_u32m1_f32m1(u32_val_1);
+
+        return __riscv_vcreate_v_f32m1x2(f32_val_0, f32_val_1);
+    }
+};
 #endif
 
 /*******************************************************************
@@ -917,6 +1115,40 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
     }
 };
 
+#endif
+
+#ifdef USE_RVV
+
+template <>
+struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
+    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d, trained) {}
+
+    FAISS_ALWAYS_INLINE vfloat32m1x2_t
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        vuint8m1_t x8 = __riscv_vle8_v_u8m1(code + i, 8);
+
+        vuint16m2_t y16_all = __riscv_vzext_vf2_u16m2(x8, 8);
+
+        vuint16m1_t y8_0 = __riscv_vget_v_u16m2_u16m1(y16_all, 0);
+        vuint16m1_t y8_1 = __riscv_vget_v_u16m2_u16m1(y16_all, 1);
+
+        vuint32m2_t u32_0 = __riscv_vzext_vf2_u32m2(y8_0, 4);
+        vuint32m2_t u32_1 = __riscv_vzext_vf2_u32m2(y8_1, 4);
+
+        vuint32m1_t u32_trunc0 = __riscv_vget_v_u32m2_u32m1(u32_0, 0);
+        vuint32m1_t u32_trunc1 = __riscv_vget_v_u32m2_u32m1(u32_1, 0);
+
+        vfloat32m1_t f32_0 = __riscv_vfcvt_f_xu_v_f32m1(u32_trunc0, 4);
+        vfloat32m1_t f32_1 = __riscv_vfcvt_f_xu_v_f32m1(u32_trunc1, 4);
+
+        vfloat32m1_t bias = __riscv_vfmv_v_f_f32m1(128.0f, 4);
+        f32_0 = __riscv_vfsub_vv_f32m1(f32_0, bias, 4);
+        f32_1 = __riscv_vfsub_vv_f32m1(f32_1, bias, 4);
+
+        return __riscv_vcreate_v_f32m1x2(f32_0, f32_1);
+    }
+};
 #endif
 
 template <int SIMDWIDTH>
@@ -1311,6 +1543,85 @@ struct SimilarityL2<8> {
 };
 #endif
 
+#ifdef USE_RVV
+
+template <>
+struct SimilarityL2<8> {
+    static constexpr int simdwidth = 8;
+    static constexpr MetricType metric_type = METRIC_L2;
+
+    const float* y;
+    const float* yi;
+
+    float accu8[8];
+
+    explicit SimilarityL2(const float* y) : y(y) {}
+
+    FAISS_ALWAYS_INLINE void begin_8() {
+        std::fill(accu8, accu8 + 8, 0.0f);
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(const vfloat32m1x2_t& x) {
+        const vfloat32m1x2_t* src = reinterpret_cast<const vfloat32m1x2_t*>(yi);
+        vfloat32m1x2_t yv = *src;
+
+        vfloat32m1_t x0 = __riscv_vget_v_f32m1x2_f32m1(x, 0);
+        vfloat32m1_t x1 = __riscv_vget_v_f32m1x2_f32m1(x, 1);
+        vfloat32m1_t y0 = __riscv_vget_v_f32m1x2_f32m1(yv, 0);
+        vfloat32m1_t y1 = __riscv_vget_v_f32m1x2_f32m1(yv, 1);
+
+        // Load the accumulator
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        // Compute (y - x)^2
+        vfloat32m1_t sub0 = __riscv_vfsub_vv_f32m1(y0, x0, 4);
+        vfloat32m1_t sub1 = __riscv_vfsub_vv_f32m1(y1, x1, 4);
+        acc0 = __riscv_vfmacc_vv_f32m1(acc0, sub0, sub0, 4);
+        acc1 = __riscv_vfmacc_vv_f32m1(acc1, sub1, sub1, 4);
+
+        // Store the results back to the accumulator
+        __riscv_vse32_v_f32m1(accu8 + 0, acc0, 4);
+        __riscv_vse32_v_f32m1(accu8 + 4, acc1, 4);
+
+        yi += 8;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components_2(
+            const vfloat32m1x2_t& x,
+            const vfloat32m1x2_t& y) {
+        vfloat32m1_t x0 = __riscv_vget_v_f32m1x2_f32m1(x, 0);
+        vfloat32m1_t x1 = __riscv_vget_v_f32m1x2_f32m1(x, 1);
+        vfloat32m1_t y0 = __riscv_vget_v_f32m1x2_f32m1(y, 0);
+        vfloat32m1_t y1 = __riscv_vget_v_f32m1x2_f32m1(y, 1);
+
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        vfloat32m1_t sub0 = __riscv_vfsub_vv_f32m1(y0, x0, 4);
+        vfloat32m1_t sub1 = __riscv_vfsub_vv_f32m1(y1, x1, 4);
+        acc0 = __riscv_vfmacc_vv_f32m1(acc0, sub0, sub0, 4);
+        acc1 = __riscv_vfmacc_vv_f32m1(acc1, sub1, sub1, 4);
+
+        __riscv_vse32_v_f32m1(accu8 + 0, acc0, 4);
+        __riscv_vse32_v_f32m1(accu8 + 4, acc1, 4);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        vfloat32m1_t sum0 = __riscv_vfredusum_vs_f32m1_f32m1(acc0, acc0, 4);
+        vfloat32m1_t sum1 = __riscv_vfredusum_vs_f32m1_f32m1(acc1, acc1, 4);
+
+        float res0 = __riscv_vfmv_f_s_f32m1_f32(sum0);
+        float res1 = __riscv_vfmv_f_s_f32m1_f32(sum1);
+        return res0 + res1;
+    }
+};
+#endif
+
 template <int SIMDWIDTH>
 struct SimilarityIP {};
 
@@ -1465,6 +1776,79 @@ struct SimilarityIP<8> {
         return vgetq_lane_f32(sum2.val[0], 0) + vgetq_lane_f32(sum2.val[1], 0);
     }
 };
+#endif
+
+#ifdef USE_RVV
+
+template <>
+struct SimilarityIP<8> {
+    static constexpr int simdwidth = 8;
+    static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
+
+    const float* y;
+    const float* yi;
+
+    float accu8[8]; // simulate a float array accumulator
+
+    explicit SimilarityIP(const float* y) : y(y) {}
+
+    FAISS_ALWAYS_INLINE void begin_8() {
+        std::fill(accu8, accu8 + 8, 0.0f);
+        yi = y;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components(const vfloat32m1x2_t& x) {
+        const vfloat32m1x2_t* src = reinterpret_cast<const vfloat32m1x2_t*>(yi);
+        vfloat32m1x2_t yv = *src;
+
+        vfloat32m1_t x0 = __riscv_vget_v_f32m1x2_f32m1(x, 0);
+        vfloat32m1_t x1 = __riscv_vget_v_f32m1x2_f32m1(x, 1);
+        vfloat32m1_t y0 = __riscv_vget_v_f32m1x2_f32m1(yv, 0);
+        vfloat32m1_t y1 = __riscv_vget_v_f32m1x2_f32m1(yv, 1);
+
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        acc0 = __riscv_vfmacc_vv_f32m1(acc0, y0, x0, 4); // acc += y * x
+        acc1 = __riscv_vfmacc_vv_f32m1(acc1, y1, x1, 4);
+
+        __riscv_vse32_v_f32m1(accu8 + 0, acc0, 4);
+        __riscv_vse32_v_f32m1(accu8 + 4, acc1, 4);
+
+        yi += 8;
+    }
+
+    FAISS_ALWAYS_INLINE void add_8_components_2(
+            const vfloat32m1x2_t& x,
+            const vfloat32m1x2_t& y) {
+        vfloat32m1_t x0 = __riscv_vget_v_f32m1x2_f32m1(x, 0);
+        vfloat32m1_t x1 = __riscv_vget_v_f32m1x2_f32m1(x, 1);
+        vfloat32m1_t y0 = __riscv_vget_v_f32m1x2_f32m1(y, 0);
+        vfloat32m1_t y1 = __riscv_vget_v_f32m1x2_f32m1(y, 1);
+
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        acc0 = __riscv_vfmacc_vv_f32m1(acc0, y0, x0, 4);
+        acc1 = __riscv_vfmacc_vv_f32m1(acc1, y1, x1, 4);
+
+        __riscv_vse32_v_f32m1(accu8 + 0, acc0, 4);
+        __riscv_vse32_v_f32m1(accu8 + 4, acc1, 4);
+    }
+
+    FAISS_ALWAYS_INLINE float result_8() {
+        vfloat32m1_t acc0 = __riscv_vle32_v_f32m1(accu8 + 0, 4);
+        vfloat32m1_t acc1 = __riscv_vle32_v_f32m1(accu8 + 4, 4);
+
+        vfloat32m1_t sum0 = __riscv_vfredusum_vs_f32m1_f32m1(acc0, acc0, 4);
+        vfloat32m1_t sum1 = __riscv_vfredusum_vs_f32m1_f32m1(acc1, acc1, 4);
+
+        float res0 = __riscv_vfmv_f_s_f32m1_f32(sum0);
+        float res1 = __riscv_vfmv_f_s_f32m1_f32(sum1);
+        return res0 + res1;
+    }
+};
+
 #endif
 
 /*******************************************************************
@@ -1644,6 +2028,54 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
         for (size_t i = 0; i < quant.d; i += 8) {
             float32x4x2_t x1 = quant.reconstruct_8_components(code1, i);
             float32x4x2_t x2 = quant.reconstruct_8_components(code2, i);
+            sim.add_8_components_2(x1, x2);
+        }
+        return sim.result_8();
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_distance(q, code);
+    }
+};
+#endif
+
+#ifdef USE_RVV
+
+template <class Quantizer, class Similarity>
+struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    Quantizer quant;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained) {}
+
+    float compute_distance(const float* x, const uint8_t* code) const {
+        Similarity sim(x);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            vfloat32m1x2_t xi = quant.reconstruct_8_components(code, i);
+            sim.add_8_components(xi);
+        }
+        return sim.result_8();
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        Similarity sim(nullptr);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            vfloat32m1x2_t x1 = quant.reconstruct_8_components(code1, i);
+            vfloat32m1x2_t x2 = quant.reconstruct_8_components(code2, i);
             sim.add_8_components_2(x1, x2);
         }
         return sim.result_8();
@@ -1881,6 +2313,53 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 
 #endif
 
+#ifdef USE_RVV
+
+template <class Similarity>
+struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    int d;
+    std::vector<uint8_t> tmp;
+
+    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+
+    int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        int accu = 0;
+        for (int i = 0; i < d; i++) {
+            if (Sim::metric_type == METRIC_INNER_PRODUCT) {
+                accu += int(code1[i]) * code2[i];
+            } else {
+                int diff = int(code1[i]) - code2[i];
+                accu += diff * diff;
+            }
+        }
+        return accu;
+    }
+
+    void set_query(const float* x) final {
+        for (int i = 0; i < d; i++) {
+            tmp[i] = int(x[i]);
+        }
+    }
+
+    int compute_distance(const float* x, const uint8_t* code) {
+        set_query(x);
+        return compute_code_distance(tmp.data(), code);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_code_distance(tmp.data(), code);
+    }
+};
+#endif
+
 /*******************************************************************
  * select_distance_computer: runtime selection of template
  * specialization
@@ -2059,7 +2538,7 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     if (d % 16 == 0) {
         return select_quantizer_1<16>(qtype, d, trained);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         return select_quantizer_1<8>(qtype, d, trained);
     } else
@@ -2102,7 +2581,7 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
                     qtype, d, trained);
         }
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
             return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
@@ -2389,7 +2868,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         return sel0_InvertedListScanner<16>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C) || defined(USE_NEON) || defined(USE_RVV)
     if (d % 8 == 0) {
         return sel0_InvertedListScanner<8>(
                 mt, this, quantizer, store_pairs, sel, by_residual);
