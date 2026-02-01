@@ -5,19 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/scalar_quantizer/training.h>
-#include <faiss/utils/utils.h>
 
+#include <faiss/impl/FaissAssert.h>
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
 
 namespace faiss {
+
 namespace scalar_quantizer {
-
-using RangeStat = ScalarQuantizer::RangeStat;
-
 /*******************************************************************
  * Quantizer range training
  */
@@ -27,12 +23,13 @@ static float sqr(float x) {
 }
 
 void train_Uniform(
-        ScalarQuantizer::RangeStat rs,
+        RangeStat rs,
         float rs_arg,
         idx_t n,
         int k,
         const float* x,
         std::vector<float>& trained) {
+    FAISS_THROW_IF_NOT(n > 0);
     trained.resize(2);
     float& vmin = trained[0];
     float& vmax = trained[1];
@@ -59,16 +56,20 @@ void train_Uniform(
         }
         float mean = sum / n;
         float var = sum2 / n - mean * mean;
-        float std = var <= 0 ? 1.0 : sqrt(var);
+        float std = var <= 0 ? 1.0 : std::sqrt(var);
 
         vmin = mean - std * rs_arg;
         vmax = mean + std * rs_arg;
     } else if (rs == ScalarQuantizer::RS_quantiles) {
         std::vector<float> x_copy(n);
         memcpy(x_copy.data(), x, n * sizeof(*x));
-        int temp = int(rs_arg * n);
-        int o = temp < 0 ? 0 : (temp > n / 2 ? n / 2 : temp);
-
+        idx_t o = static_cast<idx_t>(rs_arg * n);
+        if (o < 0) {
+            o = 0;
+        }
+        if (o > n - o) {
+            o = n / 2;
+        }
         std::nth_element(x_copy.begin(), x_copy.begin() + o, x_copy.end());
         vmin = x_copy[o];
         std::nth_element(
@@ -147,14 +148,14 @@ void train_Uniform(
 }
 
 void train_NonUniform(
-        ScalarQuantizer::RangeStat rs,
+        RangeStat rs,
         float rs_arg,
         idx_t n,
         int d,
         int k,
         const float* x,
         std::vector<float>& trained) {
-    trained.resize(2 * d);
+    trained.resize(static_cast<size_t>(2) * d);
     float* vmin = trained.data();
     float* vmax = trained.data() + d;
     if (rs == ScalarQuantizer::RS_minmax) {
@@ -198,4 +199,5 @@ void train_NonUniform(
 }
 
 } // namespace scalar_quantizer
+
 } // namespace faiss

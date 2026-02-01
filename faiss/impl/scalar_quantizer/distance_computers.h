@@ -8,10 +8,10 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
-#include <faiss/impl/scalar_quantizer/quantizers.h>
-#include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/utils/simdlib.h>
 
 namespace faiss {
+
 namespace scalar_quantizer {
 
 using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
@@ -85,7 +85,7 @@ struct DCTemplate<Quantizer, Similarity, 16>
         Similarity sim(x);
         sim.begin_16();
         for (size_t i = 0; i < quant.d; i += 16) {
-            __m512 xi = quant.reconstruct_16_components(code, i);
+            simd16float32 xi = quant.reconstruct_16_components(code, i);
             sim.add_16_components(xi);
         }
         return sim.result_16();
@@ -96,8 +96,8 @@ struct DCTemplate<Quantizer, Similarity, 16>
         Similarity sim(nullptr);
         sim.begin_16();
         for (size_t i = 0; i < quant.d; i += 16) {
-            __m512 x1 = quant.reconstruct_16_components(code1, i);
-            __m512 x2 = quant.reconstruct_16_components(code2, i);
+            simd16float32 x1 = quant.reconstruct_16_components(code1, i);
+            simd16float32 x2 = quant.reconstruct_16_components(code2, i);
             sim.add_16_components_2(x1, x2);
         }
         return sim.result_16();
@@ -117,7 +117,7 @@ struct DCTemplate<Quantizer, Similarity, 16>
     }
 };
 
-#elif defined(USE_F16C)
+#elif defined(USE_F16C) || defined(USE_NEON)
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
@@ -132,7 +132,8 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
         Similarity sim(x);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            __m256 xi = quant.reconstruct_8_components(code, i);
+            simd8float32 xi =
+                    quant.reconstruct_8_components(code, static_cast<int>(i));
             sim.add_8_components(xi);
         }
         return sim.result_8();
@@ -143,8 +144,10 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
         Similarity sim(nullptr);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            __m256 x1 = quant.reconstruct_8_components(code1, i);
-            __m256 x2 = quant.reconstruct_8_components(code2, i);
+            simd8float32 x1 =
+                    quant.reconstruct_8_components(code1, static_cast<int>(i));
+            simd8float32 x2 =
+                    quant.reconstruct_8_components(code2, static_cast<int>(i));
             sim.add_8_components_2(x1, x2);
         }
         return sim.result_8();
@@ -164,53 +167,6 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
     }
 };
 
-#endif
-
-#ifdef USE_NEON
-
-template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
-    using Sim = Similarity;
-
-    Quantizer quant;
-
-    DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
-    float compute_distance(const float* x, const uint8_t* code) const {
-        Similarity sim(x);
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
-            float32x4x2_t xi = quant.reconstruct_8_components(code, i);
-            sim.add_8_components(xi);
-        }
-        return sim.result_8();
-    }
-
-    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
-            const {
-        Similarity sim(nullptr);
-        sim.begin_8();
-        for (size_t i = 0; i < quant.d; i += 8) {
-            float32x4x2_t x1 = quant.reconstruct_8_components(code1, i);
-            float32x4x2_t x2 = quant.reconstruct_8_components(code2, i);
-            sim.add_8_components_2(x1, x2);
-        }
-        return sim.result_8();
-    }
-
-    void set_query(const float* x) final {
-        q = x;
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return compute_code_distance(
-                codes + i * code_size, codes + j * code_size);
-    }
-
-    float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
-    }
-};
 #endif
 
 /*******************************************************************

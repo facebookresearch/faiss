@@ -7,13 +7,22 @@
 
 #pragma once
 
+/*******************************************************************
+ * Quantizer range training for the scalar quantizer. This is independent of the
+ * searching code and needs not to be very optimized (scalar quantizer training
+ * is very efficient).
+ */
+
 #include <faiss/impl/ScalarQuantizer.h>
 
 namespace faiss {
+
 namespace scalar_quantizer {
 
+using RangeStat = ScalarQuantizer::RangeStat;
+
 void train_Uniform(
-        ScalarQuantizer::RangeStat rs,
+        RangeStat rs,
         float rs_arg,
         idx_t n,
         int k,
@@ -21,13 +30,13 @@ void train_Uniform(
         std::vector<float>& trained);
 
 void train_NonUniform(
-        ScalarQuantizer::RangeStat rs,
+        RangeStat rs,
         float rs_arg,
         idx_t n,
         int d,
         int k,
         const float* x,
         std::vector<float>& trained);
-
 } // namespace scalar_quantizer
+
 } // namespace faiss
