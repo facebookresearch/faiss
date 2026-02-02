@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1Codec8bit" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::Codec8bit</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_1a9a1822504f9a52a47ccb37571d3417bc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>static FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::Codec8bit::encode_component</definition>
+        <argsstring>(float x, uint8_t *code, int i)</argsstring>
+        <name>encode_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Codec8bit::encode_component</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/codecs.h" line="25" column="37" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="25" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_1ab450b4bd4d7884c56b7d20752e58f59c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>static FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Codec8bit::decode_component</definition>
+        <argsstring>(const uint8_t *code, int i)</argsstring>
+        <name>decode_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Codec8bit::decode_component</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/codecs.h" line="32" column="38" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="32" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/codecs.h" line="24" column="1" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="24" bodyend="74"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_1ab450b4bd4d7884c56b7d20752e58f59c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit</scope><name>decode_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_1a9a1822504f9a52a47ccb37571d3417bc" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit</scope><name>encode_component</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -323,6 +323,7 @@
     <innernamespace refid="namespacefaiss_1_1rabitq__multibit">faiss::rabitq_multibit</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1scalar__quantizer">faiss::scalar_quantizer</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
     <innernamespace refid="namespacefaiss_1_1svs__io">faiss::svs_io</innernamespace>
     <sectiondef kind="enum">

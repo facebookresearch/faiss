@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_49d07059965bd48f84542aba965b16d6" kind="dir">
+    <compoundname>faiss/impl/scalar_quantizer</compoundname>
+    <innerfile refid="codecs_8h">codecs.h</innerfile>
+    <innerfile refid="distance__computers_8h">distance_computers.h</innerfile>
+    <innerfile refid="quantizers_8h">quantizers.h</innerfile>
+    <innerfile refid="similarities_8h">similarities.h</innerfile>
+    <innerfile refid="training_8h">training.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/"/>
+  </compounddef>
+</doxygen>

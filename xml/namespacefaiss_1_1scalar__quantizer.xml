@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1scalar__quantizer" kind="namespace" language="C++">
+    <compoundname>faiss::scalar_quantizer</compoundname>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit" prot="public">faiss::scalar_quantizer::Codec4bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit" prot="public">faiss::scalar_quantizer::Codec6bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit" prot="public">faiss::scalar_quantizer::Codec8bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" prot="public">faiss::scalar_quantizer::DCTemplate</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_011_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public">faiss::scalar_quantizer::DistanceComputerByte</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_011_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_011_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_011_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16" prot="public">faiss::scalar_quantizer::QuantizerBF16</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_011_01_4" prot="public">faiss::scalar_quantizer::QuantizerBF16&lt; 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16" prot="public">faiss::scalar_quantizer::QuantizerFP16</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4" prot="public">faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate" prot="public">faiss::scalar_quantizer::QuantizerTemplate</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1UNIFORM_00_011_01_4" prot="public">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP" prot="public">faiss::scalar_quantizer::SimilarityIP</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4" prot="public">faiss::scalar_quantizer::SimilarityIP&lt; 1 &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2" prot="public">faiss::scalar_quantizer::SimilarityL2</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_011_01_4" prot="public">faiss::scalar_quantizer::SimilarityL2&lt; 1 &gt;</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="quantizers_8h_1a6e9b2ef1b045f70ed7889944c7e114e9" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>QuantizerTemplateScaling</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerTemplateScaling</qualifiedname>
+        <enumvalue id="quantizers_8h_1a6e9b2ef1b045f70ed7889944c7e114e9a891f35a29c3d51d02ffd42dd6dcc69b2" prot="public">
+          <name>UNIFORM</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="quantizers_8h_1a6e9b2ef1b045f70ed7889944c7e114e9a84f0dc2ff991df6484ca3d6e23e6acc2" prot="public">
+          <name>NON_UNIFORM</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="50" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="50" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="distance__computers_8h_1aebd35c67c29748c51a1f08b06ad891c5" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kindref="compound">ScalarQuantizer::SQDistanceComputer</ref></type>
+        <definition>using faiss::scalar_quantizer::SQDistanceComputer = typedef ScalarQuantizer::SQDistanceComputer</definition>
+        <argsstring></argsstring>
+        <name>SQDistanceComputer</name>
+        <qualifiedname>faiss::scalar_quantizer::SQDistanceComputer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="17" column="1" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="quantizers_8h_1a2a3063c0523e485aa5f63e5f83062f14" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref></type>
+        <definition>using faiss::scalar_quantizer::SQuantizer = typedef ScalarQuantizer::SQuantizer</definition>
+        <argsstring></argsstring>
+        <name>SQuantizer</name>
+        <qualifiedname>faiss::scalar_quantizer::SQuantizer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="42" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="quantizers_8h_1a4fed2735252555c734f3b6edc02bc3b9" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+        <definition>using faiss::scalar_quantizer::QuantizerType = typedef ScalarQuantizer::QuantizerType</definition>
+        <argsstring></argsstring>
+        <name>QuantizerType</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="43" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="training_8h_1a923e637106868c422085e5287010f0f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::train_Uniform</definition>
+        <argsstring>(ScalarQuantizer::RangeStat rs, float rs_arg, idx_t n, int k, const float *x, std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>train_Uniform</name>
+        <qualifiedname>faiss::scalar_quantizer::train_Uniform</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kindref="member">ScalarQuantizer::RangeStat</ref></type>
+          <declname>rs</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>rs_arg</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/training.h" line="15" column="6" declfile="faiss/impl/scalar_quantizer/training.h" declline="15" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="training_8h_1aaa5e0e966f3729e54427783c2e44b7ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::scalar_quantizer::train_NonUniform</definition>
+        <argsstring>(ScalarQuantizer::RangeStat rs, float rs_arg, idx_t n, int d, int k, const float *x, std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>train_NonUniform</name>
+        <qualifiedname>faiss::scalar_quantizer::train_NonUniform</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kindref="member">ScalarQuantizer::RangeStat</ref></type>
+          <declname>rs</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>rs_arg</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/training.h" line="23" column="6" declfile="faiss/impl/scalar_quantizer/training.h" declline="23" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/codecs.h" line="22" column="1"/>
+  </compounddef>
+</doxygen>
