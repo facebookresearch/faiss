@@ -4,7 +4,6 @@
     <compoundname>faiss/cppcontrib</compoundname>
     <innerdir refid="dir_8b616007acf4b97b5964ac00bedb17ee">faiss/cppcontrib/detail</innerdir>
     <innerdir refid="dir_223b9c703ffee17e94e6e39e310b329b">faiss/cppcontrib/sa_decode</innerdir>
-    <innerfile refid="factory__tools_8h">factory_tools.h</innerfile>
     <innerfile refid="SaDecodeKernels_8h">SaDecodeKernels.h</innerfile>
     <briefdescription>
     </briefdescription>

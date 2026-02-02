@@ -12,6 +12,7 @@
     <innerfile refid="AutoTune_8h">AutoTune.h</innerfile>
     <innerfile refid="clone__index_8h">clone_index.h</innerfile>
     <innerfile refid="Clustering_8h">Clustering.h</innerfile>
+    <innerfile refid="factory__tools_8h">factory_tools.h</innerfile>
     <innerfile refid="Index_8h">Index.h</innerfile>
     <innerfile refid="Index2Layer_8h">Index2Layer.h</innerfile>
     <innerfile refid="index__factory_8h">index_factory.h</innerfile>

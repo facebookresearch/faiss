@@ -5,7 +5,7 @@
     <includes local="no">string</includes>
     <incdepgraph>
       <node id="1">
-        <label>faiss/cppcontrib/factory_tools.h</label>
+        <label>faiss/factory_tools.h</label>
         <link refid="factory__tools_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
@@ -43,6 +43,6 @@
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
 <codeline lineno="22"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="faiss/cppcontrib/factory_tools.h"/>
+    <location file="faiss/factory_tools.h"/>
   </compounddef>
 </doxygen>
