@@ -277,6 +277,7 @@
     <innerclass refid="structfaiss_1_1SearchParametersPreTransform" prot="public">faiss::SearchParametersPreTransform</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersResidualCoarseQuantizer" prot="public">faiss::SearchParametersResidualCoarseQuantizer</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersSVSVamana" prot="public">faiss::SearchParametersSVSVamana</innerclass>
+    <innerclass refid="structfaiss_1_1simd16float32" prot="public">faiss::simd16float32</innerclass>
     <innerclass refid="structfaiss_1_1simd16uint16" prot="public">faiss::simd16uint16</innerclass>
     <innerclass refid="structfaiss_1_1simd256bit" prot="public">faiss::simd256bit</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint16" prot="public">faiss::simd32uint16</innerclass>
@@ -10351,6 +10352,32 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx512.h" line="210" column="21" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="210" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a395ce88592ebb8f90dbc66d4d325b897" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref></type>
+        <definition>simd16float32 faiss::fmadd</definition>
+        <argsstring>(const simd16float32 &amp;a, const simd16float32 &amp;b, const simd16float32 &amp;c)</argsstring>
+        <name>fmadd</name>
+        <qualifiedname>faiss::fmadd</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref> &amp;</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_avx512.h" line="353" column="22" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="353" bodyend="358"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>

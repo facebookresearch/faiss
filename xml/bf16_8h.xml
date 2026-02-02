@@ -3,7 +3,6 @@
   <compounddef id="bf16_8h" kind="file" language="C++">
     <compoundname>bf16.h</compoundname>
     <includes local="no">cstdint</includes>
-    <includedby refid="quantizers_8h" local="no">faiss/impl/scalar_quantizer/quantizers.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/utils/bf16.h</label>
@@ -15,24 +14,6 @@
         <label>cstdint</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="3">
-        <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
-        <link refid="distance__computers_8h_source"/>
-      </node>
-      <node id="2">
-        <label>faiss/impl/scalar_quantizer/quantizers.h</label>
-        <link refid="quantizers_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="1">
-        <label>faiss/utils/bf16.h</label>
-        <link refid="bf16_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-    </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <sectiondef kind="var">
       <memberdef kind="variable" id="bf16_8h_1a04fff3a147b71de5a0e6ca4bcefb0232" prot="public" static="no" mutable="no">

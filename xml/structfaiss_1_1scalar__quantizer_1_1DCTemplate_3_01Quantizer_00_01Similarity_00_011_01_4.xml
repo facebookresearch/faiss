@@ -234,7 +234,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ScalarQuantizer.h" line="105" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="105" bodyend="107"/>
+        <location file="faiss/impl/ScalarQuantizer.h" line="103" column="15" bodyfile="faiss/impl/ScalarQuantizer.h" bodystart="103" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>float</type>

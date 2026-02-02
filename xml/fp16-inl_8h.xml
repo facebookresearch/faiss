@@ -32,16 +32,6 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="6">
-        <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
-        <link refid="distance__computers_8h_source"/>
-      </node>
-      <node id="5">
-        <label>faiss/impl/scalar_quantizer/quantizers.h</label>
-        <link refid="quantizers_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-      </node>
       <node id="1">
         <label>faiss/utils/fp16-inl.h</label>
         <link refid="fp16-inl_8h"/>
@@ -52,8 +42,6 @@
         <label>faiss/utils/fp16.h</label>
         <link refid="fp16_8h_source"/>
         <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

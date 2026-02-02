@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="275" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="275" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="253" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="253" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="277" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="277" bodyend="277"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="255" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="255" bodyend="255"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a9746c0012b64c4f0a668300cab7bcbfa" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="279" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="279" bodyend="283"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="257" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="257" bodyend="261"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1af194311f1e3d64557e21ee667878bd9d" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -87,12 +87,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="285" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="285" bodyend="289"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="263" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="263" bodyend="267"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1ab1d255dcde95a1a68b5886c1ff31d3b5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a13037c5dbeeea65a0a36ca17bacb0d9a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
         <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;::reconstruct_component</definition>
-        <argsstring>(const uint8_t *code, int i) const</argsstring>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
         <name>reconstruct_component</name>
         <qualifiedname>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;::reconstruct_component</qualifiedname>
         <param>
@@ -100,7 +100,7 @@
           <declname>code</declname>
         </param>
         <param>
-          <type>int</type>
+          <type>size_t</type>
           <declname>i</declname>
         </param>
         <briefdescription>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="291" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="291" bodyend="294"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="269" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="269" bodyend="273"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -140,13 +140,13 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="274" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="274" bodyend="295"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="252" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="252" bodyend="274"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a66946d03b6e9c770af09297e9ef2138c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>d</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1af194311f1e3d64557e21ee667878bd9d" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a9746c0012b64c4f0a668300cab7bcbfa" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1af5646447443e340e418b3eb5790843e0" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>QuantizerFP16</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1ab1d255dcde95a1a68b5886c1ff31d3b5" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a13037c5dbeeea65a0a36ca17bacb0d9a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>reconstruct_component</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</scope><name>~SQuantizer</name></member>
     </listofallmembers>
   </compounddef>

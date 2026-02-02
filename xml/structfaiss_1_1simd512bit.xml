@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd512bit" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd512bit</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1simd16float32" prot="public" virt="non-virtual">faiss::simd16float32</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd32uint16" prot="public" virt="non-virtual">faiss::simd32uint16</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd64uint8" prot="public" virt="non-virtual">faiss::simd64uint8</derivedcompoundref>
     <includes refid="simdlib__avx512_8h" local="no">simdlib_avx512.h</includes>
@@ -269,6 +270,12 @@
     </detaileddescription>
     <inheritancegraph>
       <node id="2">
+        <label>faiss::simd16float32</label>
+        <link refid="structfaiss_1_1simd16float32"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
         <label>faiss::simd32uint16</label>
         <link refid="structfaiss_1_1simd32uint16"/>
         <childnode refid="1" relation="public-inheritance">
@@ -278,7 +285,7 @@
         <label>faiss::simd512bit</label>
         <link refid="structfaiss_1_1simd512bit"/>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss::simd64uint8</label>
         <link refid="structfaiss_1_1simd64uint8"/>
         <childnode refid="1" relation="public-inheritance">

@@ -360,18 +360,28 @@
         </childnode>
         <childnode refid="39" relation="include">
         </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
       </node>
       <node id="37">
+        <label>faiss/impl/scalar_quantizer/codecs.h</label>
+        <link refid="codecs_8h_source"/>
+      </node>
+      <node id="38">
         <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
         <link refid="distance__computers_8h_source"/>
       </node>
-      <node id="38">
+      <node id="39">
         <label>faiss/impl/scalar_quantizer/quantizers.h</label>
         <link refid="quantizers_8h_source"/>
-        <childnode refid="37" relation="include">
-        </childnode>
       </node>
-      <node id="39">
+      <node id="40">
+        <label>faiss/impl/scalar_quantizer/similarities.h</label>
+        <link refid="similarities_8h_source"/>
+      </node>
+      <node id="41">
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>

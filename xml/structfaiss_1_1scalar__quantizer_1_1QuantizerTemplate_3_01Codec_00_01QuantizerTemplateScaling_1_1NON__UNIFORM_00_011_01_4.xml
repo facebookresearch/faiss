@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="161" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="161" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="136" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="136" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1aa1bdee09f01054cd5f3bd3689f386990" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="162" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="137" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="137" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a53af12446fb0a46104bb893c56bb1a97" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="162" column="22" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="137" column="22" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="137" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="164" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="164" bodyend="165"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="139" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="139" bodyend="140"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a3ebc24c72491d7633125176b8fce7951" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -96,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="167" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="167" bodyend="181"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="142" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="142" bodyend="156"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1ad15589e2e19556f58d04095d1d5d4969" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -119,12 +119,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="183" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="183" bodyend="188"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="158" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="158" bodyend="163"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a9ba2a39c46965650dded1bc9a9080331" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a921cec8f6d5c1bb4c8123f7d6a7227ee" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
         <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;::reconstruct_component</definition>
-        <argsstring>(const uint8_t *code, int i) const</argsstring>
+        <argsstring>(const uint8_t *code, size_t i) const</argsstring>
         <name>reconstruct_component</name>
         <qualifiedname>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;::reconstruct_component</qualifiedname>
         <param>
@@ -132,7 +132,7 @@
           <declname>code</declname>
         </param>
         <param>
-          <type>int</type>
+          <type>size_t</type>
           <declname>i</declname>
         </param>
         <briefdescription>
@@ -141,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="190" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="190" bodyend="194"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="165" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="165" bodyend="170"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -172,13 +172,13 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="159" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="160" bodyend="195"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="134" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="135" bodyend="171"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a84a98102f0f169338dc2b6f98c34d4b5" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>d</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1ad15589e2e19556f58d04095d1d5d4969" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a3ebc24c72491d7633125176b8fce7951" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>encode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1aacaa86aeddb97f76dc6b707d544e2f2e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>QuantizerTemplate</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a9ba2a39c46965650dded1bc9a9080331" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>reconstruct_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a921cec8f6d5c1bb4c8123f7d6a7227ee" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>reconstruct_component</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a53af12446fb0a46104bb893c56bb1a97" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>vdiff</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1aa1bdee09f01054cd5f3bd3689f386990" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>vmin</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</scope><name>~SQuantizer</name></member>

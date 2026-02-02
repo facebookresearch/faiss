@@ -58,6 +58,7 @@
     <innerclass refid="structfaiss_1_1simd512bit" prot="public">faiss::simd512bit</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint16" prot="public">faiss::simd32uint16</innerclass>
     <innerclass refid="structfaiss_1_1simd64uint8" prot="public">faiss::simd64uint8</innerclass>
+    <innerclass refid="structfaiss_1_1simd16float32" prot="public">faiss::simd16float32</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -358,8 +359,72 @@
 <codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>tab[i];</highlight></codeline>
 <codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="294"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"></highlight></codeline>
-<codeline lineno="296"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="296"><highlight class="comment">///<sp/>vector<sp/>of<sp/>16<sp/>32-bit<sp/>floats</highlight></codeline>
+<codeline lineno="297" refid="structfaiss_1_1simd16float32" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref><sp/>:<sp/><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref><sp/>{</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>()<sp/>{}</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(__m512<sp/>f)<sp/>:<sp/><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref>(f)<sp/>{}</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x)<sp/>:<sp/><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref>(_mm512_set1_ps(x))<sp/>{}</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x)<sp/>:<sp/><ref refid="structfaiss_1_1simd512bit" kindref="compound">simd512bit</ref>(_mm512_loadu_ps(x))<sp/>{}</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear()<sp/>{</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>=<sp/>_mm512_setzero_ps();</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>storeu(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>ptr)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm512_storeu_ps(ptr,<sp/>f);</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>loadu(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>ptr)<sp/>{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>=<sp/>_mm512_loadu_ps(ptr);</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>store(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>ptr)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm512_storeu_ps(ptr,<sp/>f);</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref><sp/>operator*(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(_mm512_mul_ps(f,<sp/>other.f));</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"></highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref><sp/>operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(_mm512_add_ps(f,<sp/>other.f));</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref><sp/>operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(_mm512_sub_ps(f,<sp/>other.f));</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f<sp/>=<sp/>_mm512_add_ps(f,<sp/>other.f);</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"></highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>tostring()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>tab[16];</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>storeu(tab);</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>res[1000];</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>ptr<sp/>=<sp/>res;</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>16;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr<sp/>+=<sp/>sprintf(ptr,<sp/></highlight><highlight class="stringliteral">&quot;%g,&quot;</highlight><highlight class="normal">,<sp/>tab[i]);</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ptr[-1]<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::string(res);</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="350"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"></highlight></codeline>
+<codeline lineno="352"><highlight class="normal"></highlight><highlight class="comment">//<sp/>compute<sp/>a<sp/>*<sp/>b<sp/>+<sp/>c</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="353"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref><sp/>fmadd(</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>a,</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>b,</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>&amp;<sp/>c)<sp/>{</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(_mm512_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
+<codeline lineno="358"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"></highlight></codeline>
+<codeline lineno="360"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_avx512.h"/>
   </compounddef>

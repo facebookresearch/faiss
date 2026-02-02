@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="199" column="26" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="199" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="198" column="26" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="198" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1ad2a84396f6e70838e2e20dc80477256f" prot="public" static="yes" constexpr="yes" mutable="no">
         <type>constexpr <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="200" column="33" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="200" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="199" column="33" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="199" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="201" column="17" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="201" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="200" column="17" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="200" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a8aa919d08775bf956e94d7e43fb5706a" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="201" column="19" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="201" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="200" column="19" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="200" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1ae70cf2641873d3d4d825b2f639f26a9e" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -77,7 +77,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="203" column="11" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="203" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="202" column="11" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="202" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -97,7 +97,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="205" column="14" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="205" bodyend="205"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="204" column="14" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="204" bodyend="204"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a007864f7a7a6d9d9a47b62d92ace07bb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE void</type>
@@ -111,7 +111,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="207" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="207" bodyend="210"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="206" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="206" bodyend="209"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a4af0b9f3111c8495e0431a75512c78f2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE void</type>
@@ -129,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="212" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="212" bodyend="214"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="211" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="211" bodyend="213"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a555f3b8b7226b818d64eb5a40d64b114" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE void</type>
@@ -151,7 +151,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="216" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="216" bodyend="218"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="215" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="215" bodyend="217"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a69c02488a17e1de023fc5a70316b1537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
@@ -165,14 +165,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/similarities.h" line="220" column="31" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="220" bodyend="222"/>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="219" column="31" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="219" bodyend="221"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/similarities.h" line="198" column="1" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="198" bodyend="223"/>
+    <location file="faiss/impl/scalar_quantizer/similarities.h" line="197" column="1" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="197" bodyend="222"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1ae70cf2641873d3d4d825b2f639f26a9e" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; 1 &gt;</scope><name>accu</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_011_01_4_1a4af0b9f3111c8495e0431a75512c78f2" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; 1 &gt;</scope><name>add_component</name></member>
