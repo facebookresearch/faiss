@@ -594,7 +594,7 @@ inline auto dispatch_metric_compare(MetricType metric, Fn&& fn) {
     }
 }
 
-template <bool use_radius, typename BlockHandler, typename C>
+template <bool use_radius, typename C, typename BlockHandler>
 inline void flat_pano_search_core(
         const IndexFlatPanorama& index,
         BlockHandler& handler,
@@ -701,8 +701,7 @@ void IndexFlatPanorama::search(
     dispatch_metric_compare(metric_type, [&]<typename C>() {
         HeapBlockResultHandler<C, false> handler(
                 size_t(n), distances, labels, size_t(k), nullptr);
-        flat_pano_search_core<false, decltype(handler), C>(
-                *this, handler, n, x, 0.0f, params);
+        flat_pano_search_core<false, C>(*this, handler, n, x, 0.0f, params);
     });
 }
 
@@ -715,8 +714,7 @@ void IndexFlatPanorama::range_search(
     dispatch_metric_compare(metric_type, [&]<typename C>() {
         RangeSearchBlockResultHandler<C, false> handler(
                 result, radius, nullptr);
-        flat_pano_search_core<true, decltype(handler), C>(
-                *this, handler, n, x, radius, params);
+        flat_pano_search_core<true, C>(*this, handler, n, x, radius, params);
     });
 }
 
