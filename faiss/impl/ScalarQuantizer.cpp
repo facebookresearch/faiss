@@ -187,9 +187,9 @@ SQDistanceComputer* select_distance_computer(
                     Quantizer8bitDirectSigned<SIMDWIDTH>,
                     Sim,
                     SIMDWIDTH>(d, trained);
+        default:
+            FAISS_THROW_MSG("unknown qtype");
     }
-    FAISS_THROW_MSG("unknown qtype");
-    return nullptr;
 }
 
 template <int SIMDWIDTH>
@@ -231,8 +231,9 @@ ScalarQuantizer::SQuantizer* select_quantizer_1(
             return new Quantizer8bitDirect<SIMDWIDTH>(d, trained);
         case ScalarQuantizer::QT_8bit_direct_signed:
             return new Quantizer8bitDirectSigned<SIMDWIDTH>(d, trained);
+        default:
+            FAISS_THROW_MSG("unknown qtype");
     }
-    FAISS_THROW_MSG("unknown qtype");
 }
 
 } // namespace scalar_quantizer
@@ -276,6 +277,8 @@ void ScalarQuantizer::set_derived_sizes() {
             code_size = d * 2;
             bits = 16;
             break;
+        default:
+            break;
     }
 }
 
@@ -315,6 +318,8 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_bf16:
         case QT_8bit_direct_signed:
             // no training necessary
+            break;
+        default:
             break;
     }
 }
@@ -616,10 +621,9 @@ InvertedListScanner* sel1_InvertedListScanner(
                     Quantizer8bitDirectSigned<SIMDWIDTH>,
                     Similarity,
                     SIMDWIDTH>>(sq, quantizer, store_pairs, sel, r);
+        default:
+            FAISS_THROW_MSG("unknown qtype");
     }
-
-    FAISS_THROW_MSG("unknown qtype");
-    return nullptr;
 }
 
 template <int SIMDWIDTH>
