@@ -126,8 +126,8 @@ struct StoreResultHandler : SIMDResultHandler {
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
         size_t ofs = (q + i0) * ld + j0 + b * 32;
-        d0.store(data + ofs);
-        d1.store(data + ofs + 16);
+        d0.storeu(data + ofs);
+        d1.storeu(data + ofs + 16);
     }
 
     void set_block_origin(size_t i0_in, size_t j0_in) final {

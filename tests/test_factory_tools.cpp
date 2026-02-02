@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/cppcontrib/factory_tools.h>
+#include <faiss/factory_tools.h>
 #include <faiss/index_factory.h>
 #include <gtest/gtest.h>
 
