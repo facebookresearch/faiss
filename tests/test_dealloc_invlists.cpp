@@ -109,17 +109,17 @@ struct EncapsulateInvertedLists : InvertedLists {
     }
 
     size_t add_entries(size_t, size_t, const idx_t*, const uint8_t*) override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
         return 0;
     }
 
     void update_entries(size_t, size_t, size_t, const idx_t*, const uint8_t*)
             override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
     }
 
     void resize(size_t, size_t) override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
     }
 
     ~EncapsulateInvertedLists() override {}
