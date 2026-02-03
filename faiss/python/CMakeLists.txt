@@ -114,11 +114,11 @@ swig_add_library(swigfaiss
   SOURCES swigfaiss.swig
 )
 
-if(TARGET swigfaiss)
-    set_target_properties(swigfaiss PROPERTIES
-        CXX_VISIBILITY_PRESET hidden
-        VISIBILITY_INLINES_HIDDEN ON
-    )
+if(TARGET swigfaiss AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  set_target_properties(swigfaiss PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+  )
 endif()
 
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
