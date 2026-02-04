@@ -371,3 +371,72 @@ class TestIvfSharding(unittest.TestCase):
         )
         self.verify_sharded_ivf_indexes(
             template, xb, shard_count, self.default_sharding_function, False)
+
+    def test_save_index_shards_by_centroids_rabitq(self):
+        """Test sharding for IndexIVFRaBitQ."""
+        xb = np.random.rand(self.nb, self.d).astype('float32')
+        quantizer = faiss.IndexFlatL2(self.d)
+        index = faiss.IndexIVFRaBitQ(quantizer, self.d, self.nlist)
+        shard_count = 7
+
+        # train and add centroids to quantizer
+        index.train(xb)
+        index.quantizer.reset()
+        index.quantizer.add(xb)
+
+        template = str(random.randint(0, 100000)) + "shard.%d.rabitq.index"
+        faiss.shard_ivf_index_centroids(
+            index,
+            shard_count,
+            template,
+            None,
+            True
+        )
+        self.verify_sharded_ivf_indexes(
+            template, xb, shard_count, self.default_sharding_function)
+
+    def test_save_index_shards_by_centroids_rabitq_fastscan(self):
+        """Test sharding for IndexIVFRaBitQFastScan."""
+        xb = np.random.rand(self.nb, self.d).astype('float32')
+        quantizer = faiss.IndexFlatL2(self.d)
+        index = faiss.IndexIVFRaBitQFastScan(quantizer, self.d, self.nlist)
+        shard_count = 5
+
+        # train and add centroids to quantizer
+        index.train(xb)
+        index.quantizer.reset()
+        index.quantizer.add(xb)
+
+        template = str(random.randint(0, 100000)) + "shard.%d.rabitqfs.index"
+        faiss.shard_ivf_index_centroids(
+            index,
+            shard_count,
+            template,
+            None,
+            True
+        )
+        self.verify_sharded_ivf_indexes(
+            template, xb, shard_count, self.default_sharding_function)
+
+    def test_save_index_shards_by_centroids_rabitq_custom_sharding(self):
+        """Test sharding for IndexIVFRaBitQ with custom sharding function."""
+        xb = np.random.rand(self.nb, self.d).astype('float32')
+        quantizer = faiss.IndexFlatL2(self.d)
+        index = faiss.IndexIVFRaBitQ(quantizer, self.d, self.nlist)
+        shard_count = 20
+
+        # train and add centroids to quantizer
+        index.train(xb)
+        index.quantizer.reset()
+        index.quantizer.add(xb)
+
+        template = str(random.randint(0, 100000)) + "shard.%d.rabitq.index"
+        faiss.shard_ivf_index_centroids(
+            index,
+            shard_count,
+            template,
+            self.custom_sharding_function,
+            True
+        )
+        self.verify_sharded_ivf_indexes(
+            template, xb, shard_count, self.custom_sharding_function)
