@@ -288,13 +288,86 @@
           <declname>val</declname>
         </param>
         <briefdescription>
-<para>set one of the parameters, returns whether setting was successful </para>
+<para>set one of the parameters </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/AutoTune.h" line="181" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a3c1810d0a7fb630808941c78ba341560" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ParameterSpace::set_index_parameters</definition>
+        <argsstring>(IndexBinary *index, size_t cno) const</argsstring>
+        <name>set_index_parameters</name>
+        <qualifiedname>faiss::ParameterSpace::set_index_parameters</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>cno</declname>
+        </param>
+        <briefdescription>
+<para>set a combination of parameters on a binary index </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="187" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1ab2294d06d3023d637704926816fbf1f1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::ParameterSpace::set_index_parameters</definition>
+        <argsstring>(IndexBinary *index, const char *param_string) const</argsstring>
+        <name>set_index_parameters</name>
+        <qualifiedname>faiss::ParameterSpace::set_index_parameters</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>param_string</declname>
+        </param>
+        <briefdescription>
+<para>set a combination of parameters described by a string on a binary index </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="190" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a1a34f5b65f29ef623c3a2465f4793bd0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::ParameterSpace::set_index_parameter</definition>
+        <argsstring>(IndexBinary *index, const std::string &amp;name, double val) const</argsstring>
+        <name>set_index_parameter</name>
+        <qualifiedname>faiss::ParameterSpace::set_index_parameter</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IndexBinary" kindref="compound">IndexBinary</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+<para>set one of the parameters on a binary index </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/AutoTune.h" line="194" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -325,7 +398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="188" column="10"/>
+        <location file="faiss/AutoTune.h" line="201" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -393,7 +466,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="200" column="10"/>
+        <location file="faiss/AutoTune.h" line="213" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ParameterSpace_1a75fbe38ddf6cdca0928316dae9f17764" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -407,7 +480,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/AutoTune.h" line="207" column="13" bodyfile="faiss/AutoTune.h" bodystart="207" bodyend="207"/>
+        <location file="faiss/AutoTune.h" line="220" column="13" bodyfile="faiss/AutoTune.h" bodystart="220" bodyend="220"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -427,7 +500,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/AutoTune.h" line="131" column="1" bodyfile="faiss/AutoTune.h" bodystart="131" bodyend="208"/>
+    <location file="faiss/AutoTune.h" line="131" column="1" bodyfile="faiss/AutoTune.h" bodystart="131" bodyend="221"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ParameterSpace_1a6fa126b026197762f34ce097833c6f7c" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>add_range</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1aee8fd44e15656ba80fe98de4c65ed767" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>batchsize</name></member>
@@ -442,8 +515,11 @@
       <member refid="structfaiss_1_1ParameterSpace_1a334c1bb54bc2b70950a4a63950728cbb" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>parameter_ranges</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1ad9c41b66db298ddf8c43b14d8eb88a67" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>ParameterSpace</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1ad9e630ff62561acf6a55b972ee7bb309" prot="public" virt="virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameter</name></member>
+      <member refid="structfaiss_1_1ParameterSpace_1a1a34f5b65f29ef623c3a2465f4793bd0" prot="public" virt="virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameter</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameters</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameters</name></member>
+      <member refid="structfaiss_1_1ParameterSpace_1a3c1810d0a7fb630808941c78ba341560" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameters</name></member>
+      <member refid="structfaiss_1_1ParameterSpace_1ab2294d06d3023d637704926816fbf1f1" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>set_index_parameters</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1af6dc3b9c5631b509cbae99bf0f24170b" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>thread_over_batches</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>update_bounds</name></member>
       <member refid="structfaiss_1_1ParameterSpace_1a7a9f2292c4e0ac3aad569434edea87b0" prot="public" virt="non-virtual"><scope>faiss::ParameterSpace</scope><name>verbose</name></member>

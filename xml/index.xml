@@ -1861,6 +1861,9 @@
     <member refid="structfaiss_1_1ParameterSpace_1a6fa126b026197762f34ce097833c6f7c" kind="function"><name>add_range</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" kind="function"><name>set_index_parameters</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8" kind="function"><name>set_index_parameters</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1a3c1810d0a7fb630808941c78ba341560" kind="function"><name>set_index_parameters</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1ab2294d06d3023d637704926816fbf1f1" kind="function"><name>set_index_parameters</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1a1a34f5b65f29ef623c3a2465f4793bd0" kind="function"><name>set_index_parameter</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" kind="function"><name>update_bounds</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" kind="function"><name>explore</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a334c1bb54bc2b70950a4a63950728cbb" kind="variable"><name>parameter_ranges</name></member>
@@ -8883,6 +8886,9 @@
     <member refid="structfaiss_1_1ParameterSpace_1a613036d9ce9b2d89856043782975a30a" kind="function"><name>set_index_parameters</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1acaf902b57394d802a32dcbdfa6bcd7b8" kind="function"><name>set_index_parameters</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1ad9e630ff62561acf6a55b972ee7bb309" kind="function"><name>set_index_parameter</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1a3c1810d0a7fb630808941c78ba341560" kind="function"><name>set_index_parameters</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1ab2294d06d3023d637704926816fbf1f1" kind="function"><name>set_index_parameters</name></member>
+    <member refid="structfaiss_1_1ParameterSpace_1a1a34f5b65f29ef623c3a2465f4793bd0" kind="function"><name>set_index_parameter</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a8b8ca45f0a520a7100b4ad9c7be1e079" kind="function"><name>update_bounds</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1abf95f9ac04d0a2d1d4ac9e3b685bfcc3" kind="function"><name>explore</name></member>
     <member refid="structfaiss_1_1ParameterSpace_1a75fbe38ddf6cdca0928316dae9f17764" kind="function"><name>~ParameterSpace</name></member>
