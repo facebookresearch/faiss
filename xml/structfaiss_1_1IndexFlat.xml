@@ -1670,13 +1670,19 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="8">
+        <label>faiss::IndexFlatIPPanorama</label>
+        <link refid="structfaiss_1_1IndexFlatIPPanorama"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="5">
         <label>faiss::IndexFlatL2</label>
         <link refid="structfaiss_1_1IndexFlatL2"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>faiss::IndexFlatL2Panorama</label>
         <link refid="structfaiss_1_1IndexFlatL2Panorama"/>
         <childnode refid="7" relation="public-inheritance">

@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1IndexFlatL2Panorama" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::IndexFlatL2Panorama</compoundname>
+  <compounddef id="structfaiss_1_1IndexFlatIPPanorama" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::IndexFlatIPPanorama</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexFlatPanorama" prot="public" virt="non-virtual">faiss::IndexFlatPanorama</basecompoundref>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexFlatL2Panorama_1a2be833e51526de0f3913ffd70f1477ef" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatIPPanorama_1a60b95dcc8d5bb808c3d8f0a0d6c88217" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
-        <definition>faiss::IndexFlatL2Panorama::IndexFlatL2Panorama</definition>
+        <definition>faiss::IndexFlatIPPanorama::IndexFlatIPPanorama</definition>
         <argsstring>(idx_t d, size_t n_levels, size_t batch_size=512)</argsstring>
-        <name>IndexFlatL2Panorama</name>
-        <qualifiedname>faiss::IndexFlatL2Panorama::IndexFlatL2Panorama</qualifiedname>
+        <name>IndexFlatIPPanorama</name>
+        <qualifiedname>faiss::IndexFlatIPPanorama::IndexFlatIPPanorama</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>d</declname>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="176" column="14" bodyfile="faiss/IndexFlat.h" bodystart="176" bodyend="180"/>
+        <location file="faiss/IndexFlat.h" line="189" column="14" bodyfile="faiss/IndexFlat.h" bodystart="189" bodyend="194"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1712,8 +1712,8 @@
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexFlatL2Panorama</label>
-        <link refid="structfaiss_1_1IndexFlatL2Panorama"/>
+        <label>faiss::IndexFlatIPPanorama</label>
+        <link refid="structfaiss_1_1IndexFlatIPPanorama"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1749,8 +1749,8 @@
         </childnode>
       </node>
       <node id="1">
-        <label>faiss::IndexFlatL2Panorama</label>
-        <link refid="structfaiss_1_1IndexFlatL2Panorama"/>
+        <label>faiss::IndexFlatIPPanorama</label>
+        <link refid="structfaiss_1_1IndexFlatIPPanorama"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -1768,63 +1768,63 @@
         <link refid="structfaiss_1_1Panorama"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexFlat.h" line="170" column="1" bodyfile="faiss/IndexFlat.h" bodystart="170" bodyend="181"/>
+    <location file="faiss/IndexFlat.h" line="183" column="1" bodyfile="faiss/IndexFlat.h" bodystart="183" bodyend="195"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>add</name></member>
-      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>add_ex</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a48d3d2d28ebfe217bc5b52ed40cab40d" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>add_sa_codes</name></member>
-      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>add_with_ids</name></member>
-      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>add_with_ids_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>assign</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a9b41e4fe4e686cc34b5e22df85e48b79" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>batch_size</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>check_compatible_for_merge</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>code_size</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1aaa9908ecda5555337ca29bd0727153e9" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>codes</name></member>
-      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>component_t</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1a6da84c9f0aca74a1d6b5130478d83357" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>compute_distance_subset</name></member>
-      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>compute_residual</name></member>
-      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>compute_residual_n</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1aa27e3040ac196969a8340e48b8262009" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>cum_sums</name></member>
-      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>d</name></member>
-      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>distance_t</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>get_CodePacker</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>get_FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1ad2cfa04b291b3fa43aef842de6a2f676" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>get_xb</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1a7728074ce264b47e4f80246e85a34444" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>get_xb</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>Index</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1a7c4a216055a21621b5ba48bb042d46df" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlat</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1a75a158c47a9710c9c268b22d2c6730fa" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlat</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatCodes</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatCodes</name></member>
-      <member refid="structfaiss_1_1IndexFlatL2Panorama_1a2be833e51526de0f3913ffd70f1477ef" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatL2Panorama</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a9a7db15012e9a74b2753e7f80bee593e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>IndexFlatPanorama</name></member>
-      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a854b0837cf6044aacc1345c562fa42d5" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>merge_from</name></member>
-      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>metric_type</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a9732ec19e9f2d8fb350abc1c5ea4bb42" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>n_levels</name></member>
-      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>ntotal</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a5fc78f9210b17083698cee2ac1d860e7" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>pano</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1aef92594a941e1e9d22bde0a575dc643a" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>permute_entries</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>range_search</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a1b0c9cb07922637cb0a1fbb1bb983b75" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>reconstruct_batch</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a4cb5411775c92c68d79efe2f8142386e" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>reconstruct_n</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1ac4df64ba5bb9ef11f73351ee5946434a" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>remove_ids</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a35fdf82abfe078969b9a7a17fbaa6516" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>reset</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>sa_code_size</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>sa_decode</name></member>
-      <member refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>sa_encode</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>search</name></member>
-      <member refid="structfaiss_1_1IndexFlatCodes_1ad77a588028c960099177d970ad092dba" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>search1</name></member>
-      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>search_and_reconstruct</name></member>
-      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>search_ex</name></member>
-      <member refid="structfaiss_1_1IndexFlatPanorama_1a87c06a8ca57d0b84f6fcf94fbfd1cfda" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>search_subset</name></member>
-      <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>train_ex</name></member>
-      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>verbose</name></member>
-      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexFlatL2Panorama</scope><name>~Index</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>add</name></member>
+      <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>add_ex</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a48d3d2d28ebfe217bc5b52ed40cab40d" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>add_sa_codes</name></member>
+      <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>add_with_ids</name></member>
+      <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>add_with_ids_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>assign</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a9b41e4fe4e686cc34b5e22df85e48b79" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>batch_size</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>check_compatible_for_merge</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1aaa9908ecda5555337ca29bd0727153e9" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>component_t</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1a6da84c9f0aca74a1d6b5130478d83357" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>compute_distance_subset</name></member>
+      <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>compute_residual</name></member>
+      <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>compute_residual_n</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1aa27e3040ac196969a8340e48b8262009" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>cum_sums</name></member>
+      <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>d</name></member>
+      <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>get_CodePacker</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>get_distance_computer</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>get_FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1ad2cfa04b291b3fa43aef842de6a2f676" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>get_xb</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1a7728074ce264b47e4f80246e85a34444" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>get_xb</name></member>
+      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1a7c4a216055a21621b5ba48bb042d46df" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlat</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1a75a158c47a9710c9c268b22d2c6730fa" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlat</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlatCodes</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlatCodes</name></member>
+      <member refid="structfaiss_1_1IndexFlatIPPanorama_1a60b95dcc8d5bb808c3d8f0a0d6c88217" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlatIPPanorama</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a9a7db15012e9a74b2753e7f80bee593e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>IndexFlatPanorama</name></member>
+      <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>is_trained</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a854b0837cf6044aacc1345c562fa42d5" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>merge_from</name></member>
+      <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a9732ec19e9f2d8fb350abc1c5ea4bb42" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>n_levels</name></member>
+      <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>ntotal</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a5fc78f9210b17083698cee2ac1d860e7" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>pano</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1aef92594a941e1e9d22bde0a575dc643a" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>permute_entries</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>range_search</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a1b0c9cb07922637cb0a1fbb1bb983b75" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>reconstruct_batch</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a4cb5411775c92c68d79efe2f8142386e" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>reconstruct_n</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1ac4df64ba5bb9ef11f73351ee5946434a" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>remove_ids</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a35fdf82abfe078969b9a7a17fbaa6516" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>reset</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>sa_code_size</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>sa_decode</name></member>
+      <member refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>sa_encode</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>search</name></member>
+      <member refid="structfaiss_1_1IndexFlatCodes_1ad77a588028c960099177d970ad092dba" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>search1</name></member>
+      <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>search_and_reconstruct</name></member>
+      <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>search_ex</name></member>
+      <member refid="structfaiss_1_1IndexFlatPanorama_1a87c06a8ca57d0b84f6fcf94fbfd1cfda" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>search_subset</name></member>
+      <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>train</name></member>
+      <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>train_ex</name></member>
+      <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>verbose</name></member>
+      <member refid="structfaiss_1_1Index_1a5fa7dbbb77a2a5c69b444672d2f1b982" prot="public" virt="virtual"><scope>faiss::IndexFlatIPPanorama</scope><name>~Index</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

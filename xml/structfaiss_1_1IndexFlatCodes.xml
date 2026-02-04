@@ -1602,13 +1602,19 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
+      <node id="14">
+        <label>faiss::IndexFlatIPPanorama</label>
+        <link refid="structfaiss_1_1IndexFlatIPPanorama"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
       <node id="11">
         <label>faiss::IndexFlatL2</label>
         <link refid="structfaiss_1_1IndexFlatL2"/>
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss::IndexFlatL2Panorama</label>
         <link refid="structfaiss_1_1IndexFlatL2Panorama"/>
         <childnode refid="13" relation="public-inheritance">
@@ -1620,13 +1626,13 @@
         <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="15">
+      <node id="16">
         <label>faiss::IndexLSH</label>
         <link refid="structfaiss_1_1IndexLSH"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>faiss::IndexLattice</label>
         <link refid="structfaiss_1_1IndexLattice"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1638,13 +1644,13 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="17">
+      <node id="18">
         <label>faiss::IndexNeuralNetCodec</label>
         <link refid="structfaiss_1_1IndexNeuralNetCodec"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="19">
+      <node id="20">
         <label>faiss::IndexPQ</label>
         <link refid="structfaiss_1_1IndexPQ"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1662,13 +1668,13 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="18">
+      <node id="19">
         <label>faiss::IndexQINCo</label>
         <link refid="structfaiss_1_1IndexQINCo"/>
-        <childnode refid="17" relation="public-inheritance">
+        <childnode refid="18" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>faiss::IndexRaBitQ</label>
         <link refid="structfaiss_1_1IndexRaBitQ"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1680,7 +1686,7 @@
         <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>faiss::IndexScalarQuantizer</label>
         <link refid="structfaiss_1_1IndexScalarQuantizer"/>
         <childnode refid="1" relation="public-inheritance">

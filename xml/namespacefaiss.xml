@@ -99,6 +99,7 @@
     <innerclass refid="structfaiss_1_1IndexFlat1D" prot="public">faiss::IndexFlat1D</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatCodes" prot="public">faiss::IndexFlatCodes</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatIP" prot="public">faiss::IndexFlatIP</innerclass>
+    <innerclass refid="structfaiss_1_1IndexFlatIPPanorama" prot="public">faiss::IndexFlatIPPanorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatL2" prot="public">faiss::IndexFlatL2</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatL2Panorama" prot="public">faiss::IndexFlatL2Panorama</innerclass>
     <innerclass refid="structfaiss_1_1IndexFlatPanorama" prot="public">faiss::IndexFlatPanorama</innerclass>

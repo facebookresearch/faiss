@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="184" column="10" bodyfile="faiss/IndexFlat.h" bodystart="184" bodyend="-1"/>
+        <location file="faiss/IndexFlat.h" line="199" column="10" bodyfile="faiss/IndexFlat.h" bodystart="199" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlat1D_1a3442f0d86a14108534f99eea0b7d4d3f" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="186" column="17" bodyfile="faiss/IndexFlat.h" bodystart="186" bodyend="-1"/>
+        <location file="faiss/IndexFlat.h" line="201" column="17" bodyfile="faiss/IndexFlat.h" bodystart="201" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexFlatL2_1a2700fe561511baa741f2497ab63b1e23" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -188,7 +188,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="188" column="14"/>
+        <location file="faiss/IndexFlat.h" line="203" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlat1D_1ac7466c6c9b1e9e81ea19b846ddb8209e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -203,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="192" column="10"/>
+        <location file="faiss/IndexFlat.h" line="207" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -245,7 +245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="194" column="10"/>
+        <location file="faiss/IndexFlat.h" line="209" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlat1D_1aa205c4ffa6cbd50f49ef9cb6cc050000" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -261,7 +261,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="196" column="10"/>
+        <location file="faiss/IndexFlat.h" line="211" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlat1D_1adc489649c579772c998db8c8e495d9bc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFlat.h" line="199" column="10"/>
+        <location file="faiss/IndexFlat.h" line="214" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFlatL2_1a146056772fd978a5e46adf23bf424c6d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type><ref refid="structfaiss_1_1FlatCodesDistanceComputer" kindref="compound">FlatCodesDistanceComputer</ref> *</type>
@@ -1743,7 +1743,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexFlat.h" line="183" column="1" bodyfile="faiss/IndexFlat.h" bodystart="183" bodyend="206"/>
+    <location file="faiss/IndexFlat.h" line="198" column="1" bodyfile="faiss/IndexFlat.h" bodystart="198" bodyend="221"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFlat1D_1a5dc39280262484ecadda5e11162c2457" prot="public" virt="virtual"><scope>faiss::IndexFlat1D</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexFlat1D</scope><name>add_ex</name></member>

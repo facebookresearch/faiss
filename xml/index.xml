@@ -3168,6 +3168,56 @@
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IndexFlatIPPanorama" kind="struct"><name>faiss::IndexFlatIPPanorama</name>
+    <member refid="structfaiss_1_1IndexFlatIPPanorama_1a60b95dcc8d5bb808c3d8f0a0d6c88217" kind="function"><name>IndexFlatIPPanorama</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a178f7ed70fb50dff8e98f0a5bde5df03" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a639dbd957c39b9060ac3dfd8ee05563b" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1ac24ff62466748d1a375be88da3eace60" kind="function"><name>range_search</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a87c06a8ca57d0b84f6fcf94fbfd1cfda" kind="function"><name>search_subset</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a35fdf82abfe078969b9a7a17fbaa6516" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a1b0c9cb07922637cb0a1fbb1bb983b75" kind="function"><name>reconstruct</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a4cb5411775c92c68d79efe2f8142386e" kind="function"><name>reconstruct_n</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1ac4df64ba5bb9ef11f73351ee5946434a" kind="function"><name>remove_ids</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a854b0837cf6044aacc1345c562fa42d5" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a48d3d2d28ebfe217bc5b52ed40cab40d" kind="function"><name>add_sa_codes</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1aef92594a941e1e9d22bde0a575dc643a" kind="function"><name>permute_entries</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1a6da84c9f0aca74a1d6b5130478d83357" kind="function"><name>compute_distance_subset</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1ad2cfa04b291b3fa43aef842de6a2f676" kind="function"><name>get_xb</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1a7728074ce264b47e4f80246e85a34444" kind="function"><name>get_xb</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa" kind="function"><name>get_FlatCodesDistanceComputer</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1aaa95cb6086e2889e1c3f4478e454bc67" kind="function"><name>sa_encode</name></member>
+    <member refid="structfaiss_1_1IndexFlat_1af84e108340092e5d3970ab8824a71658" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a7252bbbd4059cb1ea4b43e52eadc920a" kind="function"><name>sa_code_size</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" kind="function"><name>get_distance_computer</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1ad77a588028c960099177d970ad092dba" kind="function"><name>search1</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a3ec1c75f8caa2ac5e59cfbb62efb910a" kind="function"><name>check_compatible_for_merge</name></member>
+    <member refid="structfaiss_1_1Index_1a8f67dfd73993e192dc78f2c93d9d9532" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" kind="function"><name>train_ex</name></member>
+    <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" kind="function"><name>add_ex</name></member>
+    <member refid="structfaiss_1_1Index_1a13b30ab195baded94b6db98d8e111ed7" kind="function"><name>add_with_ids</name></member>
+    <member refid="structfaiss_1_1Index_1ac306752b6e39ee77a97c2a0ac193b8c5" kind="function"><name>add_with_ids_ex</name></member>
+    <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" kind="function"><name>search_ex</name></member>
+    <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
+    <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
+    <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
+    <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" kind="function"><name>compute_residual</name></member>
+    <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" kind="function"><name>compute_residual_n</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a9b41e4fe4e686cc34b5e22df85e48b79" kind="variable"><name>batch_size</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a9732ec19e9f2d8fb350abc1c5ea4bb42" kind="variable"><name>n_levels</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1aa27e3040ac196969a8340e48b8262009" kind="variable"><name>cum_sums</name></member>
+    <member refid="structfaiss_1_1IndexFlatPanorama_1a5fc78f9210b17083698cee2ac1d860e7" kind="variable"><name>pano</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1IndexFlatCodes_1aaa9908ecda5555337ca29bd0727153e9" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
+    <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1Index_1a8e18f641854b2bde83ecff0a2f9a6f4e" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
+    <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
+  </compound>
   <compound refid="structfaiss_1_1IndexFlatL2" kind="struct"><name>faiss::IndexFlatL2</name>
     <member refid="structfaiss_1_1IndexFlatL2_1a2700fe561511baa741f2497ab63b1e23" kind="variable"><name>cached_l2norms</name></member>
     <member refid="structfaiss_1_1IndexFlatCodes_1a373685122b58f930ee9345fb09ac78ff" kind="variable"><name>code_size</name></member>
