@@ -27,6 +27,8 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -95,6 +97,9 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     TRYCLONE(IndexIVFProductResidualQuantizerFastScan, ivf)
     TRYCLONE(IndexIVFResidualQuantizerFastScan, ivf)
     TRYCLONE(IndexIVFPQFastScan, ivf)
+
+    TRYCLONE(IndexIVFRaBitQFastScan, ivf)
+    TRYCLONE(IndexIVFRaBitQ, ivf)
 
     TRYCLONE(IndexIVFFlatDedup, ivf)
     TRYCLONE(IndexIVFFlat, ivf)
