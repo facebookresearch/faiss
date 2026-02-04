@@ -624,7 +624,7 @@ void IndexHNSW::link_singletons() {
 
     std::vector<float> recons(singletons.size() * d);
     for (int i = 0; i < singletons.size(); i++) {
-        FAISS_ASSERT(!"not implemented");
+        FAISS_ASSERT(false); // not implemented
     }
 }
 
