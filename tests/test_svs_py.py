@@ -586,5 +586,36 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         return idx
 
 
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSLeanVecOOD(unittest.TestCase):
+    """Test out-of-distribution training for LeanVec SVS indices"""
+
+    def setUp(self):
+        self.d = 256
+        self.idx = faiss.IndexSVSVamanaLeanVec(
+            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
+        )
+        self.idx.alpha = 0.95
+
+        self.x = np.random.rand(1000, self.d).astype("float32")
+        self.tq = np.random.rand(1000, self.d).astype("float32")
+
+    def test_svs_leanvec_ood_training(self):
+        self.assertIsNone(self.idx.training_data)
+        self.idx.train(self.x, xq_train=self.tq)
+        self.assertIsNotNone(self.idx.training_data)
+
+    def test_svs_leanvec_ood_training_smaller(self):
+        self.idx.train(self.x, xq_train=self.tq[:500])
+
+    def test_svs_leanvec_ood_training_wrong_dim(self):
+        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
+        with self.assertRaises(AssertionError):
+            self.idx.train(self.x, xq_train=wrong_dim)
+
+    def test_svs_leanvec_ood_training_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
+
 if __name__ == '__main__':
     unittest.main()
