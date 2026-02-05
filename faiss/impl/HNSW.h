@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -150,6 +151,9 @@ struct HNSW {
 
     /// use Panorama progressive pruning in search
     bool is_panorama = false;
+
+    // See impl/VisitedTable.h.
+    std::optional<bool> use_visited_hashset;
 
     // methods that initialize the tree sizes
 

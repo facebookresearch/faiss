@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <vector>
 
 #include <omp.h>
 
 #include <faiss/Index.h>
-#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
@@ -38,6 +38,7 @@ namespace faiss {
  */
 
 struct DistanceComputer; // from AuxIndexStructures
+struct VisitedTable;
 
 namespace nsg {
 
@@ -121,6 +122,9 @@ struct NSG {
 
     // search-time parameters
     int search_L = 16; ///< length of the search path
+
+    // See impl/VisitedTable.h.
+    std::optional<bool> use_visited_hashset;
 
     int enterpoint; ///< enterpoint
 

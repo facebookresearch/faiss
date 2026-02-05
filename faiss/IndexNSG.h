@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include <vector>
-
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexNNDescent.h>
 #include <faiss/IndexPQ.h>
