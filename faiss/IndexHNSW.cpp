@@ -333,6 +333,14 @@ void IndexHNSW::range_search(
     }
 }
 
+void IndexHNSW::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params) const {
+    SingleQueryBlockResultHandler<HNSW::C, false> bres(handler);
+    hnsw_search(this, 1, x, bres, params);
+}
+
 void IndexHNSW::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(
             storage,
@@ -616,7 +624,7 @@ void IndexHNSW::link_singletons() {
 
     std::vector<float> recons(singletons.size() * d);
     for (int i = 0; i < singletons.size(); i++) {
-        FAISS_ASSERT(!"not implemented");
+        FAISS_ASSERT(false); // not implemented
     }
 }
 

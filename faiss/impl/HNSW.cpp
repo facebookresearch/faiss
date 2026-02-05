@@ -616,7 +616,7 @@ static inline void extract_search_params(
 int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
-        ResultHandler<C>& res,
+        ResultHandler& res,
         MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
@@ -755,7 +755,7 @@ int search_from_candidates_panorama(
         const HNSW& hnsw,
         const IndexHNSW* index,
         DistanceComputer& qdis,
-        ResultHandler<C>& res,
+        ResultHandler& res,
         MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
@@ -1182,7 +1182,7 @@ using Node = HNSW::Node;
 using C = HNSW::C;
 
 // just used as a lower bound for the minmaxheap, but it is set for heap search
-int extract_k_from_ResultHandler(ResultHandler<C>& res) {
+int extract_k_from_ResultHandler(ResultHandler& res) {
     using RH = HeapBlockResultHandler<C>;
     if (auto hres = dynamic_cast<RH::SingleResultHandler*>(&res)) {
         return hres->k;
@@ -1195,7 +1195,7 @@ int extract_k_from_ResultHandler(ResultHandler<C>& res) {
 HNSWStats HNSW::search(
         DistanceComputer& qdis,
         const IndexHNSW* index,
-        ResultHandler<C>& res,
+        ResultHandler& res,
         VisitedTable& vt,
         const SearchParameters* params) const {
     HNSWStats stats;
@@ -1272,7 +1272,7 @@ HNSWStats HNSW::search(
 
 void HNSW::search_level_0(
         DistanceComputer& qdis,
-        ResultHandler<C>& res,
+        ResultHandler& res,
         idx_t nprobe,
         const storage_idx_t* nearest_i,
         const float* nearest_d,

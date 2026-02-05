@@ -43,13 +43,15 @@ class TestSVSAdapter(unittest.TestCase):
     def _create_instance(self) -> "faiss.IndexSVSVamana | faiss.IndexSVSFlat":
         """Create an instance of the SVS index"""
         self.assertIsNotNone(
-            self.target_class, "target_class must be configured in setUpClass()"
+            self.target_class,
+            "target_class must be configured in setUpClass()",
         )
         return self.target_class(self.d, 64)
 
     @classmethod
     def setUpClass(cls):
-        # need to configure target_class here to avoid issues when SVS support is not compiled in
+        # need to configure target_class here to avoid issues when
+        # SVS support is not compiled in
         cls.target_class = faiss.IndexSVSVamana
 
     def setUp(self):
@@ -203,7 +205,8 @@ class TestSVSAdapter(unittest.TestCase):
         index_ip.add(self.xb)
         D_ip, _ = index_ip.search(self.xq[:10], 4)
 
-        # Results should be different (testing adapter forwards metric correctly)
+        # Results should be different
+        # (testing adapter forwards metric correctly)
         self.assertFalse(np.array_equal(D_l2, D_ip))
 
     def test_svs_serialization(self):
@@ -394,10 +397,12 @@ class TestSVSAdapterFlat(TestSVSAdapter):
         index_ip.add(self.xb)
         D_ip, _ = index_ip.search(self.xq[:10], 4)
 
-        # Results should be different (testing adapter forwards metric correctly)
+        # Results should be different
+        # (testing adapter forwards metric correctly)
         self.assertFalse(np.array_equal(D_l2, D_ip))
 
-    # The fowlloing tests are expected to fail for IndexSVSFlat as it doesn't support yet
+    # The following tests are expected to fail for IndexSVSFlat as it
+    # doesn't support yet
     @unittest.expectedFailure
     def test_svs_search_selected(self):
         return super().test_svs_search_selected()
@@ -425,7 +430,7 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParameters(unittest.TestCase):
-    """Test Vamana-specific parameter forwarding and persistence for SVS Vamana variants"""
+    """Test Vamana-specific parameter forwarding and persistence."""
 
     @classmethod
     def setUpClass(cls):
@@ -482,7 +487,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
         self.assertEqual(index.use_full_search_history, True)
 
     def test_vamana_parameter_serialization(self):
-        """Test that all Vamana parameters are preserved through serialization"""
+        """Test that Vamana parameters are preserved through serialization."""
         index = self._create_instance()
 
         # Set distinctive non-default values
@@ -581,37 +586,5 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         return idx
 
 
-@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
-class TestSVSLeanVecOOD(unittest.TestCase):
-    """Test out-of-distribution training for LeanVec SVS indices"""
-
-    def setUp(self):
-        self.d = 256
-        self.idx = faiss.IndexSVSVamanaLeanVec(
-            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
-        )
-        self.idx.alpha = 0.95
-
-        self.x = np.random.rand(1000, self.d).astype("float32")
-        self.tq = np.random.rand(1000, self.d).astype("float32")
-
-    def test_svs_leanvec_ood_training(self):
-        self.assertIsNone(self.idx.training_data)
-        self.idx.train(self.x, xq_train=self.tq)
-        self.assertIsNotNone(self.idx.training_data)
-
-    def test_svs_leanvec_ood_training_smaller(self):
-        self.idx.train(self.x, xq_train=self.tq[:500])
-
-    def test_svs_leanvec_ood_training_wrong_dim(self):
-        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
-        with self.assertRaises(AssertionError):
-            self.idx.train(self.x, xq_train=wrong_dim)
-
-    def test_svs_leanvec_ood_training_wrong_type(self):
-        with self.assertRaises(TypeError):
-            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

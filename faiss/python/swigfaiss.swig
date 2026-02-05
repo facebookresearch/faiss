@@ -766,6 +766,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlatIP )
+    DOWNCAST ( IndexFlatIPPanorama )
     DOWNCAST ( IndexFlatL2 )
     DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )

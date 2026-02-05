@@ -20,6 +20,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/distances.h>
@@ -286,19 +287,28 @@ void test_get_InvertedListScanner(
     EXPECT_GE(recall, accuracy_requirement);
 }
 
-void test_ivfpqfs_scanner(MetricType metric, bool by_residual = false) {
+void test_fastscan_scanner(
+        const char* factory_string,
+        MetricType metric,
+        float accuracy_requirement = 1.0,
+        bool by_residual = false) {
     auto index =
-            std::unique_ptr<Index>(index_factory(d, "IVF32,PQ4x4fs", metric));
+            std::unique_ptr<Index>(index_factory(d, factory_string, metric));
     ParameterSpace().set_index_parameter(index.get(), "nprobe", 4);
-    IndexIVFPQFastScan* index_ivf = static_cast<IndexIVFPQFastScan*>(
+    IndexIVFFastScan* index_ivf = static_cast<IndexIVFFastScan*>(
             ivflib::extract_index_ivf(index.get()));
-    index_ivf->by_residual = by_residual;
+
+    // Set by_residual for PQ indexes if requested
+    if (auto* pq_index = dynamic_cast<IndexIVFPQFastScan*>(index_ivf)) {
+        pq_index->by_residual = by_residual;
+    }
+
     // implem_10 also processes one query at a time, so compare with that.
     index_ivf->implem = 10;
     auto xt = make_data(nt);
-    index_ivf->train(nt, xt.data());
+    index->train(nt, xt.data());
     auto xb = make_data(nb);
-    index_ivf->add(nb, xb.data());
+    index->add(nb, xb.data());
     // Initialize scanner with context in params so heap results can persist
     // across multiple inverted list scans.
     auto scanner = std::unique_ptr<InvertedListScanner>(
@@ -306,12 +316,12 @@ void test_ivfpqfs_scanner(MetricType metric, bool by_residual = false) {
 
     // ref data
     auto xq = make_data(nq);
-    auto res = search_index(index_ivf, xq.data());
+    auto res = search_index(index.get(), xq.data());
 
     // distance_to_code_supported = false because codes are intermixed.
     test_get_InvertedListScanner(
             index_ivf,
-            nullptr,
+            dynamic_cast<const IndexPreTransform*>(index.get()),
             {},
             std::move(scanner),
             xq,
@@ -319,8 +329,7 @@ void test_ivfpqfs_scanner(MetricType metric, bool by_residual = false) {
             res.second,
             metric,
             false,
-            by_residual ? 0.9 : 1.0 // recall is not 100% for by_residual
-    );
+            accuracy_requirement);
 }
 
 } // anonymous namespace
@@ -366,19 +375,43 @@ TEST(TestLowLevelIVF, IVFRQ) {
 }
 
 TEST(TestLowLevelIVF, IVFPQFS_L2) {
-    test_ivfpqfs_scanner(METRIC_L2);
+    test_fastscan_scanner("IVF32,PQ4x4fs", METRIC_L2);
 }
 
 TEST(TestLowLevelIVF, IVFPQFS_IP) {
-    test_ivfpqfs_scanner(METRIC_INNER_PRODUCT);
+    test_fastscan_scanner("IVF32,PQ4x4fs", METRIC_INNER_PRODUCT);
 }
 
 TEST(TestLowLevelIVF, IVFPQFSr_L2) {
-    test_ivfpqfs_scanner(METRIC_L2, true);
+    test_fastscan_scanner("IVF32,PQ4x4fs", METRIC_L2, 0.9, true);
 }
 
 TEST(TestLowLevelIVF, IVFPQFSr_IP) {
-    test_ivfpqfs_scanner(METRIC_INNER_PRODUCT, true);
+    test_fastscan_scanner("IVF32,PQ4x4fs", METRIC_INNER_PRODUCT, 0.9, true);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS_L2) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs", METRIC_L2, 0.90);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS_IP) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs", METRIC_INNER_PRODUCT, 0.90);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS2_L2) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs2", METRIC_L2, 0.90);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS2_IP) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs2", METRIC_INNER_PRODUCT, 0.90);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS4_L2) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs4", METRIC_L2, 0.90);
+}
+
+TEST(TestLowLevelIVF, IVFRaBitQFS4_IP) {
+    test_fastscan_scanner("RR,IVF32,RaBitQfs4", METRIC_INNER_PRODUCT, 0.90);
 }
 
 /*************************************************************

@@ -728,14 +728,18 @@ Index* read_index(IOReader* f, int io_flags) {
     if (h == fourcc("null")) {
         // denotes a missing index, useful for some cases
         return nullptr;
-    } else if (h == fourcc("IxFP")) {
+    } else if (h == fourcc("IxFP") || h == fourcc("IxFp")) {
         int d;
         size_t n_levels, batch_size;
         READ1(d);
         READ1(n_levels);
         READ1(batch_size);
-        IndexFlatL2Panorama* idxp =
-                new IndexFlatL2Panorama(d, n_levels, batch_size);
+        IndexFlatPanorama* idxp;
+        if (h == fourcc("IxFP")) {
+            idxp = new IndexFlatL2Panorama(d, n_levels, batch_size);
+        } else {
+            idxp = new IndexFlatIPPanorama(d, n_levels, batch_size);
+        }
         READ1(idxp->ntotal);
         READ1(idxp->is_trained);
         READVECTOR(idxp->codes);
@@ -1389,7 +1393,7 @@ Index* read_index(IOReader* f, int io_flags) {
 #ifdef FAISS_ENABLE_SVS
     else if (
             h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
-        IndexSVSVamana* svs;
+        IndexSVSVamana* svs = nullptr;
         if (h == fourcc("ILVQ")) {
             svs = new IndexSVSVamanaLVQ();
         } else if (h == fourcc("ISVL")) {
@@ -1440,8 +1444,8 @@ Index* read_index(IOReader* f, int io_flags) {
             faiss::svs_io::ReaderStreambuf rbuf(f);
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
-            idx = svs;
         }
+        idx = svs;
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrf")) {
