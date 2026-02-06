@@ -4326,35 +4326,6 @@
         </inbodydescription>
         <location file="faiss/MetricType.h" line="51" column="16" bodyfile="faiss/MetricType.h" bodystart="51" bodyend="54"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a987ea96650dd763a87affacd88649fc6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <templateparamlist>
-          <param>
-            <type>typename LambdaType</type>
-          </param>
-        </templateparamlist>
-        <type>auto</type>
-        <definition>auto faiss::with_metric_type</definition>
-        <argsstring>(MetricType metric, LambdaType &amp;&amp;action)</argsstring>
-        <name>with_metric_type</name>
-        <qualifiedname>faiss::with_metric_type</qualifiedname>
-        <param>
-          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
-          <declname>metric</declname>
-        </param>
-        <param>
-          <type>LambdaType &amp;&amp;</type>
-          <declname>action</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Dispatch to a lambda with MetricType as a compile-time constant. This allows writing generic code that works with different metrics while maintaining compile-time optimization.</para>
-<para>Example usage: auto result = with_metric_type(runtime_metric, [&amp;](auto metric_tag) { constexpr MetricType M = decltype(metric_tag)::value; return compute_distance&lt;M&gt;(x, y); }); </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/MetricType.h" line="68" column="13" bodyfile="faiss/MetricType.h" bodystart="68" bodyend="100"/>
-      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::MetricType</type>
         <definition>svs_runtime::MetricType faiss::to_svs_metric</definition>
@@ -6833,6 +6804,35 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/extra_distances.h" line="52" column="27" declfile="faiss/utils/extra_distances.h" declline="52" declcolumn="27"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a987ea96650dd763a87affacd88649fc6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::with_metric_type</definition>
+        <argsstring>(MetricType metric, LambdaType &amp;&amp;action)</argsstring>
+        <name>with_metric_type</name>
+        <qualifiedname>faiss::with_metric_type</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Dispatch to a lambda with MetricType as a compile-time constant. This allows writing generic code that works with different metrics while maintaining compile-time optimization.</para>
+<para>Example usage: auto result = with_metric_type(runtime_metric, [&amp;](auto metric_tag) { constexpr MetricType M = decltype(metric_tag)::value; return compute_distance&lt;M&gt;(x, y); }); </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="71" column="13" bodyfile="faiss/utils/extra_distances.h" bodystart="71" bodyend="100"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint16_t</type>
