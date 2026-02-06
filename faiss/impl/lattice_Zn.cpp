@@ -490,7 +490,7 @@ ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2)
     while (dim > (1 << log2_dim)) {
         log2_dim++;
     }
-    assert(dim == (1 << log2_dim) || !"dimension must be a power of 2");
+    assert(dim == (1 << log2_dim) && "dimension must be a power of 2");
 
     all_nv.resize((log2_dim + 1) * (r2 + 1));
     all_nv_cum.resize((log2_dim + 1) * (r2 + 1) * (r2 + 1));
