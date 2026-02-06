@@ -32,6 +32,10 @@ nbits_per_index = 8  # for PQ
 
 
 class IndexAccuracy(unittest.TestCase):
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_IndexFlatIP(self):
         q = faiss.IndexFlatIP(d)  # Ask inner product
         res = ev.launch("FLAT / IP", q)
@@ -287,6 +291,10 @@ class TestSQFlavors(unittest.TestCase):
                         Inew,
                     )
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_SQ_IP(self):
         self.subtest(faiss.METRIC_INNER_PRODUCT)
 
@@ -456,6 +464,10 @@ class TestPQFlavors(unittest.TestCase):
         (0, False): 829,
     }
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_IVFPQ_IP(self):
         self.subtest(faiss.METRIC_INNER_PRODUCT)
 
