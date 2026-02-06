@@ -16,6 +16,7 @@
 #include <faiss/IndexNNDescent.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/distances.h>
 
 namespace faiss {
@@ -74,7 +75,7 @@ void IndexNSG::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            VisitedTable vt(ntotal, nsg.use_visited_hashset);
 
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));

@@ -22,6 +22,7 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
