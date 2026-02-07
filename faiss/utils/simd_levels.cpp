@@ -148,6 +148,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     // ARM NEON is standard on aarch64
     supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::ARM_NEON));
     detected_level = SIMDLevel::ARM_NEON;
+    // TODO: Add ARM SVE detection when needed
+    // For now, we default to ARM_NEON as it's universally supported on aarch64
 #endif
 
     return detected_level;
@@ -247,6 +249,8 @@ std::string to_string(SIMDLevel level) {
             return "AVX512_SPR";
         case SIMDLevel::ARM_NEON:
             return "ARM_NEON";
+        case SIMDLevel::ARM_SVE:
+            return "ARM_SVE";
         case SIMDLevel::COUNT:
         default:
             throw FaissException("Invalid SIMDLevel");
@@ -268,6 +272,9 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "ARM_NEON") {
         return SIMDLevel::ARM_NEON;
+    }
+    if (level_str == "ARM_SVE") {
+        return SIMDLevel::ARM_SVE;
     }
 
     throw FaissException("Invalid SIMD level string: " + level_str);

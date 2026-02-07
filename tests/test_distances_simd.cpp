@@ -15,7 +15,7 @@
 #include <faiss/utils/distances.h>
 
 // reference implementations
-void fvec_inner_products_ny_ref(
+static void fvec_inner_products_ny_ref(
         float* ip,
         const float* x,
         const float* y,
@@ -27,7 +27,7 @@ void fvec_inner_products_ny_ref(
     }
 }
 
-void fvec_L2sqr_ny_ref(
+static void fvec_L2sqr_ny_ref(
         float* dis,
         const float* x,
         const float* y,
