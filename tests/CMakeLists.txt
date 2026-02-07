@@ -24,7 +24,6 @@ set(FAISS_TEST_SRC
   test_simdlib.cpp
   test_approx_topk.cpp
   test_RCQ_cropping.cpp
-  test_distances_simd.cpp
   test_heap.cpp
   test_code_distance.cpp
   test_hnsw.cpp
@@ -42,35 +41,41 @@ set(FAISS_TEST_SRC
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
+  # These tests work in both static and DD modes (uniform SIMDConfig API)
+  test_distances_simd.cpp
+  test_simd_levels.cpp
 )
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
-# DD-only tests: require Dynamic Dispatch (SIMDConfig)
+# DD-only tests: x86-specific tests containing raw AVX2/AVX512 intrinsics
 if(FAISS_OPT_LEVEL STREQUAL "dd")
-  list(APPEND FAISS_TEST_SRC
-    test_simd_levels.cpp
-    test_simd_levels_x86_avx2.cpp
-    test_simd_levels_x86_avx512.cpp
-  )
-  # Set SIMD compile flags per file (cross-platform)
-  if(NOT WIN32)
-    set_source_files_properties(test_simd_levels_x86_avx2.cpp
-      PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+    list(APPEND FAISS_TEST_SRC
+      test_simd_levels_x86_avx2.cpp
+      test_simd_levels_x86_avx512.cpp
     )
-    set_source_files_properties(test_simd_levels_x86_avx512.cpp
-      PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw"
-    )
-  else()
-    # MSVC
-    set_source_files_properties(test_simd_levels_x86_avx2.cpp
-      PROPERTIES COMPILE_OPTIONS "/arch:AVX2"
-    )
-    set_source_files_properties(test_simd_levels_x86_avx512.cpp
-      PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
-    )
+    # Set SIMD compile flags per file
+    # test_simd_levels_x86_avx2.cpp and test_simd_levels_x86_avx512.cpp
+    # contain raw intrinsics and need their respective SIMD flags.
+    if(NOT WIN32)
+      set_source_files_properties(test_simd_levels_x86_avx2.cpp
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+      )
+      set_source_files_properties(test_simd_levels_x86_avx512.cpp
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw"
+      )
+    else()
+      # MSVC
+      set_source_files_properties(test_simd_levels_x86_avx2.cpp
+        PROPERTIES COMPILE_OPTIONS "/arch:AVX2"
+      )
+      set_source_files_properties(test_simd_levels_x86_avx512.cpp
+        PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
+      )
+    endif()
   endif()
 endif()
 

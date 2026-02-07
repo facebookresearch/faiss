@@ -42,6 +42,11 @@ macro(configure_swigfaiss source)
       SWIG_FLAGS -DFAISS_ENABLE_SVS -DFAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION}
     )
   endif()
+  if(FAISS_OPT_LEVEL STREQUAL "dd")
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_ENABLE_DD
+    )
+  endif()
   if(FAISS_ENABLE_GPU)
     set_source_files_properties(${source} PROPERTIES
       COMPILE_DEFINITIONS GPU_WRAPPER
@@ -208,6 +213,12 @@ if(FAISS_ENABLE_SVS)
   target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+# Enable DD support in Python bindings when building with Dynamic Dispatch
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  # Add compile definition for the generated C++ wrapper
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_DD)
 endif()
 
 if(FAISS_ENABLE_GPU)
