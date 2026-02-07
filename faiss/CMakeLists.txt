@@ -105,6 +105,7 @@ set(FAISS_SRC
   utils/random.cpp
   utils/sorting.cpp
   utils/utils.cpp
+  utils/simd_levels.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
@@ -259,6 +260,7 @@ set(FAISS_HEADERS
   utils/simdlib_neon.h
   utils/simdlib_ppc64.h
   utils/utils.h
+  utils/simd_levels.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_based.h
@@ -365,6 +367,27 @@ if(NOT WIN32)
   endif()
 endif()
 
+# =============================================================================
+# Dynamic Dispatch Mode
+# When FAISS_OPT_LEVEL=dd, the main faiss library is built with runtime SIMD
+# dispatch enabled. This adds FAISS_ENABLE_DD and architecture-specific SIMD
+# compile definitions to the main faiss target.
+# =============================================================================
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  if(NOT WIN32)
+    target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DD)
+    # Architecture-specific SIMD definitions for Dynamic Dispatch
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+      target_compile_options(faiss PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4>)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+      # ARM NEON is always available on aarch64, no special compiler flags needed
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
+    endif()
+  endif()
+endif()
+
 if(FAISS_ENABLE_SVS)
   find_package(svs_runtime REQUIRED)
 
@@ -457,6 +480,7 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx2 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
+  target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
   find_package(BLAS REQUIRED)
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
@@ -508,6 +532,8 @@ if(FAISS_OPT_LEVEL STREQUAL "sve")
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 endif()
+# Note: FAISS_OPT_LEVEL=dd builds DD support into main faiss target,
+# so no separate faiss_dd install is needed
 
 foreach(header ${FAISS_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )
