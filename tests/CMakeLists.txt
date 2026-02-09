@@ -48,6 +48,32 @@ if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
 endif()
 
+# DD-only tests: require Dynamic Dispatch (SIMDConfig)
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  list(APPEND FAISS_TEST_SRC
+    test_simd_levels.cpp
+    test_simd_levels_x86_avx2.cpp
+    test_simd_levels_x86_avx512.cpp
+  )
+  # Set SIMD compile flags per file (cross-platform)
+  if(NOT WIN32)
+    set_source_files_properties(test_simd_levels_x86_avx2.cpp
+      PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+    )
+    set_source_files_properties(test_simd_levels_x86_avx512.cpp
+      PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw"
+    )
+  else()
+    # MSVC
+    set_source_files_properties(test_simd_levels_x86_avx2.cpp
+      PROPERTIES COMPILE_OPTIONS "/arch:AVX2"
+    )
+    set_source_files_properties(test_simd_levels_x86_avx512.cpp
+      PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
+    )
+  endif()
+endif()
+
 add_executable(faiss_test ${FAISS_TEST_SRC})
 
 if(FAISS_ENABLE_SVS)
