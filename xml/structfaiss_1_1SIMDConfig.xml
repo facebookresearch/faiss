@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SIMDConfig" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SIMDConfig</compoundname>
+    <includes refid="simd__levels_8h" local="no">simd_levels.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SIMDConfig_1a6e8453c8b55b793d1c00ae6ec5f3a753" prot="public" static="yes" mutable="no">
+        <type>SIMDLevel</type>
+        <definition>SIMDLevel faiss::SIMDConfig::level</definition>
+        <argsstring></argsstring>
+        <name>level</name>
+        <qualifiedname>faiss::SIMDConfig::level</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="55" column="22" bodyfile="faiss/utils/simd_levels.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" prot="public" static="yes" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::SIMDConfig::supported_simd_levels</definition>
+        <argsstring></argsstring>
+        <name>supported_simd_levels</name>
+        <qualifiedname>faiss::SIMDConfig::supported_simd_levels</qualifiedname>
+        <briefdescription>
+<para>Returns bitmask of supported SIMD levels (1 &lt;&lt; SIMDLevel). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="58" column="21" bodyfile="faiss/utils/simd_levels.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>SIMDLevel</type>
+        <definition>static SIMDLevel faiss::SIMDConfig::auto_detect_simd_level</definition>
+        <argsstring>()</argsstring>
+        <name>auto_detect_simd_level</name>
+        <qualifiedname>faiss::SIMDConfig::auto_detect_simd_level</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="60" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::SIMDConfig::set_level</definition>
+        <argsstring>(SIMDLevel level)</argsstring>
+        <name>set_level</name>
+        <qualifiedname>faiss::SIMDConfig::set_level</qualifiedname>
+        <param>
+          <type>SIMDLevel</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Set the SIMD level. Throws <ref refid="classfaiss_1_1FaissException" kindref="compound">FaissException</ref> if level is not supported. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="65" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>SIMDLevel</type>
+        <definition>static SIMDLevel faiss::SIMDConfig::get_level</definition>
+        <argsstring>()</argsstring>
+        <name>get_level</name>
+        <qualifiedname>faiss::SIMDConfig::get_level</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="66" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string faiss::SIMDConfig::get_level_name</definition>
+        <argsstring>()</argsstring>
+        <name>get_level_name</name>
+        <qualifiedname>faiss::SIMDConfig::get_level_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="67" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool faiss::SIMDConfig::is_simd_level_available</definition>
+        <argsstring>(SIMDLevel level)</argsstring>
+        <name>is_simd_level_available</name>
+        <qualifiedname>faiss::SIMDConfig::is_simd_level_available</qualifiedname>
+        <param>
+          <type>SIMDLevel</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Check if a SIMD level is available (compiled in). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="70" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>SIMDLevel</type>
+        <definition>static SIMDLevel faiss::SIMDConfig::get_dispatched_level</definition>
+        <argsstring>()</argsstring>
+        <name>get_dispatched_level</name>
+        <qualifiedname>faiss::SIMDConfig::get_dispatched_level</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the SIMD level via the dispatch mechanism. In DD mode, uses DISPATCH_SIMDLevel internally. In static mode, returns the compiled-in level. Useful for verification: get_level() == <ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level()</ref> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="76" column="22"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a1618b84b208e04f76f9ddb24590b40f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SIMDConfig::SIMDConfig</definition>
+        <argsstring>(const char **faiss_simd_level_env=nullptr)</argsstring>
+        <name>SIMDConfig</name>
+        <qualifiedname>faiss::SIMDConfig::SIMDConfig</qualifiedname>
+        <param>
+          <type>const char **</type>
+          <declname>faiss_simd_level_env</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="62" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Current SIMD configuration.</para>
+<para>This class provides a uniform API for querying and setting the SIMD level, regardless of whether faiss was built with Dynamic Dispatch (DD) or static SIMD selection.</para>
+<para>In DD mode:<itemizedlist>
+<listitem><para>get_level() returns the runtime-detected or user-set level</para>
+</listitem><listitem><para><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level()</ref> changes the runtime level (if level is supported)</para>
+</listitem><listitem><para><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels()</ref> returns bitmask of all compiled-in levels</para>
+</listitem></itemizedlist>
+</para>
+<para>In static mode:<itemizedlist>
+<listitem><para>get_level() returns the compiled-in level</para>
+</listitem><listitem><para><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level()</ref> succeeds only if level matches compiled-in level</para>
+</listitem><listitem><para><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels()</ref> returns bitmask with single level </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="faiss/utils/simd_levels.h" line="54" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="54" bodyend="77"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>auto_detect_simd_level</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_dispatched_level</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_level</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_level_name</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>is_simd_level_available</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1a6e8453c8b55b793d1c00ae6ec5f3a753" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>level</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>set_level</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1a1618b84b208e04f76f9ddb24590b40f2" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>SIMDConfig</name></member>
+      <member refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>supported_simd_levels</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

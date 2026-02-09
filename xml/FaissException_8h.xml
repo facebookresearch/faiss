@@ -678,17 +678,19 @@
         </childnode>
         <childnode refid="114" relation="include">
         </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
         <childnode refid="109" relation="include">
         </childnode>
         <childnode refid="94" relation="include">
         </childnode>
-        <childnode refid="121" relation="include">
-        </childnode>
         <childnode refid="122" relation="include">
         </childnode>
-        <childnode refid="124" relation="include">
+        <childnode refid="123" relation="include">
         </childnode>
         <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="126" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -891,6 +893,10 @@
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
+      <node id="121">
+        <label>faiss/impl/simd_dispatch.h</label>
+        <link refid="simd__dispatch_8h"/>
+      </node>
       <node id="109">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
@@ -973,18 +979,18 @@
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="123">
+      <node id="124">
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
-      <node id="121">
+      <node id="122">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
         <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
-      <node id="122">
+      <node id="123">
         <label>faiss/utils/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="123" relation="include">
+        <childnode refid="124" relation="include">
         </childnode>
       </node>
       <node id="110">
@@ -999,7 +1005,7 @@
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="124">
+      <node id="125">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
         <childnode refid="99" relation="include">
@@ -1009,7 +1015,7 @@
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="125">
+      <node id="126">
         <label>faiss/utils/simdlib_neon.h</label>
         <link refid="simdlib__neon_8h_source"/>
       </node>

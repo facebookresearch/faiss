@@ -26,6 +26,7 @@
     <innerfile refid="quantize__lut_8h">quantize_lut.h</innerfile>
     <innerfile refid="rabitq__simd_8h">rabitq_simd.h</innerfile>
     <innerfile refid="random_8h">random.h</innerfile>
+    <innerfile refid="simd__levels_8h">simd_levels.h</innerfile>
     <innerfile refid="simdlib_8h">simdlib.h</innerfile>
     <innerfile refid="simdlib__avx2_8h">simdlib_avx2.h</innerfile>
     <innerfile refid="simdlib__avx512_8h">simdlib_avx512.h</innerfile>
