@@ -202,6 +202,10 @@ class TestIVFImplem1(unittest.TestCase):
     def test_no_residual_ip(self):
         self.do_test(False, faiss.METRIC_INNER_PRODUCT)
 
+    @unittest.skipIf(
+    "DNNL" in faiss.get_compile_options(),
+    "only if DNNL is not compiled in."
+    )
     def test_by_residual_ip(self):
         self.do_test(True, faiss.METRIC_INNER_PRODUCT)
 

@@ -22,6 +22,10 @@
 #include <arm_sve.h>
 #endif
 
+#ifdef ENABLE_DNNL
+#include <faiss/cppcontrib/amx/distances_dnnl.h>
+#endif
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -132,6 +136,27 @@ void fvec_renorm_L2(size_t d, size_t nx, float* __restrict x) {
 
 namespace {
 
+#ifdef ENABLE_DNNL
+/**
+ * Find the nearest neighbors for nx queries in a set of ny vectors，
+ * accelerated via oneDNN/AMX.
+ */
+template <class BlockResultHandler>
+void exhaustive_inner_product_dnnl(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    if (nx < distance_compute_blas_threshold) {
+        exhaustive_inner_product_seq_dnnl(x, y, d, nx, ny, res);
+    } else {
+        exhaustive_inner_product_blas_dnnl(x, y, d, nx, ny, res);
+    } 
+}
+#endif   
+
 /* Find the nearest neighbors for nx queries in a set of ny vectors */
 template <class BlockResultHandler>
 void exhaustive_inner_product_seq(
@@ -143,7 +168,7 @@ void exhaustive_inner_product_seq(
         BlockResultHandler& res) {
     using SingleResultHandler =
             typename BlockResultHandler::SingleResultHandler;
-    [[maybe_unused]] int nt = std::min(int(nx), omp_get_max_threads());
+    int nt = std::min(int(nx), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
     {
@@ -806,6 +831,12 @@ struct Run_search_inner_product {
            size_t d,
            size_t nx,
            size_t ny) {
+#ifdef ENABLE_DNNL
+        if (!res.sel && is_amxbf16_supported()) {
+            exhaustive_inner_product_dnnl(x, y, d, nx, ny, res);
+            return;
+        }
+#endif
         if (res.sel || nx < distance_compute_blas_threshold) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
@@ -842,6 +873,7 @@ int distance_compute_blas_threshold = 20;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
+
 
 void knn_inner_product(
         const float* x,
