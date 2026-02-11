@@ -18,7 +18,7 @@
 #include <cstring>
 #include <memory>
 
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
@@ -800,7 +800,7 @@ void PolysemousTraining::optimize_reproduce_distances(
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                dis_table.push_back(fvec_L2sqr(
+                dis_table.push_back(fvec_L2sqr_dispatch(
                         centroids + i * dsub, centroids + j * dsub, dsub));
             }
         }

@@ -12,6 +12,7 @@
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/simdlib.h>
 #include <faiss/utils/utils.h>
 
@@ -878,7 +879,7 @@ void compute_codes_add_centroids_mp_lut0(
         // recover the norms of reconstruction as
         // || original_vector - residual ||^2
         for (size_t i = 0; i < n; i++) {
-            pool.norms[i] = fvec_L2sqr(
+            pool.norms[i] = fvec_L2sqr_dispatch(
                     x + i * rq.d,
                     pool.residuals.data() + i * rq.max_beam_size * rq.d,
                     rq.d);

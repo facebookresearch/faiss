@@ -153,6 +153,11 @@ typedef uint64_t size_t;
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
 
+// For DD builds, we need the function declaration.
+// Note: We always declare it here for the C++ compiler since faiss_dd exports it.
+// The SWIG interface section below controls whether Python can call it.
+#include <faiss/utils/simd_levels.h>
+
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -479,6 +484,8 @@ void gpu_sync_all_devices()
 %template(CombinerRangeKNNfloat) faiss::CombinerRangeKNN<float>;
 %template(CombinerRangeKNNint16) faiss::CombinerRangeKNN<int16_t>;
 
+%include  <faiss/utils/simd_levels.h>
+
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
@@ -766,6 +773,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlatIP )
+    DOWNCAST ( IndexFlatIPPanorama )
     DOWNCAST ( IndexFlatL2 )
     DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )

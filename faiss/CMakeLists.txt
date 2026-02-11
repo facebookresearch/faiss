@@ -3,6 +3,33 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# =============================================================================
+# SIMD FILE REGISTRY
+# Keep in sync with Buck's SIMD_FILES in xplat.bzl
+# Architecture-specific: only include files for the current build architecture
+# =============================================================================
+set(FAISS_SIMD_AVX2_SRC
+  utils/simd_impl/distances_avx2.cpp
+)
+set(FAISS_SIMD_AVX512_SRC
+  utils/simd_impl/distances_avx512.cpp
+)
+set(FAISS_SIMD_NEON_SRC
+  utils/simd_impl/distances_aarch64.cpp
+)
+set(FAISS_SIMD_SVE_SRC
+  utils/simd_impl/distances_arm_sve.cpp
+)
+# Select SIMD sources based on target architecture
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
+else()
+  set(FAISS_SIMD_SRC "")
+endif()
+# =============================================================================
+
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
@@ -105,6 +132,7 @@ set(FAISS_SRC
   utils/random.cpp
   utils/sorting.cpp
   utils/utils.cpp
+  utils/simd_levels.cpp
   utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
@@ -220,6 +248,7 @@ set(FAISS_HEADERS
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/residual_quantizer_encode_steps.h
+  impl/simd_dispatch.h
   impl/simd_result_handlers.h
   impl/zerocopy_io.h
   impl/code_distance/code_distance.h
@@ -238,6 +267,7 @@ set(FAISS_HEADERS
   utils/NeuralNet.h
   utils/WorkerThread.h
   utils/distances.h
+  utils/distances_dispatch.h
   utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
@@ -259,6 +289,7 @@ set(FAISS_HEADERS
   utils/simdlib_neon.h
   utils/simdlib_ppc64.h
   utils/utils.h
+  utils/simd_levels.h
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_based.h
@@ -275,6 +306,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/neon-inl.h
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
+  utils/simd_impl/distances_autovec-inl.h
 )
 
 if(FAISS_ENABLE_SVS)
@@ -362,6 +394,45 @@ if(NOT WIN32)
   elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
     # No valid -march, so specify -march=armv8-a+sve as the default
     target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
+  endif()
+endif()
+
+# =============================================================================
+# Dynamic Dispatch Mode
+# When FAISS_OPT_LEVEL=dd, the main faiss library is built with runtime SIMD
+# dispatch enabled. This adds FAISS_ENABLE_DD and architecture-specific SIMD
+# compile definitions to the main faiss target.
+# =============================================================================
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  # Add SIMD source files to main faiss target for DD builds
+  target_sources(faiss PRIVATE ${FAISS_SIMD_SRC})
+  if(NOT WIN32)
+    target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DD)
+    # Architecture-specific SIMD definitions for Dynamic Dispatch
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+      # Baseline flags for common files (prevents auto-vectorization)
+      target_compile_options(faiss PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4 -mno-avx -mno-avx2>)
+      # Per-file SIMD flags
+      set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+      )
+      set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+      )
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+      # ARM NEON is always available on aarch64, no special compiler flags needed
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
+      # Per-file SVE flags (NEON needs no flags on aarch64)
+      set_source_files_properties(${FAISS_SIMD_SVE_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
+      )
+    endif()
   endif()
 endif()
 
@@ -457,6 +528,7 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx2 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
+  target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
   find_package(BLAS REQUIRED)
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
@@ -508,6 +580,8 @@ if(FAISS_OPT_LEVEL STREQUAL "sve")
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 endif()
+# Note: FAISS_OPT_LEVEL=dd builds DD support into main faiss target,
+# so no separate faiss_dd install is needed
 
 foreach(header ${FAISS_HEADERS})
   get_filename_component(dir ${header} DIRECTORY )

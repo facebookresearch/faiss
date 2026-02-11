@@ -53,53 +53,6 @@ constexpr bool is_similarity_metric(MetricType metric_type) {
             (metric_type == METRIC_Jaccard));
 }
 
-/// Dispatch to a lambda with MetricType as a compile-time constant.
-/// This allows writing generic code that works with different metrics
-/// while maintaining compile-time optimization.
-///
-/// Example usage:
-///   auto result = with_metric_type(runtime_metric, [&](auto metric_tag) {
-///       constexpr MetricType M = decltype(metric_tag)::value;
-///       return compute_distance<M>(x, y);
-///   });
-#ifndef SWIG
-
-template <typename LambdaType>
-inline auto with_metric_type(MetricType metric, LambdaType&& action) {
-    switch (metric) {
-        case METRIC_INNER_PRODUCT:
-            return action.template operator()<METRIC_INNER_PRODUCT>();
-        case METRIC_L2:
-            return action.template operator()<METRIC_L2>();
-        case METRIC_L1:
-            return action.template operator()<METRIC_L1>();
-        case METRIC_Linf:
-            return action.template operator()<METRIC_Linf>();
-        case METRIC_Lp:
-            return action.template operator()<METRIC_Lp>();
-        case METRIC_Canberra:
-            return action.template operator()<METRIC_Canberra>();
-        case METRIC_BrayCurtis:
-            return action.template operator()<METRIC_BrayCurtis>();
-        case METRIC_JensenShannon:
-            return action.template operator()<METRIC_JensenShannon>();
-        case METRIC_Jaccard:
-            return action.template operator()<METRIC_Jaccard>();
-        case METRIC_NaNEuclidean:
-            return action.template operator()<METRIC_NaNEuclidean>();
-        case METRIC_GOWER:
-            return action.template operator()<METRIC_GOWER>();
-        default: {
-            fprintf(stderr,
-                    "FATAL ERROR: with_metric_type called with unknown "
-                    "metric %d\n",
-                    static_cast<int>(metric));
-            abort();
-        }
-    }
-}
-#endif // SWIG
-
 } // namespace faiss
 
 #endif

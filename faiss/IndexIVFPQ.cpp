@@ -18,7 +18,7 @@
 #include <algorithm>
 
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/Clustering.h>
@@ -425,7 +425,7 @@ void initialize_IVFPQ_precomputed_table(
     for (int m = 0; m < pq.M; m++)
         for (int j = 0; j < pq.ksub; j++)
             r_norms[m * pq.ksub + j] =
-                    fvec_norm_L2sqr(pq.get_centroids(m, j), pq.dsub);
+                    fvec_norm_L2sqr_dispatch(pq.get_centroids(m, j), pq.dsub);
 
     if (use_precomputed_table == 1) {
         precomputed_table.resize(nlist * pq.M * pq.ksub);
@@ -436,7 +436,7 @@ void initialize_IVFPQ_precomputed_table(
 
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
             pq.compute_inner_prod_table(centroid.data(), tab);
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     } else if (use_precomputed_table == 2) {
         const MultiIndexQuantizer* miq =
@@ -463,7 +463,7 @@ void initialize_IVFPQ_precomputed_table(
 
         for (size_t i = 0; i < cpq.ksub; i++) {
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     }
 }
@@ -626,7 +626,7 @@ struct QueryTables {
         // and dis0, the initial value
         ivfpq.quantizer->reconstruct(key, decoded_vec);
         // decoded_vec = centroid
-        float dis0 = fvec_inner_product(qi, decoded_vec, d);
+        float dis0 = fvec_inner_product_dispatch(qi, decoded_vec, d);
 
         if (polysemous_ht) {
             for (int i = 0; i < d; i++) {
@@ -655,7 +655,7 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd(
+            fvec_madd_dispatch(
                     pq.M * pq.ksub,
                     ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
                     -2.0,
@@ -691,12 +691,12 @@ struct QueryTables {
 
                 if (polysemous_ht == 0) {
                     // sum up with query-specific table
-                    fvec_madd(Mf * pq.ksub, pc, -2.0, qtab, ltab);
+                    fvec_madd_dispatch(Mf * pq.ksub, pc, -2.0, qtab, ltab);
                     ltab += Mf * pq.ksub;
                     qtab += Mf * pq.ksub;
                 } else {
                     for (int m = cm * Mf; m < (cm + 1) * Mf; m++) {
-                        q_code[m] = fvec_madd_and_argmin(
+                        q_code[m] = fvec_madd_and_argmin_dispatch(
                                 pq.ksub, pc, -2, qtab, ltab);
                         pc += pq.ksub;
                         ltab += pq.ksub;
@@ -956,7 +956,7 @@ struct IVFPQScannerT : QueryTables {
         if (by_residual) {
             if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
                 ivfpq.quantizer->reconstruct(key, residual_vec);
-                dis0 = fvec_inner_product(residual_vec, qi, d);
+                dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
             } else {
                 ivfpq.quantizer->compute_residual(qi, residual_vec, key);
             }
@@ -974,9 +974,9 @@ struct IVFPQScannerT : QueryTables {
 
             float dis;
             if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                dis = dis0 + fvec_inner_product(decoded_vec, qi, d);
+                dis = dis0 + fvec_inner_product_dispatch(decoded_vec, qi, d);
             } else {
-                dis = fvec_L2sqr(decoded_vec, dvec, d);
+                dis = fvec_L2sqr_dispatch(decoded_vec, dvec, d);
             }
             res.add(j, dis);
         }

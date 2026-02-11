@@ -12,7 +12,7 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <cmath>
 #include <type_traits>
 
@@ -38,28 +38,28 @@ template <>
 inline float VectorDistance<METRIC_L2>::operator()(
         const float* x,
         const float* y) const {
-    return fvec_L2sqr(x, y, d);
+    return fvec_L2sqr_dispatch(x, y, d);
 }
 
 template <>
 inline float VectorDistance<METRIC_INNER_PRODUCT>::operator()(
         const float* x,
         const float* y) const {
-    return fvec_inner_product(x, y, d);
+    return fvec_inner_product_dispatch(x, y, d);
 }
 
 template <>
 inline float VectorDistance<METRIC_L1>::operator()(
         const float* x,
         const float* y) const {
-    return fvec_L1(x, y, d);
+    return fvec_L1_dispatch(x, y, d);
 }
 
 template <>
 inline float VectorDistance<METRIC_Linf>::operator()(
         const float* x,
         const float* y) const {
-    return fvec_Linf(x, y, d);
+    return fvec_Linf_dispatch(x, y, d);
     /*
         float vmax = 0;
         for (size_t i = 0; i < d; i++) {

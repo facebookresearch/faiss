@@ -11,7 +11,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/RaBitQUtils.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 
 #include <algorithm>
 #include <cmath>
@@ -273,7 +273,7 @@ void quantize_ex_bits(
     FAISS_THROW_IF_NOT_MSG(ex_code != nullptr, "ex_code cannot be null");
 
     // Step 1: Compute L2 norm of residual
-    float norm_sqr = fvec_norm_L2sqr(residual, d);
+    float norm_sqr = fvec_norm_L2sqr_dispatch(residual, d);
     float norm = std::sqrt(norm_sqr);
 
     // Handle degenerate case

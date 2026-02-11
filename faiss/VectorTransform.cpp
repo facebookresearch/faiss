@@ -18,6 +18,7 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
@@ -1105,7 +1106,8 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
         }
         pq_regular.decode(codes.data(), pq_recons.data(), n);
 
-        float pq_err = fvec_L2sqr(pq_recons.data(), xproj.data(), n * d2) / n;
+        float pq_err =
+                fvec_L2sqr_dispatch(pq_recons.data(), xproj.data(), n * d2) / n;
 
         if (verbose)
             printf("    Iteration %d (%d PQ iterations):"

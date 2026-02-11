@@ -13,7 +13,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
@@ -109,7 +109,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 
     float distance_to_code(const uint8_t* code) final {
         ndis++;
-        return fvec_L2sqr(q, (float*)code, d);
+        return fvec_L2sqr_dispatch(q, (float*)code, d);
     }
 
     float partial_dot_product(
@@ -117,12 +117,12 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const uint32_t offset,
             const uint32_t num_components) final override {
         npartial_dot_products++;
-        return fvec_inner_product(
+        return fvec_inner_product_dispatch(
                 q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
-        return fvec_L2sqr(b + j * d, b + i * d, d);
+        return fvec_L2sqr_dispatch(b + j * d, b + i * d, d);
     }
 
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
@@ -166,7 +166,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_L2sqr_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_L2sqr_batch_4_dispatch(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = dp0;
         dis1 = dp1;
         dis2 = dp2;
@@ -200,7 +200,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         float dp1_ = 0;
         float dp2_ = 0;
         float dp3_ = 0;
-        fvec_inner_product_batch_4(
+        fvec_inner_product_batch_4_dispatch(
                 q + offset,
                 y0 + offset,
                 y1 + offset,
@@ -226,12 +226,12 @@ struct FlatIPDis : FlatCodesDistanceComputer {
     size_t ndis;
 
     float symmetric_dis(idx_t i, idx_t j) final override {
-        return fvec_inner_product(b + j * d, b + i * d, d);
+        return fvec_inner_product_dispatch(b + j * d, b + i * d, d);
     }
 
     float distance_to_code(const uint8_t* code) final override {
         ndis++;
-        return fvec_inner_product(q, (const float*)code, d);
+        return fvec_inner_product_dispatch(q, (const float*)code, d);
     }
 
     explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
@@ -274,7 +274,8 @@ struct FlatIPDis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_inner_product_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_inner_product_batch_4_dispatch(
+                q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = dp0;
         dis1 = dp1;
         dis2 = dp2;
@@ -329,7 +330,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
     float distance_to_code(const uint8_t* code) final override {
         ndis++;
-        return fvec_L2sqr(q, (float*)code, d);
+        return fvec_L2sqr_dispatch(q, (float*)code, d);
     }
 
     float operator()(const idx_t i) final override {
@@ -337,7 +338,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
                 reinterpret_cast<const float*>(codes + i * code_size);
 
         prefetch_L2(l2norms + i);
-        const float dp0 = fvec_inner_product(q, y, d);
+        const float dp0 = fvec_inner_product_dispatch(q, y, d);
         return query_l2norm + l2norms[i] - 2 * dp0;
     }
 
@@ -349,7 +350,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
         prefetch_L2(l2norms + i);
         prefetch_L2(l2norms + j);
-        const float dp0 = fvec_inner_product(yi, yj, d);
+        const float dp0 = fvec_inner_product_dispatch(yi, yj, d);
         return l2norms[i] + l2norms[j] - 2 * dp0;
     }
 
@@ -369,7 +370,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
-        query_l2norm = fvec_norm_L2sqr(q, d);
+        query_l2norm = fvec_norm_L2sqr_dispatch(q, d);
     }
 
     // compute four distances
@@ -403,7 +404,8 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_inner_product_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_inner_product_batch_4_dispatch(
+                q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = query_l2norm + l2norms[idx0] - 2 * dp0;
         dis1 = query_l2norm + l2norms[idx1] - 2 * dp1;
         dis2 = query_l2norm + l2norms[idx2] - 2 * dp2;
@@ -583,7 +585,17 @@ void IndexFlat1D::search(
 
 namespace {
 
-template <bool use_radius, typename BlockHandler>
+template <typename Fn>
+inline auto dispatch_metric_compare(MetricType metric, Fn&& fn) {
+    if (is_similarity_metric(metric)) {
+        using C = CMin<float, int64_t>;
+        return fn.template operator()<C>();
+    }
+    using C = CMax<float, int64_t>;
+    return fn.template operator()<C>();
+}
+
+template <bool use_radius, typename C, typename BlockHandler>
 inline void flat_pano_search_core(
         const IndexFlatPanorama& index,
         BlockHandler& handler,
@@ -629,9 +641,7 @@ inline void flat_pano_search_core(
 
                 size_t num_active = with_metric_type(
                         index.metric_type, [&]<MetricType M>() {
-                            return index.pano.progressive_filter_batch<
-                                    CMax<float, int64_t>,
-                                    M>(
+                            return index.pano.progressive_filter_batch<C, M>(
                                     index.codes.data(),
                                     index.cum_sums.data(),
                                     xi,
@@ -689,10 +699,11 @@ void IndexFlatPanorama::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(batch_size >= k);
 
-    HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
-            size_t(n), distances, labels, size_t(k), nullptr);
-
-    flat_pano_search_core<false>(*this, handler, n, x, 0.0f, params);
+    dispatch_metric_compare(metric_type, [&]<typename C>() {
+        HeapBlockResultHandler<C, false> handler(
+                size_t(n), distances, labels, size_t(k), nullptr);
+        flat_pano_search_core<false, C>(*this, handler, n, x, 0.0f, params);
+    });
 }
 
 void IndexFlatPanorama::range_search(
@@ -701,10 +712,11 @@ void IndexFlatPanorama::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    RangeSearchBlockResultHandler<CMax<float, int64_t>, false> handler(
-            result, radius, nullptr);
-
-    flat_pano_search_core<true>(*this, handler, n, x, radius, params);
+    dispatch_metric_compare(metric_type, [&]<typename C>() {
+        RangeSearchBlockResultHandler<C, false> handler(
+                result, radius, nullptr);
+        flat_pano_search_core<true, C>(*this, handler, n, x, radius, params);
+    });
 }
 
 void IndexFlatPanorama::reset() {
@@ -793,103 +805,132 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    using SingleResultHandler =
-            HeapBlockResultHandler<CMax<float, int64_t>, false>::
-                    SingleResultHandler;
-    HeapBlockResultHandler<CMax<float, int64_t>, false> handler(
-            size_t(n), distances, labels, size_t(k), nullptr);
+    with_metric_type(metric_type, [&]<MetricType M>() {
+        constexpr bool is_sim = is_similarity_metric(M);
+        using C = std::conditional_t<
+                is_sim,
+                CMin<float, int64_t>,
+                CMax<float, int64_t>>;
+        using SingleResultHandler =
+                typename HeapBlockResultHandler<C, false>::SingleResultHandler;
+        HeapBlockResultHandler<C, false> handler(
+                size_t(n), distances, labels, size_t(k), nullptr);
 
-    FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT(batch_size == 1);
+        FAISS_THROW_IF_NOT(k > 0);
+        FAISS_THROW_IF_NOT(batch_size == 1);
 
-    [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
+        [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
-    {
-        SingleResultHandler res(handler);
+        {
+            SingleResultHandler res(handler);
 
-        std::vector<float> query_cum_norms(n_levels + 1);
+            std::vector<float> query_cum_norms(n_levels + 1);
 
-        // Panorama's optimized point-wise refinement (Algorithm 2):
-        // Batch-wise Panorama, as implemented in Panorama.h, incurs overhead
-        // from maintaining active_indices and exact_distances. This optimized
-        // implementation has minimal overhead and is thus preferred for
-        // IndexRefine's use case.
-        // 1. Initialize exact distance as ||y||^2 + ||x||^2.
-        // 2. For each level, refine distance incrementally:
-        //    - Compute dot product for current level: exact_dist -= 2*<x,y>.
-        //    - Use Cauchy-Schwarz bound on remaining levels to get lower bound.
-        //    - If there are less than k points in the heap, add the point to
-        //    the heap.
-        //    - Else, prune if lower bound exceeds k-th best distance.
-        // 3. After all levels, update heap if the point survived.
+            // Panorama's optimized point-wise refinement (Algorithm 2):
+            // Batch-wise Panorama, as implemented in Panorama.h, incurs
+            // overhead from maintaining active_indices and exact_distances.
+            // This optimized implementation has minimal overhead and is thus
+            // preferred for IndexRefine's use case.
+            // 1. Initialize exact distance as ||y||^2 + ||x||^2.
+            // 2. For each level, refine distance incrementally:
+            //    - Compute dot product for current level: exact_dist -=
+            //    2*<x,y>.
+            //    - Use Cauchy-Schwarz bound on remaining levels to get lower
+            //    bound.
+            //    - If there are less than k points in the heap, add the point
+            //    to the heap.
+            //    - Else, prune if lower bound exceeds k-th best distance.
+            // 3. After all levels, update heap if the point survived.
 #pragma omp for
-        for (idx_t i = 0; i < n; i++) {
-            const idx_t* __restrict idsi = base_labels + i * k_base;
-            const float* xi = x + i * d;
+            for (idx_t i = 0; i < n; i++) {
+                const idx_t* __restrict idsi = base_labels + i * k_base;
+                const float* xi = x + i * d;
 
-            PanoramaStats local_stats;
-            local_stats.reset();
+                PanoramaStats local_stats;
+                local_stats.reset();
 
-            pano.compute_query_cum_sums(xi, query_cum_norms.data());
-            float query_cum_norm = query_cum_norms[0] * query_cum_norms[0];
+                pano.compute_query_cum_sums(xi, query_cum_norms.data());
+                float query_cum_norm = query_cum_norms[0] * query_cum_norms[0];
 
-            res.begin(i);
+                res.begin(i);
 
-            for (size_t j = 0; j < k_base; j++) {
-                idx_t idx = idsi[j];
+                for (size_t j = 0; j < k_base; j++) {
+                    idx_t idx = idsi[j];
 
-                if (idx < 0) {
-                    continue;
-                }
-
-                size_t cum_sum_offset = (n_levels + 1) * idx;
-                float cum_sum = cum_sums[cum_sum_offset];
-                float exact_distance = cum_sum * cum_sum + query_cum_norm;
-                cum_sum_offset++;
-
-                const float* x_ptr = xi;
-                const float* p_ptr =
-                        reinterpret_cast<const float*>(codes.data()) + d * idx;
-
-                local_stats.total_dims += d;
-
-                bool pruned = false;
-                for (size_t level = 0; level < n_levels; level++) {
-                    local_stats.total_dims_scanned += pano.level_width_floats;
-
-                    // Refine distance
-                    size_t actual_level_width = std::min(
-                            pano.level_width_floats,
-                            d - level * pano.level_width_floats);
-                    float dot_product = fvec_inner_product(
-                            x_ptr, p_ptr, actual_level_width);
-                    exact_distance -= 2 * dot_product;
-
-                    float cum_sum = cum_sums[cum_sum_offset];
-                    float cauchy_schwarz_bound =
-                            2.0f * cum_sum * query_cum_norms[level + 1];
-                    float lower_bound = exact_distance - cauchy_schwarz_bound;
-
-                    // Prune using Cauchy-Schwarz bound
-                    if (lower_bound > res.heap_dis[0]) {
-                        pruned = true;
-                        break;
+                    if (idx < 0) {
+                        continue;
                     }
 
+                    size_t cum_sum_offset = (n_levels + 1) * idx;
+                    float cum_sum = cum_sums[cum_sum_offset];
+                    float exact_distance = 0.0f;
+                    if constexpr (!is_sim) {
+                        exact_distance = cum_sum * cum_sum + query_cum_norm;
+                    }
                     cum_sum_offset++;
-                    x_ptr += pano.level_width_floats;
-                    p_ptr += pano.level_width_floats;
+
+                    const float* x_ptr = xi;
+                    const float* p_ptr =
+                            reinterpret_cast<const float*>(codes.data()) +
+                            d * idx;
+
+                    local_stats.total_dims += d;
+
+                    bool pruned = false;
+                    for (size_t level = 0; level < n_levels; level++) {
+                        local_stats.total_dims_scanned +=
+                                pano.level_width_floats;
+
+                        // Refine distance
+                        size_t actual_level_width = std::min(
+                                pano.level_width_floats,
+                                d - level * pano.level_width_floats);
+                        float dot_product = fvec_inner_product_dispatch(
+                                x_ptr, p_ptr, actual_level_width);
+                        if constexpr (is_sim) {
+                            exact_distance += dot_product;
+                        } else {
+                            exact_distance -= 2 * dot_product;
+                        }
+
+                        float cum_sum = cum_sums[cum_sum_offset];
+                        float cauchy_schwarz_bound;
+                        if constexpr (is_sim) {
+                            cauchy_schwarz_bound =
+                                    -cum_sum * query_cum_norms[level + 1];
+                        } else {
+                            cauchy_schwarz_bound =
+                                    2.0f * cum_sum * query_cum_norms[level + 1];
+                        }
+                        float bound = exact_distance - cauchy_schwarz_bound;
+
+                        // Prune using Cauchy-Schwarz bound
+                        bool should_prune = false;
+                        if constexpr (is_sim) {
+                            should_prune = bound < res.heap_dis[0];
+                        } else {
+                            should_prune = bound > res.heap_dis[0];
+                        }
+                        if (should_prune) {
+                            pruned = true;
+                            break;
+                        }
+
+                        cum_sum_offset++;
+                        x_ptr += pano.level_width_floats;
+                        p_ptr += pano.level_width_floats;
+                    }
+
+                    if (!pruned) {
+                        res.add_result(exact_distance, idx);
+                    }
                 }
 
-                if (!pruned) {
-                    res.add_result(exact_distance, idx);
-                }
+                res.end();
+                indexPanorama_stats.add(local_stats);
             }
-
-            res.end();
-            indexPanorama_stats.add(local_stats);
         }
-    }
+    });
 }
 } // namespace faiss
