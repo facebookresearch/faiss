@@ -9,7 +9,9 @@ import logging
 import os
 import sys
 
-from packaging.version import Version
+
+def Version(version_str):
+    return tuple(int(''.join(filter(str.isdigit, part)) or '0') for part in version_str.split('.'))
 
 
 def supported_instruction_sets():
@@ -196,3 +198,7 @@ if not loaded:
         logger.error(message)
 
         sys.exit(1)
+
+# GPU module loading status (will be set to True if GPU module loads in __init__.py)
+gpu_loaded = False
+

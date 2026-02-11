@@ -319,9 +319,7 @@ namespace std {
 %template(OnDiskOneListVector) std::vector<faiss::OnDiskOneList>;
 #endif // !SWIGWIN
 
-#ifdef GPU_WRAPPER
-%template(GpuResourcesVector) std::vector<faiss::gpu::GpuResourcesProvider*>;
-#endif
+// GPU-specific vector templates are in swigfaiss_gpu.swig
 
 // produces an error on the Mac
 %ignore faiss::hamming;
@@ -350,112 +348,7 @@ void gpu_profiler_start();
 void gpu_profiler_stop();
 void gpu_sync_all_devices();
 
-#ifdef GPU_WRAPPER
-
-%shared_ptr(faiss::gpu::GpuResources);
-%shared_ptr(faiss::gpu::StandardGpuResourcesImpl);
-
-%{
-
-#include <faiss/gpu/StandardGpuResources.h>
-#include <faiss/gpu/GpuIndicesOptions.h>
-#include <faiss/gpu/GpuClonerOptions.h>
-#include <faiss/gpu/GpuIndex.h>
-#include <faiss/gpu/GpuIndexFlat.h>
-#include <faiss/gpu/GpuIndexIVF.h>
-#include <faiss/gpu/GpuIndexIVFPQ.h>
-#include <faiss/gpu/GpuIndexIVFFlat.h>
-#include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-#include <faiss/gpu/GpuIndexBinaryFlat.h>
-#include <faiss/gpu/GpuAutoTune.h>
-#include <faiss/gpu/GpuCloner.h>
-#include <faiss/gpu/GpuDistance.h>
-#include <faiss/gpu/GpuIcmEncoder.h>
-
-int get_num_gpus()
-{
-    return faiss::gpu::getNumDevices();
-}
-
-void gpu_profiler_start()
-{
-    return faiss::gpu::profilerStart();
-}
-
-void gpu_profiler_stop()
-{
-    return faiss::gpu::profilerStop();
-}
-
-void gpu_sync_all_devices()
-{
-    return faiss::gpu::synchronizeAllDevices();
-}
-
-%}
-
-%template() std::pair<int, uint64_t>;
-%template() std::map<std::string, std::pair<int, uint64_t> >;
-%template() std::map<int, std::map<std::string, std::pair<int, uint64_t> > >;
-
-// causes weird wrapper bug
-%ignore *::allocMemoryHandle;
-%ignore faiss::gpu::GpuMemoryReservation;
-%ignore faiss::gpu::GpuMemoryReservation::operator=(GpuMemoryReservation&&);
-%ignore faiss::gpu::AllocType;
-
-%include  <faiss/gpu/GpuResources.h>
-%include  <faiss/gpu/StandardGpuResources.h>
-
-#ifdef FAISS_ENABLE_ROCM
-
-typedef ihipStream_t* hipStream_t;
-
-%inline %{
-
-// interop between pytorch exposed hipStream_t and faiss
-hipStream_t cast_integer_to_cudastream_t(int64_t x) {
-  return (hipStream_t) x;
-}
-
-int64_t cast_cudastream_t_to_integer(hipStream_t x) {
-  return (int64_t) x;
-}
-
-%}
-
-#else // FAISS_ENABLE_ROCM
-
-#ifdef FAISS_ENABLE_CUVS
-%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
-%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
-
-%{
-
-#include <faiss/gpu/GpuIndexCagra.h>
-#include <faiss/gpu/GpuIndexBinaryCagra.h>
-
-%}
-#endif // FAISS_ENABLE_CUVS
-
-typedef CUstream_st* cudaStream_t;
-
-%inline %{
-
-// interop between pytorch exposed cudaStream_t and faiss
-cudaStream_t cast_integer_to_cudastream_t(int64_t x) {
-  return (cudaStream_t) x;
-}
-
-int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
-  return (int64_t) x;
-}
-
-%}
-
-#endif // FAISS_ENABLE_ROCM
-#else // GPU_WRAPPER
-
+// GPU functionality is in the separate swigfaiss_gpu_module when GPU is enabled
 %{
 int get_num_gpus()
 {
@@ -474,9 +367,6 @@ void gpu_sync_all_devices()
 {
 }
 %}
-
-
-#endif // GPU_WRAPPER
 
 // order matters because includes are not recursive
 
@@ -678,28 +568,7 @@ struct faiss::simd16uint16 {};
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
-#ifdef GPU_WRAPPER
-
-// quiet SWIG warnings
-%ignore faiss::gpu::GpuIndexIVF::GpuIndexIVF;
-
-%include  <faiss/gpu/GpuIndicesOptions.h>
-%include  <faiss/gpu/GpuClonerOptions.h>
-%include  <faiss/gpu/GpuIndex.h>
-#ifdef FAISS_ENABLE_CUVS
-%include  <faiss/gpu/GpuIndexCagra.h>
-%include  <faiss/gpu/GpuIndexBinaryCagra.h>
-#endif
-%include  <faiss/gpu/GpuIndexFlat.h>
-%include  <faiss/gpu/GpuIndexIVF.h>
-%include  <faiss/gpu/GpuIndexIVFPQ.h>
-%include  <faiss/gpu/GpuIndexIVFFlat.h>
-%include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
-%include  <faiss/gpu/GpuIndexBinaryFlat.h>
-%include  <faiss/gpu/GpuDistance.h>
-%include  <faiss/gpu/GpuIcmEncoder.h>
-
-#endif
+// GPU index functionality is in the separate swigfaiss_gpu_module
 
 
 
@@ -726,11 +595,7 @@ struct faiss::simd16uint16 {};
     } else
 %enddef
 
-%define DOWNCAST_GPU(subclass)
-    if (dynamic_cast<faiss::gpu::subclass *> ($1)) {
-      $result = SWIG_NewPointerObj($1,SWIGTYPE_p_faiss__gpu__ ## subclass,$owner);
-    } else
-%enddef
+// GPU downcasting is handled in the separate swigfaiss_gpu_module
 
 #endif
 
@@ -817,16 +682,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
 #endif // FAISS_ENABLE_SVS
-#ifdef GPU_WRAPPER
-#ifdef FAISS_ENABLE_CUVS
-    DOWNCAST_GPU ( GpuIndexCagra )
-    DOWNCAST_GPU ( GpuIndexBinaryCagra )
-#endif
-    DOWNCAST_GPU ( GpuIndexIVFPQ )
-    DOWNCAST_GPU ( GpuIndexIVFFlat )
-    DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
-    DOWNCAST_GPU ( GpuIndexFlat )
-#endif
+    // GPU downcasts are in the separate swigfaiss_gpu_module
     // default for non-recognized classes
     DOWNCAST ( Index )
     if ($1 == NULL)
@@ -851,9 +707,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexBinaryHNSW )
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
-#ifdef GPU_WRAPPER
-    DOWNCAST_GPU ( GpuIndexBinaryFlat )
-#endif
+    // GPU binary downcasts are in the separate swigfaiss_gpu_module
     // default for non-recognized classes
     DOWNCAST ( IndexBinary )
     if ($1 == NULL)
@@ -949,17 +803,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 %include  <faiss/MatrixStats.h>
 
 
-#ifdef GPU_WRAPPER
-
-%include  <faiss/gpu/GpuAutoTune.h>
-
-%newobject index_gpu_to_cpu;
-%newobject index_cpu_to_gpu;
-%newobject index_cpu_to_gpu_multiple;
-
-%include  <faiss/gpu/GpuCloner.h>
-
-#endif
+// GPU AutoTune and Cloner are in swigfaiss_gpu.swig
 
 
 
