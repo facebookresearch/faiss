@@ -343,6 +343,8 @@ else()
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
+target_sources(faiss_avx2 PRIVATE ${FAISS_SIMD_AVX2_SRC})
+target_compile_definitions(faiss_avx2 PRIVATE COMPILE_SIMD_AVX2)
 
 add_library(faiss_avx512 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx512")
@@ -357,6 +359,8 @@ else()
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
+target_sources(faiss_avx512 PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+target_compile_definitions(faiss_avx512 PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
 
 add_library(faiss_avx512_spr ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
@@ -371,6 +375,8 @@ else()
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
+target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -396,6 +402,8 @@ if(NOT WIN32)
     target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
   endif()
 endif()
+target_sources(faiss_sve PRIVATE ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
+target_compile_definitions(faiss_sve PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
 
 # =============================================================================
 # Dynamic Dispatch Mode
