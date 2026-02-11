@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="148" column="15" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="148" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="149" column="15" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="149" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="131" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="131" bodyend="131"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="132" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="132" bodyend="132"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac09e429d618ecf02c58d16c1640e1ce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -58,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="132" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="132" bodyend="134"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="133" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="133" bodyend="135"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1ac2e353a7009eab27f2d659f882411ecf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -72,7 +72,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="135" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="135" bodyend="137"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="136" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="136" bodyend="138"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a22389928e6cfeeda7db256858c9e9cd8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -86,7 +86,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="138" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="138" bodyend="141"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="139" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="139" bodyend="142"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1aed0e70b2475c2933b10c2e52be1150d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -100,14 +100,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="142" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="142" bodyend="145"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="143" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="143" bodyend="146"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/svs/IndexSVSFaissUtils.h" line="124" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="130" bodyend="149"/>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="125" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="131" bodyend="150"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a6a1a359d5116e34a952b975c612ed556" prot="private" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>data_span</name></member>
       <member refid="structfaiss_1_1InputBufferConverter_3_01T_00_01U_00_01std_1_1enable__if__t_3_01std_1_1is__same__eaebc806d160ba449b6838fb37663a37_1a15ecb6e7006fcf88a4eac818d107a884" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter&lt; T, U, std::enable_if_t&lt; std::is_same_v&lt; T, U &gt;||(std::is_integral_v&lt; T &gt; &amp;&amp;std::is_integral_v&lt; U &gt; &amp;&amp;sizeof(T)==sizeof(U))&gt; &gt;</scope><name>InputBufferConverter</name></member>

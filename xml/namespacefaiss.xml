@@ -4451,7 +4451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="203" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="203" bodyend="209"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="205" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="205" bodyend="211"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4c2998ae0350150fa20fb1657d15c174" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4481,7 +4481,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="212" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="212" bodyend="214"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="214" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="214" bodyend="216"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae1e679f47d92aec25aa00069e6e2155a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4507,7 +4507,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="218" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="218" bodyend="224"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="220" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="220" bodyend="226"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a86baa07840a69f553dddac10efa5dcf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4537,7 +4537,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="227" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="227" bodyend="229"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="229" column="6" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="229" bodyend="231"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1af80a4ca99b16b97df605594f16257643" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::StorageKind</type>
