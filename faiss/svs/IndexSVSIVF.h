@@ -40,15 +40,15 @@ struct SearchParametersSVSIVF : public SearchParameters {
 
 struct IndexSVSIVF : Index {
     /// Number of centroids / clusters
-    size_t num_centroids = 256;
+    size_t num_centroids = 1000;
     /// Minibatch size for k-means clustering
-    size_t minibatch_size = 256;
+    size_t minibatch_size = 10000;
     /// Number of iterations for k-means clustering
     size_t num_iterations = 10;
     /// Whether to use hierarchical clustering
-    bool is_hierarchical = false;
+    bool is_hierarchical = true;
     /// Fraction of data to use for training (0.0 to 1.0)
-    float training_fraction = 1.0f;
+    float training_fraction = 0.1f;
     /// Number of level-1 clusters for hierarchical clustering
     size_t hierarchical_level1_clusters = 0;
     /// Random seed for clustering
