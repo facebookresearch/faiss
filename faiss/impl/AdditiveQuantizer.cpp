@@ -23,6 +23,7 @@
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h>
 
 extern "C" {
@@ -354,7 +355,7 @@ void AdditiveQuantizer::compute_centroid_norms(float* norms) const {
 #pragma omp for
         for (int64_t i = 0; i < ntotal; i++) {
             decode_64bit(i, tmp.data());
-            norms[i] = fvec_norm_L2sqr(tmp.data(), d);
+            norms[i] = fvec_norm_L2sqr_dispatch(tmp.data(), d);
         }
     }
 }

@@ -14,7 +14,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 namespace faiss {
@@ -92,7 +92,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
         if (is_IP) {
             bias = 0;
         } else {
-            bias = fvec_norm_L2sqr(x, d);
+            bias = fvec_norm_L2sqr_dispatch(x, d);
         }
     }
 
@@ -100,7 +100,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
         float* tmp = LUT.data();
         aq.decode(codes + i * d, tmp, 1);
         aq.decode(codes + j * d, tmp + d, 1);
-        return fvec_L2sqr(tmp, tmp + d, d);
+        return fvec_L2sqr_dispatch(tmp, tmp + d, d);
     }
 
     float distance_to_code(const uint8_t* code) final {
@@ -173,7 +173,7 @@ void search_with_LUT(
         float bias = 0;
         if (!is_IP) { // the LUT function returns ||y||^2 - 2 * <x, y>, need to
                       // add ||x||^2
-            bias = fvec_norm_L2sqr(xq + q * d, d);
+            bias = fvec_norm_L2sqr_dispatch(xq + q * d, d);
         }
         for (size_t i = 0; i < ntotal; i++) {
             float dis = aq.compute_1_distance_LUT<is_IP, st>(

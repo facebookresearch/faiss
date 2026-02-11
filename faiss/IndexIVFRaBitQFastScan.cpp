@@ -19,7 +19,7 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -276,7 +276,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
     // Override query norm for inner product if original query is provided
     if (metric_type == MetricType::METRIC_INNER_PRODUCT &&
         original_query != nullptr) {
-        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(original_query, d);
+        query_factors.qr_norm_L2sqr =
+                fvec_norm_L2sqr_dispatch(original_query, d);
     }
 
     const size_t ex_bits = rabitq.nb_bits - 1;

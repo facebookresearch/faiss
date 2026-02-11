@@ -18,7 +18,7 @@
 #include <queue>
 #include <unordered_set>
 
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 
 namespace faiss {
 
@@ -307,7 +307,7 @@ void EnumeratedVectors::find_nn(
         decode(code, c.data());
         for (size_t j = 0; j < nq; j++) {
             const float* x = xq + j * dim;
-            float dis = fvec_inner_product(x, c.data(), dim);
+            float dis = fvec_inner_product_dispatch(x, c.data(), dim);
             if (dis > distances[j]) {
                 distances[j] = dis;
                 labels[j] = i;
@@ -356,7 +356,8 @@ float ZnSphereSearch::search(
     int ibest = -1;
     float dpbest = -100;
     for (int i = 0; i < natom; i++) {
-        float dp = fvec_inner_product(voc.data() + i * dim, xperm, dim);
+        float dp =
+                fvec_inner_product_dispatch(voc.data() + i * dim, xperm, dim);
         if (dp > dpbest) {
             dpbest = dp;
             ibest = i;
