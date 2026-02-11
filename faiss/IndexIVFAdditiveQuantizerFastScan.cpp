@@ -19,6 +19,7 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
 
@@ -414,7 +415,8 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
             for (idx_t ij = 0; ij < n * nprobe; ij++) {
                 int i = ij / nprobe;
                 quantizer->reconstruct(cq.ids[ij], c);
-                biases[ij] = coef * fvec_inner_product(c, x + i * d, d);
+                biases[ij] =
+                        coef * fvec_inner_product_dispatch(c, x + i * d, d);
             }
         }
     }

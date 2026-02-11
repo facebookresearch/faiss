@@ -22,7 +22,6 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/expanded_scanners.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 

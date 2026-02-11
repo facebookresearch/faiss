@@ -3,6 +3,30 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# =============================================================================
+# SIMD FILE REGISTRY
+# Keep in sync with Buck's SIMD_FILES in xplat.bzl
+# Architecture-specific: only include files for the current build architecture
+# =============================================================================
+set(FAISS_SIMD_AVX2_SRC
+  utils/simd_impl/distances_avx2.cpp
+)
+set(FAISS_SIMD_AVX512_SRC
+  utils/simd_impl/distances_avx512.cpp
+)
+set(FAISS_SIMD_NEON_SRC
+  utils/simd_impl/distances_aarch64.cpp
+)
+# Select SIMD sources based on target architecture
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC})
+else()
+  set(FAISS_SIMD_SRC "")
+endif()
+# =============================================================================
+
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
@@ -221,6 +245,7 @@ set(FAISS_HEADERS
   impl/platform_macros.h
   impl/pq4_fast_scan.h
   impl/residual_quantizer_encode_steps.h
+  impl/simd_dispatch.h
   impl/simd_result_handlers.h
   impl/zerocopy_io.h
   impl/code_distance/code_distance.h
@@ -239,6 +264,7 @@ set(FAISS_HEADERS
   utils/NeuralNet.h
   utils/WorkerThread.h
   utils/distances.h
+  utils/distances_dispatch.h
   utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
@@ -277,6 +303,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/neon-inl.h
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
+  utils/simd_impl/distances_autovec-inl.h
 )
 
 if(FAISS_ENABLE_SVS)
@@ -374,13 +401,26 @@ endif()
 # compile definitions to the main faiss target.
 # =============================================================================
 if(FAISS_OPT_LEVEL STREQUAL "dd")
+  # Add SIMD source files to main faiss target for DD builds
+  target_sources(faiss PRIVATE ${FAISS_SIMD_SRC})
   if(NOT WIN32)
     target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DD)
     # Architecture-specific SIMD definitions for Dynamic Dispatch
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
       target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+      # Baseline flags for common files (prevents auto-vectorization)
       target_compile_options(faiss PRIVATE
-        $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4>)
+        $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4 -mno-avx -mno-avx2>)
+      # Per-file SIMD flags
+      set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+      )
+      set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+      )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
       target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)

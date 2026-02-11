@@ -19,7 +19,7 @@
 #include <faiss/clone_index.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/index_io.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
@@ -537,7 +537,7 @@ void ivf_residual_add_from_flat_codes(
                 // decode first, does not use the norm component, so that's
                 // ok
                 index->rq.decode(tmp_code.data(), tmp.data(), 1);
-                float norm = fvec_norm_L2sqr(tmp.data(), rq.d);
+                float norm = fvec_norm_L2sqr_dispatch(tmp.data(), rq.d);
                 wr.write(rq.encode_norm(norm), rq.norm_bits);
 
                 // add code to the inverted list

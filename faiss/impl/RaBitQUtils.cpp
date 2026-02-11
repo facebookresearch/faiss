@@ -8,7 +8,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -156,9 +156,9 @@ QueryFactorsData compute_query_factors(
 
     // Compute distance from query to centroid
     if (centroid != nullptr) {
-        query_factors.qr_to_c_L2sqr = fvec_L2sqr(query, centroid, d);
+        query_factors.qr_to_c_L2sqr = fvec_L2sqr_dispatch(query, centroid, d);
     } else {
-        query_factors.qr_to_c_L2sqr = fvec_norm_L2sqr(query, d);
+        query_factors.qr_to_c_L2sqr = fvec_norm_L2sqr_dispatch(query, d);
     }
     query_factors.g_error = std::sqrt(query_factors.qr_to_c_L2sqr);
 
@@ -243,7 +243,7 @@ QueryFactorsData compute_query_factors(
     // Compute query norm for inner product metric
     query_factors.qr_norm_L2sqr = 0.0f;
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
-        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(query, d);
+        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr_dispatch(query, d);
     }
 
     return query_factors;

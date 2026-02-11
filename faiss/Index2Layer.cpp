@@ -24,7 +24,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -152,7 +152,7 @@ struct Distance2Level : DistanceComputer {
     float symmetric_dis(idx_t i, idx_t j) override {
         storage.reconstruct(i, buf.data());
         storage.reconstruct(j, buf.data() + d);
-        return fvec_L2sqr(buf.data() + d, buf.data(), d);
+        return fvec_L2sqr_dispatch(buf.data() + d, buf.data(), d);
     }
 
     void set_query(const float* x) override {

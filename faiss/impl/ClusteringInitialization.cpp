@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/random.h>
 
 namespace faiss {
@@ -51,13 +51,13 @@ float distance_to_nearest_centroid(
 
     // Check primary centroids
     for (size_t c = 0; c < n_centroids; c++) {
-        float dist = fvec_L2sqr(point, centroids + c * d, d);
+        float dist = fvec_L2sqr_dispatch(point, centroids + c * d, d);
         min_dist = std::min(min_dist, dist);
     }
 
     // Check existing centroids if provided
     for (size_t c = 0; c < n_existing_centroids; c++) {
-        float dist = fvec_L2sqr(point, existing_centroids + c * d, d);
+        float dist = fvec_L2sqr_dispatch(point, existing_centroids + c * d, d);
         min_dist = std::min(min_dist, dist);
     }
 
@@ -104,7 +104,7 @@ InitDistancesResult init_distances_for_d2_sampling(
 
         // Compute distances to first centroid
         for (size_t i = 0; i < n; i++) {
-            distances[i] = fvec_L2sqr(x + i * d, centroids, d);
+            distances[i] = fvec_L2sqr_dispatch(x + i * d, centroids, d);
             sum_d2 += distances[i];
         }
         return {1, sum_d2, first_selected_idx};
@@ -232,7 +232,7 @@ void ClusteringInitialization::init_kmeans_plus_plus(
 
         // Update min distances incrementally
         for (size_t i = 0; i < n; i++) {
-            double dist = fvec_L2sqr(x + i * d, new_centroid, d);
+            double dist = fvec_L2sqr_dispatch(x + i * d, new_centroid, d);
             min_distances[i] = std::min(min_distances[i], dist);
         }
     }

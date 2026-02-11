@@ -12,7 +12,7 @@
 #include <cstring>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 
 /* declare BLAS functions, see http://www.netlib.org/clapack/cblas/ */
 
@@ -266,7 +266,7 @@ nn::Int32Tensor2D QINCoStep::encode(
         float dis_min = HUGE_VALF;
         int64_t idx = -1;
         for (size_t j = 0; j < K; j++) {
-            float dis = fvec_L2sqr(q, db, d);
+            float dis = fvec_L2sqr_dispatch(q, db, d);
             if (dis < dis_min) {
                 dis_min = dis;
                 idx = j;

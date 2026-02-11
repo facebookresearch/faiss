@@ -9,7 +9,7 @@
 
 #include <faiss/IndexLattice.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h> // for the bitstring routines
 
 namespace faiss {
@@ -46,7 +46,7 @@ void IndexLattice::train(idx_t n, const float* x) {
 
     for (idx_t i = 0; i < n; i++) {
         for (int sq = 0; sq < nsq; sq++) {
-            float norm2 = fvec_norm_L2sqr(x + i * d + sq * dsq, dsq);
+            float norm2 = fvec_norm_L2sqr_dispatch(x + i * d + sq * dsq, dsq);
             if (norm2 > maxs[sq]) {
                 maxs[sq] = norm2;
             }
@@ -79,8 +79,8 @@ void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
         BitstringWriter wr(codes + i * code_size, code_size);
         const float* xi = x + i * d;
         for (int j = 0; j < nsq; j++) {
-            float nj = (sqrtf(fvec_norm_L2sqr(xi, dsq)) - mins[j]) * sc /
-                    (maxs[j] - mins[j]);
+            float nj = (sqrtf(fvec_norm_L2sqr_dispatch(xi, dsq)) - mins[j]) *
+                    sc / (maxs[j] - mins[j]);
             if (nj < 0) {
                 nj = 0;
             }

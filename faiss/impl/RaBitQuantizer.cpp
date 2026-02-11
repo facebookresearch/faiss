@@ -10,7 +10,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
 #include <cmath>
@@ -334,9 +334,9 @@ void RaBitQDistanceComputerNotQ::set_query(const float* x) {
 
     // compute the distance from the query to the centroid
     if (centroid != nullptr) {
-        query_fac.qr_to_c_L2sqr = fvec_L2sqr(x, centroid, d);
+        query_fac.qr_to_c_L2sqr = fvec_L2sqr_dispatch(x, centroid, d);
     } else {
-        query_fac.qr_to_c_L2sqr = fvec_norm_L2sqr(x, d);
+        query_fac.qr_to_c_L2sqr = fvec_norm_L2sqr_dispatch(x, d);
     }
 
     // subtract c, obtain P^(-1)(qr - c)
@@ -364,7 +364,7 @@ void RaBitQDistanceComputerNotQ::set_query(const float* x) {
 
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         // precompute if needed
-        query_fac.qr_norm_L2sqr = fvec_norm_L2sqr(x, d);
+        query_fac.qr_norm_L2sqr = fvec_norm_L2sqr_dispatch(x, d);
     }
 }
 
