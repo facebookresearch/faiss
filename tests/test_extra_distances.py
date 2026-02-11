@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 import unittest
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.evaluation import check_ref_knn_with_draws
@@ -18,6 +18,7 @@ from faiss.contrib.evaluation import check_ref_knn_with_draws
 import scipy.spatial.distance
 
 
+@for_all_simd_levels
 class TestExtraDistances(unittest.TestCase):
     """ check wrt. the scipy implementation """
 

@@ -13,7 +13,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
@@ -109,7 +109,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 
     float distance_to_code(const uint8_t* code) final {
         ndis++;
-        return fvec_L2sqr(q, (float*)code, d);
+        return fvec_L2sqr_dispatch(q, (float*)code, d);
     }
 
     float partial_dot_product(
@@ -117,12 +117,12 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const uint32_t offset,
             const uint32_t num_components) final override {
         npartial_dot_products++;
-        return fvec_inner_product(
+        return fvec_inner_product_dispatch(
                 q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
-        return fvec_L2sqr(b + j * d, b + i * d, d);
+        return fvec_L2sqr_dispatch(b + j * d, b + i * d, d);
     }
 
     explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
@@ -166,7 +166,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_L2sqr_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_L2sqr_batch_4_dispatch(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = dp0;
         dis1 = dp1;
         dis2 = dp2;
@@ -200,7 +200,7 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         float dp1_ = 0;
         float dp2_ = 0;
         float dp3_ = 0;
-        fvec_inner_product_batch_4(
+        fvec_inner_product_batch_4_dispatch(
                 q + offset,
                 y0 + offset,
                 y1 + offset,
@@ -226,12 +226,12 @@ struct FlatIPDis : FlatCodesDistanceComputer {
     size_t ndis;
 
     float symmetric_dis(idx_t i, idx_t j) final override {
-        return fvec_inner_product(b + j * d, b + i * d, d);
+        return fvec_inner_product_dispatch(b + j * d, b + i * d, d);
     }
 
     float distance_to_code(const uint8_t* code) final override {
         ndis++;
-        return fvec_inner_product(q, (const float*)code, d);
+        return fvec_inner_product_dispatch(q, (const float*)code, d);
     }
 
     explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
@@ -274,7 +274,8 @@ struct FlatIPDis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_inner_product_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_inner_product_batch_4_dispatch(
+                q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = dp0;
         dis1 = dp1;
         dis2 = dp2;
@@ -329,7 +330,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
     float distance_to_code(const uint8_t* code) final override {
         ndis++;
-        return fvec_L2sqr(q, (float*)code, d);
+        return fvec_L2sqr_dispatch(q, (float*)code, d);
     }
 
     float operator()(const idx_t i) final override {
@@ -337,7 +338,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
                 reinterpret_cast<const float*>(codes + i * code_size);
 
         prefetch_L2(l2norms + i);
-        const float dp0 = fvec_inner_product(q, y, d);
+        const float dp0 = fvec_inner_product_dispatch(q, y, d);
         return query_l2norm + l2norms[i] - 2 * dp0;
     }
 
@@ -349,7 +350,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
         prefetch_L2(l2norms + i);
         prefetch_L2(l2norms + j);
-        const float dp0 = fvec_inner_product(yi, yj, d);
+        const float dp0 = fvec_inner_product_dispatch(yi, yj, d);
         return l2norms[i] + l2norms[j] - 2 * dp0;
     }
 
@@ -369,7 +370,7 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
     void set_query(const float* x) override {
         q = x;
-        query_l2norm = fvec_norm_L2sqr(q, d);
+        query_l2norm = fvec_norm_L2sqr_dispatch(q, d);
     }
 
     // compute four distances
@@ -403,7 +404,8 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
         float dp1 = 0;
         float dp2 = 0;
         float dp3 = 0;
-        fvec_inner_product_batch_4(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        fvec_inner_product_batch_4_dispatch(
+                q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
         dis0 = query_l2norm + l2norms[idx0] - 2 * dp0;
         dis1 = query_l2norm + l2norms[idx1] - 2 * dp1;
         dis2 = query_l2norm + l2norms[idx2] - 2 * dp2;
@@ -884,7 +886,7 @@ void IndexFlatPanorama::search_subset(
                         size_t actual_level_width = std::min(
                                 pano.level_width_floats,
                                 d - level * pano.level_width_floats);
-                        float dot_product = fvec_inner_product(
+                        float dot_product = fvec_inner_product_dispatch(
                                 x_ptr, p_ptr, actual_level_width);
                         if constexpr (is_sim) {
                             exact_distance += dot_product;

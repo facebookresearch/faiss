@@ -19,6 +19,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/utils/approx_topk/approx_topk.h>
@@ -693,7 +694,7 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
             for (size_t code2 = 0; code2 < K; code2++) {
                 const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
                 const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
-                float ip = fvec_inner_product(c1, c2, d);
+                float ip = fvec_inner_product_dispatch(c1, c2, d);
                 // binaries[m1, m2, code1, code2] = ip * 2
                 binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
                         ip * 2;
@@ -770,7 +771,7 @@ float LocalSearchQuantizer::evaluate(
             fvec_add(d, decoded_i, c, decoded_i);
         }
 
-        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
+        float err = faiss::fvec_L2sqr_dispatch(x + i * d, decoded_i, d);
         obj += err;
 
         if (objs) {
