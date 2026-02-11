@@ -120,6 +120,7 @@ TEST(SIMDLevel, to_string_all_levels) {
     EXPECT_EQ("AVX512", faiss::to_string(faiss::SIMDLevel::AVX512));
     EXPECT_EQ("AVX512_SPR", faiss::to_string(faiss::SIMDLevel::AVX512_SPR));
     EXPECT_EQ("ARM_NEON", faiss::to_string(faiss::SIMDLevel::ARM_NEON));
+    EXPECT_EQ("ARM_SVE", faiss::to_string(faiss::SIMDLevel::ARM_SVE));
 
     // COUNT should throw
     EXPECT_THROW(
@@ -132,6 +133,7 @@ TEST(SIMDLevel, to_simd_level_all_strings) {
     EXPECT_EQ(faiss::SIMDLevel::AVX512, faiss::to_simd_level("AVX512"));
     EXPECT_EQ(faiss::SIMDLevel::AVX512_SPR, faiss::to_simd_level("AVX512_SPR"));
     EXPECT_EQ(faiss::SIMDLevel::ARM_NEON, faiss::to_simd_level("ARM_NEON"));
+    EXPECT_EQ(faiss::SIMDLevel::ARM_SVE, faiss::to_simd_level("ARM_SVE"));
 
     // Invalid strings should throw
     EXPECT_THROW(faiss::to_simd_level("INVALID"), faiss::FaissException);

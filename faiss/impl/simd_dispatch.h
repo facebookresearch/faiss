@@ -59,6 +59,14 @@ namespace faiss {
 #define DISPATCH_SIMDLevel_ARM_NEON(f, ...)
 #endif
 
+#ifdef COMPILE_SIMD_ARM_SVE
+#define DISPATCH_SIMDLevel_ARM_SVE(f, ...) \
+    case SIMDLevel::ARM_SVE:               \
+        return f<SIMDLevel::ARM_SVE>(__VA_ARGS__)
+#else
+#define DISPATCH_SIMDLevel_ARM_SVE(f, ...)
+#endif
+
 /*********************** Main dispatch macro */
 
 #ifdef FAISS_ENABLE_DD
@@ -72,6 +80,7 @@ namespace faiss {
             DISPATCH_SIMDLevel_AVX512(f, __VA_ARGS__);     \
             DISPATCH_SIMDLevel_AVX512_SPR(f, __VA_ARGS__); \
             DISPATCH_SIMDLevel_ARM_NEON(f, __VA_ARGS__);   \
+            DISPATCH_SIMDLevel_ARM_SVE(f, __VA_ARGS__);    \
         default:                                           \
             FAISS_THROW_MSG("Invalid SIMD level");         \
     }
@@ -85,6 +94,8 @@ namespace faiss {
 #define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::AVX512>(__VA_ARGS__)
 #elif defined(COMPILE_SIMD_AVX2)
 #define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::AVX2>(__VA_ARGS__)
+#elif defined(COMPILE_SIMD_ARM_SVE)
+#define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::ARM_SVE>(__VA_ARGS__)
 #elif defined(COMPILE_SIMD_ARM_NEON)
 #define DISPATCH_SIMDLevel(f, ...) return f<SIMDLevel::ARM_NEON>(__VA_ARGS__)
 #else

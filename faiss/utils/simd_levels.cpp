@@ -19,6 +19,39 @@ SIMDLevel SIMDConfig::level = SIMDLevel::NONE;
 // Bitmask of supported SIMD levels (1 << SIMDLevel)
 uint64_t SIMDConfig::supported_simd_levels = 0;
 
+// ARM SVE runtime detection
+#if defined(__aarch64__) || defined(_M_ARM64)
+
+#if defined(__linux__)
+#include <sys/auxv.h>
+#ifndef HWCAP_SVE
+#define HWCAP_SVE (1 << 22)
+#endif
+
+static bool has_sve() {
+    return (getauxval(AT_HWCAP) & HWCAP_SVE) != 0;
+}
+
+#elif defined(__APPLE__)
+// Apple Silicon does NOT support SVE
+static bool has_sve() {
+    return false;
+}
+
+#else
+// Other aarch64 platforms: conservatively report no SVE
+static bool has_sve() {
+    return false;
+}
+
+#endif // __linux__ / __APPLE__ / other
+
+#else // Not ARM64
+static bool has_sve() {
+    return false;
+}
+#endif
+
 #ifdef FAISS_ENABLE_DD
 
 // =============================================================================
@@ -143,11 +176,17 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     }
 #endif // defined(__x86_64__) && ...
 
-#if defined(__aarch64__) && defined(__ARM_NEON) && \
-        defined(COMPILE_SIMD_ARM_NEON)
+#ifdef COMPILE_SIMD_ARM_NEON
     // ARM NEON is standard on aarch64
     supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::ARM_NEON));
     detected_level = SIMDLevel::ARM_NEON;
+#endif
+
+#ifdef COMPILE_SIMD_ARM_SVE
+    if (has_sve()) {
+        supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::ARM_SVE));
+        detected_level = SIMDLevel::ARM_SVE;
+    }
 #endif
 
     return detected_level;
@@ -217,6 +256,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     return SIMDLevel::AVX512;
 #elif defined(COMPILE_SIMD_AVX2)
     return SIMDLevel::AVX2;
+#elif defined(COMPILE_SIMD_ARM_SVE)
+    return SIMDLevel::ARM_SVE;
 #elif defined(COMPILE_SIMD_ARM_NEON)
     return SIMDLevel::ARM_NEON;
 #else
@@ -247,6 +288,8 @@ std::string to_string(SIMDLevel level) {
             return "AVX512_SPR";
         case SIMDLevel::ARM_NEON:
             return "ARM_NEON";
+        case SIMDLevel::ARM_SVE:
+            return "ARM_SVE";
         case SIMDLevel::COUNT:
         default:
             throw FaissException("Invalid SIMDLevel");
@@ -268,6 +311,9 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "ARM_NEON") {
         return SIMDLevel::ARM_NEON;
+    }
+    if (level_str == "ARM_SVE") {
+        return SIMDLevel::ARM_SVE;
     }
 
     throw FaissException("Invalid SIMD level string: " + level_str);
