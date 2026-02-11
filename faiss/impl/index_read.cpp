@@ -54,6 +54,9 @@
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
@@ -1446,6 +1449,53 @@ Index* read_index(IOReader* f, int io_flags) {
             svs->deserialize_impl(is);
         }
         idx = svs;
+    } else if (
+            h == fourcc("ISIQ") || h == fourcc("ISIL") ||
+            h == fourcc("ISID")) {
+        IndexSVSIVF* svs_ivf = nullptr;
+        if (h == fourcc("ISIQ")) {
+            svs_ivf = new IndexSVSIVFLVQ();
+        } else if (h == fourcc("ISIL")) {
+            svs_ivf = new IndexSVSIVFLeanVec();
+        } else if (h == fourcc("ISID")) {
+            svs_ivf = new IndexSVSIVF();
+        }
+
+        read_index_header(svs_ivf, f);
+        READ1(svs_ivf->num_centroids);
+        READ1(svs_ivf->minibatch_size);
+        READ1(svs_ivf->num_iterations);
+        READ1(svs_ivf->is_hierarchical);
+        READ1(svs_ivf->training_fraction);
+        READ1(svs_ivf->hierarchical_level1_clusters);
+        READ1(svs_ivf->seed);
+        READ1(svs_ivf->n_probes);
+        READ1(svs_ivf->k_reorder);
+        READ1(svs_ivf->num_threads);
+        READ1(svs_ivf->intra_query_threads);
+        READ1(svs_ivf->storage_kind);
+        if (h == fourcc("ISIL")) {
+            READ1(dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf)->leanvec_d);
+        }
+
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs_ivf->deserialize_impl(is);
+        }
+        if (h == fourcc("ISIL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf)
+                        ->deserialize_training_data(is);
+            }
+        }
+        idx = svs_ivf;
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrf")) {

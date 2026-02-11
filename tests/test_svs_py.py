@@ -580,5 +580,287 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         return idx
 
 
+###############################################################################
+# SVS IVF Tests
+###############################################################################
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFAdapter(unittest.TestCase):
+    """Test the FAISS-SVS IVF adapter layer integration"""
+
+    target_class = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSIVF
+
+    def setUp(self):
+        self.d = 32
+        self.nb = 1000
+        self.nq = 100
+        self.nlist = 4
+        np.random.seed(1234)
+        self.xb = np.random.random((self.nb, self.d)).astype('float32')
+        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+
+    def _create_instance(self):
+        return self.target_class(self.d, self.nlist)
+
+    def test_ivf_construction(self):
+        """Test construction and basic properties"""
+        index = self._create_instance()
+        self.assertEqual(index.d, self.d)
+        self.assertFalse(index.is_trained)
+        self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.metric_type, faiss.METRIC_L2)
+
+    def test_ivf_train_add_search(self):
+        """Test FAISS train/add/search interface"""
+        index = self._create_instance()
+
+        # Train first
+        index.train(self.xb)
+        self.assertTrue(index.is_trained)
+
+        # Add more data
+        extra = np.random.random((200, self.d)).astype('float32')
+        index.add(extra)
+
+        # Search
+        k = 4
+        D, I = index.search(self.xq, k)
+        self.assertEqual(D.shape, (self.nq, k))
+        self.assertEqual(I.shape, (self.nq, k))
+
+    def test_ivf_throws_add_without_train(self):
+        """Test that add throws without training"""
+        index = self._create_instance()
+        with self.assertRaises(RuntimeError):
+            index.add(self.xb)
+
+    def test_ivf_serialization(self):
+        """Test serialization round-trip"""
+        index = self._create_instance()
+        index.train(self.xb)
+
+        extra = np.random.random((200, self.d)).astype('float32')
+        index.add(extra)
+
+        D_before, I_before = index.search(self.xq, 4)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+        self.assertIsInstance(loaded, self.target_class)
+        self.assertEqual(loaded.d, self.d)
+        self.assertEqual(loaded.num_centroids, self.nlist)
+
+        D_after, I_after = loaded.search(self.xq, 4)
+        # IVF search may produce different ID orderings for results
+        # at similar distances, so only check distances are close.
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+
+    def test_ivf_remove_ids(self):
+        """Test remove_ids interface"""
+        index = self._create_instance()
+        index.train(self.xb)
+
+        extra = np.random.random((200, self.d)).astype('float32')
+        index.add(extra)
+        before = index.ntotal
+
+        toremove = np.arange(0, 50, dtype=np.int64)
+        sel = faiss.IDSelectorArray(len(toremove), faiss.swig_ptr(toremove))
+        nremoved = index.remove_ids(sel)
+        self.assertEqual(nremoved, len(toremove))
+        self.assertEqual(index.ntotal, before - nremoved)
+
+    def test_ivf_reset(self):
+        """Test reset clears the index"""
+        index = self._create_instance()
+        index.train(self.xb)
+
+        extra = np.random.random((100, self.d)).astype('float32')
+        index.add(extra)
+        self.assertGreater(index.ntotal, 0)
+
+        index.reset()
+        self.assertEqual(index.ntotal, 0)
+        self.assertFalse(index.is_trained)
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFAdapterFP16(TestSVSIVFAdapter):
+    """Repeat IVF tests for FP16 variant"""
+    def _create_instance(self):
+        return self.target_class(self.d, self.nlist, faiss.METRIC_L2,
+                                 faiss.SVS_FP16)
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFAdapterSQI8(TestSVSIVFAdapter):
+    """Repeat IVF tests for SQI8 variant"""
+    def _create_instance(self):
+        return self.target_class(self.d, self.nlist, faiss.METRIC_L2,
+                                 faiss.SVS_SQI8)
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSIVFAdapterLVQ4x4(TestSVSIVFAdapter):
+    """Repeat IVF tests for LVQ4x4 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSIVFLVQ
+
+    def _create_instance(self):
+        idx = self.target_class(self.d, self.nlist)
+        idx.storage_kind = faiss.SVS_LVQ4x4
+        return idx
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSIVFAdapterLVQ4x8(TestSVSIVFAdapter):
+    """Repeat IVF tests for LVQ4x8 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSIVFLVQ
+
+    def _create_instance(self):
+        idx = self.target_class(self.d, self.nlist)
+        idx.storage_kind = faiss.SVS_LVQ4x8
+        return idx
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSIVFAdapterLeanVec4x4(TestSVSIVFAdapter):
+    """Repeat IVF tests for LeanVec4x4 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSIVFLeanVec
+
+    def _create_instance(self):
+        return self.target_class(
+            self.d, self.nlist, faiss.METRIC_L2, 0,
+            faiss.SVS_LeanVec4x4)
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFFactory(unittest.TestCase):
+    """Test SVS IVF factory strings"""
+
+    def test_svs_factory_ivf(self):
+        index = faiss.index_factory(32, "SVSIVF4")
+        self.assertEqual(index.d, 32)
+        self.assertIsInstance(index, faiss.IndexSVSIVF)
+        self.assertEqual(index.num_centroids, 4)
+        self.assertEqual(index.storage_kind, faiss.SVS_FP32)
+
+    def test_svs_factory_ivf_fp16(self):
+        index = faiss.index_factory(32, "SVSIVF4,FP16")
+        self.assertEqual(index.d, 32)
+        self.assertIsInstance(index, faiss.IndexSVSIVF)
+        self.assertEqual(index.storage_kind, faiss.SVS_FP16)
+
+    def test_svs_factory_ivf_sqi8(self):
+        index = faiss.index_factory(64, "SVSIVF8,SQI8")
+        self.assertEqual(index.d, 64)
+        self.assertIsInstance(index, faiss.IndexSVSIVF)
+        self.assertEqual(index.storage_kind, faiss.SVS_SQI8)
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSIVFFactoryLVQLeanVec(unittest.TestCase):
+    """Test SVS IVF factory strings for LVQ and LeanVec"""
+
+    def test_svs_factory_ivf_lvq(self):
+        index = faiss.index_factory(16, "SVSIVF4,LVQ4x8")
+        self.assertEqual(index.d, 16)
+        self.assertIsInstance(index, faiss.IndexSVSIVFLVQ)
+        self.assertEqual(index.storage_kind, faiss.SVS_LVQ4x8)
+
+    def test_svs_factory_ivf_leanvec(self):
+        index = faiss.index_factory(128, "SVSIVF8,LeanVec4x4_64")
+        self.assertEqual(index.d, 128)
+        self.assertIsInstance(index, faiss.IndexSVSIVFLeanVec)
+        self.assertEqual(index.storage_kind, faiss.SVS_LeanVec4x4)
+        self.assertEqual(index.leanvec_d, 64)
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFParameters(unittest.TestCase):
+    """Test IVF-specific parameter forwarding and persistence."""
+
+    def setUp(self):
+        self.d = 32
+        self.nb = 500
+        self.nq = 50
+        self.nlist = 4
+        np.random.seed(1234)
+        self.xb = np.random.random((self.nb, self.d)).astype('float32')
+        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+
+    def test_ivf_parameter_setting(self):
+        """Test that IVF parameters can be set and retrieved"""
+        index = faiss.IndexSVSIVF(self.d, self.nlist)
+
+        index.num_centroids = 8
+        index.n_probes = 4
+        index.k_reorder = 2.0
+        index.num_iterations = 20
+        index.minibatch_size = 512
+        index.seed = 99
+
+        self.assertEqual(index.num_centroids, 8)
+        self.assertEqual(index.n_probes, 4)
+        self.assertAlmostEqual(index.k_reorder, 2.0, places=6)
+        self.assertEqual(index.num_iterations, 20)
+        self.assertEqual(index.minibatch_size, 512)
+        self.assertEqual(index.seed, 99)
+
+    def test_ivf_parameter_defaults(self):
+        """Test that IVF parameters have correct default values"""
+        index = faiss.IndexSVSIVF(self.d, self.nlist)
+
+        self.assertEqual(index.num_centroids, self.nlist)
+        self.assertEqual(index.n_probes, 10)
+        self.assertAlmostEqual(index.k_reorder, 1.0, places=6)
+        self.assertEqual(index.num_iterations, 10)
+        self.assertEqual(index.minibatch_size, 256)
+        self.assertEqual(index.seed, 42)
+
+    def test_ivf_parameter_serialization(self):
+        """Test that IVF parameters are preserved through serialization"""
+        index = faiss.IndexSVSIVF(self.d, self.nlist)
+
+        index.n_probes = 5
+        index.k_reorder = 3.0
+        index.num_iterations = 15
+        index.minibatch_size = 128
+        index.seed = 77
+
+        # Train and add
+        index.train(self.xb)
+        extra = np.random.random((100, self.d)).astype('float32')
+        index.add(extra)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(index))
+
+        self.assertIsInstance(loaded, faiss.IndexSVSIVF)
+        self.assertEqual(loaded.num_centroids, self.nlist)
+        self.assertEqual(loaded.n_probes, 5)
+        self.assertAlmostEqual(loaded.k_reorder, 3.0, places=6)
+        self.assertEqual(loaded.num_iterations, 15)
+        self.assertEqual(loaded.minibatch_size, 128)
+        self.assertEqual(loaded.seed, 77)
+
+        D_before, I_before = index.search(self.xq, 4)
+        D_after, I_after = loaded.search(self.xq, 4)
+        # IVF search may produce different ID orderings for results
+        # at similar distances, so only check distances are close.
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
+
+
 if __name__ == '__main__':
     unittest.main()

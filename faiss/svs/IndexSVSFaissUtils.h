@@ -52,6 +52,8 @@ inline namespace v0 {
 struct FlatIndex;
 struct VamanaIndex;
 struct DynamicVamanaIndex;
+struct IVFIndex;
+struct DynamicIVFIndex;
 struct LeanVecTrainingData;
 } // namespace v0
 } // namespace runtime
