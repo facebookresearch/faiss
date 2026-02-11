@@ -136,6 +136,7 @@ _SIMD_LEVEL_NAMES = {
     faiss.SIMDLevel_AVX512: "AVX512",
     faiss.SIMDLevel_AVX512_SPR: "AVX512_SPR",
     faiss.SIMDLevel_ARM_NEON: "ARM_NEON",
+    faiss.SIMDLevel_ARM_SVE: "ARM_SVE",
 }
 
 

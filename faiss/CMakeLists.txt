@@ -17,11 +17,14 @@ set(FAISS_SIMD_AVX512_SRC
 set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/distances_aarch64.cpp
 )
+set(FAISS_SIMD_SVE_SRC
+  utils/simd_impl/distances_arm_sve.cpp
+)
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
-  set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC})
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 else()
   set(FAISS_SIMD_SRC "")
 endif()
@@ -423,7 +426,12 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
-      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
+      # Per-file SVE flags (NEON needs no flags on aarch64)
+      set_source_files_properties(${FAISS_SIMD_SVE_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
+      )
     endif()
   endif()
 endif()
