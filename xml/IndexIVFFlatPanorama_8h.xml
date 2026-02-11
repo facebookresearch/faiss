@@ -128,7 +128,7 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
@@ -143,7 +143,7 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="36">
+      <node id="37">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="20" relation="include">
@@ -152,7 +152,7 @@
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -184,7 +184,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="28">
@@ -218,6 +218,8 @@
         </childnode>
         <childnode refid="28" relation="include">
         </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
       </node>
       <node id="34">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -230,6 +232,16 @@
         </childnode>
       </node>
       <node id="35">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
         <label>algorithm</label>
       </node>
       <node id="32">
@@ -262,7 +274,7 @@
       <node id="33">
         <label>limits</label>
       </node>
-      <node id="37">
+      <node id="38">
         <label>memory</label>
       </node>
       <node id="2">

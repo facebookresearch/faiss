@@ -45,9 +45,9 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -99,6 +99,8 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
       <node id="20">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -111,6 +113,16 @@
         </childnode>
       </node>
       <node id="21">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
         <label>algorithm</label>
       </node>
       <node id="17">
@@ -122,7 +134,7 @@
       <node id="15">
         <label>cmath</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>cstddef</label>
       </node>
       <node id="3">
@@ -142,6 +154,9 @@
       </node>
       <node id="12">
         <label>stdint.h</label>
+      </node>
+      <node id="22">
+        <label>string</label>
       </node>
       <node id="7">
         <label>unordered_set</label>

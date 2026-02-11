@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="55" column="22" bodyfile="faiss/utils/simd_levels.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/utils/simd_levels.h" line="56" column="22" bodyfile="faiss/utils/simd_levels.h" bodystart="56" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" prot="public" static="yes" mutable="no">
         <type>uint64_t</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="58" column="21" bodyfile="faiss/utils/simd_levels.h" bodystart="58" bodyend="-1"/>
+        <location file="faiss/utils/simd_levels.h" line="59" column="21" bodyfile="faiss/utils/simd_levels.h" bodystart="59" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="60" column="22"/>
+        <location file="faiss/utils/simd_levels.h" line="61" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="65" column="17"/>
+        <location file="faiss/utils/simd_levels.h" line="66" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a90c13d194c6ce46da285958431f95088" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="66" column="22"/>
+        <location file="faiss/utils/simd_levels.h" line="67" column="22"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1af84f73c7ca9fb6657c270d2743da3e07" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="67" column="24"/>
+        <location file="faiss/utils/simd_levels.h" line="68" column="24"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -113,7 +113,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="70" column="17"/>
+        <location file="faiss/utils/simd_levels.h" line="71" column="17"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -128,7 +128,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="76" column="22"/>
+        <location file="faiss/utils/simd_levels.h" line="77" column="22"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="62" column="5"/>
+        <location file="faiss/utils/simd_levels.h" line="63" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -170,7 +170,7 @@
 </listitem></itemizedlist>
 </para>
     </detaileddescription>
-    <location file="faiss/utils/simd_levels.h" line="54" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="54" bodyend="77"/>
+    <location file="faiss/utils/simd_levels.h" line="55" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="55" bodyend="78"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SIMDConfig_1a37dc9382bb32ae1da760d67807a930a5" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>auto_detect_simd_level</name></member>
       <member refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" prot="public" virt="non-virtual"><scope>faiss::SIMDConfig</scope><name>get_dispatched_level</name></member>

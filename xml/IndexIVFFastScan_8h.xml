@@ -54,9 +54,9 @@
         <link refid="IndexIVFFastScan_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
         <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -103,7 +103,7 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/impl/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
         <childnode refid="18" relation="include">
@@ -130,7 +130,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
@@ -145,7 +145,7 @@
         <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="35">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="18" relation="include">
@@ -154,7 +154,7 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
@@ -174,7 +174,7 @@
         <link refid="DirectMap_8h_source"/>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -186,10 +186,10 @@
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
-      <node id="38">
+      <node id="39">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
         <childnode refid="30" relation="include">
@@ -200,7 +200,7 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -236,6 +236,8 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
       </node>
       <node id="32">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -248,6 +250,16 @@
         </childnode>
       </node>
       <node id="33">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
         <label>algorithm</label>
       </node>
       <node id="30">
@@ -280,7 +292,7 @@
       <node id="31">
         <label>limits</label>
       </node>
-      <node id="35">
+      <node id="36">
         <label>memory</label>
       </node>
       <node id="3">
@@ -289,7 +301,7 @@
       <node id="13">
         <label>string</label>
       </node>
-      <node id="36">
+      <node id="37">
         <label>unordered_map</label>
       </node>
       <node id="20">

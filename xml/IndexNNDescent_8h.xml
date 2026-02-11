@@ -47,9 +47,9 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -104,22 +104,22 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="35">
         <label>faiss/impl/NNDescent.h</label>
         <link refid="NNDescent_8h_source"/>
-        <childnode refid="33" relation="include">
-        </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="37" relation="include">
         </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
         <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -129,7 +129,7 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
       </node>
       <node id="21">
@@ -143,7 +143,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
@@ -213,6 +213,8 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
       </node>
       <node id="32">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -224,20 +226,30 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="40">
         <label>faiss/utils/random.h</label>
         <link refid="random_8h_source"/>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
       </node>
-      <node id="40">
+      <node id="33">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="41" relation="include">
+        <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -248,7 +260,7 @@
         <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="33">
+      <node id="34">
         <label>algorithm</label>
       </node>
       <node id="30">
@@ -284,19 +296,19 @@
       <node id="20">
         <label>memory</label>
       </node>
-      <node id="35">
+      <node id="36">
         <label>mutex</label>
       </node>
-      <node id="38">
+      <node id="39">
         <label>omp.h</label>
       </node>
-      <node id="36">
+      <node id="37">
         <label>queue</label>
       </node>
-      <node id="37">
+      <node id="38">
         <label>random</label>
       </node>
-      <node id="41">
+      <node id="42">
         <label>set</label>
       </node>
       <node id="26">

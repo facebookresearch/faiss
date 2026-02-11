@@ -138,7 +138,7 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -153,7 +153,7 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="35">
+      <node id="36">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="16" relation="include">
@@ -162,7 +162,7 @@
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
@@ -182,7 +182,7 @@
         <link refid="DirectMap_8h_source"/>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
       </node>
       <node id="23">
@@ -194,7 +194,7 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
       <node id="27">
@@ -228,6 +228,8 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="33">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -240,6 +242,16 @@
         </childnode>
       </node>
       <node id="34">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
         <label>algorithm</label>
       </node>
       <node id="31">
@@ -272,7 +284,7 @@
       <node id="32">
         <label>limits</label>
       </node>
-      <node id="36">
+      <node id="37">
         <label>memory</label>
       </node>
       <node id="19">
@@ -281,7 +293,7 @@
       <node id="12">
         <label>string</label>
       </node>
-      <node id="37">
+      <node id="38">
         <label>unordered_map</label>
       </node>
       <node id="21">

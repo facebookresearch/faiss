@@ -32,7 +32,7 @@
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"></highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>horizontal_sum(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>v)<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>v)<sp/>{</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>v0<sp/>=<sp/>_mm_shuffle_ps(v,<sp/>v,<sp/>_MM_SHUFFLE(0,<sp/>0,<sp/>3,<sp/>2));</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>v1<sp/>=<sp/>_mm_add_ps(v,<sp/>v0);</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v2<sp/>=<sp/>_mm_shuffle_ps(v1,<sp/>v1,<sp/>_MM_SHUFFLE(0,<sp/>0,<sp/>0,<sp/>1));</highlight></codeline>
@@ -41,10 +41,10 @@
 <codeline lineno="32"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Computes<sp/>a<sp/>horizontal<sp/>sum<sp/>over<sp/>an<sp/>__m256<sp/>register</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>horizontal_sum(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m256<sp/>v)<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m256<sp/>v)<sp/>{</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>__m128<sp/>v0<sp/>=</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm_add_ps(_mm256_castps256_ps128(v),<sp/>_mm256_extractf128_ps(v,<sp/>1));</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>horizontal_sum(v0);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(v0);</highlight></codeline>
 <codeline lineno="39"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
 <codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">//<sp/>processes<sp/>a<sp/>single<sp/>code<sp/>for<sp/>M=4,<sp/>ksub=256,<sp/>nbits=8</highlight><highlight class="normal"></highlight></codeline>
@@ -83,7 +83,7 @@
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"></highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/>horizontal_sum(partialSum);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSum);</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="79"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"></highlight></codeline>
@@ -123,7 +123,7 @@
 <codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"></highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/>horizontal_sum(partialSum);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSum);</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="119"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"></highlight></codeline>
@@ -178,10 +178,10 @@
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"></highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>result0<sp/>=<sp/>horizontal_sum(partialSums[0]);</highlight></codeline>
-<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>result1<sp/>=<sp/>horizontal_sum(partialSums[1]);</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>result2<sp/>=<sp/>horizontal_sum(partialSums[2]);</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>result3<sp/>=<sp/>horizontal_sum(partialSums[3]);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>result0<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[0]);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>result1<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[1]);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>result2<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[2]);</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>result3<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[3]);</highlight></codeline>
 <codeline lineno="176"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="177"><highlight class="normal"></highlight></codeline>
 <codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment">//<sp/>processes<sp/>four<sp/>codes<sp/>for<sp/>M=8,<sp/>ksub=256,<sp/>nbits=8</highlight><highlight class="normal"></highlight></codeline>
@@ -235,10 +235,10 @@
 <codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="227"><highlight class="normal"></highlight></codeline>
 <codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/>result0<sp/>=<sp/>horizontal_sum(partialSums[0]);</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>result1<sp/>=<sp/>horizontal_sum(partialSums[1]);</highlight></codeline>
-<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/>result2<sp/>=<sp/>horizontal_sum(partialSums[2]);</highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/>result3<sp/>=<sp/>horizontal_sum(partialSums[3]);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/>result0<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[0]);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>result1<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[1]);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/>result2<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[2]);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/>result3<sp/>=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[3]);</highlight></codeline>
 <codeline lineno="233"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="234"><highlight class="normal"></highlight></codeline>
 <codeline lineno="235"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
@@ -338,7 +338,7 @@
 <codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="330"><highlight class="normal"></highlight></codeline>
 <codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>+=<sp/>horizontal_sum(partialSum);</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>+=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSum);</highlight></codeline>
 <codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="334"><highlight class="normal"></highlight></codeline>
 <codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
@@ -515,10 +515,10 @@
 <codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="507"><highlight class="normal"></highlight></codeline>
 <codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>horizontal<sp/>sum<sp/>for<sp/>partialSum</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result0<sp/>+=<sp/>horizontal_sum(partialSums[0]);</highlight></codeline>
-<codeline lineno="510"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result1<sp/>+=<sp/>horizontal_sum(partialSums[1]);</highlight></codeline>
-<codeline lineno="511"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result2<sp/>+=<sp/>horizontal_sum(partialSums[2]);</highlight></codeline>
-<codeline lineno="512"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result3<sp/>+=<sp/>horizontal_sum(partialSums[3]);</highlight></codeline>
+<codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result0<sp/>+=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[0]);</highlight></codeline>
+<codeline lineno="510"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result1<sp/>+=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[1]);</highlight></codeline>
+<codeline lineno="511"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result2<sp/>+=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[2]);</highlight></codeline>
+<codeline lineno="512"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result3<sp/>+=<sp/><ref refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kindref="member">horizontal_sum</ref>(partialSums[3]);</highlight></codeline>
 <codeline lineno="513"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="514"><highlight class="normal"></highlight></codeline>
 <codeline lineno="515"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>

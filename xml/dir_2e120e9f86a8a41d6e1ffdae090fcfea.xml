@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_2e120e9f86a8a41d6e1ffdae090fcfea" kind="dir">
+    <compoundname>faiss/utils/simd_impl</compoundname>
+    <innerfile refid="distances__autovec-inl_8h">distances_autovec-inl.h</innerfile>
+    <innerfile refid="distances__sse-inl_8h">distances_sse-inl.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/simd_impl/"/>
+  </compounddef>
+</doxygen>

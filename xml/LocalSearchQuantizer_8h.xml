@@ -70,7 +70,7 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
       </node>
       <node id="21">
@@ -132,7 +132,7 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -146,7 +146,7 @@
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
@@ -161,7 +161,7 @@
         <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="2" relation="include">
@@ -222,6 +222,8 @@
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
       <node id="35">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -233,12 +235,22 @@
         <childnode refid="34" relation="include">
         </childnode>
       </node>
-      <node id="38">
+      <node id="36">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
@@ -249,7 +261,7 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="36">
+      <node id="37">
         <label>algorithm</label>
       </node>
       <node id="33">
@@ -288,7 +300,7 @@
       <node id="3">
         <label>random</label>
       </node>
-      <node id="39">
+      <node id="40">
         <label>set</label>
       </node>
       <node id="2">

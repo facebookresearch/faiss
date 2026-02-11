@@ -485,11 +485,11 @@
         </childnode>
         <childnode refid="48" relation="include">
         </childnode>
-        <childnode refid="69" relation="include">
-        </childnode>
         <childnode refid="70" relation="include">
         </childnode>
-        <childnode refid="71" relation="include">
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="74" relation="include">
         </childnode>
       </node>
       <node id="51">
@@ -517,6 +517,16 @@
         </childnode>
         <childnode refid="68" relation="include">
         </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="72" relation="include">
+        </childnode>
+      </node>
+      <node id="68">
+        <label>faiss/utils/distances_dispatch.h</label>
+        <link refid="distances__dispatch_8h"/>
+        <childnode refid="69" relation="include">
+        </childnode>
       </node>
       <node id="46">
         <label>faiss/utils/distances_fused/avx512.h</label>
@@ -530,17 +540,17 @@
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="68">
+      <node id="69">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
-        <childnode refid="69" relation="include">
+        <childnode refid="70" relation="include">
         </childnode>
       </node>
-      <node id="69">
+      <node id="70">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="70">
+      <node id="73">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>
@@ -551,6 +561,14 @@
         </childnode>
       </node>
       <node id="71">
+        <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
+        <link refid="distances__autovec-inl_8h_source"/>
+      </node>
+      <node id="72">
+        <label>faiss/utils/simd_impl/distances_sse-inl.h</label>
+        <link refid="distances__sse-inl_8h_source"/>
+      </node>
+      <node id="74">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="36" relation="include">

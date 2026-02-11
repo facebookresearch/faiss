@@ -62,20 +62,20 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="37">
+      <node id="38">
         <label>faiss/gpu/GpuIndex.h</label>
         <link refid="GpuIndex_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
       </node>
-      <node id="41">
+      <node id="42">
         <label>faiss/gpu/GpuIndexFlat.h</label>
         <link refid="GpuIndexFlat_8h_source"/>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -85,29 +85,29 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="42" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/gpu/GpuIndicesOptions.h</label>
         <link refid="GpuIndicesOptions_8h_source"/>
       </node>
-      <node id="38">
+      <node id="39">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
-        <childnode refid="39" relation="include">
-        </childnode>
         <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -169,7 +169,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -184,7 +184,7 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="35">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="16" relation="include">
@@ -193,7 +193,7 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -213,7 +213,7 @@
         <link refid="DirectMap_8h_source"/>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
       </node>
       <node id="22">
@@ -225,7 +225,7 @@
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -259,6 +259,8 @@
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
       </node>
       <node id="32">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -271,6 +273,16 @@
         </childnode>
       </node>
       <node id="33">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
         <label>algorithm</label>
       </node>
       <node id="30">
@@ -297,10 +309,10 @@
       <node id="29">
         <label>cstring</label>
       </node>
-      <node id="39">
+      <node id="40">
         <label>cublas_v2.h</label>
       </node>
-      <node id="40">
+      <node id="41">
         <label>cuda_runtime.h</label>
       </node>
       <node id="10">
@@ -309,7 +321,7 @@
       <node id="31">
         <label>limits</label>
       </node>
-      <node id="35">
+      <node id="36">
         <label>memory</label>
       </node>
       <node id="18">
@@ -318,7 +330,7 @@
       <node id="11">
         <label>string</label>
       </node>
-      <node id="36">
+      <node id="37">
         <label>unordered_map</label>
       </node>
       <node id="20">

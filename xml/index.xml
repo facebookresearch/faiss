@@ -761,6 +761,14 @@
     <member refid="structfaiss_1_1DummyScaler_1ac4deed4d5d2451bb1e6f9e44588233e0" kind="function"><name>scale_hi</name></member>
     <member refid="structfaiss_1_1DummyScaler_1a45e9d0604809f99d8ae379772e73e717" kind="function"><name>scale_one</name></member>
   </compound>
+  <compound refid="structfaiss_1_1ElementOpIP" kind="struct"><name>faiss::ElementOpIP</name>
+    <member refid="structfaiss_1_1ElementOpIP_1a77edc45f520113e9320b27ded5a83ba0" kind="function"><name>op</name></member>
+    <member refid="structfaiss_1_1ElementOpIP_1aca13b052e6158eff7924d64f4603b5c2" kind="function"><name>op</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1ElementOpL2" kind="struct"><name>faiss::ElementOpL2</name>
+    <member refid="structfaiss_1_1ElementOpL2_1a750c53f2953a47d117816dd1aaab3b74" kind="function"><name>op</name></member>
+    <member refid="structfaiss_1_1ElementOpL2_1adb796f06b11c61aed1fcdf1e60529236" kind="function"><name>op</name></member>
+  </compound>
   <compound refid="structfaiss_1_1nn_1_1Embedding" kind="struct"><name>faiss::nn::Embedding</name>
     <member refid="structfaiss_1_1nn_1_1Embedding_1ae5235f1074d366e1947a4668ad43d069" kind="variable"><name>num_embeddings</name></member>
     <member refid="structfaiss_1_1nn_1_1Embedding_1a227ca3484ff7304a34734290f42bb59a" kind="variable"><name>embedding_dim</name></member>
@@ -11469,6 +11477,7 @@
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9ea5f8acb5068c8c8db7b2a4069bd17d9fd" kind="enumvalue"><name>AVX512</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9ea27585dbcf3129631e802e670cecd1177" kind="enumvalue"><name>AVX512_SPR</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9ea368ac0bda5a399d5046dbb1c746ad22d" kind="enumvalue"><name>ARM_NEON</name></member>
+    <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9eaa0aab35213072a00b15efaf69314067a" kind="enumvalue"><name>ARM_SVE</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9ea4905ac9d6a22bdfc1ae096094ce6248d" kind="enumvalue"><name>COUNT</name></member>
     <member refid="namespacefaiss_1a33b1dcce3a5a4c296a1f4553c3299ddd" kind="typedef"><name>ResultHandler</name></member>
     <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
@@ -11611,18 +11620,30 @@
     <member refid="namespacefaiss_1a14b8c774f4115b66556dc772d2cafe43" kind="function"><name>encode_bf16</name></member>
     <member refid="namespacefaiss_1a824108d159d2fb71164979e93363c6dc" kind="function"><name>decode_bf16</name></member>
     <member refid="namespacefaiss_1a7466bd32de31640860393a701eaac5ad" kind="function"><name>fvec_L2sqr</name></member>
+    <member refid="namespacefaiss_1a4e3cf344791b237d4d22cf7c31d056cd" kind="function"><name>fvec_L2sqr</name></member>
     <member refid="namespacefaiss_1af6490f0d832462623e19a96481daeef5" kind="function"><name>fvec_inner_product</name></member>
+    <member refid="namespacefaiss_1ae09c34cb8ebc18bce6c99ef15e8e8664" kind="function"><name>fvec_inner_product</name></member>
     <member refid="namespacefaiss_1ab43fbb711cebede63ce85090fcc2b4b7" kind="function"><name>fvec_L1</name></member>
+    <member refid="namespacefaiss_1a7055e33bce2c7aa167c93351d257c757" kind="function"><name>fvec_L1</name></member>
     <member refid="namespacefaiss_1a31e28b5857d1df465e0b7c4785989d86" kind="function"><name>fvec_Linf</name></member>
+    <member refid="namespacefaiss_1a0dc0668bded7b8fd29f708f1dcd08f76" kind="function"><name>fvec_Linf</name></member>
     <member refid="namespacefaiss_1a827e08342f8d0e636e050619a15564b4" kind="function"><name>fvec_inner_product_batch_4</name></member>
+    <member refid="namespacefaiss_1a5ff94f22db19307fdb2bbcacdaec3ebc" kind="function"><name>fvec_inner_product_batch_4</name></member>
     <member refid="namespacefaiss_1a3494288e2aad7b1c41d0b7ef576251a8" kind="function"><name>fvec_L2sqr_batch_4</name></member>
+    <member refid="namespacefaiss_1a70306506b5d9474c1223b5aa5d383a83" kind="function"><name>fvec_L2sqr_batch_4</name></member>
     <member refid="namespacefaiss_1ac7a976807ce755fe82dde95efaecaf99" kind="function"><name>pairwise_L2sqr</name></member>
     <member refid="namespacefaiss_1a1f0c0270de04cc395edd3d2823d0128d" kind="function"><name>fvec_inner_products_ny</name></member>
+    <member refid="namespacefaiss_1a14721cb28e19e0af5473c70c230400fa" kind="function"><name>fvec_inner_products_ny</name></member>
     <member refid="namespacefaiss_1a4ca22849311a991b72676be10315e2af" kind="function"><name>fvec_L2sqr_ny</name></member>
+    <member refid="namespacefaiss_1a3c7a55e69f4dca4f8a0eaaed7001b1e5" kind="function"><name>fvec_L2sqr_ny</name></member>
     <member refid="namespacefaiss_1a44aac89768a76f72a4205264194f6505" kind="function"><name>fvec_L2sqr_ny_transposed</name></member>
+    <member refid="namespacefaiss_1a93d31085e59293a242dc31c00831bf8c" kind="function"><name>fvec_L2sqr_ny_transposed</name></member>
     <member refid="namespacefaiss_1a8fb5a079795e3aa9e1afa3674de43da5" kind="function"><name>fvec_L2sqr_ny_nearest</name></member>
+    <member refid="namespacefaiss_1a82ceb847a5970ac70583e7154e411f3c" kind="function"><name>fvec_L2sqr_ny_nearest</name></member>
     <member refid="namespacefaiss_1a1bc40dd030e214216a985c696771cfc0" kind="function"><name>fvec_L2sqr_ny_nearest_y_transposed</name></member>
+    <member refid="namespacefaiss_1a74be3b51c2fd93618f3119aca18fde24" kind="function"><name>fvec_L2sqr_ny_nearest_y_transposed</name></member>
     <member refid="namespacefaiss_1a7a49180ebf10e643217bbce5862c7f84" kind="function"><name>fvec_norm_L2sqr</name></member>
+    <member refid="namespacefaiss_1a7b0c798605790b43e6f61a13d9e7e925" kind="function"><name>fvec_norm_L2sqr</name></member>
     <member refid="namespacefaiss_1a043de43abbfd0d169e609fffbdf8886b" kind="function"><name>fvec_norms_L2</name></member>
     <member refid="namespacefaiss_1aa3efb3d72f4cca424c19ac96c1b34754" kind="function"><name>fvec_norms_L2sqr</name></member>
     <member refid="namespacefaiss_1a1d81952ec447e6886d2fd3b930fdc096" kind="function"><name>fvec_renorm_L2</name></member>
@@ -11644,7 +11665,23 @@
     <member refid="namespacefaiss_1aa96f47c4109ec93b1f55f8e932ebe329" kind="function"><name>range_search_inner_product</name></member>
     <member refid="namespacefaiss_1a6bae4e24e73c75640d6db8760e513d6d" kind="function"><name>compute_PQ_dis_tables_dsub2</name></member>
     <member refid="namespacefaiss_1a40328c31abd0bbba5bd95d7de951e847" kind="function"><name>fvec_madd</name></member>
+    <member refid="namespacefaiss_1a29753cc2772af16343641e63d0cd6ebc" kind="function"><name>fvec_madd</name></member>
     <member refid="namespacefaiss_1a9da63b8bb84460f5e8ccf8e17622cc7a" kind="function"><name>fvec_madd_and_argmin</name></member>
+    <member refid="namespacefaiss_1a6a87cbe5f48bc8e8d43eeb123c3e3706" kind="function"><name>fvec_madd_and_argmin</name></member>
+    <member refid="namespacefaiss_1aa5e841c092ed5a4c19640bd0689e44e2" kind="function"><name>fvec_L1_dispatch</name></member>
+    <member refid="namespacefaiss_1a598c8925169d83f2172ce5a00b7d7e90" kind="function"><name>fvec_Linf_dispatch</name></member>
+    <member refid="namespacefaiss_1a6d00a54eac79e09b75ced1d2a5c470ad" kind="function"><name>fvec_norm_L2sqr_dispatch</name></member>
+    <member refid="namespacefaiss_1a71b4be46871a31f30e043b32ebcaa674" kind="function"><name>fvec_L2sqr_dispatch</name></member>
+    <member refid="namespacefaiss_1a7e63debf8c96a6212e30cedb1c495eb6" kind="function"><name>fvec_inner_product_dispatch</name></member>
+    <member refid="namespacefaiss_1a429c535fbedf1e7db8626bbf098a7114" kind="function"><name>fvec_inner_product_batch_4_dispatch</name></member>
+    <member refid="namespacefaiss_1a626aee5b2b6f45c6b0b4fd433abed050" kind="function"><name>fvec_L2sqr_batch_4_dispatch</name></member>
+    <member refid="namespacefaiss_1af29f2312199d870a4bdc3e7e1ef33c81" kind="function"><name>fvec_L2sqr_ny_transposed_dispatch</name></member>
+    <member refid="namespacefaiss_1a171dea7d233653e2d816cac501a31eba" kind="function"><name>fvec_inner_products_ny_dispatch</name></member>
+    <member refid="namespacefaiss_1a12cad206925d025aba21c4468892c092" kind="function"><name>fvec_L2sqr_ny_dispatch</name></member>
+    <member refid="namespacefaiss_1af0dcd6f615f268189216cfba6475eae4" kind="function"><name>fvec_L2sqr_ny_nearest_dispatch</name></member>
+    <member refid="namespacefaiss_1a989473e42d5c7a83a38a837e2d95c5b7" kind="function"><name>fvec_L2sqr_ny_nearest_y_transposed_dispatch</name></member>
+    <member refid="namespacefaiss_1ade54b858872b6b91f4b3c75be55e7dc7" kind="function"><name>fvec_madd_dispatch</name></member>
+    <member refid="namespacefaiss_1a196017a664685e3c7bef0dabf2419f5a" kind="function"><name>fvec_madd_and_argmin_dispatch</name></member>
     <member refid="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
     <member refid="namespacefaiss_1af795517ea8f2270421341a93eb528c52" kind="function"><name>dispatch_VectorDistance</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
@@ -11736,6 +11773,29 @@
     <member refid="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900" kind="function"><name>rand_perm</name></member>
     <member refid="namespacefaiss_1a7f900e002856f3db2295abd9d429369e" kind="function"><name>rand_perm_splitmix64</name></member>
     <member refid="namespacefaiss_1a62eb905cf4895b293b0d10b3af2c8df6" kind="function"><name>rand_smooth_vectors</name></member>
+    <member refid="namespacefaiss_1afb2d831ab55abea70afbc36d5ea06ed8" kind="function"><name>fvec_norm_L2sqr&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a04ca31c2517e5af2b6f19b2668ebd25d" kind="function"><name>fvec_L2sqr&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a9aac8163b4d2241bf27b9e16004e5c9e" kind="function"><name>fvec_inner_product&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a6676e98963d49e3b5ebc11ea490d5dde" kind="function"><name>fvec_L1&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a5b8acc991c2a6c0b112f8e7380bcdbcd" kind="function"><name>fvec_Linf&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a5a3e1187ea7104e3438e65a07bbd3a49" kind="function"><name>fvec_inner_product_batch_4&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a185351799d071d6324a616bd6da88f61" kind="function"><name>fvec_L2sqr_batch_4&lt; AUTOVEC_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a5e7d81d1123f3b7a4a074bb5d436e3c9" kind="function"><name>fvec_madd_sse</name></member>
+    <member refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kind="function"><name>horizontal_sum</name></member>
+    <member refid="namespacefaiss_1a8fd99e0b2406d63dc9e26d5ea62ada10" kind="function"><name>fvec_op_ny_D1</name></member>
+    <member refid="namespacefaiss_1ab299eedd0a746f03f21a7e1025e5f268" kind="function"><name>fvec_op_ny_D2</name></member>
+    <member refid="namespacefaiss_1af041f1583f04045562330e92226d4593" kind="function"><name>fvec_op_ny_D4</name></member>
+    <member refid="namespacefaiss_1a09b6e8562ebff1e886dca05fe35ee6c0" kind="function"><name>fvec_op_ny_D8</name></member>
+    <member refid="namespacefaiss_1a0e833f7b9d74ede78b52111369d33ccf" kind="function"><name>fvec_op_ny_D12</name></member>
+    <member refid="namespacefaiss_1afab02e410b1705821f36952a1a1cb222" kind="function"><name>fvec_inner_products_ny_ref</name></member>
+    <member refid="namespacefaiss_1aef3266490f57f9ff0ae5c89bf119afec" kind="function"><name>fvec_L2sqr_ny_ref</name></member>
+    <member refid="namespacefaiss_1a0c9db549d925d880d6191f310831ea78" kind="function"><name>fvec_L2sqr_ny_nearest_D2</name></member>
+    <member refid="namespacefaiss_1a4ef40abbd73cd78c17c80bed39cf2b01" kind="function"><name>fvec_L2sqr_ny_nearest_D4</name></member>
+    <member refid="namespacefaiss_1af0abc7885d460485ac5393caf1f2b3ef" kind="function"><name>fvec_L2sqr_ny_nearest_D8</name></member>
+    <member refid="namespacefaiss_1a20c4d079ace40daf3bf23b8da9b4099e" kind="function"><name>fvec_L2sqr_ny_nearest_x86</name></member>
+    <member refid="namespacefaiss_1a984d3aed4da2349d880cb3973634ed5a" kind="function"><name>fvec_madd_and_argmin_sse_ref</name></member>
+    <member refid="namespacefaiss_1a6d2ac818c8d058b1cc926a28fbd9e4ba" kind="function"><name>fvec_madd_and_argmin_sse</name></member>
+    <member refid="namespacefaiss_1ad1b6ea1858c274ec9aed96539f5c0259" kind="function"><name>masked_read</name></member>
     <member refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kind="function"><name>to_string</name></member>
     <member refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kind="function"><name>to_simd_level</name></member>
     <member refid="namespacefaiss_1ae44e64d0db11cd08cfae98b8055628c3" kind="function"><name>min</name></member>
@@ -11802,15 +11862,15 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d167" kind="namespace"><name>faiss::@167</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d176" kind="namespace"><name>faiss::@176</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d196" kind="namespace"><name>faiss::@196</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d198" kind="namespace"><name>faiss::@198</name>
+  <compound refid="namespacefaiss_1_1_0d177" kind="namespace"><name>faiss::@177</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d199" kind="namespace"><name>faiss::@199</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d200" kind="namespace"><name>faiss::@200</name>
+  <compound refid="namespacefaiss_1_1_0d201" kind="namespace"><name>faiss::@201</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d202" kind="namespace"><name>faiss::@202</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d203" kind="namespace"><name>faiss::@203</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d55" kind="namespace"><name>faiss::@55</name>
   </compound>
@@ -12448,6 +12508,7 @@
     <member refid="simd__dispatch_8h_1ac83f98dbe06e36bf82099759fb448658" kind="define"><name>DISPATCH_SIMDLevel_AVX512</name></member>
     <member refid="simd__dispatch_8h_1ae93f2f76ce339f9b9af2f680fa5d599a" kind="define"><name>DISPATCH_SIMDLevel_AVX512_SPR</name></member>
     <member refid="simd__dispatch_8h_1ab8cea65c6e662cfbab3664ed02cfd9c3" kind="define"><name>DISPATCH_SIMDLevel_ARM_NEON</name></member>
+    <member refid="simd__dispatch_8h_1ad78583652b1e9de1aa30619429ee9b78" kind="define"><name>DISPATCH_SIMDLevel_ARM_SVE</name></member>
     <member refid="simd__dispatch_8h_1ab9ef1664628e287fac403ee332c5bbff" kind="define"><name>DISPATCH_SIMDLevel</name></member>
   </compound>
   <compound refid="simd__result__handlers_8h" kind="file"><name>simd_result_handlers.h</name>
@@ -12611,6 +12672,8 @@
   </compound>
   <compound refid="distances_8h" kind="file"><name>distances.h</name>
   </compound>
+  <compound refid="distances__dispatch_8h" kind="file"><name>distances_dispatch.h</name>
+  </compound>
   <compound refid="avx512_8h" kind="file"><name>avx512.h</name>
   </compound>
   <compound refid="distances__fused_8h" kind="file"><name>distances_fused.h</name>
@@ -12669,6 +12732,12 @@
   <compound refid="rabitq__simd_8h" kind="file"><name>rabitq_simd.h</name>
   </compound>
   <compound refid="random_8h" kind="file"><name>random.h</name>
+  </compound>
+  <compound refid="distances__autovec-inl_8h" kind="file"><name>distances_autovec-inl.h</name>
+  </compound>
+  <compound refid="distances__sse-inl_8h" kind="file"><name>distances_sse-inl.h</name>
+    <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
+    <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
   </compound>
   <compound refid="simd__levels_8h" kind="file"><name>simd_levels.h</name>
     <member refid="simd__levels_8h_1a8945b533221b1c3f6d70b4ef8c95d4f2" kind="define"><name>COMPILE_SIMD_NONE</name></member>
@@ -12732,6 +12801,8 @@
   <compound refid="dir_49d07059965bd48f84542aba965b16d6" kind="dir"><name>faiss/impl/scalar_quantizer</name>
   </compound>
   <compound refid="dir_7d0d39c4b531e697805e66643e473925" kind="dir"><name>faiss/gpu/impl/scan</name>
+  </compound>
+  <compound refid="dir_2e120e9f86a8a41d6e1ffdae090fcfea" kind="dir"><name>faiss/utils/simd_impl</name>
   </compound>
   <compound refid="dir_51108e9799b33ddabac525d49cc3884e" kind="dir"><name>faiss/svs</name>
   </compound>

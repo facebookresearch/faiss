@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1ElementOpL2" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::ElementOpL2</compoundname>
+    <includes refid="distances__sse-inl_8h" local="no">distances_sse-inl.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1ElementOpL2_1a750c53f2953a47d117816dd1aaab3b74" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>static float faiss::ElementOpL2::op</definition>
+        <argsstring>(float x, float y)</argsstring>
+        <name>op</name>
+        <qualifiedname>faiss::ElementOpL2::op</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_sse-inl.h" line="68" column="18" bodyfile="faiss/utils/simd_impl/distances_sse-inl.h" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1ElementOpL2_1adb796f06b11c61aed1fcdf1e60529236" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>__m128</type>
+        <definition>static __m128 faiss::ElementOpL2::op</definition>
+        <argsstring>(__m128 x, __m128 y)</argsstring>
+        <name>op</name>
+        <qualifiedname>faiss::ElementOpL2::op</qualifiedname>
+        <param>
+          <type>__m128</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>__m128</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_sse-inl.h" line="73" column="19" bodyfile="faiss/utils/simd_impl/distances_sse-inl.h" bodystart="73" bodyend="76"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Function that does a component-wise operation between x and y to compute L2 distances. ElementOp can then be used in the fvec_op_ny functions below </para>
+    </detaileddescription>
+    <location file="faiss/utils/simd_impl/distances_sse-inl.h" line="67" column="1" bodyfile="faiss/utils/simd_impl/distances_sse-inl.h" bodystart="67" bodyend="77"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1ElementOpL2_1a750c53f2953a47d117816dd1aaab3b74" prot="public" virt="non-virtual"><scope>faiss::ElementOpL2</scope><name>op</name></member>
+      <member refid="structfaiss_1_1ElementOpL2_1adb796f06b11c61aed1fcdf1e60529236" prot="public" virt="non-virtual"><scope>faiss::ElementOpL2</scope><name>op</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

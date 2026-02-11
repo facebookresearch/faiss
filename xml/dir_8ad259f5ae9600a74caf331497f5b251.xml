@@ -6,10 +6,12 @@
     <innerdir refid="dir_e13a2bd573d2812b9a3a73eeae8e330e">faiss/utils/approx_topk_hamming</innerdir>
     <innerdir refid="dir_8024a5c5304a6089dbde2bf6560405dc">faiss/utils/distances_fused</innerdir>
     <innerdir refid="dir_a990053ab0ed2a0e35fd7924fe582c4e">faiss/utils/hamming_distance</innerdir>
+    <innerdir refid="dir_2e120e9f86a8a41d6e1ffdae090fcfea">faiss/utils/simd_impl</innerdir>
     <innerdir refid="dir_6db856fab8a406bb2751df9e12e5655b">faiss/utils/transpose</innerdir>
     <innerfile refid="AlignedTable_8h">AlignedTable.h</innerfile>
     <innerfile refid="bf16_8h">bf16.h</innerfile>
     <innerfile refid="distances_8h">distances.h</innerfile>
+    <innerfile refid="distances__dispatch_8h">distances_dispatch.h</innerfile>
     <innerfile refid="extra__distances-inl_8h">extra_distances-inl.h</innerfile>
     <innerfile refid="extra__distances_8h">extra_distances.h</innerfile>
     <innerfile refid="fp16-arm_8h">fp16-arm.h</innerfile>

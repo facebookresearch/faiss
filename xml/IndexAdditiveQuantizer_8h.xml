@@ -12,12 +12,12 @@
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includedby refid="IndexAdditiveQuantizerFastScan_8h" local="no">faiss/IndexAdditiveQuantizerFastScan.h</includedby>
     <incdepgraph>
-      <node id="43">
+      <node id="44">
         <label>faiss/Clustering.h</label>
         <link refid="Clustering_8h_source"/>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="44" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -43,11 +43,11 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
         <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
@@ -97,10 +97,10 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
-      <node id="44">
+      <node id="45">
         <label>faiss/impl/ClusteringInitialization.h</label>
         <link refid="ClusteringInitialization_8h_source"/>
         <childnode refid="20" relation="include">
@@ -150,16 +150,16 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="36">
+      <node id="37">
         <label>faiss/impl/LocalSearchQuantizer.h</label>
         <link refid="LocalSearchQuantizer_8h_source"/>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -167,7 +167,7 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
       </node>
       <node id="23">
@@ -181,7 +181,7 @@
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
@@ -196,7 +196,7 @@
         <childnode refid="15" relation="include">
         </childnode>
       </node>
-      <node id="41">
+      <node id="42">
         <label>faiss/impl/ProductAdditiveQuantizer.h</label>
         <link refid="ProductAdditiveQuantizer_8h_source"/>
         <childnode refid="4" relation="include">
@@ -207,29 +207,29 @@
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="36" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="42" relation="include">
+        <childnode refid="43" relation="include">
         </childnode>
       </node>
-      <node id="35">
+      <node id="36">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/impl/ResidualQuantizer.h</label>
         <link refid="ResidualQuantizer_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
       </node>
       <node id="19">
@@ -278,7 +278,7 @@
         <childnode refid="33" relation="include">
         </childnode>
       </node>
-      <node id="45">
+      <node id="46">
         <label>faiss/utils/approx_topk/mode.h</label>
         <link refid="mode_8h_source"/>
       </node>
@@ -291,6 +291,8 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="33">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -302,12 +304,22 @@
         <childnode refid="32" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="34">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
         <label>faiss/utils/utils.h</label>
         <link refid="utils_8h_source"/>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
@@ -318,7 +330,7 @@
         <childnode refid="29" relation="include">
         </childnode>
       </node>
-      <node id="34">
+      <node id="35">
         <label>algorithm</label>
       </node>
       <node id="31">
@@ -354,10 +366,10 @@
       <node id="22">
         <label>memory</label>
       </node>
-      <node id="37">
+      <node id="38">
         <label>random</label>
       </node>
-      <node id="40">
+      <node id="41">
         <label>set</label>
       </node>
       <node id="28">
@@ -366,7 +378,7 @@
       <node id="13">
         <label>string</label>
       </node>
-      <node id="38">
+      <node id="39">
         <label>unordered_map</label>
       </node>
       <node id="25">

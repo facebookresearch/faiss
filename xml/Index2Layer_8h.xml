@@ -37,7 +37,7 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="39" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
@@ -74,7 +74,7 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="39">
+      <node id="40">
         <label>faiss/IndexPQ.h</label>
         <link refid="IndexPQ_8h_source"/>
         <childnode refid="21" relation="include">
@@ -83,9 +83,9 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="40" relation="include">
-        </childnode>
         <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
@@ -161,7 +161,7 @@
         </childnode>
         <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="37" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
@@ -176,17 +176,17 @@
         <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="40">
+      <node id="41">
         <label>faiss/impl/PolysemousTraining.h</label>
         <link refid="PolysemousTraining_8h_source"/>
-        <childnode refid="41" relation="include">
+        <childnode refid="42" relation="include">
         </childnode>
       </node>
-      <node id="43">
+      <node id="44">
         <label>faiss/impl/ProductQuantizer-inl.h</label>
         <link refid="ProductQuantizer-inl_8h_source"/>
       </node>
-      <node id="41">
+      <node id="42">
         <label>faiss/impl/ProductQuantizer.h</label>
         <link refid="ProductQuantizer_8h_source"/>
         <childnode refid="21" relation="include">
@@ -195,16 +195,16 @@
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="42" relation="include">
+        <childnode refid="43" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="21" relation="include">
@@ -239,7 +239,7 @@
         <link refid="DirectMap_8h_source"/>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
       </node>
       <node id="27">
@@ -285,6 +285,8 @@
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
       </node>
       <node id="36">
         <label>faiss/utils/ordered_key_value.h</label>
@@ -297,6 +299,16 @@
         </childnode>
       </node>
       <node id="37">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
         <label>algorithm</label>
       </node>
       <node id="34">
@@ -338,7 +350,7 @@
       <node id="12">
         <label>string</label>
       </node>
-      <node id="38">
+      <node id="39">
         <label>unordered_map</label>
       </node>
       <node id="25">

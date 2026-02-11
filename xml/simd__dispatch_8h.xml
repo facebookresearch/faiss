@@ -4,6 +4,7 @@
     <compoundname>simd_dispatch.h</compoundname>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
+    <includedby refid="distances__dispatch_8h" local="no">faiss/utils/distances_dispatch.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/impl/FaissAssert.h</label>
@@ -79,6 +80,30 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/impl/simd_dispatch.h</label>
+        <link refid="simd__dispatch_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/utils/distances_dispatch.h</label>
+        <link refid="distances__dispatch_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/utils/extra_distances.h</label>
+        <link refid="extra__distances_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <sectiondef kind="define">
       <memberdef kind="define" id="simd__dispatch_8h_1a1adafbf42b5a602178a31f352299dac0" prot="public" static="no">
@@ -129,6 +154,18 @@
         </inbodydescription>
         <location file="faiss/impl/simd_dispatch.h" line="59" column="10" bodyfile="faiss/impl/simd_dispatch.h" bodystart="59" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="define" id="simd__dispatch_8h_1ad78583652b1e9de1aa30619429ee9b78" prot="public" static="no">
+        <name>DISPATCH_SIMDLevel_ARM_SVE</name>
+        <param><defname>f</defname></param>
+        <param><defname>...</defname></param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="67" column="10" bodyfile="faiss/impl/simd_dispatch.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="define" id="simd__dispatch_8h_1ab9ef1664628e287fac403ee332c5bbff" prot="public" static="no">
         <name>DISPATCH_SIMDLevel</name>
         <param><defname>f</defname></param>
@@ -140,7 +177,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_dispatch.h" line="91" column="10" bodyfile="faiss/impl/simd_dispatch.h" bodystart="91" bodyend="-1"/>
+        <location file="faiss/impl/simd_dispatch.h" line="102" column="10" bodyfile="faiss/impl/simd_dispatch.h" bodystart="102" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -212,41 +249,52 @@
 <codeline lineno="59"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel_ARM_NEON(f,<sp/>...)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="60"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/***********************<sp/>Main<sp/>dispatch<sp/>macro<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment">//<sp/>DD<sp/>mode:<sp/>runtime<sp/>dispatch<sp/>based<sp/>on<sp/>SIMDConfig::level</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="68"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>switch<sp/>(SIMDConfig::level)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="69"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>SIMDLevel::NONE:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="70"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>f&lt;SIMDLevel::NONE&gt;(__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="71"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX2(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="72"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX512(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="73"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX512_SPR(f,<sp/>__VA_ARGS__);<sp/>\</highlight></codeline>
-<codeline lineno="74"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_ARM_NEON(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="75"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>default:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="76"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_MSG(&quot;Invalid<sp/>SIMD<sp/>level&quot;);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="77"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="78"><highlight class="normal"></highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight><highlight class="preprocessor">#else<sp/></highlight><highlight class="comment">//<sp/>Static<sp/>mode</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Static<sp/>mode:<sp/>direct<sp/>call<sp/>to<sp/>compiled-in<sp/>SIMD<sp/>level<sp/>(no<sp/>runtime<sp/>switch)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(COMPILE_SIMD_AVX512_SPR)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="83"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX512_SPR&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_AVX512)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX512&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_AVX2)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX2&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_ARM_NEON)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::ARM_NEON&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::NONE&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight></codeline>
-<codeline lineno="94"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="95"><highlight class="normal"></highlight></codeline>
-<codeline lineno="96"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>COMPILE_SIMD_ARM_SVE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel_ARM_SVE(f,<sp/>...)<sp/>\</highlight></codeline>
+<codeline lineno="64"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>case<sp/>SIMDLevel::ARM_SVE:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="65"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>f&lt;SIMDLevel::ARM_SVE&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel_ARM_SVE(f,<sp/>...)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment">/***********************<sp/>Main<sp/>dispatch<sp/>macro<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">//<sp/>DD<sp/>mode:<sp/>runtime<sp/>dispatch<sp/>based<sp/>on<sp/>SIMDConfig::level</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="76"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>switch<sp/>(SIMDConfig::level)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="77"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>case<sp/>SIMDLevel::NONE:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="78"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>f&lt;SIMDLevel::NONE&gt;(__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="79"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX2(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="80"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX512(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="81"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_AVX512_SPR(f,<sp/>__VA_ARGS__);<sp/>\</highlight></codeline>
+<codeline lineno="82"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_ARM_NEON(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="83"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel_ARM_SVE(f,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="84"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>default:<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="85"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_MSG(&quot;Invalid<sp/>SIMD<sp/>level&quot;);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="86"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#else<sp/></highlight><highlight class="comment">//<sp/>Static<sp/>mode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Static<sp/>mode:<sp/>direct<sp/>call<sp/>to<sp/>compiled-in<sp/>SIMD<sp/>level<sp/>(no<sp/>runtime<sp/>switch)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>defined(COMPILE_SIMD_AVX512_SPR)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX512_SPR&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_AVX512)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX512&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_AVX2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::AVX2&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_ARM_SVE)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::ARM_SVE&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="preprocessor">#elif<sp/>defined(COMPILE_SIMD_ARM_NEON)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::ARM_NEON&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>DISPATCH_SIMDLevel(f,<sp/>...)<sp/>return<sp/>f&lt;SIMDLevel::NONE&gt;(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/simd_dispatch.h"/>
   </compounddef>
