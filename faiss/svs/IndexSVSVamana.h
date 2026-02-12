@@ -72,7 +72,7 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
         case SVS_LeanVec8x8:
             return svs_runtime::StorageKind::LeanVec8x8;
         default:
-            FAISS_ASSERT(!"not supported SVS storage kind");
+            FAISS_ASSERT(false && "not supported SVS storage kind");
     }
 }
 

@@ -20,6 +20,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 
 extern "C" {
 
@@ -248,7 +249,7 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
         uint64_t idxm = 0;
         if (pq.transposed_centroids.empty()) {
             // the regular version
-            idxm = fvec_L2sqr_ny_nearest(
+            idxm = fvec_L2sqr_ny_nearest_dispatch(
                     distances.data(),
                     xsub,
                     pq.get_centroids(m, 0),
@@ -256,7 +257,7 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
                     pq.ksub);
         } else {
             // transposed centroids are available, use'em
-            idxm = fvec_L2sqr_ny_nearest_y_transposed(
+            idxm = fvec_L2sqr_ny_nearest_y_transposed_dispatch(
                     distances.data(),
                     xsub,
                     pq.transposed_centroids.data() + m * pq.ksub,
@@ -431,7 +432,7 @@ void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
     if (transposed_centroids.empty()) {
         // use regular version
         for (size_t m = 0; m < M; m++) {
-            fvec_L2sqr_ny(
+            fvec_L2sqr_ny_dispatch(
                     dis_table + m * ksub,
                     x + m * dsub,
                     get_centroids(m, 0),
@@ -441,7 +442,7 @@ void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
     } else {
         // transposed centroids are available, use'em
         for (size_t m = 0; m < M; m++) {
-            fvec_L2sqr_ny_transposed(
+            fvec_L2sqr_ny_transposed_dispatch(
                     dis_table + m * ksub,
                     x + m * dsub,
                     transposed_centroids.data() + m * ksub,
@@ -459,7 +460,7 @@ void ProductQuantizer::compute_inner_prod_table(
     size_t m;
 
     for (m = 0; m < M; m++) {
-        fvec_inner_products_ny(
+        fvec_inner_products_ny_dispatch(
                 dis_table + m * ksub,
                 x + m * dsub,
                 get_centroids(m, 0),
@@ -794,7 +795,8 @@ void ProductQuantizer::compute_sdc_table() {
             const float* cents = centroids.data() + m * ksub * dsub;
             const float* centi = cents + k * dsub;
             float* dis_tab = sdc_table.data() + m * ksub * ksub;
-            fvec_L2sqr_ny(dis_tab + k * ksub, centi, cents, dsub, ksub);
+            fvec_L2sqr_ny_dispatch(
+                    dis_tab + k * ksub, centi, cents, dsub, ksub);
         }
     } else {
         // NOTE: it would disable the omp loop in pairwise_L2sqr

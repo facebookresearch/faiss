@@ -12,7 +12,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 
 #include <cstring>
 
@@ -177,13 +177,13 @@ struct GenericDistanceComputer : DistanceComputer {
 
     float operator()(idx_t i) override {
         storage.reconstruct(i, buf.data());
-        return fvec_L2sqr(q, buf.data(), d);
+        return fvec_L2sqr_dispatch(q, buf.data(), d);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
         storage.reconstruct(i, buf.data());
         storage.reconstruct(j, buf.data() + d);
-        return fvec_L2sqr(buf.data() + d, buf.data(), d);
+        return fvec_L2sqr_dispatch(buf.data() + d, buf.data(), d);
     }
 
     void set_query(const float* x) override {

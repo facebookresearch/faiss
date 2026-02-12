@@ -585,7 +585,7 @@ SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x8") {
         return SVSStorageKind::SVS_LVQ4x8;
     }
-    FAISS_ASSERT(!"not supported SVS LVQ level");
+    FAISS_ASSERT(false && "not supported SVS LVQ level");
 }
 
 SVSStorageKind parse_leanvec(const std::string& leanvec_string) {
@@ -598,7 +598,7 @@ SVSStorageKind parse_leanvec(const std::string& leanvec_string) {
     if (leanvec_string == "LeanVec8x8") {
         return SVSStorageKind::SVS_LeanVec8x8;
     }
-    FAISS_ASSERT(!"not supported SVS Leanvec level");
+    FAISS_ASSERT(false && "not supported SVS Leanvec level");
 }
 
 Index* parse_svs_datatype(
@@ -616,28 +616,28 @@ Index* parse_svs_datatype(
         if (index_type == "Flat") {
             return new IndexSVSFlat(d, mt);
         }
-        FAISS_ASSERT(!"Unspported SVS index type");
+        FAISS_ASSERT(false && "Unspported SVS index type");
     }
     if (re_match(datatype_string, "FP16", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
         }
-        FAISS_ASSERT(!"Unspported SVS index type for Float16");
+        FAISS_ASSERT(false && "Unspported SVS index type for Float16");
     }
     if (re_match(datatype_string, "SQI8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
         }
-        FAISS_ASSERT(!"Unspported SVS index type for SQI8");
+        FAISS_ASSERT(false && "Unspported SVS index type for SQI8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamanaLVQ(
                     d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
         }
-        FAISS_ASSERT(!"Unspported SVS index type for LVQ");
+        FAISS_ASSERT(false && "Unspported SVS index type for LVQ");
     }
     if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
         std::string leanvec_d_string =
@@ -652,7 +652,7 @@ Index* parse_svs_datatype(
                     leanvec_d,
                     parse_leanvec(sm[1].str()));
         }
-        FAISS_ASSERT(!"Unspported SVS index type for LeanVec");
+        FAISS_ASSERT(false && "Unspported SVS index type for LeanVec");
     }
     return nullptr;
 }
@@ -672,7 +672,7 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
                 "Vamana", degree_string, datatype_string, d, mt);
     }
     if (re_match(code_string, "IVF([0-9]+)(,.+)?", sm)) {
-        FAISS_ASSERT(!"Unspported SVS index type");
+        FAISS_ASSERT(false && "Unspported SVS index type");
     }
     return nullptr;
 }
