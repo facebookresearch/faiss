@@ -17,9 +17,9 @@
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
 
@@ -406,19 +406,20 @@ void IndexIVFAdditiveQuantizerFastScan::compute_LUT(
         // bias = coef * <q, c>
         // NOTE: q^2 is not added to `biases`
         biases.resize(n * nprobe);
+        with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel
-        {
-            std::vector<float> centroid(d);
-            float* c = centroid.data();
+            {
+                std::vector<float> centroid(d);
+                float* c = centroid.data();
 
 #pragma omp for
-            for (idx_t ij = 0; ij < n * nprobe; ij++) {
-                int i = ij / nprobe;
-                quantizer->reconstruct(cq.ids[ij], c);
-                biases[ij] =
-                        coef * fvec_inner_product_dispatch(c, x + i * d, d);
+                for (idx_t ij = 0; ij < n * nprobe; ij++) {
+                    int i = ij / nprobe;
+                    quantizer->reconstruct(cq.ids[ij], c);
+                    biases[ij] = coef * fvec_inner_product<SL>(c, x + i * d, d);
+                }
             }
-        }
+        });
     }
 
     if (metric_type == METRIC_L2) {

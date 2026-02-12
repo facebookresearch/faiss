@@ -14,7 +14,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/utils/distances_dispatch.h>
+#include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 
 namespace faiss {
@@ -225,9 +225,8 @@ struct AQInvertedListScannerDecompress : AQInvertedListScanner {
         FAISS_ASSERT(q);
         FAISS_ASSERT(b.data());
 
-        return is_IP
-                ? coarse_dis + fvec_inner_product_dispatch(q, b.data(), aq.d)
-                : fvec_L2sqr_dispatch(q, b.data(), aq.d);
+        return is_IP ? coarse_dis + fvec_inner_product(q, b.data(), aq.d)
+                     : fvec_L2sqr(q, b.data(), aq.d);
     }
 
     ~AQInvertedListScannerDecompress() override = default;
@@ -251,7 +250,7 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
     void set_query(const float* query_vector) override {
         AQInvertedListScanner::set_query(query_vector);
         if (!is_IP && !ia.by_residual) {
-            distance_bias = fvec_norm_L2sqr_dispatch(query_vector, ia.d);
+            distance_bias = fvec_norm_L2sqr(query_vector, ia.d);
         }
     }
 

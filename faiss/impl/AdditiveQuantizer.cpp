@@ -21,9 +21,9 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h>
 
 extern "C" {
@@ -349,15 +349,17 @@ AdditiveQuantizer::~AdditiveQuantizer() {}
 void AdditiveQuantizer::compute_centroid_norms(float* norms) const {
     size_t ntotal = (size_t)1 << tot_bits;
     // TODO: make tree of partial sums
+    with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel
-    {
-        std::vector<float> tmp(d);
+        {
+            std::vector<float> tmp(d);
 #pragma omp for
-        for (int64_t i = 0; i < ntotal; i++) {
-            decode_64bit(i, tmp.data());
-            norms[i] = fvec_norm_L2sqr_dispatch(tmp.data(), d);
+            for (int64_t i = 0; i < ntotal; i++) {
+                decode_64bit(i, tmp.data());
+                norms[i] = fvec_norm_L2sqr<SL>(tmp.data(), d);
+            }
         }
-    }
+    });
 }
 
 void AdditiveQuantizer::decode_64bit(idx_t bits, float* xi) const {

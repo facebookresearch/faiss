@@ -11,8 +11,9 @@
 
 #include <cinttypes>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/distances_dispatch.h>
+#include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/FaissAssert.h>
@@ -128,7 +129,7 @@ void IndexIVFPQR::search_preassigned(
         IndexIVFStats* stats) const {
     uint64_t t0;
     TIC;
-    size_t k_coarse = long(k * k_factor);
+    size_t k_coarse = long((size_t)k * k_factor);
     std::unique_ptr<idx_t[]> coarse_labels(new idx_t[k_coarse * n]);
     {
         // query with quantizer levels 1 and 2.
@@ -196,8 +197,7 @@ void IndexIVFPQR::search_preassigned(
                         &refine_codes[id * refine_pq.code_size],
                         residual_1.get());
 
-                float dis =
-                        fvec_L2sqr_dispatch(residual_1.get(), residual_2, d);
+                float dis = fvec_L2sqr(residual_1.get(), residual_2, d);
 
                 if (dis < heap_sim[0]) {
                     idx_t id_or_pair = store_pairs ? sl : id;
