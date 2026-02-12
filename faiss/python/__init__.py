@@ -357,3 +357,9 @@ class TimeoutGuard:
 
     def __exit__(self, exc_type, exc_value, traceback):
         PythonInterruptCallback.reset()
+
+
+try:
+    post_init_hook()
+except NameError:
+    pass
