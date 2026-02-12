@@ -733,6 +733,20 @@ class TestSVSIVFAdapterLVQ4x8(TestSVSIVFAdapter):
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSIVFAdapterLVQ8x0(TestSVSIVFAdapter):
+    """Repeat IVF tests for LVQ8x0 variant"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.target_class = faiss.IndexSVSIVFLVQ
+
+    def _create_instance(self):
+        idx = self.target_class(self.d, self.nlist)
+        idx.storage_kind = faiss.SVS_LVQ8x0
+        return idx
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
 class TestSVSIVFAdapterLeanVec4x4(TestSVSIVFAdapter):
     """Repeat IVF tests for LeanVec4x4 variant"""
 
@@ -827,7 +841,7 @@ class TestSVSIVFParameters(unittest.TestCase):
         self.assertEqual(index.n_probes, 10)
         self.assertAlmostEqual(index.k_reorder, 1.0, places=6)
         self.assertEqual(index.num_iterations, 10)
-        self.assertEqual(index.minibatch_size, 256)
+        self.assertEqual(index.minibatch_size, 10000)
         self.assertEqual(index.seed, 42)
 
     def test_ivf_parameter_serialization(self):

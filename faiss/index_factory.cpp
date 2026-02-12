@@ -588,6 +588,9 @@ SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x8") {
         return SVSStorageKind::SVS_LVQ4x8;
     }
+    if (lvq_string == "LVQ8x0") {
+        return SVSStorageKind::SVS_LVQ8x0;
+    }
     FAISS_ASSERT(false && "not supported SVS LVQ level");
 }
 
