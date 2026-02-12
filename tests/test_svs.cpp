@@ -587,6 +587,12 @@ TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ4x8) {
     write_and_read_ivf_index(index, test_data, n);
 }
 
+TEST_F(SVSLL, WriteAndReadIndexSVSIVFLVQ8x0) {
+    faiss::IndexSVSIVFLVQ index{d, 4ul};
+    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
+    write_and_read_ivf_index(index, test_data, n);
+}
+
 TEST_F(SVSLL, WriteAndReadIndexSVSIVFLeanVec4x4) {
     faiss::IndexSVSIVFLeanVec index{
             d,
@@ -649,6 +655,12 @@ TEST_F(SVSLL, IVFLVQ4x4TrainAndAdd) {
 TEST_F(SVSLL, IVFLVQ4x8TrainAndAdd) {
     faiss::IndexSVSIVFLVQ index{d, 4ul};
     index.storage_kind = faiss::SVSStorageKind::SVS_LVQ4x8;
+    train_and_add_ivf_index(index, test_data, n);
+}
+
+TEST_F(SVSLL, IVFLVQ8x0TrainAndAdd) {
+    faiss::IndexSVSIVFLVQ index{d, 4ul};
+    index.storage_kind = faiss::SVSStorageKind::SVS_LVQ8x0;
     train_and_add_ivf_index(index, test_data, n);
 }
 
