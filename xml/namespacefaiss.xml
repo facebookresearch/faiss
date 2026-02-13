@@ -304,6 +304,18 @@
     <innerclass refid="structfaiss_1_1TopkBlockResultHandler" prot="public">faiss::TopkBlockResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1TransformedVectors" prot="public">faiss::TransformedVectors</innerclass>
     <innerclass refid="structfaiss_1_1VectorDistance" prot="public">faiss::VectorDistance</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__BrayCurtis_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_BrayCurtis, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__Canberra_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_Canberra, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__GOWER_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_GOWER, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__INNER__PRODUCT_00_01level_01_4" prot="public">faiss::VectorDistance&lt; METRIC_INNER_PRODUCT, level &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__Jaccard_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_Jaccard, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__JensenShannon_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_JensenShannon, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__L1_00_01level_01_4" prot="public">faiss::VectorDistance&lt; METRIC_L1, level &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__L2_00_01level_01_4" prot="public">faiss::VectorDistance&lt; METRIC_L2, level &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__Linf_00_01level_01_4" prot="public">faiss::VectorDistance&lt; METRIC_Linf, level &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__Lp_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_Lp, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1VectorDistanceBase" prot="public">faiss::VectorDistanceBase</innerclass>
     <innerclass refid="structfaiss_1_1VectorIOReader" prot="public">faiss::VectorIOReader</innerclass>
     <innerclass refid="structfaiss_1_1VectorIOWriter" prot="public">faiss::VectorIOWriter</innerclass>
     <innerclass refid="structfaiss_1_1VectorTransform" prot="public">faiss::VectorTransform</innerclass>
@@ -3687,6 +3699,47 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/ResultHandler.h" line="748" column="22" bodyfile="faiss/impl/ResultHandler.h" bodystart="748" bodyend="775"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename LambdaType</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto faiss::with_simd_level</definition>
+        <argsstring>(LambdaType &amp;&amp;action)</argsstring>
+        <name>with_simd_level</name>
+        <qualifiedname>faiss::with_simd_level</qualifiedname>
+        <param>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Dispatch to a lambda with SIMDLevel as a compile-time constant.</para>
+<para>This function calls the provided templated lambda with the current runtime SIMD level (from SIMDConfig::level) as a compile-time template argument. This enables SIMD-specialized code paths while keeping the dispatch logic centralized.</para>
+<para>The key benefit is that the SIMD dispatch happens once, outside any loops, so the loop body runs with the optimal SIMD implementation without per-iteration dispatch overhead.</para>
+<para>Example with a loop (the dispatch happens once, not per iteration):</para>
+<para>std::vector&lt;float&gt; distances(n); with_simd_level([&amp;]&lt;SIMDLevel level&gt;() { for (size_t i = 0; i &lt; n; i++) { distances[i] = fvec_L2sqr&lt;level&gt;(query, vectors + i * d, d); } });</para>
+<para>The lambda must be a generic lambda with a SIMDLevel template parameter.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>action</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A generic lambda with signature <computeroutput>template&lt;SIMDLevel&gt; T operator()()</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The return value of the lambda </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simd_dispatch.h" line="135" column="13" bodyfile="faiss/impl/simd_dispatch.h" bodystart="135" bodyend="137"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f255b2339b7fb86093b14e279b27fe1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -7758,7 +7811,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="200" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="200" bodyend="227"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="212" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="212" bodyend="233"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

@@ -4,7 +4,6 @@
     <compoundname>distances_dispatch.h</compoundname>
     <includes refid="simd__dispatch_8h" local="no">faiss/impl/simd_dispatch.h</includes>
     <includes refid="distances_8h" local="no">faiss/utils/distances.h</includes>
-    <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
     <incdepgraph>
       <node id="3">
         <label>faiss/impl/FaissAssert.h</label>
@@ -150,24 +149,6 @@
         <label>vector</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="1">
-        <label>faiss/utils/distances_dispatch.h</label>
-        <link refid="distances__dispatch_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/utils/extra_distances-inl.h</label>
-        <link refid="extra__distances-inl_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>faiss/utils/extra_distances.h</label>
-        <link refid="extra__distances_8h_source"/>
-      </node>
-    </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
 <para>Inlineable dispatch wrappers for distance functions. </para>

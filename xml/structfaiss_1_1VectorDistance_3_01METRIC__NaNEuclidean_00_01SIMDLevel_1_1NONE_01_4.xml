@@ -1,27 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1VectorDistance" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::VectorDistance</compoundname>
-    <basecompoundref refid="structfaiss_1_1VectorDistanceBase" prot="public" virt="non-virtual">faiss::VectorDistanceBase&lt; mt &gt;</basecompoundref>
+  <compounddef id="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1VectorDistanceBase" prot="public" virt="non-virtual">faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;</basecompoundref>
     <templateparamlist>
-      <param>
-        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
-        <declname>mt</declname>
-        <defname>mt</defname>
-      </param>
-      <param>
-        <type>SIMDLevel</type>
-        <declname>level</declname>
-        <defname>level</defname>
-      </param>
     </templateparamlist>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4_1a572da2fc2e78940032e9c87fa9be725a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
-        <definition>float faiss::VectorDistance&lt; mt, level &gt;::operator()</definition>
+        <definition>float faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
         <name>operator()</name>
-        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <qualifiedname>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;::operator()</qualifiedname>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -36,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="45" column="18"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="152" column="18" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="152" bodyend="167"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -45,7 +35,7 @@
         <definition>using faiss::VectorDistanceBase&lt; mt &gt;::C =  typename std::conditional&lt; is_similarity_metric(mt), CMin&lt;float, int64_t&gt;, CMax&lt;float, int64_t&gt; &gt;::type</definition>
         <argsstring></argsstring>
         <name>C</name>
-        <qualifiedname>faiss::VectorDistanceBase::C</qualifiedname>
+        <qualifiedname>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;::C</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -61,7 +51,7 @@
         <definition>size_t faiss::VectorDistanceBase&lt; mt &gt;::d</definition>
         <argsstring></argsstring>
         <name>d</name>
-        <qualifiedname>faiss::VectorDistanceBase::d</qualifiedname>
+        <qualifiedname>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;::d</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -75,7 +65,7 @@
         <definition>float faiss::VectorDistanceBase&lt; mt &gt;::metric_arg</definition>
         <argsstring></argsstring>
         <name>metric_arg</name>
-        <qualifiedname>faiss::VectorDistanceBase::metric_arg</qualifiedname>
+        <qualifiedname>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;::metric_arg</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -91,8 +81,7 @@
         <definition>constexpr MetricType faiss::VectorDistanceBase&lt; mt &gt;::metric</definition>
         <argsstring></argsstring>
         <name>metric</name>
-        <qualifiedname>faiss::VectorDistanceBase::metric</qualifiedname>
-        <initializer>= mt</initializer>
+        <qualifiedname>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;::metric</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -106,8 +95,7 @@
         <definition>constexpr bool faiss::VectorDistanceBase&lt; mt &gt;::is_similarity</definition>
         <argsstring></argsstring>
         <name>is_similarity</name>
-        <qualifiedname>faiss::VectorDistanceBase::is_similarity</qualifiedname>
-        <initializer>= <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt)</initializer>
+        <qualifiedname>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;::is_similarity</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -122,37 +110,37 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
+      <node id="2">
+        <label>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;</label>
+        <link refid="structfaiss_1_1VectorDistanceBase"/>
+      </node>
       <node id="1">
-        <label>faiss::VectorDistance&lt; mt, level &gt;</label>
-        <link refid="structfaiss_1_1VectorDistance"/>
+        <label>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::VectorDistanceBase&lt; mt &gt;</label>
-        <link refid="structfaiss_1_1VectorDistanceBase"/>
       </node>
     </inheritancegraph>
     <collaborationgraph>
+      <node id="2">
+        <label>faiss::VectorDistanceBase&lt; METRIC_NaNEuclidean &gt;</label>
+        <link refid="structfaiss_1_1VectorDistanceBase"/>
+      </node>
       <node id="1">
-        <label>faiss::VectorDistance&lt; mt, level &gt;</label>
-        <link refid="structfaiss_1_1VectorDistance"/>
+        <label>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="2">
-        <label>faiss::VectorDistanceBase&lt; mt &gt;</label>
-        <link refid="structfaiss_1_1VectorDistanceBase"/>
-      </node>
     </collaborationgraph>
-    <location file="faiss/utils/extra_distances-inl.h" line="44" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="44" bodyend="46"/>
+    <location file="faiss/utils/extra_distances-inl.h" line="150" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="151" bodyend="168"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>C</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>d</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>is_similarity</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric_arg</name></member>
-      <member refid="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>C</name></member>
+      <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>d</name></member>
+      <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>is_similarity</name></member>
+      <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4_1a572da2fc2e78940032e9c87fa9be725a" prot="public" virt="non-virtual"><scope>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</scope><name>operator()</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

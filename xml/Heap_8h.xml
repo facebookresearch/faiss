@@ -580,6 +580,8 @@
         </childnode>
         <childnode refid="67" relation="include">
         </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
         <childnode refid="70" relation="include">
         </childnode>
         <childnode refid="71" relation="include">
@@ -588,8 +590,6 @@
       <node id="67">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
-        <childnode refid="68" relation="include">
-        </childnode>
       </node>
       <node id="45">
         <label>faiss/utils/distances_fused/avx512.h</label>

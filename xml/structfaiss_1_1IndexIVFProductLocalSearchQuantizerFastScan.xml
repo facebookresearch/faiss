@@ -24,13 +24,14 @@
         <argsstring></argsstring>
         <name>aq</name>
         <qualifiedname>faiss::IndexIVFAdditiveQuantizerFastScan::aq</qualifiedname>
+        <initializer>{}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="40" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="40" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="40" column="23" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="40" bodyend="40"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a796db53b1eea3b4aa0430036a7a1dc30" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -68,13 +69,14 @@
         <argsstring></argsstring>
         <name>max_train_points</name>
         <qualifiedname>faiss::IndexIVFAdditiveQuantizerFastScan::max_train_points</qualifiedname>
+        <initializer>{}</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="46" column="12" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/IndexIVFAdditiveQuantizerFastScan.h" line="46" column="12" bodyfile="faiss/IndexIVFAdditiveQuantizerFastScan.h" bodystart="46" bodyend="46"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a7a5b4bc9d80aea0270de58493c4eb3d4" prot="public" static="no" mutable="no">
         <type>int</type>

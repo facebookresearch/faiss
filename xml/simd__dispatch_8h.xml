@@ -5,6 +5,7 @@
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
     <includedby refid="distances__dispatch_8h" local="no">faiss/utils/distances_dispatch.h</includedby>
+    <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/impl/FaissAssert.h</label>
@@ -86,12 +87,12 @@
         <link refid="simd__dispatch_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
       </node>
       <node id="3">
         <label>faiss/utils/extra_distances-inl.h</label>
@@ -293,8 +294,40 @@
 <codeline lineno="103"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
 <codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/></highlight><highlight class="comment">//<sp/>FAISS_ENABLE_DD</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="106"><highlight class="normal"></highlight></codeline>
-<codeline lineno="107"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="107"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>Dispatch<sp/>to<sp/>a<sp/>lambda<sp/>with<sp/>SIMDLevel<sp/>as<sp/>a<sp/>compile-time<sp/>constant.</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>This<sp/>function<sp/>calls<sp/>the<sp/>provided<sp/>templated<sp/>lambda<sp/>with<sp/>the<sp/>current</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/>*<sp/>runtime<sp/>SIMD<sp/>level<sp/>(from<sp/>SIMDConfig::level)<sp/>as<sp/>a<sp/>compile-time<sp/>template</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/>*<sp/>argument.<sp/>This<sp/>enables<sp/>SIMD-specialized<sp/>code<sp/>paths<sp/>while<sp/>keeping<sp/>the</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/>*<sp/>dispatch<sp/>logic<sp/>centralized.</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/>*<sp/>The<sp/>key<sp/>benefit<sp/>is<sp/>that<sp/>the<sp/>SIMD<sp/>dispatch<sp/>happens<sp/>once,<sp/>outside<sp/>any<sp/>loops,</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/>*<sp/>so<sp/>the<sp/>loop<sp/>body<sp/>runs<sp/>with<sp/>the<sp/>optimal<sp/>SIMD<sp/>implementation<sp/>without</highlight></codeline>
+<codeline lineno="117"><highlight class="comment"><sp/>*<sp/>per-iteration<sp/>dispatch<sp/>overhead.</highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*<sp/>Example<sp/>with<sp/>a<sp/>loop<sp/>(the<sp/>dispatch<sp/>happens<sp/>once,<sp/>not<sp/>per<sp/>iteration):</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/>*<sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>distances(n);</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/>*<sp/><sp/><sp/>with_simd_level([&amp;]&lt;SIMDLevel<sp/>level&gt;()<sp/>{</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(size_t<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>distances[i]<sp/>=<sp/>fvec_L2sqr&lt;level&gt;(query,<sp/>vectors<sp/>+<sp/>i<sp/>*<sp/>d,<sp/>d);</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/>*<sp/>The<sp/>lambda<sp/>must<sp/>be<sp/>a<sp/>generic<sp/>lambda<sp/>with<sp/>a<sp/>SIMDLevel<sp/>template<sp/>parameter.</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/>*<sp/>@param<sp/>action<sp/>A<sp/>generic<sp/>lambda<sp/>with<sp/>signature<sp/>`template&lt;SIMDLevel&gt;<sp/>T</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/>*<sp/>operator()()`</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*<sp/>@return<sp/>The<sp/>return<sp/>value<sp/>of<sp/>the<sp/>lambda</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="135" refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kindref="member">with_simd_level</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel(action.template<sp/></highlight><highlight class="keyword">operator</highlight><highlight class="normal">());</highlight></codeline>
+<codeline lineno="137"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/simd_dispatch.h"/>
   </compounddef>
