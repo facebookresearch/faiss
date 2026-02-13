@@ -18,7 +18,8 @@
 #include <queue>
 #include <unordered_set>
 
-#include <faiss/utils/distances_dispatch.h>
+#include <faiss/impl/simd_dispatch.h>
+#include <faiss/utils/distances.h>
 
 namespace faiss {
 
@@ -302,18 +303,20 @@ void EnumeratedVectors::find_nn(
     }
 
     std::vector<float> c(dim);
-    for (size_t i = 0; i < nc; i++) {
-        uint64_t code = codes[nc];
-        decode(code, c.data());
-        for (size_t j = 0; j < nq; j++) {
-            const float* x = xq + j * dim;
-            float dis = fvec_inner_product_dispatch(x, c.data(), dim);
-            if (dis > distances[j]) {
-                distances[j] = dis;
-                labels[j] = i;
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t i = 0; i < nc; i++) {
+            uint64_t code = codes[nc];
+            decode(code, c.data());
+            for (size_t j = 0; j < nq; j++) {
+                const float* x = xq + j * dim;
+                float dis = fvec_inner_product<SL>(x, c.data(), dim);
+                if (dis > distances[j]) {
+                    distances[j] = dis;
+                    labels[j] = i;
+                }
             }
         }
-    }
+    });
 }
 
 /**********************************************************
@@ -355,14 +358,15 @@ float ZnSphereSearch::search(
     // find best
     int ibest = -1;
     float dpbest = -100;
-    for (int i = 0; i < natom; i++) {
-        float dp =
-                fvec_inner_product_dispatch(voc.data() + i * dim, xperm, dim);
-        if (dp > dpbest) {
-            dpbest = dp;
-            ibest = i;
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (int i = 0; i < natom; i++) {
+            float dp = fvec_inner_product<SL>(voc.data() + i * dim, xperm, dim);
+            if (dp > dpbest) {
+                dpbest = dp;
+                ibest = i;
+            }
         }
-    }
+    });
     // revert sort
     const float* cin = voc.data() + ibest * dim;
     for (int i = 0; i < dim; i++) {

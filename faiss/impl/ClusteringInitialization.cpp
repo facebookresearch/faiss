@@ -49,18 +49,20 @@ float distance_to_nearest_centroid(
     const float* point = x + idx * d;
     float min_dist = std::numeric_limits<float>::max();
 
-    // Check primary centroids
-    for (size_t c = 0; c < n_centroids; c++) {
-        float dist = fvec_L2sqr_dispatch(point, centroids + c * d, d);
-        min_dist = std::min(min_dist, dist);
-    }
+    auto check_centroids = [&]<SIMDLevel SL>() {
+        // Check primary centroids
+        for (size_t c = 0; c < n_centroids; c++) {
+            float dist = fvec_L2sqr<SL>(point, centroids + c * d, d);
+            min_dist = std::min(min_dist, dist);
+        }
 
-    // Check existing centroids if provided
-    for (size_t c = 0; c < n_existing_centroids; c++) {
-        float dist = fvec_L2sqr_dispatch(point, existing_centroids + c * d, d);
-        min_dist = std::min(min_dist, dist);
-    }
-
+        // Check existing centroids if provided
+        for (size_t c = 0; c < n_existing_centroids; c++) {
+            float dist = fvec_L2sqr<SL>(point, existing_centroids + c * d, d);
+            min_dist = std::min(min_dist, dist);
+        }
+    };
+    with_simd_level(check_centroids);
     return min_dist;
 }
 
@@ -103,10 +105,12 @@ InitDistancesResult init_distances_for_d2_sampling(
         std::memcpy(centroids, x + first_selected_idx * d, d * sizeof(float));
 
         // Compute distances to first centroid
-        for (size_t i = 0; i < n; i++) {
-            distances[i] = fvec_L2sqr_dispatch(x + i * d, centroids, d);
-            sum_d2 += distances[i];
-        }
+        with_simd_level([&]<SIMDLevel SL>() {
+            for (size_t i = 0; i < n; i++) {
+                distances[i] = fvec_L2sqr<SL>(x + i * d, centroids, d);
+                sum_d2 += distances[i];
+            }
+        });
         return {1, sum_d2, first_selected_idx};
     }
 }
@@ -231,10 +235,12 @@ void ClusteringInitialization::init_kmeans_plus_plus(
         std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
 
         // Update min distances incrementally
-        for (size_t i = 0; i < n; i++) {
-            double dist = fvec_L2sqr_dispatch(x + i * d, new_centroid, d);
-            min_distances[i] = std::min(min_distances[i], dist);
-        }
+        with_simd_level([&]<SIMDLevel SL>() {
+            for (size_t i = 0; i < n; i++) {
+                double dist = fvec_L2sqr<SL>(x + i * d, new_centroid, d);
+                min_distances[i] = std::min(min_distances[i], dist);
+            }
+        });
     }
 }
 
@@ -245,7 +251,8 @@ void ClusteringInitialization::init_afkmc2(
         size_t n_existing_centroids,
         const float* existing_centroids) const {
     // AFK-MC² (Assumption-Free K-MC²) algorithm:
-    // Reference: Bachem et al., "Fast and Provably Good Seedings for k-Means"
+    // Reference: Bachem et al., "Fast and Provably Good Seedings for
+    // k-Means"
 
     std::mt19937_64 rng(get_seed(seed));
     std::uniform_real_distribution<double> uniform_01(0.0, 1.0);
@@ -254,8 +261,9 @@ void ClusteringInitialization::init_afkmc2(
     std::unordered_set<size_t> selected_centroids;
 
     // Compute proposal distribution q(x)
-    // If existing centroids: base q on distance to nearest existing centroid
-    // Otherwise: select first centroid randomly and base q on it
+    // If existing centroids: base q on distance to nearest existing
+    // centroid Otherwise: select first centroid randomly and base q on
+    // it
     std::vector<double> dist_to_nearest(n);
     auto result = init_distances_for_d2_sampling(
             d,
@@ -296,7 +304,8 @@ void ClusteringInitialization::init_afkmc2(
             current_idx = sample_from_cumsum(q_cumsum, rng);
         } while (selected_centroids.count(current_idx) > 0);
 
-        // Compute distance to nearest centroid (existing + newly selected)
+        // Compute distance to nearest centroid (existing + newly
+        // selected)
         double current_dist = distance_to_nearest_centroid(
                 d,
                 c,
@@ -317,7 +326,8 @@ void ClusteringInitialization::init_afkmc2(
                 continue;
             }
 
-            // Compute distance to nearest centroid (existing + newly selected)
+            // Compute distance to nearest centroid (existing + newly
+            // selected)
             double proposed_dist = distance_to_nearest_centroid(
                     d,
                     c,
@@ -332,7 +342,8 @@ void ClusteringInitialization::init_afkmc2(
             // accept = min(1, d(y,C)² · q(x) / (d(x,C)² · q(y)))
             double acceptance_prob = 0.0;
             if (current_dist <= 0) {
-                // Current point is a centroid (distance = 0), never leave
+                // Current point is a centroid (distance = 0), never
+                // leave
                 acceptance_prob = 0.0;
             } else if (proposed_q > 0) {
                 double numerator = proposed_dist * current_q;
