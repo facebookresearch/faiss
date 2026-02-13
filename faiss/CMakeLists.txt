@@ -203,6 +203,7 @@ set(FAISS_HEADERS
   VectorTransform.h
   clone_index.h
   index_factory.h
+  factory_tools.h
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
@@ -233,6 +234,7 @@ set(FAISS_HEADERS
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
+  impl/expanded_scanners.h
   impl/scalar_quantizer/codecs.h
   impl/scalar_quantizer/distance_computers.h
   impl/scalar_quantizer/quantizers.h
@@ -243,6 +245,7 @@ set(FAISS_HEADERS
   impl/index_read_utils.h
   impl/io.h
   impl/io_macros.h
+  impl/mapped_io.h
   impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
@@ -280,6 +283,7 @@ set(FAISS_HEADERS
   utils/partitioning.h
   utils/prefetch.h
   utils/quantize_lut.h
+  utils/rabitq_simd.h
   utils/random.h
   utils/sorting.h
   utils/simdlib.h
@@ -307,6 +311,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
+  utils/simd_impl/distances_sse-inl.h
 )
 
 if(FAISS_ENABLE_SVS)
