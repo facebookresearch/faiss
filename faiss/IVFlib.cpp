@@ -18,6 +18,7 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/clone_index.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/index_io.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -512,39 +513,41 @@ void ivf_residual_add_from_flat_codes(
     const ResidualQuantizer& rq = index->rq;
 
     // populate inverted lists
-#pragma omp parallel if (nb > 10000)
-    {
-        std::vector<uint8_t> tmp_code(index->code_size);
-        std::vector<float> tmp(rq.d);
-        int nt = omp_get_num_threads();
-        int rank = omp_get_thread_num();
+    with_simd_level([&]<SIMDLevel SL>() {
+#pragma omp parallel
+        {
+            std::vector<uint8_t> tmp_code(index->rq.code_size);
+            std::vector<float> tmp(rq.d);
+            int nt = omp_get_num_threads();
+            int rank = omp_get_thread_num();
 
 #pragma omp for
-        for (idx_t i = 0; i < nb; i++) {
-            const uint8_t* code = &raw_codes[i * code_size];
-            BitstringReader rd(code, code_size);
-            idx_t list_no = rd.read(rcq->rq.tot_bits);
+            for (idx_t i = 0; i < nb; i++) {
+                const uint8_t* code = &raw_codes[i * code_size];
+                BitstringReader rd(code, code_size);
+                idx_t list_no = rd.read(rcq->rq.tot_bits);
 
-            if (list_no % nt ==
-                rank) { // each thread takes care of 1/nt of the invlists
-                // copy AQ indexes one by one
-                BitstringWriter wr(tmp_code.data(), tmp_code.size());
-                for (int j = 0; j < rq.M; j++) {
-                    int nbit = rq.nbits[j];
-                    wr.write(rd.read(nbit), nbit);
+                if (list_no % nt ==
+                    rank) { // each thread takes care of 1/nt of the invlists
+                    // copy AQ indexes one by one
+                    BitstringWriter wr(tmp_code.data(), tmp_code.size());
+                    for (int j = 0; j < rq.M; j++) {
+                        int nbit = rq.nbits[j];
+                        wr.write(rd.read(nbit), nbit);
+                    }
+                    // we need to recompute the norm
+                    // decode first, does not use the norm component, so that's
+                    // ok
+                    index->rq.decode(tmp_code.data(), tmp.data(), 1);
+                    float norm = fvec_norm_L2sqr<SL>(tmp.data(), rq.d);
+                    wr.write(rq.encode_norm(norm), rq.norm_bits);
+
+                    // add code to the inverted list
+                    invlists.add_entry(list_no, i, tmp_code.data());
                 }
-                // we need to recompute the norm
-                // decode first, does not use the norm component, so that's
-                // ok
-                index->rq.decode(tmp_code.data(), tmp.data(), 1);
-                float norm = fvec_norm_L2sqr(tmp.data(), rq.d);
-                wr.write(rq.encode_norm(norm), rq.norm_bits);
-
-                // add code to the inverted list
-                invlists.add_entry(list_no, i, tmp_code.data());
             }
         }
-    }
+    });
     index->ntotal += nb;
 }
 

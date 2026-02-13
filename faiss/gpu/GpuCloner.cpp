@@ -64,7 +64,7 @@ void ToCPUCloner::merge_index(Index* dst, Index* src, bool successive_ids) {
         FAISS_ASSERT(ifl2);
         ifl->merge_from(*ifl2, successive_ids ? ifl->ntotal : 0);
     } else {
-        FAISS_ASSERT(!"merging not implemented for this type of class");
+        FAISS_ASSERT(false && "merging not implemented for this type of class");
     }
 }
 

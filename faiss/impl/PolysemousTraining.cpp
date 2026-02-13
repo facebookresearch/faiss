@@ -18,6 +18,7 @@
 #include <cstring>
 #include <memory>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -798,12 +799,18 @@ void PolysemousTraining::optimize_reproduce_distances(
 
         float* centroids = pq.get_centroids(m, 0);
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                dis_table.push_back(fvec_L2sqr(
-                        centroids + i * dsub, centroids + j * dsub, dsub));
+        auto compute_dis_table = [&]<SIMDLevel SL>() {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dis_table.push_back(
+                            fvec_L2sqr<SL>(
+                                    centroids + i * dsub,
+                                    centroids + j * dsub,
+                                    dsub));
+                }
             }
-        }
+        };
+        with_simd_level(compute_dis_table);
 
         std::vector<int> perm(n);
         ReproduceWithHammingObjective obj(nbits, dis_table, dis_weight_factor);

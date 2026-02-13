@@ -20,7 +20,6 @@
 #include <faiss/impl/ResultHandler.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 

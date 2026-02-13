@@ -12,6 +12,7 @@
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>

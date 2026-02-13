@@ -54,7 +54,7 @@ inline svs_runtime::MetricType to_svs_metric(faiss::MetricType metric) {
         case METRIC_L2:
             return svs_runtime::MetricType::L2;
         default:
-            FAISS_ASSERT(!"not supported SVS distance");
+            FAISS_ASSERT(false && "not supported SVS distance");
     }
 }
 
@@ -81,7 +81,8 @@ template <typename T, typename U, typename = void>
 struct InputBufferConverter {
     InputBufferConverter(std::span<const U> data = {}) : buffer(data.size()) {
         FAISS_ASSERT(
-                !"InputBufferConverter: there is no suitable user code for this type conversion");
+                false &&
+                "InputBufferConverter: there is no suitable user code for this type conversion");
         std::transform(
                 data.begin(), data.end(), buffer.begin(), [](const U& val) {
                     return static_cast<T>(val);
@@ -141,7 +142,8 @@ struct OutputBufferConverter {
     OutputBufferConverter(std::span<U> data = {})
             : data_span(data), buffer(data.size()) {
         FAISS_ASSERT(
-                !"OutputBufferConverter: there is no suitable user code for this type conversion");
+                false &&
+                "OutputBufferConverter: there is no suitable user code for this type conversion");
     }
 
     ~OutputBufferConverter() {
