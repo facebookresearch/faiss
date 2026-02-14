@@ -166,6 +166,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
@@ -658,6 +659,7 @@ struct faiss::simd16uint16 {};
 %ignore faiss::InterruptCallback::lock;
 
 %include <faiss/impl/AuxIndexStructures.h>
+%include <faiss/impl/VisitedTable.h>
 %include <faiss/impl/IDSelector.h>
 
 %include  <faiss/IndexIDMap.h>

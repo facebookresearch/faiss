@@ -84,6 +84,7 @@ set(FAISS_SRC
   clone_index.cpp
   index_factory.cpp
   impl/AuxIndexStructures.cpp
+  impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
   impl/CodePacker.cpp
   impl/IDSelector.cpp
@@ -207,6 +208,7 @@ set(FAISS_HEADERS
   index_io.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
+  impl/VisitedTable.h
   impl/ClusteringInitialization.h
   impl/CodePacker.h
   impl/IDSelector.h
