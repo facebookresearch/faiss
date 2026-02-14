@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="28" column="9" bodyfile="faiss/IndexNSG.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="26" column="9" bodyfile="faiss/IndexNSG.h" bodystart="26" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a6e95ff08dcda324764fead2438ae04aa" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="31" column="10" bodyfile="faiss/IndexNSG.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="29" column="10" bodyfile="faiss/IndexNSG.h" bodystart="29" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a2223ff2754ef47461d8dbe8fd0161562" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="32" column="11" bodyfile="faiss/IndexNSG.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="30" column="11" bodyfile="faiss/IndexNSG.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a48d5640864be98b5db017f7459c2f3fc" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -68,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="35" column="10" bodyfile="faiss/IndexNSG.h" bodystart="35" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="33" column="10" bodyfile="faiss/IndexNSG.h" bodystart="33" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1ab42dd8a2ccd955bac425b68fc604d7a9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -84,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="38" column="9" bodyfile="faiss/IndexNSG.h" bodystart="38" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="36" column="9" bodyfile="faiss/IndexNSG.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1aa51ad0b18442396b6df5ee99fefe21c6" prot="public" static="no" mutable="no">
         <type>char</type>
@@ -104,7 +104,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="43" column="10" bodyfile="faiss/IndexNSG.h" bodystart="43" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="41" column="10" bodyfile="faiss/IndexNSG.h" bodystart="41" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1ac1fbc1508f8ab8d4675da13048195ff9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="46" column="9" bodyfile="faiss/IndexNSG.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="44" column="9" bodyfile="faiss/IndexNSG.h" bodystart="44" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a13e6a2f1d8cd072b6005b86320acd3da" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="47" column="9" bodyfile="faiss/IndexNSG.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="45" column="9" bodyfile="faiss/IndexNSG.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a8f4fad5145737f8c485aeb4b094d9003" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="48" column="9" bodyfile="faiss/IndexNSG.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="46" column="9" bodyfile="faiss/IndexNSG.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexNSG_1a30deb28e0190cb7be986cf5e1584ce63" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -164,7 +164,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="49" column="9" bodyfile="faiss/IndexNSG.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/IndexNSG.h" line="47" column="9" bodyfile="faiss/IndexNSG.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -285,7 +285,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="51" column="14"/>
+        <location file="faiss/IndexNSG.h" line="49" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a055fc2195abfa7237ce15be50d8c385d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -308,7 +308,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="52" column="14"/>
+        <location file="faiss/IndexNSG.h" line="50" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a0d323b66b6af8592194344497a1f9422" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -322,7 +322,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="54" column="5"/>
+        <location file="faiss/IndexNSG.h" line="52" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a5f8d4dc0ef239c5d6d29252c728dd9fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -352,7 +352,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="56" column="10"/>
+        <location file="faiss/IndexNSG.h" line="54" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a9fc38a1c373f96d845364143ff933207" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -394,7 +394,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="58" column="10"/>
+        <location file="faiss/IndexNSG.h" line="56" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a024c25f4757df14fb741ca9a6fb4cfcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -419,7 +419,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="61" column="10"/>
+        <location file="faiss/IndexNSG.h" line="59" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a84e2a955e1a1a939b934e4e8be849943" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -460,7 +460,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="64" column="10"/>
+        <location file="faiss/IndexNSG.h" line="62" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a443fa9f9a866fca02ff55af0226ccb6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -502,7 +502,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="72" column="10"/>
+        <location file="faiss/IndexNSG.h" line="70" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1a88fbd9b8c4fc905a51ba202c1a447e34" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -518,7 +518,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="74" column="10"/>
+        <location file="faiss/IndexNSG.h" line="72" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexNSG_1aeba92394231e269fd0ffd8fe1e6240ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -544,7 +544,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexNSG.h" line="76" column="10"/>
+        <location file="faiss/IndexNSG.h" line="74" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -1766,7 +1766,7 @@
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexNSG.h" line="26" column="1" bodyfile="faiss/IndexNSG.h" bodystart="26" bodyend="77"/>
+    <location file="faiss/IndexNSG.h" line="24" column="1" bodyfile="faiss/IndexNSG.h" bodystart="24" bodyend="75"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexNSG_1a9fc38a1c373f96d845364143ff933207" prot="public" virt="virtual"><scope>faiss::IndexNSG</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexNSG</scope><name>add_ex</name></member>

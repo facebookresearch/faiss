@@ -20,13 +20,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="105" column="18" declfile="faiss/impl/NSG.h" declline="105" declcolumn="18"/>
+        <location file="faiss/impl/NSG.h" line="106" column="18" declfile="faiss/impl/NSG.h" declline="106" declcolumn="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/NSG.h" line="42" column="1"/>
+    <location file="faiss/impl/NSG.h" line="43" column="1"/>
   </compounddef>
 </doxygen>

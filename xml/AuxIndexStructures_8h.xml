@@ -9,7 +9,6 @@
     <includes local="no">vector</includes>
     <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
-    <includedby refid="NSG_8h" local="no">faiss/impl/NSG.h</includedby>
     <includedby refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includedby>
     <includedby refid="ScalarQuantizer_8h" local="no">faiss/impl/ScalarQuantizer.h</includedby>
     <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
@@ -76,39 +75,39 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="14">
+      <node id="12">
         <label>faiss/IndexHNSW.h</label>
         <link refid="IndexHNSW_8h_source"/>
       </node>
-      <node id="7">
+      <node id="5">
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
       </node>
-      <node id="3">
+      <node id="13">
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
-      <node id="8">
+      <node id="6">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="11">
         <label>faiss/IndexScalarQuantizer.h</label>
         <link refid="IndexScalarQuantizer_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
       </node>
-      <node id="16">
+      <node id="15">
         <label>faiss/gpu/GpuIndexIVFFlat.h</label>
         <link refid="GpuIndexIVFFlat_8h_source"/>
       </node>
-      <node id="15">
+      <node id="14">
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
@@ -117,37 +116,31 @@
         <link refid="AuxIndexStructures_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="2">
-        <label>faiss/impl/NSG.h</label>
-        <link refid="NSG_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="4">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h_source"/>
-        <childnode refid="5" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
       </node>
-      <node id="12">
+      <node id="10">
         <label>faiss/impl/ScalarQuantizer.h</label>
         <link refid="ScalarQuantizer_8h_source"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
@@ -159,78 +152,76 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
       </node>
-      <node id="5">
+      <node id="3">
         <label>faiss/impl/expanded_scanners.h</label>
         <link refid="expanded__scanners_8h_source"/>
       </node>
-      <node id="17">
+      <node id="16">
         <label>faiss/impl/scalar_quantizer/codecs.h</label>
         <link refid="codecs_8h_source"/>
       </node>
-      <node id="18">
+      <node id="17">
         <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
         <link refid="distance__computers_8h_source"/>
       </node>
-      <node id="19">
+      <node id="18">
         <label>faiss/impl/scalar_quantizer/quantizers.h</label>
         <link refid="quantizers_8h_source"/>
       </node>
-      <node id="20">
+      <node id="19">
         <label>faiss/impl/scalar_quantizer/similarities.h</label>
         <link refid="similarities_8h_source"/>
       </node>
-      <node id="21">
+      <node id="20">
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
-      <node id="6">
+      <node id="4">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
-        <childnode refid="7" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/svs/IndexSVSFaissUtils.h</label>
+        <link refid="IndexSVSFaissUtils_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="22">
-        <label>faiss/svs/IndexSVSFaissUtils.h</label>
-        <link refid="IndexSVSFaissUtils_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
-        </childnode>
-      </node>
-      <node id="23">
         <label>faiss/svs/IndexSVSFlat.h</label>
         <link refid="IndexSVSFlat_8h_source"/>
       </node>
-      <node id="24">
+      <node id="23">
         <label>faiss/svs/IndexSVSVamana.h</label>
         <link refid="IndexSVSVamana_8h_source"/>
+        <childnode refid="24" relation="include">
+        </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
       </node>
-      <node id="25">
+      <node id="24">
         <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
         <link refid="IndexSVSVamanaLVQ_8h_source"/>
       </node>
-      <node id="26">
+      <node id="25">
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="9">
+      <node id="7">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="10">
+      <node id="8">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="11">
+      <node id="9">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
@@ -242,7 +233,6 @@
     <innerclass refid="structfaiss_1_1RangeSearchPartialResult" prot="public">faiss::RangeSearchPartialResult</innerclass>
     <innerclass refid="structfaiss_1_1InterruptCallback" prot="public">faiss::InterruptCallback</innerclass>
     <innerclass refid="structfaiss_1_1TimeoutCallback" prot="public">faiss::TimeoutCallback</innerclass>
-    <innerclass refid="structfaiss_1_1VisitedTable" prot="public">faiss::VisitedTable</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -419,38 +409,10 @@
 <codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_timeout(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>timeout_in_seconds);</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>reset(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>timeout_in_seconds);</highlight></codeline>
 <codeline lineno="170"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="172"><highlight class="comment">///<sp/>set<sp/>implementation<sp/>optimized<sp/>for<sp/>fast<sp/>access.</highlight></codeline>
-<codeline lineno="173" refid="structfaiss_1_1VisitedTable" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref><sp/>{</highlight></codeline>
-<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>visited;</highlight></codeline>
-<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>uint8_t<sp/>visno;</highlight></codeline>
-<codeline lineno="176"><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable" kindref="compound">VisitedTable</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size)<sp/>:<sp/>visited(size),<sp/>visno(1)<sp/>{}</highlight></codeline>
-<codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="179"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>set<sp/>flag<sp/>#no<sp/>to<sp/>true</highlight></codeline>
-<codeline lineno="180" refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" kindref="member">set</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)<sp/>{</highlight></codeline>
-<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visited[no]<sp/>=<sp/>visno;</highlight></codeline>
-<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="184"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>get<sp/>flag<sp/>#no</highlight></codeline>
-<codeline lineno="185" refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" kindref="member">get</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>no)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>visited[no]<sp/>==<sp/>visno;</highlight></codeline>
-<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="188"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="189"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>reset<sp/>all<sp/>flags<sp/>to<sp/>false</highlight></codeline>
-<codeline lineno="190" refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kindref="member">advance</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno++;</highlight></codeline>
-<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(visno<sp/>==<sp/>250)<sp/>{</highlight></codeline>
-<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>250<sp/>rather<sp/>than<sp/>255<sp/>because<sp/>sometimes<sp/>we<sp/>use<sp/>visno<sp/>and<sp/>visno+1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memset(visited.data(),<sp/>0,<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(visited[0])<sp/>*<sp/>visited.size());</highlight></codeline>
-<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>visno<sp/>=<sp/>1;</highlight></codeline>
-<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="198"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="199"><highlight class="normal"></highlight></codeline>
-<codeline lineno="200"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="201"><highlight class="normal"></highlight></codeline>
-<codeline lineno="202"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/impl/AuxIndexStructures.h"/>
   </compounddef>

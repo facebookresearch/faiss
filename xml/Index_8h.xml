@@ -10,7 +10,7 @@
     <includedby refid="IndexBinary_8h" local="no">faiss/IndexBinary.h</includedby>
     <includedby refid="IndexFastScan_8h" local="no">faiss/IndexFastScan.h</includedby>
     <includedby refid="IndexFlatCodes_8h" local="no">faiss/IndexFlatCodes.h</includedby>
-    <includedby refid="IndexHNSW_8h" local="yes">faiss/IndexHNSW.h</includedby>
+    <includedby refid="IndexHNSW_8h" local="no">faiss/IndexHNSW.h</includedby>
     <includedby refid="IndexIDMap_8h" local="no">faiss/IndexIDMap.h</includedby>
     <includedby refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includedby>
     <includedby refid="IndexIVFRaBitQ_8h" local="no">faiss/IndexIVFRaBitQ.h</includedby>

@@ -2222,6 +2222,7 @@
     <member refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" kind="variable"><name>check_relative_distance</name></member>
     <member refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" kind="variable"><name>search_bounded_queue</name></member>
     <member refid="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" kind="variable"><name>is_panorama</name></member>
+    <member refid="structfaiss_1_1HNSW_1a7b482fea55ce6c7f20a47655b2a8305f" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" kind="function"><name>set_default_probas</name></member>
     <member refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" kind="function"><name>set_nb_neighbors</name></member>
     <member refid="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" kind="function"><name>nb_neighbors</name></member>
@@ -3388,6 +3389,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3478,6 +3480,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3494,6 +3497,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3587,6 +3591,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3603,6 +3608,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3695,6 +3701,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -3747,6 +3754,7 @@
     <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" kind="variable"><name>storage</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1aefb4e8913acd1bad3ede536cee0662cd" kind="variable"><name>init_level0</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a58718fc0510c50cbb0afaad01e9129b3" kind="variable"><name>keep_max_size_level0</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1a1f700e70f2c7c04e5c64841b26d6cb79" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -8685,6 +8693,7 @@
     <member refid="structfaiss_1_1NSG_1af354918b4f15cfee52b475d1c49164ad" kind="variable"><name>L</name></member>
     <member refid="structfaiss_1_1NSG_1a578bc868281b0c3105ddf91e6485b57b" kind="variable"><name>C</name></member>
     <member refid="structfaiss_1_1NSG_1a13564167f1050b9d23b650bc70f23a36" kind="variable"><name>search_L</name></member>
+    <member refid="structfaiss_1_1NSG_1ab881fdf756a786d7c70282a8749dd86b" kind="variable"><name>use_visited_hashset</name></member>
     <member refid="structfaiss_1_1NSG_1aed2653f3cc0681c175536a4090dfc4ca" kind="variable"><name>enterpoint</name></member>
     <member refid="structfaiss_1_1NSG_1a1176bfde1457292e4c058b352bcde902" kind="variable"><name>final_graph</name></member>
     <member refid="structfaiss_1_1NSG_1a4d059cd0ef5c9722c082c77da13fea7a" kind="variable"><name>is_built</name></member>
@@ -11374,10 +11383,12 @@
   </compound>
   <compound refid="structfaiss_1_1VisitedTable" kind="struct"><name>faiss::VisitedTable</name>
     <member refid="structfaiss_1_1VisitedTable_1ac2343f3d7f81c2cf046c3ee20ce2c5ec" kind="variable"><name>visited</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1ab7a924acc250b843afa1bc27d3f19f48" kind="variable"><name>visited_set</name></member>
     <member refid="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" kind="variable"><name>visno</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a0cc8846371feddc08cdc6294f3a0e79a" kind="function"><name>VisitedTable</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a387b6428f4bfa44495c70a5f1f45f853" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1VisitedTable_1a0becc5bcc7f355f16cfb656a18a4313c" kind="function"><name>get</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a6765ef117312689df98edce81c52e93b" kind="function"><name>VisitedTable</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1ab974710f3530d1ecbde01b2a4ce55fc4" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a3bf601159737dfbdcfbc8be1262b2034" kind="function"><name>get</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1ad3d2376dfcd6a8204ec5abf96248006c" kind="function"><name>prefetch</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kind="function"><name>advance</name></member>
   </compound>
   <compound refid="structfaiss_1_1VStackInvertedLists" kind="struct"><name>faiss::VStackInvertedLists</name>
@@ -11585,6 +11596,7 @@
     <member refid="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" kind="variable"><name>rabitq_stats</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
     <member refid="namespacefaiss_1a8e2c4631a31c84b5debeab837ae25ca2" kind="variable"><name>simd_result_handlers_accept_virtual</name></member>
+    <member refid="namespacefaiss_1acba18e3a152e4eb878768d4d5fe1d911" kind="variable"><name>visited_table_hashset_threshold</name></member>
     <member refid="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" kind="variable"><name>index2layer_sa_encode_bs</name></member>
     <member refid="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" kind="variable"><name>index_factory_verbose</name></member>
     <member refid="namespacefaiss_1a1b8b979f26be5ebe9a037a5144fb796e" kind="variable"><name>IO_FLAG_SKIP_STORAGE</name></member>
@@ -11945,17 +11957,17 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d167" kind="namespace"><name>faiss::@167</name>
+  <compound refid="namespacefaiss_1_1_0d168" kind="namespace"><name>faiss::@168</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d177" kind="namespace"><name>faiss::@177</name>
+  <compound refid="namespacefaiss_1_1_0d178" kind="namespace"><name>faiss::@178</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d199" kind="namespace"><name>faiss::@199</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d201" kind="namespace"><name>faiss::@201</name>
+  <compound refid="namespacefaiss_1_1_0d200" kind="namespace"><name>faiss::@200</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d202" kind="namespace"><name>faiss::@202</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d203" kind="namespace"><name>faiss::@203</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d204" kind="namespace"><name>faiss::@204</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d55" kind="namespace"><name>faiss::@55</name>
   </compound>
@@ -12603,6 +12615,8 @@
   <compound refid="ThreadedIndex-inl_8h" kind="file"><name>ThreadedIndex-inl.h</name>
   </compound>
   <compound refid="ThreadedIndex_8h" kind="file"><name>ThreadedIndex.h</name>
+  </compound>
+  <compound refid="VisitedTable_8h" kind="file"><name>VisitedTable.h</name>
   </compound>
   <compound refid="zerocopy__io_8h" kind="file"><name>zerocopy_io.h</name>
   </compound>

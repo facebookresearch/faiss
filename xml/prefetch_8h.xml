@@ -2,6 +2,19 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="prefetch_8h" kind="file" language="C++">
     <compoundname>prefetch.h</compoundname>
+    <includedby refid="VisitedTable_8h" local="no">faiss/impl/VisitedTable.h</includedby>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/VisitedTable.h</label>
+        <link refid="VisitedTable_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/utils/prefetch.h</label>
+        <link refid="prefetch_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <sectiondef kind="func">
       <memberdef kind="function" id="prefetch_8h_1a73bf3a206d821452c93552a14787b60c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
