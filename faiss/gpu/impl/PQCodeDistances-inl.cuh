@@ -20,11 +20,9 @@
 namespace faiss {
 namespace gpu {
 
-#if defined(USE_AMD_ROCM) && __AMDGCN_WAVEFRONT_SIZE == 64u
-#define LAUNCH_BOUND 320
-#else
-#define LAUNCH_BOUND 288
-#endif
+__device__ constexpr inline int getLaunchBound() {
+    return kWarpSize == 32 ? 288 : 320;
+}
 
 // Kernel responsible for calculating distance from residual vector to
 // each product quantizer code centroid
@@ -33,7 +31,7 @@ template <
         typename CentroidT,
         int DimsPerSubQuantizer,
         bool L2Distance>
-__global__ void __launch_bounds__(LAUNCH_BOUND, 3) pqCodeDistances(
+__global__ void __launch_bounds__(getLaunchBound(), 3) pqCodeDistances(
         Tensor<float, 2, true> queries,
         int queriesPerBlock,
         Tensor<CentroidT, 2, true> coarseCentroids,
