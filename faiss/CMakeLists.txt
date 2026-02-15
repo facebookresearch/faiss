@@ -484,6 +484,13 @@ set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve P
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
+# Apply compiler warnings based on FAISS_WARNING_LEVEL
+faiss_add_warnings(faiss)
+faiss_add_warnings(faiss_avx2)
+faiss_add_warnings(faiss_avx512)
+faiss_add_warnings(faiss_avx512_spr)
+faiss_add_warnings(faiss_sve)
+
 if(WIN32)
   target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx2 PRIVATE FAISS_MAIN_LIB)

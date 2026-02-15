@@ -26,8 +26,8 @@ struct VectorTransform {
     int d_in;  ///! input dimension
     int d_out; ///! output dimension
 
-    explicit VectorTransform(int d_in = 0, int d_out = 0)
-            : d_in(d_in), d_out(d_out), is_trained(true) {}
+    explicit VectorTransform(int d_in_val = 0, int d_out_val = 0)
+            : d_in(d_in_val), d_out(d_out_val), is_trained(true) {}
 
     /// set if the VectorTransform does not require training, or if
     /// training is done already
@@ -82,9 +82,9 @@ struct LinearTransform : VectorTransform {
 
     /// both d_in > d_out and d_out < d_in are supported
     explicit LinearTransform(
-            int d_in = 0,
-            int d_out = 0,
-            bool have_bias = false);
+            int din = 0,
+            int dout = 0,
+            bool have_bias_in = false);
 
     /// same as apply, but result is pre-allocated
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
@@ -114,8 +114,8 @@ struct LinearTransform : VectorTransform {
 /// Randomly rotate a set of vectors
 struct RandomRotationMatrix : LinearTransform {
     /// both d_in > d_out and d_out < d_in are supported
-    RandomRotationMatrix(int d_in, int d_out)
-            : LinearTransform(d_in, d_out, false) {}
+    RandomRotationMatrix(int d_in_val, int d_out_val)
+            : LinearTransform(d_in_val, d_out_val, false) {}
 
     /// must be called before the transform is used
     void init(int seed);
@@ -160,10 +160,10 @@ struct PCAMatrix : LinearTransform {
 
     // the final matrix is computed after random rotation and/or whitening
     explicit PCAMatrix(
-            int d_in = 0,
-            int d_out = 0,
-            float eigen_power = 0,
-            bool random_rotation = false);
+            int din = 0,
+            int dout = 0,
+            float eigen_power_in = 0,
+            bool random_rotation_in = false);
 
     /// train on n vectors. If n < d_in then the eigenvector matrix
     /// will be completed with 0s
@@ -210,7 +210,7 @@ struct ITQTransform : VectorTransform {
     // concatenation of PCA + ITQ transformation
     LinearTransform pca_then_itq;
 
-    explicit ITQTransform(int d_in = 0, int d_out = 0, bool do_pca = false);
+    explicit ITQTransform(int din = 0, int dout = 0, bool do_pca_in = false);
 
     void train(idx_t n, const float* x) override;
 
@@ -244,7 +244,7 @@ struct OPQMatrix : LinearTransform {
     ProductQuantizer* pq = nullptr;
 
     /// if d2 != -1, output vectors of this dimension
-    explicit OPQMatrix(int d = 0, int M = 1, int d2 = -1);
+    explicit OPQMatrix(int d = 0, int M_in = 1, int d2 = -1);
 
     void train(idx_t n, const float* x) override;
 };
@@ -257,12 +257,12 @@ struct RemapDimensionsTransform : VectorTransform {
     /// -1 -> set output to 0
     std::vector<int> map;
 
-    RemapDimensionsTransform(int d_in, int d_out, const int* map);
+    RemapDimensionsTransform(int din, int dout, const int* map);
 
     /// remap input to output, skipping or inserting dimensions as needed
     /// if uniform: distribute dimensions uniformly
     /// otherwise just take the d_out first ones.
-    RemapDimensionsTransform(int d_in, int d_out, bool uniform = true);
+    RemapDimensionsTransform(int din, int dout, bool uniform = true);
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;
 
@@ -278,7 +278,7 @@ struct RemapDimensionsTransform : VectorTransform {
 struct NormalizationTransform : VectorTransform {
     float norm;
 
-    explicit NormalizationTransform(int d, float norm = 2.0);
+    explicit NormalizationTransform(int d, float norm_in = 2.0);
     NormalizationTransform();
 
     void apply_noalloc(idx_t n, const float* x, float* xt) const override;

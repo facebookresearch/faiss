@@ -31,8 +31,8 @@ void get_matrix_column(
         int64_t i,
         int64_t j,
         TA& dest) {
-    for (int64_t k = 0; k < dest.size(); k++) {
-        if (k + i >= 0 && k + i < m) {
+    for (int64_t k = 0; k < static_cast<int64_t>(dest.size()); k++) {
+        if (k + i >= 0 && k + i < static_cast<int64_t>(m)) {
             dest[k] = src[(k + i) * n + j];
         } else {
             dest[k] = 0;
@@ -80,7 +80,7 @@ void pq4_pack_codes(
 
     uint8_t* codes2 = blocks;
     for (size_t i0 = 0; i0 < nb; i0 += bbs) {
-        for (int sq = 0; sq < nsq; sq += 2) {
+        for (size_t sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
@@ -138,7 +138,7 @@ void pq4_pack_codes_range(
     for (size_t b = block0; b < block1; b++) {
         uint8_t* codes2 = blocks + b * bbs * nsq / 2;
         int64_t i_base = b * bbs - i0;
-        for (int sq = 0; sq < nsq; sq += 2) {
+        for (size_t sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
@@ -232,11 +232,11 @@ void pq4_set_packed_element(
  * CodePackerPQ4 implementation
  ***************************************************************/
 
-CodePackerPQ4::CodePackerPQ4(size_t nsq, size_t bbs) {
-    this->nsq = nsq;
+CodePackerPQ4::CodePackerPQ4(size_t nsq_in, size_t bbs) {
+    this->nsq = nsq_in;
     nvec = bbs;
-    code_size = (nsq * 4 + 7) / 8;
-    block_size = ((nsq + 1) / 2) * bbs;
+    code_size = (nsq_in * 4 + 7) / 8;
+    block_size = ((nsq_in + 1) / 2) * bbs;
 }
 
 void CodePackerPQ4::pack_1(

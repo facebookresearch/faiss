@@ -60,12 +60,12 @@ struct Graph {
     bool own_fields; ///< the underlying data owned by itself or not
 
     // construct from a known graph
-    Graph(node_t* data, int N, int K)
-            : data(data), K(K), N(N), own_fields(false) {}
+    Graph(node_t* data_in, int N_in, int K_in)
+            : data(data_in), K(K_in), N(N_in), own_fields(false) {}
 
     // construct an empty graph
     // NOTE: the newly allocated data needs to be destroyed at destruction time
-    Graph(int N, int K) : K(K), N(N), own_fields(true) {
+    Graph(int N_in, int K_in) : K(K_in), N(N_in), own_fields(true) {
         size_t total = faiss::mul_no_overflow(
                 (size_t)N, (size_t)K, "Graph allocation");
         data = new node_t[total];

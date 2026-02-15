@@ -27,8 +27,8 @@ namespace faiss {
  * IndexSplitVectors implementation
  *******************************************************/
 
-IndexSplitVectors::IndexSplitVectors(idx_t d, bool threaded)
-        : Index(d), own_fields(false), threaded(threaded), sum_d(0) {}
+IndexSplitVectors::IndexSplitVectors(idx_t d_in, bool threaded_in)
+        : Index(d_in), own_fields(false), threaded(threaded_in), sum_d(0) {}
 
 void IndexSplitVectors::add_sub_index(Index* index) {
     sub_indexes.push_back(index);
@@ -44,7 +44,7 @@ void IndexSplitVectors::sync_with_sub_indexes() {
     metric_type = index0->metric_type;
     is_trained = index0->is_trained;
     ntotal = index0->ntotal;
-    for (int i = 1; i < sub_indexes.size(); i++) {
+    for (size_t i = 1; i < sub_indexes.size(); i++) {
         Index* index = sub_indexes[i];
         FAISS_THROW_IF_NOT(metric_type == index->metric_type);
         FAISS_THROW_IF_NOT(ntotal == index->ntotal);
@@ -88,7 +88,7 @@ void IndexSplitVectors::search(
                            n);
                 }
                 const Index* sub_index = index->sub_indexes[no];
-                int64_t sub_d = sub_index->d, d = index->d;
+                int64_t sub_d = sub_index->d;
                 idx_t ofs = 0;
                 for (int i = 0; i < no; i++) {
                     ofs += index->sub_indexes[i]->d;
@@ -107,14 +107,14 @@ void IndexSplitVectors::search(
             };
 
     if (!threaded) {
-        for (int i = 0; i < nshard; i++) {
+        for (int64_t i = 0; i < nshard; i++) {
             query_func(i);
         }
     } else {
         std::vector<std::unique_ptr<WorkerThread>> threads;
         std::vector<std::future<bool>> v;
 
-        for (int i = 0; i < nshard; i++) {
+        for (int64_t i = 0; i < nshard; i++) {
             threads.emplace_back(new WorkerThread());
             WorkerThread* wt = threads.back().get();
             v.emplace_back(wt->add([i, query_func]() { query_func(i); }));
@@ -155,7 +155,7 @@ void IndexSplitVectors::reset() {
 
 IndexSplitVectors::~IndexSplitVectors() {
     if (own_fields) {
-        for (int s = 0; s < sub_indexes.size(); s++) {
+        for (size_t s = 0; s < sub_indexes.size(); s++) {
             delete sub_indexes[s];
         }
     }
@@ -166,12 +166,12 @@ IndexSplitVectors::~IndexSplitVectors() {
  */
 
 IndexRandom::IndexRandom(
-        idx_t d,
-        idx_t ntotal,
-        int64_t seed,
-        MetricType metric_type)
-        : Index(d, metric_type), seed(seed) {
-    this->ntotal = ntotal;
+        idx_t d_in,
+        idx_t ntotal_in,
+        int64_t seed_in,
+        MetricType metric_type_in)
+        : Index(d_in, metric_type_in), seed(seed_in) {
+    this->ntotal = ntotal_in;
     is_trained = true;
 }
 
@@ -234,7 +234,7 @@ void IndexRandom::search(
 
 void IndexRandom::reconstruct(idx_t key, float* recons) const {
     RandomGenerator rng(seed + 123332 + key);
-    for (size_t i = 0; i < d; i++) {
+    for (int i = 0; i < d; i++) {
         recons[i] = rng.rand_float();
     }
 }

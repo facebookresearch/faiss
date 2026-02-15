@@ -637,13 +637,13 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
 
         write_InvertedLists(ivaqfs->invlists, f);
     } else if (
-            const ResidualCoarseQuantizer* idxr_2 =
+            const ResidualCoarseQuantizer* idxrcq =
                     dynamic_cast<const ResidualCoarseQuantizer*>(idx)) {
         uint32_t h = fourcc("ImRQ");
         WRITE1(h);
         write_index_header(idx, f);
-        write_ResidualQuantizer(&idxr_2->rq, f);
-        WRITE1(idxr_2->beam_factor);
+        write_ResidualQuantizer(&idxrcq->rq, f);
+        WRITE1(idxrcq->beam_factor);
     } else if (
             const Index2Layer* idxp_2 = dynamic_cast<const Index2Layer*>(idx)) {
         uint32_t h = fourcc("Ix2L");
@@ -1156,7 +1156,7 @@ static void write_binary_multi_hash_map(
         size_t ntotal,
         IOWriter* f) {
     int id_bits = 0;
-    while ((ntotal > ((idx_t)1 << id_bits))) {
+    while ((ntotal > (size_t(1) << id_bits))) {
         id_bits++;
     }
     WRITE1(id_bits);

@@ -30,7 +30,7 @@ struct SimilarityL2<1> {
 
     const float *y, *yi;
 
-    explicit SimilarityL2(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     /******* scalar accumulator *******/
 
@@ -65,7 +65,7 @@ struct SimilarityL2<16> {
 
     const float *y, *yi;
 
-    explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in), yi(nullptr) {}
     simd16float32 accu16 = {};
 
     FAISS_ALWAYS_INLINE void begin_16() {
@@ -102,7 +102,7 @@ struct SimilarityL2<8> {
 
     const float *y, *yi;
 
-    explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in), yi(nullptr) {}
     simd8float32 accu8 = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
@@ -145,7 +145,7 @@ struct SimilarityL2<8> {
     static constexpr MetricType metric_type = METRIC_L2;
 
     const float *y, *yi;
-    explicit SimilarityL2(const float* y) : y(y) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in) {}
     simd8float32 accu8;
 
     FAISS_ALWAYS_INLINE void begin_8() {
@@ -201,7 +201,7 @@ struct SimilarityIP<1> {
 
     float accu;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     FAISS_ALWAYS_INLINE void begin() {
         accu = 0;
@@ -232,7 +232,7 @@ struct SimilarityIP<16> {
 
     float accu;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     simd16float32 accu16 = {};
 
@@ -270,7 +270,7 @@ struct SimilarityIP<8> {
 
     float accu;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     simd8float32 accu8 = {};
 
@@ -313,7 +313,7 @@ struct SimilarityIP<8> {
 
     const float *y, *yi;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr) {}
     simd8float32 accu8;
 
     FAISS_ALWAYS_INLINE void begin_8() {
