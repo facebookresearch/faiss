@@ -27,6 +27,8 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
+#include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -96,6 +98,9 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     TRYCLONE(IndexIVFResidualQuantizerFastScan, ivf)
     TRYCLONE(IndexIVFPQFastScan, ivf)
 
+    TRYCLONE(IndexIVFRaBitQFastScan, ivf)
+    TRYCLONE(IndexIVFRaBitQ, ivf)
+
     TRYCLONE(IndexIVFFlatDedup, ivf)
     TRYCLONE(IndexIVFFlat, ivf)
     TRYCLONE(IndexIVFFlatPanorama, ivf)
@@ -129,6 +134,7 @@ IndexIDMap* clone_IndexIDMap(const IndexIDMap* im) {
 
 IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW2Level, ihnsw)
+    TRYCLONE(IndexHNSWFlatPanorama, ihnsw)
     TRYCLONE(IndexHNSWFlat, ihnsw)
     TRYCLONE(IndexHNSWPQ, ihnsw)
     TRYCLONE(IndexHNSWSQ, ihnsw)
@@ -276,6 +282,7 @@ Index* Cloner::clone_Index(const Index* index) {
     // IndexFlat
     TRYCLONE(IndexFlat1D, index)
     TRYCLONE(IndexFlatL2, index)
+    TRYCLONE(IndexFlatL2Panorama, index)
     TRYCLONE(IndexFlatIP, index)
     TRYCLONE(IndexFlat, index)
 

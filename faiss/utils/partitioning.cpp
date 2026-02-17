@@ -803,7 +803,7 @@ uint16_t simd_partition_fuzzy_with_bounds_histogram(
             n_lt = sum_below - hist[i];
             n_gt = n - sum_below;
         } else {
-            assert(!"not implemented");
+            assert(false && "not implemented");
         }
 
         IFV printf(

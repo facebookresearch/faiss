@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/simd_result_handlers.h>
@@ -24,8 +25,9 @@ namespace faiss {
 struct FastScanDistancePostProcessing;
 
 // Import shared utilities from RaBitQUtils
-using rabitq_utils::FactorsData;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::SignBitFactors;
+using rabitq_utils::SignBitFactorsWithError;
 
 /** Fast-scan version of IndexIVFRaBitQ that processes vectors in batches
  * using SIMD operations. Combines the inverted file structure of IVF
@@ -53,9 +55,16 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Use zero-centered scalar quantizer for queries
     bool centered = false;
 
-    /// Extracted factors storage for batch processing
-    /// Size: ntotal, stores factors separately from packed codes
-    std::vector<FactorsData> factors_storage;
+    /// Per-vector auxiliary data (1-bit codes stored separately in `codes`)
+    ///
+    /// 1-bit codes (sign bits) are stored in the inherited `codes` array from
+    /// IndexFastScan in packed FastScan format for SIMD processing.
+    ///
+    /// This flat_storage holds per-vector factors and refinement-bit codes:
+    /// Layout for 1-bit: [SignBitFactors (8 bytes)]
+    /// Layout for multi-bit: [SignBitFactorsWithError
+    /// (12B)][ref_codes][ExtraBitsFactors (8B)]
+    std::vector<uint8_t> flat_storage;
 
     // Constructors
 
@@ -67,7 +76,8 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             size_t nlist,
             MetricType metric = METRIC_L2,
             int bbs = 32,
-            bool own_invlists = true);
+            bool own_invlists = true,
+            uint8_t nb_bits = 1);
 
     /// Build from an existing IndexIVFRaBitQ
     explicit IndexIVFRaBitQFastScan(const IndexIVFRaBitQ& orig, int bbs = 32);
@@ -101,13 +111,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Override sa_decode to handle RaBitQ reconstruction
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-   private:
-    /// Encode a vector to FastScan format without computing factors
-    void encode_vector_to_fastscan(
-            const float* xi,
-            const float* centroid,
-            uint8_t* fastscan_code) const;
+    /// Compute storage size per vector in flat_storage based on nb_bits
+    size_t compute_per_vector_storage_size() const;
 
+   private:
     /// Compute query factors and lookup table for a residual vector
     /// (similar to IndexRaBitQFastScan::compute_float_LUT)
     void compute_residual_LUT(
@@ -116,10 +123,12 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             float* lut_out,
             const float* original_query = nullptr) const;
 
-    /// Decode FastScan code to RaBitQ residual vector
+    /// Decode FastScan code to RaBitQ residual vector with explicit
+    /// dp_multiplier
     void decode_fastscan_to_residual(
             const uint8_t* fastscan_code,
-            float* residual) const;
+            float* residual,
+            float dp_multiplier) const;
 
    public:
     /// Implementation methods for IVFRaBitQFastScan specialization
@@ -157,6 +166,13 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             const FastScanDistancePostProcessing& context,
             const float* normalizers = nullptr) const override;
 
+    /// Get an InvertedListScanner for single-query scanning.
+    /// This provides compatibility with the standard IVF search interface
+    InvertedListScanner* get_InvertedListScanner(
+            bool store_pairs = false,
+            const IDSelector* sel = nullptr,
+            const IVFSearchParameters* params = nullptr) const override;
+
     /** SIMD result handler for IndexIVFRaBitQFastScan that applies
      * RaBitQ-specific distance corrections during batch processing.
      *
@@ -171,6 +187,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
      * - Specialized handling for both centered and non-centered quantization
      * modes
      * - Efficient inner product metric corrections
+     * - Uses runtime boolean for multi-bit mode
      *
      * @tparam C Comparator type (CMin/CMax) for heap operations
      */
@@ -185,7 +202,9 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         std::vector<int>
                 probe_indices; // probe index for each query in current batch
         const FastScanDistancePostProcessing*
-                context; // Processing context with query factors
+                context;        // Processing context with query factors
+        const bool is_multibit; // Whether to use multi-bit two-stage search
+        size_t nup = 0;         // Number of heap updates
 
         // Use float-based comparator for heap operations
         using Cfloat = typename std::conditional<
@@ -199,9 +218,11 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 size_t k_val,
                 float* distances,
                 int64_t* labels,
-                const FastScanDistancePostProcessing* ctx = nullptr);
+                const FastScanDistancePostProcessing* ctx = nullptr,
+                bool multibit = false);
 
-        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final;
+        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)
+                override;
 
         /// Override base class virtual method to receive context information
         void set_list_context(size_t list_no, const std::vector<int>& probe_map)
@@ -210,6 +231,23 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         void begin(const float* norms) override;
 
         void end() override;
+
+        size_t num_updates() override {
+            return nup;
+        }
+
+       private:
+        /// Compute full multi-bit distance for a candidate vector (multi-bit
+        /// only)
+        /// @param db_idx Global database vector index
+        /// @param local_q Batch-local query index (for probe_indices access)
+        /// @param global_q Global query index (for storage indexing)
+        /// @param local_offset Offset within the current inverted list
+        float compute_full_multibit_distance(
+                size_t db_idx,
+                size_t local_q,
+                size_t global_q,
+                size_t local_offset) const;
     };
 };
 

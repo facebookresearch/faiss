@@ -10,10 +10,10 @@
 #include <faiss/impl/NNDescent.h>
 
 #include <mutex>
-#include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/VisitedTable.h>
 
 namespace faiss {
 

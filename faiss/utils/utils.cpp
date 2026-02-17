@@ -8,6 +8,7 @@
 // -*- c++ -*-
 
 #include <faiss/Index.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
 #include <cassert>
@@ -115,16 +116,26 @@ std::string get_compile_options() {
     options += "OPTIMIZE ";
 #endif
 
-#ifdef __AVX512F__
-    options += "AVX512 ";
-#elif defined(__AVX2__)
-    options += "AVX2 ";
-#elif defined(__ARM_FEATURE_SVE)
-    options += "SVE NEON ";
-#elif defined(__aarch64__)
-    options += "NEON ";
+#ifdef FAISS_ENABLE_DD
+    // Dynamic Dispatch mode: report DD and all available SIMD levels
+    options += "DD ";
+    int supported = SIMDConfig::supported_simd_levels;
+    for (int i = 0; i < static_cast<int>(SIMDLevel::COUNT); ++i) {
+        auto level = static_cast<SIMDLevel>(i);
+        if ((supported & (1 << i)) && level != SIMDLevel::NONE) {
+            options += to_string(level) + " ";
+        }
+    }
 #else
-    options += "GENERIC ";
+    // Static mode: report the compiled-in SIMD level
+    SIMDLevel level = SIMDConfig::get_level();
+    if (level != SIMDLevel::NONE) {
+        options += to_string(level) + " ";
+    }
+#endif
+
+#ifdef FAISS_ENABLE_SVS
+    options += "SVS ";
 #endif
 
     options += ref_gpu_compile_options();

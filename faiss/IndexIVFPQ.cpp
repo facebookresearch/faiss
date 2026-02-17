@@ -18,20 +18,18 @@
 #include <algorithm>
 
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/Clustering.h>
 
 #include <faiss/utils/hamming.h>
 
-#include <faiss/impl/FaissAssert.h>
-
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-
 #include <faiss/impl/ProductQuantizer.h>
-
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/code_distance/code_distance.h>
 
 namespace faiss {
@@ -427,7 +425,7 @@ void initialize_IVFPQ_precomputed_table(
     for (int m = 0; m < pq.M; m++)
         for (int j = 0; j < pq.ksub; j++)
             r_norms[m * pq.ksub + j] =
-                    fvec_norm_L2sqr(pq.get_centroids(m, j), pq.dsub);
+                    fvec_norm_L2sqr_dispatch(pq.get_centroids(m, j), pq.dsub);
 
     if (use_precomputed_table == 1) {
         precomputed_table.resize(nlist * pq.M * pq.ksub);
@@ -438,7 +436,7 @@ void initialize_IVFPQ_precomputed_table(
 
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
             pq.compute_inner_prod_table(centroid.data(), tab);
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     } else if (use_precomputed_table == 2) {
         const MultiIndexQuantizer* miq =
@@ -465,7 +463,7 @@ void initialize_IVFPQ_precomputed_table(
 
         for (size_t i = 0; i < cpq.ksub; i++) {
             float* tab = &precomputed_table[i * pq.M * pq.ksub];
-            fvec_madd(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
         }
     }
 }
@@ -628,7 +626,7 @@ struct QueryTables {
         // and dis0, the initial value
         ivfpq.quantizer->reconstruct(key, decoded_vec);
         // decoded_vec = centroid
-        float dis0 = fvec_inner_product(qi, decoded_vec, d);
+        float dis0 = fvec_inner_product_dispatch(qi, decoded_vec, d);
 
         if (polysemous_ht) {
             for (int i = 0; i < d; i++) {
@@ -657,7 +655,7 @@ struct QueryTables {
         } else if (use_precomputed_table == 1) {
             dis0 = coarse_dis;
 
-            fvec_madd(
+            fvec_madd_dispatch(
                     pq.M * pq.ksub,
                     ivfpq.precomputed_table.data() + key * pq.ksub * pq.M,
                     -2.0,
@@ -693,12 +691,12 @@ struct QueryTables {
 
                 if (polysemous_ht == 0) {
                     // sum up with query-specific table
-                    fvec_madd(Mf * pq.ksub, pc, -2.0, qtab, ltab);
+                    fvec_madd_dispatch(Mf * pq.ksub, pc, -2.0, qtab, ltab);
                     ltab += Mf * pq.ksub;
                     qtab += Mf * pq.ksub;
                 } else {
                     for (int m = cm * Mf; m < (cm + 1) * Mf; m++) {
-                        q_code[m] = fvec_madd_and_argmin(
+                        q_code[m] = fvec_madd_and_argmin_dispatch(
                                 pq.ksub, pc, -2, qtab, ltab);
                         pc += pq.ksub;
                         ltab += pq.ksub;
@@ -762,52 +760,31 @@ struct QueryTables {
     }
 };
 
-// This way of handling the selector is not optimal since all distances
-// are computed even if the id would filter it out.
 template <class C, bool use_sel>
-struct KnnSearchResults {
-    idx_t key;
+struct WrappedSearchResult {
+    ResultHandler& res;
+    size_t nup = 0;
+    idx_t list_no;
+
     const idx_t* ids;
     const IDSelector* sel;
 
-    // heap params
-    size_t k;
-    float* heap_sim;
-    idx_t* heap_ids;
-
-    size_t nup;
+    WrappedSearchResult(
+            idx_t list_no,
+            const idx_t* ids,
+            const IDSelector* sel,
+            ResultHandler& res)
+            : res(res), list_no(list_no), ids(ids), sel(sel) {}
 
     inline bool skip_entry(idx_t j) {
         return use_sel && !sel->is_member(ids[j]);
     }
 
     inline void add(idx_t j, float dis) {
-        if (C::cmp(heap_sim[0], dis)) {
-            idx_t id = ids ? ids[j] : lo_build(key, j);
-            heap_replace_top<C>(k, heap_sim, heap_ids, dis, id);
+        if (C::cmp(res.threshold, dis)) {
+            idx_t id = ids ? ids[j] : lo_build(this->list_no, j);
+            res.add_result(dis, id);
             nup++;
-        }
-    }
-};
-
-template <class C, bool use_sel>
-struct RangeSearchResults {
-    idx_t key;
-    const idx_t* ids;
-    const IDSelector* sel;
-
-    // wrapped result structure
-    float radius;
-    RangeQueryResult& rres;
-
-    inline bool skip_entry(idx_t j) {
-        return use_sel && !sel->is_member(ids[j]);
-    }
-
-    inline void add(idx_t j, float dis) {
-        if (C::cmp(radius, dis)) {
-            idx_t id = ids ? ids[j] : lo_build(key, j);
-            rres.add(dis, id);
         }
     }
 };
@@ -979,7 +956,7 @@ struct IVFPQScannerT : QueryTables {
         if (by_residual) {
             if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
                 ivfpq.quantizer->reconstruct(key, residual_vec);
-                dis0 = fvec_inner_product(residual_vec, qi, d);
+                dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
             } else {
                 ivfpq.quantizer->compute_residual(qi, residual_vec, key);
             }
@@ -997,9 +974,9 @@ struct IVFPQScannerT : QueryTables {
 
             float dis;
             if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                dis = dis0 + fvec_inner_product(decoded_vec, qi, d);
+                dis = dis0 + fvec_inner_product_dispatch(decoded_vec, qi, d);
             } else {
-                dis = fvec_L2sqr(decoded_vec, dvec, d);
+                dis = fvec_L2sqr_dispatch(decoded_vec, dvec, d);
             }
             res.add(j, dis);
         }
@@ -1239,17 +1216,12 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
             size_t ncode,
             const uint8_t* codes,
             const idx_t* ids,
-            float* heap_sim,
-            idx_t* heap_ids,
-            size_t k) const override {
-        KnnSearchResults<C, use_sel> res = {
-                /* key */ this->key,
-                /* ids */ this->store_pairs ? nullptr : ids,
-                /* sel */ this->sel,
-                /* k */ k,
-                /* heap_sim */ heap_sim,
-                /* heap_ids */ heap_ids,
-                /* nup */ 0};
+            ResultHandler& handler) const override {
+        WrappedSearchResult<C, use_sel> res(
+                this->key,
+                this->store_pairs ? nullptr : ids,
+                this->sel,
+                handler);
 
         if (this->polysemous_ht > 0) {
             assert(precompute_mode == 2);
@@ -1264,33 +1236,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQDecoder>,
             FAISS_THROW_MSG("bad precomp mode");
         }
         return res.nup;
-    }
-
-    void scan_codes_range(
-            size_t ncode,
-            const uint8_t* codes,
-            const idx_t* ids,
-            float radius,
-            RangeQueryResult& rres) const override {
-        RangeSearchResults<C, use_sel> res = {
-                /* key */ this->key,
-                /* ids */ this->store_pairs ? nullptr : ids,
-                /* sel */ this->sel,
-                /* radius */ radius,
-                /* rres */ rres};
-
-        if (this->polysemous_ht > 0) {
-            assert(precompute_mode == 2);
-            this->scan_list_polysemous(ncode, codes, res);
-        } else if (precompute_mode == 2) {
-            this->scan_list_with_table(ncode, codes, res);
-        } else if (precompute_mode == 1) {
-            this->scan_list_with_pointer(ncode, codes, res);
-        } else if (precompute_mode == 0) {
-            this->scan_on_the_fly_dist(ncode, codes, res);
-        } else {
-            FAISS_THROW_MSG("bad precomp mode");
-        }
     }
 };
 

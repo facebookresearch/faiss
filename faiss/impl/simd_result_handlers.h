@@ -126,8 +126,8 @@ struct StoreResultHandler : SIMDResultHandler {
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
         size_t ofs = (q + i0) * ld + j0 + b * 32;
-        d0.store(data + ofs);
-        d1.store(data + ofs + 16);
+        d0.storeu(data + ofs);
+        d1.storeu(data + ofs + 16);
     }
 
     void set_block_origin(size_t i0_in, size_t j0_in) final {
@@ -406,10 +406,10 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
-                    T dis_2 = d32tab[j];
-                    if (C::cmp(heap_dis[0], dis_2)) {
+                    T dis_for_j = d32tab[j];
+                    if (C::cmp(heap_dis[0], dis_for_j)) {
                         heap_replace_top<C>(
-                                k, heap_dis, heap_ids, dis_2, real_idx);
+                                k, heap_dis, heap_ids, dis_for_j, real_idx);
                         nup++;
                     }
                 }
@@ -419,10 +419,10 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
-                T dis_2 = d32tab[j];
-                if (C::cmp(heap_dis[0], dis_2)) {
+                T dis_for_j = d32tab[j];
+                if (C::cmp(heap_dis[0], dis_for_j)) {
                     int64_t idx = this->adjust_id(b, j);
-                    heap_replace_top<C>(k, heap_dis, heap_ids, dis_2, idx);
+                    heap_replace_top<C>(k, heap_dis, heap_ids, dis_for_j, idx);
                     nup++;
                 }
             }
@@ -524,8 +524,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
-                    T dis_2 = d32tab[j];
-                    res.add(dis_2, real_idx);
+                    T dis_for_j = d32tab[j];
+                    res.add(dis_for_j, real_idx);
                 }
             }
         } else {
@@ -533,8 +533,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
-                T dis_2 = d32tab[j];
-                res.add(dis_2, this->adjust_id(b, j));
+                T dis_for_j = d32tab[j];
+                res.add(dis_for_j, this->adjust_id(b, j));
             }
         }
     }
@@ -761,12 +761,12 @@ void dispatch_SIMDResultHandler_fixedCW(
         SIMDResultHandler& res,
         Consumer& consumer,
         Types... args) {
-    if (auto resh = dynamic_cast<SingleResultHandler<C, W>*>(&res)) {
-        consumer.template f<SingleResultHandler<C, W>>(*resh, args...);
-    } else if (auto resh_2 = dynamic_cast<HeapHandler<C, W>*>(&res)) {
-        consumer.template f<HeapHandler<C, W>>(*resh_2, args...);
-    } else if (auto resh_2 = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
-        consumer.template f<ReservoirHandler<C, W>>(*resh_2, args...);
+    if (auto resh_sh = dynamic_cast<SingleResultHandler<C, W>*>(&res)) {
+        consumer.template f<SingleResultHandler<C, W>>(*resh_sh, args...);
+    } else if (auto resh_hh = dynamic_cast<HeapHandler<C, W>*>(&res)) {
+        consumer.template f<HeapHandler<C, W>>(*resh_hh, args...);
+    } else if (auto resh_rh = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
+        consumer.template f<ReservoirHandler<C, W>>(*resh_rh, args...);
     } else { // generic handler -- will not be inlined
         FAISS_THROW_IF_NOT_FMT(
                 simd_result_handlers_accept_virtual,

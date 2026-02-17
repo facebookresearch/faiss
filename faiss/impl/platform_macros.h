@@ -107,6 +107,12 @@ inline int __builtin_clzll(uint64_t x) {
 
 #define FAISS_ALWAYS_INLINE __forceinline
 
+// MSVC uses pragma pack instead of __attribute__((packed))
+// Use FAISS_PACK_STRUCTS_BEGIN/END to wrap packed structure definitions
+#define FAISS_PACKED
+#define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
+#define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
+
 #else
 /*******************************************************
  * Linux and OSX
@@ -119,9 +125,15 @@ inline int __builtin_clzll(uint64_t x) {
 // windows
 #ifdef SWIG
 #define ALIGNED(x)
+#define FAISS_PACKED
 #else
 #define ALIGNED(x) __attribute__((aligned(x)))
+#define FAISS_PACKED __attribute__((packed))
 #endif
+
+// On non-Windows, FAISS_PACKED handles packing, so these are no-ops
+#define FAISS_PACK_STRUCTS_BEGIN
+#define FAISS_PACK_STRUCTS_END
 
 #define FAISS_ALWAYS_INLINE __attribute__((always_inline)) inline
 

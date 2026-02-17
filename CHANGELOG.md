@@ -3,6 +3,64 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.13.2] - 2025-12-19
+
+Added
+- 033e6acc6995d1adb9ea5317fadff152df3116bc Add RaBitQStats for tracking two-stage search filtering effectiveness (#4723)
+- 64a236744b9ec4ca18d6b5d4e21c898f861a242a Add multi-bit support for IndexIVFRaBitQFastScan (#4722)
+- cd2af8bc37628ac63dad736067200ac1291a77e7 Implement `IndexRefinePanorama` (#4683)
+- 18d20febb579788be74724cd5a0bbc71632f978b Add multi-bit support for IndexRaBitQFastScan (#4721)
+- 7372bc7982e6d15cd2048744094d510ddeb7495b Reapply `IndexHNSWFlatPanorama` with backward compatible serialization (#4692)
+- 1721ebff6de6ed5a8481302123479be9d85059a2 Also add backwards compatible check for binary (#4714)
+- 98bf8b3808ba325660006623afe177951579f3d9 Implement remaining `IndexFlatPanorama` functions (#4694)
+- a695814f4c108a2ba7a82da9ac2b526b1fff118c Enable Intel ScalableVectorSearch support (#4548)
+- d81a08e2409bb0ec2d2d6a2442d4beb7b2a8cbc9 Index serialization backward compatibility test (#4706)
+
+Changed
+- 9a6c02b061c4142a8e566d9d3360326140c95ad8 Rename RaBitQ factor structs for clarity and reorganize tests (#4730)
+- 281a999abab90aed5b145b193aaff043b52045c2 Enable cuVS in Faiss (#4729)
+- 6452d192cfaf67faf21808c285dfad1ec13b3d39 Update SVS binary to v0.1.0 (#4726)
+- 1ea99d8073bfd5d20bfee4d63c4bb049b7d63154 clean up serialization tests (#4700)
+- 89dd5a7b4ec9eb1f8c540828fc93c540f74c6699 Enable `-Wunused-exception-parameter` in faiss/PACKAGE +1
+
+Fixed
+- 5b19fca3f057b837ac898af52a8eb801c4744892 Allow over-writing centroid files to mitigate [S603653] (#4725)
+- 337dfe8043a9bd9b8f4e2f3ec3c23fffb7b02654 Fix typos in demos, benchs, and other directories" (#4719)
+- aea2b6bc8543f8a9b1b38e537cd55bcd9f6eb059 fix(docs): broken link to SVS in INSTALL.md (#4724)
+- 4627695179e304adba1addd342355f366500149c Fix SVS Python tutorial (#4720)
+- ac2e3abe3890fc7eaff06888878915bbda9c25b0 Update c_api install docs for CMake build system (#4702)
+- abc294419ae2d235aea4a15813e168e742e34995 fix broken test due to renaming to avoid lint (#4712)
+- 3d4d59fc3bd1986b31334c1a8bc6192a773b5666 Fix typos in demos, benchs, and other directories (#4709)
+
+
+## [1.13.1] - 2025-12-02
+
+
+Added
+- add dataset DINO10B (#4686)
+- Implement multi-bit RaBitQ quantization (nb_bits 2-9) (#4679)
+- Add copyright header to test_flat_l2_panorama.py (#4688)
+- Integrate Panorama into `IndexHNSWFlatPanorama` (#4621)
+- Implement `IndexFlatL2Panorama` (#4645)
+
+
+Changed
+- clamping variable used for computing percentile (#4687)
+- Remove unused variable
+- Revert D85902427 (#4690)
+- Optimize ScalarQuantizer (#4652)
+- Update comment to clarify useFloat16 in GpuClonerOptions.h (#4682)
+- facebook-hte-SharedPtrFromNew in StandardGpuResources.cpp (#4680)
+
+
+Fixed
+- Fix deprecated this capture in faiss/gpu/GpuIcmEncoder.cu +1
+- Refactor sharding to not oom (#4678)
+- Fix significant GOMP barrier overhead in exhaustive_L2sqr_blas. (#4663)
+- Fix typos in tests and contrib directories (#4672)
+
+
+
 ## [1.13.0] - 2025-11-11
 
 
@@ -358,12 +416,12 @@ Changed
 - Improve naming due to codemod (#4063)
 - Improve naming due to codemod (#4064)
 - Improve naming due to codemod (#4065)
-- separare the github build into two conditions (#4066)
+- separate the github build into two conditions (#4066)
 - Improve naming due to codemod (#4070)
 - improve naming due to codemod (#4067)
 - improve naming due to codemod (#4071)
 - improve naming due to codemod (#4072)
-- fix nightily build (#4080)
+- fix nightly build (#4080)
 - Change github action workflows name (#4083)
 - Resolve Packaging Issues (#4044)
 - Update __init__.py (#4086)
@@ -446,7 +504,7 @@ Deprecated
 - faster hnsw CPU index training (#3822)
 - Some small improvements. (#3692)
 - First attempt at LSH matching with nbits (#3679)
-- Set verbosoe before train (#3619)
+- Set verbose before train (#3619)
 - Remove duplicate NegativeDistanceComputer instances (#3450)
 - interrupt for NNDescent (#3432)
 - Get rid of redundant instructions in ScalarQuantizer (#3430)
@@ -458,11 +516,11 @@ Deprecated
 - Skip HNSWPQ sdc init with new io flag (#3250)
 
 ### Fixed
-- FIx a bug for a non-simdlib code of ResidualQuantizer (#3868)
+- Fix a bug for a non-simdlib code of ResidualQuantizer (#3868)
 - assign_index should default to null (#3855)
-- Fix an incorrectly counted the number of computed distances for HNSW (#3840)
+- Fix incorrectly counted the number of computed distances for HNSW (#3840)
 - Add error for overflowing nbits during PQ construction (#3833)
-- Fix radius search with HSNW and IP (#3698)
+- Fix radius search with HNSW and IP (#3698)
 - fix algorithm of spreading vectors over shards (#3374)
 - Fix IndexBinary.assign Python method (#3384)
 - Few fixes in bench_fw to enable IndexFromCodec (#3383)
@@ -530,7 +588,7 @@ Deprecated
 - Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
 
 ### Fixed
-- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- HNSW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
 - Faiss GPU IVF large query batch fix
 - Faiss + Torch fixes, re-enable k = 2048
 - Fix the number of distance computations to match max_codes parameter
@@ -571,7 +629,7 @@ Deprecated
 - Implementation of Local Search Quantization (by @KinglittleQ)
 
 ### Changed
-- The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
+- The order of xb and xq was different between `faiss.knn` and `faiss.knn_gpu`.
 Also the metric argument was called distance_type.
 - The typed vectors (LongVector, LongLongVector, etc.) of the SWIG interface have
 been deprecated. They have been replaced with Int32Vector, Int64Vector, etc. (by h-vetinari)
@@ -702,7 +760,7 @@ propagated.
 - Support for IMI2x16 (4B virtual centroids).
 - Support for k = 2048 search on GPU (instead of 1024).
 - Support for renaming an ondisk invertedlists.
-- Support for nterrupting computations with interrupt signal (ctrl-C) in python.
+- Support for interrupting computations with interrupt signal (ctrl-C) in python.
 - Simplified build system (with --with-cuda/--with-cuda-arch options).
 
 ### Changed
