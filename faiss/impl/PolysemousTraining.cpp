@@ -22,6 +22,7 @@
 #include <cstring>
 #include <memory>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -182,7 +183,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         return x * x;
     }
 
-    // weihgting of distances: it is more important to reproduce small
+    // weighting of distances: it is more important to reproduce small
     // distances well
     double dis_weight(double x) const {
         return exp(-dis_weight_factor * x);
@@ -513,7 +514,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
 } // anonymous namespace
 
-// weihgting of distances: it is more important to reproduce small
+// weighting of distances: it is more important to reproduce small
 // distances well
 double ReproduceDistancesObjective::dis_weight(double x) const {
     return exp(-dis_weight_factor * x);
@@ -1049,7 +1050,7 @@ struct Score3Computer : PermutationObjective {
         return accu;
     }
 
-    /// PermutationObjective implementeation (just negates the scores
+    /// PermutationObjective implementation (just negates the scores
     /// for minimization)
 
     double compute_cost(const int* perm) const override {
@@ -1102,7 +1103,7 @@ struct RankingScore2 : Score3Computer<float, double> {
     /// count nb of i, j in a x b st. i < j
     /// a and b should be sorted on input
     /// they are the ranks of j and k respectively.
-    /// specific version for diff-of-rank weighting, cannot optimized
+    /// specific version for diff-of-rank weighting, cannot optimize
     /// with a cumulative table
     double accum_gt_weight_diff(
             const std::vector<int>& a,
@@ -1211,12 +1212,18 @@ void PolysemousTraining::optimize_reproduce_distances(
 
         float* centroids = pq.get_centroids(m, 0);
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                dis_table.push_back(fvec_L2sqr(
-                        centroids + i * dsub, centroids + j * dsub, dsub));
+        auto compute_dis_table = [&]<SIMDLevel SL>() {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dis_table.push_back(
+                            fvec_L2sqr<SL>(
+                                    centroids + i * dsub,
+                                    centroids + j * dsub,
+                                    dsub));
+                }
             }
-        }
+        };
+        with_simd_level(compute_dis_table);
 
         std::vector<int> perm(n);
         ReproduceWithHammingObjective obj(nbits, dis_table, dis_weight_factor);
@@ -1398,7 +1405,7 @@ size_t PolysemousTraining::memory_usage_per_thread(
             return n * n * n * sizeof(float);
     }
 
-    FAISS_THROW_MSG("Invalid optmization type");
+    FAISS_THROW_MSG("Invalid optimization type");
     return 0;
 }
 

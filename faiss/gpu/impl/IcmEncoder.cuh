@@ -24,7 +24,7 @@ struct IcmEncoderImpl {
     std::shared_ptr<GpuResources> res;
     int device;
 
-    DeviceTensor<float, 4, true> bterm;     ///< bianry terms, size [M, M, K, K]
+    DeviceTensor<float, 4, true> bterm;     ///< binary terms, size [M, M, K, K]
     DeviceTensor<float, 3, true> codebooks; ///< codebooks, size [M, K, dims]
 
     IcmEncoderImpl(

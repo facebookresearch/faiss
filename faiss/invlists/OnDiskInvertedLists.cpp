@@ -314,7 +314,7 @@ void OnDiskInvertedLists::update_totsize(size_t new_size) {
             slots.push_back(Slot(totsize, new_size - totsize));
         }
     } else {
-        assert(!"not implemented");
+        assert(false && "not implemented");
     }
 
     totsize = new_size;
@@ -372,7 +372,7 @@ OnDiskInvertedLists::~OnDiskInvertedLists() {
     if (ptr != nullptr) {
         int err = munmap(ptr, totsize);
         if (err != 0) {
-            fprintf(stderr, "mumap error: %s", strerror(errno));
+            fprintf(stderr, "munmap error: %s", strerror(errno));
         }
     }
     delete locks;

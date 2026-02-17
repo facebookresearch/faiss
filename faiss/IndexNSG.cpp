@@ -16,6 +16,7 @@
 #include <faiss/IndexNNDescent.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/distances.h>
 
 namespace faiss {
@@ -74,7 +75,7 @@ void IndexNSG::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            VisitedTable vt(ntotal, nsg.use_visited_hashset);
 
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
@@ -261,7 +262,7 @@ void IndexNSG::check_knn_graph(const idx_t* knn_graph, idx_t n, int K) const {
     }
     FAISS_THROW_IF_NOT_MSG(
             total_count < n / 10,
-            "There are too much invalid entries in the knn graph. "
+            "There are too many invalid entries in the knn graph. "
             "It may be an invalid knn graph.");
 }
 

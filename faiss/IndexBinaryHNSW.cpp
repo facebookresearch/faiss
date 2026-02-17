@@ -22,6 +22,7 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -205,10 +206,14 @@ void IndexBinaryHNSW::search(
         idx_t k,
         int32_t* distances,
         idx_t* labels,
-        const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+        const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
+    const SearchParametersHNSW* params = nullptr;
+    if (params_in) {
+        params = dynamic_cast<const SearchParametersHNSW*>(params_in);
+        FAISS_THROW_IF_NOT_MSG(
+                params, "IndexBinaryHNSW params have incorrect type");
+    }
 
     // we use the buffer for distances as float but convert them back
     // to int in the end
@@ -227,7 +232,11 @@ void IndexBinaryHNSW::search(
         for (idx_t i = 0; i < n; i++) {
             res.begin(i);
             dis->set_query((float*)(x + i * code_size));
-            hnsw.search(*dis, res, vt);
+            // Given that IndexBinaryHNSW is not an IndexHNSW, we pass nullptr
+            // as the index parameter. This state does not get used in the
+            // search function, as it is merely there to to enable Panorama
+            // execution for IndexHNSWFlatPanorama.
+            hnsw.search(*dis, nullptr, res, vt, params_in);
             res.end();
         }
     }
@@ -290,7 +299,9 @@ struct FlatHammingDis : DistanceComputer {
 
     ~FlatHammingDis() override {
 #pragma omp critical
-        { hnsw_stats.ndis += ndis; }
+        {
+            hnsw_stats.ndis += ndis;
+        }
     }
 };
 

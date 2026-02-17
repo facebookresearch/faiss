@@ -19,6 +19,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/distances.h>
 
 extern "C" {
@@ -154,7 +155,7 @@ void IndexNNDescent::add(idx_t n, const float* x) {
 
     if (ntotal != 0) {
         fprintf(stderr,
-                "WARNING NNDescent doest not support dynamic insertions,"
+                "WARNING NNDescent does not support dynamic insertions,"
                 "multiple insertions would lead to re-building the index");
     }
 

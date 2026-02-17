@@ -6,19 +6,19 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.08, is available on Linux (x86-64 only) for CUDA 12.4.
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.10, is available on Linux (x86-64 only) for CUDA 12.4.
 
 To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.12.0
+$ conda install -c pytorch faiss-cpu=1.13.2
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.12.0
+$ conda install -c pytorch -c nvidia faiss-gpu=1.13.2
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.12.0
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.13.2
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,13 +34,10 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.12.0
+$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.13.2
 
-# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.4)
-conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=12.0,<=12.5'
-
-# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 11.8)
-conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version>=11.4,<=11.8'
+# GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.6)
+conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=12.6'
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -87,7 +84,7 @@ found to run on other platforms as well, see
 [other platforms](https://github.com/facebookresearch/faiss/wiki/Related-projects#bindings-to-other-languages-and-porting-to-other-platforms).
 
 The basic requirements are:
-- a C++17 compiler (with support for OpenMP support version 2 or higher),
+- a C++17 compiler (with OpenMP support version 2 or higher),
 - a BLAS implementation (on Intel machines we strongly recommend using Intel MKL for best
 performance).
 
@@ -98,7 +95,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=25.08
+  - libcuvs=25.10
 - for the python bindings:
   - python 3,
   - numpy,
@@ -113,9 +110,15 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 The libcuvs dependency should be installed via conda:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.08 'cuda-version>=12.0,<=12.5'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.10 'cuda-version=12.6'
 ```
-For more ways to install cuVS 25.08, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 25.10, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+
+### Building with Intel(R) SVS
+
+[Intel(R) Scalable Vector Search (SVS)](https://github.com/intel/ScalableVectorSearch) is a library for high-performance vector search. Building Faiss with SVS enabled allows using SVS implementations of graph-based indices (e.g., Vamana).
+
+The SVS library will be automatically fetched and built by CMake if `FAISS_ENABLE_SVS` is set to `ON`.
 
 ## Step 1: invoking CMake
 
@@ -140,6 +143,8 @@ Several options can be passed to CMake, among which:
   are `ON` and `OFF`),
   - `-DFAISS_ENABLE_C_API=ON` in order to enable building [C API](c_api/INSTALL.md) (possible values
     are `ON` and `OFF`),
+  - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
+    Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
@@ -200,7 +205,7 @@ For AVX512 features available since Intel(R) Sapphire Rapids.
 $ make -C build -j faiss_avx512_spr
 ```
 
-This will ensure the creation of neccesary files when building and installing the python package.
+This will ensure the creation of necessary files when building and installing the python package.
 
 ## Step 3: Building the python bindings (optional)
 

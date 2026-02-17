@@ -9,13 +9,15 @@
 
 #pragma once
 
+#include <optional>
 #include <vector>
-#include "faiss/Index.h"
 
+#include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -43,9 +45,12 @@ struct IndexHNSW : Index {
 
     // When set to true, all neighbors in level 0 are filled up
     // to the maximum size allowed (2 * M). This option is used by
-    // IndexHHNSWCagra to create a full base layer graph that is
+    // IndexHNSWCagra to create a full base layer graph that is
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
+
+    // See impl/VisitedTable.h.
+    std::optional<bool> use_visited_hashset;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
@@ -72,6 +77,12 @@ struct IndexHNSW : Index {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
+
+    /** search one vector with a custom result handler */
+    void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 
@@ -111,7 +122,7 @@ struct IndexHNSW : Index {
 
     void link_singletons();
 
-    void permute_entries(const idx_t* perm);
+    virtual void permute_entries(const idx_t* perm);
 
     DistanceComputer* get_distance_computer() const override;
 };
@@ -123,6 +134,53 @@ struct IndexHNSW : Index {
 struct IndexHNSWFlat : IndexHNSW {
     IndexHNSWFlat();
     IndexHNSWFlat(int d, int M, MetricType metric = METRIC_L2);
+};
+
+/** Panorama implementation of IndexHNSWFlat following
+ * https://www.arxiv.org/pdf/2510.00566.
+ *
+ * Unlike cluster-based Panorama, the vectors have to be higher dimensional
+ * (i.e. typically d > 512) and/or be able to compress a lot of their energy in
+ * the early dimensions to be effective. This is because HNSW accesses vectors
+ * in a random order, which makes cache misses dominate the distance computation
+ * time.
+ *
+ * The `num_panorama_levels` parameter controls the granularity of progressive
+ * distance refinement, allowing candidates to be eliminated early using partial
+ * distance computations rather than computing full distances.
+ *
+ * NOTE: This version of HNSW handles search slightly differently than the
+ * vanilla HNSW, as it uses partial distance computations with progressive
+ * refinement bounds. Instead of computing full distances immediately for all
+ * candidates, Panorama maintains lower and upper bounds that are incrementally
+ * tightened across refinement levels. Candidates are inserted into the search
+ * beam using approximate distance estimates (LB+UB)/2 and are only fully
+ * evaluated when they survive pruning and enter the result heap. This allows
+ * the algorithm to prune unpromising candidates early using Cauchy-Schwarz
+ * bounds on partial inner products. Hence, recall is not guaranteed to be the
+ * same as vanilla HNSW due to the heterogeneous precision within the search
+ * beam (exact vs. partial distance estimates affecting traversal order).
+ */
+struct IndexHNSWFlatPanorama : IndexHNSWFlat {
+    IndexHNSWFlatPanorama();
+    IndexHNSWFlatPanorama(
+            int d,
+            int M,
+            int num_panorama_levels,
+            MetricType metric = METRIC_L2);
+
+    void add(idx_t n, const float* x) override;
+    void reset() override;
+    void permute_entries(const idx_t* perm) override;
+
+    /// Inline for performance - called frequently in search hot path.
+    const float* get_cum_sum(idx_t i) const {
+        return cum_sums.data() + i * (pano.n_levels + 1);
+    }
+
+    std::vector<float> cum_sums;
+    Panorama pano;
+    const size_t num_panorama_levels;
 };
 
 /** PQ index topped with with a HNSW structure to access elements

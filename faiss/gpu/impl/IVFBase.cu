@@ -119,11 +119,13 @@ void IVFBase::reset() {
             AllocInfo(AllocType::IVFLists, getCurrentDevice(), space_, stream);
 
     for (idx_t i = 0; i < numLists_; ++i) {
-        deviceListData_.emplace_back(std::unique_ptr<DeviceIVFList>(
-                new DeviceIVFList(resources_, info)));
+        deviceListData_.emplace_back(
+                std::unique_ptr<DeviceIVFList>(
+                        new DeviceIVFList(resources_, info)));
 
-        deviceListIndices_.emplace_back(std::unique_ptr<DeviceIVFList>(
-                new DeviceIVFList(resources_, info)));
+        deviceListIndices_.emplace_back(
+                std::unique_ptr<DeviceIVFList>(
+                        new DeviceIVFList(resources_, info)));
 
         listOffsetToUserIndex_.emplace_back(std::vector<idx_t>());
     }

@@ -23,7 +23,7 @@ namespace faiss {
  * The objective is to separate the different interpretations of the same
  * registers (as a vector of uint8, uint16 or uint32), to provide printing
  * functions, and to give more readable names to the AVX intrinsics. It does not
- * pretend to be exhausitve, functions are added as needed.
+ * pretend to be exhaustive, functions are added as needed.
  */
 
 /// 512-bit representation without interpretation as a vector
@@ -292,5 +292,69 @@ struct simd64uint8 : simd512bit {
         return tab[i];
     }
 };
+
+/// vector of 16 32-bit floats
+struct simd16float32 : simd512bit {
+    simd16float32() {}
+
+    explicit simd16float32(__m512 f) : simd512bit(f) {}
+
+    explicit simd16float32(float x) : simd512bit(_mm512_set1_ps(x)) {}
+
+    explicit simd16float32(const float* x) : simd512bit(_mm512_loadu_ps(x)) {}
+
+    void clear() {
+        f = _mm512_setzero_ps();
+    }
+
+    void storeu(float* ptr) const {
+        _mm512_storeu_ps(ptr, f);
+    }
+
+    void loadu(const float* ptr) {
+        f = _mm512_loadu_ps(ptr);
+    }
+
+    void store(float* ptr) const {
+        _mm512_storeu_ps(ptr, f);
+    }
+
+    simd16float32 operator*(const simd16float32& other) const {
+        return simd16float32(_mm512_mul_ps(f, other.f));
+    }
+
+    simd16float32 operator+(const simd16float32& other) const {
+        return simd16float32(_mm512_add_ps(f, other.f));
+    }
+
+    simd16float32 operator-(const simd16float32& other) const {
+        return simd16float32(_mm512_sub_ps(f, other.f));
+    }
+
+    simd16float32& operator+=(const simd16float32& other) {
+        f = _mm512_add_ps(f, other.f);
+        return *this;
+    }
+
+    std::string tostring() const {
+        float tab[16];
+        storeu(tab);
+        char res[1000];
+        char* ptr = res;
+        for (int i = 0; i < 16; i++) {
+            ptr += sprintf(ptr, "%g,", tab[i]);
+        }
+        ptr[-1] = 0;
+        return std::string(res);
+    }
+};
+
+// compute a * b + c
+inline simd16float32 fmadd(
+        const simd16float32& a,
+        const simd16float32& b,
+        const simd16float32& c) {
+    return simd16float32(_mm512_fmadd_ps(a.f, b.f, c.f));
+}
 
 } // namespace faiss

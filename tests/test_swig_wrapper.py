@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# a few tests of the swig wrapper 
+# a few tests of the swig wrapper
 
 import unittest
 import faiss
@@ -86,13 +86,60 @@ class TestSWIGWrap(unittest.TestCase):
         )
         faiss.vector_to_array(idx.id_map)
 
-    def test_asan(self): 
+    def test_asan(self):
         # this test should fail with ASAN
         index = faiss.IndexFlatL2(32)
         index.this.own(False)   # this is a mem leak, should be catched by ASAN
 
-    def test_SWIG_version(self): 
+    def test_SWIG_version(self):
         self.assertLess(faiss.swig_version(), 0x050000)
+
+    def test_attribute_validation(self):
+        """Test that setting invalid attributes raises AttributeError"""
+
+        # Test IndexPreTransform - the main use case from the issue
+        index = faiss.index_factory(256, "OPQ64,IVF16384,PQ64")
+
+        # Should raise AttributeError when trying to set nprobe directly on
+        # wrapper
+        with self.assertRaises(AttributeError) as cm:
+            index.nprobe = 16
+
+        # Check that the error message contains basic information
+        error_msg = str(cm.exception)
+        self.assertIn("IndexPreTransform", error_msg)
+        self.assertIn("nprobe", error_msg)
+
+        # Test with other IVF parameters that should be blocked
+        with self.assertRaises(AttributeError) as cm:
+            index.nlist = 8192
+
+        # Valid attributes should still work
+        index.verbose = True  # This should be allowed
+        self.assertEqual(index.verbose, True)
+
+    def test_attribute_validation_other_indexes(self):
+        """Test that other index types allow normal attribute setting"""
+
+        # Test with a regular IndexFlat - should allow most attributes now
+        index = faiss.IndexFlatL2(10)
+
+        # Valid attributes should work
+        index.verbose = False
+        self.assertEqual(index.verbose, False)
+
+    def test_rabitq(self):
+        """Test that other index types allow normal attribute setting"""
+
+        # Test with a regular IndexFlat - should allow most attributes now
+        index = faiss.IndexRaBitQ(10)
+        # Valid attributes should work
+        index.qb = 4
+        index.centered = True
+
+        with self.assertRaises(AttributeError):
+            index.centered2 = False
+
 
 
 class TestRevSwigPtr(unittest.TestCase):

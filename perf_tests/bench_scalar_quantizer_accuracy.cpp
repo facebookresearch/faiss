@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/perf_tests/utils.h>
 #include <gflags/gflags.h>
 #include <cstdio>
 #include <map>
+#include "utils.h"
 
 #include <benchmark/benchmark.h>
 #include <faiss/impl/ScalarQuantizer.h>

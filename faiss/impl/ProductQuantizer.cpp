@@ -19,6 +19,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 
 extern "C" {
@@ -201,8 +202,10 @@ void ProductQuantizer::train(size_t n, const float* x) {
     }
 }
 
-template <class PQEncoder>
-void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
+namespace {
+
+template <class PQEncoder, SIMDLevel SL>
+void compute_1_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
     std::vector<float> distances(pq.ksub);
 
     // It seems to be meaningless to allocate std::vector<float> distances.
@@ -248,7 +251,7 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
         uint64_t idxm = 0;
         if (pq.transposed_centroids.empty()) {
             // the regular version
-            idxm = fvec_L2sqr_ny_nearest(
+            idxm = fvec_L2sqr_ny_nearest<SL>(
                     distances.data(),
                     xsub,
                     pq.get_centroids(m, 0),
@@ -256,7 +259,7 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
                     pq.ksub);
         } else {
             // transposed centroids are available, use'em
-            idxm = fvec_L2sqr_ny_nearest_y_transposed(
+            idxm = fvec_L2sqr_ny_nearest_y_transposed<SL>(
                     distances.data(),
                     xsub,
                     pq.transposed_centroids.data() + m * pq.ksub,
@@ -270,20 +273,24 @@ void compute_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
     }
 }
 
+} // namespace
+
 void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
-    switch (nbits) {
-        case 8:
-            faiss::compute_code<PQEncoder8>(*this, x, code);
-            break;
+    with_simd_level([&]<SIMDLevel SL>() {
+        switch (nbits) {
+            case 8:
+                compute_1_code<PQEncoder8, SL>(*this, x, code);
+                break;
 
-        case 16:
-            faiss::compute_code<PQEncoder16>(*this, x, code);
-            break;
+            case 16:
+                compute_1_code<PQEncoder16, SL>(*this, x, code);
+                break;
 
-        default:
-            faiss::compute_code<PQEncoderGeneric>(*this, x, code);
-            break;
-    }
+            default:
+                compute_1_code<PQEncoderGeneric, SL>(*this, x, code);
+                break;
+        }
+    }); // with_simd_level
 }
 
 template <class PQDecoder>
@@ -428,44 +435,46 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    if (transposed_centroids.empty()) {
-        // use regular version
+    with_simd_level([&]<SIMDLevel SL>() {
+        if (transposed_centroids.empty()) {
+            // use regular version
+            for (size_t m = 0; m < M; m++) {
+                fvec_L2sqr_ny<SL>(
+                        dis_table + m * ksub,
+                        x + m * dsub,
+                        get_centroids(m, 0),
+                        dsub,
+                        ksub);
+            }
+        } else {
+            // transposed centroids are available, use'em
+            for (size_t m = 0; m < M; m++) {
+                fvec_L2sqr_ny_transposed<SL>(
+                        dis_table + m * ksub,
+                        x + m * dsub,
+                        transposed_centroids.data() + m * ksub,
+                        centroids_sq_lengths.data() + m * ksub,
+                        dsub,
+                        M * ksub,
+                        ksub);
+            }
+        }
+    });
+}
+
+void ProductQuantizer::compute_inner_prod_table(
+        const float* x,
+        float* dis_table) const {
+    with_simd_level([&]<SIMDLevel SL>() {
         for (size_t m = 0; m < M; m++) {
-            fvec_L2sqr_ny(
+            fvec_inner_products_ny<SL>(
                     dis_table + m * ksub,
                     x + m * dsub,
                     get_centroids(m, 0),
                     dsub,
                     ksub);
         }
-    } else {
-        // transposed centroids are available, use'em
-        for (size_t m = 0; m < M; m++) {
-            fvec_L2sqr_ny_transposed(
-                    dis_table + m * ksub,
-                    x + m * dsub,
-                    transposed_centroids.data() + m * ksub,
-                    centroids_sq_lengths.data() + m * ksub,
-                    dsub,
-                    M * ksub,
-                    ksub);
-        }
-    }
-}
-
-void ProductQuantizer::compute_inner_prod_table(
-        const float* x,
-        float* dis_table) const {
-    size_t m;
-
-    for (m = 0; m < M; m++) {
-        fvec_inner_products_ny(
-                dis_table + m * ksub,
-                x + m * dsub,
-                get_centroids(m, 0),
-                dsub,
-                ksub);
-    }
+    });
 }
 
 void ProductQuantizer::compute_distance_tables(
@@ -785,17 +794,19 @@ void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
     if (dsub < 4) {
+        with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-        for (int mk = 0; mk < M * ksub; mk++) {
-            // allow omp to schedule in a more fine-grained way
-            // `collapse` is not supported in OpenMP 2.x
-            int m = mk / ksub;
-            int k = mk % ksub;
-            const float* cents = centroids.data() + m * ksub * dsub;
-            const float* centi = cents + k * dsub;
-            float* dis_tab = sdc_table.data() + m * ksub * ksub;
-            fvec_L2sqr_ny(dis_tab + k * ksub, centi, cents, dsub, ksub);
-        }
+            for (int mk = 0; mk < M * ksub; mk++) {
+                // allow omp to schedule in a more fine-grained way
+                // `collapse` is not supported in OpenMP 2.x
+                int m = mk / ksub;
+                int k = mk % ksub;
+                const float* cents = centroids.data() + m * ksub * dsub;
+                const float* centi = cents + k * dsub;
+                float* dis_tab = sdc_table.data() + m * ksub * ksub;
+                fvec_L2sqr_ny<SL>(dis_tab + k * ksub, centi, cents, dsub, ksub);
+            }
+        });
     } else {
         // NOTE: it would disable the omp loop in pairwise_L2sqr
         // but still accelerate especially when M >= 4

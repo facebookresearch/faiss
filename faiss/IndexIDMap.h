@@ -23,7 +23,7 @@ struct IndexIDMapTemplate : IndexT {
     using distance_t = typename IndexT::distance_t;
 
     IndexT* index = nullptr; ///! the sub-index
-    bool own_fields = false; ///! whether pointers are deleted in destructo
+    bool own_fields = false; ///! whether pointers are deleted in destructor
     std::vector<idx_t> id_map;
 
     explicit IndexIDMapTemplate(IndexT* index);

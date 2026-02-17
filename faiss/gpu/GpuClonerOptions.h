@@ -21,8 +21,10 @@ struct GpuClonerOptions {
     /// is the coarse quantizer in float16?
     bool useFloat16CoarseQuantizer = false;
 
-    /// for GpuIndexIVFFlat, is storage in float16?
     /// for GpuIndexIVFPQ, are intermediate calculations in float16?
+    /// Note: for float16 storage, use GpuIndexIVFScalarQuantizer
+    /// or cuVS, not GpuIndexIVFFlat. useFloat16 will not affect
+    /// GpuIndexIVFFlat storage.
     bool useFloat16 = false;
 
     /// use precomputed tables?

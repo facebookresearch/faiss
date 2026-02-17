@@ -32,7 +32,7 @@ struct AutoTuneCriterion {
 
     AutoTuneCriterion(idx_t nq, idx_t nnn);
 
-    /** Intitializes the gt_D and gt_I vectors. Must be called before evaluating
+    /** Initializes the gt_D and gt_I vectors. Must be called before evaluating
      *
      * @param gt_D_in  size nq * gt_nnn
      * @param gt_I_in  size nq * gt_nnn
@@ -177,9 +177,22 @@ struct ParameterSpace {
     /// set a combination of parameters described by a string
     void set_index_parameters(Index* index, const char* param_string) const;
 
-    /// set one of the parameters, returns whether setting was successful
+    /// set one of the parameters
     virtual void set_index_parameter(
             Index* index,
+            const std::string& name,
+            double val) const;
+
+    /// set a combination of parameters on a binary index
+    void set_index_parameters(IndexBinary* index, size_t cno) const;
+
+    /// set a combination of parameters described by a string on a binary index
+    void set_index_parameters(IndexBinary* index, const char* param_string)
+            const;
+
+    /// set one of the parameters on a binary index
+    virtual void set_index_parameter(
+            IndexBinary* index,
             const std::string& name,
             double val) const;
 

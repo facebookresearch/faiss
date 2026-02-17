@@ -9,6 +9,7 @@
 
 #include <faiss/IndexLattice.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h> // for the bitstring routines
 
@@ -44,17 +45,19 @@ void IndexLattice::train(idx_t n, const float* x) {
         maxs[sq] = -1;
     }
 
-    for (idx_t i = 0; i < n; i++) {
-        for (int sq = 0; sq < nsq; sq++) {
-            float norm2 = fvec_norm_L2sqr(x + i * d + sq * dsq, dsq);
-            if (norm2 > maxs[sq]) {
-                maxs[sq] = norm2;
-            }
-            if (norm2 < mins[sq]) {
-                mins[sq] = norm2;
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (idx_t i = 0; i < n; i++) {
+            for (int sq = 0; sq < nsq; sq++) {
+                float norm2 = fvec_norm_L2sqr<SL>(x + i * d + sq * dsq, dsq);
+                if (norm2 > maxs[sq]) {
+                    maxs[sq] = norm2;
+                }
+                if (norm2 < mins[sq]) {
+                    mins[sq] = norm2;
+                }
             }
         }
-    }
+    });
 
     for (int sq = 0; sq < nsq; sq++) {
         mins[sq] = sqrtf(mins[sq]);
@@ -74,24 +77,26 @@ void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
     const float* maxs = mins + nsq;
     int64_t sc = int64_t(1) << scale_nbit;
 
+    with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-    for (idx_t i = 0; i < n; i++) {
-        BitstringWriter wr(codes + i * code_size, code_size);
-        const float* xi = x + i * d;
-        for (int j = 0; j < nsq; j++) {
-            float nj = (sqrtf(fvec_norm_L2sqr(xi, dsq)) - mins[j]) * sc /
-                    (maxs[j] - mins[j]);
-            if (nj < 0) {
-                nj = 0;
+        for (idx_t i = 0; i < n; i++) {
+            BitstringWriter wr(codes + i * code_size, code_size);
+            const float* xi = x + i * d;
+            for (int j = 0; j < nsq; j++) {
+                float nj = (sqrtf(fvec_norm_L2sqr<SL>(xi, dsq)) - mins[j]) *
+                        sc / (maxs[j] - mins[j]);
+                if (nj < 0) {
+                    nj = 0;
+                }
+                if (nj >= sc) {
+                    nj = sc - 1;
+                }
+                wr.write((int64_t)nj, scale_nbit);
+                wr.write(zn_sphere_codec.encode(xi), lattice_nbit);
+                xi += dsq;
             }
-            if (nj >= sc) {
-                nj = sc - 1;
-            }
-            wr.write((int64_t)nj, scale_nbit);
-            wr.write(zn_sphere_codec.encode(xi), lattice_nbit);
-            xi += dsq;
         }
-    }
+    });
 }
 
 void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {

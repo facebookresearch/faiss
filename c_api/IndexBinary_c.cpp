@@ -68,6 +68,26 @@ int faiss_IndexBinary_search(
     CATCH_AND_HANDLE
 }
 
+int faiss_IndexBinary_search_with_params(
+        const FaissIndexBinary* index,
+        idx_t n,
+        const uint8_t* x,
+        idx_t k,
+        const FaissSearchParameters* params,
+        int32_t* distances,
+        idx_t* labels) {
+    try {
+        reinterpret_cast<const faiss::IndexBinary*>(index)->search(
+                n,
+                x,
+                k,
+                distances,
+                labels,
+                reinterpret_cast<const faiss::SearchParameters*>(params));
+    }
+    CATCH_AND_HANDLE
+}
+
 int faiss_IndexBinary_range_search(
         const FaissIndexBinary* index,
         idx_t n,

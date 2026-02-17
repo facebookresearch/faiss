@@ -16,10 +16,23 @@ inputs:
     description: 'Enable ROCm support.'
     required: false
     default: OFF
+  svs:
+    description: 'Enable SVS support.'
+    required: false
+    default: OFF
+  setup_conda:
+    description: 'Setup miniconda environment.'
+    required: false
+    default: 'true'
+  upload_artifacts:
+    description: 'Upload test artifacts. Prevents collisions when multiple jobs need to run build_cmake.'
+    required: false
+    default: 'true'
 runs:
   using: composite
   steps:
     - name: Setup miniconda
+      if: inputs.setup_conda == 'true'
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.11'
@@ -36,10 +49,10 @@ runs:
         conda config --set solver libmamba
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        conda update -y -q conda
+        conda install -y -q "conda<=25.07"
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy<2" scipy=1.14 pytest=7.4 gflags=2.2
+        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -50,7 +63,7 @@ runs:
         if [ "${{ runner.arch }}" = "X64" ]; then
           # TODO: merge this with ARM64
           conda install -y -q -c conda-forge gxx_linux-64=14.2 sysroot_linux-64=2.17
-          conda install -y -q mkl=2022.2.1 mkl-devel=2022.2.1
+          conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
         fi
 
         # no CUDA needed for ROCm so skip this
@@ -58,10 +71,15 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-toolkit=12.4 -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q cuda-toolkit=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=25.08 'cuda-version>=12.0,<=12.5' cuda-toolkit=12.4.1 gxx_linux-64=12.4 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=25.10 'cuda-version=12.6' cuda-toolkit=12.6 gxx_linux-64=13.4.0 -c rapidsai -c rapidsai-nightly -c conda-forge
+        fi
+
+        # install SVS runtime for SVS builds
+        if [ "${{ inputs.svs }}" = "ON" ]; then
+          conda install -y -q libsvs-runtime -c https://software.repos.intel.com/python/conda -c conda-forge
         fi
 
         # install test packages
@@ -69,8 +87,9 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch<2.5" pytorch-cuda=12.4 -c pytorch -c "nvidia/label/cuda-12.4.0"
+          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.6"
         else
+          # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
         fi
     - name: ROCm - Install dependencies
@@ -121,6 +140,7 @@ runs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
+        conda list --show-channel-urls
         cmake -B build \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
@@ -128,6 +148,7 @@ runs:
               -DFAISS_ENABLE_CUVS=${{ inputs.cuvs }} \
               -DFAISS_ENABLE_ROCM=${{ inputs.rocm }} \
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
+              -DFAISS_ENABLE_SVS=${{ inputs.svs }} \
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
@@ -138,33 +159,39 @@ runs:
     - name: C++ tests
       shell: bash
       run: |
+        conda list --show-channel-urls
         export GTEST_OUTPUT="xml:$(realpath .)/test-results/googletest/"
         make -C build test
     - name: C++ perf benchmarks
       shell: bash
       if: inputs.rocm == 'OFF'
       run: |
+        conda list --show-channel-urls
         find ./build/perf_tests/ -executable -type f -name "bench*" -exec '{}' -v \;
     - name: Install Python extension
       shell: bash
       working-directory: build/faiss/python
       run: |
+        conda list --show-channel-urls
         $CONDA/bin/python setup.py install
     - name: ROCm - install ROCm-enabled torch via pip
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.1
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
     - name: Python tests (CPU + GPU)
       if: inputs.gpu == 'ON'
       shell: bash
       run: |
+        conda list --show-channel-urls
         pytest --junitxml=test-results/pytest/results.xml tests/test_*.py
         pytest --junitxml=test-results/pytest/results-torch.xml tests/torch_*.py
         cp tests/common_faiss_tests.py faiss/gpu/test
@@ -174,13 +201,14 @@ runs:
       if: inputs.opt_level == 'avx2'
       shell: bash
       run: |
+        conda list --show-channel-urls
         FAISS_DISABLE_CPU_FEATURES=AVX2 LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss.so
         LD_DEBUG=libs $CONDA/bin/python -c "import faiss" 2>&1 | grep faiss_avx2.so
     - name: Upload test results
-      if: always()
+      if: inputs.upload_artifacts == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}
+        name: test-results-arch=${{ runner.arch }}-opt=${{ inputs.opt_level }}-gpu=${{ inputs.gpu }}-cuvs=${{ inputs.cuvs }}-rocm=${{ inputs.rocm }}-svs=${{ inputs.svs }}
         path: test-results
     - name: Check installed packages channel
       shell: bash

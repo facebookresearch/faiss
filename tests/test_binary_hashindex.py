@@ -194,7 +194,7 @@ class TestKnn(unittest.TestCase):
     def test_result_order_binhash(self):
         self.subtest_result_order(0)
 
-    def test_result_order_miltihash(self):
+    def test_result_order_multihash(self):
         self.subtest_result_order(3)
 
 

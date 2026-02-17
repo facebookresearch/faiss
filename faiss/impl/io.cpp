@@ -74,7 +74,7 @@ FileIOReader::FileIOReader(const char* fname) {
 FileIOReader::~FileIOReader() {
     if (need_close) {
         int ret = fclose(f);
-        if (ret != 0) { // we cannot raise and exception in the destructor
+        if (ret != 0) { // we cannot raise an exception in the destructor
             fprintf(stderr,
                     "file %s close error: %s",
                     name.c_str(),
@@ -109,7 +109,7 @@ FileIOWriter::~FileIOWriter() {
     if (need_close) {
         int ret = fclose(f);
         if (ret != 0) {
-            // we cannot raise and exception in the destructor
+            // we cannot raise an exception in the destructor
             fprintf(stderr,
                     "file %s close error: %s",
                     name.c_str(),

@@ -27,10 +27,12 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -39,6 +41,7 @@
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -49,6 +52,16 @@
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
+
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
+#include <faiss/IndexIDMap.h>
+#include <algorithm>
+#include <cctype>
 #include <string>
 
 namespace faiss {
@@ -187,8 +200,6 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
     return nbits;
 }
 
-const std::string rabitq_pattern = "(RaBitQ)";
-
 /***************************************************************
  * Parse VectorTransform
  */
@@ -326,6 +337,10 @@ IndexIVF* parse_IndexIVF(
     if (match("FlatDedup")) {
         return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
     }
+    if (match("FlatPanorama([0-9]+)?")) {
+        int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
+        return new IndexIVFFlatPanorama(get_q(), d, nlist, nlevels, mt, own_il);
+    }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
                 get_q(),
@@ -447,8 +462,21 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
-    if (match(rabitq_pattern)) {
-        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il);
+    // IndexIVFRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([1-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexIVFRaBitQ(get_q(), d, nlist, mt, own_il, nb_bits);
+    }
+    // Accepts: "RaBitQfs" (default 1-bit, batch size 32)
+    //          "RaBitQfs{nb_bits}" (e.g., "RaBitQfs4")
+    //          "RaBitQfs_64" (1-bit, batch size 64)
+    //          "RaBitQfs{nb_bits}_{bbs}" (e.g., "RaBitQfs4_64")
+    if (match("RaBitQfs([1-9])?(_[0-9]+)?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexIVFRaBitQFastScan(
+                get_q(), d, nlist, mt, bbs, own_il, nb_bits);
     }
     return nullptr;
 }
@@ -469,6 +497,11 @@ IndexHNSW* parse_IndexHNSW(
 
     if (match("Flat|")) {
         return new IndexHNSWFlat(d, hnsw_M, mt);
+    }
+
+    if (match("FlatPanorama([0-9]+)?")) {
+        int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
+        return new IndexHNSWFlatPanorama(d, hnsw_M, nlevels, mt);
     }
 
     if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
@@ -537,6 +570,114 @@ IndexNSG* parse_IndexNSG(
     return nullptr;
 }
 
+#ifdef FAISS_ENABLE_SVS
+/***************************************************************
+ * Parse IndexSVS
+ */
+
+SVSStorageKind parse_lvq(const std::string& lvq_string) {
+    if (lvq_string == "LVQ4x0") {
+        return SVSStorageKind::SVS_LVQ4x0;
+    }
+    if (lvq_string == "LVQ4x4") {
+        return SVSStorageKind::SVS_LVQ4x4;
+    }
+    if (lvq_string == "LVQ4x8") {
+        return SVSStorageKind::SVS_LVQ4x8;
+    }
+    FAISS_ASSERT(false && "not supported SVS LVQ level");
+}
+
+SVSStorageKind parse_leanvec(const std::string& leanvec_string) {
+    if (leanvec_string == "LeanVec4x4") {
+        return SVSStorageKind::SVS_LeanVec4x4;
+    }
+    if (leanvec_string == "LeanVec4x8") {
+        return SVSStorageKind::SVS_LeanVec4x8;
+    }
+    if (leanvec_string == "LeanVec8x8") {
+        return SVSStorageKind::SVS_LeanVec8x8;
+    }
+    FAISS_ASSERT(false && "not supported SVS Leanvec level");
+}
+
+Index* parse_svs_datatype(
+        const std::string& index_type,
+        const std::string& arg_string,
+        const std::string& datatype_string,
+        int d,
+        MetricType mt) {
+    std::smatch sm;
+
+    if (datatype_string.empty()) {
+        if (index_type == "Vamana") {
+            return new IndexSVSVamana(d, std::stoul(arg_string), mt);
+        }
+        if (index_type == "Flat") {
+            return new IndexSVSFlat(d, mt);
+        }
+        FAISS_ASSERT(false && "Unspported SVS index type");
+    }
+    if (re_match(datatype_string, "FP16", sm)) {
+        if (index_type == "Vamana") {
+            return new IndexSVSVamana(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
+        }
+        FAISS_ASSERT(false && "Unspported SVS index type for Float16");
+    }
+    if (re_match(datatype_string, "SQI8", sm)) {
+        if (index_type == "Vamana") {
+            return new IndexSVSVamana(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+        }
+        FAISS_ASSERT(false && "Unspported SVS index type for SQI8");
+    }
+    if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
+        if (index_type == "Vamana") {
+            return new IndexSVSVamanaLVQ(
+                    d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
+        }
+        FAISS_ASSERT(false && "Unspported SVS index type for LVQ");
+    }
+    if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
+        std::string leanvec_d_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "0";
+        int leanvec_d = static_cast<int>(std::stoul(leanvec_d_string));
+
+        if (index_type == "Vamana") {
+            return new IndexSVSVamanaLeanVec(
+                    d,
+                    std::stoul(arg_string),
+                    mt,
+                    leanvec_d,
+                    parse_leanvec(sm[1].str()));
+        }
+        FAISS_ASSERT(false && "Unspported SVS index type for LeanVec");
+    }
+    return nullptr;
+}
+
+Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
+    std::smatch sm;
+    if (re_match(code_string, "Flat(,.+)?", sm)) {
+        std::string datatype_string =
+                sm[1].length() > 0 ? sm[1].str().substr(1) : "";
+        return parse_svs_datatype("Flat", "", datatype_string, d, mt);
+    }
+    if (re_match(code_string, "Vamana([0-9]+)(,.+)?", sm)) {
+        std::string degree_string = sm[1].str();
+        std::string datatype_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        return parse_svs_datatype(
+                "Vamana", degree_string, datatype_string, d, mt);
+    }
+    if (re_match(code_string, "IVF([0-9]+)(,.+)?", sm)) {
+        FAISS_ASSERT(false && "Unspported SVS index type");
+    }
+    return nullptr;
+}
+#endif // FAISS_ENABLE_SVS
+
 /***************************************************************
  * Parse basic indexes
  */
@@ -553,6 +694,29 @@ Index* parse_other_indexes(
     // IndexFlat
     if (description == "Flat") {
         return new IndexFlat(d, metric);
+    }
+
+    // IndexFlatL2Panorama
+    if (match("FlatL2Panorama([0-9]+)(_[0-9]+)?")) {
+        FAISS_THROW_IF_NOT(metric == METRIC_L2);
+        int nlevels = std::stoi(sm[1].str());
+        if (sm[2].length() > 0) {
+            int batch_size = std::stoi(sm[2].str().substr(1));
+            return new IndexFlatL2Panorama(d, nlevels, (size_t)batch_size);
+        } else {
+            return new IndexFlatL2Panorama(d, nlevels);
+        }
+    }
+
+    // IndexFlatIPPanorama
+    if (match("FlatIPPanorama([0-9]+)(_[0-9]+)?")) {
+        FAISS_THROW_IF_NOT(metric == METRIC_INNER_PRODUCT);
+        int nlevels = std::stoi(sm[1].str());
+        if (sm[2].length() == 0) {
+            return new IndexFlatIPPanorama(d, nlevels);
+        }
+        int batch_size = std::stoi(sm[2].str().substr(1));
+        return new IndexFlatIPPanorama(d, nlevels, (size_t)batch_size);
     }
 
     // IndexLSH
@@ -671,9 +835,17 @@ Index* parse_other_indexes(
         }
     }
 
-    // IndexRaBitQ
-    if (match(rabitq_pattern)) {
-        return new IndexRaBitQ(d, metric);
+    // IndexRaBitQ with optional nb_bits (1-9)
+    // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
+    if (match("RaBitQ([1-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        return new IndexRaBitQ(d, metric, nb_bits);
+    }
+
+    if (match("RaBitQfs([1-9])?(_[0-9]+)?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexRaBitQFastScan(d, metric, bbs, nb_bits);
     }
 
     return nullptr;
@@ -714,6 +886,18 @@ std::unique_ptr<Index> index_factory_sub(
                 index_factory_sub(d, sm[1].str(), metric).release());
         idmap->own_fields = true;
         return std::unique_ptr<Index>(idmap);
+    }
+
+    // handle refine Panorama
+    // TODO(aknayar): Add tests to test_factory.py
+    if (re_match(description, "(.+),RefinePanorama\\((.+)\\)", sm)) {
+        std::unique_ptr<Index> filter_index =
+                index_factory_sub(d, sm[1].str(), metric);
+        std::unique_ptr<Index> refine_index =
+                index_factory_sub(d, sm[2].str(), metric);
+        auto* index_rf = new IndexRefinePanorama(
+                filter_index.release(), refine_index.release());
+        return std::unique_ptr<Index>(index_rf);
     }
 
     // handle refines
@@ -821,6 +1005,25 @@ std::unique_ptr<Index> index_factory_sub(
                 description.c_str());
         return std::unique_ptr<Index>(index);
     }
+
+#ifdef FAISS_ENABLE_SVS
+    if (re_match(description, "SVS((?:Flat|Vamana|IVF).*)", sm)) {
+        std::string code_string = sm[1].str();
+        if (verbose) {
+            printf("parsing SVS string %s code_string=%s",
+                   description.c_str(),
+                   code_string.c_str());
+        }
+
+        Index* index = parse_IndexSVS(code_string, d, metric);
+        FAISS_THROW_IF_NOT_FMT(
+                index,
+                "could not parse SVS code description %s in %s",
+                code_string.c_str(),
+                description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+#endif // FAISS_ENABLE_SVS
 
     // NSG variants (it was unclear in the old version that the separator was a
     // "," so we support both "_" and ",")
@@ -934,6 +1137,28 @@ IndexBinary* index_binary_factory(
         bool own_invlists) {
     IndexBinary* index = nullptr;
 
+    std::smatch sm;
+    std::string desc_str(description);
+
+    // Handle IDMap2 and IDMap wrappers (prefix or suffix)
+    if (re_match(desc_str, "(.+),IDMap2", sm) ||
+        re_match(desc_str, "IDMap2,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap2* idmap2 = new IndexBinaryIDMap2(sub_index);
+        idmap2->own_fields = true;
+        return idmap2;
+    }
+
+    if (re_match(desc_str, "(.+),IDMap", sm) ||
+        re_match(desc_str, "IDMap,(.+)", sm)) {
+        IndexBinary* sub_index =
+                index_binary_factory(d, sm[1].str().c_str(), own_invlists);
+        IndexBinaryIDMap* idmap = new IndexBinaryIDMap(sub_index);
+        idmap->own_fields = true;
+        return idmap;
+    }
+
     int ncentroids = -1;
     int M, nhash, b;
 
@@ -959,7 +1184,7 @@ IndexBinary* index_binary_factory(
     } else if (sscanf(description, "BHash%d", &b) == 1) {
         index = new IndexBinaryHash(d, b);
 
-    } else if (std::string(description) == "BFlat") {
+    } else if (desc_str == "BFlat") {
         index = new IndexBinaryFlat(d);
 
     } else {

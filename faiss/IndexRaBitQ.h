@@ -8,12 +8,13 @@
 #pragma once
 
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {
 
 struct RaBitQSearchParameters : SearchParameters {
-    uint8_t qb = 0;
+    uint8_t qb = 4;
     bool centered = false;
 };
 
@@ -25,14 +26,17 @@ struct IndexRaBitQ : IndexFlatCodes {
 
     // the default number of bits to quantize a query with.
     // use '0' to disable quantization and use raw fp32 values.
-    uint8_t qb = 0;
+    uint8_t qb = 4;
 
     // quantize the query with a zero-centered scalar quantizer.
     bool centered = false;
 
     IndexRaBitQ();
 
-    explicit IndexRaBitQ(idx_t d, MetricType metric = METRIC_L2);
+    explicit IndexRaBitQ(
+            idx_t d,
+            MetricType metric = METRIC_L2,
+            uint8_t nb_bits = 1);
 
     void train(idx_t n, const float* x) override;
 

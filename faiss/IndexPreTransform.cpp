@@ -197,6 +197,20 @@ void IndexPreTransform::range_search(
             n, tv.x, radius, result, extract_index_search_params(params));
 }
 
+void IndexPreTransform::search_subset(
+        idx_t n,
+        const float* x,
+        idx_t k_base,
+        const idx_t* base_labels,
+        idx_t k,
+        float* distances,
+        idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(is_trained);
+    TransformedVectors tv(x, apply_chain(n, x));
+    index->search_subset(n, tv.x, k_base, base_labels, k, distances, labels);
+}
+
 void IndexPreTransform::reset() {
     index->reset();
     ntotal = 0;

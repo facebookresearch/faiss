@@ -99,7 +99,7 @@ struct IVFPQBuildCagraConfig {
     /// Note: if `dim` is not multiple of `pq_dim`, a random rotation is always
     /// applied to the input data and queries to transform the working space
     /// from `dim` to `rot_dim`, which may be slightly larger than the original
-    /// space and and is a multiple of `pq_dim` (`rot_dim % pq_dim == 0`).
+    /// space and is a multiple of `pq_dim` (`rot_dim % pq_dim == 0`).
     /// However, this transform is not necessary when `dim` is multiple of
     /// `pq_dim`
     ///   (`dim == rot_dim`, hence no need in adding "extra" data columns /
@@ -135,7 +135,7 @@ struct IVFPQSearchCagraConfig {
     ///
     /// The use of low-precision types reduces the amount of shared memory
     /// required at search time, so fast shared memory kernels can be used even
-    /// for datasets with large dimansionality. Note that the recall is slightly
+    /// for datasets with large dimensionality. Note that the recall is slightly
     /// degraded when low-precision type is selected.
 
     cudaDataType_t lut_dtype = CUDA_R_32F;
@@ -166,6 +166,10 @@ struct IVFPQSearchCagraConfig {
     /// negative effects on the search performance if tweaked incorrectly.
 
     double preferred_shmem_carveout = 1.0;
+
+    /// Set the internal batch size to improve GPU utilization at the cost of
+    /// larger memory footprint.
+    uint32_t max_internal_batch_size = 4096;
 };
 
 struct GpuIndexCagraConfig : public GpuIndexConfig {

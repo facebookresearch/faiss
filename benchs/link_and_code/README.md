@@ -22,4 +22,4 @@ graph to improve the reconstruction. It is described in
 ArXiV [here](https://arxiv.org/abs/1804.09996)
 
 The necessary code for this paper was removed from Faiss in version 1.8.0.
-For a functioning verinsion, use Faiss 1.7.4.
+For a functioning version, use Faiss 1.7.4.
