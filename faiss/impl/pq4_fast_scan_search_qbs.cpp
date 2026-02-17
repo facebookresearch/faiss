@@ -53,8 +53,8 @@ void kernel_accumulate_block(
 
     // _mm_prefetch(codes + 768, 0);
     for (int sq = 0; sq < nsq - scaler.nscale; sq += 2) {
-        // prefetch
-        simd32uint8 c(codes);
+        simd32uint8 c;
+        c.loadu(codes);
         codes += 32;
 
         simd32uint8 mask(0xf);
@@ -79,8 +79,8 @@ void kernel_accumulate_block(
     }
 
     for (int sq = 0; sq < scaler.nscale; sq += 2) {
-        // prefetch
-        simd32uint8 c(codes);
+        simd32uint8 c;
+        c.loadu(codes);
         codes += 32;
 
         simd32uint8 mask(0xf);
@@ -623,7 +623,6 @@ void accumulate(
         ResultHandler& res,
         const Scaler& scaler) {
     assert(nsq % 2 == 0);
-    assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT));
 
 #define DISPATCH(NQ)                                     \
@@ -782,7 +781,7 @@ void accumulate_to_mem(
 }
 
 int pq4_preferred_qbs(int n) {
-    // from timmings in P141901742, P141902828
+    // from timings in P141901742, P141902828
     static int map[12] = {
             0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
     if (n <= 11) {

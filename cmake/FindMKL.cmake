@@ -116,6 +116,7 @@ macro(CHECK_BLAS_LIBRARIES LIBRARIES _prefix _name _flags _list _threadlibs _add
     list(APPEND _extaddlibdir ENV LD_LIBRARY_PATH)
   endif()
   list(APPEND _extaddlibdir "${CMAKE_C_IMPLICIT_LINK_DIRECTORIES}")
+  list(APPEND _extaddlibdir "${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}")
 
   foreach(_library ${_list})
     if(_library MATCHES "^-Wl,--(start|end)-group$")
@@ -322,9 +323,16 @@ if(CMAKE_C_COMPILER_LOADED OR CMAKE_CXX_COMPILER_LOADED)
       get_filename_component(BLAS_mkl_MKLROOT "${BLAS_mkl_MKLROOT}" DIRECTORY)
     endif()
   endif()
+  # Modern oneAPI MKL (2021+) uses simplified paths without OS suffix:
+  #   $MKLROOT/lib/  (libraries directly here)
+  #   $MKLROOT/lib/intel64 -> ../lib  (symlink for compatibility)
+  # Legacy MKL used paths like:
+  #   $MKLROOT/lib/intel64_lin/
+  #   $MKLROOT/mkl/lib/intel64_lin/
   set(BLAS_mkl_LIB_PATH_SUFFIXES
-    "compiler/lib" "compiler/lib/${BLAS_mkl_ARCH_NAME}_${BLAS_mkl_OS_NAME}"
-    "mkl/lib" "mkl/lib/${BLAS_mkl_ARCH_NAME}_${BLAS_mkl_OS_NAME}"
+    "lib" "lib/${BLAS_mkl_ARCH_NAME}"
+    "compiler/lib" "compiler/lib/${BLAS_mkl_ARCH_NAME}" "compiler/lib/${BLAS_mkl_ARCH_NAME}_${BLAS_mkl_OS_NAME}"
+    "mkl/lib" "mkl/lib/${BLAS_mkl_ARCH_NAME}" "mkl/lib/${BLAS_mkl_ARCH_NAME}_${BLAS_mkl_OS_NAME}"
     "lib/${BLAS_mkl_ARCH_NAME}_${BLAS_mkl_OS_NAME}")
 
   foreach(IT ${BLAS_SEARCH_LIBS})

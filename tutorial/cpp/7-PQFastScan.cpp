@@ -72,4 +72,4 @@ int main() {
     delete[] xq;
 
     return 0;
-} // namespace facebook::detail
+}

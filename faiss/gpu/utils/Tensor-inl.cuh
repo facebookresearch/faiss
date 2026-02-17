@@ -18,8 +18,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor()
         : data_(nullptr) {
     static_assert(Dim > 0, "must have > 0 dimensions");
@@ -35,8 +34,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
         Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t) {
     this->operator=(t);
@@ -47,8 +45,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
         Tensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t) {
     this->operator=(std::move(t));
@@ -59,8 +56,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& Tensor<
         T,
         Dim,
@@ -82,8 +78,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& Tensor<
         T,
         Dim,
@@ -108,8 +103,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
         DataPtrType data,
         const IndexT sizes[Dim])
@@ -131,8 +125,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
         DataPtrType data,
         std::initializer_list<IndexT> sizes)
@@ -156,8 +149,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::Tensor(
         DataPtrType data,
         const IndexT sizes[Dim],
@@ -176,8 +168,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
         const Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
         cudaStream_t stream) {
@@ -185,7 +176,7 @@ __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
     GPU_FAISS_ASSERT(this->isContiguous());
 
     // Size must be the same (since dimensions are checked and
-    // continuity is assumed, we need only check total number of
+    // contiguity is assumed, we need only check total number of
     // elements
     GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 
@@ -221,8 +212,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyTo(
         Tensor<T, Dim, InnerContig, IndexT, PtrTraits>& t,
         cudaStream_t stream) {
@@ -230,7 +220,7 @@ __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyTo(
     GPU_FAISS_ASSERT(this->isContiguous());
 
     // Size must be the same (since dimensions are checked and
-    // continuity is assumed, we need only check total number of
+    // contiguity is assumed, we need only check total number of
     // elements
     GPU_FAISS_ASSERT(this->numElements() == t.numElements());
 
@@ -266,8 +256,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ void Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::copyFrom(
         const std::vector<T>& v,
         cudaStream_t stream) {
@@ -295,8 +284,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ std::vector<T> Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         copyToVector(cudaStream_t stream) {
     // The tensor must be fully contiguous
@@ -328,8 +316,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename OtherT, int OtherDim>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::isSame(
         const Tensor<OtherT, OtherDim, InnerContig, IndexT, PtrTraits>& rhs)
@@ -356,8 +343,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename OtherT, int OtherDim>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isSameSize(
@@ -381,8 +367,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -401,8 +386,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ const Tensor<U, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -421,8 +405,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ Tensor<U, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -455,8 +438,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ const Tensor<U, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -473,8 +455,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename U>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         canCastResize() const {
@@ -510,8 +491,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename NewIndexT>
 __host__ Tensor<T, Dim, InnerContig, NewIndexT, PtrTraits> Tensor<
         T,
@@ -539,8 +519,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <typename NewIndexT>
 __host__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::canUseIndexType()
         const {
@@ -571,8 +550,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ IndexT
 Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::numElements() const {
     auto size = getSize(0);
@@ -589,8 +567,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isContiguous() const {
     IndexT prevSize = 1;
@@ -613,8 +590,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isConsistentlySized(int i) const {
     if (i == 0 && getStride(i) > 0 && getSize(i) > 0) {
@@ -633,8 +609,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isConsistentlySized() const {
     for (int i = 0; i < Dim; ++i) {
@@ -651,8 +626,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ bool Tensor<T, Dim, InnerContig, IndexT, PtrTraits>::
         isContiguousDim(int i) const {
     return (i == Dim - 1) || // just in case
@@ -665,8 +639,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
         Dim,
@@ -706,8 +679,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, false, IndexT, PtrTraits> Tensor<
         T,
         Dim,
@@ -743,8 +715,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int NewDim>
 __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -781,8 +752,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int NewDim>
 __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -817,8 +787,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int NewDim>
 __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -871,8 +840,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int NewDim>
 __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -923,8 +891,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int SubDim>
 __host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -952,8 +919,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int SubDim>
 __host__ __device__ Tensor<T, SubDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
@@ -969,8 +935,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
         Dim,
@@ -985,8 +950,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ Tensor<T, Dim, InnerContig, IndexT, PtrTraits> Tensor<
         T,
         Dim,
@@ -1022,8 +986,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 template <int NewDim>
 __host__ __device__ Tensor<T, NewDim, InnerContig, IndexT, PtrTraits> Tensor<
         T,

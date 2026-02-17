@@ -13,12 +13,13 @@
 #include <faiss/Index.h>
 #include <faiss/IndexIVF.h>
 
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {
 
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
-    uint8_t qb = 0;
+    uint8_t qb = 4;
     bool centered = false;
 };
 
@@ -28,14 +29,15 @@ struct IndexIVFRaBitQ : IndexIVF {
 
     // the default number of bits to quantize a query with.
     // use '0' to disable quantization and use raw fp32 values.
-    uint8_t qb = 0;
+    uint8_t qb = 4;
 
     IndexIVFRaBitQ(
             Index* quantizer,
             const size_t d,
             const size_t nlist,
             MetricType metric = METRIC_L2,
-            bool own_invlists = true);
+            bool own_invlists = true,
+            uint8_t nb_bits = 1);
 
     IndexIVFRaBitQ();
 

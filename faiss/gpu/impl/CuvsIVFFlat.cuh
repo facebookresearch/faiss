@@ -55,7 +55,7 @@ class CuvsIVFFlat : public IVFFlat {
     /// Reserve GPU memory in our inverted lists for this number of vectors
     void reserveMemory(idx_t numVecs) override;
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,
@@ -135,7 +135,7 @@ struct CuvsIVFFlatCodePackerInterleaved : CodePacker {
     CuvsIVFFlatCodePackerInterleaved(
             size_t list_size,
             uint32_t dim,
-            uint32_t chuk_size);
+            uint32_t chunk_size);
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)

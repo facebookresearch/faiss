@@ -77,10 +77,11 @@ void ThreadedIndex<IndexT>::addIndex(IndexT* index) {
         }
     }
 
-    indices_.emplace_back(std::make_pair(
-            index,
-            std::unique_ptr<WorkerThread>(
-                    isThreaded_ ? new WorkerThread : nullptr)));
+    indices_.emplace_back(
+            std::make_pair(
+                    index,
+                    std::unique_ptr<WorkerThread>(
+                            isThreaded_ ? new WorkerThread : nullptr)));
 
     onAfterAddIndex(index);
 }

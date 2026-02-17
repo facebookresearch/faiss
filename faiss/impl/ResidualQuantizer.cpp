@@ -18,6 +18,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -274,10 +275,12 @@ void ResidualQuantizer::train(size_t n, const float* x) {
     // find min and max norms
     std::vector<float> norms(n);
 
-    for (size_t i = 0; i < n; i++) {
-        norms[i] = fvec_L2sqr(
-                x + i * d, residuals.data() + i * cur_beam_size * d, d);
-    }
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t i = 0; i < n; i++) {
+            norms[i] = fvec_L2sqr<SL>(
+                    x + i * d, residuals.data() + i * cur_beam_size * d, d);
+        }
+    });
 
     // fvec_norms_L2sqr(norms.data(), x, d, n);
     train_norm(n, norms.data());
@@ -393,11 +396,13 @@ float ResidualQuantizer::retrain_AQ_codebook(size_t n, const float* x) {
     }
 
     float output_recons_error = 0;
-    for (size_t j = 0; j < d; j++) {
-        output_recons_error += fvec_norm_L2sqr(
-                xt.data() + total_codebook_size + n * j,
-                n - total_codebook_size);
-    }
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t j = 0; j < d; j++) {
+            output_recons_error += fvec_norm_L2sqr<SL>(
+                    xt.data() + total_codebook_size + n * j,
+                    n - total_codebook_size);
+        }
+    });
     if (verbose) {
         printf("  output quantization error %g\n", output_recons_error);
     }

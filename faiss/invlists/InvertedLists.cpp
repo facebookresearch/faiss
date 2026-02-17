@@ -229,7 +229,7 @@ bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
     }
 }
 
-// implemnent iterator on top of get_codes / get_ids
+// implement iterator on top of get_codes / get_ids
 namespace {
 
 struct CodeArrayIterator : InvertedListsIterator {
@@ -345,6 +345,120 @@ void ArrayInvertedLists::permute_invlists(const idx_t* map) {
 }
 
 ArrayInvertedLists::~ArrayInvertedLists() {}
+
+/***********************************************
+ * ArrayInvertedListsPanorama implementation
+ **********************************************/
+
+ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
+        size_t nlist,
+        size_t code_size,
+        size_t n_levels)
+        : ArrayInvertedLists(nlist, code_size),
+          n_levels(n_levels),
+          level_width(
+                  (((code_size / sizeof(float)) + n_levels - 1) / n_levels) *
+                  sizeof(float)),
+          pano(code_size, n_levels, kBatchSize) {
+    FAISS_THROW_IF_NOT(n_levels > 0);
+    FAISS_THROW_IF_NOT(code_size % sizeof(float) == 0);
+    FAISS_THROW_IF_NOT_MSG(
+            !use_iterator,
+            "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
+    FAISS_ASSERT(level_width % sizeof(float) == 0);
+
+    cum_sums.resize(nlist);
+}
+
+const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
+    assert(list_no < nlist);
+    return cum_sums[list_no].data();
+}
+
+size_t ArrayInvertedListsPanorama::add_entries(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code) {
+    assert(list_no < nlist);
+    size_t o = ids[list_no].size();
+
+    ids[list_no].resize(o + n_entry);
+    memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
+
+    size_t new_size = o + n_entry;
+    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
+    codes[list_no].resize(num_batches * kBatchSize * code_size);
+    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
+
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
+    pano.copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
+    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, vectors);
+
+    return o;
+}
+
+void ArrayInvertedListsPanorama::update_entries(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids_in,
+        const uint8_t* code) {
+    assert(list_no < nlist);
+    assert(n_entry + offset <= ids[list_no].size());
+
+    memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
+
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
+    pano.copy_codes_to_level_layout(
+            codes[list_no].data(), offset, n_entry, code);
+    pano.compute_cumulative_sums(
+            cum_sums[list_no].data(), offset, n_entry, vectors);
+}
+
+void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
+    ids[list_no].resize(new_size);
+
+    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
+    codes[list_no].resize(num_batches * kBatchSize * code_size);
+    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
+}
+
+const uint8_t* ArrayInvertedListsPanorama::get_single_code(
+        size_t list_no,
+        size_t offset) const {
+    assert(list_no < nlist);
+    assert(offset < ids[list_no].size());
+
+    uint8_t* recons_buffer = new uint8_t[code_size];
+
+    float* recons = reinterpret_cast<float*>(recons_buffer);
+    pano.reconstruct(offset, recons, codes[list_no].data());
+
+    return recons_buffer;
+}
+
+void ArrayInvertedListsPanorama::release_codes(
+        size_t list_no,
+        const uint8_t* codes) const {
+    // Only delete if it's heap-allocated (from get_single_code).
+    // If it's from get_codes (raw storage), it will be codes[list_no].data()
+    if (codes != this->codes[list_no].data()) {
+        delete[] codes;
+    }
+}
+
+InvertedListsIterator* ArrayInvertedListsPanorama::get_iterator(
+        size_t /* list_no */,
+        void* /* inverted_list_context */) const {
+    FAISS_THROW_MSG(
+            "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
+    return nullptr;
+}
 
 /*****************************************************************
  * Meta-inverted list implementations

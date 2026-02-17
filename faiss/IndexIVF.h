@@ -11,9 +11,6 @@
 #define FAISS_INDEX_IVF_H
 
 #include <stdint.h>
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>
@@ -160,7 +157,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * index maps to a list (aka inverted list or posting list), where the
  * id of the vector is stored.
  *
- * The inverted list object is required only after trainng. If none is
+ * The inverted list object is required only after training. If none is
  * set externally, an ArrayInvertedLists is used automatically.
  *
  * At search time, the vector to be searched is also quantized, and
@@ -171,7 +168,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * lists are visited.
  *
  * Sub-classes implement a post-filtering of the index that refines
- * the distance estimation from the query to databse vectors.
+ * the distance estimation from the query to database vectors.
  */
 struct IndexIVF : Index, IndexIVFInterface {
     /// Access to the actual data
@@ -324,6 +321,12 @@ struct IndexIVF : Index, IndexIVFInterface {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
+
+    /** search one vector with a custom result handler */
+    void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
 
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
@@ -492,17 +495,17 @@ struct InvertedListScanner {
     virtual void set_query(const float* query_vector) = 0;
 
     /// following codes come from this inverted list
-    virtual void set_list(idx_t list_no, float coarse_dis) = 0;
+    virtual void set_list(idx_t list_no, float coarse_dis);
 
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
-    /** scan a set of codes, compute distances to current query and
+    /** scan a set of codes, compute distances to current query, and
      * update heap of results if necessary. Default implementation
      * calls distance_to_code.
      *
-     * @param n      number of codes to scan
-     * @param codes  codes to scan (n * code_size)
+     * @param n          number of codes to scan
+     * @param codes      codes to scan (n * code_size)
      * @param ids        corresponding ids (ignored if store_pairs)
      * @param distances  heap distances (size k)
      * @param labels     heap labels (size k)
@@ -542,6 +545,13 @@ struct InvertedListScanner {
             float radius,
             RangeQueryResult& result,
             size_t& list_size) const;
+
+    // accumulate results with a ResultHandler
+    virtual size_t scan_codes(
+            size_t n,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const;
 
     virtual ~InvertedListScanner() {}
 };

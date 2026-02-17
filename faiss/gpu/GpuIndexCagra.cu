@@ -86,6 +86,8 @@ void GpuIndexCagra::train_ex(idx_t n, const void* x, NumericType numeric_type) {
                 cagraConfig_.ivf_pq_search_params->lut_dtype;
         ivf_pq_search_params->preferred_shmem_carveout =
                 cagraConfig_.ivf_pq_search_params->preferred_shmem_carveout;
+        ivf_pq_search_params->max_internal_batch_size =
+                cagraConfig_.ivf_pq_search_params->max_internal_batch_size;
     }
 
     if (numeric_type == NumericType::Float32) {
@@ -360,7 +362,7 @@ void GpuIndexCagra::copyFrom_ex(
         FAISS_ASSERT(base_index);
         auto dataset = (uint8_t*)base_index->codes.data();
 
-        // decode what was encded by Quantizer8bitDirectSigned in
+        // decode what was encoded by Quantizer8bitDirectSigned in
         // ScalarQuantizer
         int8_t* decoded_train_dataset = new int8_t[index->ntotal * index->d];
         for (int i = 0; i < index->ntotal * this->d; i++) {

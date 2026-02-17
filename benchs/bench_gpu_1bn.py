@@ -166,7 +166,7 @@ def rate_limited_imap(f, l):
 
 
 class IdentPreproc:
-    """a pre-processor is either a faiss.VectorTransform or an IndentPreproc"""
+    """a pre-processor is either a faiss.VectorTransform or an IdentPreproc"""
 
     def __init__(self, d):
         self.d_in = self.d_out = d
@@ -229,7 +229,7 @@ elif dbname == 'Deep1B':
     xb = mmap_fvecs('deep1b/base.fvecs')
     xq = mmap_fvecs('deep1b/deep1B_queries.fvecs')
     xt = mmap_fvecs('deep1b/learn.fvecs')
-    # deep1B's train is is outrageously big
+    # deep1B's train is outrageously big
     xt = xt[:10 * 1000 * 1000]
     gt_I = ivecs_read('deep1b/deep1B_groundtruth.ivecs')
 
@@ -740,11 +740,11 @@ def eval_dataset(index, preproc):
                 print("1-R@%d: %.4f" % (rank, nok / float(nq)), end=' ')
             print()
         if I_fname:
-            I_fname_i = I_fname % I
+            I_fname_i = I_fname % nprobe
             print("storing", I_fname_i)
             np.save(I, I_fname_i)
         if D_fname:
-            D_fname_i = I_fname % I
+            D_fname_i = D_fname % nprobe
             print("storing", D_fname_i)
             np.save(D, D_fname_i)
 

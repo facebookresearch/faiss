@@ -13,6 +13,7 @@
 #include "macros_impl.h"
 
 using faiss::Index;
+using faiss::IndexBinary;
 using faiss::ParameterRange;
 using faiss::ParameterSpace;
 
@@ -90,6 +91,43 @@ int faiss_ParameterSpace_set_index_parameter(
         auto index = reinterpret_cast<Index*>(cindex);
         reinterpret_cast<const ParameterSpace*>(space)->set_index_parameter(
                 index, name, value);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_ParameterSpace_set_index_parameter_binary(
+        const FaissParameterSpace* space,
+        FaissIndexBinary* cindex,
+        const char* name,
+        double value) {
+    try {
+        auto index = reinterpret_cast<IndexBinary*>(cindex);
+        reinterpret_cast<const ParameterSpace*>(space)->set_index_parameter(
+                index, name, value);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_ParameterSpace_set_index_parameters_binary(
+        const FaissParameterSpace* space,
+        FaissIndexBinary* cindex,
+        const char* param_string) {
+    try {
+        auto index = reinterpret_cast<IndexBinary*>(cindex);
+        reinterpret_cast<const ParameterSpace*>(space)->set_index_parameters(
+                index, param_string);
+    }
+    CATCH_AND_HANDLE
+}
+
+int faiss_ParameterSpace_set_index_parameters_cno_binary(
+        const FaissParameterSpace* space,
+        FaissIndexBinary* cindex,
+        size_t cno) {
+    try {
+        auto index = reinterpret_cast<IndexBinary*>(cindex);
+        reinterpret_cast<const ParameterSpace*>(space)->set_index_parameters(
+                index, cno);
     }
     CATCH_AND_HANDLE
 }

@@ -23,3 +23,5 @@ target_link_libraries(demo_weighted_kmeans PRIVATE faiss)
 
 add_executable(demo_residual_quantizer EXCLUDE_FROM_ALL demo_residual_quantizer.cpp)
 target_link_libraries(demo_residual_quantizer PRIVATE faiss)
+
+add_subdirectory(diversity_filter)

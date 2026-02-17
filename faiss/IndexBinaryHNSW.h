@@ -36,7 +36,7 @@ struct IndexBinaryHNSW : IndexBinary {
 
     // When set to true, all neighbors in level 0 are filled up
     // to the maximum size allowed (2 * M). This option is used by
-    // IndexBinaryHHNSW to create a full base layer graph that is
+    // IndexBinaryHNSW to create a full base layer graph that is
     // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryHNSW*) is called.
     bool keep_max_size_level0 = false;
 

@@ -22,7 +22,10 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
-ext = ".pyd" if platform.system() == "Windows" else ".so"
+if platform.system() != "AIX":
+    ext = ".pyd" if platform.system() == "Windows" else ".so"
+else:
+    ext = ".a"
 prefix = "Release/" * (platform.system() == "Windows")
 
 swigfaiss_generic_lib = f"{prefix}_swigfaiss{ext}"
@@ -43,18 +46,19 @@ found_faiss_example_external_module_lib = os.path.exists(
     faiss_example_external_module_lib
 )
 
-assert (
-    found_swigfaiss_generic
-    or found_swigfaiss_avx2
-    or found_swigfaiss_avx512
-    or found_swigfaiss_avx512_spr
-    or found_swigfaiss_sve
-    or found_faiss_example_external_module_lib
-), (
-    f"Could not find {swigfaiss_generic_lib} or "
-    f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
-    f"Faiss may not be compiled yet."
-)
+if platform.system() != "AIX":
+    assert (
+        found_swigfaiss_generic
+        or found_swigfaiss_avx2
+        or found_swigfaiss_avx512
+        or found_swigfaiss_avx512_spr
+        or found_swigfaiss_sve
+        or found_faiss_example_external_module_lib
+    ), (
+        f"Could not find {swigfaiss_generic_lib} or "
+        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
+        f"Faiss may not be compiled yet."
+    )
 
 if found_swigfaiss_generic:
     print(f"Copying {swigfaiss_generic_lib}")
@@ -105,7 +109,7 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name="faiss",
-    version="1.12.0",
+    version="1.13.2",
     description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
     long_description_content_type="text/plain",
@@ -117,7 +121,7 @@ setup(
     install_requires=["numpy", "packaging"],
     packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
     package_data={
-        "faiss": ["*.so", "*.pyd"],
+        "faiss": ["*.so", "*.pyd", "*.a"],
     },
     zip_safe=False,
 )

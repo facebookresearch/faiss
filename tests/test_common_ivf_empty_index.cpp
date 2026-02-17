@@ -36,7 +36,7 @@ std::vector<float> get_random_vectors(size_t n, int seed) {
     return x;
 }
 
-/** InvetedLists implementation that dispatches the search to an InvertedList
+/** InvertedLists implementation that dispatches the search to an InvertedList
  * object that is passed in at query time */
 
 struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
@@ -76,8 +76,9 @@ TEST(COMMON, test_common_trained_index) {
 
     // construct and build an "empty index": a trained index that does not
     // itself hold any data
-    std::unique_ptr<faiss::IndexIVF> empty_index(dynamic_cast<faiss::IndexIVF*>(
-            faiss::index_factory(d, "IVF32,PQ8np")));
+    std::unique_ptr<faiss::IndexIVF> empty_index(
+            dynamic_cast<faiss::IndexIVF*>(
+                    faiss::index_factory(d, "IVF32,PQ8np")));
     auto xt = get_random_vectors(nt, 123);
     empty_index->train(nt, xt.data());
     empty_index->nprobe = 4;
@@ -141,7 +142,7 @@ TEST(COMMON, test_common_trained_index) {
         new_I[i] = I;
     }
 
-    // compare with reference reslt
+    // compare with reference result
     for (int i = 0; i < N; i++) {
         ASSERT_EQ(ref_I[i], new_I[i]);
     }

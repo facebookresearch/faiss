@@ -34,9 +34,11 @@ struct SIMDResultHandler;
  * @param ntotal  number of input codes
  * @param nb      output number of codes (ntotal rounded up to a multiple of
  *                bbs)
- * @param nsq      number of sub-quantizers (=M rounded up to a muliple of 2)
+ * @param nsq      number of sub-quantizers (=M rounded up to a multiple of 2)
  * @param bbs     size of database blocks (multiple of 32)
  * @param blocks  output array, size nb * nsq / 2.
+ * @param code_stride  optional stride between consecutive codes (0 = use
+default (M + 1) / 2)
  */
 void pq4_pack_codes(
         const uint8_t* codes,
@@ -45,7 +47,8 @@ void pq4_pack_codes(
         size_t nb,
         size_t bbs,
         size_t nsq,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        size_t code_stride = 0);
 
 /** Same as pack_codes but write in a given range of the output,
  * leaving the rest untouched. Assumes allocated entries are 0 on input.
@@ -54,6 +57,8 @@ void pq4_pack_codes(
  * @param i0      first output code to write
  * @param i1      last output code to write
  * @param blocks  output array, size at least ceil(i1 / bbs) * bbs * nsq / 2
+ * @param code_stride  optional stride between consecutive codes (0 = use
+ * default (M + 1) / 2)
  */
 void pq4_pack_codes_range(
         const uint8_t* codes,
@@ -62,7 +67,8 @@ void pq4_pack_codes_range(
         size_t i1,
         size_t bbs,
         size_t nsq,
-        uint8_t* blocks);
+        uint8_t* blocks,
+        size_t code_stride = 0);
 
 /** get a single element from a packed codes table
  *
@@ -104,7 +110,7 @@ struct CodePackerPQ4 : CodePacker {
 /** Pack Look-up table for consumption by the kernel.
  *
  * @param nq      number of queries
- * @param nsq     number of sub-quantizers (muliple of 2)
+ * @param nsq     number of sub-quantizers (multiple of 2)
  * @param src     input array, size (nq, 16)
  * @param dest    output array, size (nq, 16)
  */
@@ -115,7 +121,7 @@ void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
  * @param nq      number of queries
  * @param nb      number of database elements
  * @param bbs     size of database blocks (multiple of 32)
- * @param nsq     number of sub-quantizers (muliple of 2)
+ * @param nsq     number of sub-quantizers (multiple of 2)
  * @param codes   packed codes array
  * @param LUT     packed look-up table
  * @param scaler  scaler to scale the encoded norm
@@ -154,7 +160,7 @@ int pq4_preferred_qbs(int nq);
  *
  * @param qbs     4-bit encoded number of query blocks, the total number of
  *                queries handled (nq) is deduced from it
- * @param nsq     number of sub-quantizers (muliple of 2)
+ * @param nsq     number of sub-quantizers (multiple of 2)
  * @param src     input array, size (nq, 16)
  * @param dest    output array, size (nq, 16)
  * @return nq
@@ -173,11 +179,11 @@ int pq4_pack_LUT_qbs_q_map(
 /** Run accumulation loop.
  *
  * @param qbs     4-bit encoded number of queries
- * @param nb      number of database codes (mutliple of bbs)
+ * @param nb      number of database codes (multiple of bbs)
  * @param nsq     number of sub-quantizers
  * @param codes   encoded database vectors (packed)
  * @param LUT     look-up table (packed)
- * @param res     call-back for the resutls
+ * @param res     call-back for the results
  * @param scaler  scaler to scale the encoded norm
  */
 void pq4_accumulate_loop_qbs(

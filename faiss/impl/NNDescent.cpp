@@ -10,10 +10,10 @@
 #include <faiss/impl/NNDescent.h>
 
 #include <mutex>
-#include <string>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
+#include <faiss/impl/VisitedTable.h>
 
 namespace faiss {
 
@@ -177,7 +177,7 @@ void NNDescent::join(DistanceComputer& qdis) {
     }
 }
 
-/// Sample neighbors for each node to peform local join later
+/// Sample neighbors for each node to perform local join later
 /// Store them in nn_new and nn_old
 void NNDescent::update() {
     // Step 1.

@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/impl/maybe_owned_vector.h>
 
 namespace faiss {
@@ -274,6 +275,51 @@ struct ArrayInvertedLists : InvertedLists {
             const override;
 
     ~ArrayInvertedLists() override;
+};
+
+/// Level-oriented storage as defined in the IVFFlat section of Panorama
+/// (https://www.arxiv.org/pdf/2510.00566).
+struct ArrayInvertedListsPanorama : ArrayInvertedLists {
+    static constexpr size_t kBatchSize = 128;
+    std::vector<MaybeOwnedVector<float>> cum_sums;
+    const size_t n_levels;
+    const size_t level_width; // in code units
+    Panorama pano;
+
+    ArrayInvertedListsPanorama(size_t nlist, size_t code_size, size_t n_levels);
+
+    const float* get_cum_sums(size_t list_no) const;
+
+    size_t add_entries(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void update_entries(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void resize(size_t list_no, size_t new_size) override;
+
+    /// Panorama's layout make it impractical to support iterators as defined
+    /// by Faiss (i.e. `InvertedListsIterator` API). The iterator would require
+    /// to allocate and reassemble the vector at each call.
+    /// Hence, we override this method to throw an error, this effectively
+    /// disables the `iterate_codes` and `iterate_codes_range` methods.
+    InvertedListsIterator* get_iterator(
+            size_t list_no,
+            void* inverted_list_context = nullptr) const override;
+
+    /// Reconstructs a single code from level-oriented storage to flat format.
+    const uint8_t* get_single_code(size_t list_no, size_t offset)
+            const override;
+
+    /// Frees codes returned by `get_single_code`.
+    void release_codes(size_t list_no, const uint8_t* codes) const override;
 };
 
 /*****************************************************************

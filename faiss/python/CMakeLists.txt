@@ -10,7 +10,11 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+if(FAISS_ENABLE_CUVS)
+  set(CMAKE_CXX_STANDARD 17)
+else()
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 find_package(SWIG REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
@@ -31,6 +35,16 @@ macro(configure_swigfaiss source)
   if(WIN32)
     set_source_files_properties(${source} PROPERTIES
       SWIG_FLAGS -DSWIGWIN
+    )
+  endif()
+  if(FAISS_ENABLE_SVS)
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_ENABLE_SVS -DFAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION}
+    )
+  endif()
+  if(FAISS_OPT_LEVEL STREQUAL "dd")
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_ENABLE_DD
     )
   endif()
   if(FAISS_ENABLE_GPU)
@@ -99,18 +113,17 @@ else()
   find_package(faiss REQUIRED)
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
-swig_add_library(swigfaiss
-  TYPE MODULE
-  LANGUAGE python
-  SOURCES swigfaiss.swig
-)
-else ()
 swig_add_library(swigfaiss
   TYPE SHARED
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
+
+if(TARGET swigfaiss AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  set_target_properties(swigfaiss PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+  )
 endif()
 
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
@@ -172,7 +185,10 @@ swig_add_library(faiss_example_external_module
 )
 set_property(TARGET faiss_example_external_module PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
-if(NOT WIN32)
+if(AIX)
+  set_target_properties(swigfaiss PROPERTIES SUFFIX .a)
+  set_target_properties(faiss_example_external_module PROPERTIES SUFFIX .a)
+elseif(NOT WIN32)
   # NOTE: Python does not recognize the dylib extension.
   set_target_properties(swigfaiss PROPERTIES SUFFIX .so)
   set_target_properties(swigfaiss_avx2 PROPERTIES SUFFIX .so)
@@ -188,6 +204,21 @@ else()
   target_compile_options(swigfaiss_avx512_spr PRIVATE /bigobj)
   target_compile_options(swigfaiss_sve PRIVATE /bigobj)
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
+endif()
+
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+# Enable DD support in Python bindings when building with Dynamic Dispatch
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  # Add compile definition for the generated C++ wrapper
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_DD)
 endif()
 
 if(FAISS_ENABLE_GPU)
@@ -275,7 +306,7 @@ set_property(TARGET faiss_python_callbacks
   PROPERTY POSITION_INDEPENDENT_CODE ON
 )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "AIX")
+if ("${CMAKE_SYSTEM_NAME}" MATCHES "AIX")
 target_link_libraries(faiss_python_callbacks PRIVATE faiss)
 endif()
 

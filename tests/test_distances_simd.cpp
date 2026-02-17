@@ -15,7 +15,7 @@
 #include <faiss/utils/distances.h>
 
 // reference implementations
-void fvec_inner_products_ny_ref(
+static void fvec_inner_products_ny_ref(
         float* ip,
         const float* x,
         const float* y,
@@ -27,7 +27,7 @@ void fvec_inner_products_ny_ref(
     }
 }
 
-void fvec_L2sqr_ny_ref(
+static void fvec_L2sqr_ny_ref(
         float* dis,
         const float* x,
         const float* y,
@@ -234,7 +234,7 @@ TEST(TestFvecL1, manhattan_distance) {
         auto distance = faiss::fvec_L1(x.data(), y.data(), x.size());
 
         ASSERT_EQ(distance, true_distance)
-                << "Mismatching fvec_Linf results for nrows = " << nrows;
+                << "Mismatching fvec_L1 results for nrows = " << nrows;
     }
 }
 

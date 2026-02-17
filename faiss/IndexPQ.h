@@ -164,7 +164,7 @@ struct MultiIndexQuantizer : Index {
 // block size used in MultiIndexQuantizer::search
 FAISS_API extern int multi_index_quantizer_search_bs;
 
-/** MultiIndexQuantizer where the PQ assignmnet is performed by sub-indexes
+/** MultiIndexQuantizer where the PQ assignment is performed by sub-indexes
  */
 struct MultiIndexQuantizer2 : MultiIndexQuantizer {
     /// M Indexes on d / M dimensions

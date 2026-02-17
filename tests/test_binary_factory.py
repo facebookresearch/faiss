@@ -42,3 +42,13 @@ class TestBinaryFactory(unittest.TestCase):
         index = faiss.index_binary_factory(256, "BHash5x6")
         assert index.b == 6
         assert index.nhash == 5
+
+    def test_factory_IDMap2_prefix(self):
+        index = faiss.index_binary_factory(16, "IDMap2,BFlat")
+        assert isinstance(index, faiss.IndexBinaryIDMap2)
+        assert index.index.code_size == 2
+
+    def test_factory_IDMap2_suffix(self):
+        index = faiss.index_binary_factory(16, "BFlat,IDMap2")
+        assert isinstance(index, faiss.IndexBinaryIDMap2)
+        assert index.index.code_size == 2
