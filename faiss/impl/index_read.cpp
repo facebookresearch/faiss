@@ -208,6 +208,11 @@ void read_xb_vector(VectorT& target, IOReader* f) {
 void read_index_header(Index* idx, IOReader* f) {
     READ1(idx->d);
     READ1(idx->ntotal);
+    FAISS_CHECK_RANGE(idx->d, 0, (1 << 20) + 1);
+    FAISS_THROW_IF_NOT_FMT(
+            idx->ntotal >= 0,
+            "invalid ntotal %" PRId64 " read from index",
+            (int64_t)idx->ntotal);
     idx_t dummy;
     READ1(dummy);
     READ1(dummy);
@@ -316,6 +321,10 @@ static void read_ArrayInvertedLists_sizes(
     } else if (list_type == fourcc("sprs")) {
         std::vector<size_t> idsizes;
         READVECTOR(idsizes);
+        FAISS_THROW_IF_NOT_FMT(
+                idsizes.size() % 2 == 0,
+                "invalid sparse inverted list size: %zd (must be even)",
+                idsizes.size());
         for (size_t j = 0; j < idsizes.size(); j += 2) {
             FAISS_THROW_IF_NOT(idsizes[j] < sizes.size());
             sizes[idsizes[j]] = idsizes[j + 1];
@@ -374,13 +383,17 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
         read_ArrayInvertedLists_sizes(f, sizes);
         for (size_t i = 0; i < ails->nlist; i++) {
             ails->ids[i].resize(sizes[i]);
-            ails->codes[i].resize(sizes[i] * ails->code_size);
+            ails->codes[i].resize(mul_no_overflow(
+                    sizes[i], ails->code_size, "inverted list codes"));
         }
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();
             if (n > 0) {
                 read_vector_with_known_size(
-                        ails->codes[i], f, n * ails->code_size);
+                        ails->codes[i],
+                        f,
+                        mul_no_overflow(
+                                n, ails->code_size, "inverted list codes"));
                 read_vector_with_known_size(ails->ids[i], f, n);
             }
         }
@@ -535,6 +548,106 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     ivsc->set_derived_sizes();
 }
 
+static void validate_HNSW(const HNSW* hnsw) {
+    size_t ntotal = hnsw->levels.size();
+    size_t nb_neighbors_size = hnsw->neighbors.size();
+
+    // cum_nneighbor_per_level must be non-empty and monotonically
+    // non-decreasing, starting at 0
+    if (!hnsw->cum_nneighbor_per_level.empty()) {
+        FAISS_THROW_IF_NOT_FMT(
+                hnsw->cum_nneighbor_per_level[0] == 0,
+                "HNSW cum_nneighbor_per_level[0] = %d, expected 0",
+                hnsw->cum_nneighbor_per_level[0]);
+        for (size_t i = 1; i < hnsw->cum_nneighbor_per_level.size(); i++) {
+            FAISS_THROW_IF_NOT_FMT(
+                    hnsw->cum_nneighbor_per_level[i] >=
+                            hnsw->cum_nneighbor_per_level[i - 1],
+                    "HNSW cum_nneighbor_per_level not monotonic at %zd: "
+                    "%d < %d",
+                    i,
+                    hnsw->cum_nneighbor_per_level[i],
+                    hnsw->cum_nneighbor_per_level[i - 1]);
+        }
+    }
+
+    // offsets must have size ntotal + 1, be monotonically non-decreasing,
+    // and all values must be <= neighbors.size()
+    FAISS_THROW_IF_NOT_FMT(
+            hnsw->offsets.size() == ntotal + 1,
+            "HNSW offsets size %zd != levels size %zd + 1",
+            hnsw->offsets.size(),
+            ntotal);
+    for (size_t i = 0; i < hnsw->offsets.size(); i++) {
+        FAISS_THROW_IF_NOT_FMT(
+                hnsw->offsets[i] <= nb_neighbors_size,
+                "HNSW offsets[%zd] = %zd > neighbors.size() = %zd",
+                i,
+                hnsw->offsets[i],
+                nb_neighbors_size);
+        if (i > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    hnsw->offsets[i] ==
+                            hnsw->offsets[i - 1] +
+                                    hnsw->cum_nneighbor_per_level
+                                            [hnsw->levels[i - 1]],
+                    "HNSW offsets not increasing by cum_neighbor_per_level at %zd: %zd + %d != %zd",
+                    i,
+                    hnsw->offsets[i - 1],
+                    hnsw->cum_nneighbor_per_level[hnsw->levels[i - 1]],
+                    hnsw->offsets[i]);
+        }
+    }
+
+    // max_level must be valid
+    FAISS_THROW_IF_NOT_FMT(
+            hnsw->max_level < (int)hnsw->cum_nneighbor_per_level.size(),
+            "HNSW max_level %d >= cum_nneighbor_per_level size %zd",
+            hnsw->max_level,
+            hnsw->cum_nneighbor_per_level.size());
+
+    // entry_point must be -1 (empty) or a valid node id
+    FAISS_THROW_IF_NOT_FMT(
+            hnsw->entry_point >= -1 && hnsw->entry_point < (int)ntotal,
+            "HNSW entry_point %d out of range [-1, %zd)",
+            (int)hnsw->entry_point,
+            ntotal);
+
+    // All neighbor ids must be -1 or in [0, ntotal)
+    for (size_t i = 0; i < nb_neighbors_size; i++) {
+        auto id = hnsw->neighbors[i];
+        FAISS_THROW_IF_NOT_FMT(
+                id >= -1 && id < (int)ntotal,
+                "HNSW neighbors[%zd] = %d out of range [-1, %zd)",
+                i,
+                (int)id,
+                ntotal);
+    }
+
+    // For each node, verify that its level is valid and that
+    // offsets[i] + cum_nneighbor_per_level[levels[i]] <= neighbors.size().
+    // This ensures neighbor_range() can never produce an out-of-bounds offset
+    // into neighbors.
+    int cum_levels = (int)hnsw->cum_nneighbor_per_level.size();
+    for (size_t i = 0; i < ntotal; i++) {
+        int level = hnsw->levels[i];
+        FAISS_CHECK_RANGE(level, 1, cum_levels + 1);
+        size_t end = hnsw->offsets[i] + hnsw->cum_nneighbor_per_level[level];
+        FAISS_THROW_IF_NOT_FMT(
+                end <= nb_neighbors_size,
+                "HNSW neighbor range overflow for node %zd: "
+                "offsets[%zd] (%zd) + cum_nneighbor_per_level[%d] (%d) "
+                "= %zd > neighbors.size() (%zd)",
+                i,
+                i,
+                hnsw->offsets[i],
+                level,
+                hnsw->cum_nneighbor_per_level[level],
+                end,
+                nb_neighbors_size);
+    }
+}
+
 static void read_HNSW(HNSW* hnsw, IOReader* f) {
     READVECTOR(hnsw->assign_probas);
     READVECTOR(hnsw->cum_nneighbor_per_level);
@@ -550,6 +663,8 @@ static void read_HNSW(HNSW* hnsw, IOReader* f) {
     // // deprecated field
     // READ1(hnsw->upper_beam);
     READ1_DUMMY(int)
+
+    validate_HNSW(hnsw);
 }
 
 static void read_NSG(NSG* nsg, IOReader* f) {
@@ -561,6 +676,9 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     READ1(nsg->enterpoint);
     READ1(nsg->is_built);
 
+    FAISS_THROW_IF_NOT_FMT(
+            nsg->ntotal >= 0, "invalid NSG ntotal %d", nsg->ntotal);
+
     if (!nsg->is_built) {
         return;
     }
@@ -568,21 +686,31 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     constexpr int EMPTY_ID = -1;
     int N = nsg->ntotal;
     int R = nsg->R;
+
+    // Use size_t to prevent int32 overflow in N * (R + 1) for allocation
+    // and file reading.
+    size_t graph_size =
+            mul_no_overflow((size_t)N, (size_t)(R + 1), "NSG graph allocation");
+
     auto& graph = nsg->final_graph;
-    graph = std::make_shared<nsg::Graph<int>>(N, R);
-    std::fill_n(graph->data, N * R, EMPTY_ID);
+    graph = std::make_shared<nsg::Graph<int>>(N, R + 1);
+    std::fill_n(graph->data, graph_size, EMPTY_ID);
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < R + 1; j++) {
             int id;
             READ1(id);
             if (id != EMPTY_ID) {
+                FAISS_CHECK_RANGE(id, 0, N);
                 graph->at(i, j) = id;
             } else {
                 break;
             }
         }
     }
+
+    // enterpoint must be a valid node id
+    FAISS_CHECK_RANGE(nsg->enterpoint, 0, N);
 }
 
 static void read_NNDescent(NNDescent* nnd, IOReader* f) {
@@ -596,6 +724,9 @@ static void read_NNDescent(NNDescent* nnd, IOReader* f) {
     READ1(nnd->search_L);
     READ1(nnd->random_seed);
     READ1(nnd->has_built);
+
+    FAISS_THROW_IF_NOT_FMT(
+            nnd->ntotal >= 0, "invalid NNDescent ntotal %d", nnd->ntotal);
 
     READVECTOR(nnd->final_graph);
 }
@@ -985,6 +1116,11 @@ Index* read_index(IOReader* f, int io_flags) {
         {
             std::vector<idx_t> tab;
             READVECTOR(tab);
+            FAISS_THROW_IF_NOT_FMT(
+                    tab.size() % 2 == 0,
+                    "invalid IVFFlatDedup instances table size: %zd "
+                    "(must be even)",
+                    tab.size());
             for (long i = 0; i < tab.size(); i += 2) {
                 std::pair<idx_t, idx_t> pair(tab[i], tab[i + 1]);
                 ivfl->instances.insert(pair);
@@ -1532,6 +1668,12 @@ static void read_index_binary_header(IndexBinary* idx, IOReader* f) {
     READ1(idx->ntotal);
     READ1(idx->is_trained);
     READ1(idx->metric_type);
+    FAISS_THROW_IF_NOT_FMT(
+            idx->d >= 0, "invalid binary index dimension %d", idx->d);
+    FAISS_THROW_IF_NOT_FMT(
+            idx->ntotal >= 0,
+            "invalid binary index ntotal %" PRId64,
+            (int64_t)idx->ntotal);
     idx->verbose = false;
 }
 
@@ -1561,7 +1703,9 @@ static void read_binary_hash_invlists(
     int il_nbit = 0;
     READ1(il_nbit);
     // buffer for bitstrings
-    std::vector<uint8_t> buf((b + il_nbit) * sz);
+    size_t bits_per_entry = (size_t)b + (size_t)il_nbit;
+    std::vector<uint8_t> buf(
+            mul_no_overflow(bits_per_entry, sz, "binary hash invlists"));
     READVECTOR(buf);
     BitstringReader rd(buf.data(), buf.size());
     invlists.reserve(sz);
@@ -1586,7 +1730,10 @@ static void read_binary_multi_hash_map(
     READ1(sz);
     std::vector<uint8_t> buf;
     READVECTOR(buf);
-    size_t nbit = (b + id_bits) * sz + ntotal * id_bits;
+    size_t nbit = add_no_overflow(
+            mul_no_overflow((size_t)(b + id_bits), sz, "multi hash map"),
+            mul_no_overflow(ntotal, (size_t)id_bits, "multi hash map"),
+            "multi hash map total bits");
     FAISS_THROW_IF_NOT(buf.size() == (nbit + 7) / 8);
     BitstringReader rd(buf.data(), buf.size());
     map.reserve(sz);
