@@ -116,7 +116,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="68" column="5" bodyfile="faiss/impl/NSG.h" bodystart="68" bodyend="70"/>
+        <location file="faiss/impl/NSG.h" line="68" column="5" bodyfile="faiss/impl/NSG.h" bodystart="68" bodyend="72"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1af9db6b52a82a8c633dfd8bb487106948" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -134,7 +134,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="73" column="5" bodyfile="faiss/impl/NSG.h" bodystart="73" bodyend="75"/>
+        <location file="faiss/impl/NSG.h" line="75" column="5" bodyfile="faiss/impl/NSG.h" bodystart="75" bodyend="77"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1a945f614dcd4f5ccb28c8e7af6165e6d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -148,7 +148,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="78" column="13" bodyfile="faiss/impl/NSG.h" bodystart="78" bodyend="82"/>
+        <location file="faiss/impl/NSG.h" line="80" column="13" bodyfile="faiss/impl/NSG.h" bodystart="80" bodyend="84"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1a678cdec9f72b63eca1012d657cf74770" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>node_t</type>
@@ -170,7 +170,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="85" column="19" bodyfile="faiss/impl/NSG.h" bodystart="85" bodyend="87"/>
+        <location file="faiss/impl/NSG.h" line="87" column="19" bodyfile="faiss/impl/NSG.h" bodystart="87" bodyend="91"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1ab94df92238ec1a9bb7877382c0e68e53" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>node_t &amp;</type>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="90" column="19" bodyfile="faiss/impl/NSG.h" bodystart="90" bodyend="92"/>
+        <location file="faiss/impl/NSG.h" line="94" column="19" bodyfile="faiss/impl/NSG.h" bodystart="94" bodyend="98"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1a7b857463a2dd15fcf6ae5c474d1986da" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -214,14 +214,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="95" column="20" bodyfile="faiss/impl/NSG.h" bodystart="95" bodyend="103"/>
+        <location file="faiss/impl/NSG.h" line="101" column="20" bodyfile="faiss/impl/NSG.h" bodystart="101" bodyend="109"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/NSG.h" line="56" column="1" bodyfile="faiss/impl/NSG.h" bodystart="56" bodyend="104"/>
+    <location file="faiss/impl/NSG.h" line="56" column="1" bodyfile="faiss/impl/NSG.h" bodystart="56" bodyend="110"/>
     <listofallmembers>
       <member refid="structfaiss_1_1nsg_1_1Graph_1a678cdec9f72b63eca1012d657cf74770" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>at</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1ab94df92238ec1a9bb7877382c0e68e53" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>at</name></member>

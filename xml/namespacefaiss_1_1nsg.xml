@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NSG.h" line="106" column="18" declfile="faiss/impl/NSG.h" declline="106" declcolumn="18"/>
+        <location file="faiss/impl/NSG.h" line="112" column="18" declfile="faiss/impl/NSG.h" declline="112" declcolumn="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

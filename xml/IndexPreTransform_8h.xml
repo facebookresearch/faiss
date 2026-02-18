@@ -20,7 +20,7 @@
         <link refid="IndexPreTransform_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -33,10 +33,10 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="16">
         <label>faiss/VectorTransform.h</label>
         <link refid="VectorTransform_8h_source"/>
-        <childnode refid="15" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
@@ -50,11 +50,15 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="8">
@@ -77,6 +81,9 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
+      <node id="14">
+        <label>cinttypes</label>
+      </node>
       <node id="4">
         <label>cstdint</label>
       </node>
@@ -90,6 +97,9 @@
         <label>exception</label>
       </node>
       <node id="15">
+        <label>limits</label>
+      </node>
+      <node id="17">
         <label>stdint.h</label>
       </node>
       <node id="10">

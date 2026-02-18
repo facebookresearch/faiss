@@ -43,11 +43,15 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="15">
@@ -85,9 +89,9 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
       </node>
       <node id="19">
@@ -98,42 +102,42 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="22">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
         <childnode refid="23" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-      </node>
-      <node id="27">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
       <node id="28">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
         <label>faiss/utils/random.h</label>
         <link refid="random_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -141,13 +145,16 @@
       <node id="2">
         <label>algorithm</label>
       </node>
-      <node id="25">
+      <node id="27">
         <label>cassert</label>
       </node>
-      <node id="21">
+      <node id="20">
+        <label>cinttypes</label>
+      </node>
+      <node id="23">
         <label>climits</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>cmath</label>
       </node>
       <node id="11">
@@ -159,13 +166,13 @@
       <node id="13">
         <label>cstdlib</label>
       </node>
-      <node id="23">
+      <node id="25">
         <label>cstring</label>
       </node>
       <node id="16">
         <label>exception</label>
       </node>
-      <node id="26">
+      <node id="21">
         <label>limits</label>
       </node>
       <node id="3">
@@ -180,7 +187,7 @@
       <node id="5">
         <label>random</label>
       </node>
-      <node id="24">
+      <node id="26">
         <label>stdint.h</label>
       </node>
       <node id="17">

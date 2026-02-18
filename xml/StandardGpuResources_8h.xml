@@ -20,7 +20,7 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
@@ -32,20 +32,20 @@
         <link refid="StandardGpuResources_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="18">
         <label>faiss/gpu/utils/DeviceUtils.h</label>
         <link refid="DeviceUtils_8h_source"/>
         <childnode refid="3" relation="include">
@@ -57,20 +57,20 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="17">
+      <node id="19">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
         <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="5">
@@ -80,11 +80,15 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -107,13 +111,16 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
+      <node id="14">
+        <label>cinttypes</label>
+      </node>
       <node id="12">
         <label>cstdint</label>
       </node>
       <node id="13">
         <label>cstdio</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>cstdlib</label>
       </node>
       <node id="3">
@@ -125,25 +132,28 @@
       <node id="7">
         <label>exception</label>
       </node>
-      <node id="21">
+      <node id="23">
         <label>functional</label>
       </node>
-      <node id="18">
+      <node id="16">
+        <label>limits</label>
+      </node>
+      <node id="20">
         <label>list</label>
       </node>
-      <node id="22">
+      <node id="24">
         <label>map</label>
       </node>
-      <node id="15">
+      <node id="17">
         <label>memory</label>
       </node>
       <node id="8">
         <label>string</label>
       </node>
-      <node id="19">
+      <node id="21">
         <label>tuple</label>
       </node>
-      <node id="20">
+      <node id="22">
         <label>unordered_map</label>
       </node>
       <node id="9">

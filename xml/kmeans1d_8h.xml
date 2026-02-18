@@ -32,11 +32,15 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
         <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="8">
@@ -56,7 +60,7 @@
         <link refid="kmeans1d_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="13">
@@ -66,6 +70,9 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
+      </node>
+      <node id="14">
+        <label>cinttypes</label>
       </node>
       <node id="4">
         <label>cstdint</label>
@@ -79,8 +86,11 @@
       <node id="9">
         <label>exception</label>
       </node>
-      <node id="14">
+      <node id="16">
         <label>functional</label>
+      </node>
+      <node id="15">
+        <label>limits</label>
       </node>
       <node id="10">
         <label>string</label>

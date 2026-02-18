@@ -16,11 +16,15 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -43,11 +47,9 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="15">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
         <childnode refid="17" relation="include">
@@ -56,13 +58,15 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -76,15 +80,15 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>faiss/utils/ordered_key_value.h</label>
-        <link refid="ordered__key__value_8h_source"/>
         <childnode refid="15" relation="include">
         </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/utils/ordered_key_value.h</label>
+        <link refid="ordered__key__value_8h_source"/>
         <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -92,13 +96,16 @@
       <node id="2">
         <label>algorithm</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>cassert</label>
       </node>
-      <node id="15">
-        <label>climits</label>
+      <node id="13">
+        <label>cinttypes</label>
       </node>
       <node id="16">
+        <label>climits</label>
+      </node>
+      <node id="17">
         <label>cmath</label>
       </node>
       <node id="11">
@@ -107,10 +114,10 @@
       <node id="12">
         <label>cstdio</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>cstdlib</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>cstring</label>
       </node>
       <node id="7">
@@ -119,7 +126,7 @@
       <node id="3">
         <label>limits</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>stdint.h</label>
       </node>
       <node id="8">

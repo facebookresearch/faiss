@@ -56,11 +56,15 @@
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="17">
@@ -75,7 +79,7 @@
         <childnode refid="8" relation="include">
         </childnode>
       </node>
-      <node id="21">
+      <node id="23">
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="4" relation="include">
@@ -88,7 +92,7 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
       <node id="13">
@@ -104,19 +108,19 @@
         <link refid="distance__computers_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="22" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="24">
         <label>faiss/utils/simdlib.h</label>
         <link refid="simdlib_8h_source"/>
-        <childnode refid="23" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="25">
         <label>faiss/utils/simdlib_emulated.h</label>
         <link refid="simdlib__emulated_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
@@ -125,8 +129,11 @@
         <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="24">
+      <node id="26">
         <label>algorithm</label>
+      </node>
+      <node id="21">
+        <label>cinttypes</label>
       </node>
       <node id="10">
         <label>cstdint</label>
@@ -142,6 +149,9 @@
       </node>
       <node id="18">
         <label>exception</label>
+      </node>
+      <node id="22">
+        <label>limits</label>
       </node>
       <node id="6">
         <label>memory</label>

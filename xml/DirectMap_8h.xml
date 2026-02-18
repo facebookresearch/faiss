@@ -23,11 +23,15 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
       <node id="30">
@@ -107,7 +111,7 @@
         <link refid="DirectMap_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
+        <childnode refid="33" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -182,6 +186,9 @@
       <node id="19">
         <label>cassert</label>
       </node>
+      <node id="32">
+        <label>cinttypes</label>
+      </node>
       <node id="16">
         <label>climits</label>
       </node>
@@ -218,7 +225,7 @@
       <node id="24">
         <label>string</label>
       </node>
-      <node id="32">
+      <node id="33">
         <label>unordered_map</label>
       </node>
       <node id="10">

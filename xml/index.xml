@@ -11636,6 +11636,8 @@
     <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
     <member refid="namespacefaiss_1a4f5a40d297ddf6822a9262a333f938a3" kind="function"><name>distance_single_code</name></member>
     <member refid="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" kind="function"><name>distance_four_codes</name></member>
+    <member refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" kind="function"><name>mul_no_overflow</name></member>
+    <member refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kind="function"><name>add_no_overflow</name></member>
     <member refid="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" kind="function"><name>handleExceptions</name></member>
     <member refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kind="function"><name>demangle_cpp_symbol</name></member>
     <member refid="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" kind="function"><name>search_from_candidates</name></member>
@@ -12501,6 +12503,8 @@
     <member refid="FaissAssert_8h_1a71daf41ca66c1a16bb31c537a958c6aa" kind="define"><name>FAISS_THROW_IF_MSG</name></member>
     <member refid="FaissAssert_8h_1a795f62d9a23626abc3608192db593de3" kind="define"><name>FAISS_THROW_IF_NOT_MSG</name></member>
     <member refid="FaissAssert_8h_1af2e88bd5de770a472c175d1a0b47d5b6" kind="define"><name>FAISS_THROW_IF_NOT_FMT</name></member>
+    <member refid="FaissAssert_8h_1acc819bbce434d280dcb522c55dca2f4c" kind="define"><name>FAISS_CHECK_RANGE</name></member>
+    <member refid="FaissAssert_8h_1ac434f12ded4d8d619d9ce995f06cdcfc" kind="define"><name>FAISS_CHECK_RANGE_DEBUG</name></member>
   </compound>
   <compound refid="FaissException_8h" kind="file"><name>FaissException.h</name>
   </compound>

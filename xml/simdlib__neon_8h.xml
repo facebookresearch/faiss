@@ -18,11 +18,15 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -71,6 +75,9 @@
       <node id="8">
         <label>arm_neon.h</label>
       </node>
+      <node id="16">
+        <label>cinttypes</label>
+      </node>
       <node id="3">
         <label>cstddef</label>
       </node>
@@ -80,7 +87,7 @@
       <node id="15">
         <label>cstdio</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>cstdlib</label>
       </node>
       <node id="5">
@@ -88,6 +95,9 @@
       </node>
       <node id="11">
         <label>exception</label>
+      </node>
+      <node id="18">
+        <label>limits</label>
       </node>
       <node id="6">
         <label>string</label>

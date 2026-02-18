@@ -15,11 +15,15 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
         <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="12">
@@ -86,6 +90,9 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
+      <node id="16">
+        <label>cinttypes</label>
+      </node>
       <node id="2">
         <label>cstddef</label>
       </node>
@@ -95,7 +102,7 @@
       <node id="6">
         <label>cstdio</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>cstdlib</label>
       </node>
       <node id="10">
@@ -103,6 +110,9 @@
       </node>
       <node id="13">
         <label>exception</label>
+      </node>
+      <node id="18">
+        <label>limits</label>
       </node>
       <node id="4">
         <label>memory</label>

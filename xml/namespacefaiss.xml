@@ -1786,6 +1786,60 @@
         </inbodydescription>
         <location file="faiss/impl/code_distance/code_distance.h" line="153" column="13" bodyfile="faiss/impl/code_distance/code_distance.h" bodystart="153" bodyend="182"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::mul_no_overflow</definition>
+        <argsstring>(size_t a, size_t b, const char *context)</argsstring>
+        <name>mul_no_overflow</name>
+        <qualifiedname>faiss::mul_no_overflow</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Multiplication that throws on overflow instead of wrapping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissAssert.h" line="123" column="15" bodyfile="faiss/impl/FaissAssert.h" bodystart="123" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::add_no_overflow</definition>
+        <argsstring>(size_t a, size_t b, const char *context)</argsstring>
+        <name>add_no_overflow</name>
+        <qualifiedname>faiss::add_no_overflow</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Addition that throws on overflow instead of wrapping. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissAssert.h" line="131" column="15" bodyfile="faiss/impl/FaissAssert.h" bodystart="131" bodyend="136"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::handleExceptions</definition>
@@ -13796,6 +13850,7 @@
 <para>Implementation of k-means clustering with many variants.</para>
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>Safe arithmetic</para>
 <para><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> is intended to define a subset of vectors to handle (for removal or as subset to search)</para>
 <para>PQ4 SIMD packing and accumulation functions</para>
 <para>The basic kernel accumulates nq query vectors with bbs = nb * 2 * 16 vectors and produces an output matrix for that. It is interesting for nq * nb &lt;= 4, otherwise register spilling becomes too large.</para>

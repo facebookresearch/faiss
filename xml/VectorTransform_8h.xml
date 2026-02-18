@@ -46,11 +46,15 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -73,6 +77,9 @@
         <childnode refid="7" relation="include">
         </childnode>
       </node>
+      <node id="15">
+        <label>cinttypes</label>
+      </node>
       <node id="6">
         <label>cstdint</label>
       </node>
@@ -84,6 +91,9 @@
       </node>
       <node id="11">
         <label>exception</label>
+      </node>
+      <node id="16">
+        <label>limits</label>
       </node>
       <node id="2">
         <label>stdint.h</label>
