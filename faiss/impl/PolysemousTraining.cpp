@@ -12,16 +12,13 @@
 #include <omp.h>
 #include <stdint.h>
 
-#ifdef __AVX512F__
-#include <immintrin.h>
-#endif
-
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
 
+#include <faiss/impl/PolysemousTraining_avx512.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -172,16 +169,16 @@ static inline int hamming_dis(uint64_t a, uint64_t b) {
     return __builtin_popcountl(a ^ b);
 }
 
+static inline double sqr(double x) {
+    return x * x;
+}
+
 namespace {
 
 /// optimize permutation to reproduce a distance table with Hamming distances
 struct ReproduceWithHammingObjective : PermutationObjective {
     int nbits;
     double dis_weight_factor;
-
-    static double sqr(double x) {
-        return x * x;
-    }
 
     // weighting of distances: it is more important to reproduce small
     // distances well
@@ -192,220 +189,15 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     std::vector<double> target_dis; // wanted distances (size n^2)
     std::vector<double> weights;    // weights for each distance (size n^2)
 
-#if defined(__AVX512F__) && defined(__AVX512DQ__)
-
-    static inline __m512i popcnt_512(__m512i v) {
-#ifdef __AVX512VPOPCNTDQ__
-         return _mm512_popcnt_epi64(v);
-#else
-        const __m128i nibble_popcount = _mm_setr_epi8(
-            0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
-        const __m512i lookup = _mm512_broadcast_i32x4(nibble_popcount);
-
-        const __m512i low_mask = _mm512_set1_epi8(0x0f);
-        const __m512i lo = _mm512_and_si512(v, low_mask);
-        const __m512i hi = _mm512_and_si512(_mm512_srli_epi16(v, 4), low_mask);
-        
-        const __m512i popcnt_lo = _mm512_shuffle_epi8(lookup, lo);
-        const __m512i popcnt_hi = _mm512_shuffle_epi8(lookup, hi);
-        const __m512i popcnt_bytes = _mm512_add_epi8(popcnt_lo, popcnt_hi);
-
-        return _mm512_sad_epu8(popcnt_bytes, _mm512_setzero_si512());
-#endif
-    }
-
-    double compute_cost(const int* perm) const override {
-        double total_cost = 0.0;
-
-        for (int i = 0; i < n; i++) {
-            __m512d cost_vec = _mm512_setzero_pd();
-            const int perm_i_scalar = perm[i];
-            const __m512i perm_i_vec = _mm512_set1_epi64(perm_i_scalar);
-
-            const int base_row_offset = i * n;
-
-            int j = 0;
-            for (; j <= n - 8; j += 8) {
-                const __m512d wanted_vec =
-                        _mm512_loadu_pd(&target_dis[base_row_offset + j]);
-                const __m512d w_vec =
-                        _mm512_loadu_pd(&weights[base_row_offset + j]);
-
-                const __m256i perm_j_vec_i32 =
-                        _mm256_loadu_si256((__m256i const*)&perm[j]);
-                const __m512i perm_j_vec_i64 =
-                        _mm512_cvtepi32_epi64(perm_j_vec_i32);
-
-                const __m512i xor_res =
-                        _mm512_xor_si512(perm_i_vec, perm_j_vec_i64);
-                const __m512i popcnt_res = popcnt_512(xor_res);
-                const __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
-
-                const __m512d diff = _mm512_sub_pd(wanted_vec, actual_vec);
-                const __m512d diff_sq = _mm512_mul_pd(diff, diff);
-
-                cost_vec = _mm512_fmadd_pd(w_vec, diff_sq, cost_vec);
-            }
-
-            total_cost += _mm512_reduce_add_pd(cost_vec);
-
-            for (; j < n; j++) {
-                double wanted = target_dis[base_row_offset + j];
-                double w = weights[base_row_offset + j];
-                double actual = hamming_dis(perm[i], perm[j]);
-                total_cost += w * sqr(wanted - actual);
-            }
-        }
-        return total_cost;
-    }
-
-    double cost_update(const int* perm, int iw, int jw) const override {
-        double delta_cost_scalar = 0;
-        const __m512i v_indices_base = _mm512_setr_epi64(0, 1, 2, 3, 4, 5, 6, 7);
-        __m512d delta_cost_vec = _mm512_setzero_pd();
-
-        // Process row iw
-        {
-            const int base_row_offset = iw * n;
-            const __m512i v_perm_i_old = _mm512_set1_epi64(perm[iw]);
-            const __m512i v_perm_i_new = _mm512_set1_epi64(perm[jw]);
-            int j = 0;
-            for (; j <= n - 8; j += 8) {
-                __m512d wanted_vec =
-                        _mm512_loadu_pd(&target_dis[base_row_offset + j]);
-                __m512d w_vec = _mm512_loadu_pd(&weights[base_row_offset + j]);
-
-                __m256i perm_j_vec_i32 =
-                        _mm256_loadu_si256((__m256i const*)&perm[j]);
-                __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
-                __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
-                __m512i popcnt_res = popcnt_512(xor_res);
-                __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
-                __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
-                term_old = _mm512_mul_pd(term_old, term_old);
-                delta_cost_vec =
-                        _mm512_fnmadd_pd(w_vec, term_old, delta_cost_vec);
-
-                __m512i j_indices =
-                        _mm512_add_epi64(_mm512_set1_epi64(j), v_indices_base);
-                __mmask8 mask_iw = _mm512_cmpeq_epi64_mask(
-                        j_indices, _mm512_set1_epi64(iw));
-                __mmask8 mask_jw = _mm512_cmpeq_epi64_mask(
-                        j_indices, _mm512_set1_epi64(jw));
-                __m512i perm_new_j_vec = _mm512_mask_blend_epi64(
-                        mask_jw, perm_j_vec, _mm512_set1_epi64(perm[iw]));
-                perm_new_j_vec = _mm512_mask_blend_epi64(
-                        mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
-
-                xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
-                popcnt_res = popcnt_512(xor_res);
-                __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
-                __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
-                term_new = _mm512_mul_pd(term_new, term_new);
-                delta_cost_vec =
-                        _mm512_fmadd_pd(w_vec, term_new, delta_cost_vec);
-            }
-            for (; j < n; j++) {
-                double wanted = target_dis[base_row_offset + j];
-                double w = weights[base_row_offset + j];
-                double actual = hamming_dis(perm[iw], perm[j]);
-                delta_cost_scalar -= w * sqr(wanted - actual);
-                double new_actual = hamming_dis(
-                        perm[jw],
-                        perm[j == iw           ? jw
-                                     : j == jw ? iw
-                                               : j]);
-                delta_cost_scalar += w * sqr(wanted - new_actual);
-            }
-        }
-
-        // Process row jw
-        {
-            const int base_row_offset = jw * n;
-            const __m512i v_perm_i_old = _mm512_set1_epi64(perm[jw]);
-            const __m512i v_perm_i_new = _mm512_set1_epi64(perm[iw]);
-            int j = 0;
-            for (; j <= n - 8; j += 8) {
-                __m512d wanted_vec =
-                        _mm512_loadu_pd(&target_dis[base_row_offset + j]);
-                __m512d w_vec = _mm512_loadu_pd(&weights[base_row_offset + j]);
-
-                __m256i perm_j_vec_i32 =
-                        _mm256_loadu_si256((__m256i const*)&perm[j]);
-                __m512i perm_j_vec = _mm512_cvtepi32_epi64(perm_j_vec_i32);
-
-                __m512i xor_res = _mm512_xor_si512(v_perm_i_old, perm_j_vec);
-                __m512i popcnt_res = popcnt_512(xor_res);
-                __m512d actual_vec = _mm512_cvtepi64_pd(popcnt_res);
-                __m512d term_old = _mm512_sub_pd(wanted_vec, actual_vec);
-                term_old = _mm512_mul_pd(term_old, term_old);
-                delta_cost_vec =
-                        _mm512_fnmadd_pd(w_vec, term_old, delta_cost_vec);
-
-                __m512i j_indices =
-                        _mm512_add_epi64(_mm512_set1_epi64(j), v_indices_base);
-                __mmask8 mask_iw = _mm512_cmpeq_epi64_mask(
-                        j_indices, _mm512_set1_epi64(iw));
-                __mmask8 mask_jw = _mm512_cmpeq_epi64_mask(
-                        j_indices, _mm512_set1_epi64(jw));
-                __m512i perm_new_j_vec = _mm512_mask_blend_epi64(
-                        mask_jw, perm_j_vec, _mm512_set1_epi64(perm[iw]));
-                perm_new_j_vec = _mm512_mask_blend_epi64(
-                        mask_iw, perm_new_j_vec, _mm512_set1_epi64(perm[jw]));
-
-                xor_res = _mm512_xor_si512(v_perm_i_new, perm_new_j_vec);
-                popcnt_res = popcnt_512(xor_res);
-                __m512d new_actual_vec = _mm512_cvtepi64_pd(popcnt_res);
-                __m512d term_new = _mm512_sub_pd(wanted_vec, new_actual_vec);
-                term_new = _mm512_mul_pd(term_new, term_new);
-                delta_cost_vec =
-                        _mm512_fmadd_pd(w_vec, term_new, delta_cost_vec);
-            }
-            for (; j < n; j++) {
-                double wanted = target_dis[base_row_offset + j];
-                double w = weights[base_row_offset + j];
-                double actual = hamming_dis(perm[jw], perm[j]);
-                delta_cost_scalar -= w * sqr(wanted - actual);
-                double new_actual = hamming_dis(
-                        perm[iw],
-                        perm[j == iw           ? jw
-                                     : j == jw ? iw
-                                               : j]);
-                delta_cost_scalar += w * sqr(wanted - new_actual);
-            }
-        }
-
-        // Process other rows
-        for (int i = 0; i < n; ++i) {
-            if (i == iw || i == jw)
-                continue;
-            int j = iw;
-            {
-                double wanted = target_dis[i * n + j];
-                double w = weights[i * n + j];
-                double actual = hamming_dis(perm[i], perm[j]);
-                delta_cost_scalar -= w * sqr(wanted - actual);
-                double new_actual = hamming_dis(perm[i], perm[jw]);
-                delta_cost_scalar += w * sqr(wanted - new_actual);
-            }
-            j = jw;
-            {
-                double wanted = target_dis[i * n + j];
-                double w = weights[i * n + j];
-                double actual = hamming_dis(perm[i], perm[j]);
-                delta_cost_scalar -= w * sqr(wanted - actual);
-                double new_actual = hamming_dis(perm[i], perm[iw]);
-                delta_cost_scalar += w * sqr(wanted - new_actual);
-            }
-        }
-
-        return _mm512_reduce_add_pd(delta_cost_vec) + delta_cost_scalar;
-    }
-
-#else
-
     // cost = quadratic difference between actual distance and Hamming distance
     double compute_cost(const int* perm) const override {
+#ifdef COMPILE_SIMD_AVX512
+        if (SIMDConfig::level == SIMDLevel::AVX512 ||
+            SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+            return polysemous_avx512::hamming_compute_cost_avx512(
+                    n, perm, target_dis.data(), weights.data());
+        }
+#endif
         double cost = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -421,6 +213,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     // what would the cost update be if iw and jw were swapped?
     // computed in O(n) instead of O(n^2) for the full re-computation
     double cost_update(const int* perm, int iw, int jw) const override {
+#ifdef COMPILE_SIMD_AVX512
+        if (SIMDConfig::level == SIMDLevel::AVX512 ||
+            SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+            return polysemous_avx512::hamming_cost_update_avx512(
+                    n, perm, iw, jw, target_dis.data(), weights.data());
+        }
+#endif
         double delta_cost = 0;
 
         for (int i = 0; i < n; i++) {
@@ -475,8 +274,6 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         return delta_cost;
     }
 
-#endif
-
     ReproduceWithHammingObjective(
             int nbits,
             const std::vector<double>& dis_table,
@@ -524,201 +321,14 @@ double ReproduceDistancesObjective::get_source_dis(int i, int j) const {
     return source_dis[i * n + j];
 }
 
-#if defined(__AVX512F__) && defined(__AVX512VL__)
-
-double ReproduceDistancesObjective::compute_cost(const int* perm) const {
-    double total_cost = 0.0;
-
-    for (int i = 0; i < n; ++i) {
-        const int pi = perm[i];
-        const int base_row_offset_target = i * n;
-        const int base_row_offset_source = pi * n;
-        __m512d cost_vec_sum = _mm512_setzero_pd();
-
-        int j = 0;
-        for (; j <= n - 8; j += 8) {
-            __m512d wanted_vec =
-                    _mm512_loadu_pd(&target_dis[base_row_offset_target + j]);
-            __m512d weights_vec =
-                    _mm512_loadu_pd(&weights[base_row_offset_target + j]);
-
-            __m256i perm_j_ivec = _mm256_loadu_si256(
-                    reinterpret_cast<const __m256i*>(&perm[j]));
-            __m256i indices_ivec = _mm256_add_epi32(
-                    _mm256_set1_epi32(base_row_offset_source), perm_j_ivec);
-
-            __m512d actual_vec =
-                    _mm512_i32gather_pd(indices_ivec, source_dis.data(), 8);
-            __m512d diff_vec = _mm512_sub_pd(wanted_vec, actual_vec);
-
-            cost_vec_sum = _mm512_fmadd_pd(
-                    _mm512_mul_pd(diff_vec, diff_vec),
-                    weights_vec,
-                    cost_vec_sum);
-        }
-
-        total_cost += _mm512_reduce_add_pd(cost_vec_sum);
-
-        for (; j < n; ++j) {
-            double wanted = target_dis[base_row_offset_target + j];
-            double w = weights[base_row_offset_target + j];
-            double actual = get_source_dis(pi, perm[j]);
-            total_cost += w * sqr(wanted - actual);
-        }
-    }
-
-    return total_cost;
-}
-
-double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
-        const {
-    double delta_cost = 0.0;
-
-    const int p_iw = perm[iw];
-    const int p_jw = perm[jw];
-
-    const __m256i v_j_offsets = _mm256_set_epi32(7, 6, 5, 4, 3, 2, 1, 0);
-    const __m256i v_iw = _mm256_set1_epi32(iw);
-    const __m256i v_jw = _mm256_set1_epi32(jw);
-    const __m256i v_p_iw = _mm256_set1_epi32(p_iw);
-    const __m256i v_p_jw = _mm256_set1_epi32(p_jw);
-    const __m256i v_p_iw_n = _mm256_set1_epi32(p_iw * n);
-    const __m256i v_p_jw_n = _mm256_set1_epi32(p_jw * n);
-
-    // Process row iw
-    {
-        const int base_row_offset_target = iw * n;
-        __m512d delta_vec = _mm512_setzero_pd();
-
-        int j = 0;
-        for (; j <= n - 8; j += 8) {
-            __m512d wanted_vec =
-                    _mm512_loadu_pd(&target_dis[base_row_offset_target + j]);
-            __m512d weights_vec =
-                    _mm512_loadu_pd(&weights[base_row_offset_target + j]);
-
-            __m256i perm_j_ivec = _mm256_loadu_si256(
-                    reinterpret_cast<const __m256i*>(&perm[j]));
-            __m256i indices_actual_ivec =
-                    _mm256_add_epi32(v_p_iw_n, perm_j_ivec);
-            __m512d actual_vec = _mm512_i32gather_pd(
-                    indices_actual_ivec, source_dis.data(), 8);
-            __m512d diff_actual_vec = _mm512_sub_pd(wanted_vec, actual_vec);
-            delta_vec = _mm512_fnmadd_pd(
-                    weights_vec,
-                    _mm512_mul_pd(diff_actual_vec, diff_actual_vec),
-                    delta_vec);
-
-            __m256i v_j = _mm256_add_epi32(_mm256_set1_epi32(j), v_j_offsets);
-            __mmask8 mask_is_iw = _mm256_cmpeq_epi32_mask(v_j, v_iw);
-            __mmask8 mask_is_jw = _mm256_cmpeq_epi32_mask(v_j, v_jw);
-            __m256i perm_new_j_ivec =
-                    _mm256_mask_blend_epi32(mask_is_iw, perm_j_ivec, v_p_jw);
-            perm_new_j_ivec = _mm256_mask_blend_epi32(
-                    mask_is_jw, perm_new_j_ivec, v_p_iw);
-
-            __m256i indices_new_ivec =
-                    _mm256_add_epi32(v_p_jw_n, perm_new_j_ivec);
-            __m512d new_actual_vec =
-                    _mm512_i32gather_pd(indices_new_ivec, source_dis.data(), 8);
-            __m512d diff_new_vec = _mm512_sub_pd(wanted_vec, new_actual_vec);
-            delta_vec = _mm512_fmadd_pd(
-                    weights_vec,
-                    _mm512_mul_pd(diff_new_vec, diff_new_vec),
-                    delta_vec);
-        }
-        delta_cost += _mm512_reduce_add_pd(delta_vec);
-
-        for (; j < n; ++j) {
-            double wanted = target_dis[base_row_offset_target + j];
-            double w = weights[base_row_offset_target + j];
-            double actual = get_source_dis(p_iw, perm[j]);
-            delta_cost -= w * sqr(wanted - actual);
-            int perm_new_at_j = (j == iw) ? p_jw : ((j == jw) ? p_iw : perm[j]);
-            double new_actual = get_source_dis(p_jw, perm_new_at_j);
-            delta_cost += w * sqr(wanted - new_actual);
-        }
-    }
-
-    // Process row jw
-    {
-        const int base_row_offset_target = jw * n;
-        __m512d delta_vec = _mm512_setzero_pd();
-
-        int j = 0;
-        for (; j <= n - 8; j += 8) {
-            __m512d wanted_vec =
-                    _mm512_loadu_pd(&target_dis[base_row_offset_target + j]);
-            __m512d weights_vec =
-                    _mm512_loadu_pd(&weights[base_row_offset_target + j]);
-
-            __m256i perm_j_ivec = _mm256_loadu_si256(
-                    reinterpret_cast<const __m256i*>(&perm[j]));
-            __m256i indices_actual_ivec =
-                    _mm256_add_epi32(v_p_jw_n, perm_j_ivec);
-            __m512d actual_vec = _mm512_i32gather_pd(
-                    indices_actual_ivec, source_dis.data(), 8);
-            __m512d diff_actual_vec = _mm512_sub_pd(wanted_vec, actual_vec);
-            delta_vec = _mm512_fnmadd_pd(
-                    weights_vec,
-                    _mm512_mul_pd(diff_actual_vec, diff_actual_vec),
-                    delta_vec);
-
-            __m256i v_j = _mm256_add_epi32(_mm256_set1_epi32(j), v_j_offsets);
-            __mmask8 mask_is_iw = _mm256_cmpeq_epi32_mask(v_j, v_iw);
-            __mmask8 mask_is_jw = _mm256_cmpeq_epi32_mask(v_j, v_jw);
-            __m256i perm_new_j_ivec =
-                    _mm256_mask_blend_epi32(mask_is_iw, perm_j_ivec, v_p_jw);
-            perm_new_j_ivec = _mm256_mask_blend_epi32(
-                    mask_is_jw, perm_new_j_ivec, v_p_iw);
-
-            __m256i indices_new_ivec =
-                    _mm256_add_epi32(v_p_iw_n, perm_new_j_ivec);
-            __m512d new_actual_vec =
-                    _mm512_i32gather_pd(indices_new_ivec, source_dis.data(), 8);
-            __m512d diff_new_vec = _mm512_sub_pd(wanted_vec, new_actual_vec);
-            delta_vec = _mm512_fmadd_pd(
-                    weights_vec,
-                    _mm512_mul_pd(diff_new_vec, diff_new_vec),
-                    delta_vec);
-        }
-        delta_cost += _mm512_reduce_add_pd(delta_vec);
-
-        for (; j < n; ++j) {
-            double wanted = target_dis[base_row_offset_target + j];
-            double w = weights[base_row_offset_target + j];
-            double actual = get_source_dis(p_jw, perm[j]);
-            delta_cost -= w * sqr(wanted - actual);
-            int perm_new_at_j = (j == iw) ? p_jw : ((j == jw) ? p_iw : perm[j]);
-            double new_actual = get_source_dis(p_iw, perm_new_at_j);
-            delta_cost += w * sqr(wanted - new_actual);
-        }
-    }
-
-    for (int i = 0; i < n; ++i) {
-        if (i == iw || i == jw)
-            continue;
-
-        double wanted = target_dis[i * n + iw], w = weights[i * n + iw];
-        double actual = get_source_dis(perm[i], p_iw);
-        delta_cost -= w * sqr(wanted - actual);
-        double new_actual = get_source_dis(perm[i], p_jw);
-        delta_cost += w * sqr(wanted - new_actual);
-
-        wanted = target_dis[i * n + jw], w = weights[i * n + jw];
-        actual = get_source_dis(perm[i], p_jw);
-        delta_cost -= w * sqr(wanted - actual);
-        new_actual = get_source_dis(perm[i], p_iw);
-        delta_cost += w * sqr(wanted - new_actual);
-    }
-
-    return delta_cost;
-}
-
-#else
-
 // cost = quadratic difference between actual distance and Hamming distance
 double ReproduceDistancesObjective::compute_cost(const int* perm) const {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512 ||
+        SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+        return polysemous_avx512::distances_compute_cost_avx512(*this, perm);
+    }
+#endif
     double cost = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -735,6 +345,13 @@ double ReproduceDistancesObjective::compute_cost(const int* perm) const {
 // computed in O(n) instead of O(n^2) for the full re-computation
 double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
         const {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512 ||
+        SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+        return polysemous_avx512::distances_cost_update_avx512(
+                *this, perm, iw, jw);
+    }
+#endif
     double delta_cost = 0;
     for (int i = 0; i < n; i++) {
         if (i == iw) {
@@ -782,8 +399,6 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
     }
     return delta_cost;
 }
-
-#endif
 
 ReproduceDistancesObjective::ReproduceDistancesObjective(
         int n,

@@ -12,6 +12,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
+  impl/PolysemousTraining_avx512.cpp
   utils/simd_impl/distances_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
@@ -226,6 +227,7 @@ set(FAISS_HEADERS
   impl/Panorama.h
   impl/PanoramaStats.h
   impl/PolysemousTraining.h
+  impl/PolysemousTraining_avx512.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
@@ -432,12 +434,12 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       # Per-file SIMD flags
       set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+        PROPERTIES COMPILE_OPTIONS "-mavx;-mavx2;-mfma;-mf16c;-mpopcnt"
       )
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+          "-mavx;-mavx2;-mfma;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
       )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
