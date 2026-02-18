@@ -24,6 +24,14 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
+void Index::train(
+        idx_t /*n*/,
+        const float* /*x*/,
+        idx_t /*n_train_q*/,
+        const float* /*xq_train*/) {
+    // does nothing by default
+}
+
 void Index::range_search(
         idx_t,
         const float*,
