@@ -177,6 +177,8 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::AVX2>(
 #undef DISPATCH
 }
 
+namespace {
+
 struct AVX2ElementOpIP : public ElementOpIP {
     using ElementOpIP::op;
     static __m256 op(__m256 x, __m256 y) {
@@ -192,6 +194,8 @@ struct AVX2ElementOpL2 : public ElementOpL2 {
         return _mm256_mul_ps(tmp, tmp);
     }
 };
+
+} // namespace
 
 /// helper function for AVX2
 inline float horizontal_sum(const __m256 v) {
