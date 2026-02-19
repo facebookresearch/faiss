@@ -43,11 +43,11 @@
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
 
+#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ScalarQuantizer.h>
-#include <faiss/impl/pq4_fast_scan.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -262,9 +262,7 @@ InvertedLists* clone_InvertedLists(const InvertedLists* invlists) {
     if (auto* bils = dynamic_cast<const BlockInvertedLists*>(invlists)) {
         auto* bils2 = new BlockInvertedLists(*bils);
         if (bils->packer) {
-            auto* packerPQ4 = dynamic_cast<const CodePackerPQ4*>(bils->packer);
-            FAISS_THROW_IF_NOT(packerPQ4);
-            bils2->packer = new CodePackerPQ4(*packerPQ4);
+            bils2->packer = bils->packer->clone();
         }
         return bils2;
     }

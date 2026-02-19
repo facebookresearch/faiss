@@ -20,11 +20,8 @@
 #include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/hamming.h>
-#include <faiss/utils/utils.h>
-
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/quantize_lut.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -101,17 +98,21 @@ CodePacker* IndexFastScan::get_CodePacker() const {
     return new CodePackerPQ4(M, bbs);
 }
 
+size_t IndexFastScan::get_block_stride() const {
+    return 0;
+}
+
 size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
     std::vector<uint8_t> buffer(code_size);
-    CodePackerPQ4 packer(M, bbs);
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
     for (idx_t i = 0; i < ntotal; i++) {
         if (sel.is_member(i)) {
             // should be removed
         } else {
             if (i > j) {
-                packer.unpack_1(codes.data(), i, buffer.data());
-                packer.pack_1(buffer.data(), j, codes.data());
+                packer->unpack_1(codes.data(), i, buffer.data());
+                packer->pack_1(buffer.data(), j, codes.data());
             }
             j++;
         }
@@ -120,7 +121,9 @@ size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     if (nremove > 0) {
         ntotal = j;
         ntotal2 = roundup(ntotal, bbs);
-        size_t new_size = ntotal2 * M2 / 2;
+        size_t block_stride = get_block_stride();
+        size_t new_size = (block_stride > 0) ? ntotal2 / bbs * block_stride
+                                             : ntotal2 * M2 / 2;
         codes.resize(new_size);
     }
     return nremove;
@@ -143,13 +146,17 @@ void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     check_compatible_for_merge(otherIndex);
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
-    codes.resize(ntotal2 * M2 / 2);
+    size_t block_stride = get_block_stride();
+    size_t new_size = (block_stride > 0) ? ntotal2 / bbs * block_stride
+                                         : ntotal2 * M2 / 2;
+    codes.resize(new_size);
     std::vector<uint8_t> buffer(code_size);
-    CodePackerPQ4 packer(M, bbs);
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    std::unique_ptr<CodePacker> other_packer(other->get_CodePacker());
 
     for (int i = 0; i < other->ntotal; i++) {
-        packer.unpack_1(other->codes.data(), i, buffer.data());
-        packer.pack_1(buffer.data(), ntotal + i, codes.data());
+        other_packer->unpack_1(other->codes.data(), i, buffer.data());
+        packer->pack_1(buffer.data(), ntotal + i, codes.data());
     }
     ntotal += other->ntotal;
     other->reset();
@@ -531,7 +538,8 @@ void IndexFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 *handler.get(),
-                context.norm_scaler);
+                context.norm_scaler,
+                get_block_stride());
     }
     if (!(skip & 8)) {
         handler->end();
@@ -614,7 +622,8 @@ void IndexFastScan::search_implem_14(
                 codes.get(),
                 LUT.get(),
                 *handler.get(),
-                context.norm_scaler);
+                context.norm_scaler,
+                get_block_stride());
     }
     if (!(skip & 8)) {
         handler->end();
@@ -639,11 +648,8 @@ template void IndexFastScan::search_dispatch_implem<false>(
 
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
     std::vector<uint8_t> code(code_size, 0);
-    BitstringWriter bsw(code.data(), code_size);
-    for (size_t m = 0; m < M; m++) {
-        uint8_t c = pq4_get_packed_element(codes.data(), bbs, M2, key, m);
-        bsw.write(c, nbits);
-    }
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    packer->unpack_1(codes.data(), key, code.data());
     sa_decode(1, code.data(), recons);
 }
 

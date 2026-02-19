@@ -1489,13 +1489,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = std::move(imm);
-    } else if (h == fourcc("Irfs")) {
+    } else if (h == fourcc("Irfs") || h == fourcc("Irfg")) {
         auto idxqfs = std::make_unique<IndexRaBitQFastScan>();
         read_index_header(*idxqfs, f);
         read_RaBitQuantizer(idxqfs->rabitq, f, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
-        READVECTOR(idxqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (h == fourcc("Irfs")) {
+            // Old format: flat_storage was serialized separately
+            READVECTOR(legacy_flat_storage);
+        }
 
         READ1(idxqfs->bbs);
         READ1(idxqfs->ntotal2);
@@ -1509,6 +1514,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->ksub = (1 << nbits_fastscan);
 
         READVECTOR(idxqfs->codes);
+
+        if (h == fourcc("Irfs")) {
+            // Old format: blocks are small (no aux region).
+            // Migrate by re-laying out blocks and copying aux data from
+            // flat_storage.
+            idxqfs->populate_block_aux_from_flat_storage(legacy_flat_storage);
+        }
+
         idx = std::move(idxqfs);
     } else if (h == fourcc("Ixrq")) {
         auto idxq = std::make_unique<IndexRaBitQ>();
@@ -1621,7 +1634,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idx = std::move(svs);
     }
 #endif // FAISS_ENABLE_SVS
-    else if (h == fourcc("Iwrf")) {
+    else if (h == fourcc("Iwrf") || h == fourcc("Iwrg")) {
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
         read_ivf_header(ivrqfs.get(), f);
         read_RaBitQuantizer(ivrqfs->rabitq, f);
@@ -1633,7 +1646,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrqfs->implem);
         READ1(ivrqfs->qb);
         READ1(ivrqfs->centered);
-        READVECTOR(ivrqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (h == fourcc("Iwrf")) {
+            // Old format: flat_storage was serialized separately
+            READVECTOR(legacy_flat_storage);
+        }
 
         // Initialize FastScan base class fields
         const size_t M_fastscan = (ivrqfs->d + 3) / 4;
@@ -1644,6 +1662,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         read_InvertedLists(*ivrqfs, f, io_flags);
         ivrqfs->init_code_packer();
+
+        if (h == fourcc("Iwrf")) {
+            // Old format: blocks are small (no aux region).
+            // Migrate by re-laying out blocks and copying aux data from
+            // flat_storage.
+            ivrqfs->populate_block_aux_from_flat_storage(legacy_flat_storage);
+        }
+
         idx = std::move(ivrqfs);
     } else {
         FAISS_THROW_FMT(

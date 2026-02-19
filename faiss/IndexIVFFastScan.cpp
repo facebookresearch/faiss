@@ -95,15 +95,12 @@ IndexIVFFastScan::~IndexIVFFastScan() = default;
  * Code management functions
  *********************************************************/
 
-void IndexIVFFastScan::preprocess_code_metadata(
-        idx_t /* n */,
-        const uint8_t* /* flat_codes */,
-        idx_t /* start_global_idx */) {
-    // Default: no-op
-}
-
 size_t IndexIVFFastScan::code_packing_stride() const {
     // Default: use standard M-byte stride
+    return 0;
+}
+
+size_t IndexIVFFastScan::get_block_stride() const {
     return 0;
 }
 
@@ -147,9 +144,6 @@ void IndexIVFFastScan::add_with_ids(
 
     AlignedTable<uint8_t> flat_codes(n * code_size);
     encode_vectors(n, x, idx.get(), flat_codes.get());
-
-    // Allow subclasses to preprocess metadata before packing
-    preprocess_code_metadata(n, flat_codes.get(), ntotal);
 
     DirectMapAdd dm_adder(direct_map, n, xids);
     BlockInvertedLists* bil = dynamic_cast<BlockInvertedLists*>(invlists);
@@ -206,7 +200,11 @@ void IndexIVFFastScan::add_with_ids(
                 bbs,
                 M2,
                 bil->codes[list_no].data(),
-                pack_stride);
+                pack_stride,
+                get_block_stride());
+
+        postprocess_packed_codes(
+                list_no, list_size, i1 - i0, list_codes.data());
 
         i0 = i1;
     }
@@ -1029,7 +1027,8 @@ void IndexIVFFastScan::search_implem_10(
                     codes.get(),
                     LUT,
                     handler,
-                    context.norm_scaler);
+                    context.norm_scaler,
+                    get_block_stride());
 
             ndis += ls;
             nlist_visited++;
@@ -1180,7 +1179,8 @@ void IndexIVFFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 handler,
-                context.norm_scaler);
+                context.norm_scaler,
+                get_block_stride());
         // prepare for next loop
         i0 = i1;
     }
@@ -1403,7 +1403,8 @@ void IndexIVFFastScan::search_implem_14(
                     codes.get(),
                     LUT.get(),
                     *handler.get(),
-                    context.norm_scaler);
+                    context.norm_scaler,
+                    get_block_stride());
         }
 
         // labels is in-place for HeapHC
@@ -1518,6 +1519,12 @@ void IndexIVFFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
         }
     }
 }
+
+void IndexIVFFastScan::postprocess_packed_codes(
+        idx_t /*list_no*/,
+        size_t /*list_offset*/,
+        size_t /*n_added*/,
+        const uint8_t* /*flat_codes*/) {}
 
 IVFFastScanStats IVFFastScan_stats;
 

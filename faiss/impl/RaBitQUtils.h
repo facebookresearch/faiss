@@ -361,5 +361,18 @@ inline float compute_full_multibit_distance(
     return dist;
 }
 
+/** Compute pointer to a vector's auxiliary data within block layout. */
+template <typename T>
+inline T* get_block_aux_ptr(
+        T* block_data,
+        size_t vec_pos,
+        size_t bbs,
+        size_t packed_block_size,
+        size_t full_block_size,
+        size_t storage_size) {
+    return block_data + (vec_pos / bbs) * full_block_size + packed_block_size +
+            (vec_pos % bbs) * storage_size;
+}
+
 } // namespace rabitq_utils
 } // namespace faiss

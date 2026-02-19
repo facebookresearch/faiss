@@ -214,7 +214,20 @@ struct IndexFastScan : Index {
      *
      * @return  pointer to the code packer
      */
-    CodePacker* get_CodePacker() const;
+    virtual CodePacker* get_CodePacker() const;
+
+    /** Get stride in bytes between consecutive SIMD blocks during
+     *  accumulation.
+     *
+     * When blocks contain auxiliary data appended after the packed
+     * SIMD codes, the accumulation loop must skip over this extra data.
+     *
+     * Default: returns 0, meaning the accumulation loop uses its
+     * natural stride of bbs * nsq / 2.
+     *
+     * @return stride in bytes (0 = default)
+     */
+    virtual size_t get_block_stride() const;
 
     /** Merge another index into this one
      *
