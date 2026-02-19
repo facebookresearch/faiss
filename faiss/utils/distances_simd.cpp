@@ -249,14 +249,14 @@ void compute_PQ_dis_tables_dsub2(
     FAISS_THROW_IF_NOT(ksub % 8 == 0);
 
     for (size_t m0 = 0; m0 < M; m0 += 4) {
-        int m1 = std::min(M, m0 + 4);
-        for (int k0 = 0; k0 < ksub; k0 += 8) {
+        size_t m1 = std::min(M, m0 + 4);
+        for (size_t k0 = 0; k0 < ksub; k0 += 8) {
             simd8float32 centroids[8];
             for (int k = 0; k < 8; k++) {
                 ALIGNED(32) float centroid[8];
                 size_t wp = 0;
                 size_t rp = (m0 * ksub + k + k0) * 2;
-                for (int m = m0; m < m1; m++) {
+                for (size_t m = m0; m < m1; m++) {
                     centroid[wp++] = all_centroids[rp];
                     centroid[wp++] = all_centroids[rp + 1];
                     rp += 2 * ksub;

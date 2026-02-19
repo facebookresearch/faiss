@@ -19,14 +19,14 @@ struct CompressedNSGGraph : FinalNSGGraph {
     size_t stride;
     std::vector<uint8_t> compressed_data;
 
-    CompressedNSGGraph(const FinalNSGGraph& graph, int bits)
-            : FinalNSGGraph(graph.data, graph.N, graph.K), bits(bits) {
+    CompressedNSGGraph(const FinalNSGGraph& graph, int bits_in)
+            : FinalNSGGraph(graph.data, graph.N, graph.K), bits(bits_in) {
         FAISS_THROW_IF_NOT((1 << bits) >= K + 1);
         stride = (K * bits + 7) / 8;
         compressed_data.resize(N * stride);
-        for (size_t i = 0; i < N; i++) {
+        for (size_t i = 0; i < size_t(N); i++) {
             BitstringWriter writer(compressed_data.data() + i * stride, stride);
-            for (size_t j = 0; j < K; j++) {
+            for (size_t j = 0; j < size_t(K); j++) {
                 int32_t v = graph.data[i * K + j];
                 if (v == -1) {
                     writer.write(K + 1, bits);

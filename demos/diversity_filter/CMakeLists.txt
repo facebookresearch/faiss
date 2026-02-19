@@ -6,3 +6,4 @@
 add_executable(demo_diversity_result_handler EXCLUDE_FROM_ALL
   demo_diversity_result_handler.cpp)
 target_link_libraries(demo_diversity_result_handler PRIVATE faiss)
+faiss_add_warnings(demo_diversity_result_handler)

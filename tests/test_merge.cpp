@@ -49,7 +49,7 @@ struct CommonData {
         for (size_t i = 0; i < nq * d; i++) {
             queries[i] = distrib(rng);
         }
-        for (int i = 0; i < nb; i++) {
+        for (size_t i = 0; i < nb; i++) {
             ids[i] = 123 + 456 * i;
         }
         { // just to train the quantizer
@@ -231,7 +231,7 @@ TEST(MERGE, merge_flat_ondisk_3) {
     index_shards.own_indices = true;
 
     std::vector<idx_t> ids;
-    for (int i = 0; i < nb; ++i) {
+    for (size_t i = 0; i < nb; ++i) {
         int id = i % shard_size;
         ids.push_back(id);
     }

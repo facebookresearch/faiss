@@ -124,7 +124,7 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
         }
         std::vector<float> y(d * ny);
         std::vector<float> y_sqlens(ny, 0);
-        for (size_t i = 0; i < ny; i++) {
+        for (int i = 0; i < ny; i++) {
             for (size_t j = 0; j < y.size(); j++) {
                 y[j] = uniform(rng);
                 y_sqlens[i] += y[j] * y[j];
@@ -133,9 +133,9 @@ TEST(TestFvecL2sqr, distances_L2_squared_y_transposed) {
 
         // perform function
         std::vector<float> true_distances(ny, 0);
-        for (size_t i = 0; i < ny; i++) {
+        for (int i = 0; i < ny; i++) {
             float dp = 0;
-            for (size_t j = 0; j < d; j++) {
+            for (int j = 0; j < d; j++) {
                 dp += x[j] * y[i + j * ny];
             }
             true_distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
@@ -173,7 +173,7 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
         }
         std::vector<float> y(d * ny);
         std::vector<float> y_sqlens(ny, 0);
-        for (size_t i = 0; i < ny; i++) {
+        for (int i = 0; i < ny; i++) {
             for (size_t j = 0; j < y.size(); j++) {
                 y[j] = uniform(rng);
                 y_sqlens[i] += y[j] * y[j];
@@ -182,9 +182,9 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
 
         // get distances
         std::vector<float> distances(ny, 0);
-        for (size_t i = 0; i < ny; i++) {
+        for (int i = 0; i < ny; i++) {
             float dp = 0;
-            for (size_t j = 0; j < d; j++) {
+            for (int j = 0; j < d; j++) {
                 dp += x[j] * y[i + j * ny];
             }
             distances[i] = x_sqlen + y_sqlens[i] - 2 * dp;
@@ -192,7 +192,7 @@ TEST(TestFvecL2sqr, nearest_L2_squared_y_transposed) {
         // find nearest
         size_t true_nearest_idx = 0;
         float min_dis = HUGE_VALF;
-        for (size_t i = 0; i < ny; i++) {
+        for (int i = 0; i < ny; i++) {
             if (distances[i] < min_dis) {
                 min_dis = distances[i];
                 true_nearest_idx = i;

@@ -98,8 +98,8 @@ struct IndexRefineFlat : IndexRefine {
 /** Version where the search calls search_subset, allowing for Panorama
  * refinement. */
 struct IndexRefinePanorama : IndexRefine {
-    explicit IndexRefinePanorama(Index* base_index, Index* refine_index)
-            : IndexRefine(base_index, refine_index) {}
+    explicit IndexRefinePanorama(Index* base_index_in, Index* refine_index_in)
+            : IndexRefine(base_index_in, refine_index_in) {}
 
     IndexRefinePanorama() : IndexRefine() {}
 

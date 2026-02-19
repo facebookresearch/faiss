@@ -23,8 +23,8 @@
 
 namespace faiss {
 
-IndexFlat::IndexFlat(idx_t d, MetricType metric)
-        : IndexFlatCodes(sizeof(float) * d, d, metric) {}
+IndexFlat::IndexFlat(idx_t d_in, MetricType metric)
+        : IndexFlatCodes(sizeof(float) * d_in, d_in, metric) {}
 
 void IndexFlat::search(
         idx_t n,
@@ -126,11 +126,11 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
         return fvec_L2sqr<SL>(b + j * d, b + i * d, d);
     }
 
-    explicit FlatL2Dis(const IndexFlat& storage, const float* q = nullptr)
+    explicit FlatL2Dis(const IndexFlat& storage, const float* q_in = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size,
-                      q),
+                      q_in),
               d(storage.d),
               nb(storage.ntotal),
               b(storage.get_xb()),
@@ -236,13 +236,13 @@ struct FlatIPDis : FlatCodesDistanceComputer {
         return fvec_inner_product<SL>(q, (const float*)code, d);
     }
 
-    explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
+    explicit FlatIPDis(const IndexFlat& storage, const float* q_in = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
               d(storage.d),
               nb(storage.ntotal),
-              q(q),
+              q(q_in),
               b(storage.get_xb()),
               ndis(0) {}
 
@@ -361,13 +361,13 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
 
     explicit FlatL2WithNormsDis(
             const IndexFlatL2& storage,
-            const float* q = nullptr)
+            const float* q_in = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
               d(storage.d),
               nb(storage.ntotal),
-              q(q),
+              q(q_in),
               b(storage.get_xb()),
               ndis(0),
               l2norms(storage.cached_l2norms.data()),
@@ -452,8 +452,8 @@ FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
  * IndexFlat1D
  ***************************************************/
 
-IndexFlat1D::IndexFlat1D(bool continuous_update)
-        : IndexFlatL2(1), continuous_update(continuous_update) {}
+IndexFlat1D::IndexFlat1D(bool continuous_update_in)
+        : IndexFlatL2(1), continuous_update(continuous_update_in) {}
 
 /// if not continuous_update, call this between the last add and
 /// the first search
@@ -489,7 +489,8 @@ void IndexFlat1D::search(
             !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(
-            perm.size() == ntotal, "Call update_permutation before search");
+            perm.size() == static_cast<size_t>(ntotal),
+            "Call update_permutation before search");
     const float* xb = get_xb();
 
 #pragma omp parallel for if (n > 10000)
@@ -706,7 +707,7 @@ void IndexFlatPanorama::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT(batch_size >= k);
+    FAISS_THROW_IF_NOT(batch_size >= static_cast<size_t>(k));
 
     dispatch_metric_compare(metric_type, [&]<typename C>() {
         HeapBlockResultHandler<C, false> handler(
@@ -867,7 +868,7 @@ void IndexFlatPanorama::search_subset(
 
                     res.begin(i);
 
-                    for (size_t j = 0; j < k_base; j++) {
+                    for (idx_t j = 0; j < k_base; j++) {
                         idx_t idx = idsi[j];
 
                         if (idx < 0) {
@@ -906,13 +907,13 @@ void IndexFlatPanorama::search_subset(
                                 exact_distance -= 2 * dot_product;
                             }
 
-                            float cum_sum = cum_sums[cum_sum_offset];
+                            float level_cum_sum = cum_sums[cum_sum_offset];
                             float cauchy_schwarz_bound;
                             if constexpr (is_sim) {
                                 cauchy_schwarz_bound =
-                                        -cum_sum * query_cum_norms[level + 1];
+                                        -level_cum_sum * query_cum_norms[level + 1];
                             } else {
-                                cauchy_schwarz_bound = 2.0f * cum_sum *
+                                cauchy_schwarz_bound = 2.0f * level_cum_sum *
                                         query_cum_norms[level + 1];
                             }
                             float bound = exact_distance - cauchy_schwarz_bound;
