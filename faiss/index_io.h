@@ -11,13 +11,17 @@
 #define FAISS_INDEX_IO_H
 
 #include <cstdio>
+#include <memory>
 
 /** I/O functions can read/write to a filename, a file handle or to an
  * object that abstracts the medium.
  *
- * The read functions return objects that should be deallocated with
- * delete. All references within these objects are owned by the
- * object.
+ * The read functions come in two forms:
+ * - read_*_up() returns a std::unique_ptr that owns the result.
+ * - read_*() returns a raw pointer for backward compatibility.
+ *   The caller is responsible for deleting the returned object.
+ *
+ * All references within these objects are owned by the object.
  */
 
 namespace faiss {
@@ -68,9 +72,21 @@ Index* read_index(const char* fname, int io_flags = 0);
 Index* read_index(FILE* f, int io_flags = 0);
 Index* read_index(IOReader* reader, int io_flags = 0);
 
+std::unique_ptr<Index> read_index_up(const char* fname, int io_flags = 0);
+std::unique_ptr<Index> read_index_up(FILE* f, int io_flags = 0);
+std::unique_ptr<Index> read_index_up(IOReader* reader, int io_flags = 0);
+
 IndexBinary* read_index_binary(const char* fname, int io_flags = 0);
 IndexBinary* read_index_binary(FILE* f, int io_flags = 0);
 IndexBinary* read_index_binary(IOReader* reader, int io_flags = 0);
+
+std::unique_ptr<IndexBinary> read_index_binary_up(
+        const char* fname,
+        int io_flags = 0);
+std::unique_ptr<IndexBinary> read_index_binary_up(FILE* f, int io_flags = 0);
+std::unique_ptr<IndexBinary> read_index_binary_up(
+        IOReader* reader,
+        int io_flags = 0);
 
 void write_VectorTransform(const VectorTransform* vt, const char* fname);
 void write_VectorTransform(const VectorTransform* vt, IOWriter* f);
@@ -78,14 +94,24 @@ void write_VectorTransform(const VectorTransform* vt, IOWriter* f);
 VectorTransform* read_VectorTransform(const char* fname);
 VectorTransform* read_VectorTransform(IOReader* f);
 
+std::unique_ptr<VectorTransform> read_VectorTransform_up(const char* fname);
+std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f);
+
 ProductQuantizer* read_ProductQuantizer(const char* fname);
 ProductQuantizer* read_ProductQuantizer(IOReader* reader);
+
+std::unique_ptr<ProductQuantizer> read_ProductQuantizer_up(const char* fname);
+std::unique_ptr<ProductQuantizer> read_ProductQuantizer_up(IOReader* reader);
 
 void write_ProductQuantizer(const ProductQuantizer* pq, const char* fname);
 void write_ProductQuantizer(const ProductQuantizer* pq, IOWriter* f);
 
 void write_InvertedLists(const InvertedLists* ils, IOWriter* f);
 InvertedLists* read_InvertedLists(IOReader* reader, int io_flags = 0);
+
+std::unique_ptr<InvertedLists> read_InvertedLists_up(
+        IOReader* reader,
+        int io_flags = 0);
 
 } // namespace faiss
 

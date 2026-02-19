@@ -941,6 +941,14 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 }
 %}
 
+// SWIG cannot handle std::unique_ptr return types; the raw-pointer
+// versions (already annotated with %newobject) are sufficient.
+%ignore faiss::read_index_up;
+%ignore faiss::read_index_binary_up;
+%ignore faiss::read_VectorTransform_up;
+%ignore faiss::read_ProductQuantizer_up;
+%ignore faiss::read_InvertedLists_up;
+
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>
 %newobject index_factory;
