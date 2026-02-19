@@ -687,17 +687,13 @@ static void read_NSG(NSG* nsg, IOReader* f) {
     int N = nsg->ntotal;
     int R = nsg->R;
 
-    // Use size_t to prevent int32 overflow in N * (R + 1) for allocation
-    // and file reading.
-    size_t graph_size =
-            mul_no_overflow((size_t)N, (size_t)(R + 1), "NSG graph allocation");
-
     auto& graph = nsg->final_graph;
-    graph = std::make_shared<nsg::Graph<int>>(N, R + 1);
-    std::fill_n(graph->data, graph_size, EMPTY_ID);
+    graph = std::make_shared<nsg::Graph<int>>(N, R);
+    std::fill_n(graph->data, (size_t)N * R, EMPTY_ID);
 
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < R + 1; j++) {
+        int j;
+        for (j = 0; j < R; j++) {
             int id;
             READ1(id);
             if (id != EMPTY_ID) {
@@ -706,6 +702,13 @@ static void read_NSG(NSG* nsg, IOReader* f) {
             } else {
                 break;
             }
+        }
+        if (j == R) {
+            // All R neighbor slots were filled; consume the trailing
+            // EMPTY_ID sentinel that write_NSG always appends.
+            int sentinel;
+            READ1(sentinel);
+            FAISS_THROW_IF_NOT(sentinel == EMPTY_ID);
         }
     }
 
