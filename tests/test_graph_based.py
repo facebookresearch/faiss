@@ -92,6 +92,12 @@ class TestHNSW(unittest.TestCase):
         self.assertTrue(np.all(Dhnsw2 == Dhnsw))
         self.assertTrue(np.all(Ihnsw2 == Ihnsw))
 
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        Dhnsw2b, Ihnsw2b = index2b.search(self.xq, 1)
+        self.assertTrue(np.all(Dhnsw2b == Dhnsw))
+        self.assertTrue(np.all(Ihnsw2b == Ihnsw))
+
         # also test clone
         index3 = faiss.clone_index(index)
         Dhnsw3, Ihnsw3 = index3.search(self.xq, 1)
@@ -283,6 +289,12 @@ class TestNSG(unittest.TestCase):
         Dnsg2, Insg2 = index2.search(self.xq, 1)
         np.testing.assert_array_equal(Dnsg2, Dnsg)
         np.testing.assert_array_equal(Insg2, Insg)
+
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        Dnsg2b, Insg2b = index2b.search(self.xq, 1)
+        np.testing.assert_array_equal(Dnsg2b, Dnsg)
+        np.testing.assert_array_equal(Insg2b, Insg)
 
         # also test clone
         index3 = faiss.clone_index(index)
@@ -538,6 +550,12 @@ class TestNNDescent(unittest.TestCase):
         D2, I2 = index2.search(self.xq, 1)
         np.testing.assert_array_equal(D2, D)
         np.testing.assert_array_equal(I2, I)
+
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        D2b, I2b = index2b.search(self.xq, 1)
+        np.testing.assert_array_equal(D2b, D)
+        np.testing.assert_array_equal(I2b, I)
 
         # also test clone
         index3 = faiss.clone_index(index)
