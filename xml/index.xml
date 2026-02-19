@@ -11645,7 +11645,6 @@
     <member refid="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" kind="function"><name>greedy_update_nearest</name></member>
     <member refid="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" kind="function"><name>search_from_candidate_unbounded</name></member>
     <member refid="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" kind="function"><name>search_neighbors_to_add</name></member>
-    <member refid="namespacefaiss_1a33f83fe5af91626556b1ccde1f3cafcb" kind="function"><name>read_index_header</name></member>
     <member refid="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" kind="function"><name>read_direct_map</name></member>
     <member refid="namespacefaiss_1ae748c5ec07a45d0f8d861e231ef67986" kind="function"><name>read_ivf_header</name></member>
     <member refid="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" kind="function"><name>read_InvertedLists</name></member>
@@ -11690,19 +11689,30 @@
     <member refid="namespacefaiss_1a3ef2e333e9fe5d8f948213ba8900fa64" kind="function"><name>read_index</name></member>
     <member refid="namespacefaiss_1ad1b8eddfcbc56b5e1d9024e5cb04ae74" kind="function"><name>read_index</name></member>
     <member refid="namespacefaiss_1ad853cba80f253e352e27605b1a351725" kind="function"><name>read_index</name></member>
+    <member refid="namespacefaiss_1a208879ab6f9c0cec8bfe08ddd50ceaeb" kind="function"><name>read_index_up</name></member>
+    <member refid="namespacefaiss_1a99493eec47d221ba06ca42722d190856" kind="function"><name>read_index_up</name></member>
+    <member refid="namespacefaiss_1aaf35cd7bb66818fa101ede16858075d3" kind="function"><name>read_index_up</name></member>
     <member refid="namespacefaiss_1a08da4fc593a4a6fa63bb2d9c95fa4a13" kind="function"><name>read_index_binary</name></member>
     <member refid="namespacefaiss_1a30ff4b85a6a940724f3ea38bc1c903cd" kind="function"><name>read_index_binary</name></member>
     <member refid="namespacefaiss_1a21d9992c103952690484664d16423a22" kind="function"><name>read_index_binary</name></member>
+    <member refid="namespacefaiss_1a4458d08cc69242b25e1530ae8ecb2eb0" kind="function"><name>read_index_binary_up</name></member>
+    <member refid="namespacefaiss_1a1edea936e7f981a28bf956e9f9d486c4" kind="function"><name>read_index_binary_up</name></member>
+    <member refid="namespacefaiss_1aaa7849e9efb31d35b722bc152d91de22" kind="function"><name>read_index_binary_up</name></member>
     <member refid="namespacefaiss_1ad72efd9404a8058159f1ae48225a2d94" kind="function"><name>write_VectorTransform</name></member>
     <member refid="namespacefaiss_1af06ee18cec9686419b641298e3a0667e" kind="function"><name>write_VectorTransform</name></member>
     <member refid="namespacefaiss_1a73e97b42d11f03a68bfda4ad5c569dd1" kind="function"><name>read_VectorTransform</name></member>
     <member refid="namespacefaiss_1a10cc4174ae7af7d3f0ec05d1494cc0c4" kind="function"><name>read_VectorTransform</name></member>
+    <member refid="namespacefaiss_1a1ac52100e05dd3ed3c0f9c2b17c3f3e3" kind="function"><name>read_VectorTransform_up</name></member>
+    <member refid="namespacefaiss_1a70f5235cd4cf0aa8884741b4e6edf7e5" kind="function"><name>read_VectorTransform_up</name></member>
     <member refid="namespacefaiss_1a818fa626e2368301ccf872b7ba65383a" kind="function"><name>read_ProductQuantizer</name></member>
     <member refid="namespacefaiss_1a39b1ff6a5c7baacea4002473dde1f8d3" kind="function"><name>read_ProductQuantizer</name></member>
+    <member refid="namespacefaiss_1ab1070fc58b3d2aff53a3c82421968cb6" kind="function"><name>read_ProductQuantizer_up</name></member>
+    <member refid="namespacefaiss_1ae4b175855392967613ebb4a3429d424e" kind="function"><name>read_ProductQuantizer_up</name></member>
     <member refid="namespacefaiss_1aeecb2752b0d13ace2d17ebc0189e9ea3" kind="function"><name>write_ProductQuantizer</name></member>
     <member refid="namespacefaiss_1adbd20721104c8523bbc53d82f839b03c" kind="function"><name>write_ProductQuantizer</name></member>
     <member refid="namespacefaiss_1aceed566acb3d5edfa90c70198ba5d962" kind="function"><name>write_InvertedLists</name></member>
     <member refid="namespacefaiss_1aa406bd6a2e1b397ad15954d9fd67c251" kind="function"><name>read_InvertedLists</name></member>
+    <member refid="namespacefaiss_1afe18d8b6b6b55ae7468bed708ac58a44" kind="function"><name>read_InvertedLists_up</name></member>
     <member refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" kind="function"><name>initialize_IVFPQ_precomputed_table</name></member>
     <member refid="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" kind="function"><name>lo_build</name></member>
     <member refid="namespacefaiss_1afe521d71f2a4dd6a99b0a5d9fbe19787" kind="function"><name>lo_listno</name></member>
