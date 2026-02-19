@@ -795,15 +795,15 @@ void hashtable_int64_to_int64_lookup(
 #pragma omp parallel for
     for (int64_t i = 0; i < n; i++) {
         int64_t k = keys[i];
-        int64_t hk = hash_function(k) & mask;
-        size_t slot = hk;
+        int64_t hashValue = hash_function(k) & mask;
+        size_t slot = hashValue;
 
         if (tab[2 * slot] == -1) { // not in table
             vals[i] = -1;
         } else if (tab[2 * slot] == k) { // found!
             vals[i] = tab[2 * slot + 1];
         } else { // need to search in [k0, k1)
-            size_t bucket = hk >> (log2_capacity - log2_nbucket);
+            size_t bucket = hashValue >> (log2_capacity - log2_nbucket);
             size_t k0 = bucket << (log2_capacity - log2_nbucket);
             size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
             for (;;) {
@@ -815,7 +815,7 @@ void hashtable_int64_to_int64_lookup(
                 if (slot == k1) {
                     slot = k0;
                 }
-                if (slot == hk) { // bucket is full and not found
+                if (slot == hashValue) { // bucket is full and not found
                     vals[i] = -1;
                     break;
                 }
