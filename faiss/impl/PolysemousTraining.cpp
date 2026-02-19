@@ -432,6 +432,8 @@ void ReproduceDistancesObjective::set_affine_target_dis(
  * Cost functions: RankingScore
  ****************************************************/
 
+namespace {
+
 /// Maintains a 3D table of elementary costs.
 /// Accumulates elements based on Hamming distance comparisons
 template <typename Ttab, typename Taccu>
@@ -756,6 +758,8 @@ struct RankingScore2 : Score3Computer<float, double> {
         }
     }
 };
+
+} // namespace
 
 /*****************************************
  * PolysemousTraining

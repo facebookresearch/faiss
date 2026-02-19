@@ -16,6 +16,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 
 int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
