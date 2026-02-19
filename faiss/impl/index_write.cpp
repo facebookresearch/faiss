@@ -52,6 +52,9 @@
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
@@ -1054,6 +1057,61 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             std::ostream os(&wbuf);
             svs->serialize_impl(os);
             os.flush();
+        }
+    } else if (
+            const IndexSVSIVF* svs_ivf =
+                    dynamic_cast<const IndexSVSIVF*>(idx)) {
+        uint32_t h;
+        auto* lvq = dynamic_cast<const IndexSVSIVFLVQ*>(svs_ivf);
+        auto* lean = dynamic_cast<const IndexSVSIVFLeanVec*>(svs_ivf);
+        if (lvq != nullptr) {
+            h = fourcc("ISIQ"); // IndexSVSIVFLVQ
+        } else if (lean != nullptr) {
+            h = fourcc("ISIL"); // IndexSVSIVFLeanVec
+        } else {
+            h = fourcc("ISID"); // IndexSVSIVF
+        }
+
+        WRITE1(h);
+        write_index_header(svs_ivf, f);
+        WRITE1(svs_ivf->num_centroids);
+        WRITE1(svs_ivf->minibatch_size);
+        WRITE1(svs_ivf->num_iterations);
+        WRITE1(svs_ivf->is_hierarchical);
+        WRITE1(svs_ivf->training_fraction);
+        WRITE1(svs_ivf->hierarchical_level1_clusters);
+        WRITE1(svs_ivf->seed);
+        WRITE1(svs_ivf->n_probes);
+        WRITE1(svs_ivf->k_reorder);
+        WRITE1(svs_ivf->num_threads);
+        WRITE1(svs_ivf->intra_query_threads);
+        WRITE1(svs_ivf->storage_kind);
+
+        if (lean != nullptr) {
+            WRITE1(lean->leanvec_d);
+        }
+
+        bool initialized = (svs_ivf->impl != nullptr);
+        WRITE1(initialized);
+        if (initialized) {
+            faiss::BufferedIOWriter bwr(f);
+            faiss::svs_io::WriterStreambuf wbuf(&bwr);
+            std::ostream os(&wbuf);
+            svs_ivf->serialize_impl(os);
+            os.flush();
+        }
+
+        if (lean != nullptr) {
+            // Store training data info
+            bool trained = (lean->training_data != nullptr);
+            WRITE1(trained);
+            if (trained) {
+                faiss::BufferedIOWriter bwr(f);
+                faiss::svs_io::WriterStreambuf wbuf(&bwr);
+                std::ostream os(&wbuf);
+                lean->serialize_training_data(os);
+                os.flush();
+            }
         }
     }
 #endif // FAISS_ENABLE_SVS
