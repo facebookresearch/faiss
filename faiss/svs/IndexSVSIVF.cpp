@@ -147,6 +147,18 @@ void IndexSVSIVF::search(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
 
+    // Sync thread settings to the SVS backend before searching
+    {
+        size_t current_threads = 0;
+        impl->get_num_threads(&current_threads);
+        if (num_threads > 0 && current_threads != num_threads) {
+            auto st = impl->set_num_threads(num_threads);
+            if (!st.ok()) {
+                FAISS_THROW_MSG(st.message());
+            }
+        }
+    }
+
     auto sp = make_ivf_search_parameters(*this, params);
     auto status = impl->search(
             static_cast<size_t>(n),
