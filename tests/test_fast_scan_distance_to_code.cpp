@@ -182,3 +182,27 @@ TEST(IVFPQFastScan, SearchAndEncodeIVFPQ_IP) {
 TEST(IVFPQFastScan, SearchAndEncodeIVFPQFastScan_IP) {
     test_search_and_encode("IVF32,PQ16x4fs", METRIC_INNER_PRODUCT);
 }
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan_L2) {
+    test_search_and_encode("IVF32,RaBitQfs", METRIC_L2);
+}
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan_IP) {
+    test_search_and_encode("IVF32,RaBitQfs", METRIC_INNER_PRODUCT);
+}
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan2_L2) {
+    test_search_and_encode("IVF32,RaBitQfs2", METRIC_L2);
+}
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan2_IP) {
+    test_search_and_encode("IVF32,RaBitQfs2", METRIC_INNER_PRODUCT);
+}
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan4_L2) {
+    test_search_and_encode("IVF32,RaBitQfs4", METRIC_L2);
+}
+
+TEST(IVFRaBitQFastScan, SearchAndEncodeIVFRaBitQFastScan4_IP) {
+    test_search_and_encode("IVF32,RaBitQfs4", METRIC_INNER_PRODUCT);
+}

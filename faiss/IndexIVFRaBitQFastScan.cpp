@@ -807,7 +807,6 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
 namespace {
 
 /// Provides IVF scanner interface using FastScan's SIMD batch processing.
-/// Note: distance_to_code() not supported due to packed code format.
 struct IVFRaBitQFastScanScanner : InvertedListScanner {
     static constexpr int impl = 10;
     static constexpr size_t nq = 1;
@@ -823,6 +822,9 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
 
     QueryFactorsData query_factors;
     FastScanDistancePostProcessing context;
+
+    std::unique_ptr<FlatCodesDistanceComputer> dc;
+    std::vector<float> centroid;
 
     IVFRaBitQFastScanScanner(
             const IndexIVFRaBitQFastScan& index,
@@ -852,12 +854,23 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
 
         index.compute_LUT_uint8(
                 1, xi, cq, dis_tables, biases, &normalizers[0], context);
+
+        // Set up distance computer for distance_to_code
+        centroid.resize(index.d);
+        index.quantizer->reconstruct(list_no, centroid.data());
+        dc.reset(index.rabitq.get_distance_computer(
+                index.qb, centroid.data(), index.centered));
+        dc->set_query(xi);
     }
 
-    float distance_to_code(const uint8_t* /* code */) const override {
-        FAISS_THROW_MSG("distance_to_code not implemented for FastScan");
+    float distance_to_code(const uint8_t* code) const override {
+        FAISS_THROW_IF_NOT_MSG(
+                dc,
+                "set_query and set_list must be called before distance_to_code");
+        return dc->distance_to_code(code);
     }
 
+   public:
     size_t scan_codes(
             size_t ntotal,
             const uint8_t* codes,
