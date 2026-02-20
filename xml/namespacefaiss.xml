@@ -8048,22 +8048,17 @@
         </inbodydescription>
         <location file="faiss/utils/distances_fused/distances_fused.h" line="31" column="6" declfile="faiss/utils/distances_fused/distances_fused.h" declline="31" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1af795517ea8f2270421341a93eb528c52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
-            <type>class Consumer</type>
-          </param>
-          <param>
-            <type>class...</type>
-            <declname>Types</declname>
-            <defname>Types</defname>
+            <type>typename LambdaType</type>
           </param>
         </templateparamlist>
-        <type>Consumer::T</type>
-        <definition>Consumer::T faiss::dispatch_VectorDistance</definition>
-        <argsstring>(size_t d, MetricType metric, float metric_arg, Consumer &amp;consumer, Types... args)</argsstring>
-        <name>dispatch_VectorDistance</name>
-        <qualifiedname>faiss::dispatch_VectorDistance</qualifiedname>
+        <type>auto</type>
+        <definition>auto faiss::with_VectorDistance</definition>
+        <argsstring>(size_t d, MetricType metric, float metric_arg, LambdaType &amp;&amp;action)</argsstring>
+        <name>with_VectorDistance</name>
+        <qualifiedname>faiss::with_VectorDistance</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>d</declname>
@@ -8077,12 +8072,8 @@
           <declname>metric_arg</declname>
         </param>
         <param>
-          <type>Consumer &amp;</type>
-          <declname>consumer</declname>
-        </param>
-        <param>
-          <type>Types...</type>
-          <declname>args</declname>
+          <type>LambdaType &amp;&amp;</type>
+          <declname>action</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -8090,7 +8081,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="212" column="22" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="212" bodyend="233"/>
+        <location file="faiss/utils/extra_distances-inl.h" line="213" column="6" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="213" bodyend="233"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

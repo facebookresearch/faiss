@@ -415,25 +415,25 @@
 <codeline lineno="200"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="201"><highlight class="normal"></highlight></codeline>
 <codeline lineno="202"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************************</highlight></codeline>
-<codeline lineno="203"><highlight class="comment"><sp/>*<sp/>Dispatching<sp/>function<sp/>that<sp/>takes<sp/>a<sp/>metric<sp/>type<sp/>and<sp/>a<sp/>consumer<sp/>object</highlight></codeline>
-<codeline lineno="204"><highlight class="comment"><sp/>*<sp/>the<sp/>consumer<sp/>object<sp/>should<sp/>contain<sp/>a<sp/>return<sp/>type<sp/>T<sp/>and<sp/>a<sp/>operation<sp/>template</highlight></codeline>
-<codeline lineno="205"><highlight class="comment"><sp/>*<sp/>function<sp/>f()<sp/>that<sp/>is<sp/>called<sp/>to<sp/>perform<sp/>the<sp/>operation.</highlight></codeline>
-<codeline lineno="206"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="207"><highlight class="comment"><sp/>*<sp/>The<sp/>first<sp/>argument<sp/>of<sp/>the<sp/>function<sp/>is<sp/>the<sp/>VectorDistance<sp/>object.<sp/>The<sp/>rest</highlight></codeline>
-<codeline lineno="208"><highlight class="comment"><sp/>*<sp/>are<sp/>passed<sp/>in<sp/>as<sp/>is.<sp/>The<sp/>object<sp/>also<sp/>dispatches<sp/>to<sp/>the<sp/>current<sp/>SIMD<sp/>level.</highlight></codeline>
-<codeline lineno="209"><highlight class="comment"><sp/>**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="210"><highlight class="normal"></highlight></codeline>
-<codeline lineno="211"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Consumer,<sp/></highlight><highlight class="keyword">class</highlight><highlight class="normal">...<sp/>Types&gt;</highlight></codeline>
-<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Consumer::T<sp/>dispatch_VectorDistance(</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric,</highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metric_arg,</highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Consumer&amp;<sp/>consumer,</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Types...<sp/>args)<sp/>{</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/>*<sp/>Dispatching<sp/>function<sp/>that<sp/>takes<sp/>a<sp/>lambda<sp/>directly.</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/>*<sp/>The<sp/>lambda<sp/>should<sp/>be<sp/>templated<sp/>on<sp/>VectorDistance,<sp/>eg.:</highlight></codeline>
+<codeline lineno="205"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="206"><highlight class="comment"><sp/>*<sp/><sp/><sp/>auto<sp/>result<sp/>=<sp/>with_VectorDistance(</highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>metric,<sp/>metric_arg,<sp/>[&amp;]&lt;class<sp/>VD&gt;(VD<sp/>vd)<sp/>{</highlight></codeline>
+<codeline lineno="208"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>vd(x,<sp/>y);</highlight></codeline>
+<codeline lineno="209"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="210"><highlight class="comment"><sp/>**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>with_VectorDistance(</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>metric_arg,</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
 <codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>dispatch_metric<sp/>=<sp/>[&amp;]&lt;<ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>mt&gt;()<sp/>{</highlight></codeline>
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>call<sp/>=<sp/>[&amp;]&lt;SIMDLevel<sp/>level&gt;()<sp/>{</highlight></codeline>
 <codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1VectorDistance" kindref="compound">VectorDistance&lt;mt, level&gt;</ref><sp/>vd<sp/>=<sp/>{d,<sp/>metric_arg};</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>consumer.template<sp/>f&lt;VectorDistance&lt;mt,<sp/>level&gt;&gt;(vd,<sp/>args...);</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>action(vd);</highlight></codeline>
 <codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="223"><highlight class="normal"></highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>has_simd<sp/>=<sp/>mt<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref><sp/>||</highlight></codeline>

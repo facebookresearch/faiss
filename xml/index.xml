@@ -11792,7 +11792,7 @@
     <member refid="namespacefaiss_1ade54b858872b6b91f4b3c75be55e7dc7" kind="function"><name>fvec_madd_dispatch</name></member>
     <member refid="namespacefaiss_1a196017a664685e3c7bef0dabf2419f5a" kind="function"><name>fvec_madd_and_argmin_dispatch</name></member>
     <member refid="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
-    <member refid="namespacefaiss_1af795517ea8f2270421341a93eb528c52" kind="function"><name>dispatch_VectorDistance</name></member>
+    <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a48139e7f38831a4333ca6bf1fb6be650" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" kind="function"><name>get_extra_distance_computer</name></member>
