@@ -185,28 +185,16 @@ struct IVFFlatScanner : InvertedListScanner {
     }
 };
 
-struct Run_get_InvertedListScanner {
-    using T = InvertedListScanner*;
-
-    template <class VD>
-    InvertedListScanner* f(
-            VD& vd,
-            const IndexIVFFlat* ivf,
-            bool store_pairs,
-            const IDSelector* sel) {
-        return new IVFFlatScanner<VD>(vd, store_pairs, sel);
-    }
-};
-
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFFlat::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    Run_get_InvertedListScanner run;
-    return dispatch_VectorDistance(
-            d, metric_type, metric_arg, run, this, store_pairs, sel);
+    return with_VectorDistance(
+            d, metric_type, metric_arg, [&](auto vd) -> InvertedListScanner* {
+                return new IVFFlatScanner<decltype(vd)>(vd, store_pairs, sel);
+            });
 }
 
 void IndexIVFFlat::reconstruct_from_offset(
