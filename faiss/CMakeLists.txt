@@ -14,6 +14,10 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   utils/simd_impl/distances_avx512.cpp
 )
+set(FAISS_SIMD_AVX512_SPR_SRC
+  utils/simd_impl/distances_avx512_spr.cpp
+  utils/simd_impl/partitioning_avx512_spr.cpp
+)
 set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/distances_aarch64.cpp
 )
@@ -22,7 +26,7 @@ set(FAISS_SIMD_SVE_SRC
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
-  set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 else()
@@ -283,6 +287,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/simd_impl/partitioning_avx512_spr.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
@@ -360,7 +365,7 @@ endif()
 if(NOT WIN32)
   # All modern CPUs support F, CD, VL, DQ, BW extensions.
   # Ref: https://en.wikipedia.org/wiki/AVX512
-  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
+  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx -mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
 else()
   target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
@@ -376,14 +381,14 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mbmi2 -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vbmi2 -mpopcnt>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
-target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
-target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
+target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -425,19 +430,26 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DD)
     # Architecture-specific SIMD definitions for Dynamic Dispatch
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
-      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
       # Baseline flags for common files (prevents auto-vectorization)
       target_compile_options(faiss PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4 -mno-avx -mno-avx2>)
       # Per-file SIMD flags
+      # Note: -mavx must be explicit because baseline sets -mno-avx which
+      # overrides the implicit -mavx from higher ISA flags like -mavx512f.
       set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+        PROPERTIES COMPILE_OPTIONS "-mavx;-mavx2;-mfma;-mf16c;-mpopcnt"
       )
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+          "-mavx;-mavx2;-mfma;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+      )
+      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx;-mavx2;-mfma;-mbmi2;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vbmi2;-mpopcnt"
       )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
