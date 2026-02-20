@@ -7,6 +7,8 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
+#include <memory>
+
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -160,7 +162,7 @@ void BlockInvertedListsIOHook::write(const InvertedLists* ils_in, IOWriter* f)
 
 InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         const {
-    BlockInvertedLists* il = new BlockInvertedLists();
+    auto il = std::make_unique<BlockInvertedLists>();
     READ1(il->nlist);
     READ1(il->code_size);
     READ1(il->n_per_block);
@@ -174,7 +176,7 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         READVECTOR(il->codes[i]);
     }
 
-    return il;
+    return il.release();
 }
 
 } // namespace faiss
