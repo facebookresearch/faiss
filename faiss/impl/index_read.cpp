@@ -476,6 +476,7 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READ1(aq.d);
     READ1(aq.M);
     READVECTOR(aq.nbits);
+    FAISS_CHECK_RANGE(aq.nbits.size(), aq.M, aq.M + 1);
     READ1(aq.is_trained);
     READVECTOR(aq.codebooks);
     FAISS_THROW_IF_NOT_FMT(
