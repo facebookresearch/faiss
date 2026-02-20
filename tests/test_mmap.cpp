@@ -114,8 +114,8 @@ TEST(TestMmap, mmap_flatcodes) {
     }
 
     // create a mmap index
-    std::unique_ptr<faiss::Index> index1mm(
-            faiss::read_index(tmpname.c_str(), faiss::IO_FLAG_MMAP_IFC));
+    auto index1mm =
+            faiss::read_index_up(tmpname.c_str(), faiss::IO_FLAG_MMAP_IFC);
 
     ASSERT_NE(index1mm, nullptr);
 
@@ -221,8 +221,8 @@ TEST(TestMmap, mmap_binary_flatcodes) {
     }
 
     // create a mmap index
-    std::unique_ptr<faiss::IndexBinary> index1mm(
-            faiss::read_index_binary(tmpname.c_str(), faiss::IO_FLAG_MMAP_IFC));
+    auto index1mm = faiss::read_index_binary_up(
+            tmpname.c_str(), faiss::IO_FLAG_MMAP_IFC);
 
     ASSERT_NE(index1mm, nullptr);
 
