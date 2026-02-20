@@ -565,13 +565,16 @@ void accumulate_q_4step(
         const uint8_t* codes,
         const uint8_t* LUT0,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride = 0) {
     constexpr int Q1 = QBS & 15;
     constexpr int Q2 = (QBS >> 4) & 15;
     constexpr int Q3 = (QBS >> 8) & 15;
     constexpr int Q4 = (QBS >> 12) & 15;
     constexpr int SQ = Q1 + Q2 + Q3 + Q4;
 
+    const size_t stride =
+            block_stride > 0 ? block_stride : (size_t)(32 * nsq / 2);
     for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         FixedStorageHandler<SQ, 2> res2;
         const uint8_t* LUT = LUT0;
@@ -593,7 +596,7 @@ void accumulate_q_4step(
         }
         res.set_block_origin(0, j0);
         res2.to_other_handler(res);
-        codes += 32 * nsq / 2;
+        codes += stride;
     }
 }
 
@@ -604,11 +607,15 @@ void kernel_accumulate_block_loop(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride = 0) {
+    const size_t stride =
+            block_stride > 0 ? block_stride : (size_t)(32 * nsq / 2);
     for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         res.set_block_origin(0, j0);
         kernel_accumulate_block<NQ, ResultHandler>(
-                nsq, codes + j0 * nsq / 2, LUT, res, scaler);
+                nsq, codes, LUT, res, scaler);
+        codes += stride;
     }
 }
 
@@ -621,14 +628,15 @@ void accumulate(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride = 0) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(LUT));
 
-#define DISPATCH(NQ)                                     \
-    case NQ:                                             \
-        kernel_accumulate_block_loop<NQ, ResultHandler>( \
-                ntotal2, nsq, codes, LUT, res, scaler);  \
+#define DISPATCH(NQ)                                                  \
+    case NQ:                                                          \
+        kernel_accumulate_block_loop<NQ, ResultHandler>(              \
+                ntotal2, nsq, codes, LUT, res, scaler, block_stride); \
         return
 
     switch (nq) {
@@ -650,16 +658,18 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
         const uint8_t* codes,
         const uint8_t* LUT0,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride = 0) {
     assert(nsq % 2 == 0);
     assert(is_aligned_pointer(codes));
     assert(is_aligned_pointer(LUT0));
 
     // try out optimized versions
     switch (qbs) {
-#define DISPATCH(QBS)                                                    \
-    case QBS:                                                            \
-        accumulate_q_4step<QBS>(ntotal2, nsq, codes, LUT0, res, scaler); \
+#define DISPATCH(QBS)                                                  \
+    case QBS:                                                          \
+        accumulate_q_4step<QBS>(                                       \
+                ntotal2, nsq, codes, LUT0, res, scaler, block_stride); \
         return;
         DISPATCH(0x3333); // 12
         DISPATCH(0x2333); // 11
@@ -688,6 +698,8 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
     }
 
     // default implementation where qbs is not known at compile time
+    const size_t stride =
+            block_stride > 0 ? block_stride : (size_t)(32 * nsq / 2);
 
     for (size_t j0 = 0; j0 < ntotal2; j0 += 32) {
         const uint8_t* LUT = LUT0;
@@ -714,7 +726,7 @@ void pq4_accumulate_loop_qbs_fixed_scaler(
             i0 += nq;
             LUT += nq * nsq * 16;
         }
-        codes += 32 * nsq / 2;
+        codes += stride;
     }
 }
 
@@ -726,14 +738,15 @@ struct Run_pq4_accumulate_loop_qbs {
            int nsq,
            const uint8_t* codes,
            const uint8_t* LUT,
-           const NormTableScaler* scaler) {
+           const NormTableScaler* scaler,
+           size_t block_stride) {
         if (scaler) {
             pq4_accumulate_loop_qbs_fixed_scaler(
-                    qbs, nb, nsq, codes, LUT, res, *scaler);
+                    qbs, nb, nsq, codes, LUT, res, *scaler, block_stride);
         } else {
             DummyScaler dummy;
             pq4_accumulate_loop_qbs_fixed_scaler(
-                    qbs, nb, nsq, codes, LUT, res, dummy);
+                    qbs, nb, nsq, codes, LUT, res, dummy, block_stride);
         }
     }
 };
@@ -747,9 +760,11 @@ void pq4_accumulate_loop_qbs(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler) {
+        const NormTableScaler* scaler,
+        size_t block_stride) {
     Run_pq4_accumulate_loop_qbs consumer;
-    dispatch_SIMDResultHandler(res, consumer, qbs, nb, nsq, codes, LUT, scaler);
+    dispatch_SIMDResultHandler(
+            res, consumer, qbs, nb, nsq, codes, LUT, scaler, block_stride);
 }
 
 /***************************************************************

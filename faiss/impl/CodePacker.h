@@ -22,6 +22,10 @@ struct CodePacker {
     size_t nvec;       // number of vectors per block
     size_t block_size; // size of one block in bytes (>= code_size * nvec)
 
+    CodePacker() = default;
+    CodePacker(const CodePacker&) = default;
+    CodePacker& operator=(const CodePacker&) = default;
+
     // pack a single code to a block
     virtual void pack_1(
             const uint8_t*
@@ -52,12 +56,16 @@ struct CodePacker {
                                 // * code_size)
     ) const;
 
+    virtual CodePacker* clone() const = 0;
+
     virtual ~CodePacker() {}
 };
 
 /** Trivial code packer where codes are stored one by one */
 struct CodePackerFlat : CodePacker {
     explicit CodePackerFlat(size_t code_size);
+
+    CodePacker* clone() const final;
 
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
