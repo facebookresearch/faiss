@@ -59,9 +59,9 @@ struct IndexSVSIVF : Index {
     /// Reranking multiplier for compressed datasets
     float k_reorder = 1.0f;
 
-    /// Number of threads for build/search operations
+    /// Number of threads for inter-query parallelism (0 = use all available)
     size_t num_threads = 0;
-    /// Number of intra-query threads
+    /// Number of threads for intra-query parallelism (cluster exploration)
     size_t intra_query_threads = 1;
 
     SVSStorageKind storage_kind;
