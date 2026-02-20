@@ -18,9 +18,10 @@ namespace faiss {
 IndexLattice::IndexLattice(idx_t d, int nsq, int scale_nbit, int r2)
         : IndexFlatCodes(0, d, METRIC_L2),
           nsq(nsq),
-          dsq(d / nsq),
+          dsq(nsq > 0 ? d / nsq : 0),
           zn_sphere_codec(dsq, r2),
           scale_nbit(scale_nbit) {
+    FAISS_THROW_IF_NOT(nsq > 0);
     FAISS_THROW_IF_NOT(d % nsq == 0);
 
     lattice_nbit = 0;
