@@ -332,21 +332,44 @@ def handle_Index(the_class):
         self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
         return labels
 
-    def replacement_train(self, x, numeric_type = faiss.Float32):
+    def replacement_train(self, x, *, numeric_type=faiss.Float32, xq_train=None):
         """Trains the index on a representative set of vectors.
         The index must be trained before vectors can be added to it.
+        Optionally accepts numeric_type to specify the type of input vectors.
+        Optionally accepts a set of training query vectors for out-of-distribution training.
 
         Parameters
         ----------
         x : array_like
             Query vectors, shape (n, d) where d is appropriate for the index.
             `dtype` must be float32.
+        numeric_type : type
+            Numeric type of the input vectors.
+        xq_train : array_like, optional
+            Training query vectors, shape (n_train_q, d) where d is appropriate for the index.
+            `dtype` must be float32.
         """
+        # Prepare training data
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+
+        # Prepare training queries if provided
+        n_train_q, train_q = 0, None
+        if xq_train is not None:
+            if numeric_type != faiss.Float32:
+                raise TypeError(
+                    "xq_train is only supported for numeric_type faiss.Float32"
+                )
+            n_train_q, d_train = xq_train.shape
+            assert d_train == self.d
+            train_q = swig_ptr(
+                np.ascontiguousarray(xq_train, dtype=_numeric_to_str(numeric_type))
+            )
+
+        # Dispatch to train_c / train_ex
         if numeric_type == faiss.Float32:
-            self.train_c(n, swig_ptr(x))
+            self.train_c(n, swig_ptr(x), n_train_q, train_q)
         else:
             self.train_ex(n, swig_ptr(x), numeric_type)
 
