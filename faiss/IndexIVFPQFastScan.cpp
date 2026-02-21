@@ -17,6 +17,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
 #include <faiss/utils/simdlib.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -307,6 +308,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
     const IndexIVFPQFastScan& index;
     AlignedTable<uint8_t> dis_tables;
     AlignedTable<uint16_t> biases;
+    std::vector<float> residual;
     std::array<float, 2> normalizers{};
     const float* xi = nullptr;
 
@@ -316,6 +318,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
             const IDSelector* sel)
             : InvertedListScanner(store_pairs, sel), index(index) {
         this->keep_max = is_similarity_metric(index.metric_type);
+        residual.resize(index.d);
     }
 
     void set_query(const float* query) override {
@@ -332,12 +335,40 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         FastScanDistancePostProcessing empty_context{};
         index.compute_LUT_uint8(
                 1, xi, cq, dis_tables, biases, &normalizers[0], empty_context);
+        // used in distance_to_code
+        index.quantizer->compute_residual(
+                this->xi, residual.data(), this->list_no);
     }
 
-    float distance_to_code(const uint8_t* /* code */) const override {
-        // It's not really possible to implement a distance_to_code since codes
-        // for 32 database vectors are intermixed.
-        FAISS_THROW_MSG("not implemented");
+    float distance_to_code(const uint8_t* code) const override {
+        // directly use the PQ tables to compute the distance
+        const ProductQuantizer& pq = index.pq;
+        // when by_residual, codes are residuals so compare against query
+        // residual; otherwise codes are raw vectors so compare against raw
+        // query
+        const float* x = index.by_residual ? residual.data() : this->xi;
+        float accu = 0;
+        // implemented for all vector distances, although only L2 and IP are
+        // suppored by FastScan
+        with_VectorDistance(pq.dsub, index.metric_type, 0.0, [&](auto vd) {
+            int m;
+            for (m = 0; m + 1 < pq.M; m += 2) {
+                const float* cent;
+                uint8_t c = *code++;
+                cent = pq.get_centroids(m, c & 15);
+                accu += vd(cent, x);
+                x += pq.dsub;
+                cent = pq.get_centroids(m + 1, c >> 4);
+                accu += vd(cent, x);
+                x += pq.dsub;
+            }
+            if (m < pq.M) { // leftover
+                uint8_t c = *code++;
+                const float* cent = pq.get_centroids(m, c & 15);
+                accu += vd(cent, x);
+            }
+        });
+        return accu;
     }
 
     // Based on IVFFastScan search_implem_10, since it also deals with 1 query
