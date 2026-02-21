@@ -906,6 +906,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         size_t n_levels, batch_size;
         READ1(d);
         READ1(n_levels);
+        FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
         std::unique_ptr<IndexFlatPanorama> idxp;
         if (h == fourcc("IxFP")) {
