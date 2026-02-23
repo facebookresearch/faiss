@@ -21,7 +21,7 @@
 #include <faiss/impl/IDSelector.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
+#include <faiss/impl/expanded_scanners.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 
@@ -147,7 +147,7 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 
 namespace {
 
-template <typename VectorDistance, bool use_sel>
+template <typename VectorDistance>
 struct IVFFlatScanner : InvertedListScanner {
     VectorDistance vd;
     using C = typename VectorDistance::C;
@@ -174,22 +174,14 @@ struct IVFFlatScanner : InvertedListScanner {
         const float* yj = (float*)code;
         return vd(xi, yj);
     }
-};
 
-struct Run_get_InvertedListScanner {
-    using T = InvertedListScanner*;
-
-    template <class VD>
-    InvertedListScanner* f(
-            VD& vd,
-            const IndexIVFFlat* ivf,
-            bool store_pairs,
-            const IDSelector* sel) {
-        if (sel) {
-            return new IVFFlatScanner<VD, true>(vd, store_pairs, sel);
-        } else {
-            return new IVFFlatScanner<VD, false>(vd, store_pairs, sel);
-        }
+    // redefining the scan_codes allows to inline the distance_to_code
+    size_t scan_codes(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const {
+        return run_scan_codes_fix_C<C>(*this, list_size, codes, ids, handler);
     }
 };
 
@@ -199,9 +191,10 @@ InvertedListScanner* IndexIVFFlat::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    Run_get_InvertedListScanner run;
-    return dispatch_VectorDistance(
-            d, metric_type, metric_arg, run, this, store_pairs, sel);
+    return with_VectorDistance(
+            d, metric_type, metric_arg, [&](auto vd) -> InvertedListScanner* {
+                return new IVFFlatScanner<decltype(vd)>(vd, store_pairs, sel);
+            });
 }
 
 void IndexIVFFlat::reconstruct_from_offset(

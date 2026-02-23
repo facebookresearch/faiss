@@ -489,10 +489,10 @@ class TestIOFlatMMap(unittest.TestCase):
         platform.system() not in ["Windows", "Linux"],
         "supported OSes only"
     )
-    def test_mmap(self): 
+    def test_mmap(self):
         xt, xb, xq = get_dataset_2(32, 0, 100, 50)
         index = faiss.index_factory(32, "SQfp16", faiss.METRIC_L2)
-        # does not need training 
+        # does not need training
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
 
@@ -510,7 +510,7 @@ class TestIOFlatMMap(unittest.TestCase):
             del index2
 
             if os.path.exists(fname):
-                # skip the error. On Windows, index2 holds the handle file, 
+                # skip the error. On Windows, index2 holds the handle file,
                 #   so it cannot be ensured that the file can be deleted
                 #   unless index2 is collected by a GC
                 try:
@@ -532,3 +532,67 @@ class TestIOFlatMMap(unittest.TestCase):
         Dnew, Inew = index2.search(xq, 10)
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_equal(Dref, Dnew)
+
+
+class TestIORoundTrip(unittest.TestCase):
+    """Round-trip serialize/deserialize tests covering index types
+    and sub-objects not covered by other Python tests."""
+
+    def test_index_pq(self):
+        """IndexPQ (full index, not just the PQ component)."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        index = faiss.index_factory(d, "PQ4np")
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 5)
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(xq, 5)
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_equal(Dref, D2)
+
+    def test_index_sq8(self):
+        """IndexScalarQuantizer with SQ8."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        index = faiss.index_factory(d, "SQ8")
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 5)
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(xq, 5)
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_equal(Dref, D2)
+
+    def test_vector_transform_pca(self):
+        """PCAMatrix VectorTransform with output fidelity check."""
+        xt, _, xq = get_dataset_2(d, nt, nb, nq)
+        pca = faiss.PCAMatrix(d, 16)
+        pca.train(xt)
+
+        writer = faiss.VectorIOWriter()
+        faiss.write_VectorTransform(pca, writer)
+
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(
+            np.array(faiss.vector_to_array(writer.data)), reader.data)
+        pca2 = faiss.read_VectorTransform(reader)
+
+        self.assertEqual(pca2.d_in, d)
+        self.assertEqual(pca2.d_out, 16)
+
+        ref = pca.apply(xq)
+        out = pca2.apply(xq)
+        np.testing.assert_array_equal(ref, out)
+
+    def test_null_index(self):
+        """Serializing None / null index round-trips to None."""
+        writer = faiss.VectorIOWriter()
+        faiss.write_index(None, writer)
+
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(
+            np.array(faiss.vector_to_array(writer.data)), reader.data)
+        index2 = faiss.read_index(reader)
+
+        self.assertIsNone(index2)

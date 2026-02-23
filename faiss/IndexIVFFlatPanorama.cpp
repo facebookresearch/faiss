@@ -20,7 +20,6 @@
 #include <faiss/impl/ResultHandler.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 
@@ -144,41 +143,28 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     }
 };
 
-struct Run_get_InvertedListScanner {
-    using T = InvertedListScanner*;
-
-    template <class VD>
-    InvertedListScanner* f(
-            VD& vd,
-            const IndexIVFFlatPanorama* ivf,
-            bool store_pairs,
-            const IDSelector* sel) {
-        // Safely cast to ArrayInvertedListsPanorama to access cumulative sums.
-        const ArrayInvertedListsPanorama* storage =
-                dynamic_cast<const ArrayInvertedListsPanorama*>(ivf->invlists);
-        FAISS_THROW_IF_NOT_MSG(
-                storage,
-                "IndexIVFFlatPanorama requires ArrayInvertedListsPanorama");
-
-        if (sel) {
-            return new IVFFlatScannerPanorama<VD, true>(
-                    vd, storage, store_pairs, sel);
-        } else {
-            return new IVFFlatScannerPanorama<VD, false>(
-                    vd, storage, store_pairs, sel);
-        }
-    }
-};
-
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFFlatPanorama::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    Run_get_InvertedListScanner run;
-    return dispatch_VectorDistance(
-            d, metric_type, metric_arg, run, this, store_pairs, sel);
+    const ArrayInvertedListsPanorama* storage =
+            dynamic_cast<const ArrayInvertedListsPanorama*>(invlists);
+    FAISS_THROW_IF_NOT_MSG(
+            storage,
+            "IndexIVFFlatPanorama requires ArrayInvertedListsPanorama");
+
+    return with_VectorDistance(
+            d, metric_type, metric_arg, [&](auto vd) -> InvertedListScanner* {
+                if (sel) {
+                    return new IVFFlatScannerPanorama<decltype(vd), true>(
+                            vd, storage, store_pairs, sel);
+                } else {
+                    return new IVFFlatScannerPanorama<decltype(vd), false>(
+                            vd, storage, store_pairs, sel);
+                }
+            });
 }
 
 void IndexIVFFlatPanorama::reconstruct_from_offset(

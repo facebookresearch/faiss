@@ -45,29 +45,21 @@ jobs:
           echo "Files created by CMake build:"
           ls -lh ${{ env.SHARED_DATA_DIR }}
 
-      # Step 2: Install conda faiss-cpu and read files
-      - name: Clean cmake-built packages
+      # Step 2: Install conda faiss-cpu in a clean environment and read files
+      - name: Create conda read environment with faiss-cpu
         shell: bash
         run: |
           eval "$(conda shell.bash hook)"
-          conda activate
-          # Remove packages that conflict with faiss-cpu
-          conda remove -y numpy scipy pytest gflags swig cmake make mkl mkl-devel || true
-
-      - name: Install faiss-cpu from pytorch channel
-        shell: bash
-        run: |
-          eval "$(conda shell.bash hook)"
-          conda activate
-          conda list
-          conda install -y -c pytorch faiss-cpu=1.13.2
+          conda create -n faiss_conda_read -y python=3.11
+          conda activate faiss_conda_read
+          conda install -y -c pytorch -c conda-forge faiss-cpu=1.13.2
           conda list
 
       - name: Run Conda reader (read Faiss index and verify)
         shell: bash
         run: |
           eval "$(conda shell.bash hook)"
-          conda activate
+          conda activate faiss_conda_read
           python tests/index_io_backward_compatibility/conda_reader.py ${{ env.SHARED_DATA_DIR }}
 
       - name: Upload artifacts from cmake->conda test
@@ -90,20 +82,14 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      # Step 1: Install conda faiss-cpu package and write files
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          python-version: '3.11'
-          miniforge-version: latest
-
-      - name: Install faiss-cpu from pytorch channel
+      # Step 1: Install conda faiss-cpu in a clean environment and write files
+      - name: Create conda write environment with faiss-cpu
         shell: bash
         run: |
           eval "$(conda shell.bash hook)"
-          conda activate
-          # Install pre-built faiss-cpu
-          conda install -y -c pytorch faiss-cpu=1.13.2
+          conda create -n faiss_conda_write -y python=3.11
+          conda activate faiss_conda_write
+          conda install -y -c pytorch -c conda-forge faiss-cpu=1.13.2
           conda list
 
       - name: Create shared data directory
@@ -116,7 +102,7 @@ jobs:
         shell: bash
         run: |
           eval "$(conda shell.bash hook)"
-          conda activate
+          conda activate faiss_conda_write
           python tests/index_io_backward_compatibility/conda_writer.py ${{ env.SHARED_DATA_DIR }}
 
       - name: Verify files were written
@@ -125,19 +111,10 @@ jobs:
           echo "Files created by Conda build:"
           ls -lh ${{ env.SHARED_DATA_DIR }}
 
-      # Step 2: Rebuild with CMake and read files
-      - name: Clean conda artifacts
-        shell: bash
-        run: |
-          # Uninstall conda-built faiss to avoid conflicts
-          eval "$(conda shell.bash hook)"
-          conda activate
-          conda uninstall -y faiss-cpu || true
-
+      # Step 2: Build with CMake and read files
       - name: Build with CMake
         uses: ./.github/actions/build_cmake
         with:
-          setup_conda: 'false'
           upload_artifacts: 'false'
 
       - name: Run CMake reader (read Faiss index and verify)

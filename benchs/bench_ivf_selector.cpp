@@ -55,7 +55,7 @@ int main() {
         faiss::write_index(index.get(), stored_name.c_str());
     } else {
         printf("Read %s\n", stored_name.c_str());
-        index.reset(faiss::read_index(stored_name.c_str()));
+        index = faiss::read_index_up(stored_name.c_str());
     }
     faiss::IndexIVF* index_ivf = static_cast<faiss::IndexIVF*>(index.get());
     index->verbose = true;

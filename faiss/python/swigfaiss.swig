@@ -153,6 +153,11 @@ typedef uint64_t size_t;
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
 
+// For DD builds, we need the function declaration.
+// Note: We always declare it here for the C++ compiler since faiss_dd exports it.
+// The SWIG interface section below controls whether Python can call it.
+#include <faiss/utils/simd_levels.h>
+
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -161,6 +166,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
@@ -479,6 +485,8 @@ void gpu_sync_all_devices()
 %template(CombinerRangeKNNfloat) faiss::CombinerRangeKNN<float>;
 %template(CombinerRangeKNNint16) faiss::CombinerRangeKNN<int16_t>;
 
+%include  <faiss/utils/simd_levels.h>
+
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
@@ -651,6 +659,7 @@ struct faiss::simd16uint16 {};
 %ignore faiss::InterruptCallback::lock;
 
 %include <faiss/impl/AuxIndexStructures.h>
+%include <faiss/impl/VisitedTable.h>
 %include <faiss/impl/IDSelector.h>
 
 %include  <faiss/IndexIDMap.h>
@@ -766,6 +775,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlatIP )
+    DOWNCAST ( IndexFlatIPPanorama )
     DOWNCAST ( IndexFlatL2 )
     DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )
@@ -930,6 +940,14 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
     return aq;
 }
 %}
+
+// SWIG cannot handle std::unique_ptr return types; the raw-pointer
+// versions (already annotated with %newobject) are sufficient.
+%ignore faiss::read_index_up;
+%ignore faiss::read_index_binary_up;
+%ignore faiss::read_VectorTransform_up;
+%ignore faiss::read_ProductQuantizer_up;
+%ignore faiss::read_InvertedLists_up;
 
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>

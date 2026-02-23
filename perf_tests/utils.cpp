@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/perf_tests/utils.h>
+#include "utils.h"
 namespace faiss::perf_tests {
 std::map<std::string, faiss::ScalarQuantizer::QuantizerType> sq_types() {
     static std::map<std::string, faiss::ScalarQuantizer::QuantizerType>

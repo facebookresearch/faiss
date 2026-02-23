@@ -27,6 +27,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
@@ -142,7 +143,7 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                VisitedTable vt(ntotal);
+                VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
@@ -265,7 +266,7 @@ void hnsw_search(
 
 #pragma omp parallel if (i1 - i0 > 1)
         {
-            VisitedTable vt(index->ntotal);
+            VisitedTable vt(index->ntotal, hnsw.use_visited_hashset);
             typename BlockResultHandler::SingleResultHandler res(bres);
 
             std::unique_ptr<DistanceComputer> dis(
@@ -436,7 +437,7 @@ void IndexHNSW::search_level_0(
         std::unique_ptr<DistanceComputer> qdis(
                 storage_distance_computer(storage));
         HNSWStats search_stats;
-        VisitedTable vt(ntotal);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
         RH::SingleResultHandler res(bres);
 
 #pragma omp for
@@ -524,7 +525,7 @@ void IndexHNSW::init_level_0_from_entry_points(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
@@ -624,7 +625,7 @@ void IndexHNSW::link_singletons() {
 
     std::vector<float> recons(singletons.size() * d);
     for (int i = 0; i < singletons.size(); i++) {
-        FAISS_ASSERT(!"not implemented");
+        FAISS_ASSERT(false); // not implemented
     }
 }
 
@@ -875,7 +876,8 @@ void IndexHNSW2Level::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            // visited table (not hash set) for tri-state flags.
+            VisitedTable vt(ntotal, /*use_hashset=*/false);
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
 
