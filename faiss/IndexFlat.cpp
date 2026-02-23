@@ -906,13 +906,13 @@ void IndexFlatPanorama::search_subset(
                                 exact_distance -= 2 * dot_product;
                             }
 
-                            float cum_sum = cum_sums[cum_sum_offset];
+                            float level_cum_sum = cum_sums[cum_sum_offset];
                             float cauchy_schwarz_bound;
                             if constexpr (is_sim) {
-                                cauchy_schwarz_bound =
-                                        -cum_sum * query_cum_norms[level + 1];
+                                cauchy_schwarz_bound = -level_cum_sum *
+                                        query_cum_norms[level + 1];
                             } else {
-                                cauchy_schwarz_bound = 2.0f * cum_sum *
+                                cauchy_schwarz_bound = 2.0f * level_cum_sum *
                                         query_cum_norms[level + 1];
                             }
                             float bound = exact_distance - cauchy_schwarz_bound;
