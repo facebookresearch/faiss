@@ -34,6 +34,8 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="7">
         <label>faiss/impl/FaissAssert.h</label>

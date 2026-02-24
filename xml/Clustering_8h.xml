@@ -41,6 +41,8 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
       </node>
       <node id="16">
         <label>faiss/impl/ClusteringInitialization.h</label>

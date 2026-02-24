@@ -518,11 +518,12 @@
         </briefdescription>
         <detaileddescription>
 <para>The metric space for vector comparison for Faiss indices and algorithms.</para>
-<para>Most algorithms support both inner product and L2, with the flat (brute-force) indices supporting additional metric types for vector comparison. </para>
+<para>Most algorithms support both inner product and L2, with the flat (brute-force) indices supporting additional metric types for vector comparison.</para>
+<para>NOTE: when adding or removing values, update <ref refid="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" kindref="member">metric_type_from_int()</ref> below. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="24" column="1" bodyfile="faiss/MetricType.h" bodystart="24" bodyend="44"/>
+        <location file="faiss/MetricType.h" line="28" column="1" bodyfile="faiss/MetricType.h" bodystart="28" bodyend="48"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdb" prot="public" static="no" strong="no">
         <type></type>
@@ -829,7 +830,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="47" column="1" bodyfile="faiss/MetricType.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/MetricType.h" line="51" column="1" bodyfile="faiss/MetricType.h" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -4720,7 +4721,26 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="51" column="16" bodyfile="faiss/MetricType.h" bodystart="51" bodyend="54"/>
+        <location file="faiss/MetricType.h" line="55" column="16" bodyfile="faiss/MetricType.h" bodystart="55" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::metric_type_from_int</definition>
+        <argsstring>(int x)</argsstring>
+        <name>metric_type_from_int</name>
+        <qualifiedname>faiss::metric_type_from_int</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Convert an integer to MetricType with range validation. Throws <ref refid="classfaiss_1_1FaissException" kindref="compound">FaissException</ref> if the value is not a valid MetricType. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MetricType.h" line="62" column="19" bodyfile="faiss/MetricType.h" bodystart="62" bodyend="69"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::MetricType</type>

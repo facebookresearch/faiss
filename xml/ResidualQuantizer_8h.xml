@@ -62,6 +62,8 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
       <node id="19">
         <label>faiss/impl/AdditiveQuantizer.h</label>
