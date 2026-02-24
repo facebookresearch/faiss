@@ -57,14 +57,15 @@ ProductQuantizer::ProductQuantizer() : ProductQuantizer(0, 1, 0) {}
 
 void ProductQuantizer::set_derived_values() {
     // quite a few derived values
+    FAISS_THROW_IF_NOT_MSG(M > 0, "M must be > 0");
     FAISS_THROW_IF_NOT_MSG(
             d % M == 0,
             "The dimension of the vector (d) should be a multiple of the number of subquantizers (M)");
     dsub = d / M;
-    code_size = (nbits * M + 7) / 8;
     FAISS_THROW_IF_MSG(nbits > 24, "nbits larger than 24 is not practical.");
+    code_size = (nbits * M + 7) / 8;
     ksub = 1 << nbits;
-    centroids.resize(d * ksub);
+    centroids.resize(mul_no_overflow(d, (size_t)ksub, "PQ centroids"));
     verbose = false;
     train_type = Train_default;
 }

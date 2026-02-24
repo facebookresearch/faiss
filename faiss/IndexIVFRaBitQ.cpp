@@ -49,7 +49,7 @@ IndexIVFRaBitQ::IndexIVFRaBitQ() {
 void IndexIVFRaBitQ::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     rabitq.train(n, x);
 }
 
@@ -187,7 +187,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
+    void set_list(idx_t list_no, float /*coarse_dis*/) override {
         this->list_no = list_no;
 
         reconstructed_centroid.resize(ivf_rabitq.d);

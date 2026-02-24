@@ -18,6 +18,8 @@
 #include <queue>
 #include <unordered_set>
 
+#include <faiss/impl/FaissAssert.h>
+
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 
@@ -324,6 +326,12 @@ void EnumeratedVectors::find_nn(
  **********************************************************/
 
 ZnSphereSearch::ZnSphereSearch(int dim, int r2) : dimS(dim), r2(r2) {
+    FAISS_THROW_IF_NOT_MSG(
+            dim > 0 && dim <= 64, "ZnSphereSearch: dim must be in [1, 64]");
+    FAISS_THROW_IF_NOT_MSG(
+            r2 >= 0 && r2 <= 512,
+            "ZnSphereSearch: r2 must be in [0, 512] to avoid"
+            " excessive computation in sum_of_sq");
     voc = sum_of_sq(r2, int(ceil(sqrt(r2)) + 1), dim);
     natom = voc.size() / dim;
 }
@@ -491,14 +499,28 @@ void ZnSphereCodecRec::set_nv_cum(int ld, int r2t, int r2a, uint64_t cum) {
 
 ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2)
         : EnumeratedVectors(dim), r2(r2) {
+    FAISS_THROW_IF_NOT_MSG(
+            dim > 0 && r2 >= 0, "invalid ZnSphereCodecRec parameters");
     log2_dim = 0;
     while (dim > (1 << log2_dim)) {
         log2_dim++;
     }
     assert(dim == (1 << log2_dim) && "dimension must be a power of 2");
 
-    all_nv.resize((log2_dim + 1) * (r2 + 1));
-    all_nv_cum.resize((log2_dim + 1) * (r2 + 1) * (r2 + 1));
+    // Validate allocation sizes to avoid null pointer dereference on
+    // allocation failure. The cumulative table has O(r2^2) entries.
+    size_t nv_size = (size_t)(log2_dim + 1) * (r2 + 1);
+    size_t nv_cum_size = nv_size * (r2 + 1);
+    FAISS_THROW_IF_NOT_MSG(
+            nv_cum_size / (r2 + 1) == nv_size,
+            "ZnSphereCodecRec: allocation size overflow");
+    // Cap at ~1GB worth of uint64_t entries
+    FAISS_THROW_IF_NOT_MSG(
+            nv_cum_size <= (size_t(1) << 27),
+            "ZnSphereCodecRec: r2 too large, would require excessive memory");
+
+    all_nv.resize(nv_size);
+    all_nv_cum.resize(nv_cum_size);
 
     for (int r2a = 0; r2a <= r2; r2a++) {
         int r = int(sqrt(r2a));

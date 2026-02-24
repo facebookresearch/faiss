@@ -104,7 +104,7 @@ TEST(TestZeroCopy, zerocopy_flatcodes) {
 
     // create a zero-copy index
     faiss::ZeroCopyIOReader reader(buffer.data(), buffer.size());
-    std::unique_ptr<faiss::Index> index1zc(faiss::read_index(&reader));
+    auto index1zc = faiss::read_index_up(&reader);
 
     ASSERT_NE(index1zc, nullptr);
 
@@ -199,8 +199,7 @@ TEST(TestZeroCopy, zerocopy_binary_flatcodes) {
 
     // create a zero-copy index
     faiss::ZeroCopyIOReader reader(buffer.data(), buffer.size());
-    std::unique_ptr<faiss::IndexBinary> index1zc(
-            faiss::read_index_binary(&reader));
+    auto index1zc = faiss::read_index_binary_up(&reader);
 
     ASSERT_NE(index1zc, nullptr);
 

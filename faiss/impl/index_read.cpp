@@ -447,6 +447,8 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->d);
     READ1(pq->M);
     READ1(pq->nbits);
+    FAISS_THROW_IF_NOT_FMT(
+            pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
     pq->set_derived_values();
     READVECTOR(pq->centroids);
 }
@@ -455,6 +457,11 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
     READ1(rq.M);
     READVECTOR(rq.nbits);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.nbits.size() == rq.M,
+            "ResidualQuantizer nbits size %zd != M %zd",
+            rq.nbits.size(),
+            rq.M);
     READ1(rq.is_trained);
     READ1(rq.train_type);
     READ1(rq.max_beam_size);
@@ -471,6 +478,11 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READVECTOR(aq.nbits);
     READ1(aq.is_trained);
     READVECTOR(aq.codebooks);
+    FAISS_THROW_IF_NOT_FMT(
+            aq.nbits.size() == aq.M,
+            "AdditiveQuantizer nbits size %zd != M %zd",
+            aq.nbits.size(),
+            aq.M);
     READ1(aq.search_type);
     READ1(aq.norm_min);
     READ1(aq.norm_max);
@@ -894,6 +906,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         size_t n_levels, batch_size;
         READ1(d);
         READ1(n_levels);
+        FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
         std::unique_ptr<IndexFlatPanorama> idxp;
         if (h == fourcc("IxFP")) {
@@ -1190,6 +1203,15 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(nsq);
         READ1(scale_nbit);
         READ1(r2);
+        FAISS_THROW_IF_NOT_FMT(
+                nsq > 0, "invalid IndexLattice nsq %d (must be > 0)", nsq);
+        FAISS_THROW_IF_NOT_FMT(
+                d > 0 && d % nsq == 0,
+                "invalid IndexLattice d=%d, nsq=%d (d must be > 0 and divisible by nsq)",
+                d,
+                nsq);
+        FAISS_THROW_IF_NOT_FMT(
+                r2 >= 0, "invalid IndexLattice r2 %d (must be >= 0)", r2);
         auto idxl = std::make_unique<IndexLattice>(d, nsq, scale_nbit, r2);
         read_index_header(*idxl, f);
         READVECTOR(idxl->trained);

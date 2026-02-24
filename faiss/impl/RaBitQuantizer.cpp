@@ -64,7 +64,7 @@ size_t RaBitQuantizer::compute_code_size(size_t d, size_t num_bits) const {
     return base_size + ex_size;
 }
 
-void RaBitQuantizer::train(size_t n, const float* x) {
+void RaBitQuantizer::train(size_t /*n*/, const float* /*x*/) {
     // does nothing
 }
 
