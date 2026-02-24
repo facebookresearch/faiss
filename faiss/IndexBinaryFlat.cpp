@@ -18,7 +18,7 @@
 
 namespace faiss {
 
-IndexBinaryFlat::IndexBinaryFlat(idx_t d) : IndexBinary(d) {}
+IndexBinaryFlat::IndexBinaryFlat(idx_t d_) : IndexBinary(d_) {}
 
 void IndexBinaryFlat::add(idx_t n, const uint8_t* x) {
     xb.insert(xb.end(), x, x + n * code_size);

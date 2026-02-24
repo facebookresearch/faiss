@@ -27,8 +27,8 @@ namespace faiss {
  * IndexPQ implementation
  ********************************************************/
 
-IndexPQ::IndexPQ(int d, size_t M, size_t nbits, MetricType metric)
-        : IndexFlatCodes(0, d, metric), pq(d, M, nbits) {
+IndexPQ::IndexPQ(int d_in, size_t M, size_t nbits, MetricType metric)
+        : IndexFlatCodes(0, d_in, metric), pq(d_in, M, nbits) {
     is_trained = false;
     do_polysemous_training = false;
     polysemous_ht = nbits * M + 1;
@@ -98,7 +98,7 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
         PQDecoder codei(codes + i * code_size, pq.nbits);
         PQDecoder codej(codes + j * code_size, pq.nbits);
 
-        for (int l = 0; l < pq.M; l++) {
+        for (size_t l = 0; l < pq.M; l++) {
             accu += sdci[codei.decode() + (codej.decode() << codei.nbits)];
             sdci += uint64_t(1) << (2 * codei.nbits);
         }
@@ -206,12 +206,12 @@ void IndexPQ::search(
         if (!encode_signs) {
             pq.compute_codes(x, q_codes.get(), n);
         } else {
-            FAISS_THROW_IF_NOT(d == pq.nbits * pq.M);
+            FAISS_THROW_IF_NOT(static_cast<size_t>(d) == pq.nbits * pq.M);
             memset(q_codes.get(), 0, n * pq.code_size);
-            for (size_t i = 0; i < n; i++) {
+            for (idx_t i = 0; i < n; i++) {
                 const float* xi = x + i * d;
                 uint8_t* code = q_codes.get() + i * pq.code_size;
-                for (int j = 0; j < d; j++)
+                for (size_t j = 0; j < static_cast<size_t>(d); j++)
                     if (xi[j] > 0)
                         code[j >> 3] |= 1 << (j & 7);
             }
@@ -249,7 +249,7 @@ void IndexPQ::search(
             }
 
             // convert distances to floats
-            for (int i = 0; i < k * n; i++)
+            for (idx_t i = 0; i < k * n; i++)
                 distances[i] = idistances[i];
         }
 
@@ -275,9 +275,9 @@ size_t polysemous_inner_loop(
         float* heap_dis,
         int64_t* heap_ids,
         int ht) {
-    int M = index->pq.M;
-    int code_size = index->pq.code_size;
-    int ksub = index->pq.ksub;
+    size_t M = index->pq.M;
+    size_t code_size = index->pq.code_size;
+    size_t ksub = index->pq.ksub;
     size_t ntotal = index->ntotal;
 
     const uint8_t* b_code = index->codes.data();
@@ -286,7 +286,7 @@ size_t polysemous_inner_loop(
 
     HammingComputer hc(q_code, code_size);
 
-    for (int64_t bi = 0; bi < ntotal; bi++) {
+    for (int64_t bi = 0; bi < static_cast<int64_t>(ntotal); bi++) {
         int hd = hc.hamming(b_code);
 
         if (hd < ht) {
@@ -294,7 +294,7 @@ size_t polysemous_inner_loop(
 
             float dis = 0;
             const float* dis_table = dis_table_qi;
-            for (int m = 0; m < M; m++) {
+            for (size_t m = 0; m < M; m++) {
                 dis += dis_table[b_code[m]];
                 dis_table += ksub;
             }
@@ -484,7 +484,7 @@ void IndexPQ::hamming_distance_histogram(
         for (idx_t q0 = 0; q0 < n; q0 += bs) {
             // printf ("dis stats: %zd/%zd\n", q0, n);
             size_t q1 = q0 + bs;
-            if (q1 > n)
+            if (q1 > static_cast<size_t>(n))
                 q1 = n;
 
             hammings(
@@ -517,7 +517,7 @@ struct PreSortedArray {
     const T* x;
     int N;
 
-    explicit PreSortedArray(int N) : N(N) {}
+    explicit PreSortedArray(int N_in) : N(N_in) {}
     void init(const T* x_2) {
         this->x = x_2;
     }
@@ -554,9 +554,9 @@ struct SortedArray {
     int N;
     std::vector<int> perm;
 
-    explicit SortedArray(int N) {
-        this->N = N;
-        perm.resize(N);
+    explicit SortedArray(int N_in) {
+        this->N = N_in;
+        perm.resize(N_in);
     }
 
     void init(const T* x_2) {
@@ -633,10 +633,10 @@ struct SemiSortedArray {
 
     int initial_k, k_factor;
 
-    explicit SemiSortedArray(int N) {
-        this->N = N;
-        perm.resize(N);
-        perm.resize(N);
+    explicit SemiSortedArray(int N_in) {
+        this->N = N_in;
+        perm.resize(N_in);
+        perm.resize(N_in);
         initial_k = 3;
         k_factor = 4;
     }
@@ -733,9 +733,10 @@ struct MinSumK {
     // that were seen before.
     std::vector<uint8_t> seen;
 
-    MinSumK(int K, int M, int nbit, int N) : K(K), M(M), nbit(nbit), N(N) {
-        heap_capacity = K * M;
-        assert(N <= (1 << nbit));
+    MinSumK(int K_in, int M_in, int nbit_in, int N_in)
+            : K(K_in), M(M_in), nbit(nbit_in), N(N_in) {
+        heap_capacity = K_in * M_in;
+        assert(N_in <= (1 << nbit_in));
 
         // we'll do k steps, each step pushes at most M vals
         bh_val = new T[heap_capacity];
@@ -860,8 +861,8 @@ struct MinSumK {
 
 } // anonymous namespace
 
-MultiIndexQuantizer::MultiIndexQuantizer(int d, size_t M, size_t nbits)
-        : Index(d, METRIC_L2), pq(d, M, nbits) {
+MultiIndexQuantizer::MultiIndexQuantizer(int d_in, size_t M, size_t nbits)
+        : Index(d_in, METRIC_L2), pq(d_in, M, nbits) {
     is_trained = false;
     pq.verbose = verbose;
 }
@@ -872,7 +873,7 @@ void MultiIndexQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
     // count virtual elements in index
     ntotal = 1;
-    for (int m = 0; m < pq.M; m++)
+    for (size_t m = 0; m < pq.M; m++)
         ntotal *= pq.ksub;
 }
 
@@ -923,11 +924,11 @@ void MultiIndexQuantizer::search(
             float dis = 0;
             idx_t label = 0;
 
-            for (int s = 0; s < pq.M; s++) {
+            for (size_t s = 0; s < pq.M; s++) {
                 float vmin = HUGE_VALF;
                 idx_t lmin = -1;
 
-                for (idx_t j = 0; j < pq.ksub; j++) {
+                for (size_t j = 0; j < pq.ksub; j++) {
                     if (dis_table[j] < vmin) {
                         vmin = dis_table[j];
                         lmin = j;
@@ -960,7 +961,7 @@ void MultiIndexQuantizer::search(
 
 void MultiIndexQuantizer::reconstruct(idx_t key, float* recons) const {
     int64_t jj = key;
-    for (int m = 0; m < pq.M; m++) {
+    for (size_t m = 0; m < pq.M; m++) {
         int64_t n = jj & (((int64_t)1 << pq.nbits) - 1);
         jj >>= pq.nbits;
         memcpy(recons, pq.get_centroids(m, n), sizeof(recons[0]) * pq.dsub);
@@ -985,15 +986,15 @@ void MultiIndexQuantizer::reset() {
  ******************************************/
 
 MultiIndexQuantizer2::MultiIndexQuantizer2(
-        int d,
+        int d_in,
         size_t M,
         size_t nbits,
         Index** indexes)
-        : MultiIndexQuantizer(d, M, nbits) {
+        : MultiIndexQuantizer(d_in, M, nbits) {
     assign_indexes.resize(M);
-    for (int i = 0; i < M; i++) {
+    for (size_t i = 0; i < M; i++) {
         FAISS_THROW_IF_NOT_MSG(
-                indexes[i]->d == pq.dsub,
+                static_cast<size_t>(indexes[i]->d) == pq.dsub,
                 "Provided sub-index has incorrect size");
         assign_indexes[i] = indexes[i];
     }
@@ -1001,13 +1002,14 @@ MultiIndexQuantizer2::MultiIndexQuantizer2(
 }
 
 MultiIndexQuantizer2::MultiIndexQuantizer2(
-        int d,
+        int d_in,
         size_t nbits,
         Index* assign_index_0,
         Index* assign_index_1)
-        : MultiIndexQuantizer(d, 2, nbits) {
+        : MultiIndexQuantizer(d_in, 2, nbits) {
     FAISS_THROW_IF_NOT_MSG(
-            assign_index_0->d == pq.dsub && assign_index_1->d == pq.dsub,
+            static_cast<size_t>(assign_index_0->d) == pq.dsub &&
+                    static_cast<size_t>(assign_index_1->d) == pq.dsub,
             "Provided sub-index has incorrect size");
     assign_indexes.resize(2);
     assign_indexes[0] = assign_index_0;
@@ -1018,7 +1020,7 @@ MultiIndexQuantizer2::MultiIndexQuantizer2(
 void MultiIndexQuantizer2::train(idx_t n, const float* x) {
     MultiIndexQuantizer::train(n, x);
     // add centroids to sub-indexes
-    for (int i = 0; i < pq.M; i++) {
+    for (size_t i = 0; i < pq.M; i++) {
         assign_indexes[i]->add(pq.ksub, pq.get_centroids(i, 0));
     }
 }
@@ -1048,10 +1050,10 @@ void MultiIndexQuantizer2::search(
     std::vector<float> sub_dis(n * M * k2);
     std::vector<float> xsub(n * dsub);
 
-    for (int m = 0; m < M; m++) {
+    for (int64_t m = 0; m < M; m++) {
         float* xdest = xsub.data();
         const float* xsrc = x + m * dsub;
-        for (int j = 0; j < n; j++) {
+        for (idx_t j = 0; j < n; j++) {
             memcpy(xdest, xsrc, dsub * sizeof(xdest[0]));
             xsrc += d;
             xdest += dsub;
@@ -1065,11 +1067,11 @@ void MultiIndexQuantizer2::search(
         // simple version that just finds the min in each table
         assert(k2 == 1);
 
-        for (int i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             float dis = 0;
             idx_t label = 0;
 
-            for (int m = 0; m < M; m++) {
+            for (int64_t m = 0; m < M; m++) {
                 float vmin = sub_dis[i + m * n];
                 idx_t lmin = sub_ids[i + m * n];
                 dis += vmin;
@@ -1085,7 +1087,7 @@ void MultiIndexQuantizer2::search(
             MinSumK<float, PreSortedArray<float>, false> msk(
                     K, pq.M, pq.nbits, k2);
 #pragma omp for
-            for (int i = 0; i < n; i++) {
+            for (idx_t i = 0; i < n; i++) {
                 idx_t* li = labels + i * K;
                 msk.run(&sub_dis[i * k2], k2 * n, distances + i * K, li);
 
@@ -1095,12 +1097,12 @@ void MultiIndexQuantizer2::search(
                 int64_t ld_idmap = k2 * n;
                 int64_t mask1 = ksub - (int64_t)1;
 
-                for (int k = 0; k < K; k++) {
+                for (idx_t k = 0; k < K; k++) {
                     const idx_t* idmap = idmap0;
                     int64_t vin = li[k];
                     int64_t vout = 0;
                     int bs = 0;
-                    for (int m = 0; m < M; m++) {
+                    for (int64_t m = 0; m < M; m++) {
                         int64_t s = vin & mask1;
                         vin >>= pq.nbits;
                         vout |= idmap[s] << bs;

@@ -40,8 +40,8 @@ std::vector<float> get_random_vectors(size_t n, int seed) {
  * object that is passed in at query time */
 
 struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
-    DispatchingInvertedLists(size_t nlist, size_t code_size)
-            : faiss::ReadOnlyInvertedLists(nlist, code_size) {
+    DispatchingInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::ReadOnlyInvertedLists(nlist_in, code_size_in) {
         use_iterator = true;
     }
 
@@ -56,13 +56,13 @@ struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
 
     using idx_t = faiss::idx_t;
 
-    size_t list_size(size_t list_no) const override {
+    size_t list_size(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
-    const uint8_t* get_codes(size_t list_no) const override {
+    const uint8_t* get_codes(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
-    const idx_t* get_ids(size_t list_no) const override {
+    const idx_t* get_ids(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
 };

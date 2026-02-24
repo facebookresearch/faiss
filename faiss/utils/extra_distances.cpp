@@ -41,14 +41,14 @@ struct ExtraDistanceComputer : FlatCodesDistanceComputer {
     }
 
     ExtraDistanceComputer(
-            const VD& vd,
+            const VD& vd_in,
             const float* xb,
-            size_t nb,
-            const float* q = nullptr)
-            : FlatCodesDistanceComputer((uint8_t*)xb, vd.d * sizeof(float)),
-              vd(vd),
-              nb(nb),
-              q(q),
+            size_t nb_in,
+            const float* q_in = nullptr)
+            : FlatCodesDistanceComputer((uint8_t*)xb, vd_in.d * sizeof(float)),
+              vd(vd_in),
+              nb(nb_in),
+              q(q_in),
               b(xb) {}
 
     void set_query(const float* x) override {
@@ -119,7 +119,7 @@ void knn_extra_metrics(
             size_t i1 = std::min(i0 + check_period, nx);
 
 #pragma omp parallel for
-            for (int64_t i = i0; i < i1; i++) {
+            for (int64_t i = i0; i < static_cast<int64_t>(i1); i++) {
                 const float* x_i = x + i * d;
                 const float* y_j = y;
                 size_t j;

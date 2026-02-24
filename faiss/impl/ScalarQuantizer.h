@@ -58,7 +58,7 @@ struct ScalarQuantizer : Quantizer {
     /// trained values (including the range)
     std::vector<float> trained;
 
-    ScalarQuantizer(size_t d, QuantizerType qtype);
+    ScalarQuantizer(size_t d_in, QuantizerType qtype_in);
     ScalarQuantizer();
 
     /// updates internal values based on qtype and d

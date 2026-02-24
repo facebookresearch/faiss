@@ -26,20 +26,21 @@
 namespace faiss {
 
 IndexIVFFlatPanorama::IndexIVFFlatPanorama(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
-        int n_levels,
+        Index* quantizer_in,
+        size_t d_in,
+        size_t nlist_in,
+        int n_levels_in,
         MetricType metric,
-        bool own_invlists)
-        : IndexIVFFlat(quantizer, d, nlist, metric, false), n_levels(n_levels) {
+        bool own_invlists_in)
+        : IndexIVFFlat(quantizer_in, d_in, nlist_in, metric, false),
+          n_levels(n_levels_in) {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
 
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
     this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, n_levels);
-    this->own_invlists = own_invlists;
+    this->own_invlists = own_invlists_in;
 }
 
 IndexIVFFlatPanorama::IndexIVFFlatPanorama() : n_levels(0) {}
@@ -54,11 +55,13 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     static constexpr MetricType metric = VectorDistance::metric;
 
     IVFFlatScannerPanorama(
-            const VectorDistance& vd,
-            const ArrayInvertedListsPanorama* storage,
-            bool store_pairs,
-            const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), vd(vd), storage(storage) {
+            const VectorDistance& vd_in,
+            const ArrayInvertedListsPanorama* storage_in,
+            bool store_pairs_in,
+            const IDSelector* sel_in)
+            : InvertedListScanner(store_pairs_in, sel_in),
+              vd(vd_in),
+              storage(storage_in) {
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
         cum_sums.resize(storage->n_levels + 1);
@@ -73,8 +76,8 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         q_norm = cum_sums[0] * cum_sums[0];
     }
 
-    void set_list(idx_t list_no, float /* coarse_dis */) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float /* coarse_dis */) override {
+        this->list_no = list_no_in;
     }
 
     /// This function is unreachable as `IndexIVF` only calls this within
@@ -85,6 +88,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 "IndexIVFFlatPanorama does not support distance_to_code");
     }
 
+    using InvertedListScanner::scan_codes;
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,

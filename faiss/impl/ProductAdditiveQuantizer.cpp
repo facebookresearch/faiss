@@ -42,22 +42,22 @@ int sgemm_(
 namespace faiss {
 
 ProductAdditiveQuantizer::ProductAdditiveQuantizer(
-        size_t d,
+        size_t d_,
         const std::vector<AdditiveQuantizer*>& aqs,
-        Search_type_t search_type) {
-    init(d, aqs, search_type);
+        Search_type_t search_type_) {
+    init(d_, aqs, search_type_);
 }
 
 ProductAdditiveQuantizer::ProductAdditiveQuantizer()
         : ProductAdditiveQuantizer(0, {}) {}
 
 void ProductAdditiveQuantizer::init(
-        size_t d,
+        size_t d_in,
         const std::vector<AdditiveQuantizer*>& aqs,
-        Search_type_t search_type) {
+        Search_type_t search_type_in) {
     // AdditiveQuantizer constructor
-    this->d = d;
-    this->search_type = search_type;
+    this->d = d_in;
+    this->search_type = search_type_in;
     M = 0;
     for (const auto& q : aqs) {
         M += q->M;
@@ -98,7 +98,7 @@ void ProductAdditiveQuantizer::train(size_t n, const float* x) {
         xt.resize(q->d * n);
 
 #pragma omp parallel for if (n > 1000)
-        for (idx_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < static_cast<idx_t>(n); i++) {
             memcpy(xt.data() + i * q->d,
                    x + i * d + offset_d,
                    q->d * sizeof(*x));
@@ -153,7 +153,7 @@ void ProductAdditiveQuantizer::compute_unpacked_codes(
         const float* x,
         int32_t* unpacked_codes,
         size_t n,
-        const float* centroids) const {
+        const float* /*centroids*/) const {
     /// TODO: actually we do not need to unpack and pack
     size_t offset_d = 0, offset_m = 0;
     std::vector<float> xsub;
@@ -165,7 +165,7 @@ void ProductAdditiveQuantizer::compute_unpacked_codes(
         codes.resize(n * q->code_size);
 
 #pragma omp parallel for if (n > 1000)
-        for (idx_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < static_cast<idx_t>(n); i++) {
             memcpy(xsub.data() + i * q->d,
                    x + i * d + offset_d,
                    q->d * sizeof(float));
@@ -175,7 +175,7 @@ void ProductAdditiveQuantizer::compute_unpacked_codes(
 
         // unpack
 #pragma omp parallel for if (n > 1000)
-        for (idx_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < static_cast<idx_t>(n); i++) {
             uint8_t* code = codes.data() + i * q->code_size;
             BitstringReader bsr(code, q->code_size);
 
@@ -204,7 +204,7 @@ void ProductAdditiveQuantizer::decode_unpacked(
 
     // product additive quantizer decoding
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const int32_t* codesi = codes + i * ld_codes;
 
         size_t offset_m = 0, offset_d = 0;
@@ -212,7 +212,7 @@ void ProductAdditiveQuantizer::decode_unpacked(
             const auto q = quantizers[s];
             float* xi = x + i * d + offset_d;
 
-            for (int m = 0; m < q->M; m++) {
+            for (size_t m = 0; m < q->M; m++) {
                 int idx = codesi[offset_m + m];
                 const float* c = codebooks.data() +
                         q->d * (codebook_offsets[offset_m + m] + idx);
@@ -235,7 +235,7 @@ void ProductAdditiveQuantizer::decode(const uint8_t* codes, float* x, size_t n)
             is_trained, "The product additive quantizer is not trained yet.");
 
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         BitstringReader bsr(codes + i * code_size, code_size);
 
         size_t offset_m = 0, offset_d = 0;
@@ -243,7 +243,7 @@ void ProductAdditiveQuantizer::decode(const uint8_t* codes, float* x, size_t n)
             const auto q = quantizers[s];
             float* xi = x + i * d + offset_d;
 
-            for (int m = 0; m < q->M; m++) {
+            for (size_t m = 0; m < q->M; m++) {
                 int idx = bsr.read(q->nbits[m]);
                 const float* c = codebooks.data() +
                         q->d * (codebook_offsets[offset_m + m] + idx);
@@ -315,24 +315,24 @@ void ProductAdditiveQuantizer::compute_LUT(
  ************************************/
 
 ProductLocalSearchQuantizer::ProductLocalSearchQuantizer(
-        size_t d,
-        size_t nsplits,
+        size_t d_,
+        size_t nsplits_,
         size_t Msub,
-        size_t nbits,
-        Search_type_t search_type) {
+        size_t nbits_,
+        Search_type_t search_type_) {
     std::vector<AdditiveQuantizer*> aqs;
 
-    if (nsplits > 0) {
-        FAISS_THROW_IF_NOT(d % nsplits == 0);
-        size_t dsub = d / nsplits;
+    if (nsplits_ > 0) {
+        FAISS_THROW_IF_NOT(d_ % nsplits_ == 0);
+        size_t dsub = d_ / nsplits_;
 
-        for (size_t i = 0; i < nsplits; i++) {
+        for (size_t i = 0; i < nsplits_; i++) {
             auto lsq =
-                    new LocalSearchQuantizer(dsub, Msub, nbits, ST_decompress);
+                    new LocalSearchQuantizer(dsub, Msub, nbits_, ST_decompress);
             aqs.push_back(lsq);
         }
     }
-    init(d, aqs, search_type);
+    init(d_, aqs, search_type_);
     for (auto& q : aqs) {
         delete q;
     }
@@ -346,23 +346,23 @@ ProductLocalSearchQuantizer::ProductLocalSearchQuantizer()
  ************************************/
 
 ProductResidualQuantizer::ProductResidualQuantizer(
-        size_t d,
-        size_t nsplits,
+        size_t d_,
+        size_t nsplits_,
         size_t Msub,
-        size_t nbits,
-        Search_type_t search_type) {
+        size_t nbits_,
+        Search_type_t search_type_) {
     std::vector<AdditiveQuantizer*> aqs;
 
-    if (nsplits > 0) {
-        FAISS_THROW_IF_NOT(d % nsplits == 0);
-        size_t dsub = d / nsplits;
+    if (nsplits_ > 0) {
+        FAISS_THROW_IF_NOT(d_ % nsplits_ == 0);
+        size_t dsub = d_ / nsplits_;
 
-        for (size_t i = 0; i < nsplits; i++) {
-            auto rq = new ResidualQuantizer(dsub, Msub, nbits, ST_decompress);
+        for (size_t i = 0; i < nsplits_; i++) {
+            auto rq = new ResidualQuantizer(dsub, Msub, nbits_, ST_decompress);
             aqs.push_back(rq);
         }
     }
-    init(d, aqs, search_type);
+    init(d_, aqs, search_type_);
     for (auto& q : aqs) {
         delete q;
     }

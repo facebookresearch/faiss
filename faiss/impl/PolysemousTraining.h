@@ -70,10 +70,10 @@ struct ReproduceDistancesObjective : PermutationObjective {
     double cost_update(const int* perm, int iw, int jw) const override;
 
     ReproduceDistancesObjective(
-            int n,
+            int n_in,
             const double* source_dis_in,
             const double* target_dis_in,
-            double dis_weight_factor);
+            double dis_weight_factor_in);
 
     static void compute_mean_stdev(
             const double* tab,
@@ -95,7 +95,7 @@ struct SimulatedAnnealingOptimizer : SimulatedAnnealingParameters {
     FILE* logfile; /// logs values of the cost function
 
     SimulatedAnnealingOptimizer(
-            PermutationObjective* obj,
+            PermutationObjective* obj_in,
             const SimulatedAnnealingParameters& p);
     RandomGenerator* rnd;
 

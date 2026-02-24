@@ -24,23 +24,23 @@ namespace faiss {
  **************************************************************************************/
 
 IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(
-        AdditiveQuantizer* aq,
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        AdditiveQuantizer* aq_,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         MetricType metric,
-        bool own_invlists)
-        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists), aq(aq) {
+        bool own_invlists_)
+        : IndexIVF(quantizer_, d_, nlist_, 0, metric, own_invlists_), aq(aq_) {
     by_residual = true;
 }
 
-IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq)
-        : IndexIVF(), aq(aq) {}
+IndexIVFAdditiveQuantizer::IndexIVFAdditiveQuantizer(AdditiveQuantizer* aq_)
+        : IndexIVF(), aq(aq_) {}
 
 void IndexIVFAdditiveQuantizer::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     aq->train(n, x);
 }
 
@@ -107,7 +107,7 @@ void IndexIVFAdditiveQuantizer::decode_vectors(
             if (by_residual) {
                 int64_t list_no = listnos[i];
                 quantizer->reconstruct(list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
+                for (int j = 0; j < d; j++) {
                     xi[j] += residual[j];
                 }
             }
@@ -133,7 +133,7 @@ void IndexIVFAdditiveQuantizer::sa_decode(
             aq->decode(code + coarse_size, xi, 1);
             if (by_residual) {
                 quantizer->reconstruct(list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
+                for (int j = 0; j < d; j++) {
                     xi[j] += residual[j];
                 }
             }
@@ -171,10 +171,12 @@ struct AQInvertedListScanner : InvertedListScanner {
     const AdditiveQuantizer& aq;
     std::vector<float> tmp;
 
-    AQInvertedListScanner(const IndexIVFAdditiveQuantizer& ia, bool store_pairs)
-            : ia(ia), aq(*ia.aq) {
-        this->store_pairs = store_pairs;
-        this->code_size = ia.code_size;
+    AQInvertedListScanner(
+            const IndexIVFAdditiveQuantizer& ia_,
+            bool store_pairs_)
+            : ia(ia_), aq(*ia_.aq) {
+        this->store_pairs = store_pairs_;
+        this->code_size = ia_.code_size;
         keep_max = is_similarity_metric(ia.metric_type);
         tmp.resize(ia.d);
     }
@@ -188,10 +190,10 @@ struct AQInvertedListScanner : InvertedListScanner {
 
     const float* q;
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_, float /*coarse_dis*/) override {
+        this->list_no = list_no_;
         if (ia.metric_type == METRIC_L2 && ia.by_residual) {
-            ia.quantizer->compute_residual(q0, tmp.data(), list_no);
+            ia.quantizer->compute_residual(q0, tmp.data(), list_no_);
             q = tmp.data();
         } else {
             q = q0;
@@ -204,15 +206,15 @@ struct AQInvertedListScanner : InvertedListScanner {
 template <bool is_IP>
 struct AQInvertedListScannerDecompress : AQInvertedListScanner {
     AQInvertedListScannerDecompress(
-            const IndexIVFAdditiveQuantizer& ia,
-            bool store_pairs)
-            : AQInvertedListScanner(ia, store_pairs) {}
+            const IndexIVFAdditiveQuantizer& ia_,
+            bool store_pairs_)
+            : AQInvertedListScanner(ia_, store_pairs_) {}
 
     float coarse_dis = 0;
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis_2) override {
-        AQInvertedListScanner::set_list(list_no, coarse_dis_2);
+    void set_list(idx_t list_no_, float coarse_dis_2) override {
+        AQInvertedListScanner::set_list(list_no_, coarse_dis_2);
         if (ia.by_residual) {
             this->coarse_dis = coarse_dis_2;
         }
@@ -238,9 +240,9 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
     float distance_bias;
 
     AQInvertedListScannerLUT(
-            const IndexIVFAdditiveQuantizer& ia,
-            bool store_pairs)
-            : AQInvertedListScanner(ia, store_pairs) {
+            const IndexIVFAdditiveQuantizer& ia_,
+            bool store_pairs_)
+            : AQInvertedListScanner(ia_, store_pairs_) {
         LUT.resize(aq.total_codebook_size);
         tmp.resize(ia.d);
         distance_bias = 0;
@@ -255,8 +257,8 @@ struct AQInvertedListScannerLUT : AQInvertedListScanner {
     }
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
-        AQInvertedListScanner::set_list(list_no, coarse_dis);
+    void set_list(idx_t list_no_, float coarse_dis) override {
+        AQInvertedListScanner::set_list(list_no_, coarse_dis);
         // TODO find a way to provide the nprobes together to do a matmul
         // +  precompute tables
         aq.compute_LUT(1, q, LUT.data());
@@ -322,21 +324,21 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
  **************************************************************************************/
 
 IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         const std::vector<size_t>& nbits,
         MetricType metric,
         Search_type_t search_type,
-        bool own_invlists)
+        bool own_invlists_)
         : IndexIVFAdditiveQuantizer(
                   &rq,
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_,
+                  d_,
+                  nlist_,
                   metric,
-                  own_invlists),
-          rq(d, nbits, search_type) {
+                  own_invlists_),
+          rq(d_, nbits, search_type) {
     code_size = rq.code_size;
     if (invlists) {
         invlists->code_size = code_size;
@@ -347,22 +349,22 @@ IndexIVFResidualQuantizer::IndexIVFResidualQuantizer()
         : IndexIVFAdditiveQuantizer(&rq) {}
 
 IndexIVFResidualQuantizer::IndexIVFResidualQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
         Search_type_t search_type,
-        bool own_invlists)
+        bool own_invlists_)
         : IndexIVFResidualQuantizer(
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_,
+                  d_,
+                  nlist_,
                   std::vector<size_t>(M, nbits),
                   metric,
                   search_type,
-                  own_invlists) {}
+                  own_invlists_) {}
 
 IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() = default;
 
@@ -371,22 +373,22 @@ IndexIVFResidualQuantizer::~IndexIVFResidualQuantizer() = default;
  **************************************************************************************/
 
 IndexIVFLocalSearchQuantizer::IndexIVFLocalSearchQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         size_t M,     /* number of subquantizers */
         size_t nbits, /* number of bit per subvector index */
         MetricType metric,
         Search_type_t search_type,
-        bool own_invlists)
+        bool own_invlists_)
         : IndexIVFAdditiveQuantizer(
                   &lsq,
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_,
+                  d_,
+                  nlist_,
                   metric,
-                  own_invlists),
-          lsq(d, M, nbits, search_type) {
+                  own_invlists_),
+          lsq(d_, M, nbits, search_type) {
     code_size = lsq.code_size;
     if (invlists) {
         invlists->code_size = code_size;
@@ -403,23 +405,23 @@ IndexIVFLocalSearchQuantizer::~IndexIVFLocalSearchQuantizer() = default;
  **************************************************************************************/
 
 IndexIVFProductResidualQuantizer::IndexIVFProductResidualQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         size_t nsplits,
         size_t Msub,
         size_t nbits,
         MetricType metric,
         Search_type_t search_type,
-        bool own_invlists)
+        bool own_invlists_)
         : IndexIVFAdditiveQuantizer(
                   &prq,
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_,
+                  d_,
+                  nlist_,
                   metric,
-                  own_invlists),
-          prq(d, nsplits, Msub, nbits, search_type) {
+                  own_invlists_),
+          prq(d_, nsplits, Msub, nbits, search_type) {
     code_size = prq.code_size;
     if (invlists) {
         invlists->code_size = code_size;
@@ -436,23 +438,23 @@ IndexIVFProductResidualQuantizer::~IndexIVFProductResidualQuantizer() = default;
  **************************************************************************************/
 
 IndexIVFProductLocalSearchQuantizer::IndexIVFProductLocalSearchQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         size_t nsplits,
         size_t Msub,
         size_t nbits,
         MetricType metric,
         Search_type_t search_type,
-        bool own_invlists)
+        bool own_invlists_)
         : IndexIVFAdditiveQuantizer(
                   &plsq,
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_,
+                  d_,
+                  nlist_,
                   metric,
-                  own_invlists),
-          plsq(d, nsplits, Msub, nbits, search_type) {
+                  own_invlists_),
+          plsq(d_, nsplits, Msub, nbits, search_type) {
     code_size = plsq.code_size;
     if (invlists) {
         invlists->code_size = code_size;

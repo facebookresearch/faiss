@@ -66,8 +66,8 @@ struct NegativeDistanceComputer : DistanceComputer {
     /// owned by this
     DistanceComputer* basedis;
 
-    explicit NegativeDistanceComputer(DistanceComputer* basedis)
-            : basedis(basedis) {}
+    explicit NegativeDistanceComputer(DistanceComputer* basedis_)
+            : basedis(basedis_) {}
 
     void set_query(const float* x) override {
         basedis->set_query(x);
@@ -116,13 +116,13 @@ struct FlatCodesDistanceComputer : DistanceComputer {
     const float* q = nullptr; // not used in all distance computers
 
     FlatCodesDistanceComputer(
-            const uint8_t* codes,
-            size_t code_size,
-            const float* q = nullptr)
-            : codes(codes), code_size(code_size), q(q) {}
+            const uint8_t* codes_,
+            size_t code_size_,
+            const float* q_ = nullptr)
+            : codes(codes_), code_size(code_size_), q(q_) {}
 
-    explicit FlatCodesDistanceComputer(const float* q)
-            : codes(nullptr), code_size(0), q(q) {}
+    explicit FlatCodesDistanceComputer(const float* q_)
+            : codes(nullptr), code_size(0), q(q_) {}
 
     FlatCodesDistanceComputer() : codes(nullptr), code_size(0), q(nullptr) {}
 

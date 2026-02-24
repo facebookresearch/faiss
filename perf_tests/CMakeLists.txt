@@ -30,6 +30,7 @@ target_include_directories(faiss_perf_tests_utils PRIVATE
 include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_perf_tests_utils)
+faiss_add_warnings(faiss_perf_tests_utils)
 
 set(FAISS_PERF_TEST_SRC
   bench_no_multithreading_rcq_search.cpp
@@ -43,6 +44,7 @@ foreach(bench ${FAISS_PERF_TEST_SRC})
   add_executable(${bench_exec} ${bench})
   link_to_faiss_lib(${bench_exec})
   target_link_libraries(${bench_exec} PRIVATE faiss_perf_tests_utils OpenMP::OpenMP_CXX benchmark::benchmark gflags)
+  faiss_add_warnings(${bench_exec})
   # `#include <faiss/perf_tests/utils.h>` or any other headers
   target_include_directories(${bench_exec} PRIVATE
    ${PROJECT_SOURCE_DIR}/..)

@@ -20,6 +20,14 @@ inputs:
     description: 'Enable SVS support.'
     required: false
     default: OFF
+  warning_level:
+    description: 'Compiler warning level (0=off, 1=basic, 2=standard, 3=strict).'
+    required: false
+    default: '0'
+  warnings_as_errors:
+    description: 'Treat compiler warnings as errors.'
+    required: false
+    default: 'false'
   setup_conda:
     description: 'Setup miniconda environment.'
     required: false
@@ -150,6 +158,8 @@ runs:
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_SVS=${{ inputs.svs }} \
               -DFAISS_ENABLE_C_API=ON \
+              -DFAISS_WARNING_LEVEL=${{ inputs.warning_level }} \
+              -DFAISS_WARNINGS_AS_ERRORS=${{ inputs.warnings_as_errors == 'true' && 'ON' || 'OFF' }} \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \

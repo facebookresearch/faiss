@@ -80,12 +80,12 @@ template struct Tensor2DTemplate<int32_t>;
  * Layers implementation
  *************************************************************/
 
-Linear::Linear(size_t in_features, size_t out_features, bool bias)
-        : in_features(in_features),
-          out_features(out_features),
-          weight(in_features * out_features) {
-    if (bias) {
-        this->bias.resize(out_features);
+Linear::Linear(size_t in_features_in, size_t out_features_in, bool bias_in)
+        : in_features(in_features_in),
+          out_features(out_features_in),
+          weight(in_features_in * out_features_in) {
+    if (bias_in) {
+        this->bias.resize(out_features_in);
     }
 }
 
@@ -123,9 +123,9 @@ Tensor2D Linear::operator()(const Tensor2D& x) const {
     return output;
 }
 
-Embedding::Embedding(size_t num_embeddings, size_t embedding_dim)
-        : num_embeddings(num_embeddings), embedding_dim(embedding_dim) {
-    weight.resize(num_embeddings * embedding_dim);
+Embedding::Embedding(size_t num_embeddings_in, size_t embedding_dim_in)
+        : num_embeddings(num_embeddings_in), embedding_dim(embedding_dim_in) {
+    weight.resize(num_embeddings_in * embedding_dim_in);
 }
 
 Tensor2D Embedding::operator()(const Int32Tensor2D& code) const {
@@ -181,8 +181,13 @@ Tensor2D FFN::operator()(const Tensor2D& x_in) const {
 
 using namespace nn;
 
-QINCoStep::QINCoStep(int d, int K, int L, int h)
-        : d(d), K(K), L(L), h(h), codebook(K, d), MLPconcat(2 * d, d) {
+QINCoStep::QINCoStep(int d_in, int K_in, int L_in, int h_in)
+        : d(d_in),
+          K(K_in),
+          L(L_in),
+          h(h_in),
+          codebook(K_in, d_in),
+          MLPconcat(2 * d_in, d_in) {
     for (int i = 0; i < L; i++) {
         residual_blocks.emplace_back(d, h);
     }
@@ -208,7 +213,8 @@ nn::Int32Tensor2D QINCoStep::encode(
         nn::Tensor2D* residuals) const {
     size_t n = xhat.shape[0];
     FAISS_THROW_IF_NOT(
-            n == x.shape[0] && xhat.shape[1] == d && x.shape[1] == d);
+            n == x.shape[0] && xhat.shape[1] == static_cast<size_t>(d) &&
+            x.shape[1] == static_cast<size_t>(d));
 
     // repeated codebook
     Tensor2D zqs_r(n * K, d);  // size n, K, d
@@ -226,7 +232,7 @@ nn::Int32Tensor2D QINCoStep::encode(
 
     // manual broadcasting
     for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < K; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(K); j++) {
             copy_row(zqs_r, i * K + j, 0, codebook.data() + j * d);
             copy_row(cc, i * K + j, 0, codebook.data() + j * d);
             copy_row(cc, i * K + j, d, xhat.data() + i * d);
@@ -244,8 +250,8 @@ nn::Int32Tensor2D QINCoStep::encode(
     for (size_t i = 0; i < n; i++) {
         float* zqs_r_row = zqs_r.data() + i * K * d;
         const float* xhat_row = xhat.data() + i * d;
-        for (size_t l = 0; l < K; l++) {
-            for (size_t j = 0; j < d; j++) {
+        for (size_t l = 0; l < static_cast<size_t>(K); l++) {
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                 zqs_r_row[j] += xhat_row[j];
             }
             zqs_r_row += d;
@@ -257,7 +263,8 @@ nn::Int32Tensor2D QINCoStep::encode(
     float* res = nullptr;
     if (residuals) {
         FAISS_THROW_IF_NOT(
-                residuals->shape[0] == n && residuals->shape[1] == d);
+                residuals->shape[0] == n &&
+                residuals->shape[1] == static_cast<size_t>(d));
         res = residuals->data();
     }
 
@@ -267,7 +274,7 @@ nn::Int32Tensor2D QINCoStep::encode(
         float dis_min = HUGE_VALF;
         int64_t idx = -1;
         with_simd_level([&]<SIMDLevel SL>() {
-            for (size_t j = 0; j < K; j++) {
+            for (size_t j = 0; j < static_cast<size_t>(K); j++) {
                 float dis = fvec_L2sqr<SL>(q, db, d);
                 if (dis < dis_min) {
                     dis_min = dis;
@@ -280,7 +287,7 @@ nn::Int32Tensor2D QINCoStep::encode(
         if (res) {
             const float* xhat_row = xhat.data() + i * d;
             const float* xhat_next_row = zqs_r.data() + (i * K + idx) * d;
-            for (size_t j = 0; j < d; j++) {
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                 res[j] = xhat_next_row[j] - xhat_row[j];
             }
             res += d;
@@ -293,15 +300,19 @@ nn::Int32Tensor2D QINCoStep::encode(
  * QINCo implementation
  *************************************************************/
 
-QINCo::QINCo(int d, int K, int L, int M, int h)
-        : NeuralNetCodec(d, M), K(K), L(L), h(h), codebook0(K, d) {
+QINCo::QINCo(int d_in, int K_in, int L_in, int M_in, int h_in)
+        : NeuralNetCodec(d_in, M_in),
+          K(K_in),
+          L(L_in),
+          h(h_in),
+          codebook0(K_in, d_in) {
     for (int i = 1; i < M; i++) {
         steps.emplace_back(d, K, L, h);
     }
 }
 
 nn::Tensor2D QINCo::decode(const nn::Int32Tensor2D& codes) const {
-    FAISS_THROW_IF_NOT(codes.shape[1] == M);
+    FAISS_THROW_IF_NOT(codes.shape[1] == static_cast<size_t>(M));
     Tensor2D xhat = codebook0(codes.column(0));
     for (int i = 1; i < M; i++) {
         xhat += steps[i - 1].decode(xhat, codes.column(i));
@@ -310,7 +321,7 @@ nn::Tensor2D QINCo::decode(const nn::Int32Tensor2D& codes) const {
 }
 
 nn::Int32Tensor2D QINCo::encode(const nn::Tensor2D& x) const {
-    FAISS_THROW_IF_NOT(x.shape[1] == d);
+    FAISS_THROW_IF_NOT(x.shape[1] == static_cast<size_t>(d));
     size_t n = x.shape[0];
     Int32Tensor2D codes(n, M);
     Tensor2D xhat(n, d);

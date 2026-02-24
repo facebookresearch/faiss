@@ -65,7 +65,7 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     std::vector<std::vector<uint8_t>> extra_codes(index->nlist);
     std::vector<std::vector<idx_t>> extra_ids(index->nlist);
 
-    for (size_t i = 0; i < nb2; i++) {
+    for (int i = 0; i < nb2; i++) {
         idx_t list_no = list_nos[i];
         extra_ids[list_no].push_back(i + nb1);
         extra_codes[list_no].insert(
@@ -114,17 +114,17 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
             // scan extra codes for this list
             size_t n_extra = extra_ids[list_no].size();
             for (size_t j = 0; j < n_extra; j++) {
-                float dis = scanner->distance_to_code(
+                float dist = scanner->distance_to_code(
                         extra_codes[list_no].data() + j * index->code_size);
 
                 idx_t id = extra_ids[list_no][j];
                 if (is_similarity) {
-                    if (dis > D0q[0]) {
-                        minheap_replace_top(k, D0q, I0q, dis, id);
+                    if (dist > D0q[0]) {
+                        minheap_replace_top(k, D0q, I0q, dist, id);
                     }
                 } else {
-                    if (dis < D0q[0]) {
-                        maxheap_replace_top(k, D0q, I0q, dis, id);
+                    if (dist < D0q[0]) {
+                        maxheap_replace_top(k, D0q, I0q, dist, id);
                     }
                 }
             }

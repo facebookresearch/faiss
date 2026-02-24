@@ -23,7 +23,7 @@ namespace nndescent {
 
 void gen_random(std::mt19937& rng, int* addr, const int size, const int N);
 
-Nhood::Nhood(int l, int s, std::mt19937& rng, int N) {
+Nhood::Nhood(int /* l */, int s, std::mt19937& rng, int N) {
     M = s;
     nn_new.resize(s * 2);
     gen_random(rng, nn_new.data(), (int)nn_new.size(), N);
@@ -58,7 +58,7 @@ void Nhood::insert(int id, float dist) {
     if (dist > pool.front().distance) {
         return;
     }
-    for (int i = 0; i < pool.size(); i++) {
+    for (size_t i = 0; i < pool.size(); i++) {
         if (id == pool[i].id) {
             return;
         }
@@ -153,7 +153,7 @@ using namespace nndescent;
 
 constexpr int NUM_EVAL_POINTS = 100;
 
-NNDescent::NNDescent(const int d, const int K) : K(K), d(d) {
+NNDescent::NNDescent(const int d_in, const int K_in) : K(K_in), d(d_in) {
     L = K + 50;
 }
 
@@ -197,7 +197,7 @@ void NNDescent::update() {
         auto& nn = graph[n];
         std::sort(nn.pool.begin(), nn.pool.end());
 
-        if (nn.pool.size() > L) {
+        if (nn.pool.size() > static_cast<size_t>(L)) {
             nn.pool.resize(L);
         }
         nn.pool.reserve(L); // keep the pool size be L
@@ -238,7 +238,7 @@ void NNDescent::update() {
                     // the candidate pool of the other side
                     if (nn.distance > other.pool.back().distance) {
                         LockGuard guard(other.lock);
-                        if (other.rnn_new.size() < R) {
+                        if (other.rnn_new.size() < static_cast<size_t>(R)) {
                             other.rnn_new.push_back(n);
                         } else {
                             int pos = rng() % R;
@@ -254,7 +254,7 @@ void NNDescent::update() {
                     // the candidate pool of the other side
                     if (nn.distance > other.pool.back().distance) {
                         LockGuard guard(other.lock);
-                        if (other.rnn_old.size() < R) {
+                        if (other.rnn_old.size() < static_cast<size_t>(R)) {
                             other.rnn_old.push_back(n);
                         } else {
                             int pos = rng() % R;
@@ -280,7 +280,7 @@ void NNDescent::update() {
 
         nn_new.insert(nn_new.end(), rnn_new.begin(), rnn_new.end());
         nn_old.insert(nn_old.end(), rnn_old.begin(), rnn_old.end());
-        if (nn_old.size() > R * 2) {
+        if (nn_old.size() > static_cast<size_t>(R * 2)) {
             nn_old.resize(R * 2);
             nn_old.reserve(R * 2);
         }
@@ -315,7 +315,7 @@ void NNDescent::generate_eval_set(
         std::vector<std::vector<int>>& v,
         int N) {
 #pragma omp parallel for
-    for (int i = 0; i < c.size(); i++) {
+    for (int i = 0; i < static_cast<int>(c.size()); i++) {
         std::vector<Neighbor> tmp;
         for (int j = 0; j < N; j++) {
             if (c[i] == j) {
@@ -488,7 +488,7 @@ void NNDescent::search(
             ++k;
         }
     }
-    for (size_t i = 0; i < topk; i++) {
+    for (int i = 0; i < topk; i++) {
         indices[i] = retset[i].id;
         dists[i] = retset[i].distance;
     }

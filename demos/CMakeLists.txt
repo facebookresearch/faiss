@@ -24,4 +24,12 @@ target_link_libraries(demo_weighted_kmeans PRIVATE faiss)
 add_executable(demo_residual_quantizer EXCLUDE_FROM_ALL demo_residual_quantizer.cpp)
 target_link_libraries(demo_residual_quantizer PRIVATE faiss)
 
+faiss_add_warnings(demo_imi_flat)
+faiss_add_warnings(demo_imi_pq)
+faiss_add_warnings(demo_ivfpq_indexing)
+faiss_add_warnings(demo_nndescent)
+faiss_add_warnings(demo_sift1M)
+faiss_add_warnings(demo_weighted_kmeans)
+faiss_add_warnings(demo_residual_quantizer)
+
 add_subdirectory(diversity_filter)

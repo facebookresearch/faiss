@@ -116,7 +116,7 @@ struct IDSelectorBitmap : IDSelector {
 /** reverts the membership test of another selector */
 struct IDSelectorNot : IDSelector {
     const IDSelector* sel;
-    explicit IDSelectorNot(const IDSelector* sel) : sel(sel) {}
+    explicit IDSelectorNot(const IDSelector* sel_) : sel(sel_) {}
     bool is_member(idx_t id) const final {
         return !sel->is_member(id);
     }
@@ -125,7 +125,7 @@ struct IDSelectorNot : IDSelector {
 
 /// selects all entries (useful for benchmarking)
 struct IDSelectorAll : IDSelector {
-    bool is_member(idx_t id) const final {
+    bool is_member(idx_t /* id */) const final {
         return true;
     }
     virtual ~IDSelectorAll() {}
@@ -136,8 +136,8 @@ struct IDSelectorAll : IDSelector {
 struct IDSelectorAnd : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorAnd(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorAnd(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) && rhs->is_member(id);
     }
@@ -149,8 +149,8 @@ struct IDSelectorAnd : IDSelector {
 struct IDSelectorOr : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorOr(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorOr(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) || rhs->is_member(id);
     }
@@ -162,8 +162,8 @@ struct IDSelectorOr : IDSelector {
 struct IDSelectorXOr : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorXOr(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorXOr(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) ^ rhs->is_member(id);
     }

@@ -18,10 +18,10 @@ namespace faiss {
  * IndexRefine
  ***************************************************/
 
-IndexRefine::IndexRefine(Index* base_index, Index* refine_index)
-        : Index(base_index->d, base_index->metric_type),
-          base_index(base_index),
-          refine_index(refine_index) {
+IndexRefine::IndexRefine(Index* base_index_in, Index* refine_index_in)
+        : Index(base_index_in->d, base_index_in->metric_type),
+          base_index(base_index_in),
+          refine_index(refine_index_in) {
     own_fields = own_refine_index = false;
     if (refine_index != nullptr) {
         FAISS_THROW_IF_NOT(base_index->d == refine_index->d);
@@ -191,7 +191,7 @@ void IndexRefine::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     base_index->sa_encode(n, x, tmp1.get());
     std::unique_ptr<uint8_t[]> tmp2(new uint8_t[n * cs2]);
     refine_index->sa_encode(n, x, tmp2.get());
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         uint8_t* b = bytes + i * (cs1 + cs2);
         memcpy(b, tmp1.get() + cs1 * i, cs1);
         memcpy(b + cs1, tmp2.get() + cs2 * i, cs2);
@@ -202,7 +202,7 @@ void IndexRefine::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     size_t cs1 = base_index->sa_code_size(), cs2 = refine_index->sa_code_size();
     std::unique_ptr<uint8_t[]> tmp2(
             new uint8_t[n * refine_index->sa_code_size()]);
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         memcpy(tmp2.get() + i * cs2, bytes + i * (cs1 + cs2), cs2);
     }
 
@@ -222,10 +222,10 @@ IndexRefine::~IndexRefine() {
  * IndexRefineFlat
  ***************************************************/
 
-IndexRefineFlat::IndexRefineFlat(Index* base_index)
+IndexRefineFlat::IndexRefineFlat(Index* base_index_in)
         : IndexRefine(
-                  base_index,
-                  new IndexFlat(base_index->d, base_index->metric_type)) {
+                  base_index_in,
+                  new IndexFlat(base_index_in->d, base_index_in->metric_type)) {
     is_trained = base_index->is_trained;
     own_refine_index = true;
     FAISS_THROW_IF_NOT_MSG(
@@ -233,8 +233,8 @@ IndexRefineFlat::IndexRefineFlat(Index* base_index)
             "base_index should be empty in the beginning");
 }
 
-IndexRefineFlat::IndexRefineFlat(Index* base_index, const float* xb)
-        : IndexRefine(base_index, nullptr) {
+IndexRefineFlat::IndexRefineFlat(Index* base_index_in, const float* xb)
+        : IndexRefine(base_index_in, nullptr) {
     is_trained = base_index->is_trained;
     refine_index = new IndexFlat(base_index->d, base_index->metric_type);
     own_refine_index = true;

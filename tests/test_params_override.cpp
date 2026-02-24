@@ -52,10 +52,10 @@ std::unique_ptr<Index> make_index(
         MetricType metric,
         const std::vector<float>& x) {
     assert(x.size() % d == 0);
-    idx_t nb = x.size() / d;
+    idx_t local_nb = x.size() / d;
     std::unique_ptr<Index> index(index_factory(d, index_type, metric));
-    index->train(nb, x.data());
-    index->add(nb, x.data());
+    index->train(local_nb, x.data());
+    index->add(local_nb, x.data());
     return index;
 }
 
@@ -125,7 +125,7 @@ int test_selector(const char* index_key) {
 
     std::vector<float> sub_xb;
     std::vector<idx_t> kept;
-    for (idx_t i = 0; i < nb; i++) {
+    for (size_t i = 0; i < nb; i++) {
         if (i % 10 == 2) {
             kept.push_back(i);
             sub_xb.insert(

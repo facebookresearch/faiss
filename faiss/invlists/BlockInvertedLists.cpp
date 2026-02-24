@@ -19,23 +19,25 @@
 namespace faiss {
 
 BlockInvertedLists::BlockInvertedLists(
-        size_t nlist,
-        size_t n_per_block,
-        size_t block_size)
-        : InvertedLists(nlist, InvertedLists::INVALID_CODE_SIZE),
-          n_per_block(n_per_block),
-          block_size(block_size) {
-    ids.resize(nlist);
-    codes.resize(nlist);
+        size_t nlist_in,
+        size_t n_per_block_in,
+        size_t block_size_in)
+        : InvertedLists(nlist_in, InvertedLists::INVALID_CODE_SIZE),
+          n_per_block(n_per_block_in),
+          block_size(block_size_in) {
+    ids.resize(nlist_in);
+    codes.resize(nlist_in);
 }
 
-BlockInvertedLists::BlockInvertedLists(size_t nlist, const CodePacker* packer)
-        : InvertedLists(nlist, InvertedLists::INVALID_CODE_SIZE),
-          n_per_block(packer->nvec),
-          block_size(packer->block_size),
-          packer(packer) {
-    ids.resize(nlist);
-    codes.resize(nlist);
+BlockInvertedLists::BlockInvertedLists(
+        size_t nlist_in,
+        const CodePacker* packer_in)
+        : InvertedLists(nlist_in, InvertedLists::INVALID_CODE_SIZE),
+          n_per_block(packer_in->nvec),
+          block_size(packer_in->block_size),
+          packer(packer_in) {
+    ids.resize(nlist_in);
+    codes.resize(nlist_in);
 }
 
 BlockInvertedLists::BlockInvertedLists()
@@ -84,7 +86,7 @@ const uint8_t* BlockInvertedLists::get_codes(size_t list_no) const {
 size_t BlockInvertedLists::remove_ids(const IDSelector& sel) {
     idx_t nremove = 0;
 #pragma omp parallel for
-    for (idx_t i = 0; i < nlist; i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         std::vector<uint8_t> buffer(packer->code_size);
         idx_t l = ids[i].size(), j = 0;
         while (j < l) {

@@ -142,8 +142,8 @@ struct Distance2Level : DistanceComputer {
 
     const float *pq_l1_tab, *pq_l2_tab;
 
-    explicit Distance2Level(const Index2Layer& storage) : storage(storage) {
-        d = storage.d;
+    explicit Distance2Level(const Index2Layer& storage_) : storage(storage_) {
+        d = storage_.d;
         FAISS_ASSERT(storage.pq.dsub == 4);
         pq_l2_tab = storage.pq.centroids.data();
         buf.resize(2 * d);
@@ -164,8 +164,8 @@ struct Distance2Level : DistanceComputer {
 struct DistanceXPQ4 : Distance2Level {
     int M, k;
 
-    explicit DistanceXPQ4(const Index2Layer& storage)
-            : Distance2Level(storage) {
+    explicit DistanceXPQ4(const Index2Layer& storage_)
+            : Distance2Level(storage_) {
         const IndexFlat* quantizer =
                 dynamic_cast<IndexFlat*>(storage.q1.quantizer);
 
@@ -200,6 +200,7 @@ struct DistanceXPQ4 : Distance2Level {
         accu = _mm_hadd_ps(accu, accu);
         return _mm_cvtss_f32(accu);
 #else
+        (void)i;
         FAISS_THROW_MSG("not implemented for non-x64 platforms");
 #endif
     }
@@ -209,8 +210,8 @@ struct DistanceXPQ4 : Distance2Level {
 struct Distance2xXPQ4 : Distance2Level {
     int M_2, mi_nbits;
 
-    explicit Distance2xXPQ4(const Index2Layer& storage)
-            : Distance2Level(storage) {
+    explicit Distance2xXPQ4(const Index2Layer& storage_)
+            : Distance2Level(storage_) {
         const MultiIndexQuantizer* mi =
                 dynamic_cast<MultiIndexQuantizer*>(storage.q1.quantizer);
 

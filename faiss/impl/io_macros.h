@@ -38,13 +38,13 @@
     }
 
 // will fail if we write 256G of data at once...
-#define READVECTOR(vec)                                              \
-    {                                                                \
-        size_t size;                                                 \
-        READANDCHECK(&size, 1);                                      \
-        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
-        (vec).resize(size);                                          \
-        READANDCHECK((vec).data(), size);                            \
+#define READVECTOR(vec)                                 \
+    {                                                   \
+        size_t size;                                    \
+        READANDCHECK(&size, 1);                         \
+        FAISS_THROW_IF_NOT(size < (uint64_t{1} << 40)); \
+        (vec).resize(size);                             \
+        READANDCHECK((vec).data(), size);               \
     }
 
 #define WRITEANDCHECK(ptr, n)                         \
@@ -78,12 +78,12 @@
         WRITEANDCHECK((vec).data(), size * 4);     \
     }
 
-#define READXBVECTOR(vec)                                            \
-    {                                                                \
-        size_t size;                                                 \
-        READANDCHECK(&size, 1);                                      \
-        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
-        size *= 4;                                                   \
-        (vec).resize(size);                                          \
-        READANDCHECK((vec).data(), size);                            \
+#define READXBVECTOR(vec)                               \
+    {                                                   \
+        size_t size;                                    \
+        READANDCHECK(&size, 1);                         \
+        FAISS_THROW_IF_NOT(size < (uint64_t{1} << 40)); \
+        size *= 4;                                      \
+        (vec).resize(size);                             \
+        READANDCHECK((vec).data(), size);               \
     }

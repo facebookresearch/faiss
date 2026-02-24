@@ -35,18 +35,18 @@ inline size_t roundup(size_t a, size_t b) {
 }
 
 void IndexFastScan::init_fastscan(
-        int d,
+        int d_,
         size_t M_init,
         size_t nbits_init,
         MetricType metric,
-        int bbs) {
+        int bbs_) {
     FAISS_THROW_IF_NOT(nbits_init == 4);
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    this->d = d;
+    FAISS_THROW_IF_NOT(bbs_ % 32 == 0);
+    this->d = d_;
     this->M = M_init;
     this->nbits = nbits_init;
     this->metric_type = metric;
-    this->bbs = bbs;
+    this->bbs = bbs_;
     ksub = (1 << nbits_init);
 
     code_size = (M_init * nbits_init + 7) / 8;
@@ -139,7 +139,7 @@ void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
             "can only merge indexes of the same type");
 }
 
-void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+void IndexFastScan::merge_from(Index& otherIndex, idx_t /*add_id*/) {
     check_compatible_for_merge(otherIndex);
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
@@ -147,7 +147,7 @@ void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
     std::vector<uint8_t> buffer(code_size);
     CodePackerPQ4 packer(M, bbs);
 
-    for (int i = 0; i < other->ntotal; i++) {
+    for (idx_t i = 0; i < other->ntotal; i++) {
         packer.unpack_1(other->codes.data(), i, buffer.data());
         packer.pack_1(buffer.data(), ntotal + i, codes.data());
     }
@@ -173,7 +173,7 @@ void estimators_from_tables_generic(
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = 0;
         const dis_t* dt = dis_table;
-        int nscale = context.norm_scaler ? context.norm_scaler->nscale : 0;
+        size_t nscale = context.norm_scaler ? context.norm_scaler->nscale : 0;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
@@ -204,7 +204,7 @@ SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         int impl,
         idx_t n,
         idx_t k,
-        size_t ntotal,
+        size_t ntotal_,
         float* distances,
         idx_t* labels,
         const IDSelector* sel,
@@ -216,11 +216,12 @@ SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         using SingleResultHC = SingleResultHandler<CMax<uint16_t, int>, false>;
 
         if (k == 1) {
-            return new SingleResultHC(n, ntotal, distances, labels, sel);
+            return new SingleResultHC(n, ntotal_, distances, labels, sel);
         } else if (impl % 2 == 0) {
-            return new HeapHC(n, ntotal, k, distances, labels, sel);
+            return new HeapHC(n, ntotal_, k, distances, labels, sel);
         } else {
-            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
+            return new ReservoirHC(
+                    n, ntotal_, k, 2 * k, distances, labels, sel);
         }
     } else {
         using HeapHC = HeapHandler<CMin<uint16_t, int>, false>;
@@ -228,11 +229,12 @@ SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         using SingleResultHC = SingleResultHandler<CMin<uint16_t, int>, false>;
 
         if (k == 1) {
-            return new SingleResultHC(n, ntotal, distances, labels, sel);
+            return new SingleResultHC(n, ntotal_, distances, labels, sel);
         } else if (impl % 2 == 0) {
-            return new HeapHC(n, ntotal, k, distances, labels, sel);
+            return new HeapHC(n, ntotal_, k, distances, labels, sel);
         } else {
-            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
+            return new ReservoirHC(
+                    n, ntotal_, k, 2 * k, distances, labels, sel);
         }
     }
 }
@@ -249,7 +251,7 @@ void IndexFastScan::compute_quantized_LUT(
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
     compute_float_LUT(dis_tables.get(), n, x, context);
 
-    for (uint64_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         round_uint8_per_column(
                 dis_tables.get() + i * dim12,
                 M,
@@ -258,11 +260,11 @@ void IndexFastScan::compute_quantized_LUT(
                 &normalizers[2 * i + 1]);
     }
 
-    for (uint64_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         const float* t_in = dis_tables.get() + i * dim12;
         uint8_t* t_out = lut + i * M2 * ksub;
 
-        for (int j = 0; j < dim12; j++) {
+        for (size_t j = 0; j < dim12; j++) {
             t_out[j] = int(t_in[j]);
         }
         memset(t_out + dim12, 0, (M2 - M) * ksub);
@@ -406,7 +408,7 @@ void IndexFastScan::search_implem_234(
     if (implem == 2) {
         // default float
     } else if (implem == 3 || implem == 4) {
-        for (uint64_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             round_uint8_per_column(
                     dis_tables.get() + i * dim12,
                     M,
@@ -439,7 +441,7 @@ void IndexFastScan::search_implem_234(
             float a = normalizers[2 * i];
             float b = normalizers[2 * i + 1];
 
-            for (int j = 0; j < k; j++) {
+            for (idx_t j = 0; j < k; j++) {
                 heap_dis[j] = heap_dis[j] / a + b;
             }
         }
@@ -496,14 +498,14 @@ void IndexFastScan::search_implem_12(
     // block sizes are encoded in qbs, 4 bits at a time
 
     // caution: we override an object field
-    int qbs = this->qbs;
+    int qbs_ = this->qbs;
 
-    if (n != pq4_qbs_to_nq(qbs)) {
-        qbs = pq4_preferred_qbs(n);
+    if (n != pq4_qbs_to_nq(qbs_)) {
+        qbs_ = pq4_preferred_qbs(n);
     }
 
     int LUT_nq =
-            pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
+            pq4_pack_LUT_qbs(qbs_, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
     std::unique_ptr<RH> handler(
@@ -525,7 +527,7 @@ void IndexFastScan::search_implem_12(
         // pass
     } else {
         pq4_accumulate_loop_qbs(
-                qbs,
+                qbs_,
                 ntotal2,
                 M2,
                 codes.get(),

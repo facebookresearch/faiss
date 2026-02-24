@@ -31,7 +31,8 @@ namespace faiss {
  **************************************************************/
 
 int HNSW::nb_neighbors(int layer_no) const {
-    FAISS_THROW_IF_NOT(layer_no + 1 < cum_nneighbor_per_level.size());
+    FAISS_THROW_IF_NOT(
+            static_cast<size_t>(layer_no + 1) < cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no + 1] -
             cum_nneighbor_per_level[layer_no];
 }
@@ -39,7 +40,7 @@ int HNSW::nb_neighbors(int layer_no) const {
 void HNSW::set_nb_neighbors(int level_no, int n) {
     FAISS_THROW_IF_NOT(levels.size() == 0);
     int cur_n = nb_neighbors(level_no);
-    for (int i = level_no + 1; i < cum_nneighbor_per_level.size(); i++) {
+    for (size_t i = level_no + 1; i < cum_nneighbor_per_level.size(); i++) {
         cum_nneighbor_per_level[i] += n - cur_n;
     }
 }
@@ -67,7 +68,7 @@ HNSW::HNSW(int M) : rng(12345) {
 int HNSW::random_level() {
     double f = rng.rand_float();
     // could be a bit faster with bisection
-    for (int level = 0; level < assign_probas.size(); level++) {
+    for (size_t level = 0; level < assign_probas.size(); level++) {
         if (f < assign_probas[level]) {
             return level;
         }
@@ -92,7 +93,7 @@ void HNSW::set_default_probas(int M, float levelMult) {
 }
 
 void HNSW::clear_neighbor_tables(int level) {
-    for (int i = 0; i < levels.size(); i++) {
+    for (size_t i = 0; i < levels.size(); i++) {
         size_t begin, end;
         neighbor_range(i, level, &begin, &end);
         for (size_t j = begin; j < end; j++) {
@@ -111,14 +112,15 @@ void HNSW::reset() {
 }
 
 void HNSW::print_neighbor_stats(int level) const {
-    FAISS_THROW_IF_NOT(level < cum_nneighbor_per_level.size());
+    FAISS_THROW_IF_NOT(
+            static_cast<size_t>(level) < cum_nneighbor_per_level.size());
     printf("stats on level %d, max %d neighbors per vertex:\n",
            level,
            nb_neighbors(level));
     size_t tot_neigh = 0, tot_common = 0, tot_reciprocal = 0, n_node = 0;
 #pragma omp parallel for reduction(+ : tot_neigh) reduction(+ : tot_common) \
         reduction(+ : tot_reciprocal) reduction(+ : n_node)
-    for (int i = 0; i < levels.size(); i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(levels.size()); i++) {
         if (levels[i] > level) {
             n_node++;
             size_t begin, end;
@@ -130,7 +132,7 @@ void HNSW::print_neighbor_stats(int level) const {
                 }
                 neighset.insert(neighbors[j]);
             }
-            int n_neigh = neighset.size();
+            size_t n_neigh = neighset.size();
             int n_common = 0;
             int n_reciprocal = 0;
             for (size_t j = begin; j < end; j++) {
@@ -179,7 +181,7 @@ void HNSW::fill_with_random_links(size_t n) {
 
     for (int level = max_level_2 - 1; level >= 0; --level) {
         std::vector<int> elts;
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             if (levels[i] > level) {
                 elts.push_back(i);
             }
@@ -190,7 +192,7 @@ void HNSW::fill_with_random_links(size_t n) {
             continue;
         }
 
-        for (int ii = 0; ii < elts.size(); ii++) {
+        for (size_t ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
             size_t begin, end;
             neighbor_range(i, 0, &begin, &end);
@@ -213,14 +215,14 @@ int HNSW::prepare_level_tab(size_t n, bool preset_levels) {
         FAISS_ASSERT(n0 + n == levels.size());
     } else {
         FAISS_ASSERT(n0 == levels.size());
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             int pt_level = random_level();
             levels.push_back(pt_level + 1);
         }
     }
 
     int max_level_2 = 0;
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         int pt_level = levels[i + n0] - 1;
         if (pt_level > max_level_2) {
             max_level_2 = pt_level;
@@ -265,7 +267,7 @@ void HNSW::shrink_neighbor_list(
 
         if (good) {
             output.push_back(v1);
-            if (output.size() >= max_size) {
+            if (output.size() >= static_cast<size_t>(max_size)) {
                 return;
             }
         } else if (keep_max_size_level0) {
@@ -273,7 +275,8 @@ void HNSW::shrink_neighbor_list(
         }
     }
     size_t idx = 0;
-    while (keep_max_size_level0 && (output.size() < max_size) &&
+    while (keep_max_size_level0 &&
+           (output.size() < static_cast<size_t>(max_size)) &&
            (idx < outsiders.size())) {
         output.push_back(outsiders[idx++]);
     }
@@ -295,7 +298,7 @@ void shrink_neighbor_list(
         std::priority_queue<NodeDistCloser>& resultSet1,
         int max_size,
         bool keep_max_size_level0 = false) {
-    if (resultSet1.size() < max_size) {
+    if (resultSet1.size() < static_cast<size_t>(max_size)) {
         return;
     }
     std::priority_queue<NodeDistFarther> resultSet;
@@ -418,11 +421,12 @@ void search_neighbors_to_add(
                 float dis = qdis(nodeId);
                 NodeDistFarther evE1(dis, nodeId);
 
-                if (results.size() < hnsw.efConstruction ||
+                if (results.size() < static_cast<size_t>(hnsw.efConstruction) ||
                     results.top().d > dis) {
                     results.emplace(dis, nodeId);
                     candidates.emplace(dis, nodeId);
-                    if (results.size() > hnsw.efConstruction) {
+                    if (results.size() >
+                        static_cast<size_t>(hnsw.efConstruction)) {
                         results.pop();
                     }
                 }
@@ -433,11 +437,12 @@ void search_neighbors_to_add(
             // the following version processes 4 neighbors at a time
             auto update_with_candidate = [&](const storage_idx_t idx,
                                              const float dis) {
-                if (results.size() < hnsw.efConstruction ||
+                if (results.size() < static_cast<size_t>(hnsw.efConstruction) ||
                     results.top().d > dis) {
                     results.emplace(dis, idx);
                     candidates.emplace(dis, idx);
-                    if (results.size() > hnsw.efConstruction) {
+                    if (results.size() >
+                        static_cast<size_t>(hnsw.efConstruction)) {
                         results.pop();
                     }
                 }
@@ -479,7 +484,7 @@ void search_neighbors_to_add(
             }
 
             // process leftovers
-            for (size_t icnt = 0; icnt < n_buffered; icnt++) {
+            for (int icnt = 0; icnt < n_buffered; icnt++) {
                 float dis = qdis(buffered_ids[icnt]);
                 update_with_candidate(buffered_ids[icnt], dis);
             }
@@ -726,7 +731,7 @@ int search_from_candidates(
             }
         }
 
-        for (size_t icnt = 0; icnt < counter; icnt++) {
+        for (int icnt = 0; icnt < counter; icnt++) {
             float dis = qdis(saved_j[icnt]);
             add_to_heap(saved_j[icnt], dis);
 
@@ -1039,11 +1044,11 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (top_candidates.top().first > dis ||
-                top_candidates.size() < ef) {
+                top_candidates.size() < static_cast<size_t>(ef)) {
                 candidates.emplace(dis, idx);
                 top_candidates.emplace(dis, idx);
 
-                if (top_candidates.size() > ef) {
+                if (top_candidates.size() > static_cast<size_t>(ef)) {
                     top_candidates.pop();
                 }
             }
@@ -1077,7 +1082,7 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
             }
         }
 
-        for (size_t icnt = 0; icnt < counter; icnt++) {
+        for (int icnt = 0; icnt < counter; icnt++) {
             float dis = qdis(saved_j[icnt]);
             add_to_heap(saved_j[icnt], dis);
 
@@ -1157,7 +1162,7 @@ HNSWStats greedy_update_nearest(
         }
 
         // process leftovers
-        for (size_t icnt = 0; icnt < n_buffered; icnt++) {
+        for (int icnt = 0; icnt < n_buffered; icnt++) {
             float dis = qdis(buffered_ids[icnt]);
             update_with_candidate(buffered_ids[icnt], dis);
         }
@@ -1201,12 +1206,12 @@ HNSWStats HNSW::search(
     int k = extract_k_from_ResultHandler(res);
 
     bool bounded_queue = this->search_bounded_queue;
-    int efSearch = this->efSearch;
+    int cur_efSearch = this->efSearch;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
             bounded_queue = hnsw_params->bounded_queue;
-            efSearch = hnsw_params->efSearch;
+            cur_efSearch = hnsw_params->efSearch;
         }
     }
 
@@ -1220,7 +1225,7 @@ HNSWStats HNSW::search(
         stats.combine(local_stats);
     }
 
-    int ef = std::max(efSearch, k);
+    int ef = std::max(cur_efSearch, k);
     if (bounded_queue) { // this is the most common branch, for now we only
                          // support Panorama search in this branch
         MinimaxHeap candidates(ef);
@@ -1248,7 +1253,7 @@ HNSWStats HNSW::search(
                 search_from_candidate_unbounded(
                         *this, Node(d_nearest, nearest), qdis, ef, &vt, stats);
 
-        while (top_candidates.size() > k) {
+        while (top_candidates.size() > static_cast<size_t>(k)) {
             top_candidates.pop();
         }
 
@@ -1278,11 +1283,11 @@ void HNSW::search_level_0(
         const SearchParameters* params) const {
     const HNSW& hnsw = *this;
 
-    auto efSearch = hnsw.efSearch;
+    auto cur_efSearch = hnsw.efSearch;
     if (params) {
         if (const SearchParametersHNSW* hnsw_params =
                     dynamic_cast<const SearchParametersHNSW*>(params)) {
-            efSearch = hnsw_params->efSearch;
+            cur_efSearch = hnsw_params->efSearch;
         }
     }
 
@@ -1291,7 +1296,7 @@ void HNSW::search_level_0(
     if (search_type == 1) {
         int nres = 0;
 
-        for (int j = 0; j < nprobe; j++) {
+        for (idx_t j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
             if (cj < 0) {
@@ -1302,7 +1307,7 @@ void HNSW::search_level_0(
                 continue;
             }
 
-            int candidates_size = std::max(efSearch, k);
+            int candidates_size = std::max(cur_efSearch, k);
             MinimaxHeap candidates(candidates_size);
 
             candidates.push(cj, nearest_d[j]);
@@ -1320,11 +1325,11 @@ void HNSW::search_level_0(
             nres = std::min(nres, candidates_size);
         }
     } else if (search_type == 2) {
-        int candidates_size = std::max(efSearch, int(k));
+        int candidates_size = std::max(cur_efSearch, int(k));
         candidates_size = std::max(candidates_size, int(nprobe));
 
         MinimaxHeap candidates(candidates_size);
-        for (int j = 0; j < nprobe; j++) {
+        for (idx_t j = 0; j < nprobe; j++) {
             storage_idx_t cj = nearest_i[j];
 
             if (cj < 0) {
@@ -1421,7 +1426,7 @@ int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
 
     // The following loop tracks the rightmost index with the min distance.
     // -1 index values are ignored.
-    const int k16 = (k / 16) * 16;
+    const size_t k16 = (k / 16) * 16;
     for (size_t iii = 0; iii < k16; iii += 16) {
         __m512i indices =
                 _mm512_loadu_si512((const __m512i*)(ids.data() + iii));
@@ -1447,7 +1452,7 @@ int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
     }
 
     // leftovers
-    if (k16 != k) {
+    if (k16 != static_cast<size_t>(k)) {
         const __mmask16 kmask = (1 << (k - k16)) - 1;
 
         __m512i indices = _mm512_mask_loadu_epi32(
@@ -1515,7 +1520,7 @@ int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
 
     // The following loop tracks the rightmost index with the min distance.
     // -1 index values are ignored.
-    const int k8 = (k / 8) * 8;
+    const size_t k8 = (k / 8) * 8;
     for (; iii < k8; iii += 8) {
         __m256i indices =
                 _mm256_loadu_si256((const __m256i*)(ids.data() + iii));
@@ -1556,7 +1561,7 @@ int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
     }
 
     // process last values. Vectorizing is doable, but is not practical
-    for (; iii < k; iii++) {
+    for (; iii < static_cast<size_t>(k); iii++) {
         if (ids[iii] != -1 && dis[iii] <= min_dis) {
             min_dis = dis[iii];
             min_idx = iii;

@@ -29,8 +29,8 @@ void IndexBinaryHash::InvertedList::add(
     vecs.insert(vecs.end(), code, code + code_size);
 }
 
-IndexBinaryHash::IndexBinaryHash(int d, int b)
-        : IndexBinary(d), b(b), nflip(0) {
+IndexBinaryHash::IndexBinaryHash(int d_, int b_)
+        : IndexBinary(d_), b(b_), nflip(0) {
     is_trained = true;
 }
 
@@ -72,7 +72,7 @@ struct FlipEnumerator {
     int nbit, nflip, maxflip;
     uint64_t mask, x;
 
-    FlipEnumerator(int nbit, int maxflip) : nbit(nbit), maxflip(maxflip) {
+    FlipEnumerator(int nbit_, int maxflip_) : nbit(nbit_), maxflip(maxflip_) {
         nflip = 0;
         mask = 0;
         x = 0;
@@ -285,15 +285,15 @@ IndexBinaryHashStats indexBinaryHash_stats;
  * IndexBinaryMultiHash implementation
  ******************************************************/
 
-IndexBinaryMultiHash::IndexBinaryMultiHash(int d, int nhash, int b)
-        : IndexBinary(d),
-          storage(new IndexBinaryFlat(d)),
+IndexBinaryMultiHash::IndexBinaryMultiHash(int d_, int nhash_, int b_)
+        : IndexBinary(d_),
+          storage(new IndexBinaryFlat(d_)),
           own_fields(true),
-          maps(nhash),
-          nhash(nhash),
-          b(b),
+          maps(nhash_),
+          nhash(nhash_),
+          b(b_),
           nflip(0) {
-    FAISS_THROW_IF_NOT(nhash * b <= d);
+    FAISS_THROW_IF_NOT(nhash_ * b_ <= d_);
 }
 
 IndexBinaryMultiHash::IndexBinaryMultiHash()

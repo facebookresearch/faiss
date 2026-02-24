@@ -142,8 +142,8 @@ size_t sample_from_cumsum(
 
 } // namespace
 
-ClusteringInitialization::ClusteringInitialization(size_t d, size_t k)
-        : d(d), k(k) {}
+ClusteringInitialization::ClusteringInitialization(size_t d_in, size_t k_in)
+        : d(d_in), k(k_in) {}
 
 void ClusteringInitialization::init_centroids(
         size_t n,

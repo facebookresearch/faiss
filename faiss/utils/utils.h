@@ -172,8 +172,8 @@ struct CombinerRangeKNN {
     T r2;          /// range search radius
     bool keep_max; /// whether to keep max values instead of min.
 
-    CombinerRangeKNN(int64_t nq, size_t k, T r2, bool keep_max)
-            : nq(nq), k(k), r2(r2), keep_max(keep_max) {}
+    CombinerRangeKNN(int64_t nq_in, size_t k_in, T r2_in, bool keep_max_in)
+            : nq(nq_in), k(k_in), r2(r2_in), keep_max(keep_max_in) {}
 
     /// Knn search results
     const int64_t* I = nullptr; /// size nq * k
@@ -200,7 +200,7 @@ struct CodeSet {
     size_t d;
     std::set<std::vector<uint8_t>> s;
 
-    explicit CodeSet(size_t d) : d(d) {}
+    explicit CodeSet(size_t d_in) : d(d_in) {}
     void insert(size_t n, const uint8_t* codes, bool* inserted);
 };
 

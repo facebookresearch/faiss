@@ -29,7 +29,7 @@ struct ZnSphereSearch {
     /// size dim * natom
     std::vector<float> voc;
 
-    ZnSphereSearch(int dim, int r2);
+    ZnSphereSearch(int dim, int r2_in);
 
     /// find nearest centroid. x does not need to be normalized
     float search(const float* x, float* c) const;
@@ -57,7 +57,7 @@ struct EnumeratedVectors {
     uint64_t nv;
     int dim;
 
-    explicit EnumeratedVectors(int dim) : nv(0), dim(dim) {}
+    explicit EnumeratedVectors(int dim_in) : nv(0), dim(dim_in) {}
 
     /// encode a vector from a collection
     virtual uint64_t encode(const float* x) const = 0;
@@ -98,7 +98,7 @@ struct Repeats {
     std::vector<Repeat> repeats;
 
     // initialize from a template of the atom.
-    Repeats(int dim = 0, const float* c = nullptr);
+    Repeats(int dim_in = 0, const float* c = nullptr);
 
     // count number of possible codes for this atom
     uint64_t count() const;
@@ -124,7 +124,7 @@ struct ZnSphereCodec : ZnSphereSearch, EnumeratedVectors {
     uint64_t nv;
     size_t code_size;
 
-    ZnSphereCodec(int dim, int r2);
+    ZnSphereCodec(int dim_in, int r2_in);
 
     uint64_t search_and_encode(const float* x) const;
 
@@ -146,7 +146,7 @@ struct ZnSphereCodecRec : EnumeratedVectors {
     int log2_dim;
     int code_size;
 
-    ZnSphereCodecRec(int dim, int r2);
+    ZnSphereCodecRec(int dim_in, int r2_in);
 
     uint64_t encode_centroid(const float* c) const;
 
@@ -176,7 +176,7 @@ struct ZnSphereCodecAlt : ZnSphereCodec {
     bool use_rec;
     ZnSphereCodecRec znc_rec;
 
-    ZnSphereCodecAlt(int dim, int r2);
+    ZnSphereCodecAlt(int dim_in, int r2_in);
 
     uint64_t encode(const float* x) const override;
 
