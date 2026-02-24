@@ -218,7 +218,9 @@ static void read_index_header(Index& idx, IOReader* f) {
     READ1(dummy);
     READ1(dummy);
     READ1(idx.is_trained);
-    READ1(idx.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    idx.metric_type = metric_type_from_int(metric_type_int);
     if (idx.metric_type > 1) {
         READ1(idx.metric_arg);
     }
@@ -786,7 +788,9 @@ static void read_RaBitQuantizer(
         bool multi_bit = true) {
     READ1(rabitq.d);
     READ1(rabitq.code_size);
-    READ1(rabitq.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    rabitq.metric_type = metric_type_from_int(metric_type_int);
 
     if (multi_bit) {
         READ1(rabitq.nb_bits);
@@ -1740,7 +1744,9 @@ static void read_index_binary_header(IndexBinary& idx, IOReader* f) {
     READ1(idx.code_size);
     READ1(idx.ntotal);
     READ1(idx.is_trained);
-    READ1(idx.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    idx.metric_type = metric_type_from_int(metric_type_int);
     FAISS_THROW_IF_NOT_FMT(
             idx.d >= 0, "invalid binary index dimension %d", idx.d);
     FAISS_THROW_IF_NOT_FMT(
