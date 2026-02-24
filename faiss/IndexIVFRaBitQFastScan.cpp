@@ -41,31 +41,38 @@ inline size_t roundup(size_t a, size_t b) {
 IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan() = default;
 
 IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_in,
+        size_t d_in,
+        size_t nlist_in,
         MetricType metric,
-        int bbs,
-        bool own_invlists,
+        int bbs_in,
+        bool own_invlists_in,
         uint8_t nb_bits)
-        : IndexIVFFastScan(quantizer, d, nlist, 0, metric, own_invlists),
-          rabitq(d, metric, nb_bits) {
-    FAISS_THROW_IF_NOT_MSG(d > 0, "Dimension must be positive");
+        : IndexIVFFastScan(
+                  quantizer_in,
+                  d_in,
+                  nlist_in,
+                  0,
+                  metric,
+                  own_invlists_in),
+          rabitq(d_in, metric, nb_bits) {
+    FAISS_THROW_IF_NOT_MSG(d_in > 0, "Dimension must be positive");
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "RaBitQ only supports L2 and Inner Product metrics");
-    FAISS_THROW_IF_NOT_MSG(bbs % 32 == 0, "Batch size must be multiple of 32");
-    FAISS_THROW_IF_NOT_MSG(quantizer != nullptr, "Quantizer cannot be null");
+    FAISS_THROW_IF_NOT_MSG(
+            bbs_in % 32 == 0, "Batch size must be multiple of 32");
+    FAISS_THROW_IF_NOT_MSG(quantizer_in != nullptr, "Quantizer cannot be null");
 
     by_residual = true;
     qb = 8; // RaBitQ quantization bits
     centered = false;
 
     // FastScan-specific parameters: 4 bits per sub-quantizer
-    const size_t M_fastscan = (d + 3) / 4;
+    const size_t M_fastscan = (d_in + 3) / 4;
     constexpr size_t nbits_fastscan = 4;
 
-    this->bbs = bbs;
+    this->bbs = bbs_in;
     this->fine_quantizer = &rabitq;
     this->M = M_fastscan;
     this->nbits = nbits_fastscan;
@@ -185,7 +192,7 @@ void IndexIVFRaBitQFastScan::encode_vectors(
                 const size_t bit_pattern_size = (d + 7) / 8;
 
                 // Pack sign bits directly into FastScan format (inline)
-                for (size_t j = 0; j < d; j++) {
+                for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                     const float or_minus_c = xi[j] - centroid[j];
                     if (or_minus_c > 0.0f) {
                         rabitq_utils::set_bit_fastscan(fastscan_code, j);
@@ -214,7 +221,7 @@ void IndexIVFRaBitQFastScan::encode_vectors(
 
                     // Compute residual (needed for quantize_ex_bits)
                     std::vector<float> residual(d);
-                    for (size_t j = 0; j < d; j++) {
+                    for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                         residual[j] = xi[j] - centroid[j];
                     }
 
@@ -296,7 +303,7 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
                 for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
                     const size_t dim_idx = dim_start + dim_offset;
 
-                    if (dim_idx < d) {
+                    if (dim_idx < static_cast<size_t>(d)) {
                         const bool db_bit = (code_val >> dim_offset) & 1;
                         const float query_value = rotated_qq[dim_idx];
 
@@ -320,7 +327,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
                 for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
                     const size_t dim_idx = dim_start + dim_offset;
 
-                    if (dim_idx < d && ((code_val >> dim_offset) & 1)) {
+                    if (dim_idx < static_cast<size_t>(d) &&
+                        ((code_val >> dim_offset) & 1)) {
                         inner_product += rotated_qq[dim_idx];
                         popcount++;
                     }
@@ -349,18 +357,18 @@ void IndexIVFRaBitQFastScan::search_preassigned(
             !store_pairs, "store_pairs not supported for RaBitQFastScan");
     FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
 
-    size_t nprobe = this->nprobe;
+    size_t cur_nprobe = this->nprobe;
     if (params) {
         FAISS_THROW_IF_NOT(params->max_codes == 0);
-        nprobe = params->nprobe;
+        cur_nprobe = params->nprobe;
     }
 
-    std::vector<QueryFactorsData> query_factors_storage(n * nprobe);
+    std::vector<QueryFactorsData> query_factors_storage(n * cur_nprobe);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
-    context.nprobe = nprobe;
+    context.nprobe = cur_nprobe;
 
-    const CoarseQuantized cq = {nprobe, centroid_dis, assign};
+    const CoarseQuantized cq = {cur_nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
 }
 
@@ -374,21 +382,21 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
 
-    size_t nprobe = cq.nprobe;
+    size_t cq_nprobe = cq.nprobe;
 
     size_t dim12 = 16 * M;
 
-    dis_tables.resize(n * nprobe * dim12);
-    biases.resize(n * nprobe);
+    dis_tables.resize(n * cq_nprobe * dim12);
+    biases.resize(n * cq_nprobe);
 
-    if (n * nprobe > 0) {
-        memset(biases.get(), 0, sizeof(float) * n * nprobe);
+    if (n * cq_nprobe > 0) {
+        memset(biases.get(), 0, sizeof(float) * n * cq_nprobe);
     }
-    std::unique_ptr<float[]> xrel(new float[n * nprobe * d]);
+    std::unique_ptr<float[]> xrel(new float[n * cq_nprobe * d]);
 
-#pragma omp parallel for if (n * nprobe > 1000)
-    for (idx_t ij = 0; ij < n * nprobe; ij++) {
-        idx_t i = ij / nprobe;
+#pragma omp parallel for if (n * cq_nprobe > 1000)
+    for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
+        idx_t i = ij / cq_nprobe;
         float* xij = &xrel[ij * d];
         idx_t cij = cq.ids[ij];
 
@@ -467,7 +475,7 @@ void IndexIVFRaBitQFastScan::reconstruct_from_offset(
             fastscan_code.data(), residual.data(), dp_multiplier);
 
     // Reconstruct: x = centroid + residual
-    for (size_t j = 0; j < d; j++) {
+    for (size_t j = 0; j < static_cast<size_t>(d); j++) {
         recons[j] = centroid[j] + residual[j];
     }
 }
@@ -492,7 +500,7 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
 
         idx_t list_no = decode_listno(code_i);
 
-        if (list_no >= 0 && list_no < nlist) {
+        if (list_no >= 0 && list_no < static_cast<idx_t>(nlist)) {
             quantizer->reconstruct(list_no, centroid.data());
 
             const uint8_t* fastscan_code = code_i + coarse_size;
@@ -504,7 +512,7 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
             decode_fastscan_to_residual(
                     fastscan_code, residual.data(), base_factors.dp_multiplier);
 
-            for (size_t j = 0; j < d; j++) {
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                 x_i[j] = centroid[j] + residual[j];
             }
         } else {
@@ -521,7 +529,7 @@ void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
 
     const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
 
-    for (size_t j = 0; j < d; j++) {
+    for (size_t j = 0; j < static_cast<size_t>(d); j++) {
         bool bit_value = rabitq_utils::extract_bit_fastscan(fastscan_code, j);
 
         float bit_as_float = bit_value ? 1.0f : 0.0f;
@@ -808,6 +816,7 @@ namespace {
 
 /// Provides IVF scanner interface using FastScan's SIMD batch processing.
 struct IVFRaBitQFastScanScanner : InvertedListScanner {
+    using InvertedListScanner::scan_codes;
     static constexpr int impl = 10;
     static constexpr size_t nq = 1;
 
@@ -827,24 +836,24 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
     std::vector<float> centroid;
 
     IVFRaBitQFastScanScanner(
-            const IndexIVFRaBitQFastScan& index,
-            bool store_pairs,
-            const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), index(index) {
-        this->keep_max = is_similarity_metric(index.metric_type);
+            const IndexIVFRaBitQFastScan& index_in,
+            bool store_pairs_in,
+            const IDSelector* sel_in)
+            : InvertedListScanner(store_pairs_in, sel_in), index(index_in) {
+        this->keep_max = is_similarity_metric(index_in.metric_type);
     }
 
     void set_query(const float* query) override {
         this->xi = query;
     }
 
-    void set_list(idx_t list_no, float coarse_dis) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float coarse_dis_in) override {
+        this->list_no = list_no_in;
 
         IndexIVFFastScan::CoarseQuantized cq{
                 .nprobe = 1,
-                .dis = &coarse_dis,
-                .ids = &list_no,
+                .dis = &coarse_dis_in,
+                .ids = &list_no_in,
         };
 
         // Set up context for use in scan_codes

@@ -162,9 +162,14 @@ void sa_decode_impl(
 
     // allocate tmp buffers
     std::vector<uint8_t> tmp(
-            (chunk_size < n_input ? chunk_size : n_input) * old_code_size);
+            (chunk_size < static_cast<size_t>(n_input)
+                     ? chunk_size
+                     : static_cast<size_t>(n_input)) *
+            old_code_size);
     std::vector<StorageMinMaxFP16> minmax(
-            (chunk_size < n_input ? chunk_size : n_input));
+            (chunk_size < static_cast<size_t>(n_input)
+                     ? chunk_size
+                     : static_cast<size_t>(n_input)));
 
     // all the elements to process
     size_t n_left = n_input;
@@ -339,9 +344,9 @@ int rowwise_minmax_sa_decode_bs = 16384;
  * IndexRowwiseMinMaxBase implementation
  ********************************************************/
 
-IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase(Index* index)
-        : Index(index->d, index->metric_type),
-          index{index},
+IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase(Index* index_in)
+        : Index(index_in->d, index_in->metric_type),
+          index{index_in},
           own_fields{false} {}
 
 IndexRowwiseMinMaxBase::IndexRowwiseMinMaxBase()
@@ -376,8 +381,8 @@ void IndexRowwiseMinMaxBase::reset() {
  * IndexRowwiseMinMaxFP16 implementation
  ********************************************************/
 
-IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16(Index* index)
-        : IndexRowwiseMinMaxBase(index) {}
+IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16(Index* index_in)
+        : IndexRowwiseMinMaxBase(index_in) {}
 
 IndexRowwiseMinMaxFP16::IndexRowwiseMinMaxFP16() : IndexRowwiseMinMaxBase() {}
 
@@ -411,8 +416,8 @@ void IndexRowwiseMinMaxFP16::train_inplace(idx_t n, float* x) {
  * IndexRowwiseMinMax implementation
  ********************************************************/
 
-IndexRowwiseMinMax::IndexRowwiseMinMax(Index* index)
-        : IndexRowwiseMinMaxBase(index) {}
+IndexRowwiseMinMax::IndexRowwiseMinMax(Index* index_in)
+        : IndexRowwiseMinMaxBase(index_in) {}
 
 IndexRowwiseMinMax::IndexRowwiseMinMax() : IndexRowwiseMinMaxBase() {}
 

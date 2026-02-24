@@ -75,14 +75,14 @@ bool test_search_centroid(const char* index_key) {
 
     const faiss::IndexIVF* ivf = faiss::ivflib::extract_index_ivf(index.get());
 
-    for (int i = 0; i < nb; i++) {
+    for (size_t i = 0; i < nb; i++) {
         bool found = false;
         int list_no = centroid_ids[i];
         int list_size = ivf->invlists->list_size(list_no);
         auto* list = ivf->invlists->get_ids(list_no);
 
         for (int j = 0; j < list_size; j++) {
-            if (list[j] == i) {
+            if (list[j] == static_cast<faiss::idx_t>(i)) {
                 found = true;
                 break;
             }
@@ -142,7 +142,7 @@ int test_search_and_return_centroids(const char* index_key) {
     // then check if the result ids are indeed in the inverted list
     // they are supposed to be in
 
-    for (int i = 0; i < nq * k; i++) {
+    for (size_t i = 0; i < nq * k; i++) {
         int list_no = result_centroid_ids[i];
         int result_no = newI[i];
 

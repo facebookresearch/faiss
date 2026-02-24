@@ -10,9 +10,9 @@
 namespace faiss {
 
 // BitstringWriter and BitstringReader functions
-inline BitstringWriter::BitstringWriter(uint8_t* code, size_t code_size)
-        : code(code), code_size(code_size), i(0) {
-    memset(code, 0, code_size);
+inline BitstringWriter::BitstringWriter(uint8_t* code_in, size_t code_size_in)
+        : code(code_in), code_size(code_size_in), i(0) {
+    memset(code_in, 0, code_size_in);
 }
 
 inline void BitstringWriter::write(uint64_t x, int nbit) {
@@ -36,8 +36,10 @@ inline void BitstringWriter::write(uint64_t x, int nbit) {
     }
 }
 
-inline BitstringReader::BitstringReader(const uint8_t* code, size_t code_size)
-        : code(code), code_size(code_size), i(0) {}
+inline BitstringReader::BitstringReader(
+        const uint8_t* code_in,
+        size_t code_size_in)
+        : code(code_in), code_size(code_size_in), i(0) {}
 
 inline uint64_t BitstringReader::read(int nbit) {
     assert(code_size * 8 >= nbit + i);
@@ -85,18 +87,18 @@ struct HCounterState {
     int k;
 
     HCounterState(
-            int* counters,
-            int64_t* ids_per_dis,
+            int* counters_in,
+            int64_t* ids_per_dis_in,
             const uint8_t* x,
             int d,
-            int k)
-            : counters(counters),
-              ids_per_dis(ids_per_dis),
+            int k_in)
+            : counters(counters_in),
+              ids_per_dis(ids_per_dis_in),
               hc(x, d / 8),
               thres(d + 1),
               count_lt(0),
               count_eq(0),
-              k(k) {}
+              k(k_in) {}
 
     void update_counter(const uint8_t* y, size_t j) {
         int32_t dis = hc.hamming(y);

@@ -62,7 +62,7 @@ void hnsw_add_vertices(
     }
 
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
     }
 
@@ -73,10 +73,10 @@ void hnsw_add_vertices(
     { // make buckets with vectors of the same level
 
         // build histogram
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             HNSW::storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= hist.size()) {
+            while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
             }
             hist[pt_level]++;
@@ -84,12 +84,12 @@ void hnsw_add_vertices(
 
         // accumulate
         std::vector<int> offsets(hist.size() + 1, 0);
-        for (int i = 0; i < hist.size() - 1; i++) {
+        for (size_t i = 0; i < hist.size() - 1; i++) {
             offsets[i + 1] = offsets[i] + hist[i];
         }
 
         // bucket sort
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             HNSW::storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
@@ -101,7 +101,7 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1;
+        for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
             int i0 = i1 - hist[pt_level];
@@ -157,7 +157,7 @@ void hnsw_add_vertices(
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
     }
 }
@@ -172,19 +172,19 @@ IndexBinaryHNSW::IndexBinaryHNSW() {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(int d, int M)
-        : IndexBinary(d),
+IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M)
+        : IndexBinary(d_),
           hnsw(M),
           own_fields(true),
-          storage(new IndexBinaryFlat(d)) {
+          storage(new IndexBinaryFlat(d_)) {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage, int M)
-        : IndexBinary(storage->d),
+IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage_, int M)
+        : IndexBinary(storage_->d),
           hnsw(M),
           own_fields(false),
-          storage(storage) {
+          storage(storage_) {
     is_trained = true;
 }
 
@@ -242,7 +242,7 @@ void IndexBinaryHNSW::search(
     }
 
 #pragma omp parallel for
-    for (int i = 0; i < n * k; ++i) {
+    for (idx_t i = 0; i < n * k; ++i) {
         distances[i] = std::round(distances_f[i]);
     }
 }
@@ -253,7 +253,13 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+    hnsw_add_vertices(
+            *this,
+            n0,
+            n,
+            x,
+            verbose,
+            hnsw.levels.size() == static_cast<size_t>(ntotal));
 }
 
 void IndexBinaryHNSW::reset() {
@@ -330,8 +336,8 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {
     storage = nullptr;
 }
 
-IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M)
-        : IndexBinaryHNSW(d, M) {
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d_, int M)
+        : IndexBinaryHNSW(d_, M) {
     init_level0 = true;
     keep_max_size_level0 = true;
 }
@@ -415,7 +421,7 @@ void IndexBinaryHNSWCagra::search(
         }
 
 #pragma omp parallel for
-        for (int i = 0; i < n * k; ++i) {
+        for (idx_t i = 0; i < n * k; ++i) {
             distances[i] = std::round(distances_f[i]);
         }
     }

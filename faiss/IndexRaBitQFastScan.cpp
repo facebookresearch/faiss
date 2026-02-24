@@ -37,13 +37,13 @@ size_t IndexRaBitQFastScan::compute_per_vector_storage_size() const {
 IndexRaBitQFastScan::IndexRaBitQFastScan() = default;
 
 IndexRaBitQFastScan::IndexRaBitQFastScan(
-        idx_t d,
+        idx_t d_in,
         MetricType metric,
-        int bbs,
+        int bbs_in,
         uint8_t nb_bits)
-        : rabitq(d, metric, nb_bits) {
+        : rabitq(d_in, metric, nb_bits) {
     // RaBitQ-specific validation
-    FAISS_THROW_IF_NOT_MSG(d > 0, "Dimension must be positive");
+    FAISS_THROW_IF_NOT_MSG(d_in > 0, "Dimension must be positive");
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "RaBitQ FastScan only supports L2 and Inner Product metrics");
@@ -52,24 +52,25 @@ IndexRaBitQFastScan::IndexRaBitQFastScan(
 
     // RaBitQ uses 1 bit per dimension packed into 4-bit FastScan sub-quantizers
     // Each FastScan sub-quantizer handles 4 RaBitQ dimensions
-    const size_t M_fastscan = (d + 3) / 4;
+    const size_t M_fastscan = (d_in + 3) / 4;
     constexpr size_t nbits_fastscan = 4;
 
     // init_fastscan will validate bbs % 32 == 0 and nbits_fastscan == 4
-    init_fastscan(static_cast<int>(d), M_fastscan, nbits_fastscan, metric, bbs);
+    init_fastscan(
+            static_cast<int>(d_in), M_fastscan, nbits_fastscan, metric, bbs_in);
 
     // Compute code_size directly using RaBitQuantizer
-    code_size = rabitq.compute_code_size(d, nb_bits);
+    code_size = rabitq.compute_code_size(d_in, nb_bits);
 
     // Set RaBitQ-specific parameters
     qb = 8;
-    center.resize(d, 0.0f);
+    center.resize(d_in, 0.0f);
 
     // Initialize empty flat storage
     flat_storage.clear();
 }
 
-IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs)
+IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs_in)
         : rabitq(orig.rabitq) {
     // RaBitQ-specific validation
     FAISS_THROW_IF_NOT_MSG(orig.d > 0, "Dimension must be positive");
@@ -89,7 +90,7 @@ IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs)
             M_fastscan,
             nbits_fastscan,
             orig.metric_type,
-            bbs);
+            bbs_in);
 
     code_size = rabitq.compute_code_size(d, rabitq.nb_bits);
 
@@ -131,7 +132,7 @@ IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs)
             uint8_t* fs_code = fastscan_codes.get() + i * code_size;
 
             // Convert each dimension's bit (same logic as compute_codes)
-            for (size_t j = 0; j < orig.d; j++) {
+            for (size_t j = 0; j < static_cast<size_t>(orig.d); j++) {
                 // Extract bit from original RaBitQ format
                 const size_t orig_byte_idx = j / 8;
                 const size_t orig_bit_offset = j % 8;
@@ -163,13 +164,13 @@ void IndexRaBitQFastScan::train(idx_t n, const float* x) {
     // compute a centroid
     std::vector<float> centroid(d, 0);
     for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
-        for (size_t j = 0; j < d; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
             centroid[j] += x[i * d + j];
         }
     }
 
     if (n != 0) {
-        for (size_t j = 0; j < d; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
             centroid[j] /= (float)n;
         }
     }
@@ -241,9 +242,11 @@ void IndexRaBitQFastScan::add(idx_t n, const float* x) {
     ntotal += n;
 }
 
-void IndexRaBitQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
-        const {
-    FAISS_ASSERT(codes != nullptr);
+void IndexRaBitQFastScan::compute_codes(
+        uint8_t* out_codes,
+        idx_t n,
+        const float* x) const {
+    FAISS_ASSERT(out_codes != nullptr);
     FAISS_ASSERT(x != nullptr);
     FAISS_ASSERT(
             (metric_type == MetricType::METRIC_L2 ||
@@ -258,23 +261,23 @@ void IndexRaBitQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
     const size_t ex_bits = rabitq.nb_bits - 1;
     const size_t ex_code_size = (d * ex_bits + 7) / 8;
 
-    memset(codes, 0, n * code_size);
+    memset(out_codes, 0, n * code_size);
 
 #pragma omp parallel for if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
-        uint8_t* const code = codes + i * code_size;
+        uint8_t* const code = out_codes + i * code_size;
         const float* const x_row = x + i * d;
 
         // Compute residual once, reuse for both sign bits and ex-bits
         std::vector<float> residual(d);
-        for (size_t j = 0; j < d; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
             const float centroid_val = centroid_data ? centroid_data[j] : 0.0f;
             residual[j] = x_row[j] - centroid_val;
         }
 
         // Pack sign bits directly into FastScan format using precomputed
         // residual
-        for (size_t j = 0; j < d; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
             if (residual[j] > 0.0f) {
                 rabitq_utils::set_bit_fastscan(code, j);
             }
@@ -374,7 +377,7 @@ void IndexRaBitQFastScan::compute_float_LUT(
                     for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
                         const size_t dim_idx = dim_start + dim_offset;
 
-                        if (dim_idx < d) {
+                        if (dim_idx < static_cast<size_t>(d)) {
                             const bool db_bit = (code_val >> dim_offset) & 1;
                             const float query_value = rotated_qq[dim_idx];
 
@@ -409,7 +412,8 @@ void IndexRaBitQFastScan::compute_float_LUT(
                     for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
                         const size_t dim_idx = dim_start + dim_offset;
 
-                        if (dim_idx < d && ((code_val >> dim_offset) & 1)) {
+                        if (dim_idx < static_cast<size_t>(d) &&
+                            ((code_val >> dim_offset) & 1)) {
                             inner_product += rotated_qq[dim_idx];
                             popcount++;
                         }
@@ -429,8 +433,8 @@ void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     const float* centroid_in =
             (center.data() == nullptr) ? nullptr : center.data();
-    const uint8_t* codes = bytes;
-    FAISS_ASSERT(codes != nullptr);
+    const uint8_t* input_codes = bytes;
+    FAISS_ASSERT(input_codes != nullptr);
     FAISS_ASSERT(x != nullptr);
 
     const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
@@ -439,7 +443,7 @@ void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
 #pragma omp parallel for if (n > 1000)
     for (int64_t i = 0; i < n; i++) {
         // Access code using correct FastScan format
-        const uint8_t* code = codes + i * code_size;
+        const uint8_t* code = input_codes + i * code_size;
 
         // Extract factors directly from embedded codes
         const uint8_t* factors_ptr = code + bit_pattern_size;
@@ -447,7 +451,7 @@ void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
                 reinterpret_cast<const rabitq_utils::SignBitFactors*>(
                         factors_ptr);
 
-        for (size_t j = 0; j < d; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
             // Use RaBitQUtils for consistent bit extraction
             bool bit_value = rabitq_utils::extract_bit_fastscan(code, j);
             float bit = bit_value ? 1.0f : 0.0f;
@@ -539,8 +543,11 @@ void RaBitQHeapHandler<C, with_id_map>::handle(
 
     // Compute loop bounds to avoid redundant bounds checking
     const size_t base_db_idx = this->j0 + b * 32;
-    const size_t max_vectors = (base_db_idx < rabitq_index->ntotal)
-            ? std::min<size_t>(32, rabitq_index->ntotal - base_db_idx)
+    const size_t max_vectors =
+            (base_db_idx < static_cast<size_t>(rabitq_index->ntotal))
+            ? std::min<size_t>(
+                      32,
+                      static_cast<size_t>(rabitq_index->ntotal) - base_db_idx)
             : 0;
 
     // Get storage size once

@@ -187,7 +187,7 @@ void hammings_knn_hc(
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
         const size_t j1 = std::min(j0 + block_size, n2);
 #pragma omp parallel for
-        for (int64_t i = 0; i < ha->nh; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(ha->nh); i++) {
             HammingComputer hc(bs1 + i * bytes_per_code, bytes_per_code);
 
             const uint8_t* __restrict bs2_ = bs2 + j0 * bytes_per_code;
@@ -270,7 +270,7 @@ void hammings_knn_mc(
     for (size_t j0 = 0; j0 < nb; j0 += block_size) {
         const size_t j1 = std::min(j0 + block_size, nb);
 #pragma omp parallel for
-        for (int64_t i = 0; i < na; ++i) {
+        for (int64_t i = 0; i < static_cast<int64_t>(na); ++i) {
             for (size_t j = j0; j < j1; ++j) {
                 if (!sel || sel->is_member(j)) {
                     cs[i].update_counter(b + j * bytes_per_code, j);
@@ -282,7 +282,7 @@ void hammings_knn_mc(
     for (size_t i = 0; i < na; ++i) {
         HCounterState<HammingComputer>& csi = cs[i];
 
-        int nres = 0;
+        size_t nres = 0;
         for (int b_2 = 0; b_2 < nBuckets && nres < k; b_2++) {
             for (int l = 0; l < csi.counters[b_2] && nres < k; l++) {
                 labels[i * k + nres] = csi.ids_per_dis[b_2 * k + l];
@@ -313,7 +313,7 @@ void hamming_range_search(
         RangeSearchPartialResult pres(res);
 
 #pragma omp for
-        for (int64_t i = 0; i < na; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(na); i++) {
             HammingComputer hc(a + i * code_size, code_size);
             const uint8_t* yi = b;
             RangeQueryResult& qres = pres.new_result(i);
@@ -366,11 +366,11 @@ struct Run_hamming_range_search {
  * equivalently to the lsb of the first byte that is stored.
  */
 void fvec2bitvec(const float* __restrict x, uint8_t* __restrict b, size_t d) {
-    for (int i = 0; i < d; i += 8) {
+    for (size_t i = 0; i < d; i += 8) {
         uint8_t w = 0;
         uint8_t mask = 1;
-        int nj = i + 8 <= d ? 8 : d - i;
-        for (int j = 0; j < nj; j++) {
+        size_t nj = i + 8 <= d ? 8 : d - i;
+        for (size_t j = 0; j < nj; j++) {
             if (x[i + j] >= 0) {
                 w |= mask;
             }
@@ -390,7 +390,7 @@ void fvecs2bitvecs(
         size_t n) {
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if (n > 100000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         fvec2bitvec(x + i * d, b + i * ncodes, d);
     }
 }
@@ -402,7 +402,7 @@ void bitvecs2fvecs(
         size_t n) {
     const int64_t ncodes = ((d + 7) / 8);
 #pragma omp parallel for if (n > 100000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         binary_to_real(d, b + i * ncodes, x + i * d);
     }
 }
@@ -441,13 +441,13 @@ void bitvec_shuffle(
         const uint8_t* __restrict a,
         uint8_t* __restrict b) {
     for (size_t i = 0; i < db; i++) {
-        FAISS_THROW_IF_NOT(order[i] >= 0 && order[i] < da);
+        FAISS_THROW_IF_NOT(order[i] >= 0 && static_cast<size_t>(order[i]) < da);
     }
     size_t lda = (da + 7) / 8;
     size_t ldb = (db + 7) / 8;
 
 #pragma omp parallel for if (n > 10000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const uint8_t* ai = a + i * lda;
         uint8_t* bi = b + i * ldb;
         memset(bi, 0, ldb);
@@ -722,11 +722,11 @@ void pack_bitstrings(
         size_t code_size) {
     FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const int32_t* in = unpacked + i * M;
         uint8_t* out = packed + i * code_size;
         BitstringWriter wr(out, code_size);
-        for (int j = 0; j < M; j++) {
+        for (size_t j = 0; j < M; j++) {
             wr.write(in[j], nbit);
         }
     }
@@ -740,16 +740,16 @@ void pack_bitstrings(
         uint8_t* packed,
         size_t code_size) {
     int totbit = 0;
-    for (int j = 0; j < M; j++) {
+    for (size_t j = 0; j < M; j++) {
         totbit += nbit[j];
     }
-    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+    FAISS_THROW_IF_NOT(code_size >= static_cast<size_t>((totbit + 7) / 8));
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const int32_t* in = unpacked + i * M;
         uint8_t* out = packed + i * code_size;
         BitstringWriter wr(out, code_size);
-        for (int j = 0; j < M; j++) {
+        for (size_t j = 0; j < M; j++) {
             wr.write(in[j], nbit[j]);
         }
     }
@@ -764,11 +764,11 @@ void unpack_bitstrings(
         int32_t* unpacked) {
     FAISS_THROW_IF_NOT(code_size >= (M * nbit + 7) / 8);
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const uint8_t* in = packed + i * code_size;
         int32_t* out = unpacked + i * M;
         BitstringReader rd(in, code_size);
-        for (int j = 0; j < M; j++) {
+        for (size_t j = 0; j < M; j++) {
             out[j] = rd.read(nbit);
         }
     }
@@ -782,16 +782,16 @@ void unpack_bitstrings(
         size_t code_size,
         int32_t* unpacked) {
     int totbit = 0;
-    for (int j = 0; j < M; j++) {
+    for (size_t j = 0; j < M; j++) {
         totbit += nbit[j];
     }
-    FAISS_THROW_IF_NOT(code_size >= (totbit + 7) / 8);
+    FAISS_THROW_IF_NOT(code_size >= static_cast<size_t>((totbit + 7) / 8));
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const uint8_t* in = packed + i * code_size;
         int32_t* out = unpacked + i * M;
         BitstringReader rd(in, code_size);
-        for (int j = 0; j < M; j++) {
+        for (size_t j = 0; j < M; j++) {
             out[j] = rd.read(nbit[j]);
         }
     }

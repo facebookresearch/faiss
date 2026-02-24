@@ -46,8 +46,8 @@ class TestContext {
 // the iterator that iterates over the codes stored in context object
 class TestInvertedListIterator : public faiss::InvertedListsIterator {
    public:
-    TestInvertedListIterator(size_t list_no, TestContext* context)
-            : list_no{list_no}, context{context} {
+    TestInvertedListIterator(size_t list_no_in, TestContext* context_in)
+            : list_no{list_no_in}, context{context_in} {
         it = context->codes.cbegin();
         seek_next();
     }
@@ -86,8 +86,8 @@ class TestInvertedListIterator : public faiss::InvertedListsIterator {
 
 class TestInvertedLists : public faiss::InvertedLists {
    public:
-    TestInvertedLists(size_t nlist, size_t code_size)
-            : faiss::InvertedLists(nlist, code_size) {
+    TestInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::InvertedLists(nlist_in, code_size_in) {
         use_iterator = true;
     }
 

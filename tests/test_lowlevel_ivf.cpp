@@ -148,11 +148,11 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
 
     const InvertedLists* il = index_ivf->invlists;
 
-    for (int list_no = 0; list_no < index_ivf->nlist; list_no++) {
+    for (size_t list_no = 0; list_no < index_ivf->nlist; list_no++) {
         InvertedLists::ScopedCodes ivf_codes(il, list_no);
         InvertedLists::ScopedIds ivf_ids(il, list_no);
         size_t list_size = il->list_size(list_no);
-        for (int i = 0; i < list_size; i++) {
+        for (size_t i = 0; i < list_size; i++) {
             const uint8_t* ref_code = ivf_codes.get() + i * il->code_size;
             const uint8_t* new_code = codes.data() + ivf_ids[i] * il->code_size;
             EXPECT_EQ(memcmp(ref_code, new_code, il->code_size), 0);
@@ -217,7 +217,7 @@ void test_get_InvertedListScanner(
                 index_ivf->get_InvertedListScanner());
     }
     float recall = 0.0;
-    for (int i = 0; i < nq; i++) {
+    for (size_t i = 0; i < nq; i++) {
         std::vector<idx_t> I(k, -1);
         float default_dis = metric == METRIC_L2
                 ? std::numeric_limits<float>::max()
@@ -487,7 +487,7 @@ void test_lowlevel_access_binary(const char* index_key) {
     std::unique_ptr<BinaryInvertedListScanner> scanner(
             index_ivf->get_InvertedListScanner());
 
-    for (int i = 0; i < nq; i++) {
+    for (size_t i = 0; i < nq; i++) {
         std::vector<idx_t> I(k, -1);
         uint32_t default_dis = 1 << 30;
         std::vector<int32_t> D(k, default_dis);
@@ -621,7 +621,7 @@ void test_threaded_search(const char* index_key, MetricType metric) {
     // now run search in this many threads
     int nproc = 3;
 
-    for (int i = 0; i < nq; i++) {
+    for (size_t i = 0; i < nq; i++) {
         // one result table per thread
         std::vector<idx_t> I(k * nproc, -1);
         float default_dis = metric == METRIC_L2 ? HUGE_VAL : -HUGE_VAL;

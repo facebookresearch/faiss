@@ -15,20 +15,20 @@
 
 namespace faiss {
 
-IndexLattice::IndexLattice(idx_t d, int nsq, int scale_nbit, int r2)
-        : IndexFlatCodes(0, d, METRIC_L2),
-          nsq(nsq),
-          dsq(d / nsq),
+IndexLattice::IndexLattice(idx_t d_in, int nsq_in, int scale_nbit_in, int r2)
+        : IndexFlatCodes(0, d_in, METRIC_L2),
+          nsq(nsq_in),
+          dsq(d_in / nsq_in),
           zn_sphere_codec(dsq, r2),
-          scale_nbit(scale_nbit) {
-    FAISS_THROW_IF_NOT(d % nsq == 0);
+          scale_nbit(scale_nbit_in) {
+    FAISS_THROW_IF_NOT(d_in % nsq_in == 0);
 
     lattice_nbit = 0;
     while (!(((uint64_t)1 << lattice_nbit) >= zn_sphere_codec.nv)) {
         lattice_nbit++;
     }
 
-    int total_nbit = (lattice_nbit + scale_nbit) * nsq;
+    int total_nbit = (lattice_nbit + scale_nbit_in) * nsq_in;
 
     code_size = (total_nbit + 7) / 8;
 
@@ -72,7 +72,7 @@ size_t IndexLattice::sa_code_size() const {
     return code_size;
 }
 
-void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
+void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     const float* mins = trained.data();
     const float* maxs = mins + nsq;
     int64_t sc = int64_t(1) << scale_nbit;
@@ -80,7 +80,7 @@ void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
     with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
         for (idx_t i = 0; i < n; i++) {
-            BitstringWriter wr(codes + i * code_size, code_size);
+            BitstringWriter wr(bytes + i * code_size, code_size);
             const float* xi = x + i * d;
             for (int j = 0; j < nsq; j++) {
                 float nj = (sqrtf(fvec_norm_L2sqr<SL>(xi, dsq)) - mins[j]) *
@@ -99,7 +99,7 @@ void IndexLattice::sa_encode(idx_t n, const float* x, uint8_t* codes) const {
     });
 }
 
-void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
+void IndexLattice::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     const float* mins = trained.data();
     const float* maxs = mins + nsq;
     float sc = int64_t(1) << scale_nbit;
@@ -107,7 +107,7 @@ void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
-        BitstringReader rd(codes + i * code_size, code_size);
+        BitstringReader rd(bytes + i * code_size, code_size);
         float* xi = x + i * d;
         for (int j = 0; j < nsq; j++) {
             float norm =
@@ -115,7 +115,7 @@ void IndexLattice::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
                     mins[j];
             norm /= r;
             zn_sphere_codec.decode(rd.read(lattice_nbit), xi);
-            for (int l = 0; l < dsq; l++) {
+            for (size_t l = 0; l < dsq; l++) {
                 xi[l] *= norm;
             }
             xi += dsq;

@@ -23,22 +23,22 @@
 namespace faiss {
 
 IndexIVFSpectralHash::IndexIVFSpectralHash(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
-        int nbit,
-        float period,
-        bool own_invlists)
+        Index* quantizer_in,
+        size_t d_in,
+        size_t nlist_in,
+        int nbit_in,
+        float period_in,
+        bool own_invlists_in)
         : IndexIVF(
-                  quantizer,
-                  d,
-                  nlist,
-                  (nbit + 7) / 8,
+                  quantizer_in,
+                  d_in,
+                  nlist_in,
+                  (nbit_in + 7) / 8,
                   METRIC_L2,
-                  own_invlists),
-          nbit(nbit),
-          period(period) {
-    RandomRotationMatrix* rr = new RandomRotationMatrix(d, nbit);
+                  own_invlists_in),
+          nbit(nbit_in),
+          period(period_in) {
+    RandomRotationMatrix* rr = new RandomRotationMatrix(d_in, nbit_in);
     rr->init(1234);
     vt = rr;
     is_trained = false;
@@ -71,7 +71,7 @@ float median(size_t n, float* x) {
 void IndexIVFSpectralHash::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     if (!vt->is_trained) {
         vt->train(n, x);
     }
@@ -102,13 +102,13 @@ void IndexIVFSpectralHash::train_encoder(
     quantizer->assign(n, x, idx.get());
 
     std::vector<size_t> sizes(nlist + 1);
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         FAISS_THROW_IF_NOT(idx[i] >= 0);
         sizes[idx[i]]++;
     }
 
     size_t ofs = 0;
-    for (int j = 0; j < nlist; j++) {
+    for (size_t j = 0; j < nlist; j++) {
         size_t o0 = ofs;
         ofs += sizes[j];
         sizes[j] = o0;
@@ -120,9 +120,9 @@ void IndexIVFSpectralHash::train_encoder(
     // transpose + reorder
     std::unique_ptr<float[]> xo(new float[n * nbit]);
 
-    for (size_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         size_t idest = sizes[idx[i]]++;
-        for (size_t j = 0; j < nbit; j++) {
+        for (size_t j = 0; j < static_cast<size_t>(nbit); j++) {
             xo[idest + n * j] = xt[i * nbit + j];
         }
     }
@@ -130,7 +130,7 @@ void IndexIVFSpectralHash::train_encoder(
     trained.resize(n * nbit);
     // compute medians
 #pragma omp for
-    for (int i = 0; i < nlist; i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         size_t i0 = i == 0 ? 0 : sizes[i - 1];
         size_t i1 = sizes[i];
         for (int j = 0; j < nbit; j++) {
@@ -209,6 +209,7 @@ namespace {
 
 template <class HammingComputer>
 struct IVFScanner : InvertedListScanner {
+    using InvertedListScanner::scan_codes;
     // copied from index structure
     const IndexIVFSpectralHash* index;
     size_t nbit;
@@ -219,23 +220,23 @@ struct IVFScanner : InvertedListScanner {
     std::vector<uint8_t> qcode;
     HammingComputer hc;
 
-    IVFScanner(const IndexIVFSpectralHash* index, bool store_pairs)
-            : index(index),
-              nbit(index->nbit),
-              period(index->period),
-              freq(2.0 / index->period),
+    IVFScanner(const IndexIVFSpectralHash* index_in, bool store_pairs_in)
+            : index(index_in),
+              nbit(index_in->nbit),
+              period(index_in->period),
+              freq(2.0 / index_in->period),
               q(nbit),
               zero(nbit),
-              qcode(index->code_size),
-              hc(qcode.data(), index->code_size) {
-        this->store_pairs = store_pairs;
+              qcode(index_in->code_size),
+              hc(qcode.data(), index_in->code_size) {
+        this->store_pairs = store_pairs_in;
         this->code_size = index->code_size;
         this->keep_max = is_similarity_metric(index->metric_type);
     }
 
     void set_query(const float* query) override {
         FAISS_THROW_IF_NOT(query);
-        FAISS_THROW_IF_NOT(q.size() == nbit);
+        FAISS_THROW_IF_NOT(q.size() == static_cast<size_t>(nbit));
         index->vt->apply_noalloc(1, query, q.data());
 
         if (index->threshold_type == IndexIVFSpectralHash::Thresh_global) {
@@ -244,10 +245,10 @@ struct IVFScanner : InvertedListScanner {
         }
     }
 
-    void set_list(idx_t list_no, float /*coarse_dis*/) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float /*coarse_dis*/) override {
+        this->list_no = list_no_in;
         if (index->threshold_type != IndexIVFSpectralHash::Thresh_global) {
-            const float* c = index->trained.data() + list_no * nbit;
+            const float* c = index->trained.data() + list_no_in * nbit;
             binarize_with_freq(nbit, freq, q.data(), c, qcode.data());
             hc.set(qcode.data(), code_size);
         }
@@ -323,8 +324,8 @@ void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {
     }
     vt = vt_in;
     threshold_type = Thresh_global;
-    is_trained = quantizer->is_trained && quantizer->ntotal == nlist &&
-            vt->is_trained;
+    is_trained = quantizer->is_trained &&
+            quantizer->ntotal == static_cast<idx_t>(nlist) && vt->is_trained;
     own_fields = own;
 }
 

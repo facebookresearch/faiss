@@ -64,7 +64,7 @@ void test_popmin(int heap_size, int amount_to_put) {
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -126,7 +126,7 @@ void test_popmin_identical_distances(
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -430,11 +430,12 @@ std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded
             float d1 = qdis(v1);
             ++ndis;
 
-            if (top_candidates.top().first > d1 || top_candidates.size() < ef) {
+            if (top_candidates.top().first > d1 ||
+                static_cast<int>(top_candidates.size()) < ef) {
                 candidates.emplace(d1, v1);
                 top_candidates.emplace(d1, v1);
 
-                if (top_candidates.size() > ef) {
+                if (static_cast<int>(top_candidates.size()) > ef) {
                     top_candidates.pop();
                 }
             }

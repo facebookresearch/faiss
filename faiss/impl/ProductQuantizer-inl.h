@@ -10,10 +10,10 @@
 namespace faiss {
 
 inline PQEncoderGeneric::PQEncoderGeneric(
-        uint8_t* code,
-        int nbits,
-        uint8_t offset)
-        : code(code), offset(offset), nbits(nbits), reg(0) {
+        uint8_t* code_in,
+        int nbits_in,
+        uint8_t offset_in)
+        : code(code_in), offset(offset_in), nbits(nbits_in), reg(0) {
     assert(nbits <= 64);
     if (offset > 0) {
         reg = (*code & ((1 << offset) - 1));
@@ -45,28 +45,30 @@ inline PQEncoderGeneric::~PQEncoderGeneric() {
     }
 }
 
-inline PQEncoder8::PQEncoder8(uint8_t* code, int nbits) : code(code) {
-    assert(8 == nbits);
+inline PQEncoder8::PQEncoder8(uint8_t* code_in, int nbits_in) : code(code_in) {
+    assert(8 == nbits_in);
+    (void)nbits_in;
 }
 
 inline void PQEncoder8::encode(uint64_t x) {
     *code++ = (uint8_t)x;
 }
 
-inline PQEncoder16::PQEncoder16(uint8_t* code, int nbits)
-        : code((uint16_t*)code) {
-    assert(16 == nbits);
+inline PQEncoder16::PQEncoder16(uint8_t* code_in, int nbits_in)
+        : code((uint16_t*)code_in) {
+    assert(16 == nbits_in);
+    (void)nbits_in;
 }
 
 inline void PQEncoder16::encode(uint64_t x) {
     *code++ = (uint16_t)x;
 }
 
-inline PQDecoderGeneric::PQDecoderGeneric(const uint8_t* code, int nbits)
-        : code(code),
+inline PQDecoderGeneric::PQDecoderGeneric(const uint8_t* code_in, int nbits_in)
+        : code(code_in),
           offset(0),
-          nbits(nbits),
-          mask((1ull << nbits) - 1),
+          nbits(nbits_in),
+          mask((1ull << nbits_in) - 1),
           reg(0) {
     assert(nbits <= 64);
 }
@@ -98,17 +100,20 @@ inline uint64_t PQDecoderGeneric::decode() {
     return c & mask;
 }
 
-inline PQDecoder8::PQDecoder8(const uint8_t* code, int nbits_in) : code(code) {
+inline PQDecoder8::PQDecoder8(const uint8_t* code_in, int nbits_in)
+        : code(code_in) {
     assert(8 == nbits_in);
+    (void)nbits_in;
 }
 
 inline uint64_t PQDecoder8::decode() {
     return (uint64_t)(*code++);
 }
 
-inline PQDecoder16::PQDecoder16(const uint8_t* code, int nbits_in)
-        : code((uint16_t*)code) {
+inline PQDecoder16::PQDecoder16(const uint8_t* code_in, int nbits_in)
+        : code((uint16_t*)code_in) {
     assert(16 == nbits_in);
+    (void)nbits_in;
 }
 
 inline uint64_t PQDecoder16::decode() {

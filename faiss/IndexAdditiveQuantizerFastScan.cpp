@@ -26,16 +26,16 @@ inline size_t roundup(size_t a, size_t b) {
 }
 
 IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
-        AdditiveQuantizer* aq,
+        AdditiveQuantizer* aq_,
         MetricType metric,
-        int bbs) {
-    init(aq, metric, bbs);
+        int bbs_) {
+    init(aq_, metric, bbs_);
 }
 
 void IndexAdditiveQuantizerFastScan::init(
         AdditiveQuantizer* aq_init,
         MetricType metric,
-        int bbs) {
+        int bbs_) {
     FAISS_THROW_IF_NOT(aq_init != nullptr);
     FAISS_THROW_IF_NOT(!aq_init->nbits.empty());
     FAISS_THROW_IF_NOT(aq_init->nbits[0] == 4);
@@ -57,7 +57,7 @@ void IndexAdditiveQuantizerFastScan::init(
     } else {
         M = aq_init->M;
     }
-    init_fastscan(aq_init->d, M, 4, metric, bbs);
+    init_fastscan(aq_init->d, M, 4, metric, bbs_);
 
     max_train_points = 1024 * ksub * M;
 }
@@ -70,8 +70,8 @@ IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan()
 
 IndexAdditiveQuantizerFastScan::IndexAdditiveQuantizerFastScan(
         const IndexAdditiveQuantizer& orig,
-        int bbs) {
-    init(orig.aq, orig.metric_type, bbs);
+        int bbs_) {
+    init(orig.aq, orig.metric_type, bbs_);
 
     ntotal = orig.ntotal;
     is_trained = orig.is_trained;
@@ -224,14 +224,14 @@ void IndexAdditiveQuantizerFastScan::sa_decode(
  **************************************************************************************/
 
 IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan(
-        int d,        ///< dimensionality of the input vectors
-        size_t M,     ///< number of subquantizers
-        size_t nbits, ///< number of bit per subvector index
+        int d_,        ///< dimensionality of the input vectors
+        size_t M_,     ///< number of subquantizers
+        size_t nbits_, ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type,
-        int bbs)
-        : rq(d, M, nbits, search_type) {
-    init(&rq, metric, bbs);
+        int bbs_)
+        : rq(d_, M_, nbits_, search_type) {
+    init(&rq, metric, bbs_);
 }
 
 IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan() {
@@ -243,14 +243,14 @@ IndexResidualQuantizerFastScan::IndexResidualQuantizerFastScan() {
  **************************************************************************************/
 
 IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan(
-        int d,
-        size_t M,     ///< number of subquantizers
-        size_t nbits, ///< number of bit per subvector index
+        int d_,
+        size_t M_,     ///< number of subquantizers
+        size_t nbits_, ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type,
-        int bbs)
-        : lsq(d, M, nbits, search_type) {
-    init(&lsq, metric, bbs);
+        int bbs_)
+        : lsq(d_, M_, nbits_, search_type) {
+    init(&lsq, metric, bbs_);
 }
 
 IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan() {
@@ -262,15 +262,15 @@ IndexLocalSearchQuantizerFastScan::IndexLocalSearchQuantizerFastScan() {
  **************************************************************************************/
 
 IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan(
-        int d,          ///< dimensionality of the input vectors
+        int d_,         ///< dimensionality of the input vectors
         size_t nsplits, ///< number of residual quantizers
         size_t Msub,    ///< number of subquantizers per RQ
-        size_t nbits,   ///< number of bit per subvector index
+        size_t nbits_,  ///< number of bit per subvector index
         MetricType metric,
         Search_type_t search_type,
-        int bbs)
-        : prq(d, nsplits, Msub, nbits, search_type) {
-    init(&prq, metric, bbs);
+        int bbs_)
+        : prq(d_, nsplits, Msub, nbits_, search_type) {
+    init(&prq, metric, bbs_);
 }
 
 IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan() {
@@ -283,15 +283,15 @@ IndexProductResidualQuantizerFastScan::IndexProductResidualQuantizerFastScan() {
 
 IndexProductLocalSearchQuantizerFastScan::
         IndexProductLocalSearchQuantizerFastScan(
-                int d,          ///< dimensionality of the input vectors
+                int d_,         ///< dimensionality of the input vectors
                 size_t nsplits, ///< number of local search quantizers
                 size_t Msub,    ///< number of subquantizers per LSQ
-                size_t nbits,   ///< number of bit per subvector index
+                size_t nbits_,  ///< number of bit per subvector index
                 MetricType metric,
                 Search_type_t search_type,
-                int bbs)
-        : plsq(d, nsplits, Msub, nbits, search_type) {
-    init(&plsq, metric, bbs);
+                int bbs_)
+        : plsq(d_, nsplits, Msub, nbits_, search_type) {
+    init(&plsq, metric, bbs_);
 }
 
 IndexProductLocalSearchQuantizerFastScan::

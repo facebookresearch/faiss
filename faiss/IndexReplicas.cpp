@@ -16,7 +16,7 @@ namespace {
 
 // IndexBinary needs to update the code_size when d is set...
 
-void sync_d(Index* index) {}
+void sync_d(Index* /*index*/) {}
 
 void sync_d(IndexBinary* index) {
     FAISS_THROW_IF_NOT(index->d % 8 == 0);
@@ -30,14 +30,14 @@ IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(bool threaded)
         : ThreadedIndex<IndexT>(threaded) {}
 
 template <typename IndexT>
-IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(idx_t d, bool threaded)
-        : ThreadedIndex<IndexT>(d, threaded) {
+IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(idx_t d_in, bool threaded)
+        : ThreadedIndex<IndexT>(d_in, threaded) {
     sync_d(this);
 }
 
 template <typename IndexT>
-IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(int d, bool threaded)
-        : ThreadedIndex<IndexT>(d, threaded) {
+IndexReplicasTemplate<IndexT>::IndexReplicasTemplate(int d_in, bool threaded)
+        : ThreadedIndex<IndexT>(d_in, threaded) {
     sync_d(this);
 }
 
@@ -71,7 +71,7 @@ void IndexReplicasTemplate<IndexT>::onAfterAddIndex(IndexT* index) {
 }
 
 template <typename IndexT>
-void IndexReplicasTemplate<IndexT>::onAfterRemoveIndex(IndexT* index) {
+void IndexReplicasTemplate<IndexT>::onAfterRemoveIndex(IndexT* /*index*/) {
     syncWithSubIndexes();
 }
 

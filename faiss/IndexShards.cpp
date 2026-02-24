@@ -46,27 +46,27 @@ void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
-        idx_t d,
+        idx_t d_,
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(d_, threaded), successive_ids(successive_ids_) {
     sync_d(this);
 }
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
-        int d,
+        int d_,
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(d_, threaded), successive_ids(successive_ids_) {
     sync_d(this);
 }
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids_) {
     sync_d(this);
 }
 

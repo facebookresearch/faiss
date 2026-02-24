@@ -25,16 +25,16 @@ namespace faiss {
 using rabitq_utils::SignBitFactorsWithError;
 
 IndexIVFRaBitQ::IndexIVFRaBitQ(
-        Index* quantizer,
-        const size_t d,
-        const size_t nlist,
+        Index* quantizer_in,
+        const size_t d_in,
+        const size_t nlist_in,
         MetricType metric,
-        bool own_invlists,
+        bool own_invlists_in,
         uint8_t nb_bits_in)
-        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists),
-          rabitq(d, metric, nb_bits_in) {
+        : IndexIVF(quantizer_in, d_in, nlist_in, 0, metric, own_invlists_in),
+          rabitq(d_in, metric, nb_bits_in) {
     code_size = rabitq.code_size;
-    if (own_invlists) {
+    if (own_invlists_in) {
         invlists->code_size = code_size;
     }
     is_trained = false;
@@ -126,7 +126,7 @@ void IndexIVFRaBitQ::add_core(
         int rank = omp_get_thread_num();
 
         // each thread takes care of a subset of lists
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             int64_t list_no = precomputed_idx[i];
             if (list_no >= 0 && list_no % nt == rank) {
                 int64_t id = xids ? xids[i] : ntotal + i;
@@ -153,6 +153,7 @@ void IndexIVFRaBitQ::add_core(
 }
 
 struct RaBitInvertedListScanner : InvertedListScanner {
+    using InvertedListScanner::scan_codes;
     const IndexIVFRaBitQ& ivf_rabitq;
 
     std::vector<float> reconstructed_centroid;
@@ -167,14 +168,14 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
     explicit RaBitInvertedListScanner(
             const IndexIVFRaBitQ& ivf_rabitq_in,
-            bool store_pairs = false,
-            const IDSelector* sel = nullptr,
+            bool store_pairs_in = false,
+            const IDSelector* sel_in = nullptr,
             uint8_t qb_in = 0,
-            bool centered = false)
-            : InvertedListScanner(store_pairs, sel),
+            bool centered_in = false)
+            : InvertedListScanner(store_pairs_in, sel_in),
               ivf_rabitq{ivf_rabitq_in},
               qb{qb_in},
-              centered(centered) {
+              centered(centered_in) {
         keep_max = is_similarity_metric(ivf_rabitq.metric_type);
         code_size = ivf_rabitq.code_size;
     }
@@ -187,12 +188,12 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float /*coarse_dis*/) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float /*coarse_dis*/) override {
+        this->list_no = list_no_in;
 
         reconstructed_centroid.resize(ivf_rabitq.d);
         ivf_rabitq.quantizer->reconstruct(
-                list_no, reconstructed_centroid.data());
+                list_no_in, reconstructed_centroid.data());
 
         internal_try_setup_dc();
     }
@@ -392,7 +393,7 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
     return distance;
 }
 
-float IVFRaBitDistanceComputer::symmetric_dis(idx_t i, idx_t j) {
+float IVFRaBitDistanceComputer::symmetric_dis(idx_t /*i*/, idx_t /*j*/) {
     FAISS_THROW_MSG("Not implemented");
 }
 

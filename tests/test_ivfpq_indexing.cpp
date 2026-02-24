@@ -66,7 +66,7 @@ TEST(IVFPQ, accuracy) {
     { // searching the database
 
         std::vector<float> queries(nq * d);
-        for (size_t i = 0; i < nq * d; i++) {
+        for (int i = 0; i < nq * d; i++) {
             queries[i] = distrib(rng);
         }
 

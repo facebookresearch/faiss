@@ -50,8 +50,8 @@ typename C::T sample_threshold_median3(
     T val3[3];
     int vi = 0;
 
-    for (size_t i = 0; i < n; i++) {
-        T v = vals[(i * big_prime) % n];
+    for (size_t i = 0; i < static_cast<size_t>(n); i++) {
+        T v = vals[(i * big_prime) % static_cast<size_t>(n)];
         // thresh_inf < v < thresh_sup (for CMax)
         if (C::cmp(v, thresh_inf) && C::cmp(thresh_sup, v)) {
             val3[vi++] = v;
@@ -291,7 +291,7 @@ void count_lt_and_eq(
         n_lt += 16 - i_ge;
     }
 
-    for (size_t i = n1 * 16; i < n; i++) {
+    for (int i = n1 * 16; i < n; i++) {
         uint16_t v = *vals++;
         if (C::cmp(thresh, v)) {
             n_lt++;
@@ -369,7 +369,7 @@ int simd_compress_array(
     }
 
     // end with scalar
-    for (int i = (n & ~15); i < n; i++) {
+    for (size_t i = (n & ~size_t(15)); i < n; i++) {
         if (C::cmp(thresh, vals[i])) {
             vals[wp] = vals[i];
             ids[wp] = ids[i];
@@ -1271,14 +1271,14 @@ void simd_histogram_16(
         int* hist) {
     memset(hist, 0, sizeof(*hist) * 16);
     if (shift < 0) {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             hist[data[i]]++;
         }
     } else {
         int vmax0 = std::min((16 << shift) + min, 65536);
         uint16_t vmax = uint16_t(vmax0 - 1 - min);
 
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             uint16_t v = data[i];
             v -= min;
             if (!(v <= vmax))
@@ -1304,11 +1304,11 @@ void simd_histogram_8(
         int* hist) {
     memset(hist, 0, sizeof(*hist) * 8);
     if (shift < 0) {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             hist[data[i]]++;
         }
     } else {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             if (data[i] < min)
                 continue;
             uint16_t v = data[i] - min;

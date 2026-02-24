@@ -33,35 +33,36 @@
 
 namespace faiss {
 
-AutoTuneCriterion::AutoTuneCriterion(idx_t nq, idx_t nnn)
-        : nq(nq), nnn(nnn), gt_nnn(0) {}
+AutoTuneCriterion::AutoTuneCriterion(idx_t nq_in, idx_t nnn_in)
+        : nq(nq_in), nnn(nnn_in), gt_nnn(0) {}
 
 void AutoTuneCriterion::set_groundtruth(
-        int gt_nnn,
+        int gt_nnn_in,
         const float* gt_D_in,
         const idx_t* gt_I_in) {
-    this->gt_nnn = gt_nnn;
+    this->gt_nnn = gt_nnn_in;
     if (gt_D_in) { // allow null for this, as it is often not used
-        gt_D.resize(nq * gt_nnn);
-        memcpy(gt_D.data(), gt_D_in, sizeof(gt_D[0]) * nq * gt_nnn);
+        gt_D.resize(nq * gt_nnn_in);
+        memcpy(gt_D.data(), gt_D_in, sizeof(gt_D[0]) * nq * gt_nnn_in);
     }
-    gt_I.resize(nq * gt_nnn);
-    memcpy(gt_I.data(), gt_I_in, sizeof(gt_I[0]) * nq * gt_nnn);
+    gt_I.resize(nq * gt_nnn_in);
+    memcpy(gt_I.data(), gt_I_in, sizeof(gt_I[0]) * nq * gt_nnn_in);
 }
 
-OneRecallAtRCriterion::OneRecallAtRCriterion(idx_t nq, idx_t R)
-        : AutoTuneCriterion(nq, R), R(R) {}
+OneRecallAtRCriterion::OneRecallAtRCriterion(idx_t nq_in, idx_t R_in)
+        : AutoTuneCriterion(nq_in, R_in), R(R_in) {}
 
 double OneRecallAtRCriterion::evaluate(const float* /*D*/, const idx_t* I)
         const {
     FAISS_THROW_IF_NOT_MSG(
-            (gt_I.size() == gt_nnn * nq && gt_nnn >= 1 && nnn >= R),
+            (gt_I.size() == static_cast<size_t>(gt_nnn * nq) && gt_nnn >= 1 &&
+             nnn >= R),
             "ground truth not initialized");
     idx_t n_ok = 0;
     for (idx_t q = 0; q < nq; q++) {
         idx_t gt_nn = gt_I[q * gt_nnn];
         const idx_t* I_line = I + q * nnn;
-        for (int i = 0; i < R; i++) {
+        for (idx_t i = 0; i < R; i++) {
             if (I_line[i] == gt_nn) {
                 n_ok++;
                 break;
@@ -71,13 +72,14 @@ double OneRecallAtRCriterion::evaluate(const float* /*D*/, const idx_t* I)
     return n_ok / double(nq);
 }
 
-IntersectionCriterion::IntersectionCriterion(idx_t nq, idx_t R)
-        : AutoTuneCriterion(nq, R), R(R) {}
+IntersectionCriterion::IntersectionCriterion(idx_t nq_in, idx_t R_in)
+        : AutoTuneCriterion(nq_in, R_in), R(R_in) {}
 
 double IntersectionCriterion::evaluate(const float* /*D*/, const idx_t* I)
         const {
     FAISS_THROW_IF_NOT_MSG(
-            (gt_I.size() == gt_nnn * nq && gt_nnn >= R && nnn >= R),
+            (gt_I.size() == static_cast<size_t>(gt_nnn * nq) && gt_nnn >= R &&
+             nnn >= R),
             "ground truth not initialized");
     int64_t n_ok = 0;
 #pragma omp parallel for reduction(+ : n_ok)
@@ -126,7 +128,7 @@ bool OperatingPoints::add(
             return false;
         }
     } else {
-        int i;
+        size_t i;
         // stricto sensu this should be a bisection
         for (i = 0; i < a.size(); i++) {
             if (a[i].perf >= perf) {
@@ -145,7 +147,7 @@ bool OperatingPoints::add(
         }
     }
     // remove non-optimal points from array
-    for (int i = a.size() - 1; i > 0; --i) {
+    for (size_t i = a.size() - 1; i > 0; --i) {
         if (a[i].t < a[i - 1].t) {
             a.erase(a.begin() + (i - 1));
         }
@@ -157,7 +159,7 @@ int OperatingPoints::merge_with(
         const OperatingPoints& other,
         const std::string& prefix) {
     int n_add = 0;
-    for (int i = 0; i < other.all_pts.size(); i++) {
+    for (size_t i = 0; i < other.all_pts.size(); i++) {
         const OperatingPoint& op = other.all_pts[i];
         if (add(op.perf, op.t, prefix + op.key, op.cno)) {
             n_add++;
@@ -191,7 +193,7 @@ void OperatingPoints::all_to_gnuplot(const char* fname) const {
         perror("");
         abort();
     }
-    for (int i = 0; i < all_pts.size(); i++) {
+    for (size_t i = 0; i < all_pts.size(); i++) {
         const OperatingPoint& op = all_pts[i];
         fprintf(f, "%g %g %s\n", op.perf, op.t, op.key.c_str());
     }
@@ -206,7 +208,7 @@ void OperatingPoints::optimal_to_gnuplot(const char* fname) const {
         abort();
     }
     double prev_perf = 0.0;
-    for (int i = 0; i < optimal_pts.size(); i++) {
+    for (size_t i = 0; i < optimal_pts.size(); i++) {
         const OperatingPoint& op = optimal_pts[i];
         fprintf(f, "%g %g\n", prev_perf, op.t);
         fprintf(f, "%g %g %s\n", op.perf, op.t, op.key.c_str());
@@ -222,11 +224,11 @@ void OperatingPoints::display(bool only_optimal) const {
            all_pts.size(),
            optimal_pts.size());
 
-    for (int i = 0; i < pts.size(); i++) {
+    for (size_t i = 0; i < pts.size(); i++) {
         const OperatingPoint& op = pts[i];
         const char* star = "";
         if (!only_optimal) {
-            for (int j = 0; j < optimal_pts.size(); j++) {
+            for (size_t j = 0; j < optimal_pts.size(); j++) {
                 if (op.cno == optimal_pts[j].cno) {
                     star = "*";
                     break;
@@ -269,7 +271,7 @@ ParameterSpace::ParameterSpace (Index *index):
 
 size_t ParameterSpace::n_combinations() const {
     size_t n = 1;
-    for (int i = 0; i < parameter_ranges.size(); i++) {
+    for (size_t i = 0; i < parameter_ranges.size(); i++) {
         n *= parameter_ranges[i].values.size();
     }
     return n;
@@ -279,7 +281,7 @@ size_t ParameterSpace::n_combinations() const {
 std::string ParameterSpace::combination_name(size_t cno) const {
     char buf[1000], *wp = buf;
     *wp = 0;
-    for (int i = 0; i < parameter_ranges.size(); i++) {
+    for (size_t i = 0; i < parameter_ranges.size(); i++) {
         FAISS_THROW_IF_NOT_MSG(
                 buf + 1000 - wp >= 0, "Overflow detected in snprintf");
         const ParameterRange& pr = parameter_ranges[i];
@@ -297,8 +299,8 @@ std::string ParameterSpace::combination_name(size_t cno) const {
 }
 
 bool ParameterSpace::combination_ge(size_t c1, size_t c2) const {
-    for (int i = 0; i < parameter_ranges.size(); i++) {
-        int nval = parameter_ranges[i].values.size();
+    for (size_t i = 0; i < parameter_ranges.size(); i++) {
+        size_t nval = parameter_ranges[i].values.size();
         size_t j1 = c1 % nval;
         size_t j2 = c2 % nval;
         if (!(j1 >= j2)) {
@@ -316,7 +318,7 @@ static void init_pq_ParameterRange(
     if (pq.code_size % 4 == 0) {
         // Polysemous not supported for code sizes that are not a
         // multiple of 4
-        for (int i = 2; i <= pq.code_size * 8 / 2; i += 2) {
+        for (size_t i = 2; i <= pq.code_size * 8 / 2; i += 2) {
             pr.values.push_back(i);
         }
     }
@@ -336,22 +338,22 @@ ParameterRange& ParameterSpace::add_range(const std::string& name) {
 
 // Do not use this macro if ix will be unused
 #define DC(classname) \
-    const classname* ix = dynamic_cast<const classname*>(index)
+    const classname* ix_c = dynamic_cast<const classname*>(index)
 
 /// initialize with reasonable parameters for this type of index
 void ParameterSpace::initialize(const Index* index) {
     if (DC(IndexPreTransform)) {
-        index = ix->index;
+        index = ix_c->index;
     }
     if (DC(IndexRefine)) {
         ParameterRange& pr = add_range("k_factor_rf");
         for (int i = 0; i <= 6; i++) {
             pr.values.push_back(1 << i);
         }
-        index = ix->base_index;
+        index = ix_c->base_index;
     }
     if (DC(IndexPreTransform)) {
-        index = ix->index;
+        index = ix_c->index;
     }
 
     if (DC(IndexIVFInterface)) {
@@ -359,14 +361,14 @@ void ParameterSpace::initialize(const Index* index) {
             ParameterRange& pr = add_range("nprobe");
             for (int i = 0; i < 13; i++) {
                 size_t nprobe = 1 << i;
-                if (nprobe >= ix->nlist) {
+                if (nprobe >= ix_c->nlist) {
                     break;
                 }
                 pr.values.push_back(nprobe);
             }
         }
         ParameterSpace ivf_pspace;
-        ivf_pspace.initialize(ix->quantizer);
+        ivf_pspace.initialize(ix_c->quantizer);
 
         for (const ParameterRange& p : ivf_pspace.parameter_ranges) {
             ParameterRange& pr = add_range("quantizer_" + p.name);
@@ -375,16 +377,16 @@ void ParameterSpace::initialize(const Index* index) {
     }
     if (DC(IndexPQ)) {
         ParameterRange& pr = add_range("ht");
-        init_pq_ParameterRange(ix->pq, pr);
+        init_pq_ParameterRange(ix_c->pq, pr);
     }
     if (DC(IndexIVFPQ)) {
         ParameterRange& pr = add_range("ht");
-        init_pq_ParameterRange(ix->pq, pr);
+        init_pq_ParameterRange(ix_c->pq, pr);
     }
 
     if (DC(IndexIVF)) {
         const MultiIndexQuantizer* miq =
-                dynamic_cast<const MultiIndexQuantizer*>(ix->quantizer);
+                dynamic_cast<const MultiIndexQuantizer*>(ix_c->quantizer);
         if (miq) {
             ParameterRange& pr_max_codes = add_range("max_codes");
             for (int i = 8; i < 20; i++) {
@@ -415,7 +417,7 @@ static void set_index_parameters_common(
         const ParameterSpace* ps,
         size_t cno,
         SetParamFunc set_param) {
-    for (int i = 0; i < ps->parameter_ranges.size(); i++) {
+    for (size_t i = 0; i < ps->parameter_ranges.size(); i++) {
         const ParameterRange& pr = ps->parameter_ranges[i];
         size_t j = cno % pr.values.size();
         cno /= pr.values.size();
@@ -481,7 +483,7 @@ void ParameterSpace::set_index_parameters(
 
 // non-const version
 // Do not use this macro if ix will be unused
-#define DC(classname) classname* ix = dynamic_cast<classname*>(index)
+#define DC(classname) classname* ix_ = dynamic_cast<classname*>(index)
 
 void ParameterSpace::set_index_parameter(
         Index* index,
@@ -496,11 +498,11 @@ void ParameterSpace::set_index_parameter(
         // and fall through to also enable it on sub-indexes
     }
     if (DC(IndexIDMap)) {
-        set_index_parameter(ix->index, name, val);
+        set_index_parameter(ix_->index, name, val);
         return;
     }
     if (DC(IndexPreTransform)) {
-        set_index_parameter(ix->index, name, val);
+        set_index_parameter(ix_->index, name, val);
         return;
     }
     if (DC(IndexShardsIVF)) {
@@ -509,7 +511,7 @@ void ParameterSpace::set_index_parameter(
         if (name.find("quantizer_") == 0 && name != "nprobe" &&
             name != "quantizer_nprobe") {
             std::string sub_name = name.substr(strlen("quantizer_"));
-            set_index_parameter(ix->quantizer, sub_name, val);
+            set_index_parameter(ix_->quantizer, sub_name, val);
             return;
         }
     }
@@ -518,16 +520,16 @@ void ParameterSpace::set_index_parameter(
         auto fn = [this, name, val](int /* no */, Index* subIndex) {
             set_index_parameter(subIndex, name, val);
         };
-        ix->runOnIndex(fn);
+        ix_->runOnIndex(fn);
         return;
     }
     if (DC(IndexRefine)) {
         if (name == "k_factor_rf") {
-            ix->k_factor = int(val);
+            ix_->k_factor = int(val);
             return;
         }
         // otherwise it is for the sub-index
-        set_index_parameter(ix->base_index, name, val);
+        set_index_parameter(ix_->base_index, name, val);
         return;
     }
 
@@ -537,25 +539,26 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "nprobe") {
         if (DC(IndexIVF)) {
-            ix->nprobe = int(val);
+            ix_->nprobe = int(val);
             return;
         }
     }
 
     if (name == "ht") {
         if (DC(IndexPQ)) {
-            if (val >= ix->pq.code_size * 8) {
-                ix->search_type = IndexPQ::ST_PQ;
+            if (val >= ix_->pq.code_size * 8) {
+                ix_->search_type = IndexPQ::ST_PQ;
             } else {
-                ix->search_type = IndexPQ::ST_polysemous;
-                ix->polysemous_ht = int(val);
+                ix_->search_type = IndexPQ::ST_polysemous;
+                ix_->polysemous_ht = int(val);
             }
             return;
-        } else if (DC(IndexIVFPQ)) {
-            if (val >= ix->pq.code_size * 8) {
-                ix->polysemous_ht = 0;
+        }
+        if (DC(IndexIVFPQ)) {
+            if (val >= ix_->pq.code_size * 8) {
+                ix_->polysemous_ht = 0;
             } else {
-                ix->polysemous_ht = int(val);
+                ix_->polysemous_ht = int(val);
             }
             return;
         }
@@ -563,24 +566,24 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "k_factor") {
         if (DC(IndexIVFPQR)) {
-            ix->k_factor = val;
+            ix_->k_factor = val;
             return;
         }
     }
     if (name == "max_codes") {
         if (DC(IndexIVF)) {
-            ix->max_codes = std::isfinite(val) ? size_t(val) : 0;
+            ix_->max_codes = std::isfinite(val) ? size_t(val) : 0;
             return;
         }
     }
 
     if (name == "efConstruction") {
         if (DC(IndexHNSW)) {
-            ix->hnsw.efConstruction = int(val);
+            ix_->hnsw.efConstruction = int(val);
             return;
         }
         if (DC(IndexIVF)) {
-            if (IndexHNSW* cq = dynamic_cast<IndexHNSW*>(ix->quantizer)) {
+            if (IndexHNSW* cq = dynamic_cast<IndexHNSW*>(ix_->quantizer)) {
                 cq->hnsw.efConstruction = int(val);
                 return;
             }
@@ -589,11 +592,11 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "efSearch") {
         if (DC(IndexHNSW)) {
-            ix->hnsw.efSearch = int(val);
+            ix_->hnsw.efSearch = int(val);
             return;
         }
         if (DC(IndexIVF)) {
-            if (IndexHNSW* cq = dynamic_cast<IndexHNSW*>(ix->quantizer)) {
+            if (IndexHNSW* cq = dynamic_cast<IndexHNSW*>(ix_->quantizer)) {
                 cq->hnsw.efSearch = int(val);
                 return;
             }
@@ -603,7 +606,7 @@ void ParameterSpace::set_index_parameter(
     if (name.find("quantizer_") == 0) {
         if (DC(IndexIVF)) {
             std::string sub_name = name.substr(strlen("quantizer_"));
-            set_index_parameter(ix->quantizer, sub_name, val);
+            set_index_parameter(ix_->quantizer, sub_name, val);
             return;
         }
     }
@@ -628,7 +631,7 @@ void ParameterSpace::set_index_parameter(
     }
 
     if (DC(IndexBinaryIDMap)) {
-        set_index_parameter(ix->index, name, val);
+        set_index_parameter(ix_->index, name, val);
         return;
     }
 
@@ -638,26 +641,26 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "nprobe") {
         if (DC(IndexBinaryIVF)) {
-            ix->nprobe = int(val);
+            ix_->nprobe = int(val);
             return;
         }
     }
 
     if (name == "max_codes") {
         if (DC(IndexBinaryIVF)) {
-            ix->max_codes = std::isfinite(val) ? size_t(val) : 0;
+            ix_->max_codes = std::isfinite(val) ? size_t(val) : 0;
             return;
         }
     }
 
     if (name == "efConstruction") {
         if (DC(IndexBinaryHNSW)) {
-            ix->hnsw.efConstruction = int(val);
+            ix_->hnsw.efConstruction = int(val);
             return;
         }
         if (DC(IndexBinaryIVF)) {
             if (IndexBinaryHNSW* cq =
-                        dynamic_cast<IndexBinaryHNSW*>(ix->quantizer)) {
+                        dynamic_cast<IndexBinaryHNSW*>(ix_->quantizer)) {
                 cq->hnsw.efConstruction = int(val);
                 return;
             }
@@ -666,12 +669,12 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "efSearch") {
         if (DC(IndexBinaryHNSW)) {
-            ix->hnsw.efSearch = int(val);
+            ix_->hnsw.efSearch = int(val);
             return;
         }
         if (DC(IndexBinaryIVF)) {
             if (IndexBinaryHNSW* cq =
-                        dynamic_cast<IndexBinaryHNSW*>(ix->quantizer)) {
+                        dynamic_cast<IndexBinaryHNSW*>(ix_->quantizer)) {
                 cq->hnsw.efSearch = int(val);
                 return;
             }
@@ -681,7 +684,7 @@ void ParameterSpace::set_index_parameter(
     if (name.find("quantizer_") == 0) {
         if (DC(IndexBinaryIVF)) {
             std::string sub_name = name.substr(strlen("quantizer_"));
-            set_index_parameter(ix->quantizer, sub_name, val);
+            set_index_parameter(ix_->quantizer, sub_name, val);
             return;
         }
     }
@@ -698,11 +701,11 @@ void ParameterSpace::display() const {
     printf("ParameterSpace, %zd parameters, %zd combinations:\n",
            parameter_ranges.size(),
            n_combinations());
-    for (int i = 0; i < parameter_ranges.size(); i++) {
+    for (size_t i = 0; i < parameter_ranges.size(); i++) {
         const ParameterRange& pr = parameter_ranges[i];
         printf("   %s: ", pr.name.c_str());
         char sep = '[';
-        for (int j = 0; j < pr.values.size(); j++) {
+        for (size_t j = 0; j < pr.values.size(); j++) {
             printf("%c %g", sep, pr.values[j]);
             sep = ',';
         }
@@ -734,7 +737,8 @@ void ParameterSpace::explore(
         const AutoTuneCriterion& crit,
         OperatingPoints* ops) const {
     FAISS_THROW_IF_NOT_MSG(
-            nq == crit.nq, "criterion does not have the same nb of queries");
+            nq == static_cast<size_t>(crit.nq),
+            "criterion does not have the same nb of queries");
 
     size_t n_comb = n_combinations();
 
@@ -765,7 +769,7 @@ void ParameterSpace::explore(
         return;
     }
 
-    int n_exp = n_experiments;
+    size_t n_exp = static_cast<size_t>(n_experiments);
 
     if (n_exp > n_comb) {
         n_exp = n_comb;
@@ -777,7 +781,7 @@ void ParameterSpace::explore(
     if (n_comb > 1) {
         perm[1] = n_comb - 1;
         rand_perm(&perm[2], n_comb - 2, 1234);
-        for (int i = 2; i < perm.size(); i++) {
+        for (size_t i = 2; i < perm.size(); i++) {
             perm[i]++;
         }
     }
@@ -786,7 +790,7 @@ void ParameterSpace::explore(
         size_t cno = perm[xp];
 
         if (verbose) {
-            printf("  %zd/%d: cno=%zd %s ",
+            printf("  %zd/%zd: cno=%zd %s ",
                    xp,
                    n_exp,
                    cno,
@@ -796,7 +800,7 @@ void ParameterSpace::explore(
         {
             double lower_bound_t = 0.0;
             double upper_bound_perf = 1.0;
-            for (int i = 0; i < ops->all_pts.size(); i++) {
+            for (size_t i = 0; i < ops->all_pts.size(); i++) {
                 update_bounds(
                         cno,
                         ops->all_pts[i],
@@ -827,7 +831,8 @@ void ParameterSpace::explore(
         do {
             if (thread_over_batches) {
 #pragma omp parallel for
-                for (idx_t q0 = 0; q0 < nq; q0 += batchsize) {
+                for (int64_t q0 = 0; q0 < static_cast<int64_t>(nq);
+                     q0 += batchsize) {
                     size_t q1 = q0 + batchsize;
                     if (q1 > nq) {
                         q1 = nq;

@@ -82,6 +82,13 @@ endif()
 
 add_library(faiss_c_sve ${FAISS_C_SRC})
 target_link_libraries(faiss_c_sve PRIVATE faiss_sve)
+
+# Apply compiler warnings
+faiss_add_warnings(faiss_c)
+faiss_add_warnings(faiss_c_avx2)
+faiss_add_warnings(faiss_c_avx512)
+faiss_add_warnings(faiss_c_avx512_spr)
+faiss_add_warnings(faiss_c_sve)
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
   set_target_properties(faiss_c_sve PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()

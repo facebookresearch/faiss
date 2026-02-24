@@ -27,14 +27,15 @@ using namespace nsg;
  * IndexNSG implementation
  **************************************************************/
 
-IndexNSG::IndexNSG(int d, int R, MetricType metric) : Index(d, metric), nsg(R) {
+IndexNSG::IndexNSG(int d_in, int R, MetricType metric)
+        : Index(d_in, metric), nsg(R) {
     nndescent_L = GK + 50;
 }
 
-IndexNSG::IndexNSG(Index* storage, int R)
-        : Index(storage->d, storage->metric_type),
+IndexNSG::IndexNSG(Index* storage_in, int R)
+        : Index(storage_in->d, storage_in->metric_type),
           nsg(R),
-          storage(storage),
+          storage(storage_in),
           build_type(1) {
     nndescent_L = GK + 50;
 }
@@ -96,7 +97,7 @@ void IndexNSG::search(
 
     if (is_similarity_metric(metric_type)) {
         // we need to revert the negated distances
-        for (size_t i = 0; i < k * n; i++) {
+        for (idx_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
         }
     }
@@ -274,8 +275,8 @@ IndexNSGFlat::IndexNSGFlat() {
     is_trained = true;
 }
 
-IndexNSGFlat::IndexNSGFlat(int d, int R, MetricType metric)
-        : IndexNSG(new IndexFlat(d, metric), R) {
+IndexNSGFlat::IndexNSGFlat(int d_in, int R, MetricType metric)
+        : IndexNSG(new IndexFlat(d_in, metric), R) {
     own_fields = true;
     is_trained = true;
 }
@@ -286,8 +287,8 @@ IndexNSGFlat::IndexNSGFlat(int d, int R, MetricType metric)
 
 IndexNSGPQ::IndexNSGPQ() = default;
 
-IndexNSGPQ::IndexNSGPQ(int d, int pq_m, int M, int pq_nbits)
-        : IndexNSG(new IndexPQ(d, pq_m, pq_nbits), M) {
+IndexNSGPQ::IndexNSGPQ(int d_in, int pq_m, int M, int pq_nbits)
+        : IndexNSG(new IndexPQ(d_in, pq_m, pq_nbits), M) {
     own_fields = true;
     is_trained = false;
 }
@@ -302,11 +303,11 @@ void IndexNSGPQ::train(idx_t n, const float* x) {
  **************************************************************/
 
 IndexNSGSQ::IndexNSGSQ(
-        int d,
+        int d_in,
         ScalarQuantizer::QuantizerType qtype,
         int M,
         MetricType metric)
-        : IndexNSG(new IndexScalarQuantizer(d, qtype, metric), M) {
+        : IndexNSG(new IndexScalarQuantizer(d_in, qtype, metric), M) {
     is_trained = this->storage->is_trained;
     own_fields = true;
 }

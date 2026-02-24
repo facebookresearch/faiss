@@ -43,13 +43,14 @@ void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
  ************************************************************/
 
 IndexShardsIVF::IndexShardsIVF(
-        Index* quantizer,
-        size_t nlist,
+        Index* quantizer_,
+        size_t nlist_,
         bool threaded,
-        bool successive_ids)
-        : IndexShardsTemplate<Index>(quantizer->d, threaded, successive_ids),
-          Level1Quantizer(quantizer, nlist) {
-    is_trained = quantizer->is_trained && quantizer->ntotal == nlist;
+        bool successive_ids_)
+        : IndexShardsTemplate<Index>(quantizer_->d, threaded, successive_ids_),
+          Level1Quantizer(quantizer_, nlist_) {
+    is_trained = quantizer_->is_trained &&
+            quantizer_->ntotal == static_cast<idx_t>(nlist_);
 }
 
 void IndexShardsIVF::addIndex(Index* index) {
@@ -73,11 +74,11 @@ void IndexShardsIVF::train(idx_t n, const component_t* x) {
     for (size_t i = 0; i < indices_.size(); i++) {
         Index* index = indices_[i].first;
         auto index_ivf = dynamic_cast<IndexIVFInterface*>(index);
-        Index* quantizer = index_ivf->quantizer;
-        if (!quantizer->is_trained) {
-            quantizer->train(nlist, centroids.data());
+        Index* sub_quantizer = index_ivf->quantizer;
+        if (!sub_quantizer->is_trained) {
+            sub_quantizer->train(nlist, centroids.data());
         }
-        quantizer->add(nlist, centroids.data());
+        sub_quantizer->add(nlist, centroids.data());
         // finish training
         index->train(n, x);
     }
@@ -132,9 +133,9 @@ void IndexShardsIVF::add_with_ids(
         }
         ids = aids.data();
     }
-    idx_t d = this->d;
+    idx_t cur_d = this->d;
 
-    auto fn = [n, ids, x, nshard, d, Iq](int no, Index* index) {
+    auto fn = [n, ids, x, nshard, cur_d, Iq](int no, Index* index) {
         idx_t i0 = (idx_t)no * n / nshard;
         idx_t i1 = ((idx_t)no + 1) * n / nshard;
         auto index_ivf = dynamic_cast<IndexIVF*>(index);
@@ -144,7 +145,10 @@ void IndexShardsIVF::add_with_ids(
         }
 
         index_ivf->add_core(
-                i1 - i0, x + i0 * d, ids ? ids + i0 : nullptr, Iq.data() + i0);
+                i1 - i0,
+                x + i0 * cur_d,
+                ids ? ids + i0 : nullptr,
+                Iq.data() + i0);
 
         if (index->verbose) {
             printf("end add shard %d on %" PRId64 " points\n", no, i1 - i0);
@@ -199,7 +203,9 @@ void IndexShardsIVF::search(
 
         auto index = dynamic_cast<const IndexIVFInterface*>(indexIn);
 
-        FAISS_THROW_IF_NOT_MSG(index->nprobe == nprobe, "inconsistent nprobe");
+        FAISS_THROW_IF_NOT_MSG(
+                index->nprobe == static_cast<size_t>(nprobe),
+                "inconsistent nprobe");
 
         index->search_preassigned(
                 n,

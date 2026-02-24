@@ -84,6 +84,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
 endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})
+faiss_add_warnings(faiss_test)
 
 if(FAISS_ENABLE_SVS)
   target_compile_definitions(faiss_test PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})

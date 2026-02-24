@@ -33,9 +33,9 @@ struct simd256bit {
 
     simd256bit() {}
 
-    explicit simd256bit(__m256i i) : i(i) {}
+    explicit simd256bit(__m256i val) : i(val) {}
 
-    explicit simd256bit(__m256 f) : f(f) {}
+    explicit simd256bit(__m256 val) : f(val) {}
 
     explicit simd256bit(const void* x)
             : i(_mm256_load_si256((__m256i const*)x)) {}
@@ -59,8 +59,8 @@ struct simd256bit {
     void bin(char bits[257]) const {
         char bytes[32];
         storeu((void*)bytes);
-        for (int i = 0; i < 256; i++) {
-            bits[i] = '0' + ((bytes[i / 8] >> (i % 8)) & 1);
+        for (int idx = 0; idx < 256; idx++) {
+            bits[idx] = '0' + ((bytes[idx / 8] >> (idx % 8)) & 1);
         }
         bits[256] = 0;
     }
@@ -83,7 +83,7 @@ struct simd256bit {
 struct simd16uint16 : simd256bit {
     simd16uint16() {}
 
-    explicit simd16uint16(__m256i i) : simd256bit(i) {}
+    explicit simd16uint16(__m256i val) : simd256bit(val) {}
 
     explicit simd16uint16(int x) : simd256bit(_mm256_set1_epi16(x)) {}
 
@@ -133,9 +133,12 @@ struct simd16uint16 : simd256bit {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
-        for (int i = 0; i < 16; i++) {
-            ptr += sprintf(ptr, fmt, bytes[i]);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+        for (int idx = 0; idx < 16; idx++) {
+            ptr += sprintf(ptr, fmt, bytes[idx]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -233,10 +236,10 @@ struct simd16uint16 : simd256bit {
     }
 
     // for debugging only
-    uint16_t operator[](int i) const {
+    uint16_t operator[](int idx) const {
         ALIGNED(32) uint16_t tab[16];
         store(tab);
-        return tab[i];
+        return tab[idx];
     }
 
     void accu_min(simd16uint16 incoming) {
@@ -344,7 +347,7 @@ inline void cmplt_min_max_fast(
 struct simd32uint8 : simd256bit {
     simd32uint8() {}
 
-    explicit simd32uint8(__m256i i) : simd256bit(i) {}
+    explicit simd32uint8(__m256i val) : simd256bit(val) {}
 
     explicit simd32uint8(int x) : simd256bit(_mm256_set1_epi8(x)) {}
 
@@ -428,9 +431,12 @@ struct simd32uint8 : simd256bit {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
-        for (int i = 0; i < 32; i++) {
-            ptr += sprintf(ptr, fmt, bytes[i]);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+        for (int idx = 0; idx < 32; idx++) {
+            ptr += sprintf(ptr, fmt, bytes[idx]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -478,10 +484,10 @@ struct simd32uint8 : simd256bit {
     }
 
     // for debugging only
-    uint8_t operator[](int i) const {
+    uint8_t operator[](int idx) const {
         ALIGNED(32) uint8_t tab[32];
         store(tab);
-        return tab[i];
+        return tab[idx];
     }
 };
 
@@ -505,7 +511,7 @@ inline simd32uint8 blendv(simd32uint8 a, simd32uint8 b, simd32uint8 mask) {
 struct simd8uint32 : simd256bit {
     simd8uint32() {}
 
-    explicit simd8uint32(__m256i i) : simd256bit(i) {}
+    explicit simd8uint32(__m256i val) : simd256bit(val) {}
 
     explicit simd8uint32(uint32_t x) : simd256bit(_mm256_set1_epi32(x)) {}
 
@@ -552,9 +558,12 @@ struct simd8uint32 : simd256bit {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
-        for (int i = 0; i < 8; i++) {
-            ptr += sprintf(ptr, fmt, bytes[i]);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+        for (int idx = 0; idx < 8; idx++) {
+            ptr += sprintf(ptr, fmt, bytes[idx]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -669,8 +678,8 @@ struct simd8float32 : simd256bit {
         storeu((void*)tab);
         char res[1000];
         char* ptr = res;
-        for (int i = 0; i < 8; i++) {
-            ptr += sprintf(ptr, "%g,", tab[i]);
+        for (int idx = 0; idx < 8; idx++) {
+            ptr += sprintf(ptr, "%g,", tab[idx]);
         }
         // strip last ,
         ptr[-1] = 0;

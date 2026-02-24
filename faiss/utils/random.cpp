@@ -100,7 +100,7 @@ void float_rand(float* x, size_t n, int64_t seed) {
     int a0 = rng0.rand_int(), b0 = rng0.rand_int();
 
 #pragma omp parallel for
-    for (int64_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nblock); j++) {
         RandomGenerator rng(a0 + j * b0);
 
         const size_t istart = j * n / nblock;
@@ -120,7 +120,7 @@ void float_randn(float* x, size_t n, int64_t seed) {
     int a0 = rng0.rand_int(), b0 = rng0.rand_int();
 
 #pragma omp parallel for
-    for (int64_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nblock); j++) {
         RandomGenerator rng(a0 + j * b0);
 
         double a = 0, b = 0, s = 0;
@@ -155,7 +155,7 @@ void int64_rand(int64_t* x, size_t n, int64_t seed) {
     int a0 = rng0.rand_int(), b0 = rng0.rand_int();
 
 #pragma omp parallel for
-    for (int64_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nblock); j++) {
         RandomGenerator rng(a0 + j * b0);
 
         const size_t istart = j * n / nblock;
@@ -174,7 +174,7 @@ void int64_rand_max(int64_t* x, size_t n, uint64_t max, int64_t seed) {
     int a0 = rng0.rand_int(), b0 = rng0.rand_int();
 
 #pragma omp parallel for
-    for (int64_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nblock); j++) {
         RandomGenerator rng(a0 + j * b0);
 
         const size_t istart = j * n / nblock;
@@ -219,7 +219,7 @@ void byte_rand(uint8_t* x, size_t n, int64_t seed) {
     int a0 = rng0.rand_int(), b0 = rng0.rand_int();
 
 #pragma omp parallel for
-    for (int64_t j = 0; j < nblock; j++) {
+    for (int64_t j = 0; j < static_cast<int64_t>(nblock); j++) {
         RandomGenerator rng(a0 + j * b0);
 
         const size_t istart = j * n / nblock;
@@ -261,7 +261,7 @@ void rand_smooth_vectors(size_t n, size_t d, float* x, int64_t seed) {
     float_rand(scales.data(), d, seed + 2);
 
 #pragma omp parallel for if (n * d > 10000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         for (size_t j = 0; j < d; j++) {
             x[i * d + j] = sinf(x[i * d + j] * (scales[j] * 4 + 0.1));
         }

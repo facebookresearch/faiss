@@ -14,8 +14,11 @@ namespace faiss {
  * IDSelectorRange
  ***********************************************************************/
 
-IDSelectorRange::IDSelectorRange(idx_t imin, idx_t imax, bool assume_sorted)
-        : imin(imin), imax(imax), assume_sorted(assume_sorted) {}
+IDSelectorRange::IDSelectorRange(
+        idx_t imin_in,
+        idx_t imax_in,
+        bool assume_sorted_in)
+        : imin(imin_in), imax(imax_in), assume_sorted(assume_sorted_in) {}
 
 bool IDSelectorRange::is_member(idx_t id) const {
     return id >= imin && id < imax;
@@ -67,10 +70,11 @@ void IDSelectorRange::find_sorted_ids_bounds(
  * IDSelectorArray
  ***********************************************************************/
 
-IDSelectorArray::IDSelectorArray(size_t n, const idx_t* ids) : n(n), ids(ids) {}
+IDSelectorArray::IDSelectorArray(size_t n_in, const idx_t* ids_in)
+        : n(n_in), ids(ids_in) {}
 
 bool IDSelectorArray::is_member(idx_t id) const {
-    for (idx_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         if (ids[i] == id) {
             return true;
         }
@@ -84,15 +88,15 @@ bool IDSelectorArray::is_member(idx_t id) const {
 
 IDSelectorBatch::IDSelectorBatch(size_t n, const idx_t* indices) {
     nbits = 0;
-    while (n > ((idx_t)1 << nbits)) {
+    while (n > (size_t{1} << nbits)) {
         nbits++;
     }
     nbits += 5;
     // for n = 1M, nbits = 25 is optimal, see P56659518
 
     mask = ((idx_t)1 << nbits) - 1;
-    bloom.resize((idx_t)1 << (nbits - 3), 0);
-    for (idx_t i = 0; i < n; i++) {
+    bloom.resize(size_t{1} << (nbits - 3), 0);
+    for (size_t i = 0; i < n; i++) {
         idx_t id = indices[i];
         set.insert(id);
         id &= mask;
@@ -112,8 +116,8 @@ bool IDSelectorBatch::is_member(idx_t i) const {
  * IDSelectorBitmap
  ***********************************************************************/
 
-IDSelectorBitmap::IDSelectorBitmap(size_t n, const uint8_t* bitmap)
-        : n(n), bitmap(bitmap) {}
+IDSelectorBitmap::IDSelectorBitmap(size_t n_in, const uint8_t* bitmap_in)
+        : n(n_in), bitmap(bitmap_in) {}
 
 bool IDSelectorBitmap::is_member(idx_t ii) const {
     uint64_t i = ii;

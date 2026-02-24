@@ -226,7 +226,7 @@ void bucket_sort_ref(
     for (size_t i = 0; i < vmax; i++) {
         lims[i + 1] += lims[i];
     }
-    FAISS_THROW_IF_NOT(lims[vmax] == nval);
+    FAISS_THROW_IF_NOT(static_cast<size_t>(lims[vmax]) == nval);
     double t2 = getmillisecs();
     // populate buckets
     for (size_t i = 0; i < nval; i++) {
@@ -286,7 +286,7 @@ void bucket_sort_parallel(
             for (size_t i = 0; i < vmax; i++) {
                 lims[i + 1] += lims[i];
             }
-            FAISS_THROW_IF_NOT(lims[vmax] == nval);
+            FAISS_THROW_IF_NOT(static_cast<size_t>(lims[vmax]) == nval);
         }
 #pragma omp barrier
 
@@ -341,7 +341,8 @@ void bucket_sort_inplace_ref(
     double t0 = getmillisecs();
     size_t nval = nrow * ncol;
     FAISS_THROW_IF_NOT(
-            nbucket < nval); // unclear what would happen in this case...
+            static_cast<size_t>(nbucket) <
+            nval); // unclear what would happen in this case...
 
     memset(lims, 0, sizeof(*lims) * (nbucket + 1));
     for (size_t i = 0; i < nval; i++) {
@@ -350,14 +351,14 @@ void bucket_sort_inplace_ref(
     }
     double t1 = getmillisecs();
     // compute cumulative sum
-    for (size_t i = 0; i < nbucket; i++) {
+    for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
         lims[i + 1] += lims[i];
     }
-    FAISS_THROW_IF_NOT(lims[nbucket] == nval);
+    FAISS_THROW_IF_NOT(static_cast<size_t>(lims[nbucket]) == nval);
     double t2 = getmillisecs();
 
     std::vector<size_t> ptrs(nbucket);
-    for (size_t i = 0; i < nbucket; i++) {
+    for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
         ptrs[i] = lims[i];
     }
 
@@ -378,7 +379,8 @@ void bucket_sort_inplace_ref(
         } else {
             // start new loop
             for (; init_bucket_no < nbucket; init_bucket_no++) {
-                if (ptrs[init_bucket_no] < lims[init_bucket_no + 1]) {
+                if (ptrs[init_bucket_no] <
+                    static_cast<size_t>(lims[init_bucket_no + 1])) {
                     break;
                 }
             }
@@ -390,7 +392,7 @@ void bucket_sort_inplace_ref(
         }
     }
 
-    for (size_t i = 0; i < nbucket; i++) {
+    for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
         assert(ptrs[i] == lims[i + 1]);
     }
     double t3 = getmillisecs();
@@ -407,8 +409,8 @@ struct ToWrite {
     std::vector<TI> rows;
     std::vector<size_t> lims;
 
-    explicit ToWrite(TI nbucket) : nbucket(nbucket) {
-        lims.resize(nbucket + 1);
+    explicit ToWrite(TI nbucket_in) : nbucket(nbucket_in) {
+        lims.resize(nbucket_in + 1);
     }
 
     /// add one element (row) to write in bucket b
@@ -428,7 +430,7 @@ struct ToWrite {
             lims[buckets[i] + 1]++;
         }
         // compute cumulative sum
-        for (size_t i = 0; i < nbucket; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
             lims[i + 1] += lims[i];
         }
         FAISS_THROW_IF_NOT(lims[nbucket] == buckets.size());
@@ -466,7 +468,8 @@ void bucket_sort_inplace_parallel(
     std::vector<ToWrite<TI>> all_to_write;
     size_t nval = nrow * ncol;
     FAISS_THROW_IF_NOT(
-            nbucket < nval); // unclear what would happen in this case...
+            static_cast<size_t>(nbucket) <
+            nval); // unclear what would happen in this case...
 
     // try to keep size of all_to_write < 5GiB
     // but we need at least one element per bucket
@@ -498,7 +501,7 @@ void bucket_sort_inplace_parallel(
         }
 #pragma omp critical
         { // accumulate histograms (not shifted indices to prepare cumsum)
-            for (size_t i = 0; i < nbucket; i++) {
+            for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
                 lims[i + 1] += local_lims[i];
             }
             all_to_write.push_back(ToWrite<TI>(nbucket));
@@ -511,10 +514,10 @@ void bucket_sort_inplace_parallel(
 #pragma omp master
         {
             // compute cumulative sum
-            for (size_t i = 0; i < nbucket; i++) {
+            for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
                 lims[i + 1] += lims[i];
             }
-            FAISS_THROW_IF_NOT(lims[nbucket] == nval);
+            FAISS_THROW_IF_NOT(static_cast<size_t>(lims[nbucket]) == nval);
             // at this point lims is final (read only!)
 
             memcpy(ptrs.data(), lims, sizeof(lims[0]) * nbucket);
@@ -559,19 +562,22 @@ void bucket_sort_inplace_parallel(
                     printf("ROUND %d n_to_write=%zd\n", round, n_to_write);
                 }
                 if (verbose > 2) {
-                    for (size_t b = 0; b < nbucket; b++) {
+                    for (size_t b = 0; b < static_cast<size_t>(nbucket); b++) {
                         printf("   b=%zd [", b);
-                        for (size_t i = lims[b]; i < lims[b + 1]; i++) {
+                        for (size_t i = static_cast<size_t>(lims[b]);
+                             i < static_cast<size_t>(lims[b + 1]);
+                             i++) {
                             printf(" %s%d",
                                    ptrs[b] == i ? ">" : "",
                                    int(vals[i]));
                         }
                         printf(" %s] %s\n",
-                               ptrs[b] == lims[b + 1] ? ">" : "",
+                               ptrs[b] == static_cast<size_t>(lims[b + 1]) ? ">"
+                                                                           : "",
                                did_wrap[b] ? "w" : "");
                     }
                     printf("To write\n");
-                    for (size_t b = 0; b < nbucket; b++) {
+                    for (size_t b = 0; b < static_cast<size_t>(nbucket); b++) {
                         printf("   b=%zd ", b);
                         const char* sep = "[";
                         for (const ToWrite<TI>& to_write_2 : all_to_write) {
@@ -609,7 +615,7 @@ void bucket_sort_inplace_parallel(
                                    rank,
                                    idx);
                         }
-                        if (idx < lims[b + 1]) {
+                        if (idx < static_cast<size_t>(lims[b + 1])) {
                             ptrs[b]++;
                         } else {
                             // wrapping around
@@ -709,7 +715,7 @@ inline int64_t hash_function(int64_t x) {
 void hashtable_int64_to_int64_init(int log2_capacity, int64_t* tab) {
     size_t capacity = (size_t)1 << log2_capacity;
 #pragma omp parallel for
-    for (int64_t i = 0; i < capacity; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(capacity); i++) {
         tab[2 * i] = -1;
         tab[2 * i + 1] = -1;
     }
@@ -729,7 +735,7 @@ void hashtable_int64_to_int64_add(
     size_t nbucket = (size_t)1 << log2_nbucket;
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         hk[i] = hash_function(keys[i]) & mask;
         bucket_no[i] = hk[i] >> (log2_capacity - log2_nbucket);
     }
@@ -746,11 +752,13 @@ void hashtable_int64_to_int64_add(
 
     int num_errors = 0;
 #pragma omp parallel for reduction(+ : num_errors)
-    for (int64_t bucket = 0; bucket < nbucket; bucket++) {
+    for (int64_t bucket = 0; bucket < static_cast<int64_t>(nbucket); bucket++) {
         size_t k0 = bucket << (log2_capacity - log2_nbucket);
         size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
 
-        for (size_t i = lims[bucket]; i < lims[bucket + 1]; i++) {
+        for (size_t i = static_cast<size_t>(lims[bucket]);
+             i < static_cast<size_t>(lims[bucket + 1]);
+             i++) {
             int64_t j = perm[i];
             assert(bucket_no[j] == bucket);
             assert(hk[j] >= k0 && hk[j] < k1);
@@ -768,7 +776,8 @@ void hashtable_int64_to_int64_add(
                 if (slot == k1) {
                     slot = k0;
                 }
-                if (slot == hk[j]) { // no free slot left in bucket
+                if (slot ==
+                    static_cast<size_t>(hk[j])) { // no free slot left in bucket
                     num_errors++;
                     break;
                 }
@@ -793,17 +802,17 @@ void hashtable_int64_to_int64_lookup(
     int log2_nbucket = log2_capacity_to_log2_nbucket(log2_capacity);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         int64_t k = keys[i];
-        int64_t hashValue = hash_function(k) & mask;
-        size_t slot = hashValue;
+        int64_t hk_i = hash_function(k) & mask;
+        size_t slot = hk_i;
 
         if (tab[2 * slot] == -1) { // not in table
             vals[i] = -1;
         } else if (tab[2 * slot] == k) { // found!
             vals[i] = tab[2 * slot + 1];
         } else { // need to search in [k0, k1)
-            size_t bucket = hashValue >> (log2_capacity - log2_nbucket);
+            size_t bucket = hk_i >> (log2_capacity - log2_nbucket);
             size_t k0 = bucket << (log2_capacity - log2_nbucket);
             size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
             for (;;) {
@@ -815,7 +824,8 @@ void hashtable_int64_to_int64_lookup(
                 if (slot == k1) {
                     slot = k0;
                 }
-                if (slot == hashValue) { // bucket is full and not found
+                if (slot ==
+                    static_cast<size_t>(hk_i)) { // bucket is full and not found
                     vals[i] = -1;
                     break;
                 }
