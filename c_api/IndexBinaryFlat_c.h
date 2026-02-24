@@ -24,14 +24,6 @@ FAISS_DECLARE_CLASS_INHERITED(IndexBinaryFlat, IndexBinary)
 FAISS_DECLARE_DESTRUCTOR(IndexBinaryFlat)
 FAISS_DECLARE_INDEX_BINARY_DOWNCAST(IndexBinaryFlat)
 
-/** Select between using a heap or counting to select the k smallest values
- * when scanning inverted lists.
- */
-FAISS_DECLARE_GETTER_SETTER(IndexBinaryFlat, int, use_heap)
-
-/// Configure the batch size for queries.
-FAISS_DECLARE_GETTER_SETTER(IndexBinaryFlat, int, query_batch_size)
-
 #ifdef __cplusplus
 }
 #endif

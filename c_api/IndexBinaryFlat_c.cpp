@@ -17,14 +17,4 @@ using faiss::IndexBinaryFlat;
 
 DEFINE_DESTRUCTOR(IndexBinaryFlat)
 DEFINE_INDEX_BINARY_DOWNCAST(IndexBinaryFlat)
-
-/** Select between using a heap or counting to select the k smallest values
- * when scanning inverted lists.
- */
-DEFINE_GETTER(IndexBinaryFlat, int, use_heap)
-DEFINE_SETTER(IndexBinaryFlat, int, use_heap)
-
-/// configure batch size for queries
-DEFINE_GETTER(IndexBinaryFlat, int, query_batch_size)
-DEFINE_SETTER(IndexBinaryFlat, int, query_batch_size)
 }
