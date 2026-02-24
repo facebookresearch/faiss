@@ -9,8 +9,10 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
+#include <faiss/utils/AlignedTable.h>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
 namespace faiss {
@@ -360,6 +362,57 @@ inline float compute_full_multibit_distance(
 
     return dist;
 }
+
+/** Compute pointer to a vector's auxiliary data within block layout. */
+template <typename T>
+inline T* get_block_aux_ptr(
+        T* block_data,
+        size_t vec_pos,
+        size_t bbs,
+        size_t packed_block_size,
+        size_t full_block_size,
+        size_t storage_size) {
+    return block_data + (vec_pos / bbs) * full_block_size + packed_block_size +
+            (vec_pos % bbs) * storage_size;
+}
+
+/** Compute per-vector auxiliary storage size.
+ *
+ * @param nb_bits  number of quantization bits (1 = sign-bit only)
+ * @param d        dimensionality
+ * @return         storage size in bytes
+ */
+size_t compute_per_vector_storage_size(size_t nb_bits, size_t d);
+
+/** [LEGACY FORMAT SUPPORT] Migrate block data from old I/O format to new
+ * format.
+ *
+ * This function is used only when reading indexes saved with the legacy format
+ * (fourcc "Irfs"/"Iwrf") to convert them to the new embedded auxiliary data
+ * format. Not needed for indexes saved with the new format ("Irfn"/"Iwrn").
+ *
+ * Re-layouts blocks in-place and copies aux data from flat_storage.
+ *
+ * @param flat_storage       legacy per-vector aux data indexed by global ID
+ * @param codes              block data (will be resized and re-laid out)
+ * @param num_vectors        number of vectors in this segment
+ * @param bbs                block batch size (vectors per block)
+ * @param M2                 rounded sub-quantizer count
+ * @param old_block_stride   old block size (packed codes only, or current)
+ * @param new_block_stride   new block size (packed codes + aux region)
+ * @param storage_size       per-vector aux storage size in bytes
+ * @param id_map             maps local offset to global ID; null = sequential
+ */
+void populate_block_aux_from_flat_storage(
+        const std::vector<uint8_t>& flat_storage,
+        AlignedTable<uint8_t>& codes,
+        size_t num_vectors,
+        size_t bbs,
+        size_t M2,
+        size_t old_block_stride,
+        size_t new_block_stride,
+        size_t storage_size,
+        const int64_t* id_map = nullptr);
 
 } // namespace rabitq_utils
 } // namespace faiss

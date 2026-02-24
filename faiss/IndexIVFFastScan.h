@@ -360,28 +360,6 @@ struct IndexIVFFastScan : IndexIVF {
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
    protected:
-    /** Preprocess metadata from encoded vectors before packing.
-     *
-     * Called during add_with_ids after encode_vectors but before codes
-     * are packed into SIMD-friendly blocks. Subclasses can override to
-     * extract and store metadata embedded in codes or perform other
-     * pre-packing operations.
-     *
-     * Default implementation: no-op
-     *
-     * Example use case:
-     * - IndexIVFRaBitQFastScan extracts factor data from codes for use
-     *   during search-time distance corrections
-     *
-     * @param n                  number of vectors encoded
-     * @param flat_codes         encoded vectors (n * code_size bytes)
-     * @param start_global_idx   starting global index (ntotal before add)
-     */
-    virtual void preprocess_code_metadata(
-            idx_t n,
-            const uint8_t* flat_codes,
-            idx_t start_global_idx);
-
     /** Get stride for interpreting codes during SIMD packing.
      *
      * The stride determines how to read codes when packing them into
@@ -399,6 +377,32 @@ struct IndexIVFFastScan : IndexIVF {
      *         - >0: use custom stride (e.g., code_size for embedded metadata)
      */
     virtual size_t code_packing_stride() const;
+
+   public:
+    /** Get stride in bytes between consecutive SIMD blocks.
+     *
+     * Derived from get_CodePacker()->block_size so that there is a
+     * single source of truth for the block layout.
+     *
+     * @return stride in bytes
+     */
+    size_t get_block_stride() const;
+
+    /** Post-process packed codes after pq4_pack_codes_range.
+     *
+     * Called during add_with_ids after codes have been packed into
+     * SIMD-friendly blocks.
+     *
+     * @param list_no       inverted list number
+     * @param list_offset   starting offset within the list (pre-existing size)
+     * @param n_added       number of vectors added in this batch
+     * @param flat_codes    encoded vectors for this batch (n_added * code_size)
+     */
+    virtual void postprocess_packed_codes(
+            idx_t list_no,
+            size_t list_offset,
+            size_t n_added,
+            const uint8_t* flat_codes);
 };
 
 struct IVFFastScanStats {

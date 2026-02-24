@@ -59,6 +59,7 @@ void pq4_pack_codes(
  * @param blocks  output array, size at least ceil(i1 / bbs) * bbs * nsq / 2
  * @param code_stride  optional stride between consecutive codes (0 = use
  * default (M + 1) / 2)
+ * @param block_stride  stride in bytes between consecutive blocks.
  */
 void pq4_pack_codes_range(
         const uint8_t* codes,
@@ -68,7 +69,8 @@ void pq4_pack_codes_range(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks,
-        size_t code_stride = 0);
+        size_t code_stride,
+        size_t block_stride);
 
 /** get a single element from a packed codes table
  *
@@ -101,6 +103,8 @@ struct CodePackerPQ4 : CodePacker {
 
     CodePackerPQ4(size_t nsq, size_t bbs);
 
+    CodePacker* clone() const final;
+
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)
@@ -125,6 +129,7 @@ void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
  * @param codes   packed codes array
  * @param LUT     packed look-up table
  * @param scaler  scaler to scale the encoded norm
+ * @param block_stride  stride in bytes between consecutive blocks.
  */
 void pq4_accumulate_loop(
         int nq,
@@ -134,7 +139,8 @@ void pq4_accumulate_loop(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler);
+        const NormTableScaler* scaler,
+        size_t block_stride);
 
 /* qbs versions, supported only for bbs=32.
  *
@@ -185,6 +191,7 @@ int pq4_pack_LUT_qbs_q_map(
  * @param LUT     look-up table (packed)
  * @param res     call-back for the results
  * @param scaler  scaler to scale the encoded norm
+ * @param block_stride  stride in bytes between consecutive blocks.
  */
 void pq4_accumulate_loop_qbs(
         int qbs,
@@ -193,7 +200,8 @@ void pq4_accumulate_loop_qbs(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler = nullptr);
+        const NormTableScaler* scaler,
+        size_t block_stride);
 
 /** Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler
  *  and DummyScaler

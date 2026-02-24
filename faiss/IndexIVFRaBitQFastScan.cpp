@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <memory>
 
+#include <faiss/impl/CodePackerRaBitQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/RaBitQUtils.h>
@@ -81,8 +82,6 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
     if (own_invlists) {
         replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
     }
-
-    flat_storage.clear();
 }
 
 // Constructor that converts an existing IndexIVFRaBitQ to FastScan format
@@ -99,41 +98,52 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
           rabitq(orig.rabitq) {}
 
 size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
-    const size_t ex_bits = rabitq.nb_bits - 1;
-
-    if (ex_bits == 0) {
-        // 1-bit: only SignBitFactors (8 bytes)
-        return sizeof(SignBitFactors);
-    } else {
-        // Multi-bit: SignBitFactorsWithError + ExtraBitsFactors + ex-codes
-        return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
-                (d * ex_bits + 7) / 8;
-    }
-}
-
-void IndexIVFRaBitQFastScan::preprocess_code_metadata(
-        idx_t n,
-        const uint8_t* flat_codes,
-        idx_t start_global_idx) {
-    // Unified approach: always use flat_storage for both 1-bit and multi-bit
-    const size_t storage_size = compute_per_vector_storage_size();
-    flat_storage.resize((start_global_idx + n) * storage_size);
-
-    // Copy factors data directly to flat storage (no reordering needed)
-    const size_t bit_pattern_size = (d + 7) / 8;
-    for (idx_t i = 0; i < n; i++) {
-        const uint8_t* code = flat_codes + i * code_size;
-        const uint8_t* source_factors_ptr = code + bit_pattern_size;
-        uint8_t* storage =
-                flat_storage.data() + (start_global_idx + i) * storage_size;
-        memcpy(storage, source_factors_ptr, storage_size);
-    }
+    return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
 }
 
 size_t IndexIVFRaBitQFastScan::code_packing_stride() const {
     // Use code_size as stride to skip embedded factor data during packing
     return code_size;
 }
+
+CodePacker* IndexIVFRaBitQFastScan::get_CodePacker() const {
+    return new CodePackerRaBitQ(M2, bbs, compute_per_vector_storage_size());
+}
+
+/*********************************************************
+ * postprocess_packed_codes: write auxiliary data into blocks
+ *********************************************************/
+
+void IndexIVFRaBitQFastScan::postprocess_packed_codes(
+        idx_t list_no,
+        size_t list_offset,
+        size_t n_added,
+        const uint8_t* flat_codes) {
+    auto* bil = dynamic_cast<BlockInvertedLists*>(invlists);
+    FAISS_THROW_IF_NOT(bil);
+
+    uint8_t* block_data = bil->codes[list_no].data();
+    const size_t storage_size = compute_per_vector_storage_size();
+    const size_t bit_pattern_size = (d + 7) / 8;
+    const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+    const size_t full_block_size = get_block_stride();
+
+    for (size_t i = 0; i < n_added; i++) {
+        const uint8_t* src = flat_codes + i * code_size + bit_pattern_size;
+        uint8_t* dst = rabitq_utils::get_block_aux_ptr(
+                block_data,
+                list_offset + i,
+                bbs,
+                packed_block_size,
+                full_block_size,
+                storage_size);
+        memcpy(dst, src, storage_size);
+    }
+}
+
+/*********************************************************
+ * train_encoder
+ *********************************************************/
 
 void IndexIVFRaBitQFastScan::train_encoder(
         idx_t n,
@@ -443,23 +453,22 @@ void IndexIVFRaBitQFastScan::reconstruct_from_offset(
         }
     }
 
-    // Get dp_multiplier directly from flat_storage
-    InvertedLists::ScopedIds list_ids(invlists, list_no);
-    idx_t global_id = list_ids[offset];
+    const size_t storage_size = compute_per_vector_storage_size();
+    const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+    const size_t full_block_size = get_block_stride();
 
-    float dp_multiplier = 1.0f;
-    if (global_id >= 0) {
-        const size_t storage_size = compute_per_vector_storage_size();
-        const size_t storage_capacity = flat_storage.size() / storage_size;
+    InvertedLists::ScopedCodes list_block_codes(invlists, list_no);
+    const uint8_t* aux_ptr = rabitq_utils::get_block_aux_ptr(
+            list_block_codes.get(),
+            offset,
+            bbs,
+            packed_block_size,
+            full_block_size,
+            storage_size);
 
-        if (static_cast<size_t>(global_id) < storage_capacity) {
-            const uint8_t* base_ptr =
-                    flat_storage.data() + global_id * storage_size;
-            const auto& base_factors =
-                    *reinterpret_cast<const SignBitFactors*>(base_ptr);
-            dp_multiplier = base_factors.dp_multiplier;
-        }
-    }
+    const auto& base_factors =
+            *reinterpret_cast<const SignBitFactors*>(aux_ptr);
+    const float dp_multiplier = base_factors.dp_multiplier;
 
     // Decode residual directly using dp_multiplier
     std::vector<float> residual(d);
@@ -575,7 +584,11 @@ IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::IVFRaBitQHeapHandler(
           nq(nq_val),
           k(k_val),
           context(ctx),
-          is_multibit(multibit) {
+          is_multibit(multibit),
+          storage_size(idx->compute_per_vector_storage_size()),
+          packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
+          full_block_size(idx->get_block_stride()),
+          packer(idx->get_CodePacker()) {
     current_list_no = 0;
     probe_indices.clear();
 
@@ -651,10 +664,13 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
 
         const float normalized_distance = d32tab[j] * one_a + bias;
 
-        // Get database factors from flat_storage
-        const size_t storage_size = index->compute_per_vector_storage_size();
-        const uint8_t* base_ptr =
-                index->flat_storage.data() + result_id * storage_size;
+        const uint8_t* base_ptr = rabitq_utils::get_block_aux_ptr(
+                list_codes_ptr,
+                idx_base + j,
+                index->bbs,
+                packed_block_size,
+                full_block_size,
+                storage_size);
 
         if (is_multibit) {
             // Track candidates actually considered for two-stage filtering
@@ -737,6 +753,7 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::set_list_context(
         const std::vector<int>& probe_map) {
     current_list_no = list_no;
     probe_indices = probe_map;
+    list_codes_ptr = index->invlists->get_codes(list_no);
 }
 
 template <class C>
@@ -758,16 +775,20 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::end() {
 template <class C>
 float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
         compute_full_multibit_distance(
-                size_t db_idx,
+                size_t /*db_idx*/,
                 size_t local_q,
                 size_t global_q,
                 size_t local_offset) const {
     const size_t ex_bits = index->rabitq.nb_bits - 1;
     const size_t dim = index->d;
 
-    const size_t storage_size = index->compute_per_vector_storage_size();
-    const uint8_t* base_ptr =
-            index->flat_storage.data() + db_idx * storage_size;
+    const uint8_t* base_ptr = rabitq_utils::get_block_aux_ptr(
+            list_codes_ptr,
+            local_offset,
+            index->bbs,
+            packed_block_size,
+            full_block_size,
+            storage_size);
 
     const size_t ex_code_size = (dim * ex_bits + 7) / 8;
     const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
@@ -784,8 +805,7 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
     InvertedLists::ScopedCodes list_codes(index->invlists, list_no);
 
     std::vector<uint8_t> unpacked_code(index->code_size);
-    CodePackerPQ4 packer(index->M2, index->bbs);
-    packer.unpack_1(list_codes.get(), local_offset, unpacked_code.data());
+    packer->unpack_1(list_codes.get(), local_offset, unpacked_code.data());
     const uint8_t* sign_bits = unpacked_code.data();
 
     return rabitq_utils::compute_full_multibit_distance(
@@ -916,7 +936,8 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                 codes,
                 LUT,
                 *handler,
-                nullptr);
+                nullptr,
+                index.get_block_stride());
 
         // Combine results across iterations
         handler->end();

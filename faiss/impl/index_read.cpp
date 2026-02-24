@@ -12,14 +12,18 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <optional>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/io.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/invlists/InvertedListsIOHook.h>
+
+#include <faiss/invlists/BlockInvertedLists.h>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
@@ -1515,13 +1519,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = std::move(imm);
-    } else if (h == fourcc("Irfs")) {
+    } else if (h == fourcc("Irfn") || h == fourcc("Irfs")) {
+        // Irfn = new format (aux data embedded in SIMD blocks)
+        // Irfs = legacy format (flat_storage separate, needs migration)
+        const bool is_legacy = (h == fourcc("Irfs"));
+
         auto idxqfs = std::make_unique<IndexRaBitQFastScan>();
         read_index_header(*idxqfs, f);
         read_RaBitQuantizer(idxqfs->rabitq, f, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
-        READVECTOR(idxqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (is_legacy) {
+            READVECTOR(legacy_flat_storage);
+        }
 
         READ1(idxqfs->bbs);
         READ1(idxqfs->ntotal2);
@@ -1535,6 +1547,28 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->ksub = (1 << nbits_fastscan);
 
         READVECTOR(idxqfs->codes);
+
+        if (is_legacy) {
+            const size_t storage_size =
+                    rabitq_utils::compute_per_vector_storage_size(
+                            idxqfs->rabitq.nb_bits, idxqfs->d);
+
+            FAISS_THROW_IF_NOT_MSG(
+                    legacy_flat_storage.size() ==
+                            static_cast<size_t>(idxqfs->ntotal) * storage_size,
+                    "legacy flat_storage size mismatch during migration");
+
+            rabitq_utils::populate_block_aux_from_flat_storage(
+                    legacy_flat_storage,
+                    idxqfs->codes,
+                    static_cast<size_t>(idxqfs->ntotal),
+                    idxqfs->bbs,
+                    idxqfs->M2,
+                    ((idxqfs->M2 + 1) / 2) * idxqfs->bbs,
+                    idxqfs->get_block_stride(),
+                    storage_size);
+        }
+
         idx = std::move(idxqfs);
     } else if (h == fourcc("Ixrq")) {
         auto idxq = std::make_unique<IndexRaBitQ>();
@@ -1647,7 +1681,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idx = std::move(svs);
     }
 #endif // FAISS_ENABLE_SVS
-    else if (h == fourcc("Iwrf")) {
+    else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {
+        // Iwrn = new format (aux data embedded in SIMD blocks)
+        // Iwrf = legacy format (flat_storage separate, needs migration)
+        const bool is_legacy = (h == fourcc("Iwrf"));
+
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
         read_ivf_header(ivrqfs.get(), f);
         read_RaBitQuantizer(ivrqfs->rabitq, f);
@@ -1659,7 +1697,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrqfs->implem);
         READ1(ivrqfs->qb);
         READ1(ivrqfs->centered);
-        READVECTOR(ivrqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (is_legacy) {
+            READVECTOR(legacy_flat_storage);
+        }
 
         // Initialize FastScan base class fields
         const size_t M_fastscan = (ivrqfs->d + 3) / 4;
@@ -1670,6 +1712,37 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         read_InvertedLists(*ivrqfs, f, io_flags);
         ivrqfs->init_code_packer();
+
+        if (is_legacy) {
+            auto* bil = dynamic_cast<BlockInvertedLists*>(ivrqfs->invlists);
+            FAISS_THROW_IF_NOT(bil);
+
+            const size_t storage_size =
+                    rabitq_utils::compute_per_vector_storage_size(
+                            ivrqfs->rabitq.nb_bits, ivrqfs->d);
+            const size_t new_block_stride = ivrqfs->get_block_stride();
+
+            for (size_t list_no = 0; list_no < ivrqfs->nlist; list_no++) {
+                if (bil->list_size(list_no) == 0) {
+                    continue;
+                }
+                rabitq_utils::populate_block_aux_from_flat_storage(
+                        legacy_flat_storage,
+                        bil->codes[list_no],
+                        bil->list_size(list_no),
+                        ivrqfs->bbs,
+                        ivrqfs->M2,
+                        bil->block_size,
+                        new_block_stride,
+                        storage_size,
+                        bil->ids[list_no].data());
+            }
+
+            if (bil->block_size < new_block_stride) {
+                bil->block_size = new_block_stride;
+            }
+        }
+
         idx = std::move(ivrqfs);
     } else {
         FAISS_THROW_FMT(
