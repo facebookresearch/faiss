@@ -9,15 +9,18 @@
 # Architecture-specific: only include files for the current build architecture
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
+  impl/pq_code_distance/pq_code_distance-avx2.cpp
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
+  impl/pq_code_distance/pq_code_distance-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/distances_aarch64.cpp
 )
 set(FAISS_SIMD_SVE_SRC
+  impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
 )
 # Select SIMD sources based on target architecture
@@ -93,6 +96,7 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/pq_code_distance/pq_code_distance-generic.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
@@ -256,11 +260,8 @@ set(FAISS_HEADERS
   impl/simd_dispatch.h
   impl/simd_result_handlers.h
   impl/zerocopy_io.h
-  impl/code_distance/code_distance.h
-  impl/code_distance/code_distance-generic.h
-  impl/code_distance/code_distance-avx2.h
-  impl/code_distance/code_distance-avx512.h
-  impl/code_distance/code_distance-sve.h
+  utils/pq_code_distance.h
+  impl/pq_code_distance/pq_code_distance-inl.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
