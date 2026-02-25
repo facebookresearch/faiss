@@ -31,6 +31,7 @@
 
 #include <thrust/copy.h>
 #include <thrust/gather.h>
+#include <thrust/iterator/counting_iterator.h>
 #include <thrust/reduce.h>
 
 namespace faiss {
