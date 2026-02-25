@@ -19,7 +19,8 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
-#include <faiss/impl/code_distance/code_distance.h>
+#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
 
@@ -72,8 +73,9 @@ void IndexPQ::train(idx_t n, const float* x) {
 
 namespace {
 
-template <class PQDecoder>
+template <class PQCodeDist>
 struct PQDistanceComputer : FlatCodesDistanceComputer {
+    using PQDecoder = typename PQCodeDist::PQDecoder;
     size_t d;
     MetricType metric;
     idx_t nb;
@@ -86,7 +88,7 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     float distance_to_code(const uint8_t* code) final {
         ndis++;
 
-        float dis = distance_single_code<PQDecoder>(
+        float dis = PQCodeDist::distance_single_code(
                 pq.M, pq.nbits, precomputed_table.data(), code);
         return dis;
     }
@@ -134,16 +136,23 @@ struct PQDistanceComputer : FlatCodesDistanceComputer {
     }
 };
 
+template <SIMDLevel SL>
+FlatCodesDistanceComputer* get_FlatCodesDistanceComputer1(
+        const IndexPQ& index) {
+    if (index.pq.nbits == 8) {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoder8, SL>>(index);
+    } else if (index.pq.nbits == 16) {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoder16, SL>>(index);
+    } else {
+        return new PQDistanceComputer<PQCodeDistance<PQDecoderGeneric, SL>>(
+                index);
+    }
+}
+
 } // namespace
 
 FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
-    if (pq.nbits == 8) {
-        return new PQDistanceComputer<PQDecoder8>(*this);
-    } else if (pq.nbits == 16) {
-        return new PQDistanceComputer<PQDecoder16>(*this);
-    } else {
-        return new PQDistanceComputer<PQDecoderGeneric>(*this);
-    }
+    DISPATCH_SIMDLevel(get_FlatCodesDistanceComputer1, *this);
 }
 
 /*****************************************
