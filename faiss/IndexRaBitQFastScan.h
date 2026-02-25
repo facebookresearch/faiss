@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <faiss/IndexFastScan.h>
@@ -43,17 +44,6 @@ struct IndexRaBitQFastScan : IndexFastScan {
     /// Center of all points (same as IndexRaBitQ)
     std::vector<float> center;
 
-    /// Per-vector auxiliary data (1-bit codes stored separately in `codes`)
-    ///
-    /// 1-bit codes (sign bits) are stored in the inherited `codes` array from
-    /// IndexFastScan in packed FastScan format for SIMD processing.
-    ///
-    /// This flat_storage holds per-vector factors and refinement-bit codes:
-    /// Layout for 1-bit: [SignBitFactors (8 bytes)]
-    /// Layout for multi-bit: [SignBitFactorsWithError
-    /// (12B)][ref_codes][ExtraBitsFactors (8B)]
-    std::vector<uint8_t> flat_storage;
-
     /// Default number of bits to quantize a query with
     uint8_t qb = 8;
 
@@ -77,7 +67,7 @@ struct IndexRaBitQFastScan : IndexFastScan {
 
     void compute_codes(uint8_t* codes, idx_t n, const float* x) const override;
 
-    /// Compute storage size per vector in flat_storage
+    /// Compute per-vector auxiliary data size in block aux region
     size_t compute_per_vector_storage_size() const;
 
     void compute_float_LUT(
@@ -87,6 +77,12 @@ struct IndexRaBitQFastScan : IndexFastScan {
             const FastScanDistancePostProcessing& context) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /// Return CodePackerRaBitQ with enlarged block size
+    CodePacker* get_CodePacker() const override;
+
+    /// Remove vectors and compact both PQ4 codes and auxiliary data
+    size_t remove_ids(const IDSelector& sel) override;
 
     void search(
             idx_t n,
@@ -140,6 +136,12 @@ struct RaBitQHeapHandler
     const FastScanDistancePostProcessing&
             context;         // Processing context with query offset
     const bool is_multi_bit; // Runtime flag for multi-bit mode
+
+    // Cached block-layout constants (invariant for handler lifetime)
+    const size_t storage_size;
+    const size_t packed_block_size;
+    const size_t full_block_size;
+    std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<

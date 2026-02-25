@@ -419,7 +419,8 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                 codes,
                 LUT,
                 *handler,
-                nullptr);
+                nullptr,
+                index.get_block_stride());
 
         // The handler is for the results of this iteration.
         // Then we need a second heap to combine across iterations.

@@ -12,10 +12,14 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #include <faiss/invlists/InvertedListsIOHook.h>
 
+#include <faiss/invlists/BlockInvertedLists.h>
+
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/Index2Layer.h>
@@ -937,13 +941,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexRaBitQFastScan* idxqfs =
                     dynamic_cast<const IndexRaBitQFastScan*>(idx)) {
-        uint32_t h = fourcc("Irfs");
+        uint32_t h = fourcc("Irfn");
         WRITE1(h);
         write_index_header(idx, f);
         write_RaBitQuantizer(&idxqfs->rabitq, f);
         WRITEVECTOR(idxqfs->center);
         WRITE1(idxqfs->qb);
-        WRITEVECTOR(idxqfs->flat_storage);
         WRITE1(idxqfs->bbs);
         WRITE1(idxqfs->ntotal2);
         WRITE1(idxqfs->M2);
@@ -1060,7 +1063,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     else if (
             const IndexIVFRaBitQFastScan* ivrqfs =
                     dynamic_cast<const IndexIVFRaBitQFastScan*>(idx)) {
-        uint32_t h = fourcc("Iwrf");
+        uint32_t h = fourcc("Iwrn");
         WRITE1(h);
         write_ivf_header(ivrqfs, f);
         write_RaBitQuantizer(&ivrqfs->rabitq, f);
@@ -1072,7 +1075,6 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrqfs->implem);
         WRITE1(ivrqfs->qb);
         WRITE1(ivrqfs->centered);
-        WRITEVECTOR(ivrqfs->flat_storage);
         write_InvertedLists(ivrqfs->invlists, f);
     } else {
         FAISS_THROW_MSG("don't know how to serialize this type of index");

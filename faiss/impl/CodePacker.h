@@ -18,9 +18,13 @@ namespace faiss {
  * the "fast_scan" indexes on CPU and for some GPU kernels.
  */
 struct CodePacker {
-    size_t code_size;  // input code size in bytes
-    size_t nvec;       // number of vectors per block
-    size_t block_size; // size of one block in bytes (>= code_size * nvec)
+    size_t code_size = 0;  // input code size in bytes
+    size_t nvec = 0;       // number of vectors per block
+    size_t block_size = 0; // size of one block in bytes (>= code_size * nvec)
+
+    CodePacker() = default;
+    CodePacker(const CodePacker&) = default;
+    CodePacker& operator=(const CodePacker&) = default;
 
     // pack a single code to a block
     virtual void pack_1(
@@ -52,12 +56,16 @@ struct CodePacker {
                                 // * code_size)
     ) const;
 
+    virtual CodePacker* clone() const = 0;
+
     virtual ~CodePacker() {}
 };
 
 /** Trivial code packer where codes are stored one by one */
 struct CodePackerFlat : CodePacker {
     explicit CodePackerFlat(size_t code_size);
+
+    CodePacker* clone() const final;
 
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;

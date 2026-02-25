@@ -90,6 +90,7 @@ set(FAISS_SRC
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
   impl/CodePacker.cpp
+  impl/CodePackerRaBitQ.cpp
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
@@ -215,6 +216,7 @@ set(FAISS_HEADERS
   impl/VisitedTable.h
   impl/ClusteringInitialization.h
   impl/CodePacker.h
+  impl/CodePackerRaBitQ.h
   impl/IDSelector.h
   impl/DistanceComputer.h
   impl/FaissAssert.h

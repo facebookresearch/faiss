@@ -64,4 +64,8 @@ void CodePackerFlat::unpack_1(
     unpack_all(block, flat_code);
 }
 
+CodePacker* CodePackerFlat::clone() const {
+    return new CodePackerFlat(*this);
+}
+
 } // namespace faiss

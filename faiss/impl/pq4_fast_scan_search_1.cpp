@@ -123,14 +123,15 @@ void accumulate_fixed_blocks(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride) {
     constexpr int bbs = 32 * BB;
     for (size_t j0 = 0; j0 < nb; j0 += bbs) {
         FixedStorageHandler<NQ, 2 * BB> res2;
         kernel_accumulate_block<NQ, BB>(nsq, codes, LUT, res2, scaler);
         res.set_block_origin(0, j0);
         res2.to_other_handler(res);
-        codes += bbs * nsq / 2;
+        codes += block_stride;
     }
 }
 
@@ -143,15 +144,17 @@ void pq4_accumulate_loop_fixed_scaler(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const Scaler& scaler) {
+        const Scaler& scaler,
+        size_t block_stride) {
     FAISS_THROW_IF_NOT(is_aligned_pointer(codes));
     FAISS_THROW_IF_NOT(is_aligned_pointer(LUT));
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
     FAISS_THROW_IF_NOT(nb % bbs == 0);
 
-#define DISPATCH(NQ, BB)                                                   \
-    case NQ * 1000 + BB:                                                   \
-        accumulate_fixed_blocks<NQ, BB>(nb, nsq, codes, LUT, res, scaler); \
+#define DISPATCH(NQ, BB)                                         \
+    case NQ * 1000 + BB:                                         \
+        accumulate_fixed_blocks<NQ, BB>(                         \
+                nb, nsq, codes, LUT, res, scaler, block_stride); \
         break
 
     switch (nq * 1000 + bbs / 32) {
@@ -179,14 +182,15 @@ void pq4_accumulate_loop_fixed_handler(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const NormTableScaler* scaler) {
+        const NormTableScaler* scaler,
+        size_t block_stride) {
     if (scaler) {
         pq4_accumulate_loop_fixed_scaler(
-                nq, nb, bbs, nsq, codes, LUT, res, *scaler);
+                nq, nb, bbs, nsq, codes, LUT, res, *scaler, block_stride);
     } else {
         DummyScaler dscaler;
         pq4_accumulate_loop_fixed_scaler(
-                nq, nb, bbs, nsq, codes, LUT, res, dscaler);
+                nq, nb, bbs, nsq, codes, LUT, res, dscaler, block_stride);
     }
 }
 
@@ -199,9 +203,10 @@ struct Run_pq4_accumulate_loop {
            int nsq,
            const uint8_t* codes,
            const uint8_t* LUT,
-           const NormTableScaler* scaler) {
+           const NormTableScaler* scaler,
+           size_t block_stride) {
         pq4_accumulate_loop_fixed_handler(
-                nq, nb, bbs, nsq, codes, LUT, res, scaler);
+                nq, nb, bbs, nsq, codes, LUT, res, scaler, block_stride);
     }
 };
 
@@ -215,10 +220,11 @@ void pq4_accumulate_loop(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler) {
+        const NormTableScaler* scaler,
+        size_t block_stride) {
     Run_pq4_accumulate_loop consumer;
     dispatch_SIMDResultHandler(
-            res, consumer, nq, nb, bbs, nsq, codes, LUT, scaler);
+            res, consumer, nq, nb, bbs, nsq, codes, LUT, scaler, block_stride);
 }
 
 } // namespace faiss
