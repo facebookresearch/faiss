@@ -16,6 +16,7 @@
     <includedby refid="IndexIVFPQFastScan_8h" local="no">faiss/IndexIVFPQFastScan.h</includedby>
     <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <includedby refid="IndexPQFastScan_8h" local="no">faiss/IndexPQFastScan.h</includedby>
+    <includedby refid="RaBitQUtils_8h" local="no">faiss/impl/RaBitQUtils.h</includedby>
     <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="BlockInvertedLists_8h" local="no">faiss/invlists/BlockInvertedLists.h</includedby>
     <incdepgraph>
@@ -122,6 +123,20 @@
         </childnode>
       </node>
       <node id="12">
+        <label>faiss/impl/RaBitQUtils.h</label>
+        <link refid="RaBitQUtils_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
+        <link refid="RaBitQuantizerMultiBit_8h_source"/>
+      </node>
+      <node id="14">
         <label>faiss/impl/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
         <childnode refid="6" relation="include">
@@ -129,7 +144,7 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="15">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
@@ -154,7 +169,9 @@
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

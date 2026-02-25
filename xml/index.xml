@@ -538,14 +538,19 @@
     <member refid="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" kind="variable"><name>code_size</name></member>
     <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" kind="variable"><name>nvec</name></member>
     <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" kind="variable"><name>block_size</name></member>
+    <member refid="structfaiss_1_1CodePacker_1aa70417cd6263738a8b8f003b14dc0bc5" kind="function"><name>CodePacker</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a696efc62412039fbfbbfd36f8e741419" kind="function"><name>CodePacker</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a5136126329056af77f6e3ad187845ae1" kind="function"><name>operator=</name></member>
     <member refid="structfaiss_1_1CodePacker_1a94a4b3147227cc8a115a3ce5bec3cdf1" kind="function"><name>pack_1</name></member>
     <member refid="structfaiss_1_1CodePacker_1a0b4468e9cb66b388e275412ced878f30" kind="function"><name>unpack_1</name></member>
     <member refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" kind="function"><name>pack_all</name></member>
     <member refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793" kind="function"><name>unpack_all</name></member>
+    <member refid="structfaiss_1_1CodePacker_1ad9a9dd09842c7d077ff47d2170d43c65" kind="function"><name>clone</name></member>
     <member refid="structfaiss_1_1CodePacker_1aa075e61d5471f43ca8983e45790326cc" kind="function"><name>~CodePacker</name></member>
   </compound>
   <compound refid="structfaiss_1_1CodePackerFlat" kind="struct"><name>faiss::CodePackerFlat</name>
     <member refid="structfaiss_1_1CodePackerFlat_1abccee3f957430c8569811a16efa9989b" kind="function"><name>CodePackerFlat</name></member>
+    <member refid="structfaiss_1_1CodePackerFlat_1a969e72bab9198d9d3143c430bf9dc2cf" kind="function"><name>clone</name></member>
     <member refid="structfaiss_1_1CodePackerFlat_1a728656b0b175b69b77dcaadda13cfac9" kind="function"><name>pack_1</name></member>
     <member refid="structfaiss_1_1CodePackerFlat_1a91f4886146f06de9dfe0aa1c2c5e1436" kind="function"><name>unpack_1</name></member>
     <member refid="structfaiss_1_1CodePackerFlat_1ae59ad6a701aae0f810f6aa3e9aa1acfa" kind="function"><name>pack_all</name></member>
@@ -560,8 +565,22 @@
     <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" kind="variable"><name>nvec</name></member>
     <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" kind="variable"><name>block_size</name></member>
     <member refid="structfaiss_1_1CodePackerPQ4_1a0076019cdf6fcde0e819fa8af799642a" kind="function"><name>CodePackerPQ4</name></member>
+    <member refid="structfaiss_1_1CodePackerPQ4_1a721d6a11c8c0c6445a3102b1b6a4e6a3" kind="function"><name>clone</name></member>
     <member refid="structfaiss_1_1CodePackerPQ4_1a57db85858c57120ff1c9e1b5eb9e4c4c" kind="function"><name>pack_1</name></member>
     <member refid="structfaiss_1_1CodePackerPQ4_1aa9c40fec414f52f336b16a27536fb8a0" kind="function"><name>unpack_1</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" kind="function"><name>pack_all</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793" kind="function"><name>unpack_all</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1CodePackerRaBitQ" kind="struct"><name>faiss::CodePackerRaBitQ</name>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1afd94b0bfd711eb713fb96a07ed6202b9" kind="variable"><name>nsq</name></member>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1a2f9d73840ed37dfc2f4430892ded2e8e" kind="variable"><name>aux_size_per_vec</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" kind="variable"><name>nvec</name></member>
+    <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" kind="variable"><name>block_size</name></member>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1abda13f0c88d934edd47f6457b1b3efec" kind="function"><name>CodePackerRaBitQ</name></member>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1ae109435ff946d87b0ca56a88144179b9" kind="function"><name>clone</name></member>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1a3f0126d2c8394a4c6e8dccaf2cd554e7" kind="function"><name>pack_1</name></member>
+    <member refid="structfaiss_1_1CodePackerRaBitQ_1a1e0e556f373ae81b97742a9feaf51ab3" kind="function"><name>unpack_1</name></member>
     <member refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" kind="function"><name>pack_all</name></member>
     <member refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793" kind="function"><name>unpack_all</name></member>
   </compound>
@@ -2583,7 +2602,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -2964,7 +2984,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -4043,6 +4064,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -4082,7 +4105,6 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFFastScan" kind="struct"><name>faiss::IndexIVFFastScan</name>
@@ -4142,6 +4164,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -4184,7 +4208,6 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -4629,6 +4652,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -4671,7 +4696,6 @@
     <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab90c20066eb6723c28caad01933f920a" kind="typedef"><name>Search_type_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFPQ" kind="struct"><name>faiss::IndexIVFPQ</name>
@@ -4828,6 +4852,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -4866,7 +4892,6 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
@@ -5118,6 +5143,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -5160,7 +5187,6 @@
     <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab90c20066eb6723c28caad01933f920a" kind="typedef"><name>Search_type_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFProductResidualQuantizer" kind="struct"><name>faiss::IndexIVFProductResidualQuantizer</name>
@@ -5310,6 +5336,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -5352,7 +5380,6 @@
     <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab90c20066eb6723c28caad01933f920a" kind="typedef"><name>Search_type_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFRaBitQ" kind="struct"><name>faiss::IndexIVFRaBitQ</name>
@@ -5437,7 +5464,6 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1b7b8f6f66494ef011b7d7f420bf7d61" kind="variable"><name>rabitq</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a2a98d9a22252ad88b413e434d3c2fcaf" kind="variable"><name>qb</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a6876c2d4d378426e839fb9486e9eb39d" kind="variable"><name>centered</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0c24e985e415e01d13ea858db51d3e39" kind="variable"><name>flat_storage</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a7a5b4bc9d80aea0270de58493c4eb3d4" kind="variable"><name>bbs</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a3eeb2caa1304b5366d5c1a3a3cdb289d" kind="variable"><name>M</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1aece546e9a73d5d57d276f206b98f6732" kind="variable"><name>nbits</name></member>
@@ -5475,6 +5501,8 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a51b5d8ab24ed009c4c9830e8e112027f" kind="function"><name>IndexIVFRaBitQFastScan</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0140783b48115a1596c486ce0738966f" kind="function"><name>train_encoder</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1aab365da27d3d8796efeb2569dd23dd2f" kind="function"><name>encode_vectors</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a8f64f50f916f47b8cc59223fd3a46d55" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a0a2d2c7a21d05b56c573e5d8f66b2019" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a37704d0bc79d9511db2032109d637555" kind="function"><name>reconstruct_from_offset</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a1463a1ea2123d2b672e7d74069a711f0" kind="function"><name>sa_decode</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ae1013ee474cdad64e150de031c50ab36" kind="function"><name>compute_per_vector_storage_size</name></member>
@@ -5496,8 +5524,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1ab3a42cbf9796edb635a5d193f866d49e" kind="function"><name>search_implem_10</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1ade68bfb359cd7e620c6dde4e46834edd" kind="function"><name>search_implem_12</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a478421842b68a1d8e7f08eaf0bced854" kind="function"><name>search_implem_14</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -5537,7 +5565,6 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" kind="function"><name>coarse_code_size</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1ab154d71d13d876c830efb057f9be2879" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a7d8298179ea35a8e23af9b3690feb4c7" kind="function"><name>code_packing_stride</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a92a8a5e99c29f22cba4a66d672055201" kind="function"><name>compute_residual_LUT</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1aed68df958bbb5dbceee34b04529a0707" kind="function"><name>decode_fastscan_to_residual</name></member>
@@ -5692,6 +5719,8 @@
     <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" kind="function"><name>get_CodePacker</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" kind="function"><name>reconstruct_orig_invlists</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a0f23ffc33cf0de396080f9c07888f9ca" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" kind="function"><name>get_block_stride</name></member>
+    <member refid="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" kind="function"><name>postprocess_packed_codes</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a7a1d5eec194db0977b2318c6ed6a2b86" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" kind="function"><name>add</name></member>
@@ -5734,7 +5763,6 @@
     <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1ab90c20066eb6723c28caad01933f920a" kind="typedef"><name>Search_type_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
-    <member refid="structfaiss_1_1IndexIVFFastScan_1a38ccf16547c92e004e74721f7adedea5" kind="function"><name>preprocess_code_metadata</name></member>
     <member refid="structfaiss_1_1IndexIVFFastScan_1a44181b1fd7888b686ec453792329c1eb" kind="function"><name>code_packing_stride</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFScalarQuantizer" kind="struct"><name>faiss::IndexIVFScalarQuantizer</name>
@@ -6054,7 +6082,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -6623,7 +6652,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -6792,7 +6822,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -6908,7 +6939,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -7033,7 +7065,6 @@
   <compound refid="structfaiss_1_1IndexRaBitQFastScan" kind="struct"><name>faiss::IndexRaBitQFastScan</name>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a042e56a533ad4b35aa1b602bb5ef0352" kind="variable"><name>rabitq</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a51d7f1fdf4d85b5f32e0ad83aeca6ac1" kind="variable"><name>center</name></member>
-    <member refid="structfaiss_1_1IndexRaBitQFastScan_1a67ecf2047de38220a6cab0f7d23497e9" kind="variable"><name>flat_storage</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a3b4c1aba460631c2f135004b2fbd126c" kind="variable"><name>qb</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a192256eaafd8e1bebda07807ec7fcaa8" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" kind="variable"><name>implem</name></member>
@@ -7063,6 +7094,8 @@
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1aa3380a3e7a53cdf1abb51229163e4709" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a710cfe0ac87836bd44d186f40a7f1285" kind="function"><name>compute_float_LUT</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1ac182edfc908e98ee0603c6725dd24e74" kind="function"><name>sa_decode</name></member>
+    <member refid="structfaiss_1_1IndexRaBitQFastScan_1a153607ac7c56db1e3147eb664a2dbf93" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexRaBitQFastScan_1abf6ac66745cd4d525986b8f269b44483" kind="function"><name>remove_ids</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1acd829877c1f4e9c5aba35bb336621aec" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexRaBitQFastScan_1a178f0e287e532d092daa8faa9b9f29fe" kind="function"><name>make_knn_handler</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" kind="function"><name>init_fastscan</name></member>
@@ -7073,8 +7106,7 @@
     <member refid="structfaiss_1_1IndexFastScan_1ab5e65c610254540c00f3b0b21be3ab8d" kind="function"><name>search_implem_12</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -7398,7 +7430,8 @@
     <member refid="structfaiss_1_1IndexFastScan_1ac4ff530a0a1a5480afc772547057ab55" kind="function"><name>search_implem_14</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a249e3ec94d8ca092d7aa1263c0e3fa67" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff3bf1664f78f7a121f4f513e2f75af7" kind="function"><name>remove_ids</name></member>
-    <member refid="structfaiss_1_1IndexFastScan_1ae55ba7a115a6850a6688390c68f74be9" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" kind="function"><name>get_CodePacker</name></member>
+    <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" kind="function"><name>get_block_stride</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1af0e22783a659894065a86e8a60ce7bf8" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1aff0a176ed14d8d64ca7b0ad1f3ebcbdf" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexFastScan_1a177e8f06f3ac7a6cc90cd0b817b97e58" kind="function"><name>sa_code_size</name></member>
@@ -8149,10 +8182,15 @@
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a51780093e06c7f4494892b5fcd21ee31" kind="variable"><name>nq</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1aaab02b20e8118c653c3aaf553dd4a81f" kind="variable"><name>k</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a0eada9675ce7d782e3b2c2f3a27770ee" kind="variable"><name>current_list_no</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a63ed432459f6e5e8b20992b92f5db802" kind="variable"><name>list_codes_ptr</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a554434ff1f1932a1f710e197c9059536" kind="variable"><name>probe_indices</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1af75a248943818623a84fda51e3a9d51f" kind="variable"><name>context</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a9aa050e3991d44b3722d96d67d8f770e" kind="variable"><name>is_multibit</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a466d393573afa1c05188c0cb5a32a87a" kind="variable"><name>nup</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a08a045393ce7de6225e4b943084456f0" kind="variable"><name>storage_size</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a7fdab53b256d70da1a95d4d83943d6d4" kind="variable"><name>packed_block_size</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1ae2046b514259878972c1932c7e51fa5b" kind="variable"><name>full_block_size</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1af250be7d8a68a6fc076b0b0e9a6bf87c" kind="variable"><name>packer</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" kind="variable"><name>disable</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae405b46f96ddedee11e885b6f48da53c" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ac59281f8df63e80195754e9cb1671bab" kind="variable"><name>j0</name></member>
@@ -8175,7 +8213,7 @@
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a06a5cf2fb3b5529b9533ab935b1176e9" kind="function"><name>adjust_with_origin</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a7e8b69c9da2beedf65b673b61f1a488b" kind="function"><name>adjust_id</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1af034cd3142a4e9bab30aab7c81a5161c" kind="function"><name>get_lt_mask</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a323039af9cacaba6a4f1685ad081b6c8" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a4ca2f8264a8f30367fbfdc920aae479c" kind="function"><name>compute_full_multibit_distance</name></member>
   </compound>
   <compound refid="structfaiss_1_1IVFRaBitQSearchParameters" kind="struct"><name>faiss::IVFRaBitQSearchParameters</name>
     <member refid="structfaiss_1_1IVFRaBitQSearchParameters_1ab74a8949016b84fa05db0b41fc152e08" kind="variable"><name>qb</name></member>
@@ -9513,6 +9551,10 @@
     <member refid="structfaiss_1_1RaBitQHeapHandler_1a9a050b528d9a6ac075a96e75b76ee492" kind="variable"><name>k</name></member>
     <member refid="structfaiss_1_1RaBitQHeapHandler_1a31c53b2f2cc2475d4ad205a05686de7b" kind="variable"><name>context</name></member>
     <member refid="structfaiss_1_1RaBitQHeapHandler_1aa1fb5ad369b6788f0f3abb3406b85cb7" kind="variable"><name>is_multi_bit</name></member>
+    <member refid="structfaiss_1_1RaBitQHeapHandler_1a87ccdccfb1b9beb627983d3e4552ea2d" kind="variable"><name>storage_size</name></member>
+    <member refid="structfaiss_1_1RaBitQHeapHandler_1af81071a190ab902c56dac72521a071e9" kind="variable"><name>packed_block_size</name></member>
+    <member refid="structfaiss_1_1RaBitQHeapHandler_1a45fdb0e2915f9bb740547878407c0d26" kind="variable"><name>full_block_size</name></member>
+    <member refid="structfaiss_1_1RaBitQHeapHandler_1ad3df996b9a143d953e5b3acc43141259" kind="variable"><name>packer</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae1c0777471180f8144af4d818112db44" kind="variable"><name>disable</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ae405b46f96ddedee11e885b6f48da53c" kind="variable"><name>i0</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ac59281f8df63e80195754e9cb1671bab" kind="variable"><name>j0</name></member>
@@ -11667,16 +11709,16 @@
     <member refid="namespacefaiss_1ae753c3918c4698ce7ad1eacb25b9c574" kind="function"><name>operator==</name></member>
     <member refid="namespacefaiss_1a19490ca11481c398d216a3e808386497" kind="function"><name>operator!=</name></member>
     <member refid="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" kind="function"><name>pq4_pack_codes</name></member>
-    <member refid="namespacefaiss_1a9d620ede35bd6cfb0a9fd8f4cfafb481" kind="function"><name>pq4_pack_codes_range</name></member>
+    <member refid="namespacefaiss_1ad9155a5692f0f07827bfff8a0debe91c" kind="function"><name>pq4_pack_codes_range</name></member>
     <member refid="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" kind="function"><name>pq4_get_packed_element</name></member>
     <member refid="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" kind="function"><name>pq4_set_packed_element</name></member>
     <member refid="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" kind="function"><name>pq4_pack_LUT</name></member>
-    <member refid="namespacefaiss_1aa5a48a8a2f624a62fbe95e108f99b4ad" kind="function"><name>pq4_accumulate_loop</name></member>
+    <member refid="namespacefaiss_1ae1141ea2220e370e8dfe7135dae66ae6" kind="function"><name>pq4_accumulate_loop</name></member>
     <member refid="namespacefaiss_1a323a06b2cc33d2afa49cd54690134ea3" kind="function"><name>pq4_qbs_to_nq</name></member>
     <member refid="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" kind="function"><name>pq4_preferred_qbs</name></member>
     <member refid="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" kind="function"><name>pq4_pack_LUT_qbs</name></member>
     <member refid="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" kind="function"><name>pq4_pack_LUT_qbs_q_map</name></member>
-    <member refid="namespacefaiss_1a165b6bf7891e03bf165128e9190d1da1" kind="function"><name>pq4_accumulate_loop_qbs</name></member>
+    <member refid="namespacefaiss_1a1ca0a0a5ddaf660c4549ef093abeed99" kind="function"><name>pq4_accumulate_loop_qbs</name></member>
     <member refid="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" kind="function"><name>accumulate_to_mem</name></member>
     <member refid="namespacefaiss_1abd58cb9ccddf108229bd3f2d3f0d2bac" kind="function"><name>beam_search_encode_step</name></member>
     <member refid="namespacefaiss_1abbf2bb1faef7c8072b82a7db323397a0" kind="function"><name>beam_search_encode_step_tab</name></member>
@@ -11976,19 +12018,19 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
+  <compound refid="namespacefaiss_1_1_0d165" kind="namespace"><name>faiss::@165</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d174" kind="namespace"><name>faiss::@174</name>
+  <compound refid="namespacefaiss_1_1_0d175" kind="namespace"><name>faiss::@175</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d197" kind="namespace"><name>faiss::@197</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d199" kind="namespace"><name>faiss::@199</name>
+  <compound refid="namespacefaiss_1_1_0d198" kind="namespace"><name>faiss::@198</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d200" kind="namespace"><name>faiss::@200</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d201" kind="namespace"><name>faiss::@201</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d50" kind="namespace"><name>faiss::@50</name>
+  <compound refid="namespacefaiss_1_1_0d202" kind="namespace"><name>faiss::@202</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d51" kind="namespace"><name>faiss::@51</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -12234,6 +12276,9 @@
     <member refid="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" kind="function"><name>should_refine_candidate</name></member>
     <member refid="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" kind="function"><name>extract_code_inline</name></member>
     <member refid="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" kind="function"><name>get_block_aux_ptr</name></member>
+    <member refid="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" kind="function"><name>compute_per_vector_storage_size</name></member>
+    <member refid="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" kind="function"><name>populate_block_aux_from_flat_storage</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rq__encode__steps" kind="namespace"><name>faiss::rq_encode_steps</name>
     <member refid="residual__quantizer__encode__steps_8h_1a8f562c038b63180c6cb8c11bd900dd5c" kind="function"><name>refine_beam_mp</name></member>
@@ -12501,6 +12546,8 @@
   <compound refid="ClusteringInitialization_8h" kind="file"><name>ClusteringInitialization.h</name>
   </compound>
   <compound refid="CodePacker_8h" kind="file"><name>CodePacker.h</name>
+  </compound>
+  <compound refid="CodePackerRaBitQ_8h" kind="file"><name>CodePackerRaBitQ.h</name>
   </compound>
   <compound refid="DistanceComputer_8h" kind="file"><name>DistanceComputer.h</name>
   </compound>

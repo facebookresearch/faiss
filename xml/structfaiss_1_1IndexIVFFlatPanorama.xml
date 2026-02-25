@@ -1631,6 +1631,7 @@
         <name>get_CodePacker</name>
         <qualifiedname>faiss::IndexIVF::get_CodePacker</qualifiedname>
         <reimplementedby refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a">get_CodePacker</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a8f64f50f916f47b8cc59223fd3a46d55">get_CodePacker</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

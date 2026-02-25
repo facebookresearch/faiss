@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="30" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="32" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="32" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a3ac369475e51bc132906371b84f6e8d9" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="31" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="33" column="11" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="33" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -54,7 +54,7 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/impl/RaBitQUtils.h" line="28" column="1" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="28" bodyend="32"/>
+    <location file="faiss/impl/RaBitQUtils.h" line="30" column="1" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="30" bodyend="34"/>
     <listofallmembers>
       <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a3ac369475e51bc132906371b84f6e8d9" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::SignBitFactors</scope><name>dp_multiplier</name></member>
       <member refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors_1a2f5be890fbdd4f2508314cddb986d680" prot="public" virt="non-virtual"><scope>faiss::rabitq_utils::SignBitFactors</scope><name>or_minus_c_l2sqr</name></member>

@@ -4,8 +4,10 @@
     <compoundname>RaBitQUtils.h</compoundname>
     <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <includes local="no">cstddef</includes>
     <includes local="no">cstdint</includes>
+    <includes local="no">cstring</includes>
     <includes local="no">vector</includes>
     <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
@@ -62,7 +64,11 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
@@ -75,10 +81,32 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="15">
+        <label>faiss/utils/AlignedTable.h</label>
+        <link refid="AlignedTable_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>algorithm</label>
+      </node>
+      <node id="16">
+        <label>cassert</label>
+      </node>
       <node id="13">
         <label>cinttypes</label>
       </node>
-      <node id="15">
+      <node id="19">
         <label>cstddef</label>
       </node>
       <node id="3">
@@ -89,6 +117,9 @@
       </node>
       <node id="5">
         <label>cstdlib</label>
+      </node>
+      <node id="17">
+        <label>cstring</label>
       </node>
       <node id="8">
         <label>exception</label>
@@ -154,360 +185,413 @@
 <codeline lineno="9"><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/platform_macros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="15"><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">rabitq_utils<sp/>{</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="19"><highlight class="comment">/**<sp/>Base<sp/>factors<sp/>computed<sp/>per<sp/>database<sp/>vector<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
-<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>both<sp/>1-bit<sp/>and<sp/>multi-bit<sp/>RaBitQ<sp/>variants.</highlight></codeline>
-<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>These<sp/>can<sp/>be<sp/>stored<sp/>either<sp/>embedded<sp/>in<sp/>codes<sp/>(IndexRaBitQ)<sp/>or<sp/>separately</highlight></codeline>
-<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>(IndexRaBitQFastScan).</highlight></codeline>
-<codeline lineno="23"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>For<sp/>1-bit<sp/>mode<sp/>only<sp/>-<sp/>contains<sp/>the<sp/>minimal<sp/>factors<sp/>needed<sp/>for<sp/>distance</highlight></codeline>
-<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>estimation<sp/>using<sp/>just<sp/>sign<sp/>bits.</highlight></codeline>
-<codeline lineno="26"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal">FAISS_PACK_STRUCTS_BEGIN</highlight></codeline>
-<codeline lineno="28" refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref><sp/>{</highlight></codeline>
-<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>||or<sp/>-<sp/>c||^2<sp/>-<sp/>((metric==IP)<sp/>?<sp/>||or||^2<sp/>:<sp/>0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_minus_c_l2sqr<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_multiplier<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="32"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="34"><highlight class="comment">/**<sp/>Extended<sp/>factors<sp/>for<sp/>multi-bit<sp/>RaBitQ<sp/>(nb_bits<sp/>&gt;<sp/>1).</highlight></codeline>
-<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Includes<sp/>error<sp/>bound<sp/>for<sp/>lower<sp/>bound<sp/>computation<sp/>in<sp/>two-stage<sp/>search.</highlight></codeline>
-<codeline lineno="36"><highlight class="comment"><sp/>*<sp/>Inherits<sp/>base<sp/>factors<sp/>to<sp/>maintain<sp/>layout<sp/>compatibility.</highlight></codeline>
-<codeline lineno="37"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"><sp/>*<sp/>Used<sp/>in<sp/>multi-bit<sp/>mode<sp/>-<sp/>the<sp/>error<sp/>bound<sp/>enables<sp/>quick<sp/>filtering<sp/>of</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/>*<sp/>unlikely<sp/>candidates<sp/>in<sp/>the<sp/>first<sp/>stage<sp/>of<sp/>two-stage<sp/>search.</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="41" refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>:<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref><sp/>{</highlight></codeline>
-<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Error<sp/>bound<sp/>for<sp/>lower<sp/>bound<sp/>computation<sp/>in<sp/>two-stage<sp/>search</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Used<sp/>in<sp/>formula:<sp/>lower_bound<sp/>=<sp/>est_distance<sp/>-<sp/>f_error<sp/>*<sp/>g_error</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Only<sp/>allocated<sp/>when<sp/>nb_bits<sp/>&gt;<sp/>1</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_error<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="48"><highlight class="comment">/**<sp/>Additional<sp/>factors<sp/>for<sp/>multi-bit<sp/>RaBitQ<sp/>(nb_bits<sp/>&gt;<sp/>1).</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"><sp/>*<sp/>Used<sp/>to<sp/>store<sp/>normalization<sp/>and<sp/>scaling<sp/>factors<sp/>for<sp/>the<sp/>refinement<sp/>bits</highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>that<sp/>encode<sp/>additional<sp/>precision<sp/>beyond<sp/>the<sp/>sign<sp/>bit.</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="52" refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" kindref="compound">ExtraBitsFactors</ref><sp/>{</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Additive<sp/>correction<sp/>factor<sp/>for<sp/>refinement<sp/>bit<sp/>reconstruction</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_add_ex<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Scaling/rescaling<sp/>factor<sp/>for<sp/>refinement<sp/>bit<sp/>reconstruction</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_rescale_ex<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="58"><highlight class="normal">FAISS_PACK_STRUCTS_END</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="60"><highlight class="comment">/**<sp/>Query-specific<sp/>factors<sp/>computed<sp/>during<sp/>search<sp/>for<sp/>RaBitQ<sp/>distance</highlight></codeline>
-<codeline lineno="61"><highlight class="comment"><sp/>*<sp/>computation.<sp/>Used<sp/>by<sp/>both<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan</highlight></codeline>
-<codeline lineno="62"><highlight class="comment"><sp/>*<sp/>implementations.</highlight></codeline>
-<codeline lineno="63"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="64" refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>{</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c1<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c2<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c34<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"></highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_to_c_L2sqr<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_norm_L2sqr<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>int_dot_scale<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/AlignedTable.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">rabitq_utils<sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="21"><highlight class="comment">/**<sp/>Base<sp/>factors<sp/>computed<sp/>per<sp/>database<sp/>vector<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>both<sp/>1-bit<sp/>and<sp/>multi-bit<sp/>RaBitQ<sp/>variants.</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>These<sp/>can<sp/>be<sp/>stored<sp/>either<sp/>embedded<sp/>in<sp/>codes<sp/>(IndexRaBitQ)<sp/>or<sp/>separately</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>(IndexRaBitQFastScan).</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>For<sp/>1-bit<sp/>mode<sp/>only<sp/>-<sp/>contains<sp/>the<sp/>minimal<sp/>factors<sp/>needed<sp/>for<sp/>distance</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/>estimation<sp/>using<sp/>just<sp/>sign<sp/>bits.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal">FAISS_PACK_STRUCTS_BEGIN</highlight></codeline>
+<codeline lineno="30" refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref><sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>||or<sp/>-<sp/>c||^2<sp/>-<sp/>((metric==IP)<sp/>?<sp/>||or||^2<sp/>:<sp/>0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_minus_c_l2sqr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_multiplier<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="36"><highlight class="comment">/**<sp/>Extended<sp/>factors<sp/>for<sp/>multi-bit<sp/>RaBitQ<sp/>(nb_bits<sp/>&gt;<sp/>1).</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*<sp/>Includes<sp/>error<sp/>bound<sp/>for<sp/>lower<sp/>bound<sp/>computation<sp/>in<sp/>two-stage<sp/>search.</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/>*<sp/>Inherits<sp/>base<sp/>factors<sp/>to<sp/>maintain<sp/>layout<sp/>compatibility.</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/>*<sp/>Used<sp/>in<sp/>multi-bit<sp/>mode<sp/>-<sp/>the<sp/>error<sp/>bound<sp/>enables<sp/>quick<sp/>filtering<sp/>of</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/>*<sp/>unlikely<sp/>candidates<sp/>in<sp/>the<sp/>first<sp/>stage<sp/>of<sp/>two-stage<sp/>search.</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>:<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Error<sp/>bound<sp/>for<sp/>lower<sp/>bound<sp/>computation<sp/>in<sp/>two-stage<sp/>search</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Used<sp/>in<sp/>formula:<sp/>lower_bound<sp/>=<sp/>est_distance<sp/>-<sp/>f_error<sp/>*<sp/>g_error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Only<sp/>allocated<sp/>when<sp/>nb_bits<sp/>&gt;<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_error<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="50"><highlight class="comment">/**<sp/>Additional<sp/>factors<sp/>for<sp/>multi-bit<sp/>RaBitQ<sp/>(nb_bits<sp/>&gt;<sp/>1).</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*<sp/>Used<sp/>to<sp/>store<sp/>normalization<sp/>and<sp/>scaling<sp/>factors<sp/>for<sp/>the<sp/>refinement<sp/>bits</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/>that<sp/>encode<sp/>additional<sp/>precision<sp/>beyond<sp/>the<sp/>sign<sp/>bit.</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_PACKED<sp/><ref refid="structfaiss_1_1rabitq__utils_1_1ExtraBitsFactors" kindref="compound">ExtraBitsFactors</ref><sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Additive<sp/>correction<sp/>factor<sp/>for<sp/>refinement<sp/>bit<sp/>reconstruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_add_ex<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Scaling/rescaling<sp/>factor<sp/>for<sp/>refinement<sp/>bit<sp/>reconstruction</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_rescale_ex<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">FAISS_PACK_STRUCTS_END</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="62"><highlight class="comment">/**<sp/>Query-specific<sp/>factors<sp/>computed<sp/>during<sp/>search<sp/>for<sp/>RaBitQ<sp/>distance</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/>*<sp/>computation.<sp/>Used<sp/>by<sp/>both<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/>*<sp/>implementations.</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c1<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c2<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>c34<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_to_c_L2sqr<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_norm_L2sqr<sp/>=<sp/>0;</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g_error<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>rotated_q;</highlight></codeline>
-<codeline lineno="76"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="78"><highlight class="comment">/**<sp/>Ideal<sp/>quantizer<sp/>radii<sp/>for<sp/>quantizers<sp/>of<sp/>1..8<sp/>bits,<sp/>optimized<sp/>to<sp/>minimize</highlight></codeline>
-<codeline lineno="79"><highlight class="comment"><sp/>*<sp/>L2<sp/>reconstruction<sp/>error.<sp/>Shared<sp/>between<sp/>all<sp/>RaBitQ<sp/>implementations.</highlight></codeline>
-<codeline lineno="80"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>Z_MAX_BY_QB[8];</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="83"><highlight class="comment">/**<sp/>Compute<sp/>factors<sp/>for<sp/>a<sp/>single<sp/>database<sp/>vector<sp/>using<sp/>RaBitQ<sp/>algorithm.</highlight></codeline>
-<codeline lineno="84"><highlight class="comment"><sp/>*<sp/>This<sp/>function<sp/>consolidates<sp/>the<sp/>mathematical<sp/>logic<sp/>that<sp/>was<sp/>duplicated</highlight></codeline>
-<codeline lineno="85"><highlight class="comment"><sp/>*<sp/>between<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan.</highlight></codeline>
-<codeline lineno="86"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
-<codeline lineno="88"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
-<codeline lineno="89"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
-<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
-<codeline lineno="91"><highlight class="comment"><sp/>*<sp/>@param<sp/>compute_error<sp/>whether<sp/>to<sp/>compute<sp/>f_error<sp/>(false<sp/>for<sp/>1-bit<sp/>mode)</highlight></codeline>
-<codeline lineno="92"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors<sp/>for<sp/>distance<sp/>computation</highlight></codeline>
-<codeline lineno="93"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>compute_vector_factors(</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compute_error<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="101"><highlight class="comment">/**<sp/>Compute<sp/>intermediate<sp/>values<sp/>needed<sp/>for<sp/>vector<sp/>factor<sp/>computation.</highlight></codeline>
-<codeline lineno="102"><highlight class="comment"><sp/>*<sp/>Separated<sp/>out<sp/>to<sp/>allow<sp/>different<sp/>bit<sp/>packing<sp/>strategies<sp/>while<sp/>sharing</highlight></codeline>
-<codeline lineno="103"><highlight class="comment"><sp/>*<sp/>the<sp/>core<sp/>mathematical<sp/>computation.</highlight></codeline>
-<codeline lineno="104"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="105"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
-<codeline lineno="106"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
-<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
-<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>output:<sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
-<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>||or||^2</highlight></codeline>
-<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|<sp/>(absolute<sp/>deviations)</highlight></codeline>
-<codeline lineno="111"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="112"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_vector_intermediate_values(</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>norm_L2sqr,</highlight></codeline>
-<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>or_L2sqr,</highlight></codeline>
-<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>dp_oO);</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="120"><highlight class="comment">/**<sp/>Compute<sp/>final<sp/>factors<sp/>from<sp/>intermediate<sp/>values.</highlight></codeline>
-<codeline lineno="121"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>||or||^2</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>compute_error<sp/>whether<sp/>to<sp/>compute<sp/>f_error<sp/>(false<sp/>for<sp/>1-bit<sp/>mode)</highlight></codeline>
-<codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>compute_factors_from_intermediates(</highlight></codeline>
-<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm_L2sqr,</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_L2sqr,</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_oO,</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compute_error<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="137"><highlight class="comment">/**<sp/>Compute<sp/>query<sp/>factors<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
-<codeline lineno="138"><highlight class="comment"><sp/>*<sp/>This<sp/>consolidates<sp/>the<sp/>query<sp/>processing<sp/>logic<sp/>shared<sp/>between<sp/>implementations.</highlight></codeline>
-<codeline lineno="139"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="140"><highlight class="comment"><sp/>*<sp/>@param<sp/>query<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
-<codeline lineno="141"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
-<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
-<codeline lineno="143"><highlight class="comment"><sp/>*<sp/>@param<sp/>qb<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>quantization<sp/>bits<sp/>(1-8)</highlight></codeline>
-<codeline lineno="144"><highlight class="comment"><sp/>*<sp/>@param<sp/>centered<sp/><sp/><sp/><sp/><sp/><sp/>whether<sp/>to<sp/>use<sp/>centered<sp/>quantization</highlight></codeline>
-<codeline lineno="145"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
-<codeline lineno="146"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_q<sp/><sp/><sp/><sp/><sp/>output:<sp/>query<sp/>-<sp/>centroid</highlight></codeline>
-<codeline lineno="147"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_qq<sp/><sp/><sp/><sp/>output:<sp/>quantized<sp/>query<sp/>values</highlight></codeline>
-<codeline lineno="148"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>query<sp/>factors</highlight></codeline>
-<codeline lineno="149"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="150"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>compute_query_factors(</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>query,</highlight></codeline>
-<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
-<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>qb,</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centered,</highlight></codeline>
-<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
-<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>rotated_q,</highlight></codeline>
-<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;&amp;<sp/>rotated_qq);</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="160"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>RaBitQ<sp/>code<sp/>in<sp/>standard<sp/>format.</highlight></codeline>
-<codeline lineno="161"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQ<sp/>which<sp/>stores<sp/>bits<sp/>sequentially.</highlight></codeline>
-<codeline lineno="162"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data</highlight></codeline>
-<codeline lineno="164"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
-<codeline lineno="165"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
-<codeline lineno="166"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_standard(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
-<codeline lineno="168"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="169"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
-<codeline lineno="170"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQFastScan<sp/>which<sp/>packs<sp/>bits<sp/>into<sp/>4-bit<sp/>sub-quantizers.</highlight></codeline>
-<codeline lineno="171"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="172"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data</highlight></codeline>
-<codeline lineno="173"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
-<codeline lineno="174"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
-<codeline lineno="175"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="176"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_fastscan(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
-<codeline lineno="177"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="178"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>standard<sp/>RaBitQ<sp/>code<sp/>format.</highlight></codeline>
-<codeline lineno="179"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
-<codeline lineno="180"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
-<codeline lineno="181"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="182"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_standard(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
-<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="184"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
-<codeline lineno="185"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
-<codeline lineno="186"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
-<codeline lineno="187"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="188"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_fastscan(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
-<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="190"><highlight class="comment">/**<sp/>Compute<sp/>adjusted<sp/>1-bit<sp/>distance<sp/>from<sp/>normalized<sp/>LUT<sp/>distance.</highlight></codeline>
-<codeline lineno="191"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>the<sp/>core<sp/>distance<sp/>formula<sp/>shared<sp/>by<sp/>all<sp/>RaBitQ<sp/>handlers.</highlight></codeline>
-<codeline lineno="192"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="193"><highlight class="comment"><sp/>*<sp/>@param<sp/>normalized_distance<sp/><sp/>Distance<sp/>from<sp/>SIMD<sp/>LUT<sp/>lookup<sp/>(after</highlight></codeline>
-<codeline lineno="194"><highlight class="comment"><sp/>*<sp/>normalization)</highlight></codeline>
-<codeline lineno="195"><highlight class="comment"><sp/>*<sp/>@param<sp/>db_factors<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Database<sp/>vector<sp/>factors<sp/>(SignBitFactors<sp/>or</highlight></codeline>
-<codeline lineno="196"><highlight class="comment"><sp/>*<sp/>SignBitFactorsWithError)</highlight></codeline>
-<codeline lineno="197"><highlight class="comment"><sp/>*<sp/>@param<sp/>query_factors<sp/><sp/><sp/><sp/><sp/><sp/><sp/>Query<sp/>factors<sp/>computed<sp/>during<sp/>search</highlight></codeline>
-<codeline lineno="198"><highlight class="comment"><sp/>*<sp/>@param<sp/>centered<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Whether<sp/>centered<sp/>quantization<sp/>is<sp/>used</highlight></codeline>
-<codeline lineno="199"><highlight class="comment"><sp/>*<sp/>@param<sp/>qb<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Number<sp/>of<sp/>quantization<sp/>bits</highlight></codeline>
-<codeline lineno="200"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dimensionality</highlight></codeline>
-<codeline lineno="201"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Adjusted<sp/>distance<sp/>value</highlight></codeline>
-<codeline lineno="202"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>compute_1bit_adjusted_distance(</highlight></codeline>
-<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>normalized_distance,</highlight></codeline>
-<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref>&amp;<sp/>db_factors,</highlight></codeline>
-<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref>&amp;<sp/>query_factors,</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centered,</highlight></codeline>
-<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>qb,</highlight></codeline>
-<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d)<sp/>{</highlight></codeline>
-<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>adjusted_distance;</highlight></codeline>
-<codeline lineno="211"><highlight class="normal"></highlight></codeline>
-<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(centered)<sp/>{</highlight></codeline>
-<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>centered<sp/>mode:<sp/>normalized_distance<sp/>contains<sp/>the<sp/>raw<sp/>XOR</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>contribution.<sp/>Apply<sp/>the<sp/>signed<sp/>odd<sp/>integer<sp/>quantization<sp/>formula:</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>int_dot<sp/>=<sp/>((1<sp/>&lt;&lt;<sp/>qb)<sp/>-<sp/>1)<sp/>*<sp/>d<sp/>-<sp/>2<sp/>*<sp/>xor_dot_product</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>int_dot<sp/>=<sp/>((1<sp/>&lt;&lt;<sp/>qb)<sp/>-<sp/>1)<sp/>*<sp/>d;</highlight></codeline>
-<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int_dot<sp/>-=<sp/>2<sp/>*<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int64_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(normalized_distance);</highlight></codeline>
-<codeline lineno="218"><highlight class="normal"></highlight></codeline>
-<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>query_factors.qr_to_c_L2sqr<sp/>+</highlight></codeline>
-<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>db_factors.or_minus_c_l2sqr<sp/>-</highlight></codeline>
-<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/>*<sp/>db_factors.dp_multiplier<sp/>*<sp/>int_dot<sp/>*</highlight></codeline>
-<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query_factors.int_dot_scale;</highlight></codeline>
-<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>non-centered<sp/>quantization:<sp/>use<sp/>traditional<sp/>formula</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>final_dot<sp/>=<sp/>normalized_distance<sp/>-<sp/>query_factors.c34;</highlight></codeline>
-<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>db_factors.or_minus_c_l2sqr<sp/>+</highlight></codeline>
-<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query_factors.qr_to_c_L2sqr<sp/>-</highlight></codeline>
-<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/>*<sp/>db_factors.dp_multiplier<sp/>*<sp/>final_dot;</highlight></codeline>
-<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="230"><highlight class="normal"></highlight></codeline>
-<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Apply<sp/>inner<sp/>product<sp/>correction<sp/>if<sp/>needed</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(query_factors.qr_norm_L2sqr<sp/>!=<sp/>0.0f)<sp/>{</highlight></codeline>
-<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-0.5f<sp/>*<sp/>(adjusted_distance<sp/>-<sp/>query_factors.qr_norm_L2sqr);</highlight></codeline>
-<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>std::max(0.0f,<sp/>adjusted_distance);</highlight></codeline>
-<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="238"><highlight class="normal"></highlight></codeline>
-<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>adjusted_distance;</highlight></codeline>
-<codeline lineno="240"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="241"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="242"><highlight class="comment">/**<sp/>Determine<sp/>whether<sp/>a<sp/>candidate<sp/>should<sp/>be<sp/>refined<sp/>in<sp/>two-stage<sp/>search.</highlight></codeline>
-<codeline lineno="243"><highlight class="comment"><sp/>*<sp/>Consolidates<sp/>the<sp/>filtering<sp/>logic<sp/>for<sp/>both<sp/>L2<sp/>and<sp/>IP<sp/>metrics.</highlight></codeline>
-<codeline lineno="244"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="245"><highlight class="comment"><sp/>*<sp/>For<sp/>L2<sp/>(min-heap):<sp/>uses<sp/>lower_bound<sp/>=<sp/>est_distance<sp/>-<sp/>error_adjustment</highlight></codeline>
-<codeline lineno="246"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>Skip<sp/>if<sp/>lower_bound<sp/>&gt;=<sp/>threshold<sp/>(can&apos;t<sp/>beat<sp/>current<sp/>worst)</highlight></codeline>
-<codeline lineno="247"><highlight class="comment"><sp/>*<sp/>For<sp/>IP<sp/>(max-heap):<sp/>uses<sp/>upper_bound<sp/>=<sp/>est_distance<sp/>+<sp/>error_adjustment</highlight></codeline>
-<codeline lineno="248"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>Skip<sp/>if<sp/>upper_bound<sp/>&lt;=<sp/>threshold<sp/>(can&apos;t<sp/>beat<sp/>current<sp/>best)</highlight></codeline>
-<codeline lineno="249"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="250"><highlight class="comment"><sp/>*<sp/>@param<sp/>est_distance<sp/><sp/><sp/><sp/><sp/>Estimated<sp/>1-bit<sp/>distance</highlight></codeline>
-<codeline lineno="251"><highlight class="comment"><sp/>*<sp/>@param<sp/>f_error<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Database<sp/>vector<sp/>error<sp/>factor</highlight></codeline>
-<codeline lineno="252"><highlight class="comment"><sp/>*<sp/>@param<sp/>g_error<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Query<sp/>vector<sp/>error<sp/>factor</highlight></codeline>
-<codeline lineno="253"><highlight class="comment"><sp/>*<sp/>@param<sp/>threshold<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Current<sp/>heap<sp/>threshold<sp/>(worst<sp/>result<sp/>in<sp/>heap)</highlight></codeline>
-<codeline lineno="254"><highlight class="comment"><sp/>*<sp/>@param<sp/>is_similarity<sp/><sp/><sp/><sp/>True<sp/>for<sp/>IP<sp/>metric<sp/>(max-heap),<sp/>false<sp/>for<sp/>L2</highlight></codeline>
-<codeline lineno="255"><highlight class="comment"><sp/>*<sp/>(min-heap)</highlight></codeline>
-<codeline lineno="256"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>True<sp/>if<sp/>candidate<sp/>should<sp/>be<sp/>refined<sp/>with<sp/>full</highlight></codeline>
-<codeline lineno="257"><highlight class="comment"><sp/>*<sp/>multi-bit<sp/>distance</highlight></codeline>
-<codeline lineno="258"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="259"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>should_refine_candidate(</highlight></codeline>
-<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>est_distance,</highlight></codeline>
-<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_error,</highlight></codeline>
-<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g_error,</highlight></codeline>
-<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>threshold,</highlight></codeline>
-<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_similarity)<sp/>{</highlight></codeline>
-<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>error_adjustment<sp/>=<sp/>f_error<sp/>*<sp/>g_error;</highlight></codeline>
-<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(is_similarity)<sp/>{</highlight></codeline>
-<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>IP<sp/>(max-heap):<sp/>use<sp/>upper<sp/>bound<sp/>for<sp/>filtering</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>upper_bound<sp/>=<sp/>est_distance<sp/>+<sp/>error_adjustment;</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>upper_bound<sp/>&gt;<sp/>threshold;</highlight></codeline>
-<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>L2<sp/>(min-heap):<sp/>use<sp/>lower<sp/>bound<sp/>for<sp/>filtering</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>lower_bound<sp/>=<sp/>std::max(0.0f,<sp/>est_distance<sp/>-<sp/>error_adjustment);</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lower_bound<sp/>&lt;<sp/>threshold;</highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="275"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="277"><highlight class="comment">/**<sp/>Extract<sp/>multi-bit<sp/>code<sp/>on-the-fly<sp/>from<sp/>packed<sp/>ex-bit<sp/>codes.</highlight></codeline>
-<codeline lineno="278"><highlight class="comment"><sp/>*<sp/>This<sp/>inline<sp/>function<sp/>extracts<sp/>a<sp/>single<sp/>code<sp/>value<sp/>without<sp/>unpacking<sp/>the</highlight></codeline>
-<codeline lineno="279"><highlight class="comment"><sp/>*<sp/>entire<sp/>array,<sp/>enabling<sp/>efficient<sp/>on-the-fly<sp/>decoding<sp/>during<sp/>distance</highlight></codeline>
-<codeline lineno="280"><highlight class="comment"><sp/>*<sp/>computation.</highlight></codeline>
-<codeline lineno="281"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="282"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/><sp/><sp/><sp/><sp/><sp/><sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
-<codeline lineno="283"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>which<sp/>code<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
-<codeline lineno="284"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>code<sp/>(1-8)</highlight></codeline>
-<codeline lineno="285"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>extracted<sp/>code<sp/>value<sp/>in<sp/>range<sp/>[0,<sp/>2^ex_bits<sp/>-<sp/>1]</highlight></codeline>
-<codeline lineno="286"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="287"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>extract_code_inline(</highlight></codeline>
-<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>index,</highlight></codeline>
-<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ex_bits)<sp/>{</highlight></codeline>
-<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_pos<sp/>=<sp/>index<sp/>*<sp/>ex_bits;</highlight></codeline>
-<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_value<sp/>=<sp/>0;</highlight></codeline>
-<codeline lineno="293"><highlight class="normal"></highlight></codeline>
-<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Extract<sp/>ex_bits<sp/>bits<sp/>starting<sp/>at<sp/>bit_pos</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit<sp/>=<sp/>0;<sp/>bit<sp/>&lt;<sp/>ex_bits;<sp/>bit++)<sp/>{</highlight></codeline>
-<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>byte_idx<sp/>=<sp/>bit_pos<sp/>/<sp/>8;</highlight></codeline>
-<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_idx<sp/>=<sp/>bit_pos<sp/>%<sp/>8;</highlight></codeline>
-<codeline lineno="298"><highlight class="normal"></highlight></codeline>
-<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ex_code[byte_idx]<sp/>&amp;<sp/>(1<sp/>&lt;&lt;<sp/>bit_idx))<sp/>{</highlight></codeline>
-<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code_value<sp/>|=<sp/>(1<sp/>&lt;&lt;<sp/>bit);</highlight></codeline>
-<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"></highlight></codeline>
-<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit_pos++;</highlight></codeline>
-<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="305"><highlight class="normal"></highlight></codeline>
-<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code_value;</highlight></codeline>
-<codeline lineno="307"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="308"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="309"><highlight class="comment">/**<sp/>Compute<sp/>full<sp/>multi-bit<sp/>distance<sp/>from<sp/>sign<sp/>bits<sp/>and<sp/>ex-bit<sp/>codes.</highlight></codeline>
-<codeline lineno="310"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>the<sp/>core<sp/>distance<sp/>computation<sp/>shared<sp/>by<sp/>RaBitQFastScan<sp/>handlers.</highlight></codeline>
-<codeline lineno="311"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="312"><highlight class="comment"><sp/>*<sp/>The<sp/>multi-bit<sp/>distance<sp/>combines<sp/>the<sp/>sign<sp/>bit<sp/>(1-bit)<sp/>with<sp/>additional</highlight></codeline>
-<codeline lineno="313"><highlight class="comment"><sp/>*<sp/>magnitude<sp/>bits<sp/>(ex_bits)<sp/>to<sp/>compute<sp/>a<sp/>more<sp/>accurate<sp/>distance<sp/>estimate.</highlight></codeline>
-<codeline lineno="314"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="315"><highlight class="comment"><sp/>*<sp/>@param<sp/>sign_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/>unpacked<sp/>sign<sp/>bits<sp/>(1-bit<sp/>codes<sp/>in<sp/>standard<sp/>format)</highlight></codeline>
-<codeline lineno="316"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
-<codeline lineno="317"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_fac<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex-bit<sp/>factors<sp/>(f_add_ex,<sp/>f_rescale_ex)</highlight></codeline>
-<codeline lineno="318"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_q<sp/><sp/><sp/><sp/><sp/><sp/><sp/>rotated<sp/>query<sp/>vector</highlight></codeline>
-<codeline lineno="319"><highlight class="comment"><sp/>*<sp/>@param<sp/>qr_to_c_L2sqr<sp/><sp/><sp/>precomputed<sp/>||query_rotated<sp/>-<sp/>centroid||^2</highlight></codeline>
-<codeline lineno="320"><highlight class="comment"><sp/>*<sp/>@param<sp/>qr_norm_L2sqr<sp/><sp/><sp/>precomputed<sp/>||query_rotated||^2<sp/>(0<sp/>for<sp/>L2<sp/>metric)</highlight></codeline>
-<codeline lineno="321"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
-<codeline lineno="322"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>extra<sp/>bits<sp/>(nb_bits<sp/>-<sp/>1)</highlight></codeline>
-<codeline lineno="323"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/><sp/><sp/>distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
-<codeline lineno="324"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>full<sp/>multi-bit<sp/>distance</highlight></codeline>
-<codeline lineno="325"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="326"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>compute_full_multibit_distance(</highlight></codeline>
-<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>sign_bits,</highlight></codeline>
-<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
-<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ExtraBitsFactors&amp;<sp/>ex_fac,</highlight></codeline>
-<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>rotated_q,</highlight></codeline>
-<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_to_c_L2sqr,</highlight></codeline>
-<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_norm_L2sqr,</highlight></codeline>
-<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
-<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ex_bits,</highlight></codeline>
-<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type)<sp/>{</highlight></codeline>
-<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>ex_ip<sp/>=<sp/>0.0f;</highlight></codeline>
-<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>cb<sp/>=<sp/>-(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(1<sp/>&lt;&lt;<sp/>ex_bits)<sp/>-<sp/>0.5f);</highlight></codeline>
-<codeline lineno="338"><highlight class="normal"></highlight></codeline>
-<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
-<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>byte_idx<sp/>=<sp/>i<sp/>/<sp/>8;</highlight></codeline>
-<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_offset<sp/>=<sp/>i<sp/>%<sp/>8;</highlight></codeline>
-<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>sign_bit<sp/>=<sp/>(sign_bits[byte_idx]<sp/>&gt;&gt;<sp/>bit_offset)<sp/>&amp;<sp/>1;</highlight></codeline>
-<codeline lineno="343"><highlight class="normal"></highlight></codeline>
-<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ex_code_val<sp/>=<sp/>extract_code_inline(ex_code,<sp/>i,<sp/>ex_bits);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>int_dot_scale<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g_error<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>rotated_q;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="80"><highlight class="comment">/**<sp/>Ideal<sp/>quantizer<sp/>radii<sp/>for<sp/>quantizers<sp/>of<sp/>1..8<sp/>bits,<sp/>optimized<sp/>to<sp/>minimize</highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/>*<sp/>L2<sp/>reconstruction<sp/>error.<sp/>Shared<sp/>between<sp/>all<sp/>RaBitQ<sp/>implementations.</highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>Z_MAX_BY_QB[8];</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="85"><highlight class="comment">/**<sp/>Compute<sp/>factors<sp/>for<sp/>a<sp/>single<sp/>database<sp/>vector<sp/>using<sp/>RaBitQ<sp/>algorithm.</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/>*<sp/>This<sp/>function<sp/>consolidates<sp/>the<sp/>mathematical<sp/>logic<sp/>that<sp/>was<sp/>duplicated</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/>*<sp/>between<sp/>IndexRaBitQ<sp/>and<sp/>IndexRaBitQFastScan.</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="89"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/>*<sp/>@param<sp/>compute_error<sp/>whether<sp/>to<sp/>compute<sp/>f_error<sp/>(false<sp/>for<sp/>1-bit<sp/>mode)</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors<sp/>for<sp/>distance<sp/>computation</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>compute_vector_factors(</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compute_error<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="103"><highlight class="comment">/**<sp/>Compute<sp/>intermediate<sp/>values<sp/>needed<sp/>for<sp/>vector<sp/>factor<sp/>computation.</highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/>*<sp/>Separated<sp/>out<sp/>to<sp/>allow<sp/>different<sp/>bit<sp/>packing<sp/>strategies<sp/>while<sp/>sharing</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/>*<sp/>the<sp/>core<sp/>mathematical<sp/>computation.</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>@param<sp/>x<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>input<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>output:<sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>||or||^2</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output:<sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|<sp/>(absolute<sp/>deviations)</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>compute_vector_intermediate_values(</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x,</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>norm_L2sqr,</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>or_L2sqr,</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&amp;<sp/>dp_oO);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="122"><highlight class="comment">/**<sp/>Compute<sp/>final<sp/>factors<sp/>from<sp/>intermediate<sp/>values.</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/>@param<sp/>norm_L2sqr<sp/><sp/><sp/><sp/>||or<sp/>-<sp/>c||^2</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/>@param<sp/>or_L2sqr<sp/><sp/><sp/><sp/><sp/><sp/>||or||^2</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/>@param<sp/>dp_oO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sum<sp/>of<sp/>|or_i<sp/>-<sp/>c_i|</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/>*<sp/>@param<sp/>compute_error<sp/>whether<sp/>to<sp/>compute<sp/>f_error<sp/>(false<sp/>for<sp/>1-bit<sp/>mode)</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>factors</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref><sp/>compute_factors_from_intermediates(</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>norm_L2sqr,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>or_L2sqr,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dp_oO,</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>compute_error<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="139"><highlight class="comment">/**<sp/>Compute<sp/>query<sp/>factors<sp/>for<sp/>RaBitQ<sp/>distance<sp/>computation.</highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/>*<sp/>This<sp/>consolidates<sp/>the<sp/>query<sp/>processing<sp/>logic<sp/>shared<sp/>between<sp/>implementations.</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>@param<sp/>query<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query<sp/>vector<sp/>(d<sp/>dimensions)</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/>*<sp/>@param<sp/>centroid<sp/><sp/><sp/><sp/><sp/><sp/>database<sp/>centroid<sp/>(nullptr<sp/>if<sp/>not<sp/>used)</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/>*<sp/>@param<sp/>qb<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>quantization<sp/>bits<sp/>(1-8)</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/>*<sp/>@param<sp/>centered<sp/><sp/><sp/><sp/><sp/><sp/>whether<sp/>to<sp/>use<sp/>centered<sp/>quantization</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/>distance<sp/>metric</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_q<sp/><sp/><sp/><sp/><sp/>output:<sp/>query<sp/>-<sp/>centroid</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_qq<sp/><sp/><sp/><sp/>output:<sp/>quantized<sp/>query<sp/>values</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>query<sp/>factors</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref><sp/>compute_query_factors(</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>query,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>centroid,</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint8_t<sp/>qb,</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centered,</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>rotated_q,</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;&amp;<sp/>rotated_qq);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="162"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>RaBitQ<sp/>code<sp/>in<sp/>standard<sp/>format.</highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQ<sp/>which<sp/>stores<sp/>bits<sp/>sequentially.</highlight></codeline>
+<codeline lineno="164"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data</highlight></codeline>
+<codeline lineno="166"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="167"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
+<codeline lineno="168"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_standard(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="171"><highlight class="comment">/**<sp/>Extract<sp/>bit<sp/>value<sp/>from<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="172"><highlight class="comment"><sp/>*<sp/>Used<sp/>by<sp/>IndexRaBitQFastScan<sp/>which<sp/>packs<sp/>bits<sp/>into<sp/>4-bit<sp/>sub-quantizers.</highlight></codeline>
+<codeline lineno="173"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="174"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data</highlight></codeline>
+<codeline lineno="175"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="176"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit<sp/>value<sp/>(true/false)</highlight></codeline>
+<codeline lineno="177"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>extract_bit_fastscan(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="180"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>standard<sp/>RaBitQ<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="181"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RaBitQ<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_standard(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="186"><highlight class="comment">/**<sp/>Set<sp/>bit<sp/>value<sp/>in<sp/>FastScan<sp/>code<sp/>format.</highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/>*<sp/>@param<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FastScan<sp/>code<sp/>data<sp/>to<sp/>modify</highlight></codeline>
+<codeline lineno="188"><highlight class="comment"><sp/>*<sp/>@param<sp/>bit_index<sp/><sp/><sp/><sp/><sp/>which<sp/>bit<sp/>to<sp/>set<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="189"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_bit_fastscan(uint8_t*<sp/>code,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_index);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="192"><highlight class="comment">/**<sp/>Compute<sp/>adjusted<sp/>1-bit<sp/>distance<sp/>from<sp/>normalized<sp/>LUT<sp/>distance.</highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>the<sp/>core<sp/>distance<sp/>formula<sp/>shared<sp/>by<sp/>all<sp/>RaBitQ<sp/>handlers.</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/>*<sp/>@param<sp/>normalized_distance<sp/><sp/>Distance<sp/>from<sp/>SIMD<sp/>LUT<sp/>lookup<sp/>(after</highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/>*<sp/>normalization)</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/>*<sp/>@param<sp/>db_factors<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Database<sp/>vector<sp/>factors<sp/>(SignBitFactors<sp/>or</highlight></codeline>
+<codeline lineno="198"><highlight class="comment"><sp/>*<sp/>SignBitFactorsWithError)</highlight></codeline>
+<codeline lineno="199"><highlight class="comment"><sp/>*<sp/>@param<sp/>query_factors<sp/><sp/><sp/><sp/><sp/><sp/><sp/>Query<sp/>factors<sp/>computed<sp/>during<sp/>search</highlight></codeline>
+<codeline lineno="200"><highlight class="comment"><sp/>*<sp/>@param<sp/>centered<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Whether<sp/>centered<sp/>quantization<sp/>is<sp/>used</highlight></codeline>
+<codeline lineno="201"><highlight class="comment"><sp/>*<sp/>@param<sp/>qb<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Number<sp/>of<sp/>quantization<sp/>bits</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dimensionality</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Adjusted<sp/>distance<sp/>value</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>compute_1bit_adjusted_distance(</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>normalized_distance,</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" kindref="compound">SignBitFactors</ref>&amp;<sp/>db_factors,</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref>&amp;<sp/>query_factors,</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>centered,</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>qb,</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d)<sp/>{</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>adjusted_distance;</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(centered)<sp/>{</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>centered<sp/>mode:<sp/>normalized_distance<sp/>contains<sp/>the<sp/>raw<sp/>XOR</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>contribution.<sp/>Apply<sp/>the<sp/>signed<sp/>odd<sp/>integer<sp/>quantization<sp/>formula:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>int_dot<sp/>=<sp/>((1<sp/>&lt;&lt;<sp/>qb)<sp/>-<sp/>1)<sp/>*<sp/>d<sp/>-<sp/>2<sp/>*<sp/>xor_dot_product</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>int_dot<sp/>=<sp/>((1<sp/>&lt;&lt;<sp/>qb)<sp/>-<sp/>1)<sp/>*<sp/>d;</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int_dot<sp/>-=<sp/>2<sp/>*<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int64_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(normalized_distance);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>query_factors.qr_to_c_L2sqr<sp/>+</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>db_factors.or_minus_c_l2sqr<sp/>-</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/>*<sp/>db_factors.dp_multiplier<sp/>*<sp/>int_dot<sp/>*</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query_factors.int_dot_scale;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>non-centered<sp/>quantization:<sp/>use<sp/>traditional<sp/>formula</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>final_dot<sp/>=<sp/>normalized_distance<sp/>-<sp/>query_factors.c34;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>db_factors.or_minus_c_l2sqr<sp/>+</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>query_factors.qr_to_c_L2sqr<sp/>-</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2<sp/>*<sp/>db_factors.dp_multiplier<sp/>*<sp/>final_dot;</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Apply<sp/>inner<sp/>product<sp/>correction<sp/>if<sp/>needed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(query_factors.qr_norm_L2sqr<sp/>!=<sp/>0.0f)<sp/>{</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-0.5f<sp/>*<sp/>(adjusted_distance<sp/>-<sp/>query_factors.qr_norm_L2sqr);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>adjusted_distance<sp/>=<sp/>std::max(0.0f,<sp/>adjusted_distance);</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>adjusted_distance;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="244"><highlight class="comment">/**<sp/>Determine<sp/>whether<sp/>a<sp/>candidate<sp/>should<sp/>be<sp/>refined<sp/>in<sp/>two-stage<sp/>search.</highlight></codeline>
+<codeline lineno="245"><highlight class="comment"><sp/>*<sp/>Consolidates<sp/>the<sp/>filtering<sp/>logic<sp/>for<sp/>both<sp/>L2<sp/>and<sp/>IP<sp/>metrics.</highlight></codeline>
+<codeline lineno="246"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="247"><highlight class="comment"><sp/>*<sp/>For<sp/>L2<sp/>(min-heap):<sp/>uses<sp/>lower_bound<sp/>=<sp/>est_distance<sp/>-<sp/>error_adjustment</highlight></codeline>
+<codeline lineno="248"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>Skip<sp/>if<sp/>lower_bound<sp/>&gt;=<sp/>threshold<sp/>(can&apos;t<sp/>beat<sp/>current<sp/>worst)</highlight></codeline>
+<codeline lineno="249"><highlight class="comment"><sp/>*<sp/>For<sp/>IP<sp/>(max-heap):<sp/>uses<sp/>upper_bound<sp/>=<sp/>est_distance<sp/>+<sp/>error_adjustment</highlight></codeline>
+<codeline lineno="250"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>Skip<sp/>if<sp/>upper_bound<sp/>&lt;=<sp/>threshold<sp/>(can&apos;t<sp/>beat<sp/>current<sp/>best)</highlight></codeline>
+<codeline lineno="251"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="252"><highlight class="comment"><sp/>*<sp/>@param<sp/>est_distance<sp/><sp/><sp/><sp/><sp/>Estimated<sp/>1-bit<sp/>distance</highlight></codeline>
+<codeline lineno="253"><highlight class="comment"><sp/>*<sp/>@param<sp/>f_error<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Database<sp/>vector<sp/>error<sp/>factor</highlight></codeline>
+<codeline lineno="254"><highlight class="comment"><sp/>*<sp/>@param<sp/>g_error<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Query<sp/>vector<sp/>error<sp/>factor</highlight></codeline>
+<codeline lineno="255"><highlight class="comment"><sp/>*<sp/>@param<sp/>threshold<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Current<sp/>heap<sp/>threshold<sp/>(worst<sp/>result<sp/>in<sp/>heap)</highlight></codeline>
+<codeline lineno="256"><highlight class="comment"><sp/>*<sp/>@param<sp/>is_similarity<sp/><sp/><sp/><sp/>True<sp/>for<sp/>IP<sp/>metric<sp/>(max-heap),<sp/>false<sp/>for<sp/>L2</highlight></codeline>
+<codeline lineno="257"><highlight class="comment"><sp/>*<sp/>(min-heap)</highlight></codeline>
+<codeline lineno="258"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>True<sp/>if<sp/>candidate<sp/>should<sp/>be<sp/>refined<sp/>with<sp/>full</highlight></codeline>
+<codeline lineno="259"><highlight class="comment"><sp/>*<sp/>multi-bit<sp/>distance</highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>should_refine_candidate(</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>est_distance,</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>f_error,</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g_error,</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>threshold,</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_similarity)<sp/>{</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>error_adjustment<sp/>=<sp/>f_error<sp/>*<sp/>g_error;</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(is_similarity)<sp/>{</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>IP<sp/>(max-heap):<sp/>use<sp/>upper<sp/>bound<sp/>for<sp/>filtering</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>upper_bound<sp/>=<sp/>est_distance<sp/>+<sp/>error_adjustment;</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>upper_bound<sp/>&gt;<sp/>threshold;</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>L2<sp/>(min-heap):<sp/>use<sp/>lower<sp/>bound<sp/>for<sp/>filtering</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>lower_bound<sp/>=<sp/>std::max(0.0f,<sp/>est_distance<sp/>-<sp/>error_adjustment);</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lower_bound<sp/>&lt;<sp/>threshold;</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="277"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="279"><highlight class="comment">/**<sp/>Extract<sp/>multi-bit<sp/>code<sp/>on-the-fly<sp/>from<sp/>packed<sp/>ex-bit<sp/>codes.</highlight></codeline>
+<codeline lineno="280"><highlight class="comment"><sp/>*<sp/>This<sp/>inline<sp/>function<sp/>extracts<sp/>a<sp/>single<sp/>code<sp/>value<sp/>without<sp/>unpacking<sp/>the</highlight></codeline>
+<codeline lineno="281"><highlight class="comment"><sp/>*<sp/>entire<sp/>array,<sp/>enabling<sp/>efficient<sp/>on-the-fly<sp/>decoding<sp/>during<sp/>distance</highlight></codeline>
+<codeline lineno="282"><highlight class="comment"><sp/>*<sp/>computation.</highlight></codeline>
+<codeline lineno="283"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="284"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/><sp/><sp/><sp/><sp/><sp/><sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
+<codeline lineno="285"><highlight class="comment"><sp/>*<sp/>@param<sp/>index<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>which<sp/>code<sp/>to<sp/>extract<sp/>(0<sp/>to<sp/>d-1)</highlight></codeline>
+<codeline lineno="286"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>bits<sp/>per<sp/>code<sp/>(1-8)</highlight></codeline>
+<codeline lineno="287"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>extracted<sp/>code<sp/>value<sp/>in<sp/>range<sp/>[0,<sp/>2^ex_bits<sp/>-<sp/>1]</highlight></codeline>
+<codeline lineno="288"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>extract_code_inline(</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>index,</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ex_bits)<sp/>{</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_pos<sp/>=<sp/>index<sp/>*<sp/>ex_bits;</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>code_value<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Extract<sp/>ex_bits<sp/>bits<sp/>starting<sp/>at<sp/>bit_pos</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit<sp/>=<sp/>0;<sp/>bit<sp/>&lt;<sp/>ex_bits;<sp/>bit++)<sp/>{</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>byte_idx<sp/>=<sp/>bit_pos<sp/>/<sp/>8;</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_idx<sp/>=<sp/>bit_pos<sp/>%<sp/>8;</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ex_code[byte_idx]<sp/>&amp;<sp/>(1<sp/>&lt;&lt;<sp/>bit_idx))<sp/>{</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code_value<sp/>|=<sp/>(1<sp/>&lt;&lt;<sp/>bit);</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bit_pos++;</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>code_value;</highlight></codeline>
+<codeline lineno="309"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="311"><highlight class="comment">/**<sp/>Compute<sp/>full<sp/>multi-bit<sp/>distance<sp/>from<sp/>sign<sp/>bits<sp/>and<sp/>ex-bit<sp/>codes.</highlight></codeline>
+<codeline lineno="312"><highlight class="comment"><sp/>*<sp/>This<sp/>is<sp/>the<sp/>core<sp/>distance<sp/>computation<sp/>shared<sp/>by<sp/>RaBitQFastScan<sp/>handlers.</highlight></codeline>
+<codeline lineno="313"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="314"><highlight class="comment"><sp/>*<sp/>The<sp/>multi-bit<sp/>distance<sp/>combines<sp/>the<sp/>sign<sp/>bit<sp/>(1-bit)<sp/>with<sp/>additional</highlight></codeline>
+<codeline lineno="315"><highlight class="comment"><sp/>*<sp/>magnitude<sp/>bits<sp/>(ex_bits)<sp/>to<sp/>compute<sp/>a<sp/>more<sp/>accurate<sp/>distance<sp/>estimate.</highlight></codeline>
+<codeline lineno="316"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="317"><highlight class="comment"><sp/>*<sp/>@param<sp/>sign_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/>unpacked<sp/>sign<sp/>bits<sp/>(1-bit<sp/>codes<sp/>in<sp/>standard<sp/>format)</highlight></codeline>
+<codeline lineno="318"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>packed<sp/>ex-bit<sp/>codes</highlight></codeline>
+<codeline lineno="319"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_fac<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex-bit<sp/>factors<sp/>(f_add_ex,<sp/>f_rescale_ex)</highlight></codeline>
+<codeline lineno="320"><highlight class="comment"><sp/>*<sp/>@param<sp/>rotated_q<sp/><sp/><sp/><sp/><sp/><sp/><sp/>rotated<sp/>query<sp/>vector</highlight></codeline>
+<codeline lineno="321"><highlight class="comment"><sp/>*<sp/>@param<sp/>qr_to_c_L2sqr<sp/><sp/><sp/>precomputed<sp/>||query_rotated<sp/>-<sp/>centroid||^2</highlight></codeline>
+<codeline lineno="322"><highlight class="comment"><sp/>*<sp/>@param<sp/>qr_norm_L2sqr<sp/><sp/><sp/>precomputed<sp/>||query_rotated||^2<sp/>(0<sp/>for<sp/>L2<sp/>metric)</highlight></codeline>
+<codeline lineno="323"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="324"><highlight class="comment"><sp/>*<sp/>@param<sp/>ex_bits<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>extra<sp/>bits<sp/>(nb_bits<sp/>-<sp/>1)</highlight></codeline>
+<codeline lineno="325"><highlight class="comment"><sp/>*<sp/>@param<sp/>metric_type<sp/><sp/><sp/><sp/><sp/>distance<sp/>metric<sp/>(L2<sp/>or<sp/>Inner<sp/>Product)</highlight></codeline>
+<codeline lineno="326"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>computed<sp/>full<sp/>multi-bit<sp/>distance</highlight></codeline>
+<codeline lineno="327"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="328"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>compute_full_multibit_distance(</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>sign_bits,</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>ex_code,</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ExtraBitsFactors&amp;<sp/>ex_fac,</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>rotated_q,</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_to_c_L2sqr,</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>qr_norm_L2sqr,</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ex_bits,</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type)<sp/>{</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>ex_ip<sp/>=<sp/>0.0f;</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>cb<sp/>=<sp/>-(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(1<sp/>&lt;&lt;<sp/>ex_bits)<sp/>-<sp/>0.5f);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>d;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>byte_idx<sp/>=<sp/>i<sp/>/<sp/>8;</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bit_offset<sp/>=<sp/>i<sp/>%<sp/>8;</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>sign_bit<sp/>=<sp/>(sign_bits[byte_idx]<sp/>&gt;&gt;<sp/>bit_offset)<sp/>&amp;<sp/>1;</highlight></codeline>
 <codeline lineno="345"><highlight class="normal"></highlight></codeline>
-<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>total_code<sp/>=<sp/>(sign_bit<sp/>?<sp/>1<sp/>:<sp/>0)<sp/>&lt;&lt;<sp/>ex_bits;</highlight></codeline>
-<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>total_code<sp/>+=<sp/>ex_code_val;</highlight></codeline>
-<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstructed<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(total_code)<sp/>+<sp/>cb;</highlight></codeline>
-<codeline lineno="349"><highlight class="normal"></highlight></codeline>
-<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex_ip<sp/>+=<sp/>rotated_q[i]<sp/>*<sp/>reconstructed;</highlight></codeline>
-<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="352"><highlight class="normal"></highlight></codeline>
-<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dist<sp/>=<sp/>qr_to_c_L2sqr<sp/>+<sp/>ex_fac.f_add_ex<sp/>+<sp/>ex_fac.f_rescale_ex<sp/>*<sp/>ex_ip;</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ex_code_val<sp/>=<sp/>extract_code_inline(ex_code,<sp/>i,<sp/>ex_bits);</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>total_code<sp/>=<sp/>(sign_bit<sp/>?<sp/>1<sp/>:<sp/>0)<sp/>&lt;&lt;<sp/>ex_bits;</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>total_code<sp/>+=<sp/>ex_code_val;</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>reconstructed<sp/>=<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(total_code)<sp/>+<sp/>cb;</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"></highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex_ip<sp/>+=<sp/>rotated_q[i]<sp/>*<sp/>reconstructed;</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="354"><highlight class="normal"></highlight></codeline>
-<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">MetricType::METRIC_INNER_PRODUCT</ref>)<sp/>{</highlight></codeline>
-<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>-0.5f<sp/>*<sp/>(dist<sp/>-<sp/>qr_norm_L2sqr);</highlight></codeline>
-<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>std::max(0.0f,<sp/>dist);</highlight></codeline>
-<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="360"><highlight class="normal"></highlight></codeline>
-<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dist;</highlight></codeline>
-<codeline lineno="362"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="363"><highlight class="normal"></highlight></codeline>
-<codeline lineno="364"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>rabitq_utils</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="365"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>dist<sp/>=<sp/>qr_to_c_L2sqr<sp/>+<sp/>ex_fac.f_add_ex<sp/>+<sp/>ex_fac.f_rescale_ex<sp/>*<sp/>ex_ip;</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(metric_type<sp/>==<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">MetricType::METRIC_INNER_PRODUCT</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>-0.5f<sp/>*<sp/>(dist<sp/>-<sp/>qr_norm_L2sqr);</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dist<sp/>=<sp/>std::max(0.0f,<sp/>dist);</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"></highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dist;</highlight></codeline>
+<codeline lineno="364"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="366"><highlight class="comment">/**<sp/>Compute<sp/>pointer<sp/>to<sp/>a<sp/>vector&apos;s<sp/>auxiliary<sp/>data<sp/>within<sp/>block<sp/>layout.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="367"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>T*<sp/>get_block_aux_ptr(</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>T*<sp/>block_data,</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>vec_pos,</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>packed_block_size,</highlight></codeline>
+<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>full_block_size,</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>storage_size)<sp/>{</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>block_data<sp/>+<sp/>(vec_pos<sp/>/<sp/>bbs)<sp/>*<sp/>full_block_size<sp/>+<sp/>packed_block_size<sp/>+</highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(vec_pos<sp/>%<sp/>bbs)<sp/>*<sp/>storage_size;</highlight></codeline>
+<codeline lineno="377"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="379"><highlight class="comment">/**<sp/>Compute<sp/>per-vector<sp/>auxiliary<sp/>storage<sp/>size.</highlight></codeline>
+<codeline lineno="380"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="381"><highlight class="comment"><sp/>*<sp/>@param<sp/>nb_bits<sp/><sp/>number<sp/>of<sp/>quantization<sp/>bits<sp/>(1<sp/>=<sp/>sign-bit<sp/>only)</highlight></codeline>
+<codeline lineno="382"><highlight class="comment"><sp/>*<sp/>@param<sp/>d<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dimensionality</highlight></codeline>
+<codeline lineno="383"><highlight class="comment"><sp/>*<sp/>@return<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>storage<sp/>size<sp/>in<sp/>bytes</highlight></codeline>
+<codeline lineno="384"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="385"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>compute_per_vector_storage_size(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nb_bits,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d);</highlight></codeline>
+<codeline lineno="386"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="387"><highlight class="comment">/**<sp/>[LEGACY<sp/>FORMAT<sp/>SUPPORT]<sp/>Migrate<sp/>block<sp/>data<sp/>from<sp/>old<sp/>I/O<sp/>format<sp/>to<sp/>new</highlight></codeline>
+<codeline lineno="388"><highlight class="comment"><sp/>*<sp/>format.</highlight></codeline>
+<codeline lineno="389"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="390"><highlight class="comment"><sp/>*<sp/>This<sp/>function<sp/>is<sp/>used<sp/>only<sp/>when<sp/>reading<sp/>indexes<sp/>saved<sp/>with<sp/>the<sp/>legacy<sp/>format</highlight></codeline>
+<codeline lineno="391"><highlight class="comment"><sp/>*<sp/>(fourcc<sp/>&quot;Irfs&quot;/&quot;Iwrf&quot;)<sp/>to<sp/>convert<sp/>them<sp/>to<sp/>the<sp/>new<sp/>embedded<sp/>auxiliary<sp/>data</highlight></codeline>
+<codeline lineno="392"><highlight class="comment"><sp/>*<sp/>format.<sp/>Not<sp/>needed<sp/>for<sp/>indexes<sp/>saved<sp/>with<sp/>the<sp/>new<sp/>format<sp/>(&quot;Irfn&quot;/&quot;Iwrn&quot;).</highlight></codeline>
+<codeline lineno="393"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="394"><highlight class="comment"><sp/>*<sp/>Re-layouts<sp/>blocks<sp/>in-place<sp/>and<sp/>copies<sp/>aux<sp/>data<sp/>from<sp/>flat_storage.</highlight></codeline>
+<codeline lineno="395"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="396"><highlight class="comment"><sp/>*<sp/>@param<sp/>flat_storage<sp/><sp/><sp/><sp/><sp/><sp/><sp/>legacy<sp/>per-vector<sp/>aux<sp/>data<sp/>indexed<sp/>by<sp/>global<sp/>ID</highlight></codeline>
+<codeline lineno="397"><highlight class="comment"><sp/>*<sp/>@param<sp/>codes<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>block<sp/>data<sp/>(will<sp/>be<sp/>resized<sp/>and<sp/>re-laid<sp/>out)</highlight></codeline>
+<codeline lineno="398"><highlight class="comment"><sp/>*<sp/>@param<sp/>num_vectors<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>vectors<sp/>in<sp/>this<sp/>segment</highlight></codeline>
+<codeline lineno="399"><highlight class="comment"><sp/>*<sp/>@param<sp/>bbs<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>block<sp/>batch<sp/>size<sp/>(vectors<sp/>per<sp/>block)</highlight></codeline>
+<codeline lineno="400"><highlight class="comment"><sp/>*<sp/>@param<sp/>M2<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rounded<sp/>sub-quantizer<sp/>count</highlight></codeline>
+<codeline lineno="401"><highlight class="comment"><sp/>*<sp/>@param<sp/>old_block_stride<sp/><sp/><sp/>old<sp/>block<sp/>size<sp/>(packed<sp/>codes<sp/>only,<sp/>or<sp/>current)</highlight></codeline>
+<codeline lineno="402"><highlight class="comment"><sp/>*<sp/>@param<sp/>new_block_stride<sp/><sp/><sp/>new<sp/>block<sp/>size<sp/>(packed<sp/>codes<sp/>+<sp/>aux<sp/>region)</highlight></codeline>
+<codeline lineno="403"><highlight class="comment"><sp/>*<sp/>@param<sp/>storage_size<sp/><sp/><sp/><sp/><sp/><sp/><sp/>per-vector<sp/>aux<sp/>storage<sp/>size<sp/>in<sp/>bytes</highlight></codeline>
+<codeline lineno="404"><highlight class="comment"><sp/>*<sp/>@param<sp/>id_map<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>maps<sp/>local<sp/>offset<sp/>to<sp/>global<sp/>ID;<sp/>null<sp/>=<sp/>sequential</highlight></codeline>
+<codeline lineno="405"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="406"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>populate_block_aux_from_flat_storage(</highlight></codeline>
+<codeline lineno="407"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;uint8_t&gt;&amp;<sp/>flat_storage,</highlight></codeline>
+<codeline lineno="408"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AlignedTable&lt;uint8_t&gt;&amp;<sp/>codes,</highlight></codeline>
+<codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>num_vectors,</highlight></codeline>
+<codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>bbs,</highlight></codeline>
+<codeline lineno="411"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M2,</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>old_block_stride,</highlight></codeline>
+<codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>new_block_stride,</highlight></codeline>
+<codeline lineno="414"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>storage_size,</highlight></codeline>
+<codeline lineno="415"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>id_map<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="416"><highlight class="normal"></highlight></codeline>
+<codeline lineno="417"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>rabitq_utils</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="418"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/RaBitQUtils.h"/>
   </compounddef>

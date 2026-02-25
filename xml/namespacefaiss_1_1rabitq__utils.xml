@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="81" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="81" declcolumn="30"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="83" column="30" declfile="faiss/impl/RaBitQUtils.h" declline="83" declcolumn="30"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="94" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="94" declcolumn="25"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="96" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="96" declcolumn="25"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a331fb43e107f687e17ccd9d3c7c59a80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -191,7 +191,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="112" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="112" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="114" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="114" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1ae2ce53f865a2754f82b416b803b8df7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1SignBitFactorsWithError" kindref="compound">SignBitFactorsWithError</ref></type>
@@ -282,7 +282,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="129" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="129" declcolumn="25"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="131" column="25" declfile="faiss/impl/RaBitQUtils.h" declline="131" declcolumn="25"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a9a5a3bbed90878c9ffc93e8651e730f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData" kindref="compound">QueryFactorsData</ref></type>
@@ -397,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="150" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="150" declcolumn="18"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="152" column="18" declfile="faiss/impl/RaBitQUtils.h" declline="152" declcolumn="18"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a421d9c2001db5a8d4bf07c6209ccaf56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -440,7 +440,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="167" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="167" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="169" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="169" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a25c2a02b5726381eb9ef994adab75592" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -483,7 +483,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="176" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="176" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="178" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="178" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a5b048fb1446148b1da2df5976b54a7e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -523,7 +523,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="182" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="182" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="184" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="184" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1aba390a0849a8f08f12e5356afbd66f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -563,7 +563,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="188" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="188" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="190" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="190" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1a63efa56aca52ce9b6902cd89961de18d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -654,7 +654,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="203" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="203" bodyend="240"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="205" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="205" bodyend="242"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -738,7 +738,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="259" column="13" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="259" bodyend="275"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="261" column="13" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="261" bodyend="277"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -793,7 +793,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="287" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="287" bodyend="307"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="289" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="289" bodyend="309"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>float</type>
@@ -921,7 +921,222 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="326" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="326" bodyend="362"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="328" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="328" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T *</type>
+        <definition>T * faiss::rabitq_utils::get_block_aux_ptr</definition>
+        <argsstring>(T *block_data, size_t vec_pos, size_t bbs, size_t packed_block_size, size_t full_block_size, size_t storage_size)</argsstring>
+        <name>get_block_aux_ptr</name>
+        <qualifiedname>faiss::rabitq_utils::get_block_aux_ptr</qualifiedname>
+        <param>
+          <type>T *</type>
+          <declname>block_data</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>vec_pos</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>bbs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>packed_block_size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>full_block_size</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>storage_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute pointer to a vector&apos;s auxiliary data within block layout. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="368" column="10" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="368" bodyend="377"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::rabitq_utils::compute_per_vector_storage_size</definition>
+        <argsstring>(size_t nb_bits, size_t d)</argsstring>
+        <name>compute_per_vector_storage_size</name>
+        <qualifiedname>faiss::rabitq_utils::compute_per_vector_storage_size</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>nb_bits</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute per-vector auxiliary storage size.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nb_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of quantization bits (1 = sign-bit only) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimensionality </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>storage size in bytes </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="385" column="8" declfile="faiss/impl/RaBitQUtils.h" declline="385" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rabitq_utils::populate_block_aux_from_flat_storage</definition>
+        <argsstring>(const std::vector&lt; uint8_t &gt; &amp;flat_storage, AlignedTable&lt; uint8_t &gt; &amp;codes, size_t num_vectors, size_t bbs, size_t M2, size_t old_block_stride, size_t new_block_stride, size_t storage_size, const int64_t *id_map=nullptr)</argsstring>
+        <name>populate_block_aux_from_flat_storage</name>
+        <qualifiedname>faiss::rabitq_utils::populate_block_aux_from_flat_storage</qualifiedname>
+        <param>
+          <type>const std::vector&lt; uint8_t &gt; &amp;</type>
+          <declname>flat_storage</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1AlignedTable" kindref="compound">AlignedTable</ref>&lt; uint8_t &gt; &amp;</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>num_vectors</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>bbs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>M2</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>old_block_stride</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>new_block_stride</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>storage_size</declname>
+        </param>
+        <param>
+          <type>const int64_t *</type>
+          <declname>id_map</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>[LEGACY FORMAT SUPPORT] Migrate block data from old I/O format to new format.</para>
+<para>This function is used only when reading indexes saved with the legacy format (fourcc &quot;Irfs&quot;/&quot;Iwrf&quot;) to convert them to the new embedded auxiliary data format. Not needed for indexes saved with the new format (&quot;Irfn&quot;/&quot;Iwrn&quot;).</para>
+<para>Re-layouts blocks in-place and copies aux data from flat_storage.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>flat_storage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>legacy per-vector aux data indexed by global ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>block data (will be resized and re-laid out) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_vectors</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of vectors in this segment </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>bbs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>block batch size (vectors per block) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>M2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>rounded sub-quantizer count </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>old_block_stride</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>old block size (packed codes only, or current) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_block_stride</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>new block size (packed codes + aux region) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>storage_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-vector aux storage size in bytes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id_map</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>maps local offset to global ID; null = sequential </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="406" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="406" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -145,6 +145,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>size_t<sp/>list_size,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint32_t<sp/>dim,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint32_t<sp/>chunk_size);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>CodePacker*<sp/>clone()<sp/>const<sp/>final;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>pack_1(const<sp/>uint8_t*<sp/>flat_code,<sp/>size_t<sp/>offset,<sp/>uint8_t*<sp/>block)</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>final;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>unpack_1(const<sp/>uint8_t*<sp/>block,<sp/>size_t<sp/>offset,<sp/>uint8_t*<sp/>flat_code)</highlight></codeline>

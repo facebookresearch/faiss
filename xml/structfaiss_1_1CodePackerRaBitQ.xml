@@ -1,23 +1,37 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1CodePackerPQ4" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::CodePackerPQ4</compoundname>
+  <compounddef id="structfaiss_1_1CodePackerRaBitQ" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::CodePackerRaBitQ</compoundname>
     <basecompoundref refid="structfaiss_1_1CodePacker" prot="public" virt="non-virtual">faiss::CodePacker</basecompoundref>
-    <includes refid="pq4__fast__scan_8h" local="no">pq4_fast_scan.h</includes>
+    <includes refid="CodePackerRaBitQ_8h" local="no">CodePackerRaBitQ.h</includes>
     <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1CodePackerPQ4_1a828350b663e01a7fa7010b6a73546622" prot="public" static="no" mutable="no">
+      <memberdef kind="variable" id="structfaiss_1_1CodePackerRaBitQ_1afd94b0bfd711eb713fb96a07ed6202b9" prot="public" static="no" mutable="no">
         <type>size_t</type>
-        <definition>size_t faiss::CodePackerPQ4::nsq</definition>
+        <definition>size_t faiss::CodePackerRaBitQ::nsq</definition>
         <argsstring></argsstring>
         <name>nsq</name>
-        <qualifiedname>faiss::CodePackerPQ4::nsq</qualifiedname>
+        <qualifiedname>faiss::CodePackerRaBitQ::nsq</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="102" column="12" bodyfile="faiss/impl/pq4_fast_scan.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="29" column="12" bodyfile="faiss/impl/CodePackerRaBitQ.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1CodePackerRaBitQ_1a2f9d73840ed37dfc2f4430892ded2e8e" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::CodePackerRaBitQ::aux_size_per_vec</definition>
+        <argsstring></argsstring>
+        <name>aux_size_per_vec</name>
+        <qualifiedname>faiss::CodePackerRaBitQ::aux_size_per_vec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="30" column="12" bodyfile="faiss/impl/CodePackerRaBitQ.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -66,12 +80,12 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1CodePackerPQ4_1a0076019cdf6fcde0e819fa8af799642a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1CodePackerRaBitQ_1abda13f0c88d934edd47f6457b1b3efec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
-        <definition>faiss::CodePackerPQ4::CodePackerPQ4</definition>
-        <argsstring>(size_t nsq, size_t bbs)</argsstring>
-        <name>CodePackerPQ4</name>
-        <qualifiedname>faiss::CodePackerPQ4::CodePackerPQ4</qualifiedname>
+        <definition>faiss::CodePackerRaBitQ::CodePackerRaBitQ</definition>
+        <argsstring>(size_t nsq, size_t bbs, size_t aux_per_vector)</argsstring>
+        <name>CodePackerRaBitQ</name>
+        <qualifiedname>faiss::CodePackerRaBitQ::CodePackerRaBitQ</qualifiedname>
         <param>
           <type>size_t</type>
           <declname>nsq</declname>
@@ -80,20 +94,50 @@
           <type>size_t</type>
           <declname>bbs</declname>
         </param>
+        <param>
+          <type>size_t</type>
+          <declname>aux_per_vector</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Construct a RaBitQ code packer. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nsq</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of sub-quantizers (M2) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>bbs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>block size (number of vectors per block) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>aux_per_vector</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>bytes of auxiliary data per vector </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="104" column="5"/>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="37" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1CodePackerPQ4_1a721d6a11c8c0c6445a3102b1b6a4e6a3" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1CodePackerRaBitQ_1ae109435ff946d87b0ca56a88144179b9" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
         <type><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> *</type>
-        <definition>CodePacker * faiss::CodePackerPQ4::clone</definition>
+        <definition>CodePacker * faiss::CodePackerRaBitQ::clone</definition>
         <argsstring>() const final</argsstring>
         <name>clone</name>
-        <qualifiedname>faiss::CodePackerPQ4::clone</qualifiedname>
+        <qualifiedname>faiss::CodePackerRaBitQ::clone</qualifiedname>
         <reimplements refid="structfaiss_1_1CodePacker_1ad9a9dd09842c7d077ff47d2170d43c65">clone</reimplements>
         <briefdescription>
         </briefdescription>
@@ -101,14 +145,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="106" column="16"/>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="39" column="16"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1CodePackerPQ4_1a57db85858c57120ff1c9e1b5eb9e4c4c" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1CodePackerRaBitQ_1a3f0126d2c8394a4c6e8dccaf2cd554e7" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::CodePackerPQ4::pack_1</definition>
+        <definition>void faiss::CodePackerRaBitQ::pack_1</definition>
         <argsstring>(const uint8_t *flat_code, size_t offset, uint8_t *block) const final</argsstring>
         <name>pack_1</name>
-        <qualifiedname>faiss::CodePackerPQ4::pack_1</qualifiedname>
+        <qualifiedname>faiss::CodePackerRaBitQ::pack_1</qualifiedname>
         <reimplements refid="structfaiss_1_1CodePacker_1a94a4b3147227cc8a115a3ce5bec3cdf1">pack_1</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -128,14 +172,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="108" column="10"/>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="41" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1CodePackerPQ4_1aa9c40fec414f52f336b16a27536fb8a0" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1CodePackerRaBitQ_1a1e0e556f373ae81b97742a9feaf51ab3" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" virt="virtual">
         <type>void</type>
-        <definition>void faiss::CodePackerPQ4::unpack_1</definition>
+        <definition>void faiss::CodePackerRaBitQ::unpack_1</definition>
         <argsstring>(const uint8_t *block, size_t offset, uint8_t *flat_code) const final</argsstring>
         <name>unpack_1</name>
-        <qualifiedname>faiss::CodePackerPQ4::unpack_1</qualifiedname>
+        <qualifiedname>faiss::CodePackerRaBitQ::unpack_1</qualifiedname>
         <reimplements refid="structfaiss_1_1CodePacker_1a0b4468e9cb66b388e275412ced878f30">unpack_1</reimplements>
         <param>
           <type>const uint8_t *</type>
@@ -155,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/pq4_fast_scan.h" line="110" column="10"/>
+        <location file="faiss/impl/CodePackerRaBitQ.h" line="43" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -207,7 +251,9 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> API for the PQ4 fast-scan </para>
+<para><ref refid="structfaiss_1_1CodePacker" kindref="compound">CodePacker</ref> for RaBitQ that allocates enlarged blocks.</para>
+<para>Each block contains the standard PQ4 packed codes region (bbs * nsq / 2 bytes) followed by an auxiliary data region for per-vector factors. The pack_1/unpack_1 operations transfer BOTH the PQ4 codes and the auxiliary data, so callers such as <ref refid="structfaiss_1_1BlockInvertedLists_1a5db57bbb76347d4e95c7a11f4c67b3a7" kindref="member">BlockInvertedLists::remove_ids()</ref> and add_entries() automatically preserve auxiliary data.</para>
+<para>code_size = PQ4 flat bytes + aux_size_per_vec, which must match the buffer sizes allocated by callers (e.g. the index&apos;s code_size field). </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">
@@ -215,8 +261,8 @@
         <link refid="structfaiss_1_1CodePacker"/>
       </node>
       <node id="1">
-        <label>faiss::CodePackerPQ4</label>
-        <link refid="structfaiss_1_1CodePackerPQ4"/>
+        <label>faiss::CodePackerRaBitQ</label>
+        <link refid="structfaiss_1_1CodePackerRaBitQ"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
@@ -227,28 +273,29 @@
         <link refid="structfaiss_1_1CodePacker"/>
       </node>
       <node id="1">
-        <label>faiss::CodePackerPQ4</label>
-        <link refid="structfaiss_1_1CodePackerPQ4"/>
+        <label>faiss::CodePackerRaBitQ</label>
+        <link refid="structfaiss_1_1CodePackerRaBitQ"/>
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/pq4_fast_scan.h" line="101" column="1" bodyfile="faiss/impl/pq4_fast_scan.h" bodystart="101" bodyend="112"/>
+    <location file="faiss/impl/CodePackerRaBitQ.h" line="28" column="1" bodyfile="faiss/impl/CodePackerRaBitQ.h" bodystart="28" bodyend="45"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>block_size</name></member>
-      <member refid="structfaiss_1_1CodePackerPQ4_1a721d6a11c8c0c6445a3102b1b6a4e6a3" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>clone</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>code_size</name></member>
-      <member refid="structfaiss_1_1CodePacker_1aa70417cd6263738a8b8f003b14dc0bc5" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>CodePacker</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a696efc62412039fbfbbfd36f8e741419" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>CodePacker</name></member>
-      <member refid="structfaiss_1_1CodePackerPQ4_1a0076019cdf6fcde0e819fa8af799642a" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>CodePackerPQ4</name></member>
-      <member refid="structfaiss_1_1CodePackerPQ4_1a828350b663e01a7fa7010b6a73546622" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>nsq</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>nvec</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a5136126329056af77f6e3ad187845ae1" prot="public" virt="non-virtual"><scope>faiss::CodePackerPQ4</scope><name>operator=</name></member>
-      <member refid="structfaiss_1_1CodePackerPQ4_1a57db85858c57120ff1c9e1b5eb9e4c4c" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>pack_1</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>pack_all</name></member>
-      <member refid="structfaiss_1_1CodePackerPQ4_1aa9c40fec414f52f336b16a27536fb8a0" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>unpack_1</name></member>
-      <member refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>unpack_all</name></member>
-      <member refid="structfaiss_1_1CodePacker_1aa075e61d5471f43ca8983e45790326cc" prot="public" virt="virtual"><scope>faiss::CodePackerPQ4</scope><name>~CodePacker</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1a2f9d73840ed37dfc2f4430892ded2e8e" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>aux_size_per_vec</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a665417892dc2cdd1abc38f209c93d7d6" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>block_size</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1ae109435ff946d87b0ca56a88144179b9" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>clone</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a0cf7c6faebbc3f5c7ecf0b54515da956" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1CodePacker_1aa70417cd6263738a8b8f003b14dc0bc5" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>CodePacker</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a696efc62412039fbfbbfd36f8e741419" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>CodePacker</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1abda13f0c88d934edd47f6457b1b3efec" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>CodePackerRaBitQ</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1afd94b0bfd711eb713fb96a07ed6202b9" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>nsq</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a447d29b53c1e9ad48de45a8e1226465b" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>nvec</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a5136126329056af77f6e3ad187845ae1" prot="public" virt="non-virtual"><scope>faiss::CodePackerRaBitQ</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1a3f0126d2c8394a4c6e8dccaf2cd554e7" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>pack_1</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a0f530d64acec0bc079caffd3d7ec52e7" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>pack_all</name></member>
+      <member refid="structfaiss_1_1CodePackerRaBitQ_1a1e0e556f373ae81b97742a9feaf51ab3" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>unpack_1</name></member>
+      <member refid="structfaiss_1_1CodePacker_1a094894844429901b93f3fabba5984793" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>unpack_all</name></member>
+      <member refid="structfaiss_1_1CodePacker_1aa075e61d5471f43ca8983e45790326cc" prot="public" virt="virtual"><scope>faiss::CodePackerRaBitQ</scope><name>~CodePacker</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

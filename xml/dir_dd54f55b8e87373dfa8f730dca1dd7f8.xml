@@ -8,6 +8,7 @@
     <innerfile refid="AuxIndexStructures_8h">AuxIndexStructures.h</innerfile>
     <innerfile refid="ClusteringInitialization_8h">ClusteringInitialization.h</innerfile>
     <innerfile refid="CodePacker_8h">CodePacker.h</innerfile>
+    <innerfile refid="CodePackerRaBitQ_8h">CodePackerRaBitQ.h</innerfile>
     <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
     <innerfile refid="expanded__scanners_8h">expanded_scanners.h</innerfile>
     <innerfile refid="FaissAssert_8h">FaissAssert.h</innerfile>
