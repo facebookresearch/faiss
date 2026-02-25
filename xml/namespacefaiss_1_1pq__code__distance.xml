@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1pq__code__distance" kind="namespace" language="C++">
+    <compoundname>faiss::pq_code_distance</compoundname>
+    <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" prot="public">faiss::pq_code_distance::PQCodeDistance</innerclass>
+    <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="pq__code__distance_8h_1ae54f510e7f28d07e83966797daee014e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::pq_code_distance_single_impl</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *code)</argsstring>
+        <name>pq_code_distance_single_impl</name>
+        <qualifiedname>faiss::pq_code_distance::pq_code_distance_single_impl</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="127" column="7" declfile="faiss/utils/pq_code_distance.h" declline="127" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__code__distance_8h_1a3a6ae99a6247180c63c3ab105d70c7ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::pq_code_distance_four_impl</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *__restrict code0, const uint8_t *__restrict code1, const uint8_t *__restrict code2, const uint8_t *__restrict code3, float &amp;result0, float &amp;result1, float &amp;result2, float &amp;result3)</argsstring>
+        <name>pq_code_distance_four_impl</name>
+        <qualifiedname>faiss::pq_code_distance::pq_code_distance_four_impl</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="134" column="6" declfile="faiss/utils/pq_code_distance.h" declline="134" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>FAISS_API float</type>
+        <definition>FAISS_API float faiss::pq_code_distance::pq_code_distance_single</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *code)</argsstring>
+        <name>pq_code_distance_single</name>
+        <qualifiedname>faiss::pq_code_distance::pq_code_distance_single</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute PQ distance for a single code, dispatching to the best available SIMD level. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="222" column="17" declfile="faiss/utils/pq_code_distance.h" declline="222" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="pq__code__distance_8h_1aa271346d82ed780f8b8e65431a8021ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>FAISS_API void</type>
+        <definition>FAISS_API void faiss::pq_code_distance::pq_code_distance_four</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *__restrict code0, const uint8_t *__restrict code1, const uint8_t *__restrict code2, const uint8_t *__restrict code3, float &amp;result0, float &amp;result1, float &amp;result2, float &amp;result3)</argsstring>
+        <name>pq_code_distance_four</name>
+        <qualifiedname>faiss::pq_code_distance::pq_code_distance_four</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute PQ distances for four codes simultaneously, dispatching to the best available SIMD level. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="230" column="16" declfile="faiss/utils/pq_code_distance.h" declline="230" declcolumn="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/pq_code_distance.h" line="19" column="1"/>
+  </compounddef>
+</doxygen>

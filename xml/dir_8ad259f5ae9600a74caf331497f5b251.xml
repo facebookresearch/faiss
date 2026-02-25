@@ -24,6 +24,7 @@
     <innerfile refid="NeuralNet_8h">NeuralNet.h</innerfile>
     <innerfile refid="ordered__key__value_8h">ordered_key_value.h</innerfile>
     <innerfile refid="partitioning_8h">partitioning.h</innerfile>
+    <innerfile refid="pq__code__distance_8h">pq_code_distance.h</innerfile>
     <innerfile refid="prefetch_8h">prefetch.h</innerfile>
     <innerfile refid="quantize__lut_8h">quantize_lut.h</innerfile>
     <innerfile refid="rabitq__simd_8h">rabitq_simd.h</innerfile>

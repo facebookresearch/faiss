@@ -91,6 +91,18 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
+        <link refid="pq__code__distance-inl_8h"/>
+      </node>
+      <node id="15">
+        <label>faiss/utils/pq_code_distance.h</label>
+        <link refid="pq__code__distance_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

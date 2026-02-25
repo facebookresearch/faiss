@@ -9026,6 +9026,16 @@
     <member refid="structfaiss_1_1PolysemousTraining_1af88810697a594be25ce20ca90faa65f9" kind="function"><name>optimize_reproduce_distances</name></member>
     <member refid="structfaiss_1_1PolysemousTraining_1acee2e7d023fa03f5acf2c3a295e1c377" kind="function"><name>memory_usage_per_thread</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kind="struct"><name>faiss::pq_code_distance::PQCodeDistance</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" kind="function"><name>distance_four_codes</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kind="struct"><name>faiss::pq_code_distance::PQCodeDistanceScalar</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a8c961f237a2d2b2c56ff6deaf9c7d5ff" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ada869c139227aafbdec6e2afbbb96906" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad2cd4c81c19de2dc8e6fcf67058a591d" kind="function"><name>distance_four_codes</name></member>
+  </compound>
   <compound refid="structfaiss_1_1PQDecoder16" kind="struct"><name>faiss::PQDecoder16</name>
     <member refid="structfaiss_1_1PQDecoder16_1a69eda3d6560cfbde9ddf9a2e55684582" kind="variable"><name>nbits</name></member>
     <member refid="structfaiss_1_1PQDecoder16_1ac8ad233a42295c64c326eda127628d69" kind="variable"><name>code</name></member>
@@ -11632,10 +11642,6 @@
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" kind="function"><name>reverse_index_factory</name></member>
     <member refid="namespacefaiss_1ab296cc828e119931af0b6bb2daf3ebfa" kind="function"><name>reverse_index_factory</name></member>
-    <member refid="namespacefaiss_1a9ea277840d6448e42b304287257de0b7" kind="function"><name>distance_single_code_generic</name></member>
-    <member refid="namespacefaiss_1a92b46f26c1c9dcf1da18dbb84ccdd26a" kind="function"><name>distance_four_codes_generic</name></member>
-    <member refid="namespacefaiss_1a4f5a40d297ddf6822a9262a333f938a3" kind="function"><name>distance_single_code</name></member>
-    <member refid="namespacefaiss_1a7912d9fa6a0a7ab8356eef44ecab64c4" kind="function"><name>distance_four_codes</name></member>
     <member refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" kind="function"><name>mul_no_overflow</name></member>
     <member refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kind="function"><name>add_no_overflow</name></member>
     <member refid="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" kind="function"><name>handleExceptions</name></member>
@@ -11970,19 +11976,19 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d168" kind="namespace"><name>faiss::@168</name>
+  <compound refid="namespacefaiss_1_1_0d164" kind="namespace"><name>faiss::@164</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d178" kind="namespace"><name>faiss::@178</name>
+  <compound refid="namespacefaiss_1_1_0d174" kind="namespace"><name>faiss::@174</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d197" kind="namespace"><name>faiss::@197</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d199" kind="namespace"><name>faiss::@199</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d200" kind="namespace"><name>faiss::@200</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d202" kind="namespace"><name>faiss::@202</name>
+  <compound refid="namespacefaiss_1_1_0d201" kind="namespace"><name>faiss::@201</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d203" kind="namespace"><name>faiss::@203</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d204" kind="namespace"><name>faiss::@204</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d55" kind="namespace"><name>faiss::@55</name>
+  <compound refid="namespacefaiss_1_1_0d50" kind="namespace"><name>faiss::@50</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -12189,6 +12195,12 @@
   </compound>
   <compound refid="namespacefaiss_1_1nsg" kind="namespace"><name>faiss::nsg</name>
     <member refid="NSG_8h_1a0e25b3a231c2eb38fcec063865811e52" kind="function"><name>storage_distance_computer</name></member>
+  </compound>
+  <compound refid="namespacefaiss_1_1pq__code__distance" kind="namespace"><name>faiss::pq_code_distance</name>
+    <member refid="pq__code__distance_8h_1ae54f510e7f28d07e83966797daee014e" kind="function"><name>pq_code_distance_single_impl</name></member>
+    <member refid="pq__code__distance_8h_1a3a6ae99a6247180c63c3ab105d70c7ec" kind="function"><name>pq_code_distance_four_impl</name></member>
+    <member refid="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" kind="function"><name>pq_code_distance_single</name></member>
+    <member refid="pq__code__distance_8h_1aa271346d82ed780f8b8e65431a8021ce" kind="function"><name>pq_code_distance_four</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1quantize__lut" kind="namespace"><name>faiss::quantize_lut</name>
     <member refid="namespacefaiss_1_1quantize__lut_1a71df0d46800a39a482d566c091623785" kind="function"><name>round_uint8_per_column</name></member>
@@ -12488,16 +12500,6 @@
   </compound>
   <compound refid="ClusteringInitialization_8h" kind="file"><name>ClusteringInitialization.h</name>
   </compound>
-  <compound refid="code__distance-avx2_8h" kind="file"><name>code_distance-avx2.h</name>
-  </compound>
-  <compound refid="code__distance-avx512_8h" kind="file"><name>code_distance-avx512.h</name>
-  </compound>
-  <compound refid="code__distance-generic_8h" kind="file"><name>code_distance-generic.h</name>
-  </compound>
-  <compound refid="code__distance-sve_8h" kind="file"><name>code_distance-sve.h</name>
-  </compound>
-  <compound refid="code__distance_8h" kind="file"><name>code_distance.h</name>
-  </compound>
   <compound refid="CodePacker_8h" kind="file"><name>CodePacker.h</name>
   </compound>
   <compound refid="DistanceComputer_8h" kind="file"><name>DistanceComputer.h</name>
@@ -12578,6 +12580,8 @@
   <compound refid="PolysemousTraining_8h" kind="file"><name>PolysemousTraining.h</name>
   </compound>
   <compound refid="pq4__fast__scan_8h" kind="file"><name>pq4_fast_scan.h</name>
+  </compound>
+  <compound refid="pq__code__distance-inl_8h" kind="file"><name>pq_code_distance-inl.h</name>
   </compound>
   <compound refid="ProductAdditiveQuantizer_8h" kind="file"><name>ProductAdditiveQuantizer.h</name>
   </compound>
@@ -12835,6 +12839,8 @@
   </compound>
   <compound refid="partitioning_8h" kind="file"><name>partitioning.h</name>
   </compound>
+  <compound refid="pq__code__distance_8h" kind="file"><name>pq_code_distance.h</name>
+  </compound>
   <compound refid="prefetch_8h" kind="file"><name>prefetch.h</name>
     <member refid="prefetch_8h_1a73bf3a206d821452c93552a14787b60c" kind="function"><name>prefetch_L1</name></member>
     <member refid="prefetch_8h_1ae06f589e25d0369b6d27b17679e4cff9" kind="function"><name>prefetch_L2</name></member>
@@ -12885,8 +12891,6 @@
   </compound>
   <compound refid="dir_e0bc4e8ba6e534e3fbf335254ee8d911" kind="dir"><name>faiss/gpu/utils/blockselect</name>
   </compound>
-  <compound refid="dir_df06d869ac375e073b830f0b1d0f2164" kind="dir"><name>faiss/impl/code_distance</name>
-  </compound>
   <compound refid="dir_a72cdb8482385b533c81985f0af53313" kind="dir"><name>faiss/cppcontrib</name>
   </compound>
   <compound refid="dir_8b616007acf4b97b5964ac00bedb17ee" kind="dir"><name>faiss/cppcontrib/detail</name>
@@ -12906,6 +12910,8 @@
   <compound refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir"><name>faiss/invlists</name>
   </compound>
   <compound refid="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir"><name>faiss/gpu/perf</name>
+  </compound>
+  <compound refid="dir_c049bba3e09b3fcad22939d16e82a552" kind="dir"><name>faiss/impl/pq_code_distance</name>
   </compound>
   <compound refid="dir_17d03c0b48df2002720ab53d8fded289" kind="dir"><name>faiss/python</name>
   </compound>

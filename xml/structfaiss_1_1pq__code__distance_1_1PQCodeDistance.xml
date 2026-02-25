@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pq_code_distance::PQCodeDistance</compoundname>
+    <includes refid="pq__code__distance_8h" local="no">pq_code_distance.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename PQDecoderT</type>
+      </param>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" prot="public" static="no">
+        <type>PQDecoderT</type>
+        <definition>using faiss::pq_code_distance::PQCodeDistance&lt; PQDecoderT, SL &gt;::PQDecoder =  PQDecoderT</definition>
+        <argsstring></argsstring>
+        <name>PQDecoder</name>
+        <qualifiedname>faiss::pq_code_distance::PQCodeDistance::PQDecoder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="153" column="5" bodyfile="faiss/utils/pq_code_distance.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>static float faiss::pq_code_distance::PQCodeDistance&lt; PQDecoderT, SL &gt;::distance_single_code</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *code)</argsstring>
+        <name>distance_single_code</name>
+        <qualifiedname>faiss::pq_code_distance::PQCodeDistance::distance_single_code</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="155" column="18" bodyfile="faiss/utils/pq_code_distance.h" bodystart="155" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void faiss::pq_code_distance::PQCodeDistance&lt; PQDecoderT, SL &gt;::distance_four_codes</definition>
+        <argsstring>(size_t M, size_t nbits, const float *sim_table, const uint8_t *__restrict code0, const uint8_t *__restrict code1, const uint8_t *__restrict code2, const uint8_t *__restrict code3, float &amp;result0, float &amp;result1, float &amp;result2, float &amp;result3)</argsstring>
+        <name>distance_four_codes</name>
+        <qualifiedname>faiss::pq_code_distance::PQCodeDistance::distance_four_codes</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>M</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nbits</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>sim_table</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code0</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code1</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code2</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>code3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>result3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/pq_code_distance.h" line="168" column="17" bodyfile="faiss/utils/pq_code_distance.h" bodystart="168" bodyend="207"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Primary template — always complete. For <ref refid="structfaiss_1_1PQDecoder8" kindref="compound">PQDecoder8</ref>, delegates to _impl dispatch bridges (resolved at link time to per-SIMD implementations). For other decoders, uses scalar — their sequential decode() methods don&apos;t benefit from SIMD. </para>
+    </detaileddescription>
+    <location file="faiss/utils/pq_code_distance.h" line="152" column="1" bodyfile="faiss/utils/pq_code_distance.h" bodystart="152" bodyend="208"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistance</scope><name>distance_four_codes</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistance</scope><name>distance_single_code</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQCodeDistance</scope><name>PQDecoder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

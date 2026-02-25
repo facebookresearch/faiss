@@ -4,6 +4,7 @@
     <compoundname>simd_dispatch.h</compoundname>
     <includes refid="FaissAssert_8h" local="no">faiss/impl/FaissAssert.h</includes>
     <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
+    <includedby refid="pq__code__distance-inl_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-inl.h</includedby>
     <includedby refid="distances__dispatch_8h" local="no">faiss/utils/distances_dispatch.h</includedby>
     <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
     <incdepgraph>
@@ -92,6 +93,10 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
+        <link refid="pq__code__distance-inl_8h"/>
+      </node>
       <node id="1">
         <label>faiss/impl/simd_dispatch.h</label>
         <link refid="simd__dispatch_8h"/>
@@ -99,18 +104,20 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-      </node>
-      <node id="2">
-        <label>faiss/utils/distances_dispatch.h</label>
-        <link refid="distances__dispatch_8h"/>
-      </node>
-      <node id="3">
-        <label>faiss/utils/extra_distances-inl.h</label>
-        <link refid="extra__distances-inl_8h_source"/>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
+      <node id="3">
+        <label>faiss/utils/distances_dispatch.h</label>
+        <link refid="distances__dispatch_8h"/>
+      </node>
       <node id="4">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
