@@ -10,6 +10,7 @@
 #include <cstdio>
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/simdlib.h>
 
 #include <faiss/impl/scalar_quantizer/training.h>
@@ -109,90 +110,83 @@ SQDistanceComputer* select_distance_computer(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
-    constexpr int SIMDWIDTH = Sim::simdwidth;
+    constexpr SIMDLevel SL = Sim::simd_level;
     switch (qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return new DCTemplate<
                     QuantizerTemplate<
                             Codec8bit,
                             QuantizerTemplateScaling::UNIFORM,
-                            SIMDWIDTH>,
+                            SL>,
                     Sim,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
 
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate<
                     QuantizerTemplate<
                             Codec4bit,
                             QuantizerTemplateScaling::UNIFORM,
-                            SIMDWIDTH>,
+                            SL>,
                     Sim,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
             return new DCTemplate<
                     QuantizerTemplate<
                             Codec8bit,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SIMDWIDTH>,
+                            SL>,
                     Sim,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
                     QuantizerTemplate<
                             Codec6bit,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SIMDWIDTH>,
+                            SL>,
                     Sim,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
 
         case ScalarQuantizer::QT_4bit:
             return new DCTemplate<
                     QuantizerTemplate<
                             Codec4bit,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SIMDWIDTH>,
+                            SL>,
                     Sim,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
 
         case ScalarQuantizer::QT_fp16:
-            return new DCTemplate<QuantizerFP16<SIMDWIDTH>, Sim, SIMDWIDTH>(
-                    d, trained);
+            return new DCTemplate<QuantizerFP16<SL>, Sim, SL>(d, trained);
 
         case ScalarQuantizer::QT_bf16:
-            return new DCTemplate<QuantizerBF16<SIMDWIDTH>, Sim, SIMDWIDTH>(
-                    d, trained);
+            return new DCTemplate<QuantizerBF16<SL>, Sim, SL>(d, trained);
 
         case ScalarQuantizer::QT_8bit_direct:
 #if defined(__AVX512F__)
             if (d % 32 == 0) {
-                return new DistanceComputerByte<Sim, SIMDWIDTH>(
-                        int(d), trained);
+                return new DistanceComputerByte<Sim, SL>(int(d), trained);
             } else
 #elif defined(__AVX2__)
             if (d % 16 == 0) {
-                return new DistanceComputerByte<Sim, SIMDWIDTH>(
+                return new DistanceComputerByte<Sim, SL>(
                         static_cast<int>(d), trained);
             } else
 #endif
             {
-                return new DCTemplate<
-                        Quantizer8bitDirect<SIMDWIDTH>,
-                        Sim,
-                        SIMDWIDTH>(d, trained);
+                return new DCTemplate<Quantizer8bitDirect<SL>, Sim, SL>(
+                        d, trained);
             }
         case ScalarQuantizer::QT_8bit_direct_signed:
-            return new DCTemplate<
-                    Quantizer8bitDirectSigned<SIMDWIDTH>,
-                    Sim,
-                    SIMDWIDTH>(d, trained);
+            return new DCTemplate<Quantizer8bitDirectSigned<SL>, Sim, SL>(
+                    d, trained);
         default:
             FAISS_THROW_MSG("unknown qtype");
     }
 }
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 ScalarQuantizer::SQuantizer* select_quantizer_1(
         QuantizerType qtype,
         size_t d,
@@ -202,35 +196,35 @@ ScalarQuantizer::SQuantizer* select_quantizer_1(
             return new QuantizerTemplate<
                     Codec8bit,
                     QuantizerTemplateScaling::NON_UNIFORM,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
         case ScalarQuantizer::QT_6bit:
             return new QuantizerTemplate<
                     Codec6bit,
                     QuantizerTemplateScaling::NON_UNIFORM,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
         case ScalarQuantizer::QT_4bit:
             return new QuantizerTemplate<
                     Codec4bit,
                     QuantizerTemplateScaling::NON_UNIFORM,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
         case ScalarQuantizer::QT_8bit_uniform:
             return new QuantizerTemplate<
                     Codec8bit,
                     QuantizerTemplateScaling::UNIFORM,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
             return new QuantizerTemplate<
                     Codec4bit,
                     QuantizerTemplateScaling::UNIFORM,
-                    SIMDWIDTH>(d, trained);
+                    SL>(d, trained);
         case ScalarQuantizer::QT_fp16:
-            return new QuantizerFP16<SIMDWIDTH>(d, trained);
+            return new QuantizerFP16<SL>(d, trained);
         case ScalarQuantizer::QT_bf16:
-            return new QuantizerBF16<SIMDWIDTH>(d, trained);
+            return new QuantizerBF16<SL>(d, trained);
         case ScalarQuantizer::QT_8bit_direct:
-            return new Quantizer8bitDirect<SIMDWIDTH>(d, trained);
+            return new Quantizer8bitDirect<SL>(d, trained);
         case ScalarQuantizer::QT_8bit_direct_signed:
-            return new Quantizer8bitDirectSigned<SIMDWIDTH>(d, trained);
+            return new Quantizer8bitDirectSigned<SL>(d, trained);
         default:
             FAISS_THROW_MSG("unknown qtype");
     }
@@ -327,15 +321,19 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 #if defined(USE_AVX512_F16C)
     if (d % 16 == 0) {
-        return select_quantizer_1<16>(qtype, d, trained);
+        return select_quantizer_1<SIMDLevel::AVX512>(qtype, d, trained);
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C)
     if (d % 8 == 0) {
-        return select_quantizer_1<8>(qtype, d, trained);
+        return select_quantizer_1<SIMDLevel::AVX2>(qtype, d, trained);
+    } else
+#elif defined(USE_NEON)
+    if (d % 8 == 0) {
+        return select_quantizer_1<SIMDLevel::ARM_NEON>(qtype, d, trained);
     } else
 #endif
     {
-        return select_quantizer_1<1>(qtype, d, trained);
+        return select_quantizer_1<SIMDLevel::NONE>(qtype, d, trained);
     }
 }
 
@@ -365,27 +363,41 @@ SQDistanceComputer* ScalarQuantizer::get_distance_computer(
 #if defined(USE_AVX512_F16C)
     if (d % 16 == 0) {
         if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<16>>(
+            return select_distance_computer<SimilarityL2<SIMDLevel::AVX512>>(
                     qtype, d, trained);
         } else {
-            return select_distance_computer<SimilarityIP<16>>(
+            return select_distance_computer<SimilarityIP<SIMDLevel::AVX512>>(
                     qtype, d, trained);
         }
     } else
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C)
     if (d % 8 == 0) {
         if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<8>>(qtype, d, trained);
+            return select_distance_computer<SimilarityL2<SIMDLevel::AVX2>>(
+                    qtype, d, trained);
         } else {
-            return select_distance_computer<SimilarityIP<8>>(qtype, d, trained);
+            return select_distance_computer<SimilarityIP<SIMDLevel::AVX2>>(
+                    qtype, d, trained);
+        }
+    } else
+#elif defined(USE_NEON)
+    if (d % 8 == 0) {
+        if (metric == METRIC_L2) {
+            return select_distance_computer<SimilarityL2<SIMDLevel::ARM_NEON>>(
+                    qtype, d, trained);
+        } else {
+            return select_distance_computer<SimilarityIP<SIMDLevel::ARM_NEON>>(
+                    qtype, d, trained);
         }
     } else
 #endif
     {
         if (metric == METRIC_L2) {
-            return select_distance_computer<SimilarityL2<1>>(qtype, d, trained);
+            return select_distance_computer<SimilarityL2<SIMDLevel::NONE>>(
+                    qtype, d, trained);
         } else {
-            return select_distance_computer<SimilarityIP<1>>(qtype, d, trained);
+            return select_distance_computer<SimilarityIP<SIMDLevel::NONE>>(
+                    qtype, d, trained);
         }
     }
 }
@@ -536,105 +548,103 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
 
     auto select_by_simd_and_metric =
             [&,
-             this]<int SIMDWIDTH, class Similarity>() -> InvertedListScanner* {
+             this]<SIMDLevel SL, class Similarity>() -> InvertedListScanner* {
         switch (qtype) {
             case QT_8bit_uniform:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
                                 Codec8bit,
                                 QuantizerTemplateScaling::UNIFORM,
-                                SIMDWIDTH>,
+                                SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             case QT_4bit_uniform:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
                                 Codec4bit,
                                 QuantizerTemplateScaling::UNIFORM,
-                                SIMDWIDTH>,
+                                SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             case QT_8bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
                                 Codec8bit,
                                 QuantizerTemplateScaling::NON_UNIFORM,
-                                SIMDWIDTH>,
+                                SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             case QT_4bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
                                 Codec4bit,
                                 QuantizerTemplateScaling::NON_UNIFORM,
-                                SIMDWIDTH>,
+                                SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             case QT_6bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
                                 Codec6bit,
                                 QuantizerTemplateScaling::NON_UNIFORM,
-                                SIMDWIDTH>,
+                                SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             case QT_fp16:
-                return scan.template operator()<DCTemplate<
-                        QuantizerFP16<SIMDWIDTH>,
-                        Similarity,
-                        SIMDWIDTH>>();
+                return scan.template
+                operator()<DCTemplate<QuantizerFP16<SL>, Similarity, SL>>();
             case QT_bf16:
-                return scan.template operator()<DCTemplate<
-                        QuantizerBF16<SIMDWIDTH>,
-                        Similarity,
-                        SIMDWIDTH>>();
+                return scan.template
+                operator()<DCTemplate<QuantizerBF16<SL>, Similarity, SL>>();
             case QT_8bit_direct:
 #if defined(__AVX512F__)
                 if (d % 32 == 0) {
                     return scan.template
-                    operator()<DistanceComputerByte<Similarity, SIMDWIDTH>>();
+                    operator()<DistanceComputerByte<Similarity, SL>>();
                 }
 #elif defined(__AVX2__)
                 if (d % 16 == 0) {
                     return scan.template
-                    operator()<DistanceComputerByte<Similarity, SIMDWIDTH>>();
+                    operator()<DistanceComputerByte<Similarity, SL>>();
                 }
 #endif
-                return scan.template operator()<DCTemplate<
-                        Quantizer8bitDirect<SIMDWIDTH>,
-                        Similarity,
-                        SIMDWIDTH>>();
+                return scan.template operator()<
+                        DCTemplate<Quantizer8bitDirect<SL>, Similarity, SL>>();
             case QT_8bit_direct_signed:
                 return scan.template operator()<DCTemplate<
-                        Quantizer8bitDirectSigned<SIMDWIDTH>,
+                        Quantizer8bitDirectSigned<SL>,
                         Similarity,
-                        SIMDWIDTH>>();
+                        SL>>();
             default:
                 FAISS_THROW_MSG("unknown qtype");
         }
     };
 
-    auto select_by_simd = [&]<int SIMDWIDTH>() {
+    auto select_by_simd = [&]<SIMDLevel SL>() {
         if (mt == METRIC_L2) {
             return select_by_simd_and_metric
-                    .template operator()<SIMDWIDTH, SimilarityL2<SIMDWIDTH>>();
+                    .template operator()<SL, SimilarityL2<SL>>();
         } else if (mt == METRIC_INNER_PRODUCT) {
             return select_by_simd_and_metric
-                    .template operator()<SIMDWIDTH, SimilarityIP<SIMDWIDTH>>();
+                    .template operator()<SL, SimilarityIP<SL>>();
         }
         FAISS_THROW_MSG("unsupported metric type");
     };
 
 #if defined(USE_AVX512_F16C)
     if (d % 16 == 0) {
-        return select_by_simd.template operator()<16>();
+        return select_by_simd.template operator()<SIMDLevel::AVX512>();
     }
-#elif defined(USE_F16C) || defined(USE_NEON)
+#elif defined(USE_F16C)
     if (d % 8 == 0) {
-        return select_by_simd.template operator()<8>();
+        return select_by_simd.template operator()<SIMDLevel::AVX2>();
+    }
+#elif defined(USE_NEON)
+    if (d % 8 == 0) {
+        return select_by_simd.template operator()<SIMDLevel::ARM_NEON>();
     }
 #endif
-    return select_by_simd.template operator()<1>();
+    return select_by_simd.template operator()<SIMDLevel::NONE>();
 }
 
 } // namespace faiss
