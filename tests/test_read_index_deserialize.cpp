@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <faiss/Index.h>
+#include <faiss/IndexBinary.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
@@ -220,4 +221,221 @@ TEST(ReadIndexDeserialize, IndexLatticeDNotDivisibleByNsq) {
     push_val<int>(buf, 14); // r2
 
     expect_read_throws_with(buf, "divisible by nsq");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexLattice with r2=0 causes heap-buffer-overflow in
+// ZnSphereCodecRec constructor.  The fix validates r2 > 0.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeR2Zero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 4); // d
+    push_val<int>(buf, 1); // nsq
+    push_val<int>(buf, 4); // scale_nbit
+    push_val<int>(buf, 0); // r2 = 0 -> heap-buffer-overflow
+
+    expect_read_throws_with(buf, "r2");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexLattice with d/nsq not a power of 2 >= 2 causes
+// heap-buffer-overflow in ZnSphereCodecRec constructor.  The fix
+// validates that d/nsq is a power of 2 and >= 2.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeDsqNotPowerOf2) {
+    // d=3, nsq=1 -> dsq=3 (not a power of 2)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 3); // d
+    push_val<int>(buf, 1); // nsq
+    push_val<int>(buf, 4); // scale_nbit
+    push_val<int>(buf, 1); // r2
+
+    expect_read_throws_with(buf, "power of 2");
+}
+
+TEST(ReadIndexDeserialize, IndexLatticeDsqOne) {
+    // d=1, nsq=1 -> dsq=1 (too small, causes cache_level=-1)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 1); // d
+    push_val<int>(buf, 1); // nsq
+    push_val<int>(buf, 4); // scale_nbit
+    push_val<int>(buf, 1); // r2
+
+    expect_read_throws_with(buf, "power of 2");
+}
+
+// -----------------------------------------------------------------------
+// Binary index helpers
+// -----------------------------------------------------------------------
+
+/// Helper: append read_index_binary_header fields.
+/// Fields: int d, int code_size, idx_t ntotal, bool is_trained, int metric_type
+static void push_binary_index_header(
+        std::vector<uint8_t>& buf,
+        int d,
+        int64_t ntotal,
+        bool is_trained = true,
+        int metric_type = 1 /* L2 */) {
+    int code_size = d / 8;
+    push_val<int>(buf, d);
+    push_val<int>(buf, code_size);
+    push_val<int64_t>(buf, ntotal);
+    push_val<bool>(buf, is_trained);
+    push_val<int>(buf, metric_type);
+}
+
+/// Try to read a binary index from the given buffer and expect a
+/// FaissException.
+static void expect_binary_read_throws(const std::vector<uint8_t>& data) {
+    VectorIOReader reader;
+    reader.data = data;
+    EXPECT_THROW(read_index_binary_up(&reader), FaissException);
+}
+
+/// Try to read a binary index and expect a FaissException whose message
+/// contains the given substring.
+static void expect_binary_read_throws_with(
+        const std::vector<uint8_t>& data,
+        const std::string& expected_substr) {
+    VectorIOReader reader;
+    reader.data = data;
+    try {
+        read_index_binary_up(&reader);
+        FAIL() << "expected FaissException";
+    } catch (const FaissException& e) {
+        EXPECT_NE(
+                std::string(e.what()).find(expected_substr), std::string::npos)
+                << "expected '" << expected_substr << "' in: " << e.what();
+    }
+}
+
+/// Helper: append empty direct_map bytes (NoMap type + empty array).
+static void push_empty_direct_map(std::vector<uint8_t>& buf) {
+    push_val<char>(buf, 0);   // DirectMap::NoMap
+    push_val<size_t>(buf, 0); // empty array
+}
+
+/// Helper: append null inverted lists ("il00" fourcc).
+static void push_null_invlists(std::vector<uint8_t>& buf) {
+    push_fourcc(buf, "il00");
+}
+
+/// Helper: append a minimal IndexBinaryFlat ("IBxF") with the given
+/// dimensions and ntotal=0.
+static void push_minimal_binary_flat(std::vector<uint8_t>& buf, int d) {
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, d, /*ntotal=*/0);
+    push_vector<uint8_t>(buf, {}); // empty xb
+}
+
+// -----------------------------------------------------------------------
+// Test: Unrecognized binary fourcc throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryUnrecognizedFourcc) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ZZZZ");
+
+    expect_binary_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryFlat with truncated input (fourcc only, no header).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryFlatTruncatedInput) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+
+    expect_binary_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryFlat xb size mismatch (ntotal=1 but empty xb).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryFlatXbSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/1);
+    push_vector<uint8_t>(buf, {}); // empty xb, but ntotal=1 expects 2 bytes
+
+    expect_binary_read_throws_with(buf, "xb.size()");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryFlat with negative dimension.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryFlatNegativeDimension) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    // Manually push header with d=-1
+    push_val<int>(buf, -1);    // d
+    push_val<int>(buf, 0);     // code_size
+    push_val<int64_t>(buf, 0); // ntotal
+    push_val<bool>(buf, true); // is_trained
+    push_val<int>(buf, 1);     // metric_type
+
+    expect_binary_read_throws_with(buf, "dimension");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryMultiHash with storage ntotal mismatch exercises the
+// Leak 5 fix (dynamic_cast + assertion with unique_ptr guard).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryMultiHashStorageCastFailure) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    // Outer index header: ntotal=99
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/99);
+    // Nested IBxF storage with ntotal=0 (mismatch with outer ntotal=99)
+    push_minimal_binary_flat(buf, /*d=*/16);
+
+    expect_binary_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryIVF with inverted list nlist mismatch exercises the
+// Leak 2 fix.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryIVFInvListNlistMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBwF");
+    // Binary IVF header: binary_header + nlist + nprobe + quantizer +
+    //                     direct_map
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<size_t>(buf, 10); // nlist = 10
+    push_val<size_t>(buf, 1);  // nprobe
+    // Nested quantizer (IBxF)
+    push_minimal_binary_flat(buf, /*d=*/16);
+    // Empty direct map
+    push_empty_direct_map(buf);
+    // ArrayInvertedLists with nlist=5 (mismatch with IVF nlist=10).
+    // "ilar" fourcc + nlist + code_size + sizes
+    push_fourcc(buf, "ilar");
+    push_val<size_t>(buf, 5); // nlist = 5 (mismatches IVF nlist=10)
+    push_val<size_t>(buf, 2); // code_size = d/8 = 2
+    // 5 list sizes, all zero
+    for (int i = 0; i < 5; i++) {
+        push_val<size_t>(buf, 0);
+    }
+
+    expect_binary_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryHash with empty hash invlist buffer but non-zero entry
+// count. Exercises the null-deref fix in read_binary_hash_invlists.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashEmptyInvlistBuffer) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4);            // b
+    push_val<int>(buf, 0);            // nflip
+    push_val<size_t>(buf, size_t(1)); // sz = 1 (non-zero)
+    push_val<int>(buf, 8);            // il_nbit
+    push_vector<uint8_t>(buf, {});    // empty buffer (should fail)
+
+    expect_binary_read_throws_with(buf, "binary hash invlists");
 }
