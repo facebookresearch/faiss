@@ -44,7 +44,9 @@ struct Codec8bit {
         const __m512 one_255 = _mm512_set1_ps(1.f / 255.f);
         return simd16float32(_mm512_fmadd_ps(f16, one_255, half_one_255));
     }
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
     static FAISS_ALWAYS_INLINE simd8float32
     decode_8_components(const uint8_t* code, size_t i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
@@ -105,7 +107,9 @@ struct Codec4bit {
         const __m512 one_255 = _mm512_set1_ps(1.f / 15.f);
         return simd16float32(_mm512_fmadd_ps(f16, one_255, half_one_255));
     }
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
     static FAISS_ALWAYS_INLINE simd8float32
     decode_8_components(const uint8_t* code, size_t i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
@@ -244,7 +248,9 @@ struct Codec6bit {
         // clang-format on
     }
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
     /* Load 6 bytes that represent 8 6-bit values, return them as a
      * 8*32 bit vector register */

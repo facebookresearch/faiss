@@ -92,7 +92,9 @@ struct QuantizerTemplate<
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Codec>
 struct QuantizerTemplate<
@@ -223,7 +225,9 @@ struct QuantizerTemplate<
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Codec>
 struct QuantizerTemplate<
@@ -413,7 +417,9 @@ struct QuantizerBF16<SIMDLevel::AVX512> : QuantizerBF16<SIMDLevel::NONE> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
 struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
@@ -499,7 +505,9 @@ struct Quantizer8bitDirect<SIMDLevel::AVX512>
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirect<SIMDLevel::AVX2>
@@ -593,7 +601,9 @@ struct Quantizer8bitDirectSigned<SIMDLevel::AVX512>
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
 struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>

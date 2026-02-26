@@ -96,7 +96,9 @@ struct SimilarityL2<SIMDLevel::AVX512> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
 struct SimilarityL2<SIMDLevel::AVX2> {
@@ -266,7 +268,9 @@ struct SimilarityIP<SIMDLevel::AVX512> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
 struct SimilarityIP<SIMDLevel::AVX2> {
