@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAISS WASM Demo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { padding: 10px; margin: 5px; }
+        #output { white-space: pre-wrap; background: #f0f0f0; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>FAISS WASM Demo</h1>
+    <p>Status: <span id="status">Loading...</span></p>
+    
+    <div>
+        <button id="btn-gen" disabled>Generate Vectors</button>
+        <button id="btn-add" disabled>Add to Index</button>
+        <button id="btn-search" disabled>Search</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script src="faiss-wasm.js"></script>
+    <script>
+        let index = null;
+        let vectors = [];
+        const d = 128;
+        const n = 1000;
+
+        function log(msg) {
+            document.getElementById('output').textContent += msg + '\n';
+        }
+
+        FaissModule().then(module => {
+            document.getElementById('status').textContent = 'Ready';
+            document.getElementById('btn-gen').disabled = false;
+            
+            window.module = module;
+            index = new module.IndexFlatL2(d);
+            log(`Index created with d=${d}`);
+        });
+
+        document.getElementById('btn-gen').onclick = () => {
+            vectors = [];
+            for (let i = 0; i < n; i++) {
+                const vec = [];
+                for (let j = 0; j < d; j++) {
+                    vec.push(Math.random());
+                }
+                vectors.push(vec);
+            }
+            log(`Generated ${n} vectors of dimension ${d}`);
+            document.getElementById('btn-add').disabled = false;
+        };
+
+        document.getElementById('btn-add').onclick = () => {
+            const flat = new Float32Array(vectors.flat());
+            const start = performance.now();
+            index.add(flat);
+            const end = performance.now();
+            log(`Added ${n} vectors in ${(end - start).toFixed(2)}ms`);
+            log(`Total vectors in index: ${index.ntotal}`);
+            document.getElementById('btn-search').disabled = false;
+        };
+
+        document.getElementById('btn-search').onclick = () => {
+            // Search for the first vector (should match itself)
+            const query = new Float32Array(vectors[0]);
+            const k = 5;
+            const start = performance.now();
+            const results = index.search(query, k);
+            const end = performance.now();
+            
+            log(`Search completed in ${(end - start).toFixed(2)}ms`);
+            log(`Results for vector 0:`);
+            for (let i = 0; i < k; i++) {
+                log(`  ${i}: Label ${results.labels[i]}, Distance ${results.distances[i]}`);
+            }
+        };
+    </script>
+</body>
+</html>
