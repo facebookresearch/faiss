@@ -4,16 +4,16 @@
     <compoundname>faiss::scalar_quantizer::Quantizer8bitDirectSigned</compoundname>
     <templateparamlist>
       <param>
-        <type>int</type>
-        <declname>SIMDWIDTH</declname>
-        <defname>SIMDWIDTH</defname>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
       </param>
     </templateparamlist>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="502" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="502" bodyend="502"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="549" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="549" bodyend="549"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

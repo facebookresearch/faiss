@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a2a6a7ba7871e39508f7faac79ef60d5b" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::simdwidth</definition>
+        <argsstring></argsstring>
+        <name>simdwidth</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::simdwidth</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="203" column="26" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a436386a726f2599323d3207fab728fc4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::simd_level</definition>
+        <argsstring></argsstring>
+        <name>simd_level</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::simd_level</qualifiedname>
+        <initializer>= SIMDLevel::NONE</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="204" column="32" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1adbfe4b18087f58ffc696915f24fbb8b0" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>constexpr MetricType faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::metric_type</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" kindref="member">METRIC_INNER_PRODUCT</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="205" column="33" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1aa71196c2f7191ebba10ff1712553d2b8" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="206" column="17" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ab87cd646e48ce67539f14a289851ed9a" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float * faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::yi</definition>
+        <argsstring></argsstring>
+        <name>yi</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::yi</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="206" column="19" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a8c9aa80069dd1d191ee0c81028090310" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::accu</definition>
+        <argsstring></argsstring>
+        <name>accu</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::accu</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="208" column="11" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="208" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1aba516fbfa30559c90d536f8e5a8bb974" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::SimilarityIP</definition>
+        <argsstring>(const float *y)</argsstring>
+        <name>SimilarityIP</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::SimilarityIP</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="210" column="14" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="210" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1af92114af7e22086928390a30d8b1eb90" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::begin</definition>
+        <argsstring>()</argsstring>
+        <name>begin</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="212" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="212" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ab08e90568adb06c1b2acc06500e79bcb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::add_component</definition>
+        <argsstring>(float x)</argsstring>
+        <name>add_component</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::add_component</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="217" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="217" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ac75385d98999181a1cef66848c47124c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::add_component_2</definition>
+        <argsstring>(float x1, float x2)</argsstring>
+        <name>add_component_2</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::add_component_2</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x1</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>x2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="221" column="30" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="221" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a4b69674fcd020e456c00e4a67898d1bc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::result</definition>
+        <argsstring>()</argsstring>
+        <name>result</name>
+        <qualifiedname>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;::result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/similarities.h" line="225" column="31" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="225" bodyend="227"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/similarities.h" line="202" column="1" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="202" bodyend="228"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a8c9aa80069dd1d191ee0c81028090310" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>accu</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ab08e90568adb06c1b2acc06500e79bcb" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>add_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ac75385d98999181a1cef66848c47124c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>add_component_2</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1af92114af7e22086928390a30d8b1eb90" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1adbfe4b18087f58ffc696915f24fbb8b0" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a4b69674fcd020e456c00e4a67898d1bc" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>result</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a436386a726f2599323d3207fab728fc4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>simd_level</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1a2a6a7ba7871e39508f7faac79ef60d5b" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>simdwidth</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1aba516fbfa30559c90d536f8e5a8bb974" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>SimilarityIP</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1aa71196c2f7191ebba10ff1712553d2b8" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>y</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityIP_3_01SIMDLevel_1_1NONE_01_4_1ab87cd646e48ce67539f14a289851ed9a" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityIP&lt; SIMDLevel::NONE &gt;</scope><name>yi</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

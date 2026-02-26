@@ -5,6 +5,9 @@
     <includes local="no">cstdint</includes>
     <includes local="no">string</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
+    <includedby refid="distance__computers_8h" local="no">faiss/impl/scalar_quantizer/distance_computers.h</includedby>
+    <includedby refid="quantizers_8h" local="no">faiss/impl/scalar_quantizer/quantizers.h</includedby>
+    <includedby refid="similarities_8h" local="no">faiss/impl/scalar_quantizer/similarities.h</includedby>
     <includedby refid="simd__dispatch_8h" local="no">faiss/impl/simd_dispatch.h</includedby>
     <includedby refid="distances_8h" local="no">faiss/utils/distances.h</includedby>
     <includedby refid="pq__code__distance_8h" local="no">faiss/utils/pq_code_distance.h</includedby>
@@ -38,64 +41,60 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="24">
+      <node id="27">
         <label>faiss/IVFlib.h</label>
         <link refid="IVFlib_8h_source"/>
-        <childnode refid="25" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
       </node>
-      <node id="26">
+      <node id="29">
         <label>faiss/Index2Layer.h</label>
         <link refid="Index2Layer_8h_source"/>
       </node>
-      <node id="14">
+      <node id="17">
         <label>faiss/IndexAdditiveQuantizer.h</label>
         <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="15" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="18">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
       </node>
-      <node id="27">
+      <node id="30">
         <label>faiss/IndexBinaryIVF.h</label>
         <link refid="IndexBinaryIVF_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="12">
         <label>faiss/IndexFlat.h</label>
         <link refid="IndexFlat_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-      </node>
-      <node id="10">
-        <label>faiss/IndexHNSW.h</label>
-        <link refid="IndexHNSW_8h_source"/>
-      </node>
-      <node id="23">
-        <label>faiss/IndexIVF.h</label>
-        <link refid="IndexIVF_8h_source"/>
-        <childnode refid="24" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="26" relation="include">
-        </childnode>
-        <childnode refid="27" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+      </node>
+      <node id="13">
+        <label>faiss/IndexHNSW.h</label>
+        <link refid="IndexHNSW_8h_source"/>
+      </node>
+      <node id="26">
+        <label>faiss/IndexIVF.h</label>
+        <link refid="IndexIVF_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
@@ -103,7 +102,7 @@
         </childnode>
         <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="38" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
@@ -111,241 +110,9 @@
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
-        </childnode>
-        <childnode refid="47" relation="include">
-        </childnode>
-        <childnode refid="48" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
-        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
-        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
-      </node>
-      <node id="28">
-        <label>faiss/IndexIVFFastScan.h</label>
-        <link refid="IndexIVFFastScan_8h_source"/>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="31">
-        <label>faiss/IndexIVFFlat.h</label>
-        <link refid="IndexIVFFlat_8h_source"/>
-        <childnode refid="32" relation="include">
-        </childnode>
-      </node>
-      <node id="32">
-        <label>faiss/IndexIVFFlatPanorama.h</label>
-        <link refid="IndexIVFFlatPanorama_8h_source"/>
-      </node>
-      <node id="33">
-        <label>faiss/IndexIVFIndependentQuantizer.h</label>
-        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
-      </node>
-      <node id="34">
-        <label>faiss/IndexIVFPQ.h</label>
-        <link refid="IndexIVFPQ_8h_source"/>
-        <childnode refid="29" relation="include">
-        </childnode>
-        <childnode refid="35" relation="include">
-        </childnode>
-      </node>
-      <node id="29">
-        <label>faiss/IndexIVFPQFastScan.h</label>
-        <link refid="IndexIVFPQFastScan_8h_source"/>
-      </node>
-      <node id="35">
-        <label>faiss/IndexIVFPQR.h</label>
-        <link refid="IndexIVFPQR_8h_source"/>
-      </node>
-      <node id="36">
-        <label>faiss/IndexIVFRaBitQ.h</label>
-        <link refid="IndexIVFRaBitQ_8h_source"/>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="30">
-        <label>faiss/IndexIVFRaBitQFastScan.h</label>
-        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
-      </node>
-      <node id="37">
-        <label>faiss/IndexIVFSpectralHash.h</label>
-        <link refid="IndexIVFSpectralHash_8h_source"/>
-      </node>
-      <node id="11">
-        <label>faiss/IndexNNDescent.h</label>
-        <link refid="IndexNNDescent_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>faiss/IndexNSG.h</label>
-        <link refid="IndexNSG_8h_source"/>
-      </node>
-      <node id="38">
-        <label>faiss/IndexScalarQuantizer.h</label>
-        <link refid="IndexScalarQuantizer_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-      </node>
-      <node id="40">
-        <label>faiss/IndexShardsIVF.h</label>
-        <link refid="IndexShardsIVF_8h_source"/>
-      </node>
-      <node id="19">
-        <label>faiss/gpu/GpuIcmEncoder.h</label>
-        <link refid="GpuIcmEncoder_8h_source"/>
-      </node>
-      <node id="42">
-        <label>faiss/gpu/GpuIndexBinaryCagra.h</label>
-        <link refid="GpuIndexBinaryCagra_8h_source"/>
-      </node>
-      <node id="41">
-        <label>faiss/gpu/GpuIndexCagra.h</label>
-        <link refid="GpuIndexCagra_8h_source"/>
-        <childnode refid="42" relation="include">
-        </childnode>
-      </node>
-      <node id="43">
-        <label>faiss/gpu/GpuIndexIVF.h</label>
-        <link refid="GpuIndexIVF_8h_source"/>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
-        <childnode refid="39" relation="include">
-        </childnode>
-      </node>
-      <node id="44">
-        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
-        <link refid="GpuIndexIVFFlat_8h_source"/>
-      </node>
-      <node id="45">
-        <label>faiss/gpu/GpuIndexIVFPQ.h</label>
-        <link refid="GpuIndexIVFPQ_8h_source"/>
-        <childnode refid="41" relation="include">
-        </childnode>
-      </node>
-      <node id="39">
-        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
-        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
-      </node>
-      <node id="49">
-        <label>faiss/gpu/test/TestUtils.h</label>
-        <link refid="TestUtils_8h_source"/>
-      </node>
-      <node id="13">
-        <label>faiss/impl/AdditiveQuantizer.h</label>
-        <link refid="AdditiveQuantizer_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-      </node>
-      <node id="18">
-        <label>faiss/impl/LocalSearchQuantizer.h</label>
-        <link refid="LocalSearchQuantizer_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>faiss/impl/Panorama.h</label>
-        <link refid="Panorama_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="20">
-        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
-        <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="21">
-        <label>faiss/impl/ResidualQuantizer.h</label>
-        <link refid="ResidualQuantizer_8h_source"/>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="20" relation="include">
-        </childnode>
-      </node>
-      <node id="46">
-        <label>faiss/impl/expanded_scanners.h</label>
-        <link refid="expanded__scanners_8h_source"/>
-      </node>
-      <node id="47">
-        <label>faiss/impl/index_read_utils.h</label>
-        <link refid="index__read__utils_8h_source"/>
-      </node>
-      <node id="3">
-        <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
-        <link refid="pq__code__distance-inl_8h"/>
-      </node>
-      <node id="2">
-        <label>faiss/impl/simd_dispatch.h</label>
-        <link refid="simd__dispatch_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-      </node>
-      <node id="50">
-        <label>faiss/invlists/BlockInvertedLists.h</label>
-        <link refid="BlockInvertedLists_8h_source"/>
-      </node>
-      <node id="51">
-        <label>faiss/invlists/DirectMap.h</label>
-        <link refid="DirectMap_8h_source"/>
-        <childnode refid="23" relation="include">
-        </childnode>
-      </node>
-      <node id="22">
-        <label>faiss/invlists/InvertedLists.h</label>
-        <link refid="InvertedLists_8h_source"/>
-        <childnode refid="23" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="49" relation="include">
         </childnode>
@@ -353,66 +120,314 @@
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+      </node>
+      <node id="19">
+        <label>faiss/IndexIVFAdditiveQuantizer.h</label>
+        <link refid="IndexIVFAdditiveQuantizer_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>faiss/IndexIVFAdditiveQuantizerFastScan.h</label>
+        <link refid="IndexIVFAdditiveQuantizerFastScan_8h_source"/>
+      </node>
+      <node id="31">
+        <label>faiss/IndexIVFFastScan.h</label>
+        <link refid="IndexIVFFastScan_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>faiss/IndexIVFFlat.h</label>
+        <link refid="IndexIVFFlat_8h_source"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>faiss/IndexIVFFlatPanorama.h</label>
+        <link refid="IndexIVFFlatPanorama_8h_source"/>
+      </node>
+      <node id="36">
+        <label>faiss/IndexIVFIndependentQuantizer.h</label>
+        <link refid="IndexIVFIndependentQuantizer_8h_source"/>
+      </node>
+      <node id="37">
+        <label>faiss/IndexIVFPQ.h</label>
+        <link refid="IndexIVFPQ_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>faiss/IndexIVFPQFastScan.h</label>
+        <link refid="IndexIVFPQFastScan_8h_source"/>
+      </node>
+      <node id="38">
+        <label>faiss/IndexIVFPQR.h</label>
+        <link refid="IndexIVFPQR_8h_source"/>
+      </node>
+      <node id="39">
+        <label>faiss/IndexIVFRaBitQ.h</label>
+        <link refid="IndexIVFRaBitQ_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
+      <node id="40">
+        <label>faiss/IndexIVFSpectralHash.h</label>
+        <link refid="IndexIVFSpectralHash_8h_source"/>
+      </node>
+      <node id="14">
+        <label>faiss/IndexNNDescent.h</label>
+        <link refid="IndexNNDescent_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss/IndexNSG.h</label>
+        <link refid="IndexNSG_8h_source"/>
+      </node>
+      <node id="41">
+        <label>faiss/IndexScalarQuantizer.h</label>
+        <link refid="IndexScalarQuantizer_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>faiss/IndexShardsIVF.h</label>
+        <link refid="IndexShardsIVF_8h_source"/>
+      </node>
+      <node id="22">
+        <label>faiss/gpu/GpuIcmEncoder.h</label>
+        <link refid="GpuIcmEncoder_8h_source"/>
+      </node>
+      <node id="45">
+        <label>faiss/gpu/GpuIndexBinaryCagra.h</label>
+        <link refid="GpuIndexBinaryCagra_8h_source"/>
+      </node>
+      <node id="44">
+        <label>faiss/gpu/GpuIndexCagra.h</label>
+        <link refid="GpuIndexCagra_8h_source"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>faiss/gpu/GpuIndexIVF.h</label>
+        <link refid="GpuIndexIVF_8h_source"/>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>faiss/gpu/GpuIndexIVFFlat.h</label>
+        <link refid="GpuIndexIVFFlat_8h_source"/>
+      </node>
+      <node id="48">
+        <label>faiss/gpu/GpuIndexIVFPQ.h</label>
+        <link refid="GpuIndexIVFPQ_8h_source"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
+        <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
+      </node>
+      <node id="52">
+        <label>faiss/gpu/test/TestUtils.h</label>
+        <link refid="TestUtils_8h_source"/>
+      </node>
+      <node id="16">
+        <label>faiss/impl/AdditiveQuantizer.h</label>
+        <link refid="AdditiveQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>faiss/impl/LocalSearchQuantizer.h</label>
+        <link refid="LocalSearchQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss/impl/Panorama.h</label>
+        <link refid="Panorama_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="52">
-        <label>faiss/invlists/InvertedListsIOHook.h</label>
-        <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="50" relation="include">
+      <node id="23">
+        <label>faiss/impl/ProductAdditiveQuantizer.h</label>
+        <link refid="ProductAdditiveQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="48">
-        <label>faiss/invlists/OnDiskInvertedLists.h</label>
-        <link refid="OnDiskInvertedLists_8h_source"/>
+      <node id="24">
+        <label>faiss/impl/ResidualQuantizer.h</label>
+        <link refid="ResidualQuantizer_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
       </node>
-      <node id="25">
-        <label>faiss/python/python_callbacks.h</label>
-        <link refid="python__callbacks_8h_source"/>
+      <node id="49">
+        <label>faiss/impl/expanded_scanners.h</label>
+        <link refid="expanded__scanners_8h_source"/>
       </node>
-      <node id="7">
-        <label>faiss/utils/distances.h</label>
-        <link refid="distances_8h_source"/>
+      <node id="50">
+        <label>faiss/impl/index_read_utils.h</label>
+        <link refid="index__read__utils_8h_source"/>
+      </node>
+      <node id="6">
+        <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
+        <link refid="pq__code__distance-inl_8h"/>
+      </node>
+      <node id="2">
+        <label>faiss/impl/scalar_quantizer/distance_computers.h</label>
+        <link refid="distance__computers_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/impl/scalar_quantizer/quantizers.h</label>
+        <link refid="quantizers_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/impl/scalar_quantizer/similarities.h</label>
+        <link refid="similarities_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/impl/simd_dispatch.h</label>
+        <link refid="simd__dispatch_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+      </node>
+      <node id="53">
+        <label>faiss/invlists/BlockInvertedLists.h</label>
+        <link refid="BlockInvertedLists_8h_source"/>
+      </node>
+      <node id="54">
+        <label>faiss/invlists/DirectMap.h</label>
+        <link refid="DirectMap_8h_source"/>
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+      </node>
+      <node id="25">
+        <label>faiss/invlists/InvertedLists.h</label>
+        <link refid="InvertedLists_8h_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
         <childnode refid="54" relation="include">
         </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="55">
+        <label>faiss/invlists/InvertedListsIOHook.h</label>
+        <link refid="InvertedListsIOHook_8h_source"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>faiss/invlists/OnDiskInvertedLists.h</label>
+        <link refid="OnDiskInvertedLists_8h_source"/>
+      </node>
+      <node id="28">
+        <label>faiss/python/python_callbacks.h</label>
+        <link refid="python__callbacks_8h_source"/>
+      </node>
+      <node id="10">
+        <label>faiss/utils/distances.h</label>
+        <link refid="distances_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
       </node>
-      <node id="5">
+      <node id="8">
         <label>faiss/utils/extra_distances-inl.h</label>
         <link refid="extra__distances-inl_8h_source"/>
-        <childnode refid="6" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="9">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="55">
+      <node id="58">
         <label>faiss/utils/pq_code_distance.h</label>
         <link refid="pq__code__distance_8h_source"/>
-        <childnode refid="3" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="56">
         <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
         <link refid="distances__autovec-inl_8h_source"/>
       </node>
-      <node id="54">
+      <node id="57">
         <label>faiss/utils/simd_impl/distances_sse-inl.h</label>
         <link refid="distances__sse-inl_8h_source"/>
       </node>
@@ -421,9 +436,15 @@
         <link refid="simd__levels_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -477,55 +498,66 @@
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>COUNT</highlight></codeline>
 <codeline lineno="30"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="32"><highlight class="comment">///<sp/>Convert<sp/>SIMDLevel<sp/>to<sp/>string.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>level.</highlight></codeline>
-<codeline lineno="33" refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/><ref refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kindref="member">to_string</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="35"><highlight class="comment">///<sp/>Parse<sp/>string<sp/>to<sp/>SIMDLevel.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>strings.</highlight></codeline>
-<codeline lineno="36" refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" refkind="member"><highlight class="comment"></highlight><highlight class="normal">SIMDLevel<sp/><ref refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kindref="member">to_simd_level</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>level_str);</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="38"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="39"><highlight class="comment"><sp/>*<sp/>Current<sp/>SIMD<sp/>configuration.</highlight></codeline>
-<codeline lineno="40"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="41"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>provides<sp/>a<sp/>uniform<sp/>API<sp/>for<sp/>querying<sp/>and<sp/>setting<sp/>the<sp/>SIMD<sp/>level,</highlight></codeline>
-<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>regardless<sp/>of<sp/>whether<sp/>faiss<sp/>was<sp/>built<sp/>with<sp/>Dynamic<sp/>Dispatch<sp/>(DD)<sp/>or<sp/>static</highlight></codeline>
-<codeline lineno="43"><highlight class="comment"><sp/>*<sp/>SIMD<sp/>selection.</highlight></codeline>
-<codeline lineno="44"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="45"><highlight class="comment"><sp/>*<sp/>In<sp/>DD<sp/>mode:</highlight></codeline>
-<codeline lineno="46"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>runtime-detected<sp/>or<sp/>user-set<sp/>level</highlight></codeline>
-<codeline lineno="47"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>changes<sp/>the<sp/>runtime<sp/>level<sp/>(if<sp/>level<sp/>is<sp/>supported)</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>of<sp/>all<sp/>compiled-in<sp/>levels</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>In<sp/>static<sp/>mode:</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>compiled-in<sp/>level</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>succeeds<sp/>only<sp/>if<sp/>level<sp/>matches<sp/>compiled-in<sp/>level</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>with<sp/>single<sp/>level</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="55" refid="structfaiss_1_1SIMDConfig" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref><sp/>{</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>level;</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>bitmask<sp/>of<sp/>supported<sp/>SIMD<sp/>levels<sp/>(1<sp/>&lt;&lt;<sp/>SIMDLevel).</highlight></codeline>
-<codeline lineno="59" refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels</ref>;</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="65"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
-<codeline lineno="66" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="70"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
-<codeline lineno="71" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="73"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
-<codeline lineno="74"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>DISPATCH_SIMDLevel<sp/>internally.</highlight></codeline>
-<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
-<codeline lineno="76"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
-<codeline lineno="77" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
-<codeline lineno="78"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"></highlight></codeline>
-<codeline lineno="80"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///<sp/>Number<sp/>of<sp/>float32<sp/>lanes<sp/>for<sp/>a<sp/>given<sp/>SIMD<sp/>level.</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="34" refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" kindref="member">simd_width</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX512<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::AVX512_SPR)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>16;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX2<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::ARM_NEON)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>8;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="43"><highlight class="comment">///<sp/>Convert<sp/>SIMDLevel<sp/>to<sp/>string.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>level.</highlight></codeline>
+<codeline lineno="44" refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/><ref refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kindref="member">to_string</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="46"><highlight class="comment">///<sp/>Parse<sp/>string<sp/>to<sp/>SIMDLevel.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>strings.</highlight></codeline>
+<codeline lineno="47" refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" refkind="member"><highlight class="comment"></highlight><highlight class="normal">SIMDLevel<sp/><ref refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kindref="member">to_simd_level</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>level_str);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="49"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/>Current<sp/>SIMD<sp/>configuration.</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>provides<sp/>a<sp/>uniform<sp/>API<sp/>for<sp/>querying<sp/>and<sp/>setting<sp/>the<sp/>SIMD<sp/>level,</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>regardless<sp/>of<sp/>whether<sp/>faiss<sp/>was<sp/>built<sp/>with<sp/>Dynamic<sp/>Dispatch<sp/>(DD)<sp/>or<sp/>static</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/>SIMD<sp/>selection.</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>In<sp/>DD<sp/>mode:</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>runtime-detected<sp/>or<sp/>user-set<sp/>level</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>changes<sp/>the<sp/>runtime<sp/>level<sp/>(if<sp/>level<sp/>is<sp/>supported)</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>of<sp/>all<sp/>compiled-in<sp/>levels</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/>*<sp/>In<sp/>static<sp/>mode:</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>compiled-in<sp/>level</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>succeeds<sp/>only<sp/>if<sp/>level<sp/>matches<sp/>compiled-in<sp/>level</highlight></codeline>
+<codeline lineno="64"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>with<sp/>single<sp/>level</highlight></codeline>
+<codeline lineno="65"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="structfaiss_1_1SIMDConfig" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>level;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>bitmask<sp/>of<sp/>supported<sp/>SIMD<sp/>levels<sp/>(1<sp/>&lt;&lt;<sp/>SIMDLevel).</highlight></codeline>
+<codeline lineno="70" refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels</ref>;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="76"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
+<codeline lineno="77" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="81"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
+<codeline lineno="82" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="84"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>DISPATCH_SIMDLevel<sp/>internally.</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
+<codeline lineno="88" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simd_levels.h"/>
   </compounddef>

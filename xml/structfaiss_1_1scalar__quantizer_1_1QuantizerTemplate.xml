@@ -12,16 +12,16 @@
         <defname>SCALING</defname>
       </param>
       <param>
-        <type>int</type>
-        <declname>SIMD</declname>
-        <defname>SIMD</defname>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
       </param>
     </templateparamlist>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="25" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="25" bodyend="25"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="26" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="26" bodyend="26"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

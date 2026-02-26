@@ -11960,6 +11960,28 @@
         </inbodydescription>
         <location file="faiss/utils/simd_impl/distances_sse-inl.h" line="371" column="15" bodyfile="faiss/utils/simd_impl/distances_sse-inl.h" bodystart="371" bodyend="389"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr int</type>
+        <definition>constexpr int faiss::simd_width</definition>
+        <argsstring>()</argsstring>
+        <name>simd_width</name>
+        <qualifiedname>faiss::simd_width</qualifiedname>
+        <briefdescription>
+<para>Number of float32 lanes for a given SIMD level. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="34" column="15" bodyfile="faiss/utils/simd_levels.h" bodystart="34" bodyend="41"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a79e514996c26613456730d2427a8a842" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
         <definition>std::string faiss::to_string</definition>
@@ -11977,7 +11999,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="33" column="13" declfile="faiss/utils/simd_levels.h" declline="33" declcolumn="13"/>
+        <location file="faiss/utils/simd_levels.h" line="44" column="13" declfile="faiss/utils/simd_levels.h" declline="44" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -11996,7 +12018,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="36" column="11" declfile="faiss/utils/simd_levels.h" declline="36" declcolumn="11"/>
+        <location file="faiss/utils/simd_levels.h" line="47" column="11" declfile="faiss/utils/simd_levels.h" declline="47" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae44e64d0db11cd08cfae98b8055628c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>

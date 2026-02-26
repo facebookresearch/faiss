@@ -4,16 +4,16 @@
     <compoundname>faiss::scalar_quantizer::SimilarityIP</compoundname>
     <templateparamlist>
       <param>
-        <type>int</type>
-        <declname>SIMDWIDTH</declname>
-        <defname>SIMDWIDTH</defname>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
       </param>
     </templateparamlist>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/similarities.h" line="194" column="1" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="194" bodyend="194"/>
+    <location file="faiss/impl/scalar_quantizer/similarities.h" line="199" column="1" bodyfile="faiss/impl/scalar_quantizer/similarities.h" bodystart="199" bodyend="199"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

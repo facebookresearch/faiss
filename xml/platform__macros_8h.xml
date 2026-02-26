@@ -1404,6 +1404,12 @@
       <node id="162">
         <label>faiss/utils/simd_levels.h</label>
         <link refid="simd__levels_8h_source"/>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
         <childnode refid="141" relation="include">
         </childnode>
         <childnode refid="151" relation="include">

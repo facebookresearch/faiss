@@ -2,12 +2,12 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::ScalarQuantizer::SQuantizer</compoundname>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirect&lt; 1 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; 1 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16&lt; 1 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</derivedcompoundref>
-    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1UNIFORM_00_011_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, 1 &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3" prot="public" virt="non-virtual">faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</derivedcompoundref>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a4c94383b46a19a999fc19cb09de9e31d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -15,12 +15,12 @@
         <argsstring>(const float *x, uint8_t *code) const =0</argsstring>
         <name>encode_vector</name>
         <qualifiedname>faiss::ScalarQuantizer::SQuantizer::encode_vector</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1UNIFORM_00_011_01_4_1ac6e423a5bf846c50164062b72dc90667">encode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1a3ebc24c72491d7633125176b8fce7951">encode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1a9746c0012b64c4f0a668300cab7bcbfa">encode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_011_01_4_1a0d1356670421b5c9d6ed595796a64512">encode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_011_01_4_1a258745f2373bbfec25b1a7b6e3d7a6d9">encode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_011_01_4_1a3de5f318989f3d7e71056571b88ddf1f">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3_1a3e359297b04c4aeae818358e96af22c8">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a7783a16c4dcac6986e9594298fdefae3">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1afaff0fae2456b4b81831c1a45443670a">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a0743a049bdadffd7b3823ea3aee3ac79">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1aff1e88517249ddb7c4fda1ad740fe07a">encode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a6024bdd73074592db4de26a4ea972621">encode_vector</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>x</declname>
@@ -43,12 +43,12 @@
         <argsstring>(const uint8_t *code, float *x) const =0</argsstring>
         <name>decode_vector</name>
         <qualifiedname>faiss::ScalarQuantizer::SQuantizer::decode_vector</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1UNIFORM_00_011_01_4_1a20916905aa6d53c4b3f31fdb1ab3f08d">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4_1ad15589e2e19556f58d04095d1d5d4969">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4_1af194311f1e3d64557e21ee667878bd9d">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_011_01_4_1a756659cbbb385b31d71a3b7dd75f29a5">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_011_01_4_1a02c479cfdc84ef7a7e4d7c70cc21926f">decode_vector</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_011_01_4_1a447a32753dd89a9f313aa6d52bf62a62">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3_1a7fe0ed6e064d13c88dca09b4967485a3">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a51150cd9c80e503441912c7381f91a23">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4_1aa04612cd542de32495725036478649cc">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1aa7f06c29da6036d96eb94a0750dac0b2">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4_1a05a9d9ab323ea1eec11f31e85f414885">decode_vector</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4_1a734637d9ead0164e557fe9dfa707235d">decode_vector</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -90,38 +90,38 @@
         <link refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer"/>
       </node>
       <node id="2">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_011_01_4"/>
+        <label>faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="3">
-        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_011_01_4"/>
+        <label>faiss::scalar_quantizer::Quantizer8bitDirectSigned&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="4">
-        <label>faiss::scalar_quantizer::QuantizerBF16&lt; 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_011_01_4"/>
+        <label>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="5">
-        <label>faiss::scalar_quantizer::QuantizerFP16&lt; 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_011_01_4"/>
+        <label>faiss::scalar_quantizer::QuantizerFP16&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerFP16_3_01SIMDLevel_1_1NONE_01_4"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="6">
-        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1NON__UNIFORM_00_011_01_4"/>
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
       <node id="7">
-        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, 1 &gt;</label>
-        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1UNIFORM_00_011_01_4"/>
+        <label>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::UNIFORM, SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_d0b54c1d5580c4f0c3be0e42b36550f3"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>

@@ -315,8 +315,8 @@
         <argsstring>(const float *x)=0</argsstring>
         <name>set_query</name>
         <qualifiedname>faiss::DistanceComputer::set_query</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_011_01_4_1ac4f574dbec68856867cefbc09846d1ff">set_query</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_011_01_4_1ad614292c0d9986e1e43c410b0b49fbd0">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a26623e7801c7f8d3c5c557f05e29c609">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4_1a9f1c66330ffa63e711fcb6e9f61b9ac3">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826">set_query</reimplementedby>
         <param>
           <type>const float *</type>
