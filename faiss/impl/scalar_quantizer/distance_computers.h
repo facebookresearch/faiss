@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/simdlib.h>
 
 namespace faiss {
@@ -21,11 +22,11 @@ using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
  * code-to-vector or code-to-code comparisons
  *******************************************************************/
 
-template <class Quantizer, class Similarity, int SIMDWIDTH>
+template <class Quantizer, class Similarity, SIMDLevel SL>
 struct DCTemplate : SQDistanceComputer {};
 
 template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
@@ -72,7 +73,7 @@ struct DCTemplate<Quantizer, Similarity, 1> : SQDistanceComputer {
 #if defined(USE_AVX512_F16C)
 
 template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 16>
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
         : SQDistanceComputer { // Update to handle 16 lanes
     using Sim = Similarity;
 
@@ -117,10 +118,65 @@ struct DCTemplate<Quantizer, Similarity, 16>
     }
 };
 
-#elif defined(USE_F16C) || defined(USE_NEON)
+#endif
+
+#if defined(USE_F16C)
 
 template <class Quantizer, class Similarity>
-struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
+    using Sim = Similarity;
+
+    Quantizer quant;
+
+    DCTemplate(size_t d, const std::vector<float>& trained)
+            : quant(d, trained) {}
+
+    float compute_distance(const float* x, const uint8_t* code) const {
+        Similarity sim(x);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi =
+                    quant.reconstruct_8_components(code, static_cast<int>(i));
+            sim.add_8_components(xi);
+        }
+        return sim.result_8();
+    }
+
+    float compute_code_distance(const uint8_t* code1, const uint8_t* code2)
+            const {
+        Similarity sim(nullptr);
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 x1 =
+                    quant.reconstruct_8_components(code1, static_cast<int>(i));
+            simd8float32 x2 =
+                    quant.reconstruct_8_components(code2, static_cast<int>(i));
+            sim.add_8_components_2(x1, x2);
+        }
+        return sim.result_8();
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        return compute_code_distance(
+                codes + i * code_size, codes + j * code_size);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        return compute_distance(q, code);
+    }
+};
+
+#endif
+
+#ifdef USE_NEON
+
+template <class Quantizer, class Similarity>
+struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     Quantizer quant;
@@ -173,11 +229,11 @@ struct DCTemplate<Quantizer, Similarity, 8> : SQDistanceComputer {
  * DistanceComputerByte: computes distances in the integer domain
  *******************************************************************/
 
-template <class Similarity, int SIMDWIDTH>
+template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByte : SQDistanceComputer {};
 
 template <class Similarity>
-struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
+struct DistanceComputerByte<Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     using Sim = Similarity;
 
     int d;
@@ -223,7 +279,8 @@ struct DistanceComputerByte<Similarity, 1> : SQDistanceComputer {
 #if defined(__AVX512F__)
 
 template <class Similarity>
-struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
+struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     int d;
@@ -273,10 +330,12 @@ struct DistanceComputerByte<Similarity, 16> : SQDistanceComputer {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Similarity>
-struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
+struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     using Sim = Similarity;
 
     int d;
@@ -341,7 +400,8 @@ struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
 #ifdef USE_NEON
 
 template <class Similarity>
-struct DistanceComputerByte<Similarity, 8> : SQDistanceComputer {
+struct DistanceComputerByte<Similarity, SIMDLevel::ARM_NEON>
+        : SQDistanceComputer {
     using Sim = Similarity;
 
     int d;

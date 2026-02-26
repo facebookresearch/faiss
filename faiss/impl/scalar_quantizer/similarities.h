@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/simdlib.h>
 
 namespace faiss {
@@ -20,12 +21,13 @@ namespace scalar_quantizer {
  * an accumulator.
  */
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct SimilarityL2 {};
 
 template <>
-struct SimilarityL2<1> {
+struct SimilarityL2<SIMDLevel::NONE> {
     static constexpr int simdwidth = 1;
+    static constexpr SIMDLevel simd_level = SIMDLevel::NONE;
     static constexpr MetricType metric_type = METRIC_L2;
 
     const float *y, *yi;
@@ -59,8 +61,9 @@ struct SimilarityL2<1> {
 #if defined(__AVX512F__)
 
 template <>
-struct SimilarityL2<16> {
+struct SimilarityL2<SIMDLevel::AVX512> {
     static constexpr int simdwidth = 16;
+    static constexpr SIMDLevel simd_level = SIMDLevel::AVX512;
     static constexpr MetricType metric_type = METRIC_L2;
 
     const float *y, *yi;
@@ -93,11 +96,14 @@ struct SimilarityL2<16> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
-struct SimilarityL2<8> {
+struct SimilarityL2<SIMDLevel::AVX2> {
     static constexpr int simdwidth = 8;
+    static constexpr SIMDLevel simd_level = SIMDLevel::AVX2;
     static constexpr MetricType metric_type = METRIC_L2;
 
     const float *y, *yi;
@@ -140,8 +146,9 @@ struct SimilarityL2<8> {
 
 #ifdef USE_NEON
 template <>
-struct SimilarityL2<8> {
+struct SimilarityL2<SIMDLevel::ARM_NEON> {
     static constexpr int simdwidth = 8;
+    static constexpr SIMDLevel simd_level = SIMDLevel::ARM_NEON;
     static constexpr MetricType metric_type = METRIC_L2;
 
     const float *y, *yi;
@@ -190,12 +197,13 @@ struct SimilarityL2<8> {
 };
 #endif
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct SimilarityIP {};
 
 template <>
-struct SimilarityIP<1> {
+struct SimilarityIP<SIMDLevel::NONE> {
     static constexpr int simdwidth = 1;
+    static constexpr SIMDLevel simd_level = SIMDLevel::NONE;
     static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
     const float *y, *yi;
 
@@ -224,8 +232,9 @@ struct SimilarityIP<1> {
 #if defined(__AVX512F__)
 
 template <>
-struct SimilarityIP<16> {
+struct SimilarityIP<SIMDLevel::AVX512> {
     static constexpr int simdwidth = 16;
+    static constexpr SIMDLevel simd_level = SIMDLevel::AVX512;
     static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
 
     const float *y, *yi;
@@ -259,11 +268,14 @@ struct SimilarityIP<16> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
-struct SimilarityIP<8> {
+struct SimilarityIP<SIMDLevel::AVX2> {
     static constexpr int simdwidth = 8;
+    static constexpr SIMDLevel simd_level = SIMDLevel::AVX2;
     static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
 
     const float *y, *yi;
@@ -307,8 +319,9 @@ struct SimilarityIP<8> {
 #ifdef USE_NEON
 
 template <>
-struct SimilarityIP<8> {
+struct SimilarityIP<SIMDLevel::ARM_NEON> {
     static constexpr int simdwidth = 8;
+    static constexpr SIMDLevel simd_level = SIMDLevel::ARM_NEON;
     static constexpr MetricType metric_type = METRIC_INNER_PRODUCT;
 
     const float *y, *yi;

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/utils/simd_levels.h>
 #include <faiss/utils/simdlib.h>
 
 namespace faiss {
@@ -21,12 +22,14 @@ namespace scalar_quantizer {
 
 enum class QuantizerTemplateScaling { UNIFORM = 0, NON_UNIFORM = 1 };
 
-template <class Codec, QuantizerTemplateScaling SCALING, int SIMD>
+template <class Codec, QuantizerTemplateScaling SCALING, SIMDLevel SL>
 struct QuantizerTemplate {};
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
-        : ScalarQuantizer::SQuantizer {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::UNIFORM,
+        SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float vmin, vdiff;
 
@@ -67,12 +70,19 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
 #if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::UNIFORM,
+        SIMDLevel::AVX512>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
-                      trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::UNIFORM,
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -82,15 +92,24 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::UNIFORM,
+        SIMDLevel::AVX2>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
-                      trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::UNIFORM,
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -105,12 +124,19 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 #ifdef USE_NEON
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::UNIFORM,
+        SIMDLevel::ARM_NEON>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
-                      trained) {}
+            : QuantizerTemplate<
+                      Codec,
+                      QuantizerTemplateScaling::UNIFORM,
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -131,8 +157,10 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 #endif
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
-        : ScalarQuantizer::SQuantizer {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::NON_UNIFORM,
+        SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -173,13 +201,19 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
 #if defined(__AVX512F__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::NON_UNIFORM,
+        SIMDLevel::AVX512>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::NON_UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -191,16 +225,24 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::NON_UNIFORM,
+        SIMDLevel::AVX2>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::NON_UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -217,13 +259,19 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
 #ifdef USE_NEON
 
 template <class Codec>
-struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
-        : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
+struct QuantizerTemplate<
+        Codec,
+        QuantizerTemplateScaling::NON_UNIFORM,
+        SIMDLevel::ARM_NEON>
+        : QuantizerTemplate<
+                  Codec,
+                  QuantizerTemplateScaling::NON_UNIFORM,
+                  SIMDLevel::NONE> {
     QuantizerTemplate(size_t d, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -245,11 +293,11 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
  * FP16 quantizer
  *******************************************************************/
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct QuantizerFP16 {};
 
 template <>
-struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
+struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -276,9 +324,9 @@ struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
 #if defined(USE_AVX512_F16C)
 
 template <>
-struct QuantizerFP16<16> : QuantizerFP16<1> {
+struct QuantizerFP16<SIMDLevel::AVX512> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -292,9 +340,9 @@ struct QuantizerFP16<16> : QuantizerFP16<1> {
 #if defined(USE_F16C)
 
 template <>
-struct QuantizerFP16<8> : QuantizerFP16<1> {
+struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -308,9 +356,9 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 #ifdef USE_NEON
 
 template <>
-struct QuantizerFP16<8> : QuantizerFP16<1> {
+struct QuantizerFP16<SIMDLevel::ARM_NEON> : QuantizerFP16<SIMDLevel::NONE> {
     QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+            : QuantizerFP16<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -326,11 +374,11 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
  * BF16 quantizer
  *******************************************************************/
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct QuantizerBF16 {};
 
 template <>
-struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
+struct QuantizerBF16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     QuantizerBF16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
@@ -357,9 +405,9 @@ struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
 #if defined(__AVX512F__)
 
 template <>
-struct QuantizerBF16<16> : QuantizerBF16<1> {
+struct QuantizerBF16<SIMDLevel::AVX512> : QuantizerBF16<SIMDLevel::NONE> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
         __m256i code_256i = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
@@ -369,12 +417,14 @@ struct QuantizerBF16<16> : QuantizerBF16<1> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
-struct QuantizerBF16<8> : QuantizerBF16<1> {
+struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -390,9 +440,9 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 #ifdef USE_NEON
 
 template <>
-struct QuantizerBF16<8> : QuantizerBF16<1> {
+struct QuantizerBF16<SIMDLevel::ARM_NEON> : QuantizerBF16<SIMDLevel::NONE> {
     QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+            : QuantizerBF16<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -410,11 +460,11 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
  * 8bit_direct quantizer
  *******************************************************************/
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct Quantizer8bitDirect {};
 
 template <>
-struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
+struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
@@ -442,9 +492,10 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
 #if defined(__AVX512F__)
 
 template <>
-struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
+struct Quantizer8bitDirect<SIMDLevel::AVX512>
+        : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -454,12 +505,15 @@ struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
-struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
+struct Quantizer8bitDirect<SIMDLevel::AVX2>
+        : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -474,9 +528,10 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 #ifdef USE_NEON
 
 template <>
-struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
+struct Quantizer8bitDirect<SIMDLevel::ARM_NEON>
+        : Quantizer8bitDirect<SIMDLevel::NONE> {
     Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+            : Quantizer8bitDirect<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -498,11 +553,12 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
  * 8bit_direct_signed quantizer
  *******************************************************************/
 
-template <int SIMDWIDTH>
+template <SIMDLevel SL>
 struct Quantizer8bitDirectSigned {};
 
 template <>
-struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
+struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
+        : ScalarQuantizer::SQuantizer {
     const size_t d;
 
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& /* unused */)
@@ -530,9 +586,10 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
 #if defined(__AVX512F__)
 
 template <>
-struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
+struct Quantizer8bitDirectSigned<SIMDLevel::AVX512>
+        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -544,12 +601,15 @@ struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <>
-struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
+struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>
+        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -566,9 +626,10 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 #ifdef USE_NEON
 
 template <>
-struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
+struct Quantizer8bitDirectSigned<SIMDLevel::ARM_NEON>
+        : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+            : Quantizer8bitDirectSigned<SIMDLevel::NONE>(d, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
