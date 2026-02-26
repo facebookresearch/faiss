@@ -438,14 +438,14 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
 }
 
 void read_InvertedLists(IndexIVF& ivf, IOReader* f, int io_flags) {
-    InvertedLists* ils = read_InvertedLists(f, io_flags);
+    auto ils = read_InvertedLists_up(f, io_flags);
     if (ils) {
         FAISS_THROW_IF_NOT(ils->nlist == ivf.nlist);
         FAISS_THROW_IF_NOT(
                 ils->code_size == InvertedLists::INVALID_CODE_SIZE ||
                 ils->code_size == ivf.code_size);
     }
-    ivf.invlists = ils;
+    ivf.invlists = ils.release();
     ivf.own_invlists = true;
 }
 
@@ -1306,8 +1306,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (has_vt) {
             indep->vt = read_VectorTransform(f);
         }
-        indep->index_ivf = dynamic_cast<IndexIVF*>(read_index(f, io_flags));
+        auto ivf_idx = read_index_up(f, io_flags);
+        indep->index_ivf = dynamic_cast<IndexIVF*>(ivf_idx.get());
         FAISS_THROW_IF_NOT(indep->index_ivf);
+        ivf_idx.release();
         if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
             READ1(index_ivfpq->use_precomputed_table);
         }
@@ -1335,20 +1337,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IxRF") || h == fourcc("IxRP")) {
         auto idxrf = std::make_unique<IndexRefine>();
         read_index_header(*idxrf, f);
-        idxrf->base_index = read_index(f, io_flags);
-        idxrf->refine_index = read_index(f, io_flags);
+        auto base = read_index_up(f, io_flags);
+        auto refine = read_index_up(f, io_flags);
         READ1(idxrf->k_factor);
         if (h == fourcc("IxRP")) {
             // then make a RefineFlatPanorama with it
             auto idxrf_new = std::make_unique<IndexRefinePanorama>();
             static_cast<IndexRefine&>(*idxrf_new) = *idxrf;
             idxrf = std::move(idxrf_new);
-        } else if (dynamic_cast<IndexFlat*>(idxrf->refine_index)) {
+        } else if (dynamic_cast<IndexFlat*>(refine.get())) {
             // then make a RefineFlat with it
             auto idxrf_new = std::make_unique<IndexRefineFlat>();
             static_cast<IndexRefine&>(*idxrf_new) = *idxrf;
             idxrf = std::move(idxrf_new);
         }
+        idxrf->base_index = base.release();
+        idxrf->refine_index = refine.release();
         idxrf->own_fields = true;
         idxrf->own_refine_index = true;
         idx = std::move(idxrf);
@@ -1804,11 +1808,11 @@ VectorTransform* read_VectorTransform(const char* fname) {
  **************************************************************/
 
 static void read_InvertedLists(IndexBinaryIVF& ivf, IOReader* f, int io_flags) {
-    InvertedLists* ils = read_InvertedLists(f, io_flags);
+    auto ils = read_InvertedLists_up(f, io_flags);
     FAISS_THROW_IF_NOT(
             !ils ||
             (ils->nlist == ivf.nlist && ils->code_size == ivf.code_size));
-    ivf.invlists = ils;
+    ivf.invlists = ils.release();
     ivf.own_invlists = true;
 }
 
@@ -1962,9 +1966,11 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IBHm")) {
         auto idxmh = std::make_unique<IndexBinaryMultiHash>();
         read_index_binary_header(*idxmh, f);
-        idxmh->storage = dynamic_cast<IndexBinaryFlat*>(read_index_binary(f));
-        FAISS_THROW_IF_NOT(
-                idxmh->storage && idxmh->storage->ntotal == idxmh->ntotal);
+        auto storage_idx = read_index_binary_up(f);
+        auto* flat_ptr = dynamic_cast<IndexBinaryFlat*>(storage_idx.get());
+        FAISS_THROW_IF_NOT(flat_ptr && flat_ptr->ntotal == idxmh->ntotal);
+        idxmh->storage = flat_ptr;
+        storage_idx.release();
         idxmh->own_fields = true;
         READ1(idxmh->b);
         READ1(idxmh->nhash);
