@@ -604,6 +604,18 @@ static void validate_HNSW(const HNSW& hnsw) {
         }
     }
 
+    // every levels[i] must be a valid index into cum_nneighbor_per_level
+    size_t cum_size = hnsw.cum_nneighbor_per_level.size();
+    for (size_t i = 0; i < ntotal; i++) {
+        FAISS_THROW_IF_NOT_FMT(
+                hnsw.levels[i] >= 0 &&
+                        static_cast<size_t>(hnsw.levels[i]) < cum_size,
+                "HNSW levels[%zd] = %d out of range [0, %zd)",
+                i,
+                hnsw.levels[i],
+                cum_size);
+    }
+
     // offsets must have size ntotal + 1, be monotonically non-decreasing,
     // and all values must be <= neighbors.size()
     FAISS_THROW_IF_NOT_FMT(
