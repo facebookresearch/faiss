@@ -143,6 +143,7 @@ set(FAISS_SRC
   utils/distances_fused/distances_fused.cpp
   utils/distances_fused/simdlib_based.cpp
   factory_tools.cpp
+  # build.cpp excluded due to build errors on Windows
 )
 
 if(FAISS_ENABLE_SVS)
