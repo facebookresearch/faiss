@@ -1231,7 +1231,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 d,
                 nsq);
         FAISS_THROW_IF_NOT_FMT(
-                r2 >= 0, "invalid IndexLattice r2 %d (must be >= 0)", r2);
+                r2 > 0, "invalid IndexLattice r2 %d (must be > 0)", r2);
+        int dsq = d / nsq;
+        FAISS_THROW_IF_NOT_FMT(
+                dsq >= 2 && (dsq & (dsq - 1)) == 0,
+                "invalid IndexLattice d=%d, nsq=%d: d/nsq=%d must be a power of 2 >= 2",
+                d,
+                nsq,
+                dsq);
         auto idxl = std::make_unique<IndexLattice>(d, nsq, scale_nbit, r2);
         read_index_header(*idxl, f);
         READVECTOR(idxl->trained);
@@ -1872,9 +1879,19 @@ static void read_binary_hash_invlists(
     READ1(il_nbit);
     // buffer for bitstrings
     size_t bits_per_entry = (size_t)b + (size_t)il_nbit;
-    std::vector<uint8_t> buf(
-            mul_no_overflow(bits_per_entry, sz, "binary hash invlists"));
+    size_t total_bits =
+            mul_no_overflow(bits_per_entry, sz, "binary hash invlists");
+    size_t needed_bytes = (total_bits + 7) / 8;
+    std::vector<uint8_t> buf;
     READVECTOR(buf);
+    FAISS_THROW_IF_NOT_FMT(
+            buf.size() >= needed_bytes,
+            "binary hash invlists: buffer size %zd < needed %zd bytes "
+            "for %zd entries of %zd bits each",
+            buf.size(),
+            needed_bytes,
+            sz,
+            bits_per_entry);
     BitstringReader rd(buf.data(), buf.size());
     invlists.reserve(sz);
     for (size_t i = 0; i < sz; i++) {
