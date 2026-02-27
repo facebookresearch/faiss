@@ -348,7 +348,9 @@ void add_link(
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
+    size_t max_size = end - begin;
+    max_size -= max_size * hnsw.prune_headroom;
+    shrink_neighbor_list(qdis, resultSet, max_size, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;
