@@ -455,7 +455,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
 endif()
 
 if(FAISS_ENABLE_SVS)
-  find_package(svs_runtime REQUIRED)
+  find_package(svs_runtime 0.2.0 REQUIRED)
 
   target_link_libraries(faiss PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)
