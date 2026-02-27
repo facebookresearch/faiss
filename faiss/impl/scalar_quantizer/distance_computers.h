@@ -330,7 +330,9 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
     }
 };
 
-#elif defined(__AVX2__)
+#endif
+
+#if defined(__AVX2__)
 
 template <class Similarity>
 struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
