@@ -1355,6 +1355,12 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
     return simd8float32{float32x4x2_t{a.data.val[1], b.data.val[1]}};
 }
 
+// horizontal add: sum all 8 floats in the register
+inline float horizontal_add(const simd8float32& a) {
+    float32x4_t sum = vaddq_f32(a.data.val[0], a.data.val[1]);
+    return vaddvq_f32(sum);
+}
+
 } // namespace
 
 } // namespace faiss
