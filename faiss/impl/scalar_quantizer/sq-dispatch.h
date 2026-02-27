@@ -5,94 +5,76 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Private implementation header for per-SIMD scalar quantizer TUs.
-// Do not include in public APIs.
-
 #pragma once
-
-#include <faiss/impl/ScalarQuantizer.h>
-#include <faiss/utils/simd_levels.h>
-#include <faiss/utils/simdlib.h>
-
-#include <faiss/impl/simd_dispatch.h>
-
-#ifdef __SSE__
-#include <immintrin.h>
-#endif
-
-#include <faiss/IndexIVF.h>
-#include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/IDSelector.h>
-#include <faiss/impl/expanded_scanners.h>
-#include <faiss/utils/bf16.h>
-#include <faiss/utils/fp16.h>
-
-// Define USE_* macros for the sub-headers. These macros gate struct template
-// specializations that contain SIMD intrinsics. They must use compiler-defined
-// macros (not COMPILE_SIMD_*) because in DD mode the COMPILE_SIMD_* macros are
-// set globally, but the actual SIMD instructions are only available in per-SIMD
-// TUs that receive the appropriate compiler flags.
-#if defined(__AVX512F__) && defined(__F16C__)
-#define USE_AVX512_F16C
-#endif
-
-#if defined(__AVX2__) && defined(__F16C__)
-#define USE_F16C
-#endif
-
-#if defined(__aarch64__)
-#if !defined(__GNUC__) || __GNUC__ >= 8
-#define USE_NEON
-#endif
-#endif
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
+#include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
 
-#include <faiss/impl/scalar_quantizer/sq_impl.h>
+#ifndef THE_LEVEL_TO_DISPATCH
+#error "THE_LEVEL_TO_DISPATCH should be set on input to this header"
+#endif
 
 namespace faiss {
 
 namespace scalar_quantizer {
 
-using QuantizerType = ScalarQuantizer::QuantizerType;
-using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
+// Define SL as alias for THE_LEVEL_TO_DISPATCH for use in this file
+constexpr SIMDLevel SL = THE_LEVEL_TO_DISPATCH;
+
+// Returns true if dimension d is compatible with the given SIMD level
+template <SIMDLevel SL2>
+constexpr bool is_dimension_compatible(size_t d) {
+    if constexpr (SL2 == SIMDLevel::AVX512) {
+        return d % 16 == 0;
+    } else if constexpr (SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
+        return d % 8 == 0;
+    } else {
+        return true; // SIMDLevel::NONE has no alignment requirements
+    }
+}
 
 /*******************************************************************
- * select_quantizer_1_body: the big switch returning SQuantizer*
+ * sq_select_quantizer: the big switch returning SQuantizer*
  *******************************************************************/
 
-template <SIMDLevel SL>
-ScalarQuantizer::SQuantizer* select_quantizer_1_body(
+template <>
+ScalarQuantizer::SQuantizer* sq_select_quantizer<THE_LEVEL_TO_DISPATCH>(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
+    // Return nullptr for incompatible dimensions in SIMD cases
+    if constexpr (SL != SIMDLevel::NONE) {
+        if (!is_dimension_compatible<SL>(d)) {
+            return nullptr;
+        }
+    }
     switch (qtype) {
         case ScalarQuantizer::QT_8bit:
             return new QuantizerTemplate<
-                    Codec8bit,
+                    Codec8bit<SL>,
                     QuantizerTemplateScaling::NON_UNIFORM,
                     SL>(d, trained);
         case ScalarQuantizer::QT_6bit:
             return new QuantizerTemplate<
-                    Codec6bit,
+                    Codec6bit<SL>,
                     QuantizerTemplateScaling::NON_UNIFORM,
                     SL>(d, trained);
         case ScalarQuantizer::QT_4bit:
             return new QuantizerTemplate<
-                    Codec4bit,
+                    Codec4bit<SL>,
                     QuantizerTemplateScaling::NON_UNIFORM,
                     SL>(d, trained);
         case ScalarQuantizer::QT_8bit_uniform:
             return new QuantizerTemplate<
-                    Codec8bit,
+                    Codec8bit<SL>,
                     QuantizerTemplateScaling::UNIFORM,
                     SL>(d, trained);
         case ScalarQuantizer::QT_4bit_uniform:
             return new QuantizerTemplate<
-                    Codec4bit,
+                    Codec4bit<SL>,
                     QuantizerTemplateScaling::UNIFORM,
                     SL>(d, trained);
         case ScalarQuantizer::QT_fp16:
@@ -109,84 +91,89 @@ ScalarQuantizer::SQuantizer* select_quantizer_1_body(
 }
 
 /*******************************************************************
- * select_distance_computer_body: the big switch returning
- * SQDistanceComputer*
+ * select_distance_computer_body: helper for sq_select_distance_computer
  *******************************************************************/
 
-template <class Sim>
+template <class Sim, SIMDLevel SL2>
 SQDistanceComputer* select_distance_computer_body(
-        QuantizerType qtype,
+        ScalarQuantizer::QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained) {
-    constexpr SIMDLevel SL = Sim::simd_level;
+    // Return nullptr for incompatible dimensions in SIMD cases
+    if constexpr (SL2 != SIMDLevel::NONE) {
+        if (!is_dimension_compatible<SL2>(d)) {
+            return nullptr;
+        }
+    }
     switch (qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return new DCTemplate<
                     QuantizerTemplate<
-                            Codec8bit,
+                            Codec8bit<SL2>,
                             QuantizerTemplateScaling::UNIFORM,
-                            SL>,
+                            SL2>,
                     Sim,
-                    SL>(d, trained);
+                    SL2>(d, trained);
 
         case ScalarQuantizer::QT_4bit_uniform:
             return new DCTemplate<
                     QuantizerTemplate<
-                            Codec4bit,
+                            Codec4bit<SL2>,
                             QuantizerTemplateScaling::UNIFORM,
-                            SL>,
+                            SL2>,
                     Sim,
-                    SL>(d, trained);
+                    SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
             return new DCTemplate<
                     QuantizerTemplate<
-                            Codec8bit,
+                            Codec8bit<SL2>,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SL>,
+                            SL2>,
                     Sim,
-                    SL>(d, trained);
+                    SL2>(d, trained);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
                     QuantizerTemplate<
-                            Codec6bit,
+                            Codec6bit<SL2>,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SL>,
+                            SL2>,
                     Sim,
-                    SL>(d, trained);
+                    SL2>(d, trained);
 
         case ScalarQuantizer::QT_4bit:
             return new DCTemplate<
                     QuantizerTemplate<
-                            Codec4bit,
+                            Codec4bit<SL2>,
                             QuantizerTemplateScaling::NON_UNIFORM,
-                            SL>,
+                            SL2>,
                     Sim,
-                    SL>(d, trained);
+                    SL2>(d, trained);
 
         case ScalarQuantizer::QT_fp16:
-            return new DCTemplate<QuantizerFP16<SL>, Sim, SL>(d, trained);
+            return new DCTemplate<QuantizerFP16<SL2>, Sim, SL2>(d, trained);
 
         case ScalarQuantizer::QT_bf16:
-            return new DCTemplate<QuantizerBF16<SL>, Sim, SL>(d, trained);
+            return new DCTemplate<QuantizerBF16<SL2>, Sim, SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit_direct:
-            if constexpr (SL == SIMDLevel::AVX512) {
+            if constexpr (SL2 == SIMDLevel::AVX512) {
                 if (d % 32 == 0) {
-                    return new DistanceComputerByte<Sim, SL>(
+                    return new DistanceComputerByte<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
-            } else if constexpr (SL == SIMDLevel::AVX2) {
+            } else if constexpr (SL2 == SIMDLevel::AVX2) {
                 if (d % 16 == 0) {
-                    return new DistanceComputerByte<Sim, SL>(
+                    return new DistanceComputerByte<Sim, SL2>(
                             static_cast<int>(d), trained);
                 }
             }
-            return new DCTemplate<Quantizer8bitDirect<SL>, Sim, SL>(d, trained);
+            return new DCTemplate<Quantizer8bitDirect<SL2>, Sim, SL2>(
+                    d, trained);
 
         case ScalarQuantizer::QT_8bit_direct_signed:
-            return new DCTemplate<Quantizer8bitDirectSigned<SL>, Sim, SL>(
+            return new DCTemplate<Quantizer8bitDirectSigned<SL2>, Sim, SL2>(
                     d, trained);
         default:
             FAISS_THROW_MSG("unknown qtype");
@@ -194,123 +181,30 @@ SQDistanceComputer* select_distance_computer_body(
 }
 
 /*******************************************************************
- * IVFSQScannerIP / IVFSQScannerL2 — moved from anonymous namespace
- * in ScalarQuantizer.cpp
+ * sq_select_distance_computer: returns SQDistanceComputer*
  *******************************************************************/
 
-namespace sq_internal {
-
-template <class DCClass>
-struct IVFSQScannerIP : InvertedListScanner {
-    DCClass dc;
-    bool by_residual;
-
-    float accu0; /// added to all distances
-
-    IVFSQScannerIP(
-            int d,
-            const std::vector<float>& trained,
-            size_t code_size,
-            bool store_pairs,
-            const IDSelector* sel,
-            bool by_residual)
-            : dc(d, trained), by_residual(by_residual), accu0(0) {
-        this->store_pairs = store_pairs;
-        this->sel = sel;
-        this->code_size = code_size;
-        this->keep_max = true;
+template <>
+SQDistanceComputer* sq_select_distance_computer<THE_LEVEL_TO_DISPATCH>(
+        MetricType metric,
+        ScalarQuantizer::QuantizerType qtype,
+        size_t d,
+        const std::vector<float>& trained) {
+    if (metric == METRIC_L2) {
+        return select_distance_computer_body<SimilarityL2<SL>, SL>(
+                qtype, d, trained);
+    } else {
+        return select_distance_computer_body<SimilarityIP<SL>, SL>(
+                qtype, d, trained);
     }
-
-    void set_query(const float* query) override {
-        dc.set_query(query);
-    }
-
-    void set_list(idx_t list_no, float coarse_dis) override {
-        this->list_no = list_no;
-        accu0 = by_residual ? coarse_dis : 0;
-    }
-
-    float distance_to_code(const uint8_t* code) const final {
-        return accu0 + dc.query_to_code(code);
-    }
-
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            ResultHandler& handler) const override {
-        return run_scan_codes_fix_C<CMin<float, idx_t>>(
-                *this, list_size, codes, ids, handler);
-    }
-};
-
-template <class DCClass>
-struct IVFSQScannerL2 : InvertedListScanner {
-    DCClass dc;
-
-    bool by_residual;
-    const Index* quantizer;
-    const float* x; /// current query
-
-    std::vector<float> tmp;
-
-    IVFSQScannerL2(
-            int d,
-            const std::vector<float>& trained,
-            size_t code_size,
-            const Index* quantizer,
-            bool store_pairs,
-            const IDSelector* sel,
-            bool by_residual)
-            : dc(d, trained),
-              by_residual(by_residual),
-              quantizer(quantizer),
-              x(nullptr),
-              tmp(d) {
-        this->store_pairs = store_pairs;
-        this->sel = sel;
-        this->code_size = code_size;
-    }
-
-    void set_query(const float* query) override {
-        x = query;
-        if (!quantizer) {
-            dc.set_query(query);
-        }
-    }
-
-    void set_list(idx_t list_no, float /*coarse_dis*/) override {
-        this->list_no = list_no;
-        if (by_residual) {
-            quantizer->compute_residual(x, tmp.data(), list_no);
-            dc.set_query(tmp.data());
-        } else {
-            dc.set_query(x);
-        }
-    }
-
-    float distance_to_code(const uint8_t* code) const final {
-        return dc.query_to_code(code);
-    }
-
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            ResultHandler& handler) const override {
-        return run_scan_codes_fix_C<CMax<float, idx_t>>(
-                *this, list_size, codes, ids, handler);
-    }
-};
-
-} // namespace sq_internal
+}
 
 /*******************************************************************
- * select_InvertedListScanner_body: the lambda chain
+ * sq_select_InvertedListScanner: returns InvertedListScanner*
  *******************************************************************/
 
-template <SIMDLevel SL>
-InvertedListScanner* select_InvertedListScanner_body(
+template <>
+InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
         QuantizerType qtype,
         MetricType mt,
         size_t d,
@@ -322,7 +216,7 @@ InvertedListScanner* select_InvertedListScanner_body(
         bool by_residual) {
     auto scan = [&]<class DCClass>() -> InvertedListScanner* {
         if constexpr (DCClass::Sim::metric_type == METRIC_L2) {
-            return new sq_internal::IVFSQScannerL2<DCClass>(
+            return new IVFSQScannerL2<DCClass>(
                     int(d),
                     trained,
                     code_size,
@@ -332,7 +226,7 @@ InvertedListScanner* select_InvertedListScanner_body(
                     by_residual);
         } else if constexpr (
                 DCClass::Sim::metric_type == METRIC_INNER_PRODUCT) {
-            return new sq_internal::IVFSQScannerIP<DCClass>(
+            return new IVFSQScannerIP<DCClass>(
                     int(d), trained, code_size, store_pairs, sel, by_residual);
         } else {
             FAISS_THROW_MSG("unsupported metric type");
@@ -341,11 +235,17 @@ InvertedListScanner* select_InvertedListScanner_body(
 
     auto select_by_simd_and_metric =
             [&]<SIMDLevel SL2, class Similarity>() -> InvertedListScanner* {
+        // Return nullptr for incompatible dimensions in SIMD cases
+        if constexpr (SL2 != SIMDLevel::NONE) {
+            if (!is_dimension_compatible<SL2>(d)) {
+                return nullptr;
+            }
+        }
         switch (qtype) {
             case ScalarQuantizer::QT_8bit_uniform:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
-                                Codec8bit,
+                                Codec8bit<SL2>,
                                 QuantizerTemplateScaling::UNIFORM,
                                 SL2>,
                         Similarity,
@@ -353,7 +253,7 @@ InvertedListScanner* select_InvertedListScanner_body(
             case ScalarQuantizer::QT_4bit_uniform:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
-                                Codec4bit,
+                                Codec4bit<SL2>,
                                 QuantizerTemplateScaling::UNIFORM,
                                 SL2>,
                         Similarity,
@@ -361,7 +261,7 @@ InvertedListScanner* select_InvertedListScanner_body(
             case ScalarQuantizer::QT_8bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
-                                Codec8bit,
+                                Codec8bit<SL2>,
                                 QuantizerTemplateScaling::NON_UNIFORM,
                                 SL2>,
                         Similarity,
@@ -369,7 +269,7 @@ InvertedListScanner* select_InvertedListScanner_body(
             case ScalarQuantizer::QT_4bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
-                                Codec4bit,
+                                Codec4bit<SL2>,
                                 QuantizerTemplateScaling::NON_UNIFORM,
                                 SL2>,
                         Similarity,
@@ -377,7 +277,7 @@ InvertedListScanner* select_InvertedListScanner_body(
             case ScalarQuantizer::QT_6bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
-                                Codec6bit,
+                                Codec6bit<SL2>,
                                 QuantizerTemplateScaling::NON_UNIFORM,
                                 SL2>,
                         Similarity,

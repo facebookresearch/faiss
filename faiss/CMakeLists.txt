@@ -250,7 +250,9 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/codecs.h
   impl/scalar_quantizer/distance_computers.h
   impl/scalar_quantizer/quantizers.h
+  impl/scalar_quantizer/scanners.h
   impl/scalar_quantizer/similarities.h
+  impl/scalar_quantizer/sq-dispatch.h
   impl/scalar_quantizer/sq-inl.h
   impl/scalar_quantizer/sq_impl.h
   impl/scalar_quantizer/training.h
