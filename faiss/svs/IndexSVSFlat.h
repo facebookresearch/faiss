@@ -26,6 +26,8 @@
 #include <faiss/Index.h>
 #include <faiss/svs/IndexSVSFaissUtils.h>
 
+#include <svs/runtime/flat_index.h>
+
 #include <iostream>
 
 namespace faiss {

@@ -62,7 +62,7 @@ outputs:
         - openblas =0.3.30 # [not x86_64]
         - libcuvs =25.10
         - cuda-version {{ cuda_constraints }}
-        - libsvs-runtime =0.1.0  # [x86_64 and linux]
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - mkl >=2024.2.2,<2025.0a0  # [x86_64]
@@ -72,7 +72,7 @@ outputs:
         - libcuvs =25.10
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
-        - libsvs-runtime =0.1.0  # [x86_64 and linux]
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
