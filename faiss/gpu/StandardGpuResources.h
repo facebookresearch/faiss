@@ -25,7 +25,8 @@
 
 #if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/host/pinned_memory_resource.hpp>
+#include <rmm/mr/device_memory_resource.hpp>
+#include <rmm/mr/pinned_host_memory_resource.hpp>
 #endif
 
 #include <faiss/gpu/GpuResources.h>
@@ -172,8 +173,8 @@ class StandardGpuResourcesImpl : public GpuResources {
     // managed_memory_resource
     std::unique_ptr<rmm::mr::device_memory_resource> mmr_;
 
-    // pinned_memory_resource
-    std::unique_ptr<rmm::mr::host_memory_resource> pmr_;
+    // pinned_host_memory_resource
+    std::unique_ptr<rmm::mr::pinned_host_memory_resource> pmr_;
 #endif
 
     /// Pinned memory allocation for use with this GPU

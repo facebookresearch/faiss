@@ -6,7 +6,7 @@ pre-release nightly builds.
 
 - The CPU-only faiss-cpu conda package is currently available on Linux (x86-64 and aarch64), OSX (arm64 only), and Windows (x86-64)
 - faiss-gpu, containing both CPU and GPU indices, is available on Linux (x86-64 only) for CUDA 11.4 and 12.1
-- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 25.10, is available on Linux (x86-64 only) for CUDA 12.4.
+- faiss-gpu-cuvs package containing GPU indices provided by [NVIDIA cuVS](https://github.com/rapidsai/cuvs/) version 26.02, is available on Linux (x86-64 only) for CUDA 12.4.
 
 To install the latest stable release:
 
@@ -97,7 +97,7 @@ The optional requirements are:
 - for AMD GPUs:
   - AMD ROCm,
 - for using NVIDIA cuVS implementations:
-  - libcuvs=25.10
+  - libcuvs=26.02
 - for the python bindings:
   - python 3,
   - numpy,
@@ -112,9 +112,9 @@ section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshoot
 
 The libcuvs dependency should be installed via conda:
 ```
-conda install -c rapidsai -c conda-forge -c nvidia libcuvs=25.10 'cuda-version=12.6'
+conda install -c rapidsai -c conda-forge -c nvidia libcuvs=26.02 'cuda-version=12.6'
 ```
-For more ways to install cuVS 25.10, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
+For more ways to install cuVS 26.02, refer to the [RAPIDS Installation Guide](https://docs.rapids.ai/install).
 
 ### Building with Intel(R) SVS
 
