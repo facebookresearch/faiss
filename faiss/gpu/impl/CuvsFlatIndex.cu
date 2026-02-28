@@ -91,7 +91,7 @@ void CuvsFlatIndex::query(
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        cuvsDistanceType distance = metricFaissToCuvs(metric, exactDistance);
+        auto distance = metricFaissToCuvs(metric, exactDistance);
 
         std::optional<raft::device_vector_view<const float, int64_t>>
                 norms_view = raft::make_device_vector_view(
