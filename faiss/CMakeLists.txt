@@ -110,7 +110,6 @@ set(FAISS_SRC
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
   impl/ScalarQuantizer.cpp
-  impl/scalar_quantizer/sq-generic.cpp
   impl/scalar_quantizer/training.cpp
   impl/index_read.cpp
   impl/index_write.cpp
@@ -250,9 +249,9 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/codecs.h
   impl/scalar_quantizer/distance_computers.h
   impl/scalar_quantizer/quantizers.h
+  impl/scalar_quantizer/scanners.h
   impl/scalar_quantizer/similarities.h
-  impl/scalar_quantizer/sq-inl.h
-  impl/scalar_quantizer/sq_impl.h
+  impl/scalar_quantizer/sq-dispatch.h
   impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h

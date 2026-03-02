@@ -18,13 +18,12 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_dispatch.h>
 
-#include <faiss/impl/scalar_quantizer/sq_impl.h>
+#include <faiss/impl/scalar_quantizer/scanners.h>
+
+#define THE_LEVEL_TO_DISPATCH SIMDLevel::NONE
+#include <faiss/impl/scalar_quantizer/sq-dispatch.h>
 
 namespace faiss {
-
-using scalar_quantizer::sq_select_distance_computer;
-using scalar_quantizer::sq_select_InvertedListScanner;
-using scalar_quantizer::sq_select_quantizer;
 
 /*******************************************************************
  * ScalarQuantizer implementation
@@ -116,12 +115,14 @@ void ScalarQuantizer::train(size_t n, const float* x) {
 ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
     return with_simd_level([&]<SIMDLevel SL>() -> SQuantizer* {
         if constexpr (SL != SIMDLevel::NONE) {
-            auto* q = sq_select_quantizer<SL>(qtype, d, trained);
+            auto* q = scalar_quantizer::sq_select_quantizer<SL>(
+                    qtype, d, trained);
             if (q) {
                 return q;
             }
         }
-        return sq_select_quantizer<SIMDLevel::NONE>(qtype, d, trained);
+        return scalar_quantizer::sq_select_quantizer<SIMDLevel::NONE>(
+                qtype, d, trained);
     });
 }
 
@@ -150,13 +151,13 @@ ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
     return with_simd_level([&]<SIMDLevel SL>() -> SQDistanceComputer* {
         if constexpr (SL != SIMDLevel::NONE) {
-            auto* dc =
-                    sq_select_distance_computer<SL>(metric, qtype, d, trained);
+            auto* dc = scalar_quantizer::sq_select_distance_computer<SL>(
+                    metric, qtype, d, trained);
             if (dc) {
                 return dc;
             }
         }
-        return sq_select_distance_computer<SIMDLevel::NONE>(
+        return scalar_quantizer::sq_select_distance_computer<SIMDLevel::NONE>(
                 metric, qtype, d, trained);
     });
 }
@@ -169,7 +170,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         bool by_residual) const {
     return with_simd_level([&]<SIMDLevel SL>() -> InvertedListScanner* {
         if constexpr (SL != SIMDLevel::NONE) {
-            auto* s = sq_select_InvertedListScanner<SL>(
+            auto* s = scalar_quantizer::sq_select_InvertedListScanner<SL>(
                     qtype,
                     mt,
                     d,
@@ -183,7 +184,7 @@ InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
                 return s;
             }
         }
-        return sq_select_InvertedListScanner<SIMDLevel::NONE>(
+        return scalar_quantizer::sq_select_InvertedListScanner<SIMDLevel::NONE>(
                 qtype,
                 mt,
                 d,
