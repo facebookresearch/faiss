@@ -15,9 +15,14 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/expanded_scanners.h>
 
 namespace faiss {
+
+using rabitq_utils::SignBitFactorsWithError;
 
 IndexIVFRaBitQ::IndexIVFRaBitQ(
         Index* quantizer,
@@ -44,7 +49,7 @@ IndexIVFRaBitQ::IndexIVFRaBitQ() {
 void IndexIVFRaBitQ::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     rabitq.train(n, x);
 }
 
@@ -182,7 +187,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// following codes come from this inverted list
-    void set_list(idx_t list_no, float coarse_dis) override {
+    void set_list(idx_t list_no, float /*coarse_dis*/) override {
         this->list_no = list_no;
 
         reconstructed_centroid.resize(ivf_rabitq.d);
@@ -193,8 +198,18 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// compute a single query-to-code distance
-    float distance_to_code(const uint8_t* code) const override {
+    float distance_to_code(const uint8_t* code) const final {
         return dc->distance_to_code(code);
+    }
+
+    // redefiniing the scan_codes allows to inline the distance_to_code
+    // (this is unlikely to matter because it contains a virtual function call)
+    size_t scan_codes_1bit(
+            size_t list_size,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const {
+        return run_scan_codes(*this, list_size, codes, ids, handler);
     }
 
     /// Override scan_codes to implement adaptive filtering for multi-bit codes
@@ -202,15 +217,12 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
+            ResultHandler& handler) const override {
         size_t ex_bits = ivf_rabitq.rabitq.nb_bits - 1;
 
         // For 1-bit codes, use default implementation
         if (ex_bits == 0 || rabitq_dc == nullptr) {
-            return InvertedListScanner::scan_codes(
-                    list_size, codes, ids, simi, idxi, k);
+            return scan_codes_1bit(list_size, codes, ids, handler);
         }
 
         // Multi-bit: Two-stage search with adaptive filtering
@@ -233,33 +245,33 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
             local_1bit_evaluations++;
 
-            // Stage 1: Compute lower bound using 1-bit codes
-            float lower_bound = rabitq_dc->lower_bound_distance(codes);
+            // Stage 1: Compute distance bound using 1-bit codes
+            // For L2 (min-heap): use lower_bound to safely skip if it's
+            //                    already worse than heap worst
+            // For IP (max-heap): use upper_bound because with a lower bound,
+            //                    we can't safely skip any candidate
+            float est_distance = rabitq_dc->distance_to_code_1bit(codes);
 
-            // Stage 2: Adaptive filtering
-            // L2 (min-heap): filter if lower_bound < simi[0]
-            // IP (max-heap): filter if lower_bound > simi[0]
-            // Note: Using simi[0] directly (not cached) enables more aggressive
-            // filtering as the heap is updated with better candidates
-            bool should_refine = keep_max ? (lower_bound > simi[0])
-                                          : (lower_bound < simi[0]);
+            // Extract f_error and g_error for filtering
+            size_t code_size_base = (ivf_rabitq.d + 7) / 8;
+            const rabitq_utils::SignBitFactorsWithError* base_fac =
+                    reinterpret_cast<
+                            const rabitq_utils::SignBitFactorsWithError*>(
+                            codes + code_size_base);
 
+            bool should_refine = rabitq_utils::should_refine_candidate(
+                    est_distance,
+                    base_fac->f_error,
+                    rabitq_dc->g_error,
+                    handler.threshold,
+                    keep_max);
             if (should_refine) {
                 local_multibit_evaluations++;
                 // Lower bound is promising, compute full distance
                 float dis = distance_to_code(codes);
+                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                // Check if distance improves heap
-                bool improves_heap =
-                        keep_max ? (dis > simi[0]) : (dis < simi[0]);
-
-                if (improves_heap) {
-                    int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                    if (keep_max) {
-                        minheap_replace_top(k, simi, idxi, dis, id);
-                    } else {
-                        maxheap_replace_top(k, simi, idxi, dis, id);
-                    }
+                if (handler.add_result(dis, id)) {
                     nup++;
                 }
             }

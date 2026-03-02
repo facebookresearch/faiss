@@ -214,7 +214,16 @@ struct IndexFastScan : Index {
      *
      * @return  pointer to the code packer
      */
-    CodePacker* get_CodePacker() const;
+    virtual CodePacker* get_CodePacker() const;
+
+    /** Get stride in bytes between consecutive SIMD blocks.
+     *
+     * Derived from get_CodePacker()->block_size so that there is a
+     * single source of truth for the block layout.
+     *
+     * @return stride in bytes
+     */
+    size_t get_block_stride() const;
 
     /** Merge another index into this one
      *

@@ -470,6 +470,18 @@ class Kmeans:
        round centroids coordinates to integer
     seed: int, optional
        seed for the random number generator
+    init_method: ClusteringInitMethod, optional
+       centroid initialization method:
+       - ClusteringInitMethod_RANDOM: uniform random sampling (default)
+       - ClusteringInitMethod_KMEANS_PLUS_PLUS: k-means++ D²-weighted sampling,
+         selects centroids with probability proportional to squared distance
+         from existing centroids. Better quality but O(nkd) complexity.
+       - ClusteringInitMethod_AFK_MC2: Assumption-Free K-MC², MCMC-based
+         approximation using Metropolis-Hastings. Good quality with lower
+         complexity than k-means++ for large k.
+    afkmc2_chain_length: int, optional
+       chain length for AFK-MC² initialization (default 50). Longer chains
+       give better approximation to k-means++ but are slower.
 
     """
 

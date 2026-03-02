@@ -13,6 +13,7 @@ set(FAISS_C_SRC
   AutoTune_c.cpp
   Clustering_c.cpp
   IndexFlat_c.cpp
+  IndexHNSW_c.cpp
   IndexIVFFlat_c.cpp
   IndexIVF_c.cpp
   IndexLSH_c.cpp

@@ -290,5 +290,68 @@ void set_bit_fastscan(uint8_t* code, size_t bit_index) {
     }
 }
 
+size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
+    const size_t ex_bits = nb_bits - 1;
+    if (ex_bits == 0) {
+        return sizeof(SignBitFactors);
+    } else {
+        return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
+                (d * ex_bits + 7) / 8;
+    }
+}
+
+void populate_block_aux_from_flat_storage(
+        const std::vector<uint8_t>& flat_storage,
+        AlignedTable<uint8_t>& codes,
+        size_t num_vectors,
+        size_t bbs,
+        size_t M2,
+        size_t old_block_stride,
+        size_t new_block_stride,
+        size_t storage_size,
+        const int64_t* id_map) {
+    if (flat_storage.empty() || num_vectors == 0) {
+        return;
+    }
+
+    const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+    const size_t n_blocks = (num_vectors + bbs - 1) / bbs;
+
+    if (old_block_stride < new_block_stride) {
+        AlignedTable<uint8_t> old_data;
+        old_data.resize(codes.size());
+        memcpy(old_data.data(), codes.data(), codes.size());
+
+        codes.resize(n_blocks * new_block_stride);
+        memset(codes.data(), 0, n_blocks * new_block_stride);
+        for (size_t b = 0; b < n_blocks; b++) {
+            memcpy(codes.data() + b * new_block_stride,
+                   old_data.data() + b * old_block_stride,
+                   packed_block_size);
+        }
+    }
+
+    for (size_t offset = 0; offset < num_vectors; offset++) {
+        const int64_t global_id =
+                id_map ? id_map[offset] : static_cast<int64_t>(offset);
+        FAISS_THROW_IF_NOT_MSG(
+                global_id >= 0 &&
+                        static_cast<size_t>(global_id) * storage_size +
+                                        storage_size <=
+                                flat_storage.size(),
+                "global_id out of bounds for flat_storage during migration");
+
+        const uint8_t* src = flat_storage.data() + global_id * storage_size;
+        uint8_t* dst = get_block_aux_ptr(
+                codes.data(),
+                offset,
+                bbs,
+                packed_block_size,
+                new_block_stride,
+                storage_size);
+        memcpy(dst, src, storage_size);
+    }
+}
+
 } // namespace rabitq_utils
 } // namespace faiss

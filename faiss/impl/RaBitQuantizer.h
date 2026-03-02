@@ -103,10 +103,8 @@ struct RaBitQuantizer : Quantizer {
 //
 // 1. distance_to_code_1bit() - Fast 1-bit filtering using only sign bits
 // 2. distance_to_code_full() - Accurate multi-bit refinement using all bits
-// 3. lower_bound_distance() - Error-bounded adaptive filtering
-//                              (based on 1-bit estimator)
 //
-// These three methods implement RaBitQ's two-stage search pattern and are
+// These methods implement RaBitQ's two-stage search pattern and are
 // shared between the quantized (Q) and non-quantized (NotQ) query variants.
 // The intermediate class allows two-stage search code to work with both
 // variants via a single dynamic_cast.
@@ -116,8 +114,8 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
     MetricType metric_type = MetricType::METRIC_L2;
     size_t nb_bits = 1;
 
-    // Query norm for lower bound computation (g_error in rabitq-library)
-    // This is the L2 norm of the rotated query: ||query - centroid||
+    // Query error factor for bound computation (g_error in rabitq-library)
+    // Used with f_error to compute error bounds for two-stage filtering
     float g_error = 0.0f;
 
     float symmetric_dis(idx_t /*i*/, idx_t /*j*/) override {
@@ -130,11 +128,6 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
 
     // Compute full multi-bit distance (accurate)
     virtual float distance_to_code_full(const uint8_t* code) = 0;
-
-    // Compute lower bound of distance using error bounds
-    // Guarantees: actual_distance >= lower_bound_distance
-    // Used for adaptive filtering in two-stage search
-    virtual float lower_bound_distance(const uint8_t* code);
 
     // Override from FlatCodesDistanceComputer
     // Delegates to distance_to_code_full() for multi-bit distance computation

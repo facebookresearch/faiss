@@ -27,6 +27,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
@@ -142,7 +143,7 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                VisitedTable vt(ntotal);
+                VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
@@ -265,7 +266,7 @@ void hnsw_search(
 
 #pragma omp parallel if (i1 - i0 > 1)
         {
-            VisitedTable vt(index->ntotal);
+            VisitedTable vt(index->ntotal, hnsw.use_visited_hashset);
             typename BlockResultHandler::SingleResultHandler res(bres);
 
             std::unique_ptr<DistanceComputer> dis(
@@ -331,6 +332,14 @@ void IndexHNSW::range_search(
             result->distances[i] = -result->distances[i];
         }
     }
+}
+
+void IndexHNSW::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params) const {
+    SingleQueryBlockResultHandler<HNSW::C, false> bres(handler);
+    hnsw_search(this, 1, x, bres, params);
 }
 
 void IndexHNSW::add(idx_t n, const float* x) {
@@ -428,7 +437,7 @@ void IndexHNSW::search_level_0(
         std::unique_ptr<DistanceComputer> qdis(
                 storage_distance_computer(storage));
         HNSWStats search_stats;
-        VisitedTable vt(ntotal);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
         RH::SingleResultHandler res(bres);
 
 #pragma omp for
@@ -516,7 +525,7 @@ void IndexHNSW::init_level_0_from_entry_points(
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
@@ -616,7 +625,7 @@ void IndexHNSW::link_singletons() {
 
     std::vector<float> recons(singletons.size() * d);
     for (int i = 0; i < singletons.size(); i++) {
-        FAISS_ASSERT(!"not implemented");
+        FAISS_ASSERT(false); // not implemented
     }
 }
 
@@ -653,33 +662,8 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
 
-void IndexHNSWFlatPanorama::compute_cum_sums(
-        const float* x,
-        float* dst_cum_sums,
-        int d,
-        int num_panorama_levels,
-        int panorama_level_width) {
-    // Iterate backwards through levels, accumulating sum as we go.
-    // This avoids computing the suffix sum for each vector, which takes
-    // extra memory.
-
-    float sum = 0.0f;
-    dst_cum_sums[num_panorama_levels] = 0.0f;
-    for (int level = num_panorama_levels - 1; level >= 0; level--) {
-        int start_idx = level * panorama_level_width;
-        int end_idx = std::min(start_idx + panorama_level_width, d);
-        for (int j = start_idx; j < end_idx; j++) {
-            sum += x[j] * x[j];
-        }
-        dst_cum_sums[level] = std::sqrt(sum);
-    }
-}
-
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
-        : IndexHNSWFlat(),
-          cum_sums(),
-          panorama_level_width(0),
-          num_panorama_levels(0) {}
+        : IndexHNSWFlat(), cum_sums(), pano(0, 1, 1), num_panorama_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d,
@@ -688,8 +672,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         MetricType metric)
         : IndexHNSWFlat(d, M, metric),
           cum_sums(),
-          panorama_level_width(
-                  (d + num_panorama_levels - 1) / num_panorama_levels),
+          pano(d * sizeof(float), num_panorama_levels, 1),
           num_panorama_levels(num_panorama_levels) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
@@ -704,18 +687,8 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
     idx_t n0 = ntotal;
-    cum_sums.resize((ntotal + n) * (num_panorama_levels + 1));
-
-    for (size_t idx = 0; idx < n; idx++) {
-        const float* vector = x + idx * d;
-        compute_cum_sums(
-                vector,
-                &cum_sums[(n0 + idx) * (num_panorama_levels + 1)],
-                d,
-                num_panorama_levels,
-                panorama_level_width);
-    }
-
+    cum_sums.resize((ntotal + n) * (pano.n_levels + 1));
+    pano.compute_cumulative_sums(cum_sums.data(), n0, n, x);
     IndexHNSWFlat::add(n, x);
 }
 
@@ -725,13 +698,13 @@ void IndexHNSWFlatPanorama::reset() {
 }
 
 void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
-    std::vector<float> new_cum_sums(ntotal * (num_panorama_levels + 1));
+    std::vector<float> new_cum_sums(ntotal * (pano.n_levels + 1));
 
     for (idx_t i = 0; i < ntotal; i++) {
         idx_t src = perm[i];
-        memcpy(&new_cum_sums[i * (num_panorama_levels + 1)],
-               &cum_sums[src * (num_panorama_levels + 1)],
-               (num_panorama_levels + 1) * sizeof(float));
+        memcpy(&new_cum_sums[i * (pano.n_levels + 1)],
+               &cum_sums[src * (pano.n_levels + 1)],
+               (pano.n_levels + 1) * sizeof(float));
     }
 
     std::swap(cum_sums, new_cum_sums);
@@ -903,7 +876,8 @@ void IndexHNSW2Level::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            // visited table (not hash set) for tri-state flags.
+            VisitedTable vt(ntotal, /*use_hashset=*/false);
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
 

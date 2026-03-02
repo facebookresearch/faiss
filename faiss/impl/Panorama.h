@@ -10,6 +10,7 @@
 #ifndef FAISS_PANORAMA_H
 #define FAISS_PANORAMA_H
 
+#include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/PanoramaStats.h>
 #include <faiss/utils/distances.h>
@@ -67,7 +68,7 @@ struct Panorama {
             float* cumsum_base,
             size_t offset,
             size_t n_entry,
-            const float* vectors);
+            const float* vectors) const;
 
     /// Compute the cumulative sums of the query vector.
     void compute_query_cum_sums(const float* query, float* query_cum_sums)
@@ -97,7 +98,7 @@ struct Panorama {
     /// 4. After all levels, survivors are exact distances; update heap.
     /// This achieves early termination while maintaining SIMD-friendly
     /// sequential access patterns in the level-oriented storage layout.
-    template <typename C>
+    template <typename C, MetricType M>
     size_t progressive_filter_batch(
             const uint8_t* codes_base,
             const float* cum_sums,
@@ -116,7 +117,7 @@ struct Panorama {
     void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
 
-template <typename C>
+template <typename C, MetricType M>
 size_t Panorama::progressive_filter_batch(
         const uint8_t* codes_base,
         const float* cum_sums,
@@ -151,7 +152,12 @@ size_t Panorama::progressive_filter_batch(
 
         active_indices[num_active] = i;
         float cum_sum = batch_cum_sums[i];
-        exact_distances[i] = cum_sum * cum_sum + q_norm;
+
+        if constexpr (M == METRIC_INNER_PRODUCT) {
+            exact_distances[i] = 0.0f;
+        } else {
+            exact_distances[i] = cum_sum * cum_sum + q_norm;
+        }
 
         num_active += include;
     }
@@ -183,10 +189,20 @@ size_t Panorama::progressive_filter_batch(
             float dot_product =
                     fvec_inner_product(query_level, yj, actual_level_width);
 
-            exact_distances[idx] -= 2.0f * dot_product;
+            if constexpr (M == METRIC_INNER_PRODUCT) {
+                exact_distances[idx] += dot_product;
+            } else {
+                exact_distances[idx] -= 2.0f * dot_product;
+            }
 
             float cum_sum = level_cum_sums[idx];
-            float cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
+            float cauchy_schwarz_bound;
+            if constexpr (M == METRIC_INNER_PRODUCT) {
+                cauchy_schwarz_bound = -cum_sum * query_cum_norm;
+            } else {
+                cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
+            }
+
             float lower_bound = exact_distances[idx] - cauchy_schwarz_bound;
 
             active_indices[next_active] = idx;

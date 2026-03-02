@@ -37,13 +37,13 @@ namespace faiss {
 struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
-    AdditiveQuantizer* aq;
+    AdditiveQuantizer* aq{};
 
     bool rescale_norm = false;
     int norm_scale = 1;
 
     // max number of training vectors
-    size_t max_train_points;
+    size_t max_train_points{};
 
     IndexIVFAdditiveQuantizerFastScan(
             Index* quantizer,

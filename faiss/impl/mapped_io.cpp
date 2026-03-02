@@ -34,8 +34,15 @@ struct MmappedFileMappingOwner::PImpl {
     size_t ptr_size = 0;
 
     explicit PImpl(const std::string& filename) {
-        auto f = std::unique_ptr<FILE, decltype(&fclose)>(
-                fopen(filename.c_str(), "r"), &fclose);
+        struct FileDeleter {
+            void operator()(FILE* f) const {
+                if (f)
+                    fclose(f);
+            }
+        };
+
+        auto f = std::unique_ptr<FILE, FileDeleter>(
+                fopen(filename.c_str(), "r"), FileDeleter{});
         FAISS_THROW_IF_NOT_FMT(
                 f.get(),
                 "could not open %s for reading: %s",

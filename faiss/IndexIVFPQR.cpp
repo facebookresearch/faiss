@@ -11,6 +11,7 @@
 
 #include <cinttypes>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
@@ -128,7 +129,7 @@ void IndexIVFPQR::search_preassigned(
         IndexIVFStats* stats) const {
     uint64_t t0;
     TIC;
-    size_t k_coarse = long(k * k_factor);
+    size_t k_coarse = long((size_t)k * k_factor);
     std::unique_ptr<idx_t[]> coarse_labels(new idx_t[k_coarse * n]);
     {
         // query with quantizer levels 1 and 2.

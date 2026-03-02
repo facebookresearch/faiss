@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 function(link_to_faiss_lib target)
-  if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr" AND NOT FAISS_OPT_LEVEL STREQUAL "sve")
+  if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr" AND NOT FAISS_OPT_LEVEL STREQUAL "sve" AND NOT FAISS_OPT_LEVEL STREQUAL "dd")
     target_link_libraries(${target} PRIVATE faiss)
   endif()
 
@@ -62,5 +62,27 @@ function(link_to_faiss_lib target)
       # TODO: support Windows
     endif()
     target_link_libraries(${target} PRIVATE faiss_sve)
+  endif()
+
+  if(FAISS_OPT_LEVEL STREQUAL "dd")
+    # DD mode: link to main faiss library with DD-specific definitions
+    # When FAISS_OPT_LEVEL=dd, the main faiss library is built with DD enabled,
+    # so we link to faiss (not a separate faiss_dd).
+    # FAISS_ENABLE_DD exposes SIMDConfig class to consuming code (e.g., tests)
+    # COMPILE_SIMD_* flags enable DD code paths in headers (architecture-specific)
+    # Note: No SIMD compile flags here - DD handles dispatch internally.
+    # Special tests (like test_simd_levels.cpp) that use raw intrinsics
+    # should get their own SIMD flags via set_source_files_properties.
+    #
+    # Architecture-specific definitions mirror simd_dispatch.bzl dispatch_config:
+    # - x86_64: AVX2 + AVX512 enabled
+    # - aarch64: ARM_NEON enabled
+    target_compile_definitions(${target} PRIVATE FAISS_ENABLE_DD)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+      target_compile_definitions(${target} PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+      target_compile_definitions(${target} PRIVATE COMPILE_SIMD_ARM_NEON)
+    endif()
+    target_link_libraries(${target} PRIVATE faiss)
   endif()
 endfunction()

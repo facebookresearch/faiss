@@ -9,13 +9,15 @@
 
 #pragma once
 
+#include <optional>
 #include <vector>
-#include "faiss/Index.h"
 
+#include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -47,6 +49,9 @@ struct IndexHNSW : Index {
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
 
+    // See impl/VisitedTable.h.
+    std::optional<bool> use_visited_hashset;
+
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
 
@@ -72,6 +77,12 @@ struct IndexHNSW : Index {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
+
+    /** search one vector with a custom result handler */
+    void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
 
     void reconstruct(idx_t key, float* recons) const override;
 
@@ -164,20 +175,11 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
 
     /// Inline for performance - called frequently in search hot path.
     const float* get_cum_sum(idx_t i) const {
-        return cum_sums.data() + i * (num_panorama_levels + 1);
+        return cum_sums.data() + i * (pano.n_levels + 1);
     }
 
-    /// Compute cumulative sums for a vector (used both for database points and
-    /// queries).
-    static void compute_cum_sums(
-            const float* x,
-            float* dst_cum_sums,
-            int d,
-            int num_panorama_levels,
-            int panorama_level_width);
-
     std::vector<float> cum_sums;
-    const size_t panorama_level_width;
+    Panorama pano;
     const size_t num_panorama_levels;
 };
 

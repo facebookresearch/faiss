@@ -12,7 +12,7 @@
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
-#include "faiss/Index.h"
+#include <stdexcept>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>

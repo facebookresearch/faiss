@@ -43,7 +43,6 @@
 #include <raft/core/operators.hpp>
 #include <raft/core/temporary_device_buffer.hpp>
 #include <raft/linalg/unary_op.cuh>
-#include <raft/neighbors/brute_force.cuh>
 #endif
 
 namespace faiss {

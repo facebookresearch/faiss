@@ -35,13 +35,22 @@ INDEX_TYPES = [
     "OPQ16_64,Flat",
     "PCA30,IVF256(PQ15),Flat",
     # RaBitQ indexes
-    "RaBitQ",
-    "IVF256,RaBitQ",
-    "IVF256,RaBitQ4",  # multibit
-    "RaBitQfs",
-    "RaBitQfs_64",  # batch size 64
-    "IVF256,RaBitQfs",
-    "IVF256,RaBitQfs_64",  # batch size 64
+    "RaBitQ",  # regular
+    "IVF256,RaBitQ",  # IVF
+    "IVF256,RaBitQ4",  # IVF multibit
+    # RaBitQ FastScan indexes are temporarily disabled because D93538118
+    # changed the serialization format (fourcc "Irfs"->"Irfn", "Iwrf"->"Iwrn")
+    # by embedding auxiliary data directly into SIMD blocks. The conda
+    # faiss-cpu=1.13.2 reader does not understand the new format.
+    # Re-enable these once a new conda release includes the new format.
+    # "RaBitQfs",  # FS
+    # "RaBitQfs_64",  # FS, batch size 64
+    # "IVF256,RaBitQfs",  # IVF FS
+    # "IVF256,RaBitQfs_64",  # IVF FS, batch size 64
+    # "RaBitQfs6",  # multibit FS
+    # "RaBitQfs4_64",  # multibit FS, batch size 64
+    # "IVF256,RaBitQfs3",  # IVF FS multibit
+    # "IVF256,RaBitQfs7_64",  # IVF FS multibit, batch size 64
     # HNSW indexes
     "HNSW32",
     "HNSW32_SQ8",
@@ -99,6 +108,9 @@ INDEX_TYPES = [
     "IVF256,FlatPanorama8",
     "FlatL2Panorama8",
     "FlatL2Panorama8_256",
+    "HNSW32_FlatPanorama",
+    "HNSW16_FlatPanorama12",
+    "IVF32,Flat,RefinePanorama(PQ16x4)",
 ]
 
 INDEX_BINARY_TYPES = [

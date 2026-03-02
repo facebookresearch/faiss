@@ -41,12 +41,16 @@ class TestSearch(unittest.TestCase):
     # hopefully the jitter in executtion time will not produce
     # too many spurious test failures. Unoptimized timings are
     # not exploitable, hence the flag test on that as well.
+    # TODO(DD): Add DD dispatch to fast_scan (pq4_fast_scan.cpp) and remove
+    # the "DD" exclusion below. Currently fast_scan is compiled with SSE4-only
+    # flags in DD mode, so it doesn't benefit from AVX2/AVX512 SIMD.
     @unittest.skipUnless(
         ('AVX2' in faiss.get_compile_options() or
         'AVX512' in faiss.get_compile_options() or
         'NEON' in faiss.get_compile_options()) and
-        "OPTIMIZE" in faiss.get_compile_options(),
-        "only test while building with avx2 or neon")
+        "OPTIMIZE" in faiss.get_compile_options() and
+        "DD" not in faiss.get_compile_options(),
+        "only test in static mode with avx2 or neon (DD lacks fast_scan dispatch)")
     def test_PQ4_speed(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()

@@ -374,8 +374,8 @@ class TestSQByte(unittest.TestCase):
         index.add(xb)
         D, I = index.search(xq, 10)
 
-        assert np.all(I == Iref)
-        assert np.all(D == Dref)
+        np.testing.assert_array_equal(D, Dref)
+        np.testing.assert_array_equal(I, Iref)
 
     def test_8bit_direct(self):
         for quantizer in faiss.ScalarQuantizer.QT_8bit_direct, faiss.ScalarQuantizer.QT_8bit_direct_signed:
