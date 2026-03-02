@@ -41,7 +41,7 @@ INDEX_TYPES = [
     # RaBitQ FastScan indexes are temporarily disabled because D93538118
     # changed the serialization format (fourcc "Irfs"->"Irfn", "Iwrf"->"Iwrn")
     # by embedding auxiliary data directly into SIMD blocks. The conda
-    # faiss-cpu=1.13.2 reader does not understand the new format.
+    # faiss-cpu=1.14.0 reader does not understand the new format.
     # Re-enable these once a new conda release includes the new format.
     # "RaBitQfs",  # FS
     # "RaBitQfs_64",  # FS, batch size 64
