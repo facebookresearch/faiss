@@ -179,6 +179,15 @@ class TestRaBitQFastScan(unittest.TestCase):
                     np.testing.assert_array_equal(Dref, Dnew)
                     np.testing.assert_array_equal(Iref, Inew)
 
+                # Verify deserialized index is serializable again
+                b2 = faiss.serialize_index(index2)
+                index3 = faiss.deserialize_index(b2)
+                if use_ivf:
+                    index3.nprobe = self.NPROBE
+                Dnew3, Inew3 = index3.search(ds.get_queries(), 10)
+                np.testing.assert_array_equal(Dref, Dnew3)
+                np.testing.assert_array_equal(Iref, Inew3)
+
     # ==================== Memory Management Tests ====================
 
     def test_memory_management(self):
@@ -754,6 +763,14 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        index3.qb = qb
+                        D3, I3 = index3.search(ds.get_queries(), 5)
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     def test_ivf_serialization(self):
         """Test IVF serialization preserves results."""
         ds = datasets.SyntheticDataset(64, 1000, 500, 20)
@@ -778,6 +795,13 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     self.assertEqual(index2.rabitq.nb_bits, nb_bits)
                     np.testing.assert_array_equal(I1, I2)
                     np.testing.assert_allclose(D1, D2, rtol=1e-5)
+
+                    # Verify deserialized index is serializable again
+                    index_bytes2 = faiss.serialize_index(index2)
+                    index3 = faiss.deserialize_index(index_bytes2)
+                    D3, I3 = index3.search(ds.get_queries(), 10)
+                    np.testing.assert_array_equal(I1, I3)
+                    np.testing.assert_allclose(D1, D3, rtol=1e-5)
 
     # ==================== Reconstruction Tests ====================
 

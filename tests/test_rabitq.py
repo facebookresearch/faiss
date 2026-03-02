@@ -595,6 +595,13 @@ def do_test_serde(description):
     np.testing.assert_equal(Dref, Dnew)
     np.testing.assert_equal(Iref, Inew)
 
+    # Verify deserialized index is serializable again
+    b2 = faiss.serialize_index(index2)
+    index3 = faiss.deserialize_index(b2)
+    Dnew3, Inew3 = index3.search(ds.get_queries(), 10)
+    np.testing.assert_equal(Dref, Dnew3)
+    np.testing.assert_equal(Iref, Inew3)
+
 
 class TestMultiBitRaBitQ(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ.
@@ -769,6 +776,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     # ==================== IVF Tests ====================
 
     def test_ivf_basic_operations(self):
@@ -856,6 +872,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
 
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
+
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
 
     # ==================== Query Quantization Tests ====================
 

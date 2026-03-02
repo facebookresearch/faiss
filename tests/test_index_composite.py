@@ -202,6 +202,11 @@ class TestRemove(unittest.TestCase):
         else:
             assert False, 'should have raised an exception'
 
+        # Verify deserialized index is serializable again
+        index2 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index))
+        assert index2.reconstruct(1004)[0] == 104
+
 
 class TestRangeSearch(unittest.TestCase):
 
@@ -466,6 +471,11 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dst, Ist = index_st.search(xq, 20)
 
         check_ref_knn_with_draws(Dnew, Inew, Dst, Ist)
+
+        # Verify deserialized index is serializable again
+        index_st2 = faiss.deserialize_index(faiss.serialize_index(index_st))
+        Dst2, Ist2 = index_st2.search(xq, 20)
+        check_ref_knn_with_draws(Dnew, Inew, Dst2, Ist2)
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
@@ -811,6 +821,12 @@ class TestIndependentQuantizer(unittest.TestCase):
 
         np.testing.assert_array_equal(Dnew, D2)
         np.testing.assert_array_equal(Inew, I2)
+
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index(faiss.serialize_index(index2))
+        D3, I3 = index3.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Dnew, D3)
+        np.testing.assert_array_equal(Inew, I3)
 
 
 
