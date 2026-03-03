@@ -260,7 +260,8 @@ void GpuIndexBinaryCagra::searchImpl_(
             params->hashmap_min_bitlen,
             params->hashmap_max_fill_rate,
             params->num_random_samplings,
-            params->seed);
+            params->seed,
+            params->sel);
 
     if (not search_params) {
         delete params;

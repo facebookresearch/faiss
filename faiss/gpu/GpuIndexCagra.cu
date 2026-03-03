@@ -228,7 +228,8 @@ void GpuIndexCagra::searchImpl_ex_(
                 params->hashmap_min_bitlen,
                 params->hashmap_max_fill_rate,
                 params->num_random_samplings,
-                params->seed);
+                params->seed,
+                params->sel);
 
     } else if (numeric_type == NumericType::Float16) {
         Tensor<half, 2, true> queries(
@@ -251,7 +252,8 @@ void GpuIndexCagra::searchImpl_ex_(
                 params->hashmap_min_bitlen,
                 params->hashmap_max_fill_rate,
                 params->num_random_samplings,
-                params->seed);
+                params->seed,
+                params->sel);
     } else if (numeric_type == NumericType::Int8) {
         Tensor<int8_t, 2, true> queries(
                 const_cast<int8_t*>(static_cast<const int8_t*>(x)),
@@ -274,7 +276,8 @@ void GpuIndexCagra::searchImpl_ex_(
                 params->hashmap_min_bitlen,
                 params->hashmap_max_fill_rate,
                 params->num_random_samplings,
-                params->seed);
+                params->seed,
+                params->sel);
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::searchImpl_ unsupported data type");
     }

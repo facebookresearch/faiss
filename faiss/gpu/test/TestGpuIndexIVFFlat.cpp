@@ -28,6 +28,7 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <sstream>
@@ -907,6 +908,86 @@ TEST(TestGpuIndexIVFFlat, Reconstruct_n) {
     gpuIndex2.reconstruct_n(0, gpuIndex2.ntotal, gpuVals.data());
 
     EXPECT_EQ(gpuVals, cpuVals);
+}
+
+void testIDSelectorType(
+        faiss::gpu::GpuIndexIVFFlat& gpuIndex,
+        faiss::IDSelector* selector,
+        const std::vector<float>& queryVecs,
+        int numQuery,
+        int k,
+        int nprobe,
+        const std::string& selectorName) {
+    faiss::SearchParametersIVF search_params;
+    search_params.nprobe = nprobe;
+    search_params.sel = selector;
+
+    std::vector<float> distances(numQuery * k);
+    std::vector<faiss::idx_t> labels(numQuery * k);
+
+    gpuIndex.search(
+            numQuery,
+            queryVecs.data(),
+            k,
+            distances.data(),
+            labels.data(),
+            &search_params);
+    // Verify all returned labels are valid members of the selector
+    for (int i = 0; i < numQuery * k; ++i) {
+        if (labels[i] >= 0) {
+            EXPECT_TRUE(selector->is_member(labels[i]))
+                    << "Label " << labels[i] << "@ " << i << " not in "
+                    << selectorName << " selector";
+        }
+    }
+}
+
+void testIDSelectorIVFFlat(faiss::MetricType metricType) {
+    Options opt;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    faiss::IndexFlatL2 quantizerL2(opt.dim);
+    faiss::IndexFlatIP quantizerIP(opt.dim);
+    faiss::Index* quantizer = metricType == faiss::METRIC_L2
+            ? (faiss::Index*)&quantizerL2
+            : (faiss::Index*)&quantizerIP;
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = 0;
+    config.use_cuvs = true;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, opt.dim, opt.numCentroids, metricType, config);
+    gpuIndex.nprobe = opt.nprobe;
+
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+    gpuIndex.add(opt.numAdd, addVecs.data());
+
+    auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+    faiss::gpu::TestIDSelectorStruct selector_struct(opt.numAdd);
+    for (auto& [selectorName, selector] : selector_struct.selector_map) {
+        testIDSelectorType(
+                gpuIndex,
+                selector.get(),
+                queryVecs,
+                opt.numQuery,
+                opt.k,
+                opt.nprobe,
+                selectorName);
+    }
+}
+
+TEST(TestGpuIndexIVFFlat, IDSelector_L2) {
+    testIDSelectorIVFFlat(faiss::METRIC_L2);
+}
+
+TEST(TestGpuIndexIVFFlat, IDSelector_IP) {
+    testIDSelectorIVFFlat(faiss::METRIC_INNER_PRODUCT);
 }
 
 int main(int argc, char** argv) {

@@ -21,6 +21,7 @@
  * limitations under the License.
  */
 
+#include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsFlatIndex.cuh>
 #include <faiss/gpu/utils/ConversionOperators.cuh>
@@ -28,6 +29,7 @@
 #include <optional>
 #include <vector>
 
+#include <cuvs/core/bitset.hpp>
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
@@ -53,7 +55,8 @@ void CuvsFlatIndex::query(
         float metricArg,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
-        bool exactDistance) {
+        bool exactDistance,
+        const IDSelector* sel) {
     /**
      * cuVS doesn't yet support half-precision in bfknn.
      * Use FlatIndex for float16 for now
@@ -72,7 +75,8 @@ void CuvsFlatIndex::query(
                 metricArg,
                 outDistances,
                 outIndices,
-                exactDistance);
+                exactDistance,
+                sel);
     } else {
         raft::device_resources& handle =
                 resources_->getRaftHandleCurrentDevice();
@@ -99,7 +103,28 @@ void CuvsFlatIndex::query(
 
         cuvs::neighbors::brute_force::index idx(
                 handle, index, norms_view, distance, metricArg);
-        cuvs::neighbors::brute_force::search(handle, idx, search, inds, dists);
+
+        std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
+        std::optional<
+                cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
+                bitset_filter_cuvs;
+        cuvs::neighbors::filtering::none_sample_filter none_filter;
+
+        if (sel) {
+            bitset_cuvs = cuvs::core::bitset<uint32_t, int64_t>(
+                    handle, vectors_.getSize(0), false);
+            faiss::gpu::convert_to_bitset(
+                    resources_, *sel, bitset_cuvs->view());
+            bitset_filter_cuvs.emplace(bitset_cuvs->view());
+        }
+        const cuvs::neighbors::filtering::base_filter& filter_ref = sel
+                ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                          bitset_filter_cuvs.value())
+                : static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                          none_filter);
+
+        cuvs::neighbors::brute_force::search(
+                handle, idx, search, inds, dists, filter_ref);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
@@ -126,7 +151,8 @@ void CuvsFlatIndex::query(
         float metricArg,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
-        bool exactDistance) {
+        bool exactDistance,
+        const IDSelector* sel) {
     FAISS_ASSERT(useFloat16_);
 
     // FIXME: ref https://github.com/rapidsai/raft/issues/1280
@@ -137,7 +163,8 @@ void CuvsFlatIndex::query(
             metricArg,
             outDistances,
             outIndices,
-            exactDistance);
+            exactDistance,
+            sel);
 }
 
 } // namespace gpu

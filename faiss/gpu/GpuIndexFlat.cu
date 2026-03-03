@@ -224,8 +224,16 @@ void GpuIndexFlat::searchImpl_(
     Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(labels, {n, k});
 
+    const IDSelector* sel = params ? params->sel : nullptr;
     data_->query(
-            queries, k, metric_type, metric_arg, outDistances, outLabels, true);
+            queries,
+            k,
+            metric_type,
+            metric_arg,
+            outDistances,
+            outLabels,
+            true,
+            sel);
 }
 
 void GpuIndexFlat::reconstruct(idx_t key, float* out) const {

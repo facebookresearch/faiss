@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include <cstring>
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -140,6 +141,17 @@ void testIVFEquality(A& cpuIndex, B& gpuIndex) {
         EXPECT_EQ(cpuIndices, gpuIndex.getListIndices(i));
     }
 }
+
+// Structure to hold all IDSelector instances
+struct TestIDSelectorStruct {
+    // Storage for selectors that need it
+    std::vector<faiss::idx_t> array_ids;
+    std::vector<faiss::idx_t> batch_ids;
+    std::vector<uint8_t> bitmap;
+    std::map<std::string, std::unique_ptr<faiss::IDSelector>> selector_map;
+
+    TestIDSelectorStruct(int numAdd);
+};
 
 } // namespace gpu
 } // namespace faiss
