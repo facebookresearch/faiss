@@ -873,6 +873,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
     DOWNCAST (ITQMatrix)
+    DOWNCAST (HadamardRotation)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
