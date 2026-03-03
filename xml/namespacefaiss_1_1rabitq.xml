@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="namespacefaiss_1_1rabitq" kind="namespace" language="C++">
     <compoundname>faiss::rabitq</compoundname>
+    <innernamespace refid="namespacefaiss_1_1rabitq_1_1multibit">faiss::rabitq::multibit</innernamespace>
     <sectiondef kind="func">
       <memberdef kind="function" id="rabitq__simd_8h_1ad2e5c4c6149b0e481d68ef593b81ad8d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -68,7 +69,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="222" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="222" bodyend="294"/>
+        <location file="faiss/utils/rabitq_simd.h" line="223" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="223" bodyend="295"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ac5ea8dd8e109c02092e213e74fd139b4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -135,7 +136,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="305" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="305" bodyend="377"/>
+        <location file="faiss/utils/rabitq_simd.h" line="306" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="306" bodyend="378"/>
       </memberdef>
       <memberdef kind="function" id="rabitq__simd_8h_1ae550e84d71139760b85f38dcf3b10145" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>uint64_t</type>
@@ -157,13 +158,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="379" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="379" bodyend="423"/>
+        <location file="faiss/utils/rabitq_simd.h" line="380" column="17" bodyfile="faiss/utils/rabitq_simd.h" bodystart="380" bodyend="424"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/rabitq_simd.h" line="19" column="1"/>
+    <location file="faiss/utils/rabitq_simd.h" line="20" column="1"/>
   </compounddef>
 </doxygen>

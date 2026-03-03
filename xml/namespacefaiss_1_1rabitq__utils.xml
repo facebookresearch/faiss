@@ -795,7 +795,7 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQUtils.h" line="289" column="12" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="289" bodyend="309"/>
       </memberdef>
-      <memberdef kind="function" id="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::rabitq_utils::compute_full_multibit_distance</definition>
         <argsstring>(const uint8_t *sign_bits, const uint8_t *ex_code, const ExtraBitsFactors &amp;ex_fac, const float *rotated_q, float qr_to_c_L2sqr, float qr_norm_L2sqr, size_t d, size_t ex_bits, MetricType metric_type)</argsstring>
@@ -841,7 +841,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Compute full multi-bit distance from sign bits and ex-bit codes. This is the core distance computation shared by RaBitQFastScan handlers.</para>
-<para>The multi-bit distance combines the sign bit (1-bit) with additional magnitude bits (ex_bits) to compute a more accurate distance estimate.</para>
+<para>The multi-bit distance combines the sign bit (1-bit) with additional magnitude bits (ex_bits) to compute a more accurate distance estimate. Uses SIMD-optimized bit-plane decomposition (AVX2+BMI2) for ex_bits 1-7, with scalar fallback for non-x86 or non-BMI2 platforms.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sign_bits</parametername>
@@ -921,7 +921,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="328" column="14" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="328" bodyend="364"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="330" column="7" declfile="faiss/impl/RaBitQUtils.h" declline="330" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -965,7 +965,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="368" column="10" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="368" bodyend="377"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="343" column="10" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="343" bodyend="352"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1008,7 +1008,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="385" column="8" declfile="faiss/impl/RaBitQUtils.h" declline="385" declcolumn="8"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="360" column="8" declfile="faiss/impl/RaBitQUtils.h" declline="360" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1136,7 +1136,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="406" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="406" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="381" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="381" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

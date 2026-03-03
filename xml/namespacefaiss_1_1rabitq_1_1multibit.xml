@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1rabitq_1_1multibit" kind="namespace" language="C++">
+    <compoundname>faiss::rabitq::multibit</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="rabitq__simd_8h_1a7fc63cb7b1c8ae1167d5c595adff0103" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rabitq::multibit::ip_scalar</definition>
+        <argsstring>(const uint8_t *__restrict sign_bits, const uint8_t *__restrict ex_code, const float *__restrict rotated_q, size_t start, size_t d, size_t ex_bits, float cb)</argsstring>
+        <name>ip_scalar</name>
+        <qualifiedname>faiss::rabitq::multibit::ip_scalar</qualifiedname>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>sign_bits</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>rotated_q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>start</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ex_bits</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>cb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Scalar inner product for multi-bit RaBitQ. Extracts each code value in O(1) via 64-bit window read + shift + mask. Also serves as the tail handler for SIMD kernels via the <computeroutput>start</computeroutput> parameter. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="447" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="447" bodyend="470"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1ab575b316838927e704e878f02281f5fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::rabitq::multibit::compute_inner_product</definition>
+        <argsstring>(const uint8_t *__restrict sign_bits, const uint8_t *__restrict ex_code, const float *__restrict rotated_q, size_t d, size_t ex_bits, float cb)</argsstring>
+        <name>compute_inner_product</name>
+        <qualifiedname>faiss::rabitq::multibit::compute_inner_product</qualifiedname>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>sign_bits</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>rotated_q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ex_bits</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>cb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Dispatch to the best available kernel for the given ex_bits.</para>
+<para>Routing (compile-time): ex_bits == 1: specialized 1-bit kernel (AVX-512 &gt; AVX2 &gt; scalar) ex_bits &gt;= 2: bit-plane decomposition (AVX2+BMI2 &gt; scalar)</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sign_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>packed sign bits (1 bit/dim, standard byte packing) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>packed extra-bit codes (ex_bits bits/dim) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rotated_q</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>rotated query vector (float[d]) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>dimensionality </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ex_bits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of extra bits per dimension (nb_bits - 1) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>constant bias: -(2^ex_bits - 0.5) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>inner product value </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="660" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="660" bodyend="683"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/rabitq_simd.h" line="442" column="1"/>
+  </compounddef>
+</doxygen>
