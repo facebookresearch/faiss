@@ -357,4 +357,9 @@ inline simd16float32 fmadd(
     return simd16float32(_mm512_fmadd_ps(a.f, b.f, c.f));
 }
 
+// horizontal add: sum all 16 floats in the register
+inline float horizontal_add(const simd16float32& a) {
+    return _mm512_reduce_add_ps(a.f);
+}
+
 } // namespace faiss

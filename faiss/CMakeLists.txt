@@ -10,13 +10,16 @@
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
   impl/pq_code_distance/pq_code_distance-avx2.cpp
+  impl/scalar_quantizer/sq-avx2.cpp
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/pq_code_distance/pq_code_distance-avx512.cpp
+  impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
+  impl/scalar_quantizer/sq-neon.cpp
   utils/simd_impl/distances_aarch64.cpp
 )
 set(FAISS_SIMD_SVE_SRC
@@ -246,7 +249,9 @@ set(FAISS_HEADERS
   impl/scalar_quantizer/codecs.h
   impl/scalar_quantizer/distance_computers.h
   impl/scalar_quantizer/quantizers.h
+  impl/scalar_quantizer/scanners.h
   impl/scalar_quantizer/similarities.h
+  impl/scalar_quantizer/sq-dispatch.h
   impl/scalar_quantizer/training.h
   impl/ThreadedIndex-inl.h
   impl/ThreadedIndex.h
@@ -440,7 +445,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mpopcnt"
+          "-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mfma;-mf16c;-mpopcnt"
       )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
