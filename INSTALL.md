@@ -12,13 +12,13 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch -c conda-forge faiss-cpu=1.13.2
+$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.13.2
+$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.0
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.13.2
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -36,7 +36,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.13.2
+$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.6)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=12.6'

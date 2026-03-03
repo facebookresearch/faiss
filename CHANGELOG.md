@@ -3,6 +3,103 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-03-02
+
+Added
+- Add PEP 561 Python type stubs for the faiss package (#4840)
+- Add conda-forge channel to INSTALL.md install commands (#4819)
+- Add post_init_hook call to Python init (#4795)
+- Add ARM SVE support for distance functions (#4798)
+- Add Dynamic Dispatch OSS CI workflow (#4779)
+- Add IndexFlatIPPanorama (#4787)
+- Add benchmark to measure the ResultHandler overhead (#4778)
+- Demo for a diversity filter (#4765)
+- Add SVS binary size comparison demo and documentation (#4777)
+- Add InvertedListScanner support for IndexIVFRaBitQFastScan (#4760)
+- Add comprehensive ScalarQuantizer correctness tests (#4766)
+- add IDSelector for knn_extra_metrics() (#4753)
+- Add early stopping to k-means clustering (#4741)
+- Add k-means++ and AFK-MC² centroid initialization methods (#4740)
+
+Changed
+- ScalarQuantizer: refactor SIMDWIDTH int → SIMDLevel enum (#4838)
+- Fold IndexIVFPQ scanner helpers into templatized lambdas (#4836)
+- Temporarily disable RaBitQ FastScan from backward compatibility test (#4841)
+- Eliminate flat_storage by embedding auxiliary data in SIMD blocks (#4816)
+- Rework PQ code distance for Dynamic Dispatch (#4808)
+- fbcode/faiss/impl (#4832)
+- fbcode/faiss/utils/simd_impl (#4833)
+- fbcode/faiss/IndexFlat.cpp (#4831)
+- fbcode/faiss (#4829)
+- Implement distance_to_code for IVFRaBitQFastScanScanner (#4822)
+- distance_to_code for IVFPQFastScan invertedlistscanner (#4821)
+- Make dispatch_VectorDistance more compact (#4820)
+- Update callers to use read_index_up API (#4818)
+- fbcode/faiss/utils/simd_impl/distances_avx2.cpp (#4813)
+- fbcode/faiss/impl/PolysemousTraining.cpp (#4814)
+- fbcode/faiss/utils/sorting.cpp (#4815)
+- VisitedTable -> unordered_set if ntotal is large (#4735)
+- resulthandlers with AVX512 (#4806)
+- put dispatch one level above (#4802)
+- dynamic dispatch distances_simd (#4781)
+- Introduce Dynamic Dispatch infrastructure with SIMDConfig (#4780)
+- make runtime template selection more compact (#4793)
+- support SearchParameters for IndexBinary (#4761)
+- Support sharding of RaBitQ indices (#4790)
+- Refactor ScalarQuantizer headers to use SIMD wrapper types (#4772)
+- Split ScalarQuantizer.cpp into modular headers (NOOP) (#4786)
+- Move factory_tools to main library and fix unaligned SIMD store (#4782)
+- inline scanning code for fast distance computations (#4785)
+- Enable Faiss for internal use (#4737)
+- Address review comments on SQ correctness tests (#4771)
+- Enable use of svs runtime conda package instead of tarball (#4747)
+- generic result handlers for most indexes (#4762)
+- Use nth_element for median computation in IndexLSH (#4653)
+- Change default qb from 0 to 4 in RaBitQ indexes (#4757)
+- Move reorder_2_heaps() into Heap.h (#4752)
+- Improve naming due to codemod. simd_result_handlers (#4351)
+- Dot Product Support Similarity Metric for IndexIVFFlatPanorama (#4732)
+- Panorama Refactor and Code Cleanup (#4728)
+- Update serialization backwards compatibility test with panorama and rabitq (#4736)
+
+Fixed
+- Additional index deserialization validation (#4844)
+- Validate HNSW levels array entries during deserialization (#4827)
+- Additional memory exception handling fixes for index_read.cpp (#4837)
+- Catch attempts to deserialize undefined MetricTypes (#4823)
+- BlockInvertedListsIOHook::read(): Don't leak on exception. (#4824)
+- Harden ZnSphere lattice codec against invalid parameters (#4826)
+- Validate n_levels > 0 in Panorama (#4825)
+- Additional hardening of index load path (#4817)
+- Deploy std::unique_ptr<> in index_read.cpp for exception safety (#4809)
+- Fix to graph deserialization (#4812)
+- Harden deserialization against integer overflow and buffer overflows (#4811)
+- Fix CMake/Buck build discrepancies (#4807)
+- Fix NSG off-by-one neighbor ID check (#4804)
+- Fix CMake static targets missing SIMD sources and definitions (#4800)
+- Enable -Wstring-conversion in faiss/PACKAGE +1
+- Fix backward compat CI: use isolated conda environments (#4799)
+- Fix string-conversion issue in faiss/impl/lattice_Zn.cpp +1 (#4794)
+- Fix build pr 4761 (#4792)
+- Fix: Remove -Wignored-attributes warning in mapped_io.cpp (#4775)
+- Fix string-conversion issue in faiss/IndexHNSW.cpp
+- Fix: Remove -Wswitch-unreachable warning in generic-inl.h (#4776)
+- Fix string-conversion issue in faiss/invlists/OnDiskInvertedLists.cpp +5 (#4791)
+- Fix OSX arm64 nightly by disabling hidden visibility on macOS (#4789)
+- Fix FindMKL.cmake to detect Intel oneAPI MKL (2021+) (#4769)
+- Fix lint errors in SVS integration code (#4774)
+- Fix typos in demos, benchs, and other directories (#4743)
+- Fix weak external symbol leakage (#4758)
+- Fix compilation on macOS ARM64: Use faiss::idx_t instead of long test_hamming (#4755)
+- Fix multi-bit RaBitQ IP metric filtering and f_add_ex computation (#4754)
+- Fix IP metric distance computation in multi-bit RaBitQ (#4751)
+- Reduce memory usage in timeout callback tests (#4745)
+- Fix c++20 compilation in OSS Faiss for OSX ARM64 (#4733)
+
+Deprecated
+- Remove deprecated RAFT headers (#4731)
+
+
 ## [1.13.2] - 2025-12-19
 
 Added
