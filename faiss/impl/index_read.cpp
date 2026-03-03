@@ -304,6 +304,10 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             itqt->pca_then_itq = *pi;
         }
         vt = std::move(itqt);
+    } else if (h == fourcc("HRot")) {
+        auto hr = std::make_unique<HadamardRotation>();
+        READ1(hr->seed);
+        vt = std::move(hr);
     } else {
         FAISS_THROW_FMT(
                 "fourcc %ud (\"%s\") not recognized in %s",
@@ -314,6 +318,10 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_in);
     READ1(vt->d_out);
     READ1(vt->is_trained);
+    if (h == fourcc("HRot")) {
+        auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
+        hr->init(hr->seed);
+    }
     return vt;
 }
 

@@ -651,6 +651,39 @@ class TestIORoundTrip(unittest.TestCase):
         out = pca2.apply(xq)
         np.testing.assert_array_equal(ref, out)
 
+    def test_vector_transform_hadamard_rotation(self):
+        """HadamardRotation VectorTransform write/read round-trip."""
+        xt, _, xq = get_dataset_2(d, nt, nb, nq)
+        fr = faiss.HadamardRotation(d, 42)
+
+        writer = faiss.VectorIOWriter()
+        faiss.write_VectorTransform(fr, writer)
+
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(
+            np.array(faiss.vector_to_array(writer.data)), reader.data)
+        fr2 = faiss.read_VectorTransform(reader)
+
+        self.assertEqual(fr2.d_in, d)
+        self.assertEqual(fr2.d_out, d)
+
+        ref = fr.apply(xq)
+        out = fr2.apply(xq)
+        np.testing.assert_array_equal(ref, out)
+
+    def test_index_pretransform_hadamard_rotation(self):
+        """Full index with HadamardRotation pre-transform round-trip."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        index = faiss.index_factory(d, "HR,Flat")
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 5)
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(xq, 5)
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_equal(Dref, D2)
+
     def test_null_index(self):
         """Serializing None / null index round-trips to None."""
         writer = faiss.VectorIOWriter()

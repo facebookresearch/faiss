@@ -105,7 +105,14 @@ static void write_index_header(const Index* idx, IOWriter* f) {
 }
 
 void write_VectorTransform(const VectorTransform* vt, IOWriter* f) {
-    if (const LinearTransform* lt = dynamic_cast<const LinearTransform*>(vt)) {
+    if (const HadamardRotation* hr =
+                dynamic_cast<const HadamardRotation*>(vt)) {
+        uint32_t h = fourcc("HRot");
+        WRITE1(h);
+        WRITE1(hr->seed);
+    } else if (
+            const LinearTransform* lt =
+                    dynamic_cast<const LinearTransform*>(vt)) {
         if (dynamic_cast<const RandomRotationMatrix*>(lt)) {
             uint32_t h = fourcc("rrot");
             WRITE1(h);
