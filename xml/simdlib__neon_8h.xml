@@ -1485,9 +1485,15 @@
 <codeline lineno="1355"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32{float32x4x2_t{a.data.val[1],<sp/>b.data.val[1]}};</highlight></codeline>
 <codeline lineno="1356"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="1357"><highlight class="normal"></highlight></codeline>
-<codeline lineno="1358"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="1359"><highlight class="normal"></highlight></codeline>
-<codeline lineno="1360"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1358"><highlight class="normal"></highlight><highlight class="comment">//<sp/>horizontal<sp/>add:<sp/>sum<sp/>all<sp/>8<sp/>floats<sp/>in<sp/>the<sp/>register</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1359"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>horizontal_add(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a)<sp/>{</highlight></codeline>
+<codeline lineno="1360"><highlight class="normal"><sp/><sp/><sp/><sp/>float32x4_t<sp/>sum<sp/>=<sp/>vaddq_f32(a.data.val[0],<sp/>a.data.val[1]);</highlight></codeline>
+<codeline lineno="1361"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>vaddvq_f32(sum);</highlight></codeline>
+<codeline lineno="1362"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="1363"><highlight class="normal"></highlight></codeline>
+<codeline lineno="1364"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1365"><highlight class="normal"></highlight></codeline>
+<codeline lineno="1366"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_neon.h"/>
   </compounddef>

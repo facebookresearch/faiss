@@ -424,7 +424,12 @@
 <codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref>(_mm512_fmadd_ps(a.f,<sp/>b.f,<sp/>c.f));</highlight></codeline>
 <codeline lineno="358"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="359"><highlight class="normal"></highlight></codeline>
-<codeline lineno="360"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="360"><highlight class="normal"></highlight><highlight class="comment">//<sp/>horizontal<sp/>add:<sp/>sum<sp/>all<sp/>16<sp/>floats<sp/>in<sp/>the<sp/>register</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="361"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>horizontal_add(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd16float32&amp;<sp/>a)<sp/>{</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>_mm512_reduce_add_ps(a.f);</highlight></codeline>
+<codeline lineno="363"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight></codeline>
+<codeline lineno="365"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_avx512.h"/>
   </compounddef>

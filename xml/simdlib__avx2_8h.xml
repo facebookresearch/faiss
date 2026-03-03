@@ -860,13 +860,24 @@
 <codeline lineno="794"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>0<sp/>|<sp/>2<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
 <codeline lineno="795"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="796"><highlight class="normal"></highlight></codeline>
-<codeline lineno="797"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(simd8float32<sp/>a,<sp/>simd8float32<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="797"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/>simd8float32<sp/>gethigh128(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>b)<sp/>{</highlight></codeline>
 <codeline lineno="798"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>simd8float32(_mm256_permute2f128_ps(a.f,<sp/>b.f,<sp/>1<sp/>|<sp/>3<sp/>&lt;&lt;<sp/>4));</highlight></codeline>
 <codeline lineno="799"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="800"><highlight class="normal"></highlight></codeline>
-<codeline lineno="801"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="802"><highlight class="normal"></highlight></codeline>
-<codeline lineno="803"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="801"><highlight class="normal"></highlight><highlight class="comment">//<sp/>horizontal<sp/>add:<sp/>sum<sp/>all<sp/>8<sp/>floats<sp/>in<sp/>the<sp/>register</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="802"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>horizontal_add(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>simd8float32&amp;<sp/>a)<sp/>{</highlight></codeline>
+<codeline lineno="803"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>sum<sp/>=<sp/>_mm_add_ps(</highlight></codeline>
+<codeline lineno="804"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_mm256_castps256_ps128(a.f),<sp/>_mm256_extractf128_ps(a.f,<sp/>1));</highlight></codeline>
+<codeline lineno="805"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v0<sp/>=<sp/>_mm_shuffle_ps(sum,<sp/>sum,<sp/>_MM_SHUFFLE(0,<sp/>0,<sp/>3,<sp/>2));</highlight></codeline>
+<codeline lineno="806"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v1<sp/>=<sp/>_mm_add_ps(sum,<sp/>v0);</highlight></codeline>
+<codeline lineno="807"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v2<sp/>=<sp/>_mm_shuffle_ps(v1,<sp/>v1,<sp/>_MM_SHUFFLE(0,<sp/>0,<sp/>0,<sp/>1));</highlight></codeline>
+<codeline lineno="808"><highlight class="normal"><sp/><sp/><sp/><sp/>__m128<sp/>v3<sp/>=<sp/>_mm_add_ps(v1,<sp/>v2);</highlight></codeline>
+<codeline lineno="809"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>_mm_cvtss_f32(v3);</highlight></codeline>
+<codeline lineno="810"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="811"><highlight class="normal"></highlight></codeline>
+<codeline lineno="812"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="813"><highlight class="normal"></highlight></codeline>
+<codeline lineno="814"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simdlib_avx2.h"/>
   </compounddef>

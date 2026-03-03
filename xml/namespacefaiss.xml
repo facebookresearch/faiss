@@ -12537,6 +12537,24 @@
         </inbodydescription>
         <location file="faiss/utils/simdlib_avx512.h" line="353" column="22" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="353" bodyend="358"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8ce0319dd51c6db66a64106689974fb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::horizontal_add</definition>
+        <argsstring>(const simd16float32 &amp;a)</argsstring>
+        <name>horizontal_add</name>
+        <qualifiedname>faiss::horizontal_add</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32" kindref="compound">simd16float32</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simdlib_avx512.h" line="361" column="14" bodyfile="faiss/utils/simdlib_avx512.h" bodystart="361" bodyend="363"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ade3c1b83444c4ae5051eefa1263adaca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16" kindref="compound">simd16uint16</ref></type>
         <definition>simd16uint16 faiss::min</definition>

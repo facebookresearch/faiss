@@ -181,9 +181,11 @@
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
         <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="42" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
       </node>
       <node id="10">
@@ -312,7 +314,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="43">
+      <node id="45">
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h_source"/>
       </node>
@@ -381,16 +383,28 @@
       <node id="40">
         <label>faiss/impl/expanded_scanners.h</label>
         <link refid="expanded__scanners_8h_source"/>
+        <childnode refid="41" relation="include">
+        </childnode>
       </node>
-      <node id="41">
+      <node id="43">
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="44">
+      <node id="41">
+        <label>faiss/impl/scalar_quantizer/scanners.h</label>
+        <link refid="scanners_8h_source"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
+        <link refid="sq-dispatch_8h_source"/>
+      </node>
+      <node id="46">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="45">
+      <node id="47">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
         <childnode refid="17" relation="include">
@@ -401,26 +415,26 @@
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="43" relation="include">
-        </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
         <childnode refid="45" relation="include">
         </childnode>
         <childnode refid="46" relation="include">
         </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
         <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="46">
+      <node id="48">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
       </node>
-      <node id="42">
+      <node id="44">
         <label>faiss/invlists/OnDiskInvertedLists.h</label>
         <link refid="OnDiskInvertedLists_8h_source"/>
       </node>
@@ -433,34 +447,34 @@
         <link refid="distances_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
-        </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
         </childnode>
-        <childnode refid="51" relation="include">
+        <childnode refid="52" relation="include">
         </childnode>
-      </node>
-      <node id="47">
-        <label>faiss/utils/distances_dispatch.h</label>
-        <link refid="distances__dispatch_8h"/>
-      </node>
-      <node id="48">
-        <label>faiss/utils/extra_distances-inl.h</label>
-        <link refid="extra__distances-inl_8h_source"/>
-        <childnode refid="49" relation="include">
+        <childnode refid="53" relation="include">
         </childnode>
       </node>
       <node id="49">
+        <label>faiss/utils/distances_dispatch.h</label>
+        <link refid="distances__dispatch_8h"/>
+      </node>
+      <node id="50">
+        <label>faiss/utils/extra_distances-inl.h</label>
+        <link refid="extra__distances-inl_8h_source"/>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="50">
+      <node id="52">
         <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
         <link refid="distances__autovec-inl_8h_source"/>
       </node>
-      <node id="51">
+      <node id="53">
         <label>faiss/utils/simd_impl/distances_sse-inl.h</label>
         <link refid="distances__sse-inl_8h_source"/>
       </node>

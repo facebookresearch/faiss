@@ -3,12 +3,17 @@
   <compounddef id="namespacefaiss_1_1scalar__quantizer" kind="namespace" language="C++">
     <compoundname>faiss::scalar_quantizer</compoundname>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit" prot="public">faiss::scalar_quantizer::Codec4bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec4bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec4bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit" prot="public">faiss::scalar_quantizer::Codec6bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec6bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec6bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit" prot="public">faiss::scalar_quantizer::Codec8bit</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" prot="public">faiss::scalar_quantizer::DCTemplate</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public">faiss::scalar_quantizer::DistanceComputerByte</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public">faiss::scalar_quantizer::IVFSQScannerIP</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public">faiss::scalar_quantizer::IVFSQScannerL2</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect&lt; SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirectSigned" prot="public">faiss::scalar_quantizer::Quantizer8bitDirectSigned</innerclass>
@@ -51,13 +56,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="23" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="23" bodyend="23"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="27" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="27" bodyend="27"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="distance__computers_8h_1aebd35c67c29748c51a1f08b06ad891c5" prot="public" static="no">
+      <memberdef kind="typedef" id="distance__computers_8h_1a2bb1cab8888757c59810340371f44c46" prot="public" static="no">
         <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kindref="compound">ScalarQuantizer::SQDistanceComputer</ref></type>
-        <definition>using faiss::scalar_quantizer::SQDistanceComputer = typedef ScalarQuantizer::SQDistanceComputer</definition>
+        <definition>typedef ScalarQuantizer::SQDistanceComputer faiss::scalar_quantizer::SQDistanceComputer</definition>
         <argsstring></argsstring>
         <name>SQDistanceComputer</name>
         <qualifiedname>faiss::scalar_quantizer::SQDistanceComputer</qualifiedname>
@@ -68,6 +73,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="18" column="1" bodyfile="faiss/impl/scalar_quantizer/distance_computers.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="quantizers_8h_1a07f0c77733be666772cfc68c33fe8368" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+        <definition>typedef ScalarQuantizer::QuantizerType faiss::scalar_quantizer::QuantizerType</definition>
+        <argsstring></argsstring>
+        <name>QuantizerType</name>
+        <qualifiedname>faiss::scalar_quantizer::QuantizerType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="20" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="training_8h_1af10cb6aadb4adfe0e2c4272449500ec7" prot="public" static="no">
         <type><ref refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kindref="member">ScalarQuantizer::RangeStat</ref></type>
@@ -84,7 +103,324 @@
         <location file="faiss/impl/scalar_quantizer/training.h" line="22" column="1" bodyfile="faiss/impl/scalar_quantizer/training.h" bodystart="22" bodyend="-1"/>
       </memberdef>
     </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="sq-dispatch_8h_1a58eb810b8acdea1d6740da050ae0d9c1" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::scalar_quantizer::SL</definition>
+        <argsstring></argsstring>
+        <name>SL</name>
+        <qualifiedname>faiss::scalar_quantizer::SL</qualifiedname>
+        <initializer>= THE_LEVEL_TO_DISPATCH</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="25" column="21" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="func">
+      <memberdef kind="function" id="distance__computers_8h_1ac6f2ec5777abf6638c5ae71909b0691f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kindref="compound">SQDistanceComputer</ref> *</type>
+        <definition>SQDistanceComputer * faiss::scalar_quantizer::sq_select_distance_computer</definition>
+        <argsstring>(MetricType metric, ScalarQuantizer::QuantizerType qtype, size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>sq_select_distance_computer</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_distance_computer</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="129" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="129" declcolumn="20"/>
+      </memberdef>
+      <memberdef kind="function" id="quantizers_8h_1a58372b4312405a8863e41082b9bd9c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref> *</type>
+        <definition>ScalarQuantizer::SQuantizer * faiss::scalar_quantizer::sq_select_quantizer</definition>
+        <argsstring>(QuantizerType qtype, size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>sq_select_quantizer</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_quantizer</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="273" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="273" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="scanners_8h_1a93720e4ec0d8f806eb62c46db3e0ab04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
+        <definition>InvertedListScanner * faiss::scalar_quantizer::sq_select_InvertedListScanner</definition>
+        <argsstring>(QuantizerType qtype, MetricType mt, size_t d, size_t code_size, const std::vector&lt; float &gt; &amp;trained, const Index *quantizer, bool store_pairs, const IDSelector *sel, bool by_residual)</argsstring>
+        <name>sq_select_InvertedListScanner</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_InvertedListScanner</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>mt</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>quantizer</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>by_residual</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/scanners.h" line="151" column="21" declfile="faiss/impl/scalar_quantizer/scanners.h" declline="151" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1a9aafc3129d3bd359d2a36d1684100b28" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL2</declname>
+            <defname>SL2</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::scalar_quantizer::is_dimension_compatible</definition>
+        <argsstring>(size_t d)</argsstring>
+        <name>is_dimension_compatible</name>
+        <qualifiedname>faiss::scalar_quantizer::is_dimension_compatible</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="29" column="16" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="29" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1abe3d240b2efb670c775e45054fa874f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer" kindref="compound">ScalarQuantizer::SQuantizer</ref> *</type>
+        <definition>ScalarQuantizer::SQuantizer * faiss::scalar_quantizer::sq_select_quantizer&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(QuantizerType qtype, size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>sq_select_quantizer&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_quantizer&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="44" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="44" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Sim</type>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL2</declname>
+            <defname>SL2</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kindref="compound">SQDistanceComputer</ref> *</type>
+        <definition>SQDistanceComputer * faiss::scalar_quantizer::select_distance_computer_body</definition>
+        <argsstring>(ScalarQuantizer::QuantizerType qtype, size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>select_distance_computer_body</name>
+        <qualifiedname>faiss::scalar_quantizer::select_distance_computer_body</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="98" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="98" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer" kindref="compound">SQDistanceComputer</ref> *</type>
+        <definition>SQDistanceComputer * faiss::scalar_quantizer::sq_select_distance_computer&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(MetricType metric, ScalarQuantizer::QuantizerType qtype, size_t d, const std::vector&lt; float &gt; &amp;trained)</argsstring>
+        <name>sq_select_distance_computer&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_distance_computer&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>metric</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">ScalarQuantizer::QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="188" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="188" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref> *</type>
+        <definition>InvertedListScanner * faiss::scalar_quantizer::sq_select_InvertedListScanner&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(QuantizerType qtype, MetricType mt, size_t d, size_t code_size, const std::vector&lt; float &gt; &amp;trained, const Index *quantizer, bool store_pairs, const IDSelector *sel, bool by_residual)</argsstring>
+        <name>sq_select_InvertedListScanner&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::scalar_quantizer::sq_select_InvertedListScanner&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" kindref="member">QuantizerType</ref></type>
+          <declname>qtype</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+          <declname>mt</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>code_size</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>trained</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
+          <declname>quantizer</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>store_pairs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>by_residual</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="207" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="207" bodyend="325"/>
+      </memberdef>
       <memberdef kind="function" id="training_8h_1a7832c78df26bd9df1561e07d4da31891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::scalar_quantizer::train_Uniform</definition>
@@ -170,6 +506,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/codecs.h" line="15" column="1"/>
+    <location file="faiss/impl/scalar_quantizer/codecs.h" line="16" column="1"/>
   </compounddef>
 </doxygen>

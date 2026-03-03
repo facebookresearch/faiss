@@ -21,7 +21,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="162" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="79" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="79" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a630e84aed62b16bced6e020b532d0801" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -35,7 +35,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="163" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="163" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="80" column="17" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="80" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1ad50038d3627e09ce2273939cbc862296" prot="public" static="no" mutable="no">
         <type>const float *</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="163" column="22" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="163" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="80" column="22" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="80" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="165" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="165" bodyend="166"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="82" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="82" bodyend="83"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a7783a16c4dcac6986e9594298fdefae3" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -96,7 +96,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="168" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="168" bodyend="182"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="85" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="85" bodyend="99"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a51150cd9c80e503441912c7381f91a23" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -119,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="184" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="184" bodyend="189"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="101" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="101" bodyend="106"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1ad66aaf19da123d228a2e90b68a72e7d7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
@@ -141,7 +141,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="191" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="191" bodyend="196"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="108" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="108" bodyend="113"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -172,7 +172,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="158" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="161" bodyend="197"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="75" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="78" bodyend="114"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1aa9a867e28e04a6f290030539beb7ecf0" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</scope><name>d</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerTemplate_3_01Codec_00_01QuantizerTemplateScaling_1_1f87c299167ba4f86d4cc88c4115d733_1a51150cd9c80e503441912c7381f91a23" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerTemplate&lt; Codec, QuantizerTemplateScaling::NON_UNIFORM, SIMDLevel::NONE &gt;</scope><name>decode_vector</name></member>

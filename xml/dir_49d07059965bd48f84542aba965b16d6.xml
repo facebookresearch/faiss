@@ -5,7 +5,9 @@
     <innerfile refid="codecs_8h">codecs.h</innerfile>
     <innerfile refid="distance__computers_8h">distance_computers.h</innerfile>
     <innerfile refid="quantizers_8h">quantizers.h</innerfile>
+    <innerfile refid="scanners_8h">scanners.h</innerfile>
     <innerfile refid="similarities_8h">similarities.h</innerfile>
+    <innerfile refid="sq-dispatch_8h">sq-dispatch.h</innerfile>
     <innerfile refid="training_8h">training.h</innerfile>
     <briefdescription>
     </briefdescription>

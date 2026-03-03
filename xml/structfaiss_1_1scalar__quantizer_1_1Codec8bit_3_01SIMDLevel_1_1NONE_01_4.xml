@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1a97f74ed35e49a280f4d82a98707f709b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE void</type>
+        <definition>static FAISS_ALWAYS_INLINE void faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;::encode_component</definition>
+        <argsstring>(float x, uint8_t *code, size_t i)</argsstring>
+        <name>encode_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;::encode_component</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/codecs.h" line="29" column="37" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="29" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1abeacbc7b1d73eb2c1ef1cd5e74495a26" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>FAISS_ALWAYS_INLINE float</type>
+        <definition>static FAISS_ALWAYS_INLINE float faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;::decode_component</definition>
+        <argsstring>(const uint8_t *code, size_t i)</argsstring>
+        <name>decode_component</name>
+        <qualifiedname>faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;::decode_component</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/scalar_quantizer/codecs.h" line="36" column="38" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="36" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/scalar_quantizer/codecs.h" line="28" column="1" bodyfile="faiss/impl/scalar_quantizer/codecs.h" bodystart="28" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1abeacbc7b1d73eb2c1ef1cd5e74495a26" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;</scope><name>decode_component</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1Codec8bit_3_01SIMDLevel_1_1NONE_01_4_1a97f74ed35e49a280f4d82a98707f709b" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::Codec8bit&lt; SIMDLevel::NONE &gt;</scope><name>encode_component</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

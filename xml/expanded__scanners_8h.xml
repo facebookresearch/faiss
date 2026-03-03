@@ -5,6 +5,7 @@
     <includes local="no">cstdio</includes>
     <includes refid="IndexIVF_8h" local="no">faiss/IndexIVF.h</includes>
     <includes refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includes>
+    <includedby refid="scanners_8h" local="no">faiss/impl/scalar_quantizer/scanners.h</includedby>
     <incdepgraph>
       <node id="5">
         <label>faiss/Clustering.h</label>
@@ -355,6 +356,24 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/impl/expanded_scanners.h</label>
+        <link refid="expanded__scanners_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/impl/scalar_quantizer/scanners.h</label>
+        <link refid="scanners_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
+        <link refid="sq-dispatch_8h_source"/>
+      </node>
+    </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <briefdescription>
     </briefdescription>
