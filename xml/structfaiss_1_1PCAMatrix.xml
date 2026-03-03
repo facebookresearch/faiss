@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="138" column="11" bodyfile="faiss/VectorTransform.h" bodystart="138" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="161" column="11" bodyfile="faiss/VectorTransform.h" bodystart="161" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1a0c2483343aeff1c43c10f66a136a7f37" prot="public" static="no" mutable="no">
         <type>float</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="141" column="11" bodyfile="faiss/VectorTransform.h" bodystart="141" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="164" column="11" bodyfile="faiss/VectorTransform.h" bodystart="164" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1af111f055b7571703a3aa270d89e99321" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="144" column="10" bodyfile="faiss/VectorTransform.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="167" column="10" bodyfile="faiss/VectorTransform.h" bodystart="167" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1abdce90f57a3c4401f5230f03da901e0d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="147" column="12" bodyfile="faiss/VectorTransform.h" bodystart="147" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="170" column="12" bodyfile="faiss/VectorTransform.h" bodystart="170" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1ac9a4c97b5861081dfd8ca5881bb1a677" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -79,7 +79,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="150" column="9" bodyfile="faiss/VectorTransform.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="173" column="9" bodyfile="faiss/VectorTransform.h" bodystart="173" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1a721c338c1df5c99471db82e6d3dc8f93" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="153" column="17" bodyfile="faiss/VectorTransform.h" bodystart="153" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="176" column="17" bodyfile="faiss/VectorTransform.h" bodystart="176" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1ae80e130c0667b66cea608c4926d7d561" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="156" column="17" bodyfile="faiss/VectorTransform.h" bodystart="156" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="179" column="17" bodyfile="faiss/VectorTransform.h" bodystart="179" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PCAMatrix_1aef5c130774e5d4f697a3e1c82647bfd3" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -124,7 +124,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="159" column="17" bodyfile="faiss/VectorTransform.h" bodystart="159" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="182" column="17" bodyfile="faiss/VectorTransform.h" bodystart="182" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1LinearTransform_1a322401ba80cb96ac1e7846401f2bef24" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -278,7 +278,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="162" column="14"/>
+        <location file="faiss/VectorTransform.h" line="185" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="170" column="10"/>
+        <location file="faiss/VectorTransform.h" line="193" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PCAMatrix_1a5eeb75861ade62cf606d003da398a09f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -321,7 +321,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="173" column="10"/>
+        <location file="faiss/VectorTransform.h" line="196" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PCAMatrix_1ac13555c4d9007ae338d3392882b8e0db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -336,7 +336,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="176" column="10"/>
+        <location file="faiss/VectorTransform.h" line="199" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -569,7 +569,7 @@
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="131" column="1" bodyfile="faiss/VectorTransform.h" bodystart="131" bodyend="177"/>
+    <location file="faiss/VectorTransform.h" line="154" column="1" bodyfile="faiss/VectorTransform.h" bodystart="154" bodyend="200"/>
     <listofallmembers>
       <member refid="structfaiss_1_1LinearTransform_1aa40e156ef57fe206cd5f3a58ec0660da" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>A</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>apply</name></member>

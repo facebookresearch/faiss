@@ -52,6 +52,7 @@
     <innerclass refid="structfaiss_1_1GenHammingComputer32" prot="public">faiss::GenHammingComputer32</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputer8" prot="public">faiss::GenHammingComputer8</innerclass>
     <innerclass refid="structfaiss_1_1GenHammingComputerM8" prot="public">faiss::GenHammingComputerM8</innerclass>
+    <innerclass refid="structfaiss_1_1HadamardRotation" prot="public">faiss::HadamardRotation</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer" prot="public">faiss::HammingComputer</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer16" prot="public">faiss::HammingComputer16</innerclass>
     <innerclass refid="structfaiss_1_1HammingComputer20" prot="public">faiss::HammingComputer20</innerclass>

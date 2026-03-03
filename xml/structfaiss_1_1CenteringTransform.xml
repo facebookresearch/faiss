@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="295" column="17" bodyfile="faiss/VectorTransform.h" bodystart="295" bodyend="-1"/>
+        <location file="faiss/VectorTransform.h" line="318" column="17" bodyfile="faiss/VectorTransform.h" bodystart="318" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -83,7 +83,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="297" column="14"/>
+        <location file="faiss/VectorTransform.h" line="320" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -107,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="300" column="10"/>
+        <location file="faiss/VectorTransform.h" line="323" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="303" column="10"/>
+        <location file="faiss/VectorTransform.h" line="326" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="306" column="10"/>
+        <location file="faiss/VectorTransform.h" line="329" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1CenteringTransform_1a31952d08f3041c30fd537934dad3368d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -182,7 +182,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/VectorTransform.h" line="308" column="10"/>
+        <location file="faiss/VectorTransform.h" line="331" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float *</type>
@@ -256,7 +256,7 @@
         <link refid="structfaiss_1_1VectorTransform"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/VectorTransform.h" line="293" column="1" bodyfile="faiss/VectorTransform.h" bodystart="293" bodyend="309"/>
+    <location file="faiss/VectorTransform.h" line="316" column="1" bodyfile="faiss/VectorTransform.h" bodystart="316" bodyend="332"/>
     <listofallmembers>
       <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>apply</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1a0d9a07e911c43a598f64981f23afec0a" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>apply_noalloc</name></member>

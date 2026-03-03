@@ -327,6 +327,7 @@
         <name>train</name>
         <qualifiedname>faiss::VectorTransform::train</qualifiedname>
         <reimplementedby refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HadamardRotation_1a36e4f4f76f451e7b4724aabca37d867c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736">train</reimplementedby>

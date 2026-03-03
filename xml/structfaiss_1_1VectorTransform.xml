@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1VectorTransform" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::VectorTransform</compoundname>
     <derivedcompoundref refid="structfaiss_1_1CenteringTransform" prot="public" virt="non-virtual">faiss::CenteringTransform</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1HadamardRotation" prot="public" virt="non-virtual">faiss::HadamardRotation</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1ITQTransform" prot="public" virt="non-virtual">faiss::ITQTransform</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1LinearTransform" prot="public" virt="non-virtual">faiss::LinearTransform</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1NormalizationTransform" prot="public" virt="non-virtual">faiss::NormalizationTransform</derivedcompoundref>
@@ -87,6 +88,7 @@
         <name>train</name>
         <qualifiedname>faiss::VectorTransform::train</qualifiedname>
         <reimplementedby refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181">train</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HadamardRotation_1a36e4f4f76f451e7b4724aabca37d867c">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQMatrix_1abac7b3a00aa622c1590ea11f01abf073">train</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736">train</reimplementedby>
@@ -176,6 +178,7 @@
         <name>apply_noalloc</name>
         <qualifiedname>faiss::VectorTransform::apply_noalloc</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d">apply_noalloc</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HadamardRotation_1a8b51c06a5b6ba821394c7f9ae313043c">apply_noalloc</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a">apply_noalloc</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e">apply_noalloc</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd">apply_noalloc</reimplementedby>
@@ -264,6 +267,7 @@
         <name>check_identical</name>
         <qualifiedname>faiss::VectorTransform::check_identical</qualifiedname>
         <reimplementedby refid="structfaiss_1_1LinearTransform_1a3ce4b5a2f726620afa5492069924b506">check_identical</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1HadamardRotation_1a026d7491ad09a3cd017752aebaf2a11e">check_identical</reimplementedby>
         <reimplementedby refid="structfaiss_1_1ITQTransform_1a84b7defd5ebf855ac2e4038bdbd1fdd6">check_identical</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RemapDimensionsTransform_1ae8f62cc0239c222b35ee3406ad8e7815">check_identical</reimplementedby>
         <reimplementedby refid="structfaiss_1_1NormalizationTransform_1afeac1f2cd1f51640424180bd27833b24">check_identical</reimplementedby>
@@ -307,49 +311,55 @@
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
-        <label>faiss::ITQMatrix</label>
-        <link refid="structfaiss_1_1ITQMatrix"/>
-        <childnode refid="4" relation="public-inheritance">
+      <node id="3">
+        <label>faiss::HadamardRotation</label>
+        <link refid="structfaiss_1_1HadamardRotation"/>
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="6">
+        <label>faiss::ITQMatrix</label>
+        <link refid="structfaiss_1_1ITQMatrix"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::ITQTransform</label>
         <link refid="structfaiss_1_1ITQTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::LinearTransform</label>
         <link refid="structfaiss_1_1LinearTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss::NormalizationTransform</label>
         <link refid="structfaiss_1_1NormalizationTransform"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>faiss::OPQMatrix</label>
         <link refid="structfaiss_1_1OPQMatrix"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="7">
-        <label>faiss::PCAMatrix</label>
-        <link refid="structfaiss_1_1PCAMatrix"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
       <node id="8">
-        <label>faiss::RandomRotationMatrix</label>
-        <link refid="structfaiss_1_1RandomRotationMatrix"/>
-        <childnode refid="4" relation="public-inheritance">
+        <label>faiss::PCAMatrix</label>
+        <link refid="structfaiss_1_1PCAMatrix"/>
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="9">
+        <label>faiss::RandomRotationMatrix</label>
+        <link refid="structfaiss_1_1RandomRotationMatrix"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
         <label>faiss::RemapDimensionsTransform</label>
         <link refid="structfaiss_1_1RemapDimensionsTransform"/>
         <childnode refid="1" relation="public-inheritance">

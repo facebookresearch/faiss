@@ -1955,6 +1955,23 @@
     <member refid="structfaiss_1_1nsg_1_1Graph_1ab94df92238ec1a9bb7877382c0e68e53" kind="function"><name>at</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a7b857463a2dd15fcf6ae5c474d1986da" kind="function"><name>get_neighbors</name></member>
   </compound>
+  <compound refid="structfaiss_1_1HadamardRotation" kind="struct"><name>faiss::HadamardRotation</name>
+    <member refid="structfaiss_1_1HadamardRotation_1a26e7d67687f76be9a2aa8ad10ceda833" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a1c132fb43763a79abb6669eabf1b58c4" kind="variable"><name>signs1</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a37c0de897839bded104d29490508047d" kind="variable"><name>signs2</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1acc6fec44d3a99d1a246b2fa85c107f41" kind="variable"><name>signs3</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a84542c09fad43be41c450d6e0db1a0a8" kind="function"><name>HadamardRotation</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1aa1ce92b4a61a605755011fe0a8233cad" kind="function"><name>init</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a36e4f4f76f451e7b4724aabca37d867c" kind="function"><name>train</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a8b51c06a5b6ba821394c7f9ae313043c" kind="function"><name>apply_noalloc</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a026d7491ad09a3cd017752aebaf2a11e" kind="function"><name>check_identical</name></member>
+    <member refid="structfaiss_1_1HadamardRotation_1a4daf2a8a3b1a30d6f4659c8032cd65ba" kind="function"><name>HadamardRotation</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" kind="function"><name>apply</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" kind="function"><name>reverse_transform</name></member>
+  </compound>
   <compound refid="structfaiss_1_1HammingComputer" kind="struct"><name>faiss::HammingComputer</name>
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
