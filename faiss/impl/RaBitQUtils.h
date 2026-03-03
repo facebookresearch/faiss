@@ -313,6 +313,8 @@ inline int extract_code_inline(
  *
  * The multi-bit distance combines the sign bit (1-bit) with additional
  * magnitude bits (ex_bits) to compute a more accurate distance estimate.
+ * Uses SIMD-optimized bit-plane decomposition (AVX2+BMI2) for ex_bits 1-7,
+ * with scalar fallback for non-x86 or non-BMI2 platforms.
  *
  * @param sign_bits       unpacked sign bits (1-bit codes in standard format)
  * @param ex_code         packed ex-bit codes
@@ -325,7 +327,7 @@ inline int extract_code_inline(
  * @param metric_type     distance metric (L2 or Inner Product)
  * @return                computed full multi-bit distance
  */
-inline float compute_full_multibit_distance(
+float compute_full_multibit_distance(
         const uint8_t* sign_bits,
         const uint8_t* ex_code,
         const ExtraBitsFactors& ex_fac,
@@ -334,34 +336,7 @@ inline float compute_full_multibit_distance(
         float qr_norm_L2sqr,
         size_t d,
         size_t ex_bits,
-        MetricType metric_type) {
-    float ex_ip = 0.0f;
-    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
-
-    for (size_t i = 0; i < d; i++) {
-        const size_t byte_idx = i / 8;
-        const size_t bit_offset = i % 8;
-        const bool sign_bit = (sign_bits[byte_idx] >> bit_offset) & 1;
-
-        int ex_code_val = extract_code_inline(ex_code, i, ex_bits);
-
-        int total_code = (sign_bit ? 1 : 0) << ex_bits;
-        total_code += ex_code_val;
-        float reconstructed = static_cast<float>(total_code) + cb;
-
-        ex_ip += rotated_q[i] * reconstructed;
-    }
-
-    float dist = qr_to_c_L2sqr + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
-
-    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
-        dist = -0.5f * (dist - qr_norm_L2sqr);
-    } else {
-        dist = std::max(0.0f, dist);
-    }
-
-    return dist;
-}
+        MetricType metric_type);
 
 /** Compute pointer to a vector's auxiliary data within block layout. */
 template <typename T>

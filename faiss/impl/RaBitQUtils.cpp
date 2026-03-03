@@ -9,8 +9,10 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <limits>
 
 namespace faiss {
@@ -298,6 +300,32 @@ size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
         return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
                 (d * ex_bits + 7) / 8;
     }
+}
+
+float compute_full_multibit_distance(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExtraBitsFactors& ex_fac,
+        const float* rotated_q,
+        float qr_to_c_L2sqr,
+        float qr_norm_L2sqr,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
+
+    float ex_ip = rabitq::multibit::compute_inner_product(
+            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+
+    float dist = qr_to_c_L2sqr + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+
+    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+        dist = -0.5f * (dist - qr_norm_L2sqr);
+    } else {
+        dist = std::max(0.0f, dist);
+    }
+
+    return dist;
 }
 
 void populate_block_aux_from_flat_storage(
