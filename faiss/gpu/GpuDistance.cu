@@ -238,7 +238,7 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
     if (should_use_cuvs(args) && args.queriesRowMajor == args.vectorsRowMajor &&
         args.outIndicesType == IndicesDataType::I64 &&
         args.vectorType == DistanceDataType::F32 && args.k > 0) {
-        cuvsDistanceType distance = metricFaissToCuvs(args.metric, false);
+        auto distance = metricFaissToCuvs(args.metric, false);
 
         auto resImpl = prov->getResources();
         auto res = resImpl.get();
