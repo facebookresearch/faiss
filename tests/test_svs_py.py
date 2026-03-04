@@ -18,8 +18,10 @@
 # limitations under the License.
 #
 
-import numpy as np
 import unittest
+
+import numpy as np
+
 import faiss
 
 _SKIP_SVS = "SVS" not in faiss.get_compile_options().split()
@@ -57,8 +59,8 @@ class TestSVSAdapter(unittest.TestCase):
         self.nb = 1000
         self.nq = 100
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def test_svs_construction(self):
         """Test construction and basic properties"""
@@ -231,7 +233,7 @@ class TestSVSAdapter(unittest.TestCase):
         index = self._create_instance()
 
         # Test wrong dimension
-        wrong_dim_data = np.random.random((100, self.d + 1)).astype('float32')
+        wrong_dim_data = np.random.random((100, self.d + 1)).astype("float32")
         with self.assertRaises(AssertionError):
             index.add(wrong_dim_data)
 
@@ -313,6 +315,7 @@ class TestSVSFactoryLVQLeanVec(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
@@ -322,6 +325,7 @@ class TestSVSAdapterFP16(TestSVSAdapter):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterSQI8(TestSVSAdapter):
     """Repeat all tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
@@ -441,8 +445,8 @@ class TestSVSVamanaParameters(unittest.TestCase):
         self.nb = 500  # Smaller dataset for parameter tests
         self.nq = 50
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        self.xb = np.random.random((self.nb, self.d)).astype("float32")
+        self.xq = np.random.random((self.nq, self.d)).astype("float32")
 
     def test_vamana_parameter_setting(self):
         """Test that all Vamana parameters can be set and retrieved"""
@@ -523,6 +527,7 @@ class TestSVSVamanaParameters(unittest.TestCase):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS Float16 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_FP16
@@ -532,6 +537,7 @@ class TestSVSVamanaParametersFP16(TestSVSVamanaParameters):
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSVamanaParametersSQI8(TestSVSVamanaParameters):
     """Repeat Vamana parameter tests for SVS SQ int8 variant"""
+
     def _create_instance(self):
         idx = self.target_class(self.d, 64)
         idx.storage_kind = faiss.SVS_SQI8
@@ -579,6 +585,37 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
         idx.storage_kind = faiss.SVS_LVQ4x8
         return idx
 
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSLeanVecOOD(unittest.TestCase):
+    """Test out-of-distribution training for LeanVec SVS indices"""
+
+    def setUp(self):
+        self.d = 256
+        self.idx = faiss.IndexSVSVamanaLeanVec(
+            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
+        )
+        self.idx.alpha = 0.95
+
+        self.x = np.random.rand(1000, self.d).astype("float32")
+        self.tq = np.random.rand(1000, self.d).astype("float32")
+
+    def test_svs_leanvec_ood_training(self):
+        self.assertIsNone(self.idx.training_data)
+        self.idx.train(self.x, xq_train=self.tq)
+        self.assertIsNotNone(self.idx.training_data)
+
+    def test_svs_leanvec_ood_training_smaller(self):
+        self.idx.train(self.x, xq_train=self.tq[:500])
+
+    def test_svs_leanvec_ood_training_wrong_dim(self):
+        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
+        with self.assertRaises(AssertionError):
+            self.idx.train(self.x, xq_train=wrong_dim)
+
+    def test_svs_leanvec_ood_training_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
 
 if __name__ == '__main__':
     unittest.main()

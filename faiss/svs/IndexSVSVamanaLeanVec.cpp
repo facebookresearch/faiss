@@ -66,6 +66,14 @@ void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
 }
 
 void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
+    train(n, x, 0, nullptr);
+}
+
+void IndexSVSVamanaLeanVec::train(
+        idx_t n,
+        const float* x,
+        idx_t n_train_q,
+        const float* queries) {
     FAISS_THROW_IF_MSG(
             training_data || impl, "Index already trained or contains data.");
 
@@ -74,7 +82,7 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
             "LVQ/LeanVec support not available on this platform or build");
 
     auto status = svs_runtime::LeanVecTrainingData::build(
-            &training_data, d, n, x, leanvec_d);
+            &training_data, d, n, x, n_train_q, queries, leanvec_d);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
