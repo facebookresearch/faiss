@@ -27,7 +27,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="119" column="17" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="119" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="107" column="17" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="107" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="94" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="94" bodyend="102"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="82" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="82" bodyend="90"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_1a22754fe48d5425a445b38aca60763db6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="104" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="104" bodyend="106"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="92" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="92" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_1a930048dad428651901bfa623da88c790" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="107" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="107" bodyend="109"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="95" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="95" bodyend="97"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_1a380951d72fb94dc33ee45ed12eb69d68" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -90,7 +90,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="111" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="111" bodyend="113"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="99" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="99" bodyend="101"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InputBufferConverter_1a2fcc0e29698105b757e94ad101f67e55" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -104,14 +104,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSFaissUtils.h" line="114" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="114" bodyend="116"/>
+        <location file="faiss/svs/IndexSVSFaissUtils.h" line="102" column="5" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="102" bodyend="104"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/svs/IndexSVSFaissUtils.h" line="93" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="93" bodyend="120"/>
+    <location file="faiss/svs/IndexSVSFaissUtils.h" line="81" column="1" bodyfile="faiss/svs/IndexSVSFaissUtils.h" bodystart="81" bodyend="108"/>
     <listofallmembers>
       <member refid="structfaiss_1_1InputBufferConverter_1ae3f2f5a9ecc6493681f7cd466e4cbdd5" prot="private" virt="non-virtual"><scope>faiss::InputBufferConverter</scope><name>buffer</name></member>
       <member refid="structfaiss_1_1InputBufferConverter_1adadfc19b7c096cd721e6bafa6725f6b1" prot="public" virt="non-virtual"><scope>faiss::InputBufferConverter</scope><name>InputBufferConverter</name></member>

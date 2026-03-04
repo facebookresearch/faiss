@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="36" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="37" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="37" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParametersSVSVamana_1ab80b155d04947eb7d92a7d2a3b972373" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="37" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="37" bodyend="-1"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="38" column="12" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="38" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1SearchParameters_1a85e6514f1599673eb1cf3d0276f00e3a" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -86,7 +86,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/svs/IndexSVSVamana.h" line="35" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="35" bodyend="38"/>
+    <location file="faiss/svs/IndexSVSVamana.h" line="36" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="36" bodyend="39"/>
     <listofallmembers>
       <member refid="structfaiss_1_1SearchParametersSVSVamana_1ab80b155d04947eb7d92a7d2a3b972373" prot="public" virt="non-virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>search_buffer_capacity</name></member>
       <member refid="structfaiss_1_1SearchParametersSVSVamana_1a1c733f93149c8449792c2d3a6905b857" prot="public" virt="non-virtual"><scope>faiss::SearchParametersSVSVamana</scope><name>search_window_size</name></member>

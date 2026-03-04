@@ -1,4 +1,0 @@
-Namespace svs
-=============
-
-.. doxygennamespace:: svs
