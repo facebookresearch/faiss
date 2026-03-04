@@ -103,7 +103,7 @@ outputs:
         - {{ compiler('cxx') }}
         - libcxx =20.1.1  # [osx and arm64]
         - sysroot_linux-64 =2.17 # [linux64]
-        - swig =4.0
+        - swig =4.4
         - cmake >=3.24.0
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
