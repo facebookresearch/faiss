@@ -29,6 +29,7 @@
 
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
+#include <faiss/utils/simd_levels.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -55,6 +56,18 @@ int sgemm_(
 }
 
 namespace faiss {
+
+#ifdef COMPILE_SIMD_AVX512
+// Defined in simd_impl/distances_avx512.cpp
+extern void exhaustive_L2sqr_blas_cmax_avx512(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms);
+#endif
 
 /***************************************************************************
  * Public API dispatch wrappers
@@ -875,6 +888,19 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
         size_t ny,
         Top1BlockResultHandler<CMax<float, int64_t>>& res,
         const float* y_norms) {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512 ||
+        SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+        // use a faster fused kernel if available
+        if (exhaustive_L2sqr_fused_cmax(x, y, d, nx, ny, res, y_norms)) {
+            return;
+        }
+
+        // run the specialized AVX-512 implementation
+        exhaustive_L2sqr_blas_cmax_avx512(x, y, d, nx, ny, res, y_norms);
+        return;
+    }
+#endif
 #if defined(__AVX2__)
     // use a faster fused kernel if available
     if (exhaustive_L2sqr_fused_cmax(x, y, d, nx, ny, res, y_norms)) {
