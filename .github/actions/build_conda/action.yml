@@ -29,7 +29,7 @@ runs:
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         miniforge-version: latest # ensures conda-forge channel is used.
         channels: conda-forge
         conda-remove-defaults: 'true'
@@ -60,7 +60,7 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss --python 3.11 -c pytorch
+        conda build faiss --python 3.12 -c pytorch
     - name: Conda build (CPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}

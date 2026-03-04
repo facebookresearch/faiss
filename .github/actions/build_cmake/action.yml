@@ -35,7 +35,7 @@ runs:
       if: inputs.setup_conda == 'true'
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         miniforge-version: latest # ensures conda-forge channel is used.
         channels: conda-forge
         conda-remove-defaults: 'true'
@@ -52,7 +52,7 @@ runs:
         conda install -y -q "conda<=25.07"
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2
+        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
