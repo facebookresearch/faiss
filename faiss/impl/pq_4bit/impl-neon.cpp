@@ -41,6 +41,20 @@ std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner_impl<
     return rabitq_make_knn_scanner_impl<SIMDLevel::ARM_NEON>(
             is_max, index, nq, k, distances, ids, sel, context, multi_bit);
 }
+template <>
+std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner_impl<
+        SIMDLevel::ARM_SVE>(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit) {
+    return rabitq_ivf_make_knn_scanner_impl<SIMDLevel::ARM_NEON>(
+            is_max, index, nq, k, distances, ids, context, multi_bit);
+}
 } // namespace faiss
 
 #endif // COMPILE_SIMD_ARM_NEON
