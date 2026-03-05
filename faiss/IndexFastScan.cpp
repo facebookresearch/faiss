@@ -251,6 +251,18 @@ SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
     }
 }
 
+std::unique_ptr<PQ4CodeScanner> IndexFastScan::make_knn_scanner(
+        bool is_max,
+        idx_t n,
+        idx_t k,
+        size_t ntotal_in,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel) const {
+    return pq4_make_knn_scanner(
+            is_max, n, ntotal_in, k, distances, labels, sel);
+}
+
 using namespace quantize_lut;
 
 void IndexFastScan::compute_quantized_LUT(
@@ -520,36 +532,56 @@ void IndexFastScan::search_implem_12(
             pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    std::unique_ptr<RH> handler(
-            static_cast<RH*>(make_knn_handler(
-                    C::is_max,
-                    impl,
-                    n,
-                    k,
-                    ntotal,
-                    distances,
-                    labels,
-                    nullptr,
-                    context)));
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr);
+    if (scanner) {
+        auto* rh = scanner->handler();
+        rh->normalizers = normalizers.get();
 
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
-
-    if (skip & 4) {
-        // pass
+        if (!(skip & (2 | 4))) {
+            scanner->accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    context.norm_scaler,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            rh->end();
+        }
     } else {
-        pq4_accumulate_loop_qbs(
-                qbs,
-                ntotal2,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                context.norm_scaler,
-                get_block_stride());
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        // Fallback for indexes with custom handlers (e.g. RaBitQ)
+        std::unique_ptr<RH> handler(
+                static_cast<RH*>(make_knn_handler(
+                        C::is_max,
+                        impl,
+                        n,
+                        k,
+                        ntotal,
+                        distances,
+                        labels,
+                        nullptr,
+                        context)));
+
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (!(skip & 4)) {
+            pq4_accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    context.norm_scaler,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 
@@ -604,36 +636,57 @@ void IndexFastScan::search_implem_14(
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    std::unique_ptr<RH> handler(
-            static_cast<RH*>(make_knn_handler(
-                    C::is_max,
-                    impl,
-                    n,
-                    k,
-                    ntotal,
-                    distances,
-                    labels,
-                    nullptr,
-                    context)));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr);
+    if (scanner) {
+        auto* rh = scanner->handler();
+        rh->normalizers = normalizers.get();
 
-    if (skip & 4) {
-        // pass
+        if (!(skip & (2 | 4))) {
+            scanner->accumulate_loop(
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    context.norm_scaler,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            rh->end();
+        }
     } else {
-        pq4_accumulate_loop(
-                n,
-                ntotal2,
-                bbs,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                context.norm_scaler,
-                get_block_stride());
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        // Fallback for indexes with custom handlers (e.g. RaBitQ)
+        std::unique_ptr<RH> handler(
+                static_cast<RH*>(make_knn_handler(
+                        C::is_max,
+                        impl,
+                        n,
+                        k,
+                        ntotal,
+                        distances,
+                        labels,
+                        nullptr,
+                        context)));
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (!(skip & 4)) {
+            pq4_accumulate_loop(
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    context.norm_scaler,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 

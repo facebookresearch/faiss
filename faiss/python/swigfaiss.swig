@@ -599,11 +599,15 @@ void gpu_sync_all_devices()
 
 %include  <faiss/impl/FastScanDistancePostProcessing.h>
 
-// Ignore make_knn_handler methods — they return SIMDResultHandlerToFloat*
-// which is an internal SIMD type not exposed to Python.
+// Ignore internal SIMD dispatch types and methods not exposed to Python.
+%ignore faiss::PQ4CodeScanner;
+%ignore faiss::pq4_make_knn_scanner_impl;
+%ignore faiss::pq4_make_knn_scanner;
 %ignore faiss::IndexFastScan::make_knn_handler;
+%ignore faiss::IndexFastScan::make_knn_scanner;
 %ignore faiss::IndexIVFFastScan::make_knn_handler;
 %ignore faiss::IndexRaBitQFastScan::make_knn_handler;
+%ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
 %ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
 
 %include  <faiss/IndexFastScan.h>
