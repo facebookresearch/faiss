@@ -551,29 +551,6 @@ std::unique_ptr<PQ4CodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
             is_max, this, n, k, distances, labels, &context, is_multibit);
 }
 
-// Implementation of virtual make_knn_handler method
-SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
-        bool is_max,
-        int /* impl */,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* /* sel */,
-        const FastScanDistancePostProcessing& context,
-        const float* /* normalizers */) const {
-    const size_t ex_bits = rabitq.nb_bits - 1;
-    const bool is_multibit = ex_bits > 0;
-
-    if (is_max) {
-        return new IVFRaBitQHeapHandler<CMax<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    } else {
-        return new IVFRaBitQHeapHandler<CMin<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    }
-}
-
 /*********************************************************
  * IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler implementation
  *********************************************************/

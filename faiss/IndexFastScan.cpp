@@ -25,8 +25,6 @@
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
@@ -211,45 +209,6 @@ void estimators_from_tables_generic(
 }
 
 } // anonymous namespace
-
-// Default implementation of make_knn_handler with centralized fallback logic
-SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
-        bool is_max,
-        int impl,
-        idx_t n,
-        idx_t k,
-        size_t ntotal,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing&) const {
-    // Create default handlers based on k and impl
-    if (is_max) {
-        using HeapHC = HeapHandler<CMax<uint16_t, int>, false>;
-        using ReservoirHC = ReservoirHandler<CMax<uint16_t, int>, false>;
-        using SingleResultHC = SingleResultHandler<CMax<uint16_t, int>, false>;
-
-        if (k == 1) {
-            return new SingleResultHC(n, ntotal, distances, labels, sel);
-        } else if (impl % 2 == 0) {
-            return new HeapHC(n, ntotal, k, distances, labels, sel);
-        } else {
-            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
-        }
-    } else {
-        using HeapHC = HeapHandler<CMin<uint16_t, int>, false>;
-        using ReservoirHC = ReservoirHandler<CMin<uint16_t, int>, false>;
-        using SingleResultHC = SingleResultHandler<CMin<uint16_t, int>, false>;
-
-        if (k == 1) {
-            return new SingleResultHC(n, ntotal, distances, labels, sel);
-        } else if (impl % 2 == 0) {
-            return new HeapHC(n, ntotal, k, distances, labels, sel);
-        } else {
-            return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
-        }
-    }
-}
 
 std::unique_ptr<PQ4CodeScanner> IndexFastScan::make_knn_scanner(
         bool is_max,
@@ -482,7 +441,6 @@ void IndexFastScan::search_implem_12(
         idx_t* labels,
         int impl,
         const FastScanDistancePostProcessing& context) const {
-    using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -535,54 +493,21 @@ void IndexFastScan::search_implem_12(
 
     auto scanner = make_knn_scanner(
             C::is_max, n, k, ntotal, distances, labels, nullptr, context);
-    if (scanner) {
-        auto* rh = scanner->handler();
-        rh->normalizers = normalizers.get();
+    auto* rh = scanner->handler();
+    rh->normalizers = normalizers.get();
 
-        if (!(skip & (2 | 4))) {
-            scanner->accumulate_loop_qbs(
-                    qbs,
-                    ntotal2,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    context.norm_scaler,
-                    get_block_stride());
-        }
-        if (!(skip & 8)) {
-            rh->end();
-        }
-    } else {
-        // Fallback for indexes with custom handlers (e.g. RaBitQ)
-        std::unique_ptr<RH> handler(
-                static_cast<RH*>(make_knn_handler(
-                        C::is_max,
-                        impl,
-                        n,
-                        k,
-                        ntotal,
-                        distances,
-                        labels,
-                        nullptr,
-                        context)));
-
-        handler->disable = bool(skip & 2);
-        handler->normalizers = normalizers.get();
-
-        if (!(skip & 4)) {
-            pq4_accumulate_loop_qbs(
-                    qbs,
-                    ntotal2,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    *handler.get(),
-                    context.norm_scaler,
-                    get_block_stride());
-        }
-        if (!(skip & 8)) {
-            handler->end();
-        }
+    if (!(skip & (2 | 4))) {
+        scanner->accumulate_loop_qbs(
+                qbs,
+                ntotal2,
+                M2,
+                codes.get(),
+                LUT.get(),
+                context.norm_scaler,
+                get_block_stride());
+    }
+    if (!(skip & 8)) {
+        rh->end();
     }
 }
 
@@ -597,7 +522,6 @@ void IndexFastScan::search_implem_14(
         idx_t* labels,
         int impl,
         const FastScanDistancePostProcessing& context) const {
-    using RH = ResultHandlerCompare<C, false>;
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     int qbs2 = qbs == 0 ? 4 : qbs;
@@ -639,55 +563,22 @@ void IndexFastScan::search_implem_14(
 
     auto scanner = make_knn_scanner(
             C::is_max, n, k, ntotal, distances, labels, nullptr, context);
-    if (scanner) {
-        auto* rh = scanner->handler();
-        rh->normalizers = normalizers.get();
+    auto* rh = scanner->handler();
+    rh->normalizers = normalizers.get();
 
-        if (!(skip & (2 | 4))) {
-            scanner->accumulate_loop(
-                    n,
-                    ntotal2,
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    context.norm_scaler,
-                    get_block_stride());
-        }
-        if (!(skip & 8)) {
-            rh->end();
-        }
-    } else {
-        // Fallback for indexes with custom handlers (e.g. RaBitQ)
-        std::unique_ptr<RH> handler(
-                static_cast<RH*>(make_knn_handler(
-                        C::is_max,
-                        impl,
-                        n,
-                        k,
-                        ntotal,
-                        distances,
-                        labels,
-                        nullptr,
-                        context)));
-        handler->disable = bool(skip & 2);
-        handler->normalizers = normalizers.get();
-
-        if (!(skip & 4)) {
-            pq4_accumulate_loop(
-                    n,
-                    ntotal2,
-                    bbs,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    *handler.get(),
-                    context.norm_scaler,
-                    get_block_stride());
-        }
-        if (!(skip & 8)) {
-            handler->end();
-        }
+    if (!(skip & (2 | 4))) {
+        scanner->accumulate_loop(
+                n,
+                ntotal2,
+                bbs,
+                M2,
+                codes.get(),
+                LUT.get(),
+                context.norm_scaler,
+                get_block_stride());
+    }
+    if (!(skip & 8)) {
+        rh->end();
     }
 }
 

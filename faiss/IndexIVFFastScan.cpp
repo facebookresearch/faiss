@@ -29,8 +29,6 @@
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
@@ -398,28 +396,6 @@ void IndexIVFFastScan::range_search(
 
 namespace {
 
-template <class C>
-ResultHandlerCompare<C, true>* make_knn_handler_fixC(
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const float* normalizers) {
-    using HeapHC = HeapHandler<C, true>;
-    using ReservoirHC = ReservoirHandler<C, true>;
-    using SingleResultHC = SingleResultHandler<C, true>;
-
-    if (k == 1) {
-        return new SingleResultHC(n, 0, distances, labels, sel);
-    } else if (impl % 2 == 0) {
-        return new HeapHC(n, 0, k, distances, labels, sel, normalizers);
-    } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, 0, k, 2 * k, distances, labels, sel);
-    }
-}
-
 using CoarseQuantized = IndexIVFFastScan::CoarseQuantized;
 
 struct CoarseQuantizedWithBuffer : CoarseQuantized {
@@ -496,25 +472,6 @@ int compute_search_nslice(
 
 } // namespace
 
-SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
-        bool is_max,
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing&,
-        const float* normalizers) const {
-    if (is_max) {
-        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
-    } else {
-        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
-    }
-}
-
 std::unique_ptr<PQ4CodeScanner> IndexIVFFastScan::make_knn_scanner(
         bool is_max,
         idx_t n,
@@ -542,7 +499,6 @@ void IndexIVFFastScan::search_dispatch_implem(
             params ? params->quantizer_params : nullptr;
 
     bool is_max = !is_similarity_metric(metric_type);
-    using RH = SIMDResultHandlerToFloat;
 
     if (n == 0) {
         return;
@@ -602,96 +558,32 @@ void IndexIVFFastScan::search_dispatch_implem(
         if (!multiple_threads) {
             auto scanner = make_knn_scanner(
                     is_max, n, k, distances, labels, sel, context);
-            if (scanner) {
-                auto* rh = scanner->handler();
-                if (impl == 12 || impl == 13) {
-                    search_implem_12(
-                            n,
-                            x,
-                            *rh,
-                            cq,
-                            &ndis,
-                            &nlist_visited,
-                            context,
-                            params,
-                            scanner.get());
-                } else if (impl == 14 || impl == 15) {
-                    search_implem_14(
-                            n,
-                            x,
-                            k,
-                            distances,
-                            labels,
-                            cq,
-                            impl,
-                            context,
-                            params);
-                } else {
-                    search_implem_10(
-                            n,
-                            x,
-                            *rh,
-                            cq,
-                            &ndis,
-                            &nlist_visited,
-                            context,
-                            params,
-                            scanner.get());
-                }
+            auto* rh = scanner->handler();
+            if (impl == 12 || impl == 13) {
+                search_implem_12(
+                        n,
+                        x,
+                        *rh,
+                        cq,
+                        &ndis,
+                        &nlist_visited,
+                        context,
+                        params,
+                        *scanner);
+            } else if (impl == 14 || impl == 15) {
+                search_implem_14(
+                        n, x, k, distances, labels, cq, impl, context, params);
             } else {
-                // Fallback for indexes with custom handlers (e.g. RaBitQ)
-                if (impl == 12 || impl == 13) {
-                    std::unique_ptr<RH> handler(
-                            static_cast<RH*>(this->make_knn_handler(
-                                    is_max,
-                                    impl,
-                                    n,
-                                    k,
-                                    distances,
-                                    labels,
-                                    sel,
-                                    context)));
-                    search_implem_12(
-                            n,
-                            x,
-                            *handler.get(),
-                            cq,
-                            &ndis,
-                            &nlist_visited,
-                            context,
-                            params);
-                } else if (impl == 14 || impl == 15) {
-                    search_implem_14(
-                            n,
-                            x,
-                            k,
-                            distances,
-                            labels,
-                            cq,
-                            impl,
-                            context,
-                            params);
-                } else {
-                    std::unique_ptr<RH> handler(
-                            static_cast<RH*>(this->make_knn_handler(
-                                    is_max,
-                                    impl,
-                                    n,
-                                    k,
-                                    distances,
-                                    labels,
-                                    sel,
-                                    context)));
-                    search_implem_10(
-                            n,
-                            x,
-                            *handler.get(),
-                            cq,
-                            &ndis,
-                            &nlist_visited,
-                            context,
-                            params);
-                }
+                search_implem_10(
+                        n,
+                        x,
+                        *rh,
+                        cq,
+                        &ndis,
+                        &nlist_visited,
+                        context,
+                        params,
+                        *scanner);
             }
         } else {
             // explicitly slice over threads
@@ -726,63 +618,29 @@ void IndexIVFFastScan::search_dispatch_implem(
                             lab_i,
                             sel,
                             thread_context);
-                    if (scanner) {
-                        auto* rh = scanner->handler();
-                        if (impl == 12 || impl == 13) {
-                            search_implem_12(
-                                    i1 - i0,
-                                    x + i0 * d,
-                                    *rh,
-                                    cq_i,
-                                    &ndis,
-                                    &nlist_visited,
-                                    thread_context,
-                                    params,
-                                    scanner.get());
-                        } else {
-                            search_implem_10(
-                                    i1 - i0,
-                                    x + i0 * d,
-                                    *rh,
-                                    cq_i,
-                                    &ndis,
-                                    &nlist_visited,
-                                    thread_context,
-                                    params,
-                                    scanner.get());
-                        }
+                    auto* rh = scanner->handler();
+                    if (impl == 12 || impl == 13) {
+                        search_implem_12(
+                                i1 - i0,
+                                x + i0 * d,
+                                *rh,
+                                cq_i,
+                                &ndis,
+                                &nlist_visited,
+                                thread_context,
+                                params,
+                                *scanner);
                     } else {
-                        std::unique_ptr<RH> handler(
-                                static_cast<RH*>(this->make_knn_handler(
-                                        is_max,
-                                        impl,
-                                        i1 - i0,
-                                        k,
-                                        dis_i,
-                                        lab_i,
-                                        sel,
-                                        thread_context)));
-                        if (impl == 12 || impl == 13) {
-                            search_implem_12(
-                                    i1 - i0,
-                                    x + i0 * d,
-                                    *handler.get(),
-                                    cq_i,
-                                    &ndis,
-                                    &nlist_visited,
-                                    thread_context,
-                                    params);
-                        } else {
-                            search_implem_10(
-                                    i1 - i0,
-                                    x + i0 * d,
-                                    *handler.get(),
-                                    cq_i,
-                                    &ndis,
-                                    &nlist_visited,
-                                    thread_context,
-                                    params);
-                        }
+                        search_implem_10(
+                                i1 - i0,
+                                x + i0 * d,
+                                *rh,
+                                cq_i,
+                                &ndis,
+                                &nlist_visited,
+                                thread_context,
+                                params,
+                                *scanner);
                     }
                 }
             }
@@ -853,7 +711,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                     &nlist_visited,
                     context,
                     nullptr,
-                    scanner.get());
+                    *scanner);
         } else if (impl == 10) {
             search_implem_10(
                     n,
@@ -864,7 +722,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                     &nlist_visited,
                     context,
                     nullptr,
-                    scanner.get());
+                    *scanner);
         } else {
             FAISS_THROW_FMT("Range search implem %d not implemented", impl);
         }
@@ -897,7 +755,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                             &nlist_visited,
                             context,
                             nullptr,
-                            scanner.get());
+                            *scanner);
                 } else {
                     search_implem_10(
                             i1 - i0,
@@ -908,7 +766,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                             &nlist_visited,
                             context,
                             nullptr,
-                            scanner.get());
+                            *scanner);
                 }
             }
             pres.finalize();
@@ -1086,7 +944,7 @@ void IndexIVFFastScan::search_implem_10(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* /* params */,
-        PQ4CodeScanner* scanner) const {
+        PQ4CodeScanner& scanner) const {
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> dis_tables;
     AlignedTable<uint16_t> biases;
@@ -1142,28 +1000,15 @@ void IndexIVFFastScan::search_implem_10(
             probe_map[0] = static_cast<int>(j);
             handler.set_list_context(list_no, probe_map);
 
-            if (scanner) {
-                scanner->accumulate_loop(
-                        1,
-                        roundup(ls, bbs),
-                        bbs,
-                        M2,
-                        codes.get(),
-                        LUT,
-                        context.norm_scaler,
-                        get_block_stride());
-            } else {
-                pq4_accumulate_loop(
-                        1,
-                        roundup(ls, bbs),
-                        bbs,
-                        M2,
-                        codes.get(),
-                        LUT,
-                        handler,
-                        context.norm_scaler,
-                        get_block_stride());
-            }
+            scanner.accumulate_loop(
+                    1,
+                    roundup(ls, bbs),
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT,
+                    context.norm_scaler,
+                    get_block_stride());
 
             ndis += ls;
             nlist_visited++;
@@ -1184,7 +1029,7 @@ void IndexIVFFastScan::search_implem_12(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* /* params */,
-        PQ4CodeScanner* scanner) const {
+        PQ4CodeScanner& scanner) const {
     if (n == 0) { // does not work well with reservoir
         return;
     }
@@ -1308,26 +1153,14 @@ void IndexIVFFastScan::search_implem_12(
         }
         handler.set_list_context(list_no, probe_map);
 
-        if (scanner) {
-            scanner->accumulate_loop_qbs(
-                    qbs_for_list,
-                    list_size,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    context.norm_scaler,
-                    get_block_stride());
-        } else {
-            pq4_accumulate_loop_qbs(
-                    qbs_for_list,
-                    list_size,
-                    M2,
-                    codes.get(),
-                    LUT.get(),
-                    handler,
-                    context.norm_scaler,
-                    get_block_stride());
-        }
+        scanner.accumulate_loop_qbs(
+                qbs_for_list,
+                list_size,
+                M2,
+                codes.get(),
+                LUT.get(),
+                context.norm_scaler,
+                get_block_stride());
         // prepare for next loop
         i0 = i1;
     }
@@ -1462,22 +1295,7 @@ void IndexIVFFastScan::search_implem_14(
         // prepare the result handlers
         auto scanner = make_knn_scanner(
                 is_max, n, k, local_dis.data(), local_idx.data(), sel, context);
-        SIMDResultHandlerToFloat* handler;
-        std::unique_ptr<SIMDResultHandlerToFloat> handler_fallback;
-        if (scanner) {
-            handler = scanner->handler();
-        } else {
-            handler_fallback.reset(this->make_knn_handler(
-                    is_max,
-                    impl,
-                    n,
-                    k,
-                    local_dis.data(),
-                    local_idx.data(),
-                    sel,
-                    context));
-            handler = handler_fallback.get();
-        }
+        auto* handler = scanner->handler();
         handler->begin(normalizers.get());
 
         int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
@@ -1551,26 +1369,14 @@ void IndexIVFFastScan::search_implem_14(
             }
             handler->set_list_context(list_no, probe_map);
 
-            if (scanner) {
-                scanner->accumulate_loop_qbs(
-                        qbs_for_list,
-                        list_size,
-                        M2,
-                        codes.get(),
-                        LUT.get(),
-                        context.norm_scaler,
-                        get_block_stride());
-            } else {
-                pq4_accumulate_loop_qbs(
-                        qbs_for_list,
-                        list_size,
-                        M2,
-                        codes.get(),
-                        LUT.get(),
-                        *handler,
-                        context.norm_scaler,
-                        get_block_stride());
-            }
+            scanner->accumulate_loop_qbs(
+                    qbs_for_list,
+                    list_size,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    context.norm_scaler,
+                    get_block_stride());
         }
 
         // labels is in-place for HeapHC

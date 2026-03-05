@@ -544,27 +544,4 @@ std::unique_ptr<PQ4CodeScanner> IndexRaBitQFastScan::make_knn_scanner(
             rabitq.nb_bits > 1);
 }
 
-// Implementation of virtual make_knn_handler method
-SIMDResultHandlerToFloat* IndexRaBitQFastScan::make_knn_handler(
-        bool is_max,
-        int /*impl*/,
-        idx_t n,
-        idx_t k,
-        size_t /*ntotal*/,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing& context) const {
-    // Use runtime boolean for multi-bit mode
-    const bool multi_bit = rabitq.nb_bits > 1;
-
-    if (is_max) {
-        return new RaBitQHeapHandler<CMax<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, &context, multi_bit);
-    } else {
-        return new RaBitQHeapHandler<CMin<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, &context, multi_bit);
-    }
-}
-
 } // namespace faiss

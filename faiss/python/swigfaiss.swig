@@ -603,15 +603,11 @@ void gpu_sync_all_devices()
 %ignore faiss::PQ4CodeScanner;
 %ignore faiss::pq4_make_knn_scanner_impl;
 %ignore faiss::pq4_make_knn_scanner;
-%ignore faiss::IndexFastScan::make_knn_handler;
 %ignore faiss::IndexFastScan::make_knn_scanner;
-%ignore faiss::IndexIVFFastScan::make_knn_handler;
 %ignore faiss::IndexIVFFastScan::make_knn_scanner;
 %ignore faiss::IndexIVFFastScan::search_implem_10;
 %ignore faiss::IndexIVFFastScan::search_implem_12;
-%ignore faiss::IndexRaBitQFastScan::make_knn_handler;
 %ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
-%ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
 %ignore faiss::IndexIVFRaBitQFastScan::make_knn_scanner;
 
 %include  <faiss/IndexFastScan.h>
