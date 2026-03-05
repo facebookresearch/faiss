@@ -35,7 +35,7 @@ void kernel_accumulate_block(
         ResultHandler& res,
         const Scaler& scaler) {
     // distance accumulators
-    simd16uint16 accu[NQ][BB][4];
+    simd16uint16<SINGLE_SIMD_LEVEL_256> accu[NQ][BB][4];
 
     for (int q = 0; q < NQ; q++) {
         for (int b = 0; b < BB; b++) {
@@ -47,55 +47,67 @@ void kernel_accumulate_block(
     }
 
     for (int sq = 0; sq < nsq - scaler.nscale; sq += 2) {
-        simd32uint8 lut_cache[NQ];
+        simd32uint8<SINGLE_SIMD_LEVEL_256> lut_cache[NQ];
         for (int q = 0; q < NQ; q++) {
-            lut_cache[q] = simd32uint8(LUT);
+            lut_cache[q] = simd32uint8<SINGLE_SIMD_LEVEL_256>(LUT);
             LUT += 32;
         }
 
         for (int b = 0; b < BB; b++) {
-            simd32uint8 c = simd32uint8(codes);
+            simd32uint8<SINGLE_SIMD_LEVEL_256> c =
+                    simd32uint8<SINGLE_SIMD_LEVEL_256>(codes);
             codes += 32;
-            simd32uint8 mask(15);
-            simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
-            simd32uint8 clo = c & mask;
+            simd32uint8<SINGLE_SIMD_LEVEL_256> mask(15);
+            simd32uint8<SINGLE_SIMD_LEVEL_256> chi =
+                    simd32uint8<SINGLE_SIMD_LEVEL_256>(
+                            simd16uint16<SINGLE_SIMD_LEVEL_256>(c) >> 4) &
+                    mask;
+            simd32uint8<SINGLE_SIMD_LEVEL_256> clo = c & mask;
 
             for (int q = 0; q < NQ; q++) {
-                simd32uint8 lut = lut_cache[q];
-                simd32uint8 res0 = lut.lookup_2_lanes(clo);
-                simd32uint8 res1 = lut.lookup_2_lanes(chi);
+                simd32uint8<SINGLE_SIMD_LEVEL_256> lut = lut_cache[q];
+                simd32uint8<SINGLE_SIMD_LEVEL_256> res0 =
+                        lut.lookup_2_lanes(clo);
+                simd32uint8<SINGLE_SIMD_LEVEL_256> res1 =
+                        lut.lookup_2_lanes(chi);
 
-                accu[q][b][0] += simd16uint16(res0);
-                accu[q][b][1] += simd16uint16(res0) >> 8;
+                accu[q][b][0] += simd16uint16<SINGLE_SIMD_LEVEL_256>(res0);
+                accu[q][b][1] += simd16uint16<SINGLE_SIMD_LEVEL_256>(res0) >> 8;
 
-                accu[q][b][2] += simd16uint16(res1);
-                accu[q][b][3] += simd16uint16(res1) >> 8;
+                accu[q][b][2] += simd16uint16<SINGLE_SIMD_LEVEL_256>(res1);
+                accu[q][b][3] += simd16uint16<SINGLE_SIMD_LEVEL_256>(res1) >> 8;
             }
         }
     }
 
     for (int sq = 0; sq < scaler.nscale; sq += 2) {
-        simd32uint8 lut_cache[NQ];
+        simd32uint8<SINGLE_SIMD_LEVEL_256> lut_cache[NQ];
         for (int q = 0; q < NQ; q++) {
-            lut_cache[q] = simd32uint8(LUT);
+            lut_cache[q] = simd32uint8<SINGLE_SIMD_LEVEL_256>(LUT);
             LUT += 32;
         }
 
         for (int b = 0; b < BB; b++) {
-            simd32uint8 c = simd32uint8(codes);
+            simd32uint8<SINGLE_SIMD_LEVEL_256> c =
+                    simd32uint8<SINGLE_SIMD_LEVEL_256>(codes);
             codes += 32;
-            simd32uint8 mask(15);
-            simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
-            simd32uint8 clo = c & mask;
+            simd32uint8<SINGLE_SIMD_LEVEL_256> mask(15);
+            simd32uint8<SINGLE_SIMD_LEVEL_256> chi =
+                    simd32uint8<SINGLE_SIMD_LEVEL_256>(
+                            simd16uint16<SINGLE_SIMD_LEVEL_256>(c) >> 4) &
+                    mask;
+            simd32uint8<SINGLE_SIMD_LEVEL_256> clo = c & mask;
 
             for (int q = 0; q < NQ; q++) {
-                simd32uint8 lut = lut_cache[q];
+                simd32uint8<SINGLE_SIMD_LEVEL_256> lut = lut_cache[q];
 
-                simd32uint8 res0 = scaler.lookup(lut, clo);
+                simd32uint8<SINGLE_SIMD_LEVEL_256> res0 =
+                        scaler.lookup(lut, clo);
                 accu[q][b][0] += scaler.scale_lo(res0); // handle vectors 0..7
                 accu[q][b][1] += scaler.scale_hi(res0); // handle vectors 8..15
 
-                simd32uint8 res1 = scaler.lookup(lut, chi);
+                simd32uint8<SINGLE_SIMD_LEVEL_256> res1 =
+                        scaler.lookup(lut, chi);
                 accu[q][b][2] += scaler.scale_lo(res1); // handle vectors 16..23
                 accu[q][b][3] +=
                         scaler.scale_hi(res1); //  handle vectors 24..31
@@ -106,10 +118,12 @@ void kernel_accumulate_block(
     for (int q = 0; q < NQ; q++) {
         for (int b = 0; b < BB; b++) {
             accu[q][b][0] -= accu[q][b][1] << 8;
-            simd16uint16 dis0 = combine2x2(accu[q][b][0], accu[q][b][1]);
+            simd16uint16<SINGLE_SIMD_LEVEL_256> dis0 =
+                    combine2x2(accu[q][b][0], accu[q][b][1]);
 
             accu[q][b][2] -= accu[q][b][3] << 8;
-            simd16uint16 dis1 = combine2x2(accu[q][b][2], accu[q][b][3]);
+            simd16uint16<SINGLE_SIMD_LEVEL_256> dis1 =
+                    combine2x2(accu[q][b][2], accu[q][b][3]);
 
             res.handle(q, b, dis0, dis1);
         }

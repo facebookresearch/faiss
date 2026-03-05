@@ -190,13 +190,13 @@ void fvec_madd_simd(
     assert(is_aligned_pointer(b));
     assert(is_aligned_pointer(c));
     assert(n % 8 == 0);
-    simd8float32 bf8(bf);
+    simd8float32<SINGLE_SIMD_LEVEL_256> bf8(bf);
     n /= 8;
     for (size_t i = 0; i < n; i++) {
-        simd8float32 ai(a);
-        simd8float32 bi(b);
+        simd8float32<SINGLE_SIMD_LEVEL_256> ai(a);
+        simd8float32<SINGLE_SIMD_LEVEL_256> bi(b);
 
-        simd8float32 ci = fmadd(bf8, bi, ai);
+        simd8float32<SINGLE_SIMD_LEVEL_256> ci = fmadd(bf8, bi, ai);
         ci.store(c);
         c += 8;
         a += 8;
@@ -349,7 +349,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         const float* x = index.by_residual ? residual.data() : this->xi;
         float accu = 0;
         // implemented for all vector distances, although only L2 and IP are
-        // suppored by FastScan
+        // supported by FastScan
         with_VectorDistance(pq.dsub, index.metric_type, 0.0, [&](auto vd) {
             int m;
             for (m = 0; m + 1 < pq.M; m += 2) {

@@ -78,10 +78,11 @@ void kernel(
 
     // load a single point from x
     // load -2 * value
-    simd8float32 x_i[NX_POINTS_PER_LOOP][DIM];
+    simd8float32<SINGLE_SIMD_LEVEL_256> x_i[NX_POINTS_PER_LOOP][DIM];
     for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
         for (size_t dd = 0; dd < DIM; dd++) {
-            x_i[nx_k][dd] = simd8float32(-2 * *(xd_0 + nx_k * DIM + dd));
+            x_i[nx_k][dd] = simd8float32<SINGLE_SIMD_LEVEL_256>(
+                    -2 * *(xd_0 + nx_k * DIM + dd));
         }
     }
 
@@ -92,32 +93,36 @@ void kernel(
     }
 
     // distances and indices
-    simd8float32 min_distances_i[NX_POINTS_PER_LOOP];
+    simd8float32<SINGLE_SIMD_LEVEL_256> min_distances_i[NX_POINTS_PER_LOOP];
     for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
-        min_distances_i[nx_k] =
-                simd8float32(res.dis_tab[i + nx_k] - x_norm_i[nx_k]);
+        min_distances_i[nx_k] = simd8float32<SINGLE_SIMD_LEVEL_256>(
+                res.dis_tab[i + nx_k] - x_norm_i[nx_k]);
     }
 
-    simd8uint32 min_indices_i[NX_POINTS_PER_LOOP];
+    simd8uint32<SINGLE_SIMD_LEVEL_256> min_indices_i[NX_POINTS_PER_LOOP];
     for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
-        min_indices_i[nx_k] = simd8uint32((uint32_t)0);
+        min_indices_i[nx_k] = simd8uint32<SINGLE_SIMD_LEVEL_256>((uint32_t)0);
     }
 
     //
-    simd8uint32 current_indices = simd8uint32(0, 1, 2, 3, 4, 5, 6, 7);
-    const simd8uint32 indices_delta = simd8uint32(8);
+    simd8uint32<SINGLE_SIMD_LEVEL_256> current_indices =
+            simd8uint32<SINGLE_SIMD_LEVEL_256>(0, 1, 2, 3, 4, 5, 6, 7);
+    const simd8uint32<SINGLE_SIMD_LEVEL_256> indices_delta =
+            simd8uint32<SINGLE_SIMD_LEVEL_256>(8);
 
     // main loop
     size_t j = 0;
     for (; j < ny_p; j += NY_POINTS_PER_LOOP * 8) {
         // compute dot products for NX_POINTS from x and NY_POINTS from y
         // technically, we're multiplying -2x and y
-        simd8float32 dp_i[NX_POINTS_PER_LOOP][NY_POINTS_PER_LOOP];
+        simd8float32<SINGLE_SIMD_LEVEL_256> dp_i[NX_POINTS_PER_LOOP]
+                                                [NY_POINTS_PER_LOOP];
 
         // DIM 0 that uses MUL
         for (size_t ny_k = 0; ny_k < NY_POINTS_PER_LOOP; ny_k++) {
-            simd8float32 y_i =
-                    simd8float32(y_transposed + j + ny_k * 8 + ny * 0);
+            simd8float32<SINGLE_SIMD_LEVEL_256> y_i =
+                    simd8float32<SINGLE_SIMD_LEVEL_256>(
+                            y_transposed + j + ny_k * 8 + ny * 0);
             for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
                 dp_i[nx_k][ny_k] = x_i[nx_k][0] * y_i;
             }
@@ -126,8 +131,9 @@ void kernel(
         // other DIMs that use FMA
         for (size_t dd = 1; dd < DIM; dd++) {
             for (size_t ny_k = 0; ny_k < NY_POINTS_PER_LOOP; ny_k++) {
-                simd8float32 y_i =
-                        simd8float32(y_transposed + j + ny_k * 8 + ny * dd);
+                simd8float32<SINGLE_SIMD_LEVEL_256> y_i =
+                        simd8float32<SINGLE_SIMD_LEVEL_256>(
+                                y_transposed + j + ny_k * 8 + ny * dd);
 
                 for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
                     dp_i[nx_k][ny_k] =
@@ -138,7 +144,8 @@ void kernel(
 
         // compute y^2 + (-2x,y)
         for (size_t ny_k = 0; ny_k < NY_POINTS_PER_LOOP; ny_k++) {
-            simd8float32 y_l2_sqr = simd8float32(y_norms + j + ny_k * 8);
+            simd8float32<SINGLE_SIMD_LEVEL_256> y_l2_sqr =
+                    simd8float32<SINGLE_SIMD_LEVEL_256>(y_norms + j + ny_k * 8);
 
             for (size_t nx_k = 0; nx_k < NX_POINTS_PER_LOOP; nx_k++) {
                 dp_i[nx_k][ny_k] = dp_i[nx_k][ny_k] + y_l2_sqr;
