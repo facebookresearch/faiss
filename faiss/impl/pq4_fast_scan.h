@@ -9,8 +9,10 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/simd_levels.h>
 
 /** PQ4 SIMD packing and accumulation functions
  *
@@ -24,8 +26,12 @@
 
 namespace faiss {
 
+struct IDSelector;
 struct NormTableScaler;
+struct RangeSearchResult;
+struct RangeSearchPartialResult;
 struct SIMDResultHandler;
+struct SIMDResultHandlerToFloat;
 
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
@@ -220,5 +226,147 @@ void accumulate_to_mem(
         const uint8_t* codes,
         const uint8_t* LUT,
         uint16_t* accu);
+
+/** Virtual base for PQ4 scanner that bundles handler+kernel behind the
+ *  SIMD dispatch boundary. The handler and kernel share the same SIMDLevel,
+ *  which is selected at construction time via the factory. */
+struct PQ4CodeScanner {
+    virtual ~PQ4CodeScanner() = default;
+
+    /// The encapsulated handler (for begin/end/normalizers/set_list_context)
+    virtual SIMDResultHandlerToFloat* handler() = 0;
+
+    virtual void accumulate_loop(
+            int nq,
+            size_t nb,
+            int bbs,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            const NormTableScaler* scaler,
+            size_t block_stride) = 0;
+
+    virtual void accumulate_loop_qbs(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            const NormTableScaler* scaler,
+            size_t block_stride) = 0;
+};
+
+/// Per-SIMD implementation of the scanner factory (defined in per-SIMD TUs).
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner_impl(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map);
+
+/// Factory: creates a PQ4CodeScanner with the optimal SIMD level.
+/// The scanner encapsulates the result handler internally.
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map = false);
+
+/// Per-SIMD range scanner factories (defined in per-SIMD TUs).
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> pq4_make_range_scanner_impl(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> pq4_make_partial_range_scanner_impl(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel);
+
+/// Factory dispatch: range search scanner.
+std::unique_ptr<PQ4CodeScanner> pq4_make_range_scanner(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel);
+
+/// Factory dispatch: partial range search scanner (per-thread).
+std::unique_ptr<PQ4CodeScanner> pq4_make_partial_range_scanner(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel);
+
+struct IndexRaBitQFastScan;
+struct IndexIVFRaBitQFastScan;
+struct FastScanDistancePostProcessing;
+
+/// Per-SIMD RaBitQ scanner factory (flat).
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner_impl(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit);
+
+/// Factory dispatch: flat RaBitQ scanner.
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit);
+
+/// Per-SIMD IVF RaBitQ scanner factory.
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner_impl(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit);
+
+/// Factory dispatch: IVF RaBitQ scanner.
+std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit);
 
 } // namespace faiss
