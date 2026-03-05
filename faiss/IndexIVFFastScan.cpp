@@ -29,8 +29,6 @@
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
@@ -398,28 +396,6 @@ void IndexIVFFastScan::range_search(
 
 namespace {
 
-template <class C>
-ResultHandlerCompare<C, true>* make_knn_handler_fixC(
-        int impl,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const float* normalizers) {
-    using HeapHC = HeapHandler<C, true>;
-    using ReservoirHC = ReservoirHandler<C, true>;
-    using SingleResultHC = SingleResultHandler<C, true>;
-
-    if (k == 1) {
-        return new SingleResultHC(n, 0, distances, labels, sel);
-    } else if (impl % 2 == 0) {
-        return new HeapHC(n, 0, k, distances, labels, sel, normalizers);
-    } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, 0, k, 2 * k, distances, labels, sel);
-    }
-}
-
 using CoarseQuantized = IndexIVFFastScan::CoarseQuantized;
 
 struct CoarseQuantizedWithBuffer : CoarseQuantized {
@@ -496,23 +472,16 @@ int compute_search_nslice(
 
 } // namespace
 
-SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
+std::unique_ptr<PQ4CodeScanner> IndexIVFFastScan::make_knn_scanner(
         bool is_max,
-        int impl,
         idx_t n,
         idx_t k,
         float* distances,
         idx_t* labels,
         const IDSelector* sel,
-        const FastScanDistancePostProcessing&,
-        const float* normalizers) const {
-    if (is_max) {
-        return make_knn_handler_fixC<CMax<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
-    } else {
-        return make_knn_handler_fixC<CMin<uint16_t, int64_t>>(
-                impl, n, k, distances, labels, sel, normalizers);
-    }
+        const FastScanDistancePostProcessing&) const {
+    return pq4_make_knn_scanner(
+            is_max, n, 0, k, distances, labels, sel, /*with_id_map=*/true);
 }
 
 void IndexIVFFastScan::search_dispatch_implem(
@@ -530,7 +499,6 @@ void IndexIVFFastScan::search_dispatch_implem(
             params ? params->quantizer_params : nullptr;
 
     bool is_max = !is_similarity_metric(metric_type);
-    using RH = SIMDResultHandlerToFloat;
 
     if (n == 0) {
         return;
@@ -588,43 +556,35 @@ void IndexIVFFastScan::search_dispatch_implem(
         size_t ndis = 0, nlist_visited = 0;
 
         if (!multiple_threads) {
-            // clang-format off
+            auto scanner = make_knn_scanner(
+                    is_max, n, k, distances, labels, sel, context);
+            auto* rh = scanner->handler();
             if (impl == 12 || impl == 13) {
-                std::unique_ptr<RH> handler(
-                    static_cast<RH*>(this->make_knn_handler(
-                        is_max,
-                        impl,
-                        n,
-                        k,
-                        distances,
-                        labels,
-                        sel,
-                        context))
-                );
                 search_implem_12(
-                        n, x, *handler.get(),
-                        cq, &ndis, &nlist_visited, context, params);
+                        n,
+                        x,
+                        *rh,
+                        cq,
+                        &ndis,
+                        &nlist_visited,
+                        context,
+                        params,
+                        *scanner);
             } else if (impl == 14 || impl == 15) {
                 search_implem_14(
-                        n, x, k, distances, labels,
-                        cq, impl, context, params);
+                        n, x, k, distances, labels, cq, impl, context, params);
             } else {
-                std::unique_ptr<RH> handler(
-                    static_cast<RH*>(this->make_knn_handler(
-                        is_max,
-                        impl,
-                        n,
-                        k,
-                        distances,
-                        labels,
-                        sel,
-                        context))
-                );
                 search_implem_10(
-                        n, x, *handler.get(), cq,
-                        &ndis, &nlist_visited, context, params);
+                        n,
+                        x,
+                        *rh,
+                        cq,
+                        &ndis,
+                        &nlist_visited,
+                        context,
+                        params,
+                        *scanner);
             }
-            // clang-format on
         } else {
             // explicitly slice over threads
             int nslice = compute_search_nslice(this, n, cq.nprobe);
@@ -645,34 +605,43 @@ void IndexIVFFastScan::search_dispatch_implem(
                         cq_i.quantize_slice(quantizer, x, quantizer_params);
                     }
 
-                    // Create per-thread context with adjusted query_factors
-                    // pointer
                     FastScanDistancePostProcessing thread_context = context;
                     if (thread_context.query_factors != nullptr) {
                         thread_context.query_factors += i0 * nprobe;
                     }
 
-                    std::unique_ptr<RH> handler(
-                            static_cast<RH*>(this->make_knn_handler(
-                                    is_max,
-                                    impl,
-                                    i1 - i0,
-                                    k,
-                                    dis_i,
-                                    lab_i,
-                                    sel,
-                                    thread_context)));
-                    // clang-format off
+                    auto scanner = make_knn_scanner(
+                            is_max,
+                            i1 - i0,
+                            k,
+                            dis_i,
+                            lab_i,
+                            sel,
+                            thread_context);
+                    auto* rh = scanner->handler();
                     if (impl == 12 || impl == 13) {
                         search_implem_12(
-                                i1 - i0, x + i0 * d, *handler.get(),
-                                cq_i, &ndis, &nlist_visited, thread_context, params);
+                                i1 - i0,
+                                x + i0 * d,
+                                *rh,
+                                cq_i,
+                                &ndis,
+                                &nlist_visited,
+                                thread_context,
+                                params,
+                                *scanner);
                     } else {
                         search_implem_10(
-                                i1 - i0, x + i0 * d, *handler.get(),
-                                cq_i, &ndis, &nlist_visited, thread_context, params);
+                                i1 - i0,
+                                x + i0 * d,
+                                *rh,
+                                cq_i,
+                                &ndis,
+                                &nlist_visited,
+                                thread_context,
+                                params,
+                                *scanner);
                     }
-                    // clang-format on
                 }
             }
         }
@@ -730,20 +699,30 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     size_t ndis = 0, nlist_visited = 0;
 
     if (!multiple_threads) { // single thread
-        std::unique_ptr<SIMDResultHandlerToFloat> handler;
-        if (is_max) {
-            handler.reset(new RangeHandler<CMax<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        } else {
-            handler.reset(new RangeHandler<CMin<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        }
+        auto scanner = pq4_make_range_scanner(is_max, rres, radius, 0, sel);
+        auto* handler = scanner->handler();
         if (impl == 12) {
             search_implem_12(
-                    n, x, *handler.get(), cq, &ndis, &nlist_visited, context);
+                    n,
+                    x,
+                    *handler,
+                    cq,
+                    &ndis,
+                    &nlist_visited,
+                    context,
+                    nullptr,
+                    *scanner);
         } else if (impl == 10) {
             search_implem_10(
-                    n, x, *handler.get(), cq, &ndis, &nlist_visited, context);
+                    n,
+                    x,
+                    *handler,
+                    cq,
+                    &ndis,
+                    &nlist_visited,
+                    context,
+                    nullptr,
+                    *scanner);
         } else {
             FAISS_THROW_FMT("Range search implem %d not implemented", impl);
         }
@@ -762,35 +741,32 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                 if (!cq_i.done()) {
                     cq_i.quantize_slice(quantizer, x, quantizer_params);
                 }
-                std::unique_ptr<SIMDResultHandlerToFloat> handler;
-                if (is_max) {
-                    handler.reset(new PartialRangeHandler<
-                                  CMax<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                } else {
-                    handler.reset(new PartialRangeHandler<
-                                  CMin<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                }
+                auto scanner = pq4_make_partial_range_scanner(
+                        is_max, pres, radius, 0, i0, i1, sel);
+                auto* handler = scanner->handler();
 
                 if (impl == 12 || impl == 13) {
                     search_implem_12(
                             i1 - i0,
                             x + i0 * d,
-                            *handler.get(),
+                            *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
-                            context);
+                            context,
+                            nullptr,
+                            *scanner);
                 } else {
                     search_implem_10(
                             i1 - i0,
                             x + i0 * d,
-                            *handler.get(),
+                            *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
-                            context);
+                            context,
+                            nullptr,
+                            *scanner);
                 }
             }
             pres.finalize();
@@ -967,7 +943,8 @@ void IndexIVFFastScan::search_implem_10(
         size_t* ndis_out,
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
-        const IVFSearchParameters* /* params */) const {
+        const IVFSearchParameters* /* params */,
+        PQ4CodeScanner& scanner) const {
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> dis_tables;
     AlignedTable<uint16_t> biases;
@@ -1023,14 +1000,13 @@ void IndexIVFFastScan::search_implem_10(
             probe_map[0] = static_cast<int>(j);
             handler.set_list_context(list_no, probe_map);
 
-            pq4_accumulate_loop(
+            scanner.accumulate_loop(
                     1,
                     roundup(ls, bbs),
                     bbs,
                     M2,
                     codes.get(),
                     LUT,
-                    handler,
                     context.norm_scaler,
                     get_block_stride());
 
@@ -1052,7 +1028,8 @@ void IndexIVFFastScan::search_implem_12(
         size_t* ndis_out,
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
-        const IVFSearchParameters* /* params */) const {
+        const IVFSearchParameters* /* params */,
+        PQ4CodeScanner& scanner) const {
     if (n == 0) { // does not work well with reservoir
         return;
     }
@@ -1176,13 +1153,12 @@ void IndexIVFFastScan::search_implem_12(
         }
         handler.set_list_context(list_no, probe_map);
 
-        pq4_accumulate_loop_qbs(
+        scanner.accumulate_loop_qbs(
                 qbs_for_list,
                 list_size,
                 M2,
                 codes.get(),
                 LUT.get(),
-                handler,
                 context.norm_scaler,
                 get_block_stride());
         // prepare for next loop
@@ -1317,16 +1293,9 @@ void IndexIVFFastScan::search_implem_14(
         std::vector<float> local_dis(k * n);
 
         // prepare the result handlers
-        std::unique_ptr<SIMDResultHandlerToFloat> handler(
-                this->make_knn_handler(
-                        is_max,
-                        impl,
-                        n,
-                        k,
-                        local_dis.data(),
-                        local_idx.data(),
-                        sel,
-                        context));
+        auto scanner = make_knn_scanner(
+                is_max, n, k, local_dis.data(), local_idx.data(), sel, context);
+        auto* handler = scanner->handler();
         handler->begin(normalizers.get());
 
         int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
@@ -1400,13 +1369,12 @@ void IndexIVFFastScan::search_implem_14(
             }
             handler->set_list_context(list_no, probe_map);
 
-            pq4_accumulate_loop_qbs(
+            scanner->accumulate_loop_qbs(
                     qbs_for_list,
                     list_size,
                     M2,
                     codes.get(),
                     LUT.get(),
-                    *handler.get(),
                     context.norm_scaler,
                     get_block_stride());
         }

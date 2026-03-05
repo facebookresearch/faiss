@@ -7,16 +7,17 @@
 
 #pragma once
 
+#include <memory>
+
 #include <faiss/Index.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
 struct IDSelector;
-struct SIMDResultHandlerToFloat;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
@@ -122,26 +123,10 @@ struct IndexFastScan : Index {
             const float* x,
             const FastScanDistancePostProcessing& context) const = 0;
 
-    /** Create a KNN handler for this index type
-     *
-     * This method can be overridden by derived classes to provide
-     * specialized handlers (e.g., RaBitQHeapHandler for RaBitQ indexes).
-     * Base implementation creates standard handlers based on k and impl.
-     *
-     * @param is_max       whether to use CMax comparator (true) or CMin (false)
-     * @param impl         implementation number
-     * @param n            number of queries
-     * @param k            number of neighbors to find
-     * @param ntotal       total number of vectors in database
-     * @param distances    output distances array
-     * @param labels       output labels array
-     * @param sel          optional ID selector
-     * @param context      processing context for distance post-processing
-     * @return             pointer to created handler (never returns nullptr)
-     */
-    virtual SIMDResultHandlerToFloat* make_knn_handler(
+    /** Create a PQ4CodeScanner that bundles handler+kernel for SIMD dispatch.
+     *  The scanner's accumulate methods dispatch to the optimal SIMD level. */
+    virtual std::unique_ptr<PQ4CodeScanner> make_knn_scanner(
             bool is_max,
-            int impl,
             idx_t n,
             idx_t k,
             size_t ntotal,
