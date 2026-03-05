@@ -20,40 +20,44 @@
 namespace faiss {
 
 /// no-op handler
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct DummyScaler {
     static constexpr int nscale = 0;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
 
-    inline simd32uint8 lookup(const simd32uint8&, const simd32uint8&) const {
+    inline simd32uint8<SL256> lookup(
+            const simd32uint8<SL256>&,
+            const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
-        return simd32uint8(0);
+        return simd32uint8<SL256>(0);
     }
 
-    inline simd16uint16 scale_lo(const simd32uint8&) const {
+    inline simd16uint16<SL256> scale_lo(const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_lo should not be called.");
-        return simd16uint16(0);
+        return simd16uint16<SL256>(0);
     }
 
-    inline simd16uint16 scale_hi(const simd32uint8&) const {
+    inline simd16uint16<SL256> scale_hi(const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_hi should not be called.");
-        return simd16uint16(0);
+        return simd16uint16<SL256>(0);
     }
 
-#ifdef __AVX512F__
-    inline simd64uint8 lookup(const simd64uint8&, const simd64uint8&) const {
+    inline simd64uint8<SL> lookup(
+            const simd64uint8<SL>&,
+            const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
-        return simd64uint8(0);
+        return simd64uint8<SL>(0);
     }
 
-    inline simd32uint16 scale_lo(const simd64uint8&) const {
+    inline simd32uint16<SL> scale_lo(const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_lo should not be called.");
-        return simd32uint16(0);
+        return simd32uint16<SL>(0);
     }
 
-    inline simd32uint16 scale_hi(const simd64uint8&) const {
+    inline simd32uint16<SL> scale_hi(const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_hi should not be called.");
-        return simd32uint16(0);
+        return simd32uint16<SL>(0);
     }
-#endif
 
     template <class dist_t>
     inline dist_t scale_one(const dist_t&) const {
@@ -67,39 +71,47 @@ struct DummyScaler {
 struct NormTableScaler {
     static constexpr int nscale = 2;
     int scale_int;
-    simd16uint16 scale_simd;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> scale_simd;
 
     explicit NormTableScaler(int scale) : scale_int(scale), scale_simd(scale) {}
 
-    inline simd32uint8 lookup(const simd32uint8& lut, const simd32uint8& c)
-            const {
+    inline simd32uint8<SINGLE_SIMD_LEVEL_256> lookup(
+            const simd32uint8<SINGLE_SIMD_LEVEL_256>& lut,
+            const simd32uint8<SINGLE_SIMD_LEVEL_256>& c) const {
         return lut.lookup_2_lanes(c);
     }
 
-    inline simd16uint16 scale_lo(const simd32uint8& res) const {
-        return simd16uint16(res) * scale_simd;
+    inline simd16uint16<SINGLE_SIMD_LEVEL_256> scale_lo(
+            const simd32uint8<SINGLE_SIMD_LEVEL_256>& res) const {
+        return simd16uint16<SINGLE_SIMD_LEVEL_256>(res) * scale_simd;
     }
 
-    inline simd16uint16 scale_hi(const simd32uint8& res) const {
-        return (simd16uint16(res) >> 8) * scale_simd;
+    inline simd16uint16<SINGLE_SIMD_LEVEL_256> scale_hi(
+            const simd32uint8<SINGLE_SIMD_LEVEL_256>& res) const {
+        return (simd16uint16<SINGLE_SIMD_LEVEL_256>(res) >> 8) * scale_simd;
     }
 
-#ifdef __AVX512F__
-    inline simd64uint8 lookup(const simd64uint8& lut, const simd64uint8& c)
-            const {
+#if defined(__AVX512F__) && !defined(FAISS_ENABLE_DD)
+    inline simd64uint8<SINGLE_SIMD_LEVEL> lookup(
+            const simd64uint8<SINGLE_SIMD_LEVEL>& lut,
+            const simd64uint8<SINGLE_SIMD_LEVEL>& c) const {
         return lut.lookup_4_lanes(c);
     }
 
-    inline simd32uint16 scale_lo(const simd64uint8& res) const {
-        auto scale_simd_wide = simd32uint16(scale_simd, scale_simd);
-        return simd32uint16(res) * scale_simd_wide;
+    inline simd32uint16<SINGLE_SIMD_LEVEL> scale_lo(
+            const simd64uint8<SINGLE_SIMD_LEVEL>& res) const {
+        auto scale_simd_wide =
+                simd32uint16<SINGLE_SIMD_LEVEL>(scale_simd, scale_simd);
+        return simd32uint16<SINGLE_SIMD_LEVEL>(res) * scale_simd_wide;
     }
 
-    inline simd32uint16 scale_hi(const simd64uint8& res) const {
-        auto scale_simd_wide = simd32uint16(scale_simd, scale_simd);
-        return (simd32uint16(res) >> 8) * scale_simd_wide;
+    inline simd32uint16<SINGLE_SIMD_LEVEL> scale_hi(
+            const simd64uint8<SINGLE_SIMD_LEVEL>& res) const {
+        auto scale_simd_wide =
+                simd32uint16<SINGLE_SIMD_LEVEL>(scale_simd, scale_simd);
+        return (simd32uint16<SINGLE_SIMD_LEVEL>(res) >> 8) * scale_simd_wide;
     }
-#endif
+#endif // __AVX512F__ && !FAISS_ENABLE_DD
 
     // for non-SIMD implem 2, 3, 4
     template <class dist_t>

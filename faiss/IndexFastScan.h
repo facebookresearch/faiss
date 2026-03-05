@@ -7,14 +7,16 @@
 
 #pragma once
 
+#include <memory>
+
 #include <faiss/Index.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
 struct IDSelector;
 struct SIMDResultHandlerToFloat;
 
@@ -142,6 +144,20 @@ struct IndexFastScan : Index {
     virtual SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,
             int impl,
+            idx_t n,
+            idx_t k,
+            size_t ntotal,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            const FastScanDistancePostProcessing& context) const;
+
+    /** Create a PQ4CodeScanner that bundles handler+kernel for SIMD dispatch.
+     *  Returns nullptr if the index uses custom handlers (e.g. RaBitQ).
+     *  When non-null, the scanner's accumulate methods should be used instead
+     *  of the free pq4_accumulate_loop functions. */
+    virtual std::unique_ptr<PQ4CodeScanner> make_knn_scanner(
+            bool is_max,
             idx_t n,
             idx_t k,
             size_t ntotal,
