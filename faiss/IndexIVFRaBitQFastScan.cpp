@@ -538,6 +538,16 @@ void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
     }
 }
 
+std::unique_ptr<PQ4CodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
+        bool,
+        idx_t,
+        idx_t,
+        float*,
+        idx_t*,
+        const IDSelector*) const {
+    return nullptr; // RaBitQ uses custom handlers; scanner support pending
+}
+
 // Implementation of virtual make_knn_handler method
 SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
         bool is_max,
