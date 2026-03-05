@@ -91,7 +91,7 @@ struct NormTableScaler {
         return (simd16uint16<SINGLE_SIMD_LEVEL_256>(res) >> 8) * scale_simd;
     }
 
-#ifdef __AVX512F__
+#if defined(__AVX512F__) && !defined(FAISS_ENABLE_DD)
     inline simd64uint8<SINGLE_SIMD_LEVEL> lookup(
             const simd64uint8<SINGLE_SIMD_LEVEL>& lut,
             const simd64uint8<SINGLE_SIMD_LEVEL>& c) const {
@@ -111,7 +111,7 @@ struct NormTableScaler {
                 simd32uint16<SINGLE_SIMD_LEVEL>(scale_simd, scale_simd);
         return (simd32uint16<SINGLE_SIMD_LEVEL>(res) >> 8) * scale_simd_wide;
     }
-#endif
+#endif // __AVX512F__ && !FAISS_ENABLE_DD
 
     // for non-SIMD implem 2, 3, 4
     template <class dist_t>

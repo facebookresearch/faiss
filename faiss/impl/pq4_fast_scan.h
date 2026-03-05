@@ -9,8 +9,10 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/simd_levels.h>
 
 /** PQ4 SIMD packing and accumulation functions
  *
@@ -24,8 +26,10 @@
 
 namespace faiss {
 
+struct IDSelector;
 struct NormTableScaler;
 struct SIMDResultHandler;
+struct SIMDResultHandlerToFloat;
 
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
@@ -220,5 +224,58 @@ void accumulate_to_mem(
         const uint8_t* codes,
         const uint8_t* LUT,
         uint16_t* accu);
+
+/** Virtual base for PQ4 scanner that bundles handler+kernel behind the
+ *  SIMD dispatch boundary. The handler and kernel share the same SIMDLevel,
+ *  which is selected at construction time via the factory. */
+struct PQ4CodeScanner {
+    virtual ~PQ4CodeScanner() = default;
+
+    /// The encapsulated handler (for begin/end/normalizers/set_list_context)
+    virtual SIMDResultHandlerToFloat* handler() = 0;
+
+    virtual void accumulate_loop(
+            int nq,
+            size_t nb,
+            int bbs,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            const NormTableScaler* scaler,
+            size_t block_stride) = 0;
+
+    virtual void accumulate_loop_qbs(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            const NormTableScaler* scaler,
+            size_t block_stride) = 0;
+};
+
+/// Per-SIMD implementation of the scanner factory (defined in per-SIMD TUs).
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner_impl(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map);
+
+/// Factory: creates a PQ4CodeScanner with the optimal SIMD level.
+/// The scanner encapsulates the result handler internally.
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map = false);
 
 } // namespace faiss
