@@ -269,7 +269,8 @@ static inline uint16x8_t vshrq(uint16x8_t vec) {
 } // namespace detail
 
 /// vector of 16 elements in uint16
-struct simd16uint16 {
+template <>
+struct simd16uint16<SIMDLevel::ARM_NEON> {
     uint16x8x2_t data;
 
     simd16uint16() = default;
@@ -499,12 +500,12 @@ struct simd16uint16 {
         }
     }
 
-    simd16uint16 operator+=(const simd16uint16& other) {
+    simd16uint16& operator+=(const simd16uint16& other) {
         *this = *this + other;
         return *this;
     }
 
-    simd16uint16 operator-=(const simd16uint16& other) {
+    simd16uint16& operator-=(const simd16uint16& other) {
         *this = *this - other;
         return *this;
     }
@@ -629,21 +630,27 @@ struct simd16uint16 {
 };
 
 // not really a std::min because it returns an elementwise min
-inline simd16uint16 min(const simd16uint16& av, const simd16uint16& bv) {
-    return simd16uint16{
+inline simd16uint16<SIMDLevel::ARM_NEON> min(
+        const simd16uint16<SIMDLevel::ARM_NEON>& av,
+        const simd16uint16<SIMDLevel::ARM_NEON>& bv) {
+    return simd16uint16<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(av.data, bv.data).call<&vminq_u16>()};
 }
 
-inline simd16uint16 max(const simd16uint16& av, const simd16uint16& bv) {
-    return simd16uint16{
+inline simd16uint16<SIMDLevel::ARM_NEON> max(
+        const simd16uint16<SIMDLevel::ARM_NEON>& av,
+        const simd16uint16<SIMDLevel::ARM_NEON>& bv) {
+    return simd16uint16<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(av.data, bv.data).call<&vmaxq_u16>()};
 }
 
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
 // return (a0 + a1, b0 + b1)
 // TODO find a better name
-inline simd16uint16 combine2x2(const simd16uint16& a, const simd16uint16& b) {
-    return simd16uint16{uint16x8x2_t{
+inline simd16uint16<SIMDLevel::ARM_NEON> combine2x2(
+        const simd16uint16<SIMDLevel::ARM_NEON>& a,
+        const simd16uint16<SIMDLevel::ARM_NEON>& b) {
+    return simd16uint16<SIMDLevel::ARM_NEON>{uint16x8x2_t{
             vaddq_u16(a.data.val[0], a.data.val[1]),
             vaddq_u16(b.data.val[0], b.data.val[1])}};
 }
@@ -651,22 +658,24 @@ inline simd16uint16 combine2x2(const simd16uint16& a, const simd16uint16& b) {
 // compare d0 and d1 to thr, return 32 bits corresponding to the concatenation
 // of d0 and d1 with thr
 inline uint32_t cmp_ge32(
-        const simd16uint16& d0,
-        const simd16uint16& d1,
-        const simd16uint16& thr) {
+        const simd16uint16<SIMDLevel::ARM_NEON>& d0,
+        const simd16uint16<SIMDLevel::ARM_NEON>& d1,
+        const simd16uint16<SIMDLevel::ARM_NEON>& thr) {
     return detail::simdlib::cmp_xe32<&vcgeq_u16>(d0.data, d1.data, thr.data);
 }
 
 inline uint32_t cmp_le32(
-        const simd16uint16& d0,
-        const simd16uint16& d1,
-        const simd16uint16& thr) {
+        const simd16uint16<SIMDLevel::ARM_NEON>& d0,
+        const simd16uint16<SIMDLevel::ARM_NEON>& d1,
+        const simd16uint16<SIMDLevel::ARM_NEON>& thr) {
     return detail::simdlib::cmp_xe32<&vcleq_u16>(d0.data, d1.data, thr.data);
 }
 
 // hadd does not cross lanes
-inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
-    return simd16uint16{
+inline simd16uint16<SIMDLevel::ARM_NEON> hadd(
+        const simd16uint16<SIMDLevel::ARM_NEON>& a,
+        const simd16uint16<SIMDLevel::ARM_NEON>& b) {
+    return simd16uint16<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vpaddq_u16>()};
 }
 
@@ -682,14 +691,14 @@ inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd16uint16 candidateValues,
-        const simd16uint16 candidateIndices,
-        const simd16uint16 currentValues,
-        const simd16uint16 currentIndices,
-        simd16uint16& minValues,
-        simd16uint16& minIndices,
-        simd16uint16& maxValues,
-        simd16uint16& maxIndices) {
+        const simd16uint16<SIMDLevel::ARM_NEON> candidateValues,
+        const simd16uint16<SIMDLevel::ARM_NEON> candidateIndices,
+        const simd16uint16<SIMDLevel::ARM_NEON> currentValues,
+        const simd16uint16<SIMDLevel::ARM_NEON> currentIndices,
+        simd16uint16<SIMDLevel::ARM_NEON>& minValues,
+        simd16uint16<SIMDLevel::ARM_NEON>& minIndices,
+        simd16uint16<SIMDLevel::ARM_NEON>& maxValues,
+        simd16uint16<SIMDLevel::ARM_NEON>& maxIndices) {
     const uint16x8x2_t comparison =
             detail::simdlib::binary_func(
                     candidateValues.data, currentValues.data)
@@ -719,7 +728,8 @@ inline void cmplt_min_max_fast(
 }
 
 // vector of 32 unsigned 8-bit integers
-struct simd32uint8 {
+template <>
+struct simd32uint8<SIMDLevel::ARM_NEON> {
     uint8x16x2_t data;
 
     simd32uint8() = default;
@@ -853,7 +863,7 @@ struct simd32uint8 {
                                    .call<&vqtbl1q_u8>()};
     }
 
-    simd32uint8 operator+=(const simd32uint8& other) {
+    simd32uint8& operator+=(const simd32uint8& other) {
         *this = *this + other;
         return *this;
     }
@@ -879,37 +889,38 @@ struct simd32uint8 {
 
 // convert with saturation
 // careful: this does not cross lanes, so the order is weird
-inline simd32uint8 uint16_to_uint8_saturate(
-        const simd16uint16& a,
-        const simd16uint16& b) {
-    return simd32uint8{uint8x16x2_t{
+inline simd32uint8<SIMDLevel::ARM_NEON> uint16_to_uint8_saturate(
+        const simd16uint16<SIMDLevel::ARM_NEON>& a,
+        const simd16uint16<SIMDLevel::ARM_NEON>& b) {
+    return simd32uint8<SIMDLevel::ARM_NEON>{uint8x16x2_t{
             vqmovn_high_u16(vqmovn_u16(a.data.val[0]), b.data.val[0]),
             vqmovn_high_u16(vqmovn_u16(a.data.val[1]), b.data.val[1])}};
 }
 
 /// get most significant bit of each byte
-inline uint32_t get_MSBs(const simd32uint8& a) {
+inline uint32_t get_MSBs(const simd32uint8<SIMDLevel::ARM_NEON>& a) {
     using detail::simdlib::vmovmask_u8;
     return vmovmask_u8(a.data.val[0]) |
             static_cast<uint32_t>(vmovmask_u8(a.data.val[1])) << 16u;
 }
 
 /// use MSB of each byte of mask to select a byte between a and b
-inline simd32uint8 blendv(
-        const simd32uint8& a,
-        const simd32uint8& b,
-        const simd32uint8& mask) {
+inline simd32uint8<SIMDLevel::ARM_NEON> blendv(
+        const simd32uint8<SIMDLevel::ARM_NEON>& a,
+        const simd32uint8<SIMDLevel::ARM_NEON>& b,
+        const simd32uint8<SIMDLevel::ARM_NEON>& mask) {
     const auto msb = vdupq_n_u8(0x80);
     const uint8x16x2_t msb_mask = {
             vtstq_u8(mask.data.val[0], msb), vtstq_u8(mask.data.val[1], msb)};
     const uint8x16x2_t selected = {
             vbslq_u8(msb_mask.val[0], b.data.val[0], a.data.val[0]),
             vbslq_u8(msb_mask.val[1], b.data.val[1], a.data.val[1])};
-    return simd32uint8{selected};
+    return simd32uint8<SIMDLevel::ARM_NEON>{selected};
 }
 
 /// vector of 8 unsigned 32-bit integers
-struct simd8uint32 {
+template <>
+struct simd8uint32<SIMDLevel::ARM_NEON> {
     uint32x4x2_t data;
 
     simd8uint32() = default;
@@ -926,7 +937,8 @@ struct simd8uint32 {
     explicit simd8uint32(const T& x)
             : data{detail::simdlib::reinterpret_u32(x.data)} {}
 
-    explicit simd8uint32(const uint8_t* x) : simd8uint32(simd32uint8(x)) {}
+    explicit simd8uint32(const uint8_t* x)
+            : simd8uint32(simd32uint8<SIMDLevel::ARM_NEON>(x)) {}
 
     explicit simd8uint32(
             uint32_t u0,
@@ -1044,14 +1056,14 @@ struct simd8uint32 {
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd8uint32 candidateValues,
-        const simd8uint32 candidateIndices,
-        const simd8uint32 currentValues,
-        const simd8uint32 currentIndices,
-        simd8uint32& minValues,
-        simd8uint32& minIndices,
-        simd8uint32& maxValues,
-        simd8uint32& maxIndices) {
+        const simd8uint32<SIMDLevel::ARM_NEON> candidateValues,
+        const simd8uint32<SIMDLevel::ARM_NEON> candidateIndices,
+        const simd8uint32<SIMDLevel::ARM_NEON> currentValues,
+        const simd8uint32<SIMDLevel::ARM_NEON> currentIndices,
+        simd8uint32<SIMDLevel::ARM_NEON>& minValues,
+        simd8uint32<SIMDLevel::ARM_NEON>& minIndices,
+        simd8uint32<SIMDLevel::ARM_NEON>& maxValues,
+        simd8uint32<SIMDLevel::ARM_NEON>& maxIndices) {
     const uint32x4x2_t comparison =
             detail::simdlib::binary_func(
                     candidateValues.data, currentValues.data)
@@ -1084,7 +1096,8 @@ inline void cmplt_min_max_fast(
                     candidateIndices.data.val[1])};
 }
 
-struct simd8float32 {
+template <>
+struct simd8float32<SIMDLevel::ARM_NEON> {
     float32x4x2_t data;
 
     simd8float32() = default;
@@ -1167,13 +1180,13 @@ struct simd8float32 {
         return *this;
     }
 
-    simd8uint32 operator==(simd8float32 other) const {
-        return simd8uint32{
+    simd8uint32<SIMDLevel::ARM_NEON> operator==(simd8float32 other) const {
+        return simd8uint32<SIMDLevel::ARM_NEON>{
                 detail::simdlib::binary_func<::uint32x4x2_t>(data, other.data)
                         .call<&vceqq_f32>()};
     }
 
-    simd8uint32 operator!=(simd8float32 other) const {
+    simd8uint32<SIMDLevel::ARM_NEON> operator!=(simd8float32 other) const {
         return ~(*this == other);
     }
 
@@ -1194,27 +1207,33 @@ struct simd8float32 {
 };
 
 // hadd does not cross lanes
-inline simd8float32 hadd(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{
+inline simd8float32<SIMDLevel::ARM_NEON> hadd(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vpaddq_f32>()};
 }
 
-inline simd8float32 unpacklo(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{
+inline simd8float32<SIMDLevel::ARM_NEON> unpacklo(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vzip1q_f32>()};
 }
 
-inline simd8float32 unpackhi(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{
+inline simd8float32<SIMDLevel::ARM_NEON> unpackhi(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vzip2q_f32>()};
 }
 
 // compute a * b + c
-inline simd8float32 fmadd(
-        const simd8float32& a,
-        const simd8float32& b,
-        const simd8float32& c) {
-    return simd8float32{float32x4x2_t{
+inline simd8float32<SIMDLevel::ARM_NEON> fmadd(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b,
+        const simd8float32<SIMDLevel::ARM_NEON>& c) {
+    return simd8float32<SIMDLevel::ARM_NEON>{float32x4x2_t{
             vfmaq_f32(c.data.val[0], a.data.val[0], b.data.val[0]),
             vfmaq_f32(c.data.val[1], a.data.val[1], b.data.val[1])}};
 }
@@ -1251,10 +1270,10 @@ inline simd8float32 fmadd(
 // confusion for ppl who write in low-level SIMD instructions. Additionally,
 // these two ops (cmp and blend) are very often used together.
 inline void cmplt_and_blend_inplace(
-        const simd8float32 candidateValues,
-        const simd8uint32 candidateIndices,
-        simd8float32& lowestValues,
-        simd8uint32& lowestIndices) {
+        const simd8float32<SIMDLevel::ARM_NEON> candidateValues,
+        const simd8uint32<SIMDLevel::ARM_NEON> candidateIndices,
+        simd8float32<SIMDLevel::ARM_NEON>& lowestValues,
+        simd8uint32<SIMDLevel::ARM_NEON>& lowestIndices) {
     const auto comparison = detail::simdlib::binary_func<::uint32x4x2_t>(
                                     candidateValues.data, lowestValues.data)
                                     .call<&vcltq_f32>();
@@ -1291,14 +1310,14 @@ inline void cmplt_and_blend_inplace(
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd8float32 candidateValues,
-        const simd8uint32 candidateIndices,
-        const simd8float32 currentValues,
-        const simd8uint32 currentIndices,
-        simd8float32& minValues,
-        simd8uint32& minIndices,
-        simd8float32& maxValues,
-        simd8uint32& maxIndices) {
+        const simd8float32<SIMDLevel::ARM_NEON> candidateValues,
+        const simd8uint32<SIMDLevel::ARM_NEON> candidateIndices,
+        const simd8float32<SIMDLevel::ARM_NEON> currentValues,
+        const simd8uint32<SIMDLevel::ARM_NEON> currentIndices,
+        simd8float32<SIMDLevel::ARM_NEON>& minValues,
+        simd8uint32<SIMDLevel::ARM_NEON>& minIndices,
+        simd8float32<SIMDLevel::ARM_NEON>& maxValues,
+        simd8uint32<SIMDLevel::ARM_NEON>& maxIndices) {
     const uint32x4x2_t comparison =
             detail::simdlib::binary_func<::uint32x4x2_t>(
                     candidateValues.data, currentValues.data)
@@ -1334,29 +1353,39 @@ inline void cmplt_min_max_fast(
 namespace {
 
 // get even float32's of a and b, interleaved
-simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{
+simd8float32<SIMDLevel::ARM_NEON> geteven(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vuzp1q_f32>()};
 }
 
 // get odd float32's of a and b, interleaved
-simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{
+simd8float32<SIMDLevel::ARM_NEON> getodd(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
             detail::simdlib::binary_func(a.data, b.data).call<&vuzp2q_f32>()};
 }
 
 // 3 cycles
 // if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
-simd8float32 getlow128(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{float32x4x2_t{a.data.val[0], b.data.val[0]}};
+simd8float32<SIMDLevel::ARM_NEON> getlow128(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
+            float32x4x2_t{a.data.val[0], b.data.val[0]}};
 }
 
-simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
-    return simd8float32{float32x4x2_t{a.data.val[1], b.data.val[1]}};
+simd8float32<SIMDLevel::ARM_NEON> gethigh128(
+        const simd8float32<SIMDLevel::ARM_NEON>& a,
+        const simd8float32<SIMDLevel::ARM_NEON>& b) {
+    return simd8float32<SIMDLevel::ARM_NEON>{
+            float32x4x2_t{a.data.val[1], b.data.val[1]}};
 }
 
 // horizontal add: sum all 8 floats in the register
-inline float horizontal_add(const simd8float32& a) {
+inline float horizontal_add(const simd8float32<SIMDLevel::ARM_NEON>& a) {
     float32x4_t sum = vaddq_f32(a.data.val[0], a.data.val[1]);
     return vaddvq_f32(sum);
 }

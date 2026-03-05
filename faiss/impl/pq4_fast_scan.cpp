@@ -7,6 +7,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/impl/simd_result_handlers.h>
 
 #include <array>
@@ -348,6 +349,40 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+/***************************************************************
+ * PQ4CodeScanner factory dispatch
+ ***************************************************************/
+
+} // namespace faiss
+
+// NONE specialization: compiled in the base TU (no SIMD flags needed).
+#define THE_LEVEL_TO_DISPATCH faiss::SIMDLevel::NONE
+#include <faiss/impl/pq_4bit/dispatching.h>
+#undef THE_LEVEL_TO_DISPATCH
+
+namespace faiss {
+
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map) {
+    DISPATCH_SIMDLevel(
+            pq4_make_knn_scanner_impl,
+            is_max,
+            nq,
+            ntotal,
+            k,
+            distances,
+            ids,
+            sel,
+            with_id_map);
 }
 
 } // namespace faiss

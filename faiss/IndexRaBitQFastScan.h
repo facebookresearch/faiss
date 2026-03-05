@@ -159,7 +159,11 @@ struct RaBitQHeapHandler
             const FastScanDistancePostProcessing& context,
             bool multi_bit);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
+    void handle(
+            size_t q,
+            size_t b,
+            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) override;
 
     void begin(const float* norms);
 
