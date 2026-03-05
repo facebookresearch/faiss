@@ -114,7 +114,7 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name="faiss",
-    version="1.14.0",
+    version="1.14.1",
     description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
     long_description_content_type="text/plain",
