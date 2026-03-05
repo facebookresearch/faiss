@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/LookupTableScaler.h>
@@ -183,6 +184,31 @@ std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner_impl<
         return std::make_unique<
                 RaBitQScannerMixIn<RaBitQHeapHandler<C, false, RABITQ_SL>>>(
                 index, nq, k, distances, ids, sel, &context, multi_bit);
+    }
+}
+
+// IVF RaBitQ scanner factory
+template <>
+std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner_impl<
+        THE_LEVEL_TO_DISPATCH>(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit) {
+    if (is_max) {
+        using C = CMax<uint16_t, int64_t>;
+        using H = IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C, RABITQ_SL>;
+        return std::make_unique<RaBitQScannerMixIn<H>>(
+                index, nq, k, distances, ids, context, multi_bit);
+    } else {
+        using C = CMin<uint16_t, int64_t>;
+        using H = IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C, RABITQ_SL>;
+        return std::make_unique<RaBitQScannerMixIn<H>>(
+                index, nq, k, distances, ids, context, multi_bit);
     }
 }
 

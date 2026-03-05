@@ -13,6 +13,7 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
@@ -195,9 +196,11 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
      *
      * @tparam C Comparator type (CMin/CMax) for heap operations
      */
-    template <class C>
+    template <class C, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
     struct IVFRaBitQHeapHandler
-            : simd_result_handlers::ResultHandlerCompare<C, true> {
+            : simd_result_handlers::ResultHandlerCompare<C, true, SL> {
+        using SIMDResultHandler::handle;
+        static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
         const IndexIVFRaBitQFastScan* index;
         float* heap_distances; // [nq * k]
         int64_t* heap_labels;  // [nq * k]
@@ -230,38 +233,229 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 float* distances,
                 int64_t* labels,
                 const FastScanDistancePostProcessing* ctx = nullptr,
-                bool multibit = false);
+                bool multibit = false)
+                : simd_result_handlers::ResultHandlerCompare<C, true, SL>(
+                          nq_val,
+                          0,
+                          nullptr),
+                  index(idx),
+                  heap_distances(distances),
+                  heap_labels(labels),
+                  nq(nq_val),
+                  k(k_val),
+                  context(ctx),
+                  is_multibit(multibit),
+                  storage_size(idx->compute_per_vector_storage_size()),
+                  packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
+                  full_block_size(idx->get_block_stride()),
+                  packer(idx->get_CodePacker()) {
+            for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
+                heap_heapify<Cfloat>(
+                        k, heap_distances + q * k, heap_labels + q * k);
+            }
+        }
 
         void handle(
                 size_t q,
                 size_t b,
-                simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-                simd16uint16<SINGLE_SIMD_LEVEL_256> d1) override;
+                simd16uint16<SL256> d0,
+                simd16uint16<SL256> d1) {
+            using namespace rabitq_utils;
+            size_t local_q = q;
+            this->adjust_with_origin(q, d0, d1);
 
-        /// Override base class virtual method to receive context information
-        void set_list_context(size_t list_no, const std::vector<int>& probe_map)
-                override;
+            ALIGNED(32) uint16_t d32tab[32];
+            d0.store(d32tab);
+            d1.store(d32tab + 16);
 
-        void begin(const float* norms) override;
+            float* const heap_dis = heap_distances + q * k;
+            int64_t* const heap_ids = heap_labels + q * k;
 
-        void end() override;
+            FAISS_THROW_IF_NOT_FMT(
+                    !probe_indices.empty() && local_q < probe_indices.size(),
+                    "set_list_context() must be called before handle() - "
+                    "probe_indices size: %zu, local_q: %zu, global_q: %zu",
+                    probe_indices.size(),
+                    local_q,
+                    q);
 
-        size_t num_updates() override {
+            if (!context || !context->query_factors) {
+                FAISS_THROW_MSG("Query factors not available");
+            }
+
+            size_t probe_rank = probe_indices[local_q];
+            size_t nprobe_val =
+                    context->nprobe > 0 ? context->nprobe : index->nprobe;
+            size_t storage_idx = q * nprobe_val + probe_rank;
+            const auto& query_factors = context->query_factors[storage_idx];
+
+            const float one_a = this->normalizers
+                    ? (1.0f / this->normalizers[2 * q])
+                    : 1.0f;
+            const float bias =
+                    this->normalizers ? this->normalizers[2 * q + 1] : 0.0f;
+
+            uint64_t idx_base = this->j0 + b * 32;
+            if (idx_base >= this->ntotal)
+                return;
+            size_t max_positions =
+                    std::min<size_t>(32, this->ntotal - idx_base);
+
+            size_t local_1bit_evaluations = 0;
+            size_t local_multibit_evaluations = 0;
+
+            for (size_t j = 0; j < max_positions; j++) {
+                const int64_t result_id = this->adjust_id(b, j);
+                if (result_id < 0)
+                    continue;
+
+                const float normalized_distance = d32tab[j] * one_a + bias;
+                const uint8_t* base_ptr = get_block_aux_ptr(
+                        list_codes_ptr,
+                        idx_base + j,
+                        index->bbs,
+                        packed_block_size,
+                        full_block_size,
+                        storage_size);
+
+                if (is_multibit) {
+                    local_1bit_evaluations++;
+                    const SignBitFactorsWithError& full_factors =
+                            *reinterpret_cast<const SignBitFactorsWithError*>(
+                                    base_ptr);
+
+                    float dist_1bit = compute_1bit_adjusted_distance(
+                            normalized_distance,
+                            full_factors,
+                            query_factors,
+                            index->centered,
+                            index->qb,
+                            index->d);
+
+                    const bool is_similarity = index->metric_type ==
+                            MetricType::METRIC_INNER_PRODUCT;
+                    bool should_refine = should_refine_candidate(
+                            dist_1bit,
+                            full_factors.f_error,
+                            query_factors.g_error,
+                            heap_dis[0],
+                            is_similarity);
+
+                    if (should_refine) {
+                        local_multibit_evaluations++;
+                        size_t local_offset = this->j0 + b * 32 + j;
+                        float dist_full = compute_full_multibit_distance(
+                                result_id, local_q, q, local_offset);
+                        if (Cfloat::cmp(heap_dis[0], dist_full)) {
+                            heap_replace_top<Cfloat>(
+                                    k,
+                                    heap_dis,
+                                    heap_ids,
+                                    dist_full,
+                                    result_id);
+                            nup++;
+                        }
+                    }
+                } else {
+                    const auto& db_factors =
+                            *reinterpret_cast<const SignBitFactors*>(base_ptr);
+                    float adjusted_distance = compute_1bit_adjusted_distance(
+                            normalized_distance,
+                            db_factors,
+                            query_factors,
+                            index->centered,
+                            index->qb,
+                            index->d);
+                    if (Cfloat::cmp(heap_dis[0], adjusted_distance)) {
+                        heap_replace_top<Cfloat>(
+                                k,
+                                heap_dis,
+                                heap_ids,
+                                adjusted_distance,
+                                result_id);
+                        nup++;
+                    }
+                }
+            }
+
+#pragma omp atomic
+            rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
+#pragma omp atomic
+            rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
+        }
+
+        void set_list_context(
+                size_t list_no,
+                const std::vector<int>& probe_map) {
+            current_list_no = list_no;
+            probe_indices = probe_map;
+            list_codes_ptr = index->invlists->get_codes(list_no);
+        }
+
+        void begin(const float* norms) {
+            this->normalizers = norms;
+        }
+
+        void end() {
+#pragma omp parallel for
+            for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
+                heap_reorder<Cfloat>(
+                        k, heap_distances + q * k, heap_labels + q * k);
+            }
+        }
+
+        size_t num_updates() {
             return nup;
         }
 
        private:
-        /// Compute full multi-bit distance for a candidate vector (multi-bit
-        /// only)
-        /// @param db_idx Global database vector index
-        /// @param local_q Batch-local query index (for probe_indices access)
-        /// @param global_q Global query index (for storage indexing)
-        /// @param local_offset Offset within the current inverted list
         float compute_full_multibit_distance(
                 size_t /*db_idx*/,
                 size_t local_q,
                 size_t global_q,
-                size_t local_offset) const;
+                size_t local_offset) const {
+            using namespace rabitq_utils;
+            const size_t ex_bits = index->rabitq.nb_bits - 1;
+            const size_t dim = index->d;
+
+            const uint8_t* base_ptr = get_block_aux_ptr(
+                    list_codes_ptr,
+                    local_offset,
+                    index->bbs,
+                    packed_block_size,
+                    full_block_size,
+                    storage_size);
+
+            const size_t ex_code_size = (dim * ex_bits + 7) / 8;
+            const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
+            const ExtraBitsFactors& ex_fac =
+                    *reinterpret_cast<const ExtraBitsFactors*>(
+                            base_ptr + sizeof(SignBitFactorsWithError) +
+                            ex_code_size);
+
+            size_t probe_rank = probe_indices[local_q];
+            size_t nprobe_val =
+                    context->nprobe > 0 ? context->nprobe : index->nprobe;
+            size_t storage_idx = global_q * nprobe_val + probe_rank;
+            const auto& qf = context->query_factors[storage_idx];
+
+            InvertedLists::ScopedCodes list_codes(
+                    index->invlists, current_list_no);
+            std::vector<uint8_t> unpacked_code(index->code_size);
+            packer->unpack_1(
+                    list_codes.get(), local_offset, unpacked_code.data());
+
+            return rabitq_utils::compute_full_multibit_distance(
+                    unpacked_code.data(),
+                    ex_code,
+                    ex_fac,
+                    qf.rotated_q.data(),
+                    qf.qr_to_c_L2sqr,
+                    qf.qr_norm_L2sqr,
+                    dim,
+                    ex_bits,
+                    index->metric_type);
+        }
     };
 };
 
