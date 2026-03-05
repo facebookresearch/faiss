@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.14.1] - 2026-03-04
+
+Added
+- 5cf2c4203f0e52f67504f154ae4dbea84906bc1f Expose IndexBinaryFlat to the C API. (#4834)
+- db9ba35118d5230f92d466e17e19f5019ff8601d add hadamard transformation as an index for IVF (#4856)
+
+Changed
+- d2f8d3514003986ec9ed37c9b29d70818ccf686a removed conda-forge install documentation (#4843)
+- c90c9dc544a8a82108d6499d7fafb3c3dc6fda2f Update python to include 3.13 and 3.14 (#4859)
+- 8af77fe730f141d58fa7b0de8d3a33663e8c4b23 SIMD-optimize multi-bit RaBitQ inner product (#4850)
+- ccc934f58660f42da677d5c253b550e61b153d5f ScalarQuantizer: split SIMD specializations into per-SIMD TUs + DD dispatch (#4839)
+
+Fixed
+- 28f79bd98efcb00c2bbf50a7eb30abc507ae49b6 Fix SWIG 4.4 multi-phase init: replace import_array() with import_array1(-1) (#4846)
+
+
 ## [1.14.0] - 2026-03-02
 
 Added
@@ -906,7 +922,13 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.14.1...HEAD
+[1.14.1]: https://github.com/facebookresearch/faiss/compare/v1.14.0...v1.14.1
+[1.14.0]: https://github.com/facebookresearch/faiss/compare/v1.13.2...v1.14.0
+[1.13.2]: https://github.com/facebookresearch/faiss/compare/v1.13.1...v1.13.2
+[1.13.1]: https://github.com/facebookresearch/faiss/compare/v1.13.0...v1.13.1
+[1.13.0]: https://github.com/facebookresearch/faiss/compare/v1.12.0...v1.13.0
+[1.12.0]: https://github.com/facebookresearch/faiss/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/facebookresearch/faiss/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/facebookresearch/faiss/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/facebookresearch/faiss/compare/v1.8.0...v1.9.0
