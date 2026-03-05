@@ -70,6 +70,7 @@ struct QueryFactorsData {
 
     float qr_to_c_L2sqr = 0;
     float qr_norm_L2sqr = 0;
+    float q_dot_c = 0; // <query, centroid> for IP metric; 0 for L2
 
     float int_dot_scale = 1;
 
@@ -320,8 +321,7 @@ inline int extract_code_inline(
  * @param ex_code         packed ex-bit codes
  * @param ex_fac          ex-bit factors (f_add_ex, f_rescale_ex)
  * @param rotated_q       rotated query vector
- * @param qr_to_c_L2sqr   precomputed ||query_rotated - centroid||^2
- * @param qr_norm_L2sqr   precomputed ||query_rotated||^2 (0 for L2 metric)
+ * @param qr_base         precomputed base term: ||q-c||^2 for L2, <q,c> for IP
  * @param d               dimensionality
  * @param ex_bits         number of extra bits (nb_bits - 1)
  * @param metric_type     distance metric (L2 or Inner Product)
@@ -332,8 +332,7 @@ float compute_full_multibit_distance(
         const uint8_t* ex_code,
         const ExtraBitsFactors& ex_fac,
         const float* rotated_q,
-        float qr_to_c_L2sqr,
-        float qr_norm_L2sqr,
+        float qr_base,
         size_t d,
         size_t ex_bits,
         MetricType metric_type);

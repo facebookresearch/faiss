@@ -283,10 +283,11 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
             rotated_q,
             rotated_qq);
 
-    // Override query norm for inner product if original query is provided
     if (metric_type == MetricType::METRIC_INNER_PRODUCT &&
         original_query != nullptr) {
         query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(original_query, d);
+        query_factors.q_dot_c = query_factors.qr_norm_L2sqr -
+                fvec_inner_product(original_query, residual, d);
     }
 
     const size_t ex_bits = rabitq.nb_bits - 1;
@@ -813,8 +814,9 @@ float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),
-            query_factors.qr_to_c_L2sqr,
-            query_factors.qr_norm_L2sqr,
+            (index->metric_type == MetricType::METRIC_INNER_PRODUCT)
+                    ? query_factors.q_dot_c
+                    : query_factors.qr_to_c_L2sqr,
             dim,
             ex_bits,
             index->metric_type);

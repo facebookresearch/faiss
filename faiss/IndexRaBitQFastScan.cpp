@@ -751,8 +751,9 @@ float RaBitQHeapHandler<C, with_id_map>::compute_full_multibit_distance(
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),
-            query_factors.qr_to_c_L2sqr,
-            query_factors.qr_norm_L2sqr,
+            (rabitq_index->metric_type == MetricType::METRIC_INNER_PRODUCT)
+                    ? query_factors.q_dot_c
+                    : query_factors.qr_to_c_L2sqr,
             dim,
             ex_bits,
             rabitq_index->metric_type);
