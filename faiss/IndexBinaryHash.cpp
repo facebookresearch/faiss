@@ -11,6 +11,7 @@
 
 #include <cinttypes>
 #include <cstdio>
+#include <memory>
 #include <unordered_set>
 
 #include <faiss/utils/hamming.h>
@@ -286,18 +287,14 @@ IndexBinaryHashStats indexBinaryHash_stats;
  ******************************************************/
 
 IndexBinaryMultiHash::IndexBinaryMultiHash(int d, int nhash, int b)
-        : IndexBinary(d),
-          storage(new IndexBinaryFlat(d)),
-          own_fields(true),
-          maps(nhash),
-          nhash(nhash),
-          b(b),
-          nflip(0) {
+        : IndexBinary(d), maps(nhash), nhash(nhash), b(b), nflip(0) {
     FAISS_THROW_IF_NOT(nhash * b <= d);
+    storage = std::make_unique<IndexBinaryFlat>(d).release();
+    own_fields = true;
 }
 
 IndexBinaryMultiHash::IndexBinaryMultiHash()
-        : storage(nullptr), own_fields(true), nhash(0), b(0), nflip(0) {}
+        : storage(nullptr), nhash(0), b(0), nflip(0) {}
 
 IndexBinaryMultiHash::~IndexBinaryMultiHash() {
     if (own_fields) {
