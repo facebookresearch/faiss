@@ -9,6 +9,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
@@ -262,6 +263,16 @@ struct IndexIVFFastScan : IndexIVF {
             const FastScanDistancePostProcessing& context,
             const float* normalizers = nullptr) const;
 
+    /** Create a PQ4CodeScanner for IVF search (with_id_map=true).
+     *  Returns nullptr if the index uses custom handlers (e.g. RaBitQ). */
+    virtual std::unique_ptr<PQ4CodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel) const;
+
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
             idx_t n,
@@ -315,7 +326,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params = nullptr,
+            PQ4CodeScanner* scanner = nullptr) const;
 
     void search_implem_12(
             idx_t n,
@@ -325,7 +337,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params = nullptr,
+            PQ4CodeScanner* scanner = nullptr) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(
