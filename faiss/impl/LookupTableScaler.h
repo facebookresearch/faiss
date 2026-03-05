@@ -20,48 +20,44 @@
 namespace faiss {
 
 /// no-op handler
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct DummyScaler {
     static constexpr int nscale = 0;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
 
-    inline simd32uint8<SINGLE_SIMD_LEVEL_256> lookup(
-            const simd32uint8<SINGLE_SIMD_LEVEL_256>&,
-            const simd32uint8<SINGLE_SIMD_LEVEL_256>&) const {
+    inline simd32uint8<SL256> lookup(
+            const simd32uint8<SL256>&,
+            const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
-        return simd32uint8<SINGLE_SIMD_LEVEL_256>(0);
+        return simd32uint8<SL256>(0);
     }
 
-    inline simd16uint16<SINGLE_SIMD_LEVEL_256> scale_lo(
-            const simd32uint8<SINGLE_SIMD_LEVEL_256>&) const {
+    inline simd16uint16<SL256> scale_lo(const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_lo should not be called.");
-        return simd16uint16<SINGLE_SIMD_LEVEL_256>(0);
+        return simd16uint16<SL256>(0);
     }
 
-    inline simd16uint16<SINGLE_SIMD_LEVEL_256> scale_hi(
-            const simd32uint8<SINGLE_SIMD_LEVEL_256>&) const {
+    inline simd16uint16<SL256> scale_hi(const simd32uint8<SL256>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_hi should not be called.");
-        return simd16uint16<SINGLE_SIMD_LEVEL_256>(0);
+        return simd16uint16<SL256>(0);
     }
 
-#ifdef __AVX512F__
-    inline simd64uint8<SINGLE_SIMD_LEVEL> lookup(
-            const simd64uint8<SINGLE_SIMD_LEVEL>&,
-            const simd64uint8<SINGLE_SIMD_LEVEL>&) const {
+    inline simd64uint8<SL> lookup(
+            const simd64uint8<SL>&,
+            const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::lookup should not be called.");
-        return simd64uint8<SINGLE_SIMD_LEVEL>(0);
+        return simd64uint8<SL>(0);
     }
 
-    inline simd32uint16<SINGLE_SIMD_LEVEL> scale_lo(
-            const simd64uint8<SINGLE_SIMD_LEVEL>&) const {
+    inline simd32uint16<SL> scale_lo(const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_lo should not be called.");
-        return simd32uint16<SINGLE_SIMD_LEVEL>(0);
+        return simd32uint16<SL>(0);
     }
 
-    inline simd32uint16<SINGLE_SIMD_LEVEL> scale_hi(
-            const simd64uint8<SINGLE_SIMD_LEVEL>&) const {
+    inline simd32uint16<SL> scale_hi(const simd64uint8<SL>&) const {
         FAISS_THROW_MSG("DummyScaler::scale_hi should not be called.");
-        return simd32uint16<SINGLE_SIMD_LEVEL>(0);
+        return simd32uint16<SL>(0);
     }
-#endif
 
     template <class dist_t>
     inline dist_t scale_one(const dist_t&) const {

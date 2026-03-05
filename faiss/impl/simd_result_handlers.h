@@ -146,21 +146,22 @@ struct StoreResultHandler : SIMDResultHandler {
 };
 
 /** stores results in fixed-size matrix. */
-template <int NQ, int BB>
-struct FixedStorageHandler : SIMDResultHandler {
-    simd16uint16<SINGLE_SIMD_LEVEL_256> dis[NQ][BB];
+template <int NQ, int BB, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct FixedStorageHandler {
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    simd16uint16<SL256> dis[NQ][BB];
     int i0 = 0;
 
     void handle(
             size_t q,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) final {
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) {
         dis[q + i0][2 * b] = d0;
         dis[q + i0][2 * b + 1] = d1;
     }
 
-    void set_block_origin(size_t i0_in, size_t j0_in) final {
+    void set_block_origin(size_t i0_in, size_t j0_in) {
         this->i0 = i0_in;
         assert(j0_in == 0);
     }
@@ -173,14 +174,13 @@ struct FixedStorageHandler : SIMDResultHandler {
             }
         }
     }
-
-    virtual ~FixedStorageHandler() {}
 };
 
 /** Result handler that compares distances to check if they need to be kept */
-template <class C, bool with_id_map>
+template <class C, bool with_id_map, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct ResultHandlerCompare : SIMDResultHandlerToFloat {
     using TI = typename C::TI;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
 
     bool disable = false;
 
@@ -204,12 +204,12 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
     // adjust handler data for IVF.
     void adjust_with_origin(
             size_t& q,
-            simd16uint16<SINGLE_SIMD_LEVEL_256>& d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256>& d1) {
+            simd16uint16<SL256>& d0,
+            simd16uint16<SL256>& d1) {
         q += i0;
 
         if (dbias) {
-            simd16uint16<SINGLE_SIMD_LEVEL_256> dbias16(dbias[q]);
+            simd16uint16<SL256> dbias16(dbias[q]);
             d0 += dbias16;
             d1 += dbias16;
         }
@@ -233,9 +233,9 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
     uint32_t get_lt_mask(
             uint16_t thr,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) {
-        simd16uint16<SINGLE_SIMD_LEVEL_256> thr16(thr);
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) {
+        simd16uint16<SL256> thr16(thr);
         uint32_t lt_mask;
 
         constexpr bool keep_min = C::is_max;
@@ -263,11 +263,15 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
 };
 
 /** Special version for k=1 */
-template <class C, bool with_id_map = false>
-struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using RHC::normalizers;
 
     std::vector<int16_t> idis;
@@ -290,8 +294,8 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
     void handle(
             size_t q,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) final {
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) final {
         if (this->disable) {
             return;
         }
@@ -349,11 +353,15 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
 };
 
 /** Structure that collects results in a min- or max-heap */
-template <class C, bool with_id_map = false>
-struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using RHC::normalizers;
 
     std::vector<uint16_t> idis;
@@ -398,8 +406,8 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
     void handle(
             size_t q,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) final {
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) final {
         if (this->disable) {
             return;
         }
@@ -484,11 +492,15 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
  * reached. Then a partition sort is used to update the threshold. */
 
 /** Handler built from several ReservoirTopN (one per query) */
-template <class C, bool with_id_map = false>
-struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using RHC::normalizers;
 
     size_t capacity; // rounded up to multiple of 16
@@ -528,8 +540,8 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
     void handle(
             size_t q,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) final {
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) final {
         if (this->disable) {
             return;
         }
@@ -611,11 +623,15 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
  * have to be scaled using the scaler.
  */
 
-template <class C, bool with_id_map = false>
-struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
     using RHC::normalizers;
     using RHC::nq;
 
@@ -655,8 +671,8 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
     void handle(
             size_t q,
             size_t b,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
-            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) final {
+            simd16uint16<SL256> d0,
+            simd16uint16<SL256> d1) final {
         if (this->disable) {
             return;
         }
@@ -721,11 +737,14 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
 #ifndef SWIG
 
 // handler for a subset of queries
-template <class C, bool with_id_map = false>
-struct PartialRangeHandler : RangeHandler<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = RangeHandler<C, with_id_map>;
+    using RHC = RangeHandler<C, with_id_map, SL>;
     using RHC::normalizers;
     using RHC::nq, RHC::q0, RHC::triplets, RHC::n_per_query;
 
@@ -738,7 +757,11 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map> {
             size_t q0,
             size_t q1,
             const IDSelector* sel_in)
-            : RangeHandler<C, with_id_map>(*pres.res, radius, ntotal, sel_in),
+            : RangeHandler<C, with_id_map, SL>(
+                      *pres.res,
+                      radius,
+                      ntotal,
+                      sel_in),
               pres(pres) {
         nq = q1 - q0;
         this->q0 = q0;

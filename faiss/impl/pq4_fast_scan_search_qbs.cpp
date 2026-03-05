@@ -793,7 +793,7 @@ struct Run_pq4_accumulate_loop_qbs {
             pq4_accumulate_loop_qbs_fixed_scaler(
                     qbs, nb, nsq, codes, LUT, res, *scaler, block_stride);
         } else {
-            DummyScaler dummy;
+            DummyScaler<> dummy;
             pq4_accumulate_loop_qbs_fixed_scaler(
                     qbs, nb, nsq, codes, LUT, res, dummy, block_stride);
         }
@@ -840,7 +840,7 @@ void accumulate_to_mem(
         uint16_t* accu) {
     FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
     StoreResultHandler handler(accu, ntotal2);
-    DummyScaler scaler;
+    DummyScaler<> scaler;
     accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
 }
 

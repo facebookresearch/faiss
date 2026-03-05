@@ -202,7 +202,7 @@ void pq4_accumulate_loop_fixed_handler(
         pq4_accumulate_loop_fixed_scaler(
                 nq, nb, bbs, nsq, codes, LUT, res, *scaler, block_stride);
     } else {
-        DummyScaler dscaler;
+        DummyScaler<> dscaler;
         pq4_accumulate_loop_fixed_scaler(
                 nq, nb, bbs, nsq, codes, LUT, res, dscaler, block_stride);
     }
