@@ -604,8 +604,8 @@ template <class C>
 void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
         size_t q,
         size_t b,
-        simd16uint16 d0,
-        simd16uint16 d1) {
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d1) {
     // Store the original local query index before adjust_with_origin changes it
     size_t local_q = q;
     this->adjust_with_origin(q, d0, d1);

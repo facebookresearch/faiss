@@ -70,14 +70,15 @@ void accum_and_store_tab(
 
     // process in chunks of size (8 * NK) floats
     for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
+        simd8float32<SINGLE_SIMD_LEVEL_256> regs[NK];
         for (size_t ik = 0; ik < NK; ik++) {
             regs[ik].loadu(cbs[0] + kk + ik * 8);
         }
 
         for (size_t ij = 1; ij < M; ij++) {
             for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+                regs[ik] += simd8float32<SINGLE_SIMD_LEVEL_256>(
+                        cbs[ij] + kk + ik * 8);
             }
         }
 
@@ -125,20 +126,21 @@ void accum_and_add_tab(
 
     // process in chunks of size (8 * NK) floats
     for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
+        simd8float32<SINGLE_SIMD_LEVEL_256> regs[NK];
         for (size_t ik = 0; ik < NK; ik++) {
             regs[ik].loadu(cbs[0] + kk + ik * 8);
         }
 
         for (size_t ij = 1; ij < M; ij++) {
             for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+                regs[ik] += simd8float32<SINGLE_SIMD_LEVEL_256>(
+                        cbs[ij] + kk + ik * 8);
             }
         }
 
         // write the result
         for (size_t ik = 0; ik < NK; ik++) {
-            simd8float32 existing(output + kk + ik * 8);
+            simd8float32<SINGLE_SIMD_LEVEL_256> existing(output + kk + ik * 8);
             existing += regs[ik];
             existing.storeu(output + kk + ik * 8);
         }
@@ -183,26 +185,28 @@ void accum_and_finalize_tab(
 
     // process in chunks of size (8 * NK) floats
     for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
+        simd8float32<SINGLE_SIMD_LEVEL_256> regs[NK];
         for (size_t ik = 0; ik < NK; ik++) {
             regs[ik].loadu(cbs[0] + kk + ik * 8);
         }
 
         for (size_t ij = 1; ij < M; ij++) {
             for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
+                regs[ik] += simd8float32<SINGLE_SIMD_LEVEL_256>(
+                        cbs[ij] + kk + ik * 8);
             }
         }
 
-        simd8float32 two(2.0f);
+        simd8float32<SINGLE_SIMD_LEVEL_256> two(2.0f);
         for (size_t ik = 0; ik < NK; ik++) {
             // cent_distances[b * K + k] = distances_i[b] + cd_common[k]
             //     + 2 * dp[k];
 
-            simd8float32 common_v(cd_common + kk + ik * 8);
+            simd8float32<SINGLE_SIMD_LEVEL_256> common_v(
+                    cd_common + kk + ik * 8);
             common_v = fmadd(two, regs[ik], common_v);
 
-            common_v += simd8float32(distances_i[b]);
+            common_v += simd8float32<SINGLE_SIMD_LEVEL_256>(distances_i[b]);
             common_v.storeu(output + b * K + kk + ik * 8);
         }
     }
