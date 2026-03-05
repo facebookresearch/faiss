@@ -23,8 +23,9 @@ namespace scalar_quantizer {
 
 template <>
 struct Codec8bit<SIMDLevel::AVX2> : Codec8bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE simd8float32
-    decode_8_components(const uint8_t* code, size_t i) {
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> decode_8_components(
+            const uint8_t* code,
+            size_t i) {
         const uint64_t c8 = *(uint64_t*)(code + i);
 
         const __m128i i8 = _mm_set1_epi64x(c8);
@@ -32,14 +33,16 @@ struct Codec8bit<SIMDLevel::AVX2> : Codec8bit<SIMDLevel::NONE> {
         const __m256 f8 = _mm256_cvtepi32_ps(i32);
         const __m256 half_one_255 = _mm256_set1_ps(0.5f / 255.f);
         const __m256 one_255 = _mm256_set1_ps(1.f / 255.f);
-        return simd8float32(_mm256_fmadd_ps(f8, one_255, half_one_255));
+        return simd8float32<SIMDLevel::AVX2>(
+                _mm256_fmadd_ps(f8, one_255, half_one_255));
     }
 };
 
 template <>
 struct Codec4bit<SIMDLevel::AVX2> : Codec4bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE simd8float32
-    decode_8_components(const uint8_t* code, size_t i) {
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> decode_8_components(
+            const uint8_t* code,
+            size_t i) {
         uint32_t c4 = *(uint32_t*)(code + (i >> 1));
         uint32_t mask = 0x0f0f0f0f;
         uint32_t c4ev = c4 & mask;
@@ -56,7 +59,7 @@ struct Codec4bit<SIMDLevel::AVX2> : Codec4bit<SIMDLevel::NONE> {
         __m256 half = _mm256_set1_ps(0.5f);
         f8 = _mm256_add_ps(f8, half);
         __m256 one_255 = _mm256_set1_ps(1.f / 15.f);
-        return simd8float32(_mm256_mul_ps(f8, one_255));
+        return simd8float32<SIMDLevel::AVX2>(_mm256_mul_ps(f8, one_255));
     }
 };
 
@@ -83,8 +86,9 @@ struct Codec6bit<SIMDLevel::AVX2> : Codec6bit<SIMDLevel::NONE> {
         return c5;
     }
 
-    static FAISS_ALWAYS_INLINE simd8float32
-    decode_8_components(const uint8_t* code, size_t i) {
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> decode_8_components(
+            const uint8_t* code,
+            size_t i) {
         // // Faster code for Intel CPUs or AMD Zen3+, just keeping it here
         // // for the reference, maybe, it becomes used one day.
         // const uint16_t* data16 = (const uint16_t*)(code + (i >> 2) * 3);
@@ -104,7 +108,8 @@ struct Codec6bit<SIMDLevel::AVX2> : Codec6bit<SIMDLevel::NONE> {
         // not obviously faster
         const __m256 half_one_255 = _mm256_set1_ps(0.5f / 63.f);
         const __m256 one_255 = _mm256_set1_ps(1.f / 63.f);
-        return simd8float32(_mm256_fmadd_ps(f8, one_255, half_one_255));
+        return simd8float32<SIMDLevel::AVX2>(
+                _mm256_fmadd_ps(f8, one_255, half_one_255));
     }
 };
 
@@ -129,10 +134,11 @@ struct QuantizerTemplate<
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m256 xi = Codec::decode_8_components(code, i).f;
-        return simd8float32(_mm256_fmadd_ps(
+        return simd8float32<SIMDLevel::AVX2>(_mm256_fmadd_ps(
                 xi, _mm256_set1_ps(this->vdiff), _mm256_set1_ps(this->vmin)));
     }
 };
@@ -154,10 +160,11 @@ struct QuantizerTemplate<
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m256 xi = Codec::decode_8_components(code, i).f;
-        return simd8float32(_mm256_fmadd_ps(
+        return simd8float32<SIMDLevel::AVX2>(_mm256_fmadd_ps(
                 xi,
                 _mm256_loadu_ps(this->vdiff + i),
                 _mm256_loadu_ps(this->vmin + i)));
@@ -175,10 +182,11 @@ struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16<SIMDLevel::NONE> {
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m128i codei = _mm_loadu_si128((const __m128i*)(code + 2 * i));
-        return simd8float32(_mm256_cvtph_ps(codei));
+        return simd8float32<SIMDLevel::AVX2>(_mm256_cvtph_ps(codei));
     }
 };
 
@@ -193,12 +201,13 @@ struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16<SIMDLevel::NONE> {
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m128i code_128i = _mm_loadu_si128((const __m128i*)(code + 2 * i));
         __m256i code_256i = _mm256_cvtepu16_epi32(code_128i);
         code_256i = _mm256_slli_epi32(code_256i, 16);
-        return simd8float32(_mm256_castsi256_ps(code_256i));
+        return simd8float32<SIMDLevel::AVX2>(_mm256_castsi256_ps(code_256i));
     }
 };
 
@@ -214,11 +223,13 @@ struct Quantizer8bitDirect<SIMDLevel::AVX2>
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
         __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
-        return simd8float32(_mm256_cvtepi32_ps(y8));        // 8 * float32
+        return simd8float32<SIMDLevel::AVX2>(
+                _mm256_cvtepi32_ps(y8)); // 8 * float32
     }
 };
 
@@ -234,13 +245,15 @@ struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
-    reconstruct_8_components(const uint8_t* code, int i) const {
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::AVX2> reconstruct_8_components(
+            const uint8_t* code,
+            int i) const {
         __m128i x8 = _mm_loadl_epi64((__m128i*)(code + i)); // 8 * int8
         __m256i y8 = _mm256_cvtepu8_epi32(x8);              // 8 * int32
         __m256i c8 = _mm256_set1_epi32(128);
         __m256i z8 = _mm256_sub_epi32(y8, c8); // subtract 128 from all lanes
-        return simd8float32(_mm256_cvtepi32_ps(z8)); // 8 * float32
+        return simd8float32<SIMDLevel::AVX2>(
+                _mm256_cvtepi32_ps(z8)); // 8 * float32
     }
 };
 
@@ -257,25 +270,27 @@ struct SimilarityL2<SIMDLevel::AVX2> {
     const float *y, *yi;
 
     explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
-    simd8float32 accu8 = {};
+    simd8float32<SIMDLevel::AVX2> accu8 = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
         accu8.clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+    FAISS_ALWAYS_INLINE void add_8_components(simd8float32<SIMDLevel::AVX2> x) {
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
         __m256 tmp = _mm256_sub_ps(yiv, x.f);
-        accu8 = simd8float32(_mm256_fmadd_ps(tmp, tmp, accu8.f));
+        accu8 = simd8float32<SIMDLevel::AVX2>(
+                _mm256_fmadd_ps(tmp, tmp, accu8.f));
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
-            simd8float32 x,
-            simd8float32 y_2) {
+            simd8float32<SIMDLevel::AVX2> x,
+            simd8float32<SIMDLevel::AVX2> y_2) {
         __m256 tmp = _mm256_sub_ps(y_2.f, x.f);
-        accu8 = simd8float32(_mm256_fmadd_ps(tmp, tmp, accu8.f));
+        accu8 = simd8float32<SIMDLevel::AVX2>(
+                _mm256_fmadd_ps(tmp, tmp, accu8.f));
     }
 
     FAISS_ALWAYS_INLINE float result_8() {
@@ -302,22 +317,22 @@ struct SimilarityIP<SIMDLevel::AVX2> {
 
     explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
 
-    simd8float32 accu8 = {};
+    simd8float32<SIMDLevel::AVX2> accu8 = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
         accu8.clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
+    FAISS_ALWAYS_INLINE void add_8_components(simd8float32<SIMDLevel::AVX2> x) {
         __m256 yiv = _mm256_loadu_ps(yi);
         yi += 8;
         accu8.f = _mm256_fmadd_ps(yiv, x.f, accu8.f);
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
-            simd8float32 x1,
-            simd8float32 x2) {
+            simd8float32<SIMDLevel::AVX2> x1,
+            simd8float32<SIMDLevel::AVX2> x2) {
         accu8.f = _mm256_fmadd_ps(x1.f, x2.f, accu8.f);
     }
 
@@ -350,7 +365,7 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
         Similarity sim(x);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 xi =
+            simd8float32<SIMDLevel::AVX2> xi =
                     quant.reconstruct_8_components(code, static_cast<int>(i));
             sim.add_8_components(xi);
         }
@@ -362,9 +377,9 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
         Similarity sim(nullptr);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 x1 =
+            simd8float32<SIMDLevel::AVX2> x1 =
                     quant.reconstruct_8_components(code1, static_cast<int>(i));
-            simd8float32 x2 =
+            simd8float32<SIMDLevel::AVX2> x2 =
                     quant.reconstruct_8_components(code2, static_cast<int>(i));
             sim.add_8_components_2(x1, x2);
         }

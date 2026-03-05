@@ -7,6 +7,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/impl/simd_result_handlers.h>
 
 #include <array>
@@ -348,6 +349,85 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+/***************************************************************
+ * PQ4CodeScanner factory dispatch
+ ***************************************************************/
+
+} // namespace faiss
+
+// NONE specializations: compiled in the base TU (no SIMD flags needed).
+#define THE_LEVEL_TO_DISPATCH faiss::SIMDLevel::NONE
+#include <faiss/impl/pq_4bit/dispatching.h>
+#include <faiss/impl/pq_4bit/rabitq_dispatching.h>
+#undef THE_LEVEL_TO_DISPATCH
+
+namespace faiss {
+
+std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
+        bool is_max,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map) {
+    DISPATCH_SIMDLevel(
+            pq4_make_knn_scanner_impl,
+            is_max,
+            nq,
+            ntotal,
+            k,
+            distances,
+            ids,
+            sel,
+            with_id_map);
+}
+
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_make_knn_scanner_impl,
+            is_max,
+            index,
+            nq,
+            k,
+            distances,
+            ids,
+            sel,
+            context,
+            multi_bit);
+}
+
+std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_ivf_make_knn_scanner_impl,
+            is_max,
+            index,
+            nq,
+            k,
+            distances,
+            ids,
+            context,
+            multi_bit);
 }
 
 } // namespace faiss

@@ -598,14 +598,30 @@ void gpu_sync_all_devices()
 %include  <faiss/Index2Layer.h>
 
 %include  <faiss/impl/FastScanDistancePostProcessing.h>
+
+// Ignore internal SIMD dispatch types and methods not exposed to Python.
+%ignore faiss::PQ4CodeScanner;
+%ignore faiss::pq4_make_knn_scanner_impl;
+%ignore faiss::pq4_make_knn_scanner;
+%ignore faiss::IndexFastScan::make_knn_handler;
+%ignore faiss::IndexFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::make_knn_handler;
+%ignore faiss::IndexIVFFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::search_implem_10;
+%ignore faiss::IndexIVFFastScan::search_implem_12;
+%ignore faiss::IndexRaBitQFastScan::make_knn_handler;
+%ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_scanner;
+
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
 
-// NOTE(matthijs) let's not go into wrapping simdlib
-struct faiss::simd16uint16 {};
-
-%include  <faiss/impl/simd_result_handlers.h>
+// NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
+// class template. SWIG cannot handle this, and the Python API doesn't need
+// the internal SIMD handler types.
+// %include  <faiss/impl/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>

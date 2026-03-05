@@ -23,7 +23,7 @@ namespace scalar_quantizer {
 
 template <>
 struct Codec8bit<SIMDLevel::ARM_NEON> : Codec8bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE simd8float32
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
@@ -32,13 +32,13 @@ struct Codec8bit<SIMDLevel::ARM_NEON> : Codec8bit<SIMDLevel::NONE> {
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return simd8float32(float32x4x2_t{res1, res2});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{res1, res2});
     }
 };
 
 template <>
 struct Codec4bit<SIMDLevel::ARM_NEON> : Codec4bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE simd8float32
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
@@ -47,13 +47,13 @@ struct Codec4bit<SIMDLevel::ARM_NEON> : Codec4bit<SIMDLevel::NONE> {
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return simd8float32(float32x4x2_t{res1, res2});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{res1, res2});
     }
 };
 
 template <>
 struct Codec6bit<SIMDLevel::ARM_NEON> : Codec6bit<SIMDLevel::NONE> {
-    static FAISS_ALWAYS_INLINE simd8float32
+    static FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     decode_8_components(const uint8_t* code, size_t i) {
         float32_t result[8] = {};
         for (size_t j = 0; j < 8; j++) {
@@ -62,7 +62,7 @@ struct Codec6bit<SIMDLevel::ARM_NEON> : Codec6bit<SIMDLevel::NONE> {
         }
         float32x4_t res1 = vld1q_f32(result);
         float32x4_t res2 = vld1q_f32(result + 4);
-        return simd8float32(float32x4x2_t{res1, res2});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{res1, res2});
     }
 };
 
@@ -87,19 +87,15 @@ struct QuantizerTemplate<
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
-        simd8float32 xi = Codec::decode_8_components(code, i);
-        return simd8float32(
-                float32x4x2_t{
-                        vfmaq_n_f32(
-                                vdupq_n_f32(this->vmin),
-                                xi.data.val[0],
-                                this->vdiff),
-                        vfmaq_n_f32(
-                                vdupq_n_f32(this->vmin),
-                                xi.data.val[1],
-                                this->vdiff)});
+        simd8float32<SIMDLevel::ARM_NEON> xi =
+                Codec::decode_8_components(code, i);
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vfmaq_n_f32(
+                        vdupq_n_f32(this->vmin), xi.data.val[0], this->vdiff),
+                vfmaq_n_f32(
+                        vdupq_n_f32(this->vmin), xi.data.val[1], this->vdiff)});
     }
 };
 
@@ -120,19 +116,19 @@ struct QuantizerTemplate<
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
-        simd8float32 xi = Codec::decode_8_components(code, i);
-        return simd8float32(
-                float32x4x2_t{
-                        vfmaq_f32(
-                                vld1q_f32(this->vmin + i),
-                                xi.data.val[0],
-                                vld1q_f32(this->vdiff + i)),
-                        vfmaq_f32(
-                                vld1q_f32(this->vmin + i + 4),
-                                xi.data.val[1],
-                                vld1q_f32(this->vdiff + i + 4))});
+        simd8float32<SIMDLevel::ARM_NEON> xi =
+                Codec::decode_8_components(code, i);
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vfmaq_f32(
+                        vld1q_f32(this->vmin + i),
+                        xi.data.val[0],
+                        vld1q_f32(this->vdiff + i)),
+                vfmaq_f32(
+                        vld1q_f32(this->vmin + i + 4),
+                        xi.data.val[1],
+                        vld1q_f32(this->vdiff + i + 4))});
     }
 };
 
@@ -147,13 +143,12 @@ struct QuantizerFP16<SIMDLevel::ARM_NEON> : QuantizerFP16<SIMDLevel::NONE> {
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
         uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 * i));
-        return simd8float32(
-                float32x4x2_t{
-                        vcvt_f32_f16(vreinterpret_f16_u16(codei.val[0])),
-                        vcvt_f32_f16(vreinterpret_f16_u16(codei.val[1]))});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vcvt_f32_f16(vreinterpret_f16_u16(codei.val[0])),
+                vcvt_f32_f16(vreinterpret_f16_u16(codei.val[1]))});
     }
 };
 
@@ -168,15 +163,13 @@ struct QuantizerBF16<SIMDLevel::ARM_NEON> : QuantizerBF16<SIMDLevel::NONE> {
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
         uint16x4x2_t codei = vld1_u16_x2((const uint16_t*)(code + 2 * i));
-        return simd8float32(
-                float32x4x2_t{
-                        vreinterpretq_f32_u32(
-                                vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
-                        vreinterpretq_f32_u32(
-                                vshlq_n_u32(vmovl_u16(codei.val[1]), 16))});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vreinterpretq_f32_u32(vshlq_n_u32(vmovl_u16(codei.val[0]), 16)),
+                vreinterpretq_f32_u32(
+                        vshlq_n_u32(vmovl_u16(codei.val[1]), 16))});
     }
 };
 
@@ -192,16 +185,15 @@ struct Quantizer8bitDirect<SIMDLevel::ARM_NEON>
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
         uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
         uint16x8_t y8 = vmovl_u8(x8);
         uint16x4_t y8_0 = vget_low_u16(y8);
         uint16x4_t y8_1 = vget_high_u16(y8);
-        return simd8float32(
-                float32x4x2_t{
-                        vcvtq_f32_u32(vmovl_u16(y8_0)),
-                        vcvtq_f32_u32(vmovl_u16(y8_1))});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vcvtq_f32_u32(vmovl_u16(y8_0)),
+                vcvtq_f32_u32(vmovl_u16(y8_1))});
     }
 };
 
@@ -217,7 +209,7 @@ struct Quantizer8bitDirectSigned<SIMDLevel::ARM_NEON>
         assert(d % 8 == 0);
     }
 
-    FAISS_ALWAYS_INLINE simd8float32
+    FAISS_ALWAYS_INLINE simd8float32<SIMDLevel::ARM_NEON>
     reconstruct_8_components(const uint8_t* code, int i) const {
         uint8x8_t x8 = vld1_u8((const uint8_t*)(code + i));
         uint16x8_t y8 = vmovl_u8(x8);
@@ -225,10 +217,9 @@ struct Quantizer8bitDirectSigned<SIMDLevel::ARM_NEON>
                 vsubq_u16(y8, vdupq_n_u16(128))); // subtract 128 from all lanes
         int16x4_t z8_0 = vget_low_s16(z8);
         int16x4_t z8_1 = vget_high_s16(z8);
-        return simd8float32(
-                float32x4x2_t{
-                        vcvtq_f32_s32(vmovl_s16(z8_0)),
-                        vcvtq_f32_s32(vmovl_s16(z8_1))});
+        return simd8float32<SIMDLevel::ARM_NEON>(float32x4x2_t{
+                vcvtq_f32_s32(vmovl_s16(z8_0)),
+                vcvtq_f32_s32(vmovl_s16(z8_1))});
     }
 };
 
@@ -246,24 +237,25 @@ struct SimilarityL2<SIMDLevel::ARM_NEON> {
 
     explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
 
-    simd8float32 accu8;
+    simd8float32<SIMDLevel::ARM_NEON> accu8;
 
     FAISS_ALWAYS_INLINE void begin_8() {
         accu8.clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
-        simd8float32 yiv(yi);
+    FAISS_ALWAYS_INLINE void add_8_components(
+            simd8float32<SIMDLevel::ARM_NEON> x) {
+        simd8float32<SIMDLevel::ARM_NEON> yiv(yi);
         yi += 8;
-        simd8float32 tmp = yiv - x;
+        simd8float32<SIMDLevel::ARM_NEON> tmp = yiv - x;
         accu8 = accu8 + tmp * tmp;
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
-            simd8float32 x,
-            simd8float32 y_2) {
-        simd8float32 tmp = y_2 - x;
+            simd8float32<SIMDLevel::ARM_NEON> x,
+            simd8float32<SIMDLevel::ARM_NEON> y_2) {
+        simd8float32<SIMDLevel::ARM_NEON> tmp = y_2 - x;
         accu8 = accu8 + tmp * tmp;
     }
 
@@ -282,22 +274,23 @@ struct SimilarityIP<SIMDLevel::ARM_NEON> {
 
     explicit SimilarityIP(const float* y) : y(y), yi(nullptr) {}
 
-    simd8float32 accu8;
+    simd8float32<SIMDLevel::ARM_NEON> accu8;
 
     FAISS_ALWAYS_INLINE void begin_8() {
         accu8.clear();
         yi = y;
     }
 
-    FAISS_ALWAYS_INLINE void add_8_components(simd8float32 x) {
-        simd8float32 yiv(yi);
+    FAISS_ALWAYS_INLINE void add_8_components(
+            simd8float32<SIMDLevel::ARM_NEON> x) {
+        simd8float32<SIMDLevel::ARM_NEON> yiv(yi);
         yi += 8;
         accu8 = accu8 + yiv * x;
     }
 
     FAISS_ALWAYS_INLINE void add_8_components_2(
-            simd8float32 x1,
-            simd8float32 x2) {
+            simd8float32<SIMDLevel::ARM_NEON> x1,
+            simd8float32<SIMDLevel::ARM_NEON> x2) {
         accu8 = accu8 + x1 * x2;
     }
 
@@ -324,7 +317,8 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
         Similarity sim(x);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 xi = quant.reconstruct_8_components(code, i);
+            simd8float32<SIMDLevel::ARM_NEON> xi =
+                    quant.reconstruct_8_components(code, i);
             sim.add_8_components(xi);
         }
         return sim.result_8();
@@ -335,8 +329,10 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
         Similarity sim(nullptr);
         sim.begin_8();
         for (size_t i = 0; i < quant.d; i += 8) {
-            simd8float32 x1 = quant.reconstruct_8_components(code1, i);
-            simd8float32 x2 = quant.reconstruct_8_components(code2, i);
+            simd8float32<SIMDLevel::ARM_NEON> x1 =
+                    quant.reconstruct_8_components(code1, i);
+            simd8float32<SIMDLevel::ARM_NEON> x2 =
+                    quant.reconstruct_8_components(code2, i);
             sim.add_8_components_2(x1, x2);
         }
         return sim.result_8();

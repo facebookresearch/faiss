@@ -16,7 +16,8 @@
 
 namespace faiss {
 
-// HeapWithBucketsForHamming32 uses simd8uint32 under the hood.
+// HeapWithBucketsForHamming32 uses simd8uint32<SINGLE_SIMD_LEVEL_256> under the
+// hood.
 
 template <typename C, uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
 struct HeapWithBucketsForHamming32 {
@@ -79,19 +80,21 @@ struct HeapWithBucketsForHamming32<
 
         // main loop
         for (uint32_t beam_index = 0; beam_index < beam_size; beam_index++) {
-            simd8uint32 min_distances_i[NBUCKETS_8][N];
-            simd8uint32 min_indices_i[NBUCKETS_8][N];
+            simd8uint32<SINGLE_SIMD_LEVEL_256> min_distances_i[NBUCKETS_8][N];
+            simd8uint32<SINGLE_SIMD_LEVEL_256> min_indices_i[NBUCKETS_8][N];
 
             for (uint32_t j = 0; j < NBUCKETS_8; j++) {
                 for (uint32_t p = 0; p < N; p++) {
-                    min_distances_i[j][p] =
-                            simd8uint32(std::numeric_limits<int32_t>::max());
-                    min_indices_i[j][p] = simd8uint32(0, 1, 2, 3, 4, 5, 6, 7);
+                    min_distances_i[j][p] = simd8uint32<SINGLE_SIMD_LEVEL_256>(
+                            std::numeric_limits<int32_t>::max());
+                    min_indices_i[j][p] = simd8uint32<SINGLE_SIMD_LEVEL_256>(
+                            0, 1, 2, 3, 4, 5, 6, 7);
                 }
             }
 
-            simd8uint32 current_indices(0, 1, 2, 3, 4, 5, 6, 7);
-            const simd8uint32 indices_delta(NBUCKETS);
+            simd8uint32<SINGLE_SIMD_LEVEL_256> current_indices(
+                    0, 1, 2, 3, 4, 5, 6, 7);
+            const simd8uint32<SINGLE_SIMD_LEVEL_256> indices_delta(NBUCKETS);
 
             const uint32_t nb = (n_per_beam / NBUCKETS) * NBUCKETS;
 
@@ -118,15 +121,16 @@ struct HeapWithBucketsForHamming32<
                     }
 
                     // loop. Compiler should get rid of unneeded ops
-                    simd8uint32 distance_candidate;
+                    simd8uint32<SINGLE_SIMD_LEVEL_256> distance_candidate;
                     distance_candidate.loadu(hamming_distances);
-                    simd8uint32 indices_candidate = current_indices;
+                    simd8uint32<SINGLE_SIMD_LEVEL_256> indices_candidate =
+                            current_indices;
 
                     for (uint32_t p = 0; p < N; p++) {
-                        simd8uint32 min_distances_new;
-                        simd8uint32 min_indices_new;
-                        simd8uint32 max_distances_new;
-                        simd8uint32 max_indices_new;
+                        simd8uint32<SINGLE_SIMD_LEVEL_256> min_distances_new;
+                        simd8uint32<SINGLE_SIMD_LEVEL_256> min_indices_new;
+                        simd8uint32<SINGLE_SIMD_LEVEL_256> max_distances_new;
+                        simd8uint32<SINGLE_SIMD_LEVEL_256> max_indices_new;
 
                         faiss::cmplt_min_max_fast(
                                 distance_candidate,
@@ -151,7 +155,8 @@ struct HeapWithBucketsForHamming32<
 
             // fix the indices
             for (uint32_t j = 0; j < NBUCKETS_8; j++) {
-                const simd8uint32 offset(n_per_beam * beam_index + j * 8);
+                const simd8uint32<SINGLE_SIMD_LEVEL_256> offset(
+                        n_per_beam * beam_index + j * 8);
                 for (uint32_t p = 0; p < N; p++) {
                     min_indices_i[j][p] += offset;
                 }
@@ -197,8 +202,9 @@ struct HeapWithBucketsForHamming32<
     }
 };
 
-// HeapWithBucketsForHamming16 uses simd16uint16 under the hood.
-// Less registers needed in total, so higher values of NBUCKETS/N can be used,
+// HeapWithBucketsForHamming16 uses simd16uint16<SINGLE_SIMD_LEVEL_256> under
+// the hood. Less registers needed in total, so higher values of NBUCKETS/N can
+// be used,
 //   but somewhat slower.
 // No more than 32K elements currently, but it can be reorganized a bit
 //   to be limited to 32K elements per beam.
@@ -260,14 +266,14 @@ struct HeapWithBucketsForHamming16<
 
         // main loop
         for (uint32_t beam_index = 0; beam_index < beam_size; beam_index++) {
-            simd16uint16 min_distances_i[NBUCKETS_16][N];
-            simd16uint16 min_indices_i[NBUCKETS_16][N];
+            simd16uint16<SINGLE_SIMD_LEVEL_256> min_distances_i[NBUCKETS_16][N];
+            simd16uint16<SINGLE_SIMD_LEVEL_256> min_indices_i[NBUCKETS_16][N];
 
             for (uint32_t j = 0; j < NBUCKETS_16; j++) {
                 for (uint32_t p = 0; p < N; p++) {
-                    min_distances_i[j][p] =
-                            simd16uint16(std::numeric_limits<int16_t>::max());
-                    min_indices_i[j][p] = simd16uint16(
+                    min_distances_i[j][p] = simd16uint16<SINGLE_SIMD_LEVEL_256>(
+                            std::numeric_limits<int16_t>::max());
+                    min_indices_i[j][p] = simd16uint16<SINGLE_SIMD_LEVEL_256>(
                             0,
                             1,
                             2,
@@ -287,9 +293,10 @@ struct HeapWithBucketsForHamming16<
                 }
             }
 
-            simd16uint16 current_indices(
+            simd16uint16<SINGLE_SIMD_LEVEL_256> current_indices(
                     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-            const simd16uint16 indices_delta((uint16_t)NBUCKETS);
+            const simd16uint16<SINGLE_SIMD_LEVEL_256> indices_delta(
+                    (uint16_t)NBUCKETS);
 
             const uint32_t nb = (n_per_beam / NBUCKETS) * NBUCKETS;
 
@@ -305,15 +312,16 @@ struct HeapWithBucketsForHamming16<
                     }
 
                     // loop. Compiler should get rid of unneeded ops
-                    simd16uint16 distance_candidate;
+                    simd16uint16<SINGLE_SIMD_LEVEL_256> distance_candidate;
                     distance_candidate.loadu(hamming_distances);
-                    simd16uint16 indices_candidate = current_indices;
+                    simd16uint16<SINGLE_SIMD_LEVEL_256> indices_candidate =
+                            current_indices;
 
                     for (uint32_t p = 0; p < N; p++) {
-                        simd16uint16 min_distances_new;
-                        simd16uint16 min_indices_new;
-                        simd16uint16 max_distances_new;
-                        simd16uint16 max_indices_new;
+                        simd16uint16<SINGLE_SIMD_LEVEL_256> min_distances_new;
+                        simd16uint16<SINGLE_SIMD_LEVEL_256> min_indices_new;
+                        simd16uint16<SINGLE_SIMD_LEVEL_256> max_distances_new;
+                        simd16uint16<SINGLE_SIMD_LEVEL_256> max_indices_new;
 
                         faiss::cmplt_min_max_fast(
                                 distance_candidate,
@@ -338,7 +346,7 @@ struct HeapWithBucketsForHamming16<
 
             // fix the indices
             for (uint32_t j = 0; j < NBUCKETS_16; j++) {
-                const simd16uint16 offset(
+                const simd16uint16<SINGLE_SIMD_LEVEL_256> offset(
                         (uint16_t)(n_per_beam * beam_index + j * 16));
                 for (uint32_t p = 0; p < N; p++) {
                     min_indices_i[j][p] += offset;
