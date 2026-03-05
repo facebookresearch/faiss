@@ -269,6 +269,7 @@ set(FAISS_HEADERS
   impl/pq_4bit/NormTableScalerSL.h
   impl/pq_4bit/decompose_qbs.h
   impl/pq_4bit/dispatching.h
+  impl/pq_4bit/rabitq_dispatching.h
   impl/pq_4bit/kernels_simd256.h
   impl/pq_4bit/kernels_simd512.h
   impl/residual_quantizer_encode_steps.h

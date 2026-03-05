@@ -163,7 +163,8 @@ struct IndexFastScan : Index {
             size_t ntotal,
             float* distances,
             idx_t* labels,
-            const IDSelector* sel) const;
+            const IDSelector* sel,
+            const FastScanDistancePostProcessing& context) const;
 
     // called by search function
     void compute_quantized_LUT(

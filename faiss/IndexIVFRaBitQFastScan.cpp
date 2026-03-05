@@ -544,8 +544,11 @@ std::unique_ptr<PQ4CodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
         idx_t,
         float*,
         idx_t*,
-        const IDSelector*) const {
-    return nullptr; // RaBitQ uses custom handlers; scanner support pending
+        const IDSelector*,
+        const FastScanDistancePostProcessing&) const {
+    // IVF RaBitQ scanner support pending — needs IVFRaBitQHeapHandler
+    // SL parameterization and header definitions move.
+    return nullptr;
 }
 
 // Implementation of virtual make_knn_handler method

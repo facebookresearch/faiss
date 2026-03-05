@@ -271,7 +271,8 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const IDSelector* sel) const;
+            const IDSelector* sel,
+            const FastScanDistancePostProcessing& context) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(

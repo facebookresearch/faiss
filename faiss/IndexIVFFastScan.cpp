@@ -521,7 +521,8 @@ std::unique_ptr<PQ4CodeScanner> IndexIVFFastScan::make_knn_scanner(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing&) const {
     return pq4_make_knn_scanner(
             is_max, n, 0, k, distances, labels, sel, /*with_id_map=*/true);
 }
@@ -599,8 +600,8 @@ void IndexIVFFastScan::search_dispatch_implem(
         size_t ndis = 0, nlist_visited = 0;
 
         if (!multiple_threads) {
-            auto scanner =
-                    make_knn_scanner(is_max, n, k, distances, labels, sel);
+            auto scanner = make_knn_scanner(
+                    is_max, n, k, distances, labels, sel, context);
             if (scanner) {
                 auto* rh = scanner->handler();
                 if (impl == 12 || impl == 13) {
@@ -718,7 +719,13 @@ void IndexIVFFastScan::search_dispatch_implem(
                     }
 
                     auto scanner = make_knn_scanner(
-                            is_max, i1 - i0, k, dis_i, lab_i, sel);
+                            is_max,
+                            i1 - i0,
+                            k,
+                            dis_i,
+                            lab_i,
+                            sel,
+                            thread_context);
                     if (scanner) {
                         auto* rh = scanner->handler();
                         if (impl == 12 || impl == 13) {
@@ -1447,7 +1454,7 @@ void IndexIVFFastScan::search_implem_14(
 
         // prepare the result handlers
         auto scanner = make_knn_scanner(
-                is_max, n, k, local_dis.data(), local_idx.data(), sel);
+                is_max, n, k, local_dis.data(), local_idx.data(), sel, context);
         SIMDResultHandlerToFloat* handler;
         std::unique_ptr<SIMDResultHandlerToFloat> handler_fallback;
         if (scanner) {
