@@ -758,6 +758,17 @@ float RaBitQHeapHandler<C, with_id_map>::compute_full_multibit_distance(
             rabitq_index->metric_type);
 }
 
+std::unique_ptr<PQ4CodeScanner> IndexRaBitQFastScan::make_knn_scanner(
+        bool,
+        idx_t,
+        idx_t,
+        size_t,
+        float*,
+        idx_t*,
+        const IDSelector*) const {
+    return nullptr; // RaBitQ uses custom handlers; scanner support pending
+}
+
 // Implementation of virtual make_knn_handler method
 SIMDResultHandlerToFloat* IndexRaBitQFastScan::make_knn_handler(
         bool is_max,
