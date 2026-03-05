@@ -222,4 +222,48 @@ std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner_impl<
     }
 }
 
+// Range search scanner factory
+template <>
+std::unique_ptr<PQ4CodeScanner> pq4_make_range_scanner_impl<
+        THE_LEVEL_TO_DISPATCH>(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    if (is_max) {
+        using C = CMax<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<RangeHandler<C, true, PQ4_SL>>>(
+                rres, radius, ntotal, sel);
+    } else {
+        using C = CMin<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<RangeHandler<C, true, PQ4_SL>>>(
+                rres, radius, ntotal, sel);
+    }
+}
+
+// Partial range search scanner factory (for per-thread slicing)
+template <>
+std::unique_ptr<PQ4CodeScanner> pq4_make_partial_range_scanner_impl<
+        THE_LEVEL_TO_DISPATCH>(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    if (is_max) {
+        using C = CMax<uint16_t, int64_t>;
+        return std::make_unique<
+                ScannerMixIn<PartialRangeHandler<C, true, PQ4_SL>>>(
+                pres, radius, ntotal, q0, q1, sel);
+    } else {
+        using C = CMin<uint16_t, int64_t>;
+        return std::make_unique<
+                ScannerMixIn<PartialRangeHandler<C, true, PQ4_SL>>>(
+                pres, radius, ntotal, q0, q1, sel);
+    }
+}
+
 } // namespace faiss

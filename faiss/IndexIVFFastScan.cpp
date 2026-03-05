@@ -841,20 +841,30 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     size_t ndis = 0, nlist_visited = 0;
 
     if (!multiple_threads) { // single thread
-        std::unique_ptr<SIMDResultHandlerToFloat> handler;
-        if (is_max) {
-            handler.reset(new RangeHandler<CMax<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        } else {
-            handler.reset(new RangeHandler<CMin<uint16_t, int64_t>, true>(
-                    rres, radius, 0, sel));
-        }
+        auto scanner = pq4_make_range_scanner(is_max, rres, radius, 0, sel);
+        auto* handler = scanner->handler();
         if (impl == 12) {
             search_implem_12(
-                    n, x, *handler.get(), cq, &ndis, &nlist_visited, context);
+                    n,
+                    x,
+                    *handler,
+                    cq,
+                    &ndis,
+                    &nlist_visited,
+                    context,
+                    nullptr,
+                    scanner.get());
         } else if (impl == 10) {
             search_implem_10(
-                    n, x, *handler.get(), cq, &ndis, &nlist_visited, context);
+                    n,
+                    x,
+                    *handler,
+                    cq,
+                    &ndis,
+                    &nlist_visited,
+                    context,
+                    nullptr,
+                    scanner.get());
         } else {
             FAISS_THROW_FMT("Range search implem %d not implemented", impl);
         }
@@ -873,35 +883,32 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                 if (!cq_i.done()) {
                     cq_i.quantize_slice(quantizer, x, quantizer_params);
                 }
-                std::unique_ptr<SIMDResultHandlerToFloat> handler;
-                if (is_max) {
-                    handler.reset(new PartialRangeHandler<
-                                  CMax<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                } else {
-                    handler.reset(new PartialRangeHandler<
-                                  CMin<uint16_t, int64_t>,
-                                  true>(pres, radius, 0, i0, i1, sel));
-                }
+                auto scanner = pq4_make_partial_range_scanner(
+                        is_max, pres, radius, 0, i0, i1, sel);
+                auto* handler = scanner->handler();
 
                 if (impl == 12 || impl == 13) {
                     search_implem_12(
                             i1 - i0,
                             x + i0 * d,
-                            *handler.get(),
+                            *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
-                            context);
+                            context,
+                            nullptr,
+                            scanner.get());
                 } else {
                     search_implem_10(
                             i1 - i0,
                             x + i0 * d,
-                            *handler.get(),
+                            *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
-                            context);
+                            context,
+                            nullptr,
+                            scanner.get());
                 }
             }
             pres.finalize();
