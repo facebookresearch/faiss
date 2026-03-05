@@ -912,5 +912,119 @@ class TestSVSIVFParameters(unittest.TestCase):
         np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
 
 
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSLeanVecOOD(unittest.TestCase):
+    """Test out-of-distribution training for LeanVec SVS indices"""
+
+    def setUp(self):
+        self.d = 256
+        self.idx = faiss.IndexSVSVamanaLeanVec(
+            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
+        )
+        self.idx.alpha = 0.95
+
+        self.x = np.random.rand(1000, self.d).astype("float32")
+        self.tq = np.random.rand(1000, self.d).astype("float32")
+
+    def test_svs_leanvec_ood_training(self):
+        self.assertIsNone(self.idx.training_data)
+        self.idx.train(self.x, xq_train=self.tq)
+        self.assertIsNotNone(self.idx.training_data)
+
+    def test_svs_leanvec_ood_training_smaller(self):
+        self.idx.train(self.x, xq_train=self.tq[:500])
+
+    def test_svs_leanvec_ood_training_wrong_dim(self):
+        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
+        with self.assertRaises(AssertionError):
+            self.idx.train(self.x, xq_train=wrong_dim)
+
+    def test_svs_leanvec_ood_training_wrong_type(self):
+        with self.assertRaises(TypeError):
+            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
+
+
+@unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
+class TestSVSLeanVecResetRetrain(unittest.TestCase):
+    """Test that reset() properly clears training_data so retrain works."""
+
+    def _make_data(self, d, n):
+        return np.random.rand(n, d).astype("float32")
+
+    def test_ivf_leanvec_reset_retrain(self):
+        """IVFLeanVec: train → reset → retrain should succeed."""
+        d, n = 64, 5000
+        X = self._make_data(d, n)
+        idx = faiss.index_factory(d, "SVSIVF100,LeanVec4x8_32")
+        idx.num_threads = 4
+
+        idx.train(X)
+        self.assertTrue(idx.is_trained)
+        self.assertEqual(idx.ntotal, n)
+
+        idx.reset()
+        self.assertFalse(idx.is_trained)
+        self.assertEqual(idx.ntotal, 0)
+
+        idx.train(X)
+        self.assertTrue(idx.is_trained)
+        self.assertEqual(idx.ntotal, n)
+
+    def test_ivf_leanvec_ood_reset_retrain(self):
+        """IVFLeanVec OOD: train → reset → retrain should succeed."""
+        d, n = 64, 5000
+        X = self._make_data(d, n)
+        Xq = self._make_data(d, 100)
+        idx = faiss.index_factory(d, "SVSIVF100,LeanVec4x8_32")
+        idx.num_threads = 4
+
+        idx.train(X, xq_train=Xq)
+        self.assertTrue(idx.is_trained)
+
+        idx.reset()
+        self.assertFalse(idx.is_trained)
+
+        idx.train(X, xq_train=Xq)
+        self.assertTrue(idx.is_trained)
+        self.assertEqual(idx.ntotal, n)
+
+    def test_vamana_leanvec_reset_retrain(self):
+        """VamanaLeanVec: train → reset → retrain should succeed."""
+        d = 64
+        X = self._make_data(d, 1000)
+        idx = faiss.IndexSVSVamanaLeanVec(
+            d, 64, faiss.METRIC_L2, 32, faiss.SVS_LeanVec4x8
+        )
+        idx.alpha = 0.95
+
+        idx.train(X)
+        self.assertTrue(idx.is_trained)
+
+        idx.reset()
+        self.assertFalse(idx.is_trained)
+
+        idx.train(X)
+        self.assertTrue(idx.is_trained)
+
+    def test_vamana_leanvec_ood_reset_retrain(self):
+        """VamanaLeanVec OOD: train → reset → retrain should succeed."""
+        d = 64
+        X = self._make_data(d, 1000)
+        Xq = self._make_data(d, 100)
+        idx = faiss.IndexSVSVamanaLeanVec(
+            d, 64, faiss.METRIC_INNER_PRODUCT, 32, faiss.SVS_LeanVec4x8
+        )
+        idx.alpha = 0.95
+
+        idx.train(X, xq_train=Xq)
+        self.assertTrue(idx.is_trained)
+
+        idx.reset()
+        self.assertFalse(idx.is_trained)
+
+        idx.train(X, xq_train=Xq)
+        self.assertTrue(idx.is_trained)
+
+
 if __name__ == '__main__':
     unittest.main()

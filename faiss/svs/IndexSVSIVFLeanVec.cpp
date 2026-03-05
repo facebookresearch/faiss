@@ -60,6 +60,14 @@ IndexSVSIVFLeanVec::~IndexSVSIVFLeanVec() {
 }
 
 void IndexSVSIVFLeanVec::train(idx_t n, const float* x) {
+    train(n, x, 0, nullptr);
+}
+
+void IndexSVSIVFLeanVec::train(
+        idx_t n,
+        const float* x,
+        idx_t n_train_q,
+        const float* xq_train) {
     FAISS_THROW_IF_MSG(
             training_data || impl, "Index already trained or contains data.");
 
@@ -67,9 +75,9 @@ void IndexSVSIVFLeanVec::train(idx_t n, const float* x) {
             IndexSVSIVF::is_lvq_leanvec_enabled(),
             "LVQ/LeanVec support not available on this platform or build");
 
-    // Build LeanVec training data first
+    // Build LeanVec training data
     auto status = svs_runtime::LeanVecTrainingData::build(
-            &training_data, d, n, x, leanvec_d);
+            &training_data, d, n, x, n_train_q, xq_train, leanvec_d);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -79,6 +87,15 @@ void IndexSVSIVFLeanVec::train(idx_t n, const float* x) {
     // Now build the IVF index with the training data
     create_impl(n, x);
     is_trained = true;
+}
+
+void IndexSVSIVFLeanVec::reset() {
+    if (training_data) {
+        auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
+        FAISS_ASSERT(status.ok());
+        training_data = nullptr;
+    }
+    IndexSVSIVF::reset();
 }
 
 void IndexSVSIVFLeanVec::serialize_training_data(std::ostream& out) const {
