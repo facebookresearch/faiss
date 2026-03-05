@@ -386,6 +386,35 @@ std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
             with_id_map);
 }
 
+std::unique_ptr<PQ4CodeScanner> pq4_make_range_scanner(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            pq4_make_range_scanner_impl, is_max, rres, radius, ntotal, sel);
+}
+
+std::unique_ptr<PQ4CodeScanner> pq4_make_partial_range_scanner(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            pq4_make_partial_range_scanner_impl,
+            is_max,
+            pres,
+            radius,
+            ntotal,
+            q0,
+            q1,
+            sel);
+}
+
 std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner(
         bool is_max,
         const IndexRaBitQFastScan* index,

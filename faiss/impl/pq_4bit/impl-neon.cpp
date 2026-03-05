@@ -55,6 +55,29 @@ std::unique_ptr<PQ4CodeScanner> rabitq_ivf_make_knn_scanner_impl<
     return rabitq_ivf_make_knn_scanner_impl<SIMDLevel::ARM_NEON>(
             is_max, index, nq, k, distances, ids, context, multi_bit);
 }
+template <>
+std::unique_ptr<PQ4CodeScanner> pq4_make_range_scanner_impl<SIMDLevel::ARM_SVE>(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    return pq4_make_range_scanner_impl<SIMDLevel::ARM_NEON>(
+            is_max, rres, radius, ntotal, sel);
+}
+template <>
+std::unique_ptr<PQ4CodeScanner> pq4_make_partial_range_scanner_impl<
+        SIMDLevel::ARM_SVE>(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    return pq4_make_partial_range_scanner_impl<SIMDLevel::ARM_NEON>(
+            is_max, pres, radius, ntotal, q0, q1, sel);
+}
 } // namespace faiss
 
 #endif // COMPILE_SIMD_ARM_NEON
