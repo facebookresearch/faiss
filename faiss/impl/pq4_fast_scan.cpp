@@ -357,9 +357,10 @@ int pq4_pack_LUT_qbs_q_map(
 
 } // namespace faiss
 
-// NONE specialization: compiled in the base TU (no SIMD flags needed).
+// NONE specializations: compiled in the base TU (no SIMD flags needed).
 #define THE_LEVEL_TO_DISPATCH faiss::SIMDLevel::NONE
 #include <faiss/impl/pq_4bit/dispatching.h>
+#include <faiss/impl/pq_4bit/rabitq_dispatching.h>
 #undef THE_LEVEL_TO_DISPATCH
 
 namespace faiss {
@@ -383,6 +384,29 @@ std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
             ids,
             sel,
             with_id_map);
+}
+
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_make_knn_scanner_impl,
+            is_max,
+            index,
+            nq,
+            k,
+            distances,
+            ids,
+            sel,
+            context,
+            multi_bit);
 }
 
 } // namespace faiss

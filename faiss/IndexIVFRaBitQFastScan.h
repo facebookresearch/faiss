@@ -155,7 +155,8 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const IDSelector* sel) const override;
+            const IDSelector* sel,
+            const FastScanDistancePostProcessing& context) const override;
 
     /// Override to create RaBitQ-specific handlers
     SIMDResultHandlerToFloat* make_knn_handler(

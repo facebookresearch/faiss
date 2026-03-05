@@ -258,7 +258,8 @@ std::unique_ptr<PQ4CodeScanner> IndexFastScan::make_knn_scanner(
         size_t ntotal_in,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel) const {
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing&) const {
     return pq4_make_knn_scanner(
             is_max, n, ntotal_in, k, distances, labels, sel);
 }
@@ -533,7 +534,7 @@ void IndexFastScan::search_implem_12(
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
     auto scanner = make_knn_scanner(
-            C::is_max, n, k, ntotal, distances, labels, nullptr);
+            C::is_max, n, k, ntotal, distances, labels, nullptr, context);
     if (scanner) {
         auto* rh = scanner->handler();
         rh->normalizers = normalizers.get();
@@ -637,7 +638,7 @@ void IndexFastScan::search_implem_14(
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
     auto scanner = make_knn_scanner(
-            C::is_max, n, k, ntotal, distances, labels, nullptr);
+            C::is_max, n, k, ntotal, distances, labels, nullptr, context);
     if (scanner) {
         auto* rh = scanner->handler();
         rh->normalizers = normalizers.get();

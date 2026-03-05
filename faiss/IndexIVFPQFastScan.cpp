@@ -382,9 +382,16 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         // the prior loop
         std::vector<float> curr_dists(k, distances[0]);
         std::vector<idx_t> curr_labels(k, labels[0]);
+        FastScanDistancePostProcessing empty_context{};
 
         auto scanner = index.make_knn_scanner(
-                !keep_max, nq, k, curr_dists.data(), curr_labels.data(), sel);
+                !keep_max,
+                nq,
+                k,
+                curr_dists.data(),
+                curr_labels.data(),
+                sel,
+                empty_context);
         auto* handler = scanner->handler();
 
         // This does not quite match search_implem_10, but it is fine because

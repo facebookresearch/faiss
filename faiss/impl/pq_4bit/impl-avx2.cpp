@@ -8,6 +8,7 @@
 #ifdef COMPILE_SIMD_AVX2
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
-#include <faiss/impl/pq_4bit/dispatching.h> // IWYU pragma: keep
+#include <faiss/impl/pq_4bit/dispatching.h>        // IWYU pragma: keep
+#include <faiss/impl/pq_4bit/rabitq_dispatching.h> // IWYU pragma: keep
 
 #endif // COMPILE_SIMD_AVX2

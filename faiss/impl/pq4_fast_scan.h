@@ -278,4 +278,32 @@ std::unique_ptr<PQ4CodeScanner> pq4_make_knn_scanner(
         const IDSelector* sel,
         bool with_id_map = false);
 
+struct IndexRaBitQFastScan;
+struct FastScanDistancePostProcessing;
+
+/// Per-SIMD RaBitQ scanner factory (flat).
+template <SIMDLevel SL>
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner_impl(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit);
+
+/// Factory dispatch: flat RaBitQ scanner.
+std::unique_ptr<PQ4CodeScanner> rabitq_make_knn_scanner(
+        bool is_max,
+        const IndexRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool multi_bit);
+
 } // namespace faiss
