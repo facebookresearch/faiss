@@ -662,6 +662,52 @@ class TestInvlistMeta(unittest.TestCase):
         # avoid mem leak
         index.replace_invlists(il, True)
 
+    def test_capped_invlists(self):
+        d = 10
+        nb = 1000
+        nq = 1
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+
+        index = faiss.index_factory(d, "IVF32,Flat")
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        il = index.invlists
+        maxsz = max(il.list_size(i) for i in range(il.nlist))
+
+        # cap at half the max size
+        cap = max(maxsz // 2, 1)
+        il2 = faiss.CappedInvertedLists(il, cap)
+
+        # verify capping works
+        for i in range(il.nlist):
+            orig_sz = il.list_size(i)
+            capped_sz = il2.list_size(i)
+            self.assertEqual(capped_sz, min(orig_sz, cap))
+            self.assertEqual(il2.real_list_size(i), orig_sz)
+
+        index.own_invlists = False
+        index.replace_invlists(il2, False)
+
+        # search with capped lists - should still return valid results
+        D1, I1 = index.search(xq, 10)
+        # results may differ due to capping, but should be valid
+        self.assertTrue(np.all(I1 >= -1))
+
+        # test that writes pass through
+        index.replace_invlists(il, False)
+        orig_ntotal = index.ntotal
+        index.replace_invlists(il2, False)
+        index.add(xb[:10])  # add through capped wrapper
+        self.assertEqual(index.ntotal, orig_ntotal + 10)
+
+        # cleanup
+        index.replace_invlists(il, True)
+        
 
 class TestSplitMerge(unittest.TestCase):
 
