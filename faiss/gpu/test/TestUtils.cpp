@@ -6,6 +6,7 @@
  */
 
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
 #include <time.h>
@@ -472,5 +473,33 @@ TestIDSelectorStruct::TestIDSelectorStruct(int numAdd) {
     selector_map["XOr"] = std::make_unique<faiss::IDSelectorXOr>(
             selector_map["Not"].get(), selector_map["Array"].get());
 }
+
+void testIDSelectorSearch(
+        faiss::Index* index,
+        faiss::SearchParameters* search_params,
+        const std::vector<float>& queryVecs,
+        int numQuery,
+        int k,
+        const std::string& selectorName) {
+    FAISS_ASSERT(search_params && search_params->sel);
+    std::vector<float> distances(numQuery * k);
+    std::vector<faiss::idx_t> labels(numQuery * k);
+    index->search(
+            numQuery,
+            queryVecs.data(),
+            k,
+            distances.data(),
+            labels.data(),
+            search_params);
+    faiss::IDSelector* selector = search_params->sel;
+    for (int i = 0; i < numQuery * k; ++i) {
+        if (labels[i] >= 0) {
+            EXPECT_TRUE(selector->is_member(labels[i]))
+                    << "Label " << labels[i] << " @ " << i << " not in "
+                    << selectorName << " selector";
+        }
+    }
+}
+
 } // namespace gpu
 } // namespace faiss

@@ -26,6 +26,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/distances.h>
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
@@ -430,6 +431,51 @@ TEST(TestGpuIndexBinaryCagra, CopyFrom_NN_DESCENT) {
 
 TEST(TestGpuIndexBinaryCagra, CopyFrom_ITERATIVE_SEARCH) {
     copyFromTest(faiss::gpu::graph_build_algo::ITERATIVE_SEARCH, 0.98);
+}
+
+void testIDSelectorBinaryCagra() {
+    Options opt;
+    auto trainVecs = faiss::gpu::randBinaryVecs(opt.numTrain, opt.dim);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexCagraConfig config;
+    config.device = 0;
+    config.graph_degree = opt.graphDegree;
+    config.intermediate_graph_degree = opt.intermediateGraphDegree;
+    config.build_algo = faiss::gpu::graph_build_algo::NN_DESCENT;
+    config.nn_descent_niter = 20;
+
+    faiss::gpu::GpuIndexBinaryCagra gpuIndex(&res, opt.dim, config);
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+
+    auto queryVecs = faiss::gpu::randBinaryVecs(opt.numQuery, opt.dim);
+    faiss::gpu::TestIDSelectorStruct selector_struct(opt.numTrain);
+    faiss::gpu::SearchParametersCagra search_params;
+    for (auto& [selectorName, selector] : selector_struct.selector_map) {
+        search_params.sel = selector.get();
+        std::vector<int> distances(opt.numQuery * opt.k);
+        std::vector<faiss::idx_t> labels(opt.numQuery * opt.k);
+        gpuIndex.search(
+                opt.numQuery,
+                queryVecs.data(),
+                opt.k,
+                distances.data(),
+                labels.data(),
+                &search_params);
+        for (int i = 0; i < opt.numQuery * opt.k; ++i) {
+            if (labels[i] >= 0) {
+                EXPECT_TRUE(selector->is_member(labels[i]))
+                        << "Label " << labels[i] << " @ " << i << " not in "
+                        << selectorName << " selector";
+            }
+        }
+    }
+}
+
+TEST(TestGpuIndexBinaryCagra, IDSelector) {
+    testIDSelectorBinaryCagra();
 }
 
 int main(int argc, char** argv) {

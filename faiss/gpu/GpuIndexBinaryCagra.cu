@@ -119,8 +119,6 @@ void GpuIndexBinaryCagra::search(
         return;
     }
 
-    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
-
     // validateKSelect(k);
 
     // The input vectors may be too large for the GPU, but we still

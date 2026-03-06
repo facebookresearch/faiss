@@ -57,18 +57,12 @@ void CuvsFlatIndex::query(
         Tensor<idx_t, 2, true>& outIndices,
         bool exactDistance,
         const IDSelector* sel) {
-    /**
-     * cuVS doesn't yet support half-precision in bfknn.
-     * Use FlatIndex for float16 for now
-     */
     if (useFloat16_) {
-        auto stream = resources_->getDefaultStreamCurrentDevice();
-
         // We need to convert the input to float16 for comparison to ourselves
+        auto stream = resources_->getDefaultStreamCurrentDevice();
         auto inputHalf = convertTensorTemporary<float, half, 2>(
                 resources_, stream, input);
-
-        FlatIndex::query(
+        CuvsFlatIndex::query(
                 inputHalf,
                 k,
                 metric,
@@ -122,9 +116,10 @@ void CuvsFlatIndex::query(
                           bitset_filter_cuvs.value())
                 : static_cast<const cuvs::neighbors::filtering::base_filter&>(
                           none_filter);
+        cuvs::neighbors::brute_force::search_params search_params_bf;
 
         cuvs::neighbors::brute_force::search(
-                handle, idx, search, inds, dists, filter_ref);
+                handle, search_params_bf, idx, search, inds, dists, filter_ref);
 
         if (metric == MetricType::METRIC_Lp) {
             raft::linalg::unary_op(
@@ -155,16 +150,66 @@ void CuvsFlatIndex::query(
         const IDSelector* sel) {
     FAISS_ASSERT(useFloat16_);
 
-    // FIXME: ref https://github.com/rapidsai/raft/issues/1280
-    FlatIndex::query(
-            vecs,
-            k,
-            metric,
-            metricArg,
-            outDistances,
-            outIndices,
-            exactDistance,
-            sel);
+    raft::device_resources& handle = resources_->getRaftHandleCurrentDevice();
+
+    auto index = raft::make_device_matrix_view<const half, int64_t>(
+            vectorsHalf_.data(),
+            vectorsHalf_.getSize(0),
+            vectorsHalf_.getSize(1));
+    auto search = raft::make_device_matrix_view<const half, int64_t>(
+            vecs.data(), vecs.getSize(0), vecs.getSize(1));
+
+    auto inds = raft::make_device_matrix_view<idx_t, int64_t>(
+            outIndices.data(), outIndices.getSize(0), outIndices.getSize(1));
+    auto dists = raft::make_device_matrix_view<float, int64_t>(
+            outDistances.data(),
+            outDistances.getSize(0),
+            outDistances.getSize(1));
+
+    cuvsDistanceType distance = metricFaissToCuvs(metric, exactDistance);
+
+    std::optional<raft::device_vector_view<const float, int64_t>> norms_view =
+            raft::make_device_vector_view(norms_.data(), norms_.getSize(0));
+
+    cuvs::neighbors::brute_force::index idx(
+            handle, index, norms_view, distance, metricArg);
+
+    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
+    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
+            bitset_filter_cuvs;
+    cuvs::neighbors::filtering::none_sample_filter none_filter;
+
+    if (sel) {
+        bitset_cuvs = cuvs::core::bitset<uint32_t, int64_t>(
+                handle, vectorsHalf_.getSize(0), false);
+        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_cuvs->view());
+        bitset_filter_cuvs.emplace(bitset_cuvs->view());
+    }
+    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
+            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      bitset_filter_cuvs.value())
+            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      none_filter);
+    cuvs::neighbors::brute_force::search_params search_params_bf;
+
+    cuvs::neighbors::brute_force::search(
+            handle, search_params_bf, idx, search, inds, dists, filter_ref);
+
+    if (metric == MetricType::METRIC_Lp) {
+        raft::linalg::unary_op(
+                handle,
+                raft::make_const_mdspan(dists),
+                dists,
+                [metricArg] __device__(const float& a) {
+                    return powf(a, metricArg);
+                });
+    } else if (metric == MetricType::METRIC_JensenShannon) {
+        raft::linalg::unary_op(
+                handle,
+                raft::make_const_mdspan(dists),
+                dists,
+                [] __device__(const float& a) { return powf(a, 2); });
+    }
 }
 
 } // namespace gpu

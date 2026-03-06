@@ -142,6 +142,17 @@ void testIVFEquality(A& cpuIndex, B& gpuIndex) {
     }
 }
 
+/// Run search with the given search_params and verify all returned labels are
+/// members of the selector. Works with any Index that supports search with
+/// SearchParameters.
+void testIDSelectorSearch(
+        faiss::Index* index,
+        faiss::SearchParameters* search_params,
+        const std::vector<float>& queryVecs,
+        int numQuery,
+        int k,
+        const std::string& selectorName);
+
 // Structure to hold all IDSelector instances
 struct TestIDSelectorStruct {
     // Storage for selectors that need it

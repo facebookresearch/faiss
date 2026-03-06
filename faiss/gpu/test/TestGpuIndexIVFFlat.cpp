@@ -910,38 +910,6 @@ TEST(TestGpuIndexIVFFlat, Reconstruct_n) {
     EXPECT_EQ(gpuVals, cpuVals);
 }
 
-void testIDSelectorType(
-        faiss::gpu::GpuIndexIVFFlat& gpuIndex,
-        faiss::IDSelector* selector,
-        const std::vector<float>& queryVecs,
-        int numQuery,
-        int k,
-        int nprobe,
-        const std::string& selectorName) {
-    faiss::SearchParametersIVF search_params;
-    search_params.nprobe = nprobe;
-    search_params.sel = selector;
-
-    std::vector<float> distances(numQuery * k);
-    std::vector<faiss::idx_t> labels(numQuery * k);
-
-    gpuIndex.search(
-            numQuery,
-            queryVecs.data(),
-            k,
-            distances.data(),
-            labels.data(),
-            &search_params);
-    // Verify all returned labels are valid members of the selector
-    for (int i = 0; i < numQuery * k; ++i) {
-        if (labels[i] >= 0) {
-            EXPECT_TRUE(selector->is_member(labels[i]))
-                    << "Label " << labels[i] << "@ " << i << " not in "
-                    << selectorName << " selector";
-        }
-    }
-}
-
 void testIDSelectorIVFFlat(faiss::MetricType metricType) {
     Options opt;
 
@@ -959,6 +927,7 @@ void testIDSelectorIVFFlat(faiss::MetricType metricType) {
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
     config.device = 0;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     config.use_cuvs = true;
 
     faiss::gpu::GpuIndexIVFFlat gpuIndex(
@@ -970,25 +939,29 @@ void testIDSelectorIVFFlat(faiss::MetricType metricType) {
 
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
     faiss::gpu::TestIDSelectorStruct selector_struct(opt.numAdd);
+    faiss::SearchParametersIVF search_params;
+    search_params.nprobe = opt.nprobe;
     for (auto& [selectorName, selector] : selector_struct.selector_map) {
-        testIDSelectorType(
-                gpuIndex,
-                selector.get(),
+        search_params.sel = selector.get();
+        faiss::gpu::testIDSelectorSearch(
+                &gpuIndex,
+                &search_params,
                 queryVecs,
                 opt.numQuery,
                 opt.k,
-                opt.nprobe,
                 selectorName);
     }
 }
 
-TEST(TestGpuIndexIVFFlat, IDSelector_L2) {
+#if defined USE_NVIDIA_CUVS
+TEST(TestCuvsGpuIndexIVFFlat, IDSelector_L2) {
     testIDSelectorIVFFlat(faiss::METRIC_L2);
 }
 
-TEST(TestGpuIndexIVFFlat, IDSelector_IP) {
+TEST(TestCuvsGpuIndexIVFFlat, IDSelector_IP) {
     testIDSelectorIVFFlat(faiss::METRIC_INNER_PRODUCT);
 }
+#endif
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
