@@ -27,8 +27,6 @@
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
@@ -190,13 +188,13 @@ void fvec_madd_simd(
     assert(is_aligned_pointer(b));
     assert(is_aligned_pointer(c));
     assert(n % 8 == 0);
-    simd8float32 bf8(bf);
+    simd8float32<SINGLE_SIMD_LEVEL_256> bf8(bf);
     n /= 8;
     for (size_t i = 0; i < n; i++) {
-        simd8float32 ai(a);
-        simd8float32 bi(b);
+        simd8float32<SINGLE_SIMD_LEVEL_256> ai(a);
+        simd8float32<SINGLE_SIMD_LEVEL_256> bi(b);
 
-        simd8float32 ci = fmadd(bf8, bi, ai);
+        simd8float32<SINGLE_SIMD_LEVEL_256> ci = fmadd(bf8, bi, ai);
         ci.store(c);
         c += 8;
         a += 8;
@@ -349,7 +347,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         const float* x = index.by_residual ? residual.data() : this->xi;
         float accu = 0;
         // implemented for all vector distances, although only L2 and IP are
-        // suppored by FastScan
+        // supported by FastScan
         with_VectorDistance(pq.dsub, index.metric_type, 0.0, [&](auto vd) {
             int m;
             for (m = 0; m + 1 < pq.M; m += 2) {
@@ -384,18 +382,10 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         // the prior loop
         std::vector<float> curr_dists(k, distances[0]);
         std::vector<idx_t> curr_labels(k, labels[0]);
-        FastScanDistancePostProcessing empty_context{};
-        std::unique_ptr<SIMDResultHandlerToFloat> handler(
-                index.make_knn_handler(
-                        !keep_max,
-                        impl,
-                        nq,
-                        k,
-                        curr_dists.data(),
-                        curr_labels.data(),
-                        sel,
-                        empty_context,
-                        &normalizers[0]));
+
+        auto scanner = index.make_knn_scanner(
+                !keep_max, nq, k, curr_dists.data(), curr_labels.data(), sel);
+        auto* handler = scanner->handler();
 
         // This does not quite match search_implem_10, but it is fine because
         // the scanner operates on a single query at a time, and this value is
@@ -411,14 +401,13 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         handler->ntotal = ntotal;
         handler->id_map = ids;
 
-        pq4_accumulate_loop(
+        scanner->accumulate_loop(
                 1,
                 roundup(ntotal, index.bbs),
                 index.bbs,
                 static_cast<int>(index.M2),
                 codes,
                 LUT,
-                *handler,
                 nullptr,
                 index.get_block_stride());
 

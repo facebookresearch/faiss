@@ -539,6 +539,16 @@ void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
     }
 }
 
+std::unique_ptr<PQ4CodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
+        bool,
+        idx_t,
+        idx_t,
+        float*,
+        idx_t*,
+        const IDSelector*) const {
+    return nullptr; // RaBitQ uses custom handlers; scanner support pending
+}
+
 // Implementation of virtual make_knn_handler method
 SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
         bool is_max,
@@ -605,8 +615,8 @@ template <class C>
 void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
         size_t q,
         size_t b,
-        simd16uint16 d0,
-        simd16uint16 d1) {
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d1) {
     // Store the original local query index before adjust_with_origin changes it
     size_t local_q = q;
     this->adjust_with_origin(q, d0, d1);

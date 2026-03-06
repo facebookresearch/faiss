@@ -148,6 +148,15 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
 
+    /// RaBitQ uses custom handlers; scanner support pending.
+    std::unique_ptr<PQ4CodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel) const override;
+
     /// Override to create RaBitQ-specific handlers
     SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,
@@ -222,8 +231,11 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 const FastScanDistancePostProcessing* ctx = nullptr,
                 bool multibit = false);
 
-        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)
-                override;
+        void handle(
+                size_t q,
+                size_t b,
+                simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+                simd16uint16<SINGLE_SIMD_LEVEL_256> d1) override;
 
         /// Override base class virtual method to receive context information
         void set_list_context(size_t list_no, const std::vector<int>& probe_map)
