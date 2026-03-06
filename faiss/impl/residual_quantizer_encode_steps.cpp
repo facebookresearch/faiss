@@ -13,7 +13,7 @@
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/utils/simdlib_dispatch.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/utils/approx_topk/approx_topk.h>

@@ -17,7 +17,7 @@
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/utils/simdlib_dispatch.h>
 
 namespace faiss {
 

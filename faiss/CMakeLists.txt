@@ -297,6 +297,7 @@ set(FAISS_HEADERS
   utils/random.h
   utils/sorting.h
   utils/simdlib.h
+  utils/simdlib_dispatch.h
   utils/simdlib_avx2.h
   utils/simdlib_avx512.h
   utils/simdlib_emulated.h
