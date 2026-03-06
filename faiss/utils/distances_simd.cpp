@@ -180,15 +180,15 @@ namespace {
 /// compute the IP for dsub = 2 for 8 centroids and 4 sub-vectors at a time
 template <bool is_inner_product>
 void pq2_8cents_table(
-        const simd8float32 centroids[8],
-        const simd8float32 x,
+        const simd8float32<SINGLE_SIMD_LEVEL_256> centroids[8],
+        const simd8float32<SINGLE_SIMD_LEVEL_256> x,
         float* out,
         size_t ldo,
         size_t nout = 4) {
-    simd8float32 ips[4];
+    simd8float32<SINGLE_SIMD_LEVEL_256> ips[4];
 
     for (int i = 0; i < 4; i++) {
-        simd8float32 p1, p2;
+        simd8float32<SINGLE_SIMD_LEVEL_256> p1, p2;
         if (is_inner_product) {
             p1 = x * centroids[2 * i];
             p2 = x * centroids[2 * i + 1];
@@ -201,15 +201,15 @@ void pq2_8cents_table(
         ips[i] = hadd(p1, p2);
     }
 
-    simd8float32 ip02a = geteven(ips[0], ips[1]);
-    simd8float32 ip02b = geteven(ips[2], ips[3]);
-    simd8float32 ip0 = getlow128(ip02a, ip02b);
-    simd8float32 ip2 = gethigh128(ip02a, ip02b);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip02a = geteven(ips[0], ips[1]);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip02b = geteven(ips[2], ips[3]);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip0 = getlow128(ip02a, ip02b);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip2 = gethigh128(ip02a, ip02b);
 
-    simd8float32 ip13a = getodd(ips[0], ips[1]);
-    simd8float32 ip13b = getodd(ips[2], ips[3]);
-    simd8float32 ip1 = getlow128(ip13a, ip13b);
-    simd8float32 ip3 = gethigh128(ip13a, ip13b);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip13a = getodd(ips[0], ips[1]);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip13b = getodd(ips[2], ips[3]);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip1 = getlow128(ip13a, ip13b);
+    simd8float32<SINGLE_SIMD_LEVEL_256> ip3 = gethigh128(ip13a, ip13b);
 
     switch (nout) {
         case 4:
@@ -226,13 +226,15 @@ void pq2_8cents_table(
     }
 }
 
-simd8float32 load_simd8float32_partial(const float* x, int n) {
+simd8float32<SINGLE_SIMD_LEVEL_256> load_simd8float32_partial(
+        const float* x,
+        int n) {
     ALIGNED(32) float tmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     float* wp = tmp;
     for (int i = 0; i < n; i++) {
         *wp++ = *x++;
     }
-    return simd8float32(tmp);
+    return simd8float32<SINGLE_SIMD_LEVEL_256>(tmp);
 }
 
 } // anonymous namespace
@@ -251,7 +253,7 @@ void compute_PQ_dis_tables_dsub2(
     for (size_t m0 = 0; m0 < M; m0 += 4) {
         int m1 = std::min(M, m0 + 4);
         for (int k0 = 0; k0 < ksub; k0 += 8) {
-            simd8float32 centroids[8];
+            simd8float32<SINGLE_SIMD_LEVEL_256> centroids[8];
             for (int k = 0; k < 8; k++) {
                 ALIGNED(32) float centroid[8];
                 size_t wp = 0;
@@ -261,10 +263,10 @@ void compute_PQ_dis_tables_dsub2(
                     centroid[wp++] = all_centroids[rp + 1];
                     rp += 2 * ksub;
                 }
-                centroids[k] = simd8float32(centroid);
+                centroids[k] = simd8float32<SINGLE_SIMD_LEVEL_256>(centroid);
             }
             for (size_t i = 0; i < nx; i++) {
-                simd8float32 xi;
+                simd8float32<SINGLE_SIMD_LEVEL_256> xi;
                 if (m1 == m0 + 4) {
                     xi.loadu(x + i * d + m0 * 2);
                 } else {
@@ -299,7 +301,7 @@ void compute_PQ_dis_tables_dsub2(
 void fvec_sub(size_t d, const float* a, const float* b, float* c) {
     size_t i;
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
+        simd8float32<SINGLE_SIMD_LEVEL_256> ci, ai, bi;
         ai.loadu(a + i);
         bi.loadu(b + i);
         ci = ai - bi;
@@ -314,7 +316,7 @@ void fvec_sub(size_t d, const float* a, const float* b, float* c) {
 void fvec_add(size_t d, const float* a, const float* b, float* c) {
     size_t i;
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai, bi;
+        simd8float32<SINGLE_SIMD_LEVEL_256> ci, ai, bi;
         ai.loadu(a + i);
         bi.loadu(b + i);
         ci = ai + bi;
@@ -328,9 +330,9 @@ void fvec_add(size_t d, const float* a, const float* b, float* c) {
 
 void fvec_add(size_t d, const float* a, float b, float* c) {
     size_t i;
-    simd8float32 bv(b);
+    simd8float32<SINGLE_SIMD_LEVEL_256> bv(b);
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32 ci, ai;
+        simd8float32<SINGLE_SIMD_LEVEL_256> ci, ai;
         ai.loadu(a + i);
         ci = ai + bv;
         ci.storeu(c + i);

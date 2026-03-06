@@ -230,9 +230,9 @@ void find_minimax(
         size_t n,
         uint16_t& smin,
         uint16_t& smax) {
-    simd16uint16 vmin(0xffff), vmax(0);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> vmin(0xffff), vmax(0);
     for (size_t i = 0; i + 15 < n; i += 16) {
-        simd16uint16 v(vals + i);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(vals + i);
         vmin.accu_min(v);
         vmax.accu_max(v);
     }
@@ -257,7 +257,9 @@ void find_minimax(
 
 // max func differentiates between CMin and CMax (keep lowest or largest)
 template <class C>
-simd16uint16 max_func(simd16uint16 v, simd16uint16 thr16) {
+simd16uint16<SINGLE_SIMD_LEVEL_256> max_func(
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v,
+        simd16uint16<SINGLE_SIMD_LEVEL_256> thr16) {
     constexpr bool is_max = C::is_max;
     if (is_max) {
         return max(v, thr16);
@@ -274,16 +276,16 @@ void count_lt_and_eq(
         size_t& n_lt,
         size_t& n_eq) {
     n_lt = n_eq = 0;
-    simd16uint16 thr16(thresh);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> thr16(thresh);
 
     size_t n1 = n / 16;
 
     for (size_t i = 0; i < n1; i++) {
-        simd16uint16 v(vals);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(vals);
         vals += 16;
-        simd16uint16 eqmask = (v == thr16);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> eqmask = (v == thr16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> max2 = max_func<C>(v, thr16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> gemask = (v == max2);
         uint32_t bits = get_MSBs(uint16_to_uint8_saturate(eqmask, gemask));
         int i_eq = __builtin_popcount(bits & 0x00ff00ff);
         int i_ge = __builtin_popcount(bits) - i_eq;
@@ -310,22 +312,22 @@ int simd_compress_array(
         size_t n,
         uint16_t thresh,
         int n_eq) {
-    simd16uint16 thr16(thresh);
-    simd16uint16 mixmask(0xff00);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> thr16(thresh);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> mixmask(0xff00);
 
     int wp = 0;
     size_t i0;
 
     // loop while there are eqs to collect
     for (i0 = 0; i0 + 15 < n && n_eq > 0; i0 += 16) {
-        simd16uint16 v(vals + i0);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
-        simd16uint16 eqmask = (v == thr16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(vals + i0);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> max2 = max_func<C>(v, thr16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> gemask = (v == max2);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> eqmask = (v == thr16);
         uint32_t bits = get_MSBs(
-                blendv(simd32uint8(eqmask),
-                       simd32uint8(gemask),
-                       simd32uint8(mixmask)));
+                blendv(simd32uint8<SINGLE_SIMD_LEVEL_256>(eqmask),
+                       simd32uint8<SINGLE_SIMD_LEVEL_256>(gemask),
+                       simd32uint8<SINGLE_SIMD_LEVEL_256>(mixmask)));
         bits ^= 0xAAAAAAAA;
         // bit 2*i     : eq
         // bit 2*i + 1 : lt
@@ -352,10 +354,10 @@ int simd_compress_array(
 
     // handle remaining, only strictly lt ones.
     for (; i0 + 15 < n; i0 += 16) {
-        simd16uint16 v(vals + i0);
-        simd16uint16 max2 = max_func<C>(v, thr16);
-        simd16uint16 gemask = (v == max2);
-        uint32_t bits = ~get_MSBs(simd32uint8(gemask));
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(vals + i0);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> max2 = max_func<C>(v, thr16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> gemask = (v == max2);
+        uint32_t bits = ~get_MSBs(simd32uint8<SINGLE_SIMD_LEVEL_256>(gemask));
 
         while (bits) {
             int j = __builtin_ctz(bits);
@@ -826,57 +828,62 @@ namespace {
  * 8 bins
  ************************************************************/
 
-simd32uint8 accu4to8(simd16uint16 a4) {
-    simd16uint16 mask4(0x0f0f);
+simd32uint8<SINGLE_SIMD_LEVEL_256> accu4to8(
+        simd16uint16<SINGLE_SIMD_LEVEL_256> a4) {
+    simd16uint16<SINGLE_SIMD_LEVEL_256> mask4(0x0f0f);
 
-    simd16uint16 a8_0 = a4 & mask4;
-    simd16uint16 a8_1 = (a4 >> 4) & mask4;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_0 = a4 & mask4;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_1 = (a4 >> 4) & mask4;
 
-    return simd32uint8(hadd(a8_0, a8_1));
+    return simd32uint8<SINGLE_SIMD_LEVEL_256>(hadd(a8_0, a8_1));
 }
 
-simd16uint16 accu8to16(simd32uint8 a8) {
-    simd16uint16 mask8(0x00ff);
+simd16uint16<SINGLE_SIMD_LEVEL_256> accu8to16(
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a8) {
+    simd16uint16<SINGLE_SIMD_LEVEL_256> mask8(0x00ff);
 
-    simd16uint16 a8_0 = simd16uint16(a8) & mask8;
-    simd16uint16 a8_1 = (simd16uint16(a8) >> 8) & mask8;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_0 =
+            simd16uint16<SINGLE_SIMD_LEVEL_256>(a8) & mask8;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_1 =
+            (simd16uint16<SINGLE_SIMD_LEVEL_256>(a8) >> 8) & mask8;
 
     return hadd(a8_0, a8_1);
 }
 
-static const simd32uint8 shifts = simd32uint8::create<
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64,
-        0,
-        0,
-        0,
-        0,
-        1,
-        16,
-        0,
-        0,
-        4,
-        64>();
+static const simd32uint8<SINGLE_SIMD_LEVEL_256> shifts =
+        simd32uint8<SINGLE_SIMD_LEVEL_256>::create<
+                1,
+                16,
+                0,
+                0,
+                4,
+                64,
+                0,
+                0,
+                0,
+                0,
+                1,
+                16,
+                0,
+                0,
+                4,
+                64,
+                1,
+                16,
+                0,
+                0,
+                4,
+                64,
+                0,
+                0,
+                0,
+                0,
+                1,
+                16,
+                0,
+                0,
+                4,
+                64>();
 
 // 2-bit accumulator: we can add only up to 3 elements
 // on output we return 2*4-bit results
@@ -886,33 +893,38 @@ template <int N, class Preproc>
 void compute_accu2(
         const uint16_t*& data,
         Preproc& pp,
-        simd16uint16& a4lo,
-        simd16uint16& a4hi) {
-    simd16uint16 mask2(0x3333);
-    simd16uint16 a2((uint16_t)0); // 2-bit accu
+        simd16uint16<SINGLE_SIMD_LEVEL_256>& a4lo,
+        simd16uint16<SINGLE_SIMD_LEVEL_256>& a4hi) {
+    simd16uint16<SINGLE_SIMD_LEVEL_256> mask2(0x3333);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a2((uint16_t)0); // 2-bit accu
     for (int j = 0; j < N; j++) {
-        simd16uint16 v(data);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(data);
         data += 16;
         v = pp(v);
         // 0x800 -> force second half of table
-        simd16uint16 idx = v | (v << 8) | simd16uint16(0x800);
-        a2 += simd16uint16(shifts.lookup_2_lanes(simd32uint8(idx)));
+        simd16uint16<SINGLE_SIMD_LEVEL_256> idx =
+                v | (v << 8) | simd16uint16<SINGLE_SIMD_LEVEL_256>(0x800);
+        a2 += simd16uint16<SINGLE_SIMD_LEVEL_256>(
+                shifts.lookup_2_lanes(simd32uint8<SINGLE_SIMD_LEVEL_256>(idx)));
     }
     a4lo += a2 & mask2;
     a4hi += (a2 >> 2) & mask2;
 }
 
 template <class Preproc>
-simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
+simd16uint16<SINGLE_SIMD_LEVEL_256> histogram_8(
+        const uint16_t* data,
+        Preproc pp,
+        size_t n_in) {
     assert(n_in % 16 == 0);
     int n = n_in / 16;
 
-    simd32uint8 a8lo(0);
-    simd32uint8 a8hi(0);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a8lo(0);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a8hi(0);
 
     for (int i0 = 0; i0 < n; i0 += 15) {
-        simd16uint16 a4lo(0); // 4-bit accus
-        simd16uint16 a4hi(0);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> a4lo(0); // 4-bit accus
+        simd16uint16<SINGLE_SIMD_LEVEL_256> a4hi(0);
 
         int i1 = std::min(i0 + 15, n);
         int i;
@@ -933,10 +945,10 @@ simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
     }
 
     // move to 16-bit accu
-    simd16uint16 a16lo = accu8to16(a8lo);
-    simd16uint16 a16hi = accu8to16(a8hi);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16lo = accu8to16(a8lo);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16hi = accu8to16(a8hi);
 
-    simd16uint16 a16 = hadd(a16lo, a16hi);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16 = hadd(a16lo, a16hi);
 
     // the 2 lanes must still be combined
     return a16;
@@ -946,42 +958,46 @@ simd16uint16 histogram_8(const uint16_t* data, Preproc pp, size_t n_in) {
  * 16 bins
  ************************************************************/
 
-static const simd32uint8 shifts2 = simd32uint8::create<
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128,
-        1,
-        2,
-        4,
-        8,
-        16,
-        32,
-        64,
-        128>();
+static const simd32uint8<SINGLE_SIMD_LEVEL_256> shifts2 =
+        simd32uint8<SINGLE_SIMD_LEVEL_256>::create<
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128,
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128,
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128,
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64,
+                128>();
 
-simd32uint8 shiftr_16(simd32uint8 x, int n) {
-    return simd32uint8(simd16uint16(x) >> n);
+simd32uint8<SINGLE_SIMD_LEVEL_256> shiftr_16(
+        simd32uint8<SINGLE_SIMD_LEVEL_256> x,
+        int n) {
+    return simd32uint8<SINGLE_SIMD_LEVEL_256>(
+            simd16uint16<SINGLE_SIMD_LEVEL_256>(x) >> n);
 }
 
 // 2-bit accumulator: we can add only up to 3 elements
@@ -990,34 +1006,36 @@ template <int N, class Preproc>
 void compute_accu2_16(
         const uint16_t*& data,
         Preproc pp,
-        simd32uint8& a4_0,
-        simd32uint8& a4_1,
-        simd32uint8& a4_2,
-        simd32uint8& a4_3) {
-    simd32uint8 mask1(0x55);
-    simd32uint8 a2_0; // 2-bit accu
-    simd32uint8 a2_1; // 2-bit accu
+        simd32uint8<SINGLE_SIMD_LEVEL_256>& a4_0,
+        simd32uint8<SINGLE_SIMD_LEVEL_256>& a4_1,
+        simd32uint8<SINGLE_SIMD_LEVEL_256>& a4_2,
+        simd32uint8<SINGLE_SIMD_LEVEL_256>& a4_3) {
+    simd32uint8<SINGLE_SIMD_LEVEL_256> mask1(0x55);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a2_0; // 2-bit accu
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a2_1; // 2-bit accu
     a2_0.clear();
     a2_1.clear();
 
     for (int j = 0; j < N; j++) {
-        simd16uint16 v(data);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> v(data);
         data += 16;
         v = pp(v);
 
-        simd16uint16 idx = v | (v << 8);
-        simd32uint8 a1 = shifts2.lookup_2_lanes(simd32uint8(idx));
+        simd16uint16<SINGLE_SIMD_LEVEL_256> idx = v | (v << 8);
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a1 =
+                shifts2.lookup_2_lanes(simd32uint8<SINGLE_SIMD_LEVEL_256>(idx));
         // contains 0s for out-of-bounds elements
 
-        simd16uint16 lt8 = (v >> 3) == simd16uint16(0);
-        lt8 = lt8 ^ simd16uint16(0xff00);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> lt8 =
+                (v >> 3) == simd16uint16<SINGLE_SIMD_LEVEL_256>(0);
+        lt8 = lt8 ^ simd16uint16<SINGLE_SIMD_LEVEL_256>(0xff00);
 
         a1 = a1 & lt8;
 
         a2_0 += a1 & mask1;
         a2_1 += shiftr_16(a1, 1) & mask1;
     }
-    simd32uint8 mask2(0x33);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> mask2(0x33);
 
     a4_0 += a2_0 & mask2;
     a4_1 += a2_1 & mask2;
@@ -1025,33 +1043,38 @@ void compute_accu2_16(
     a4_3 += shiftr_16(a2_1, 2) & mask2;
 }
 
-simd32uint8 accu4to8_2(simd32uint8 a4_0, simd32uint8 a4_1) {
-    simd32uint8 mask4(0x0f);
+simd32uint8<SINGLE_SIMD_LEVEL_256> accu4to8_2(
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_0,
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_1) {
+    simd32uint8<SINGLE_SIMD_LEVEL_256> mask4(0x0f);
 
-    simd16uint16 a8_0 = combine2x2(
-            (simd16uint16)(a4_0 & mask4),
-            (simd16uint16)(shiftr_16(a4_0, 4) & mask4));
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_0 = combine2x2(
+            (simd16uint16<SINGLE_SIMD_LEVEL_256>)(a4_0 & mask4),
+            (simd16uint16<SINGLE_SIMD_LEVEL_256>)(shiftr_16(a4_0, 4) & mask4));
 
-    simd16uint16 a8_1 = combine2x2(
-            (simd16uint16)(a4_1 & mask4),
-            (simd16uint16)(shiftr_16(a4_1, 4) & mask4));
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a8_1 = combine2x2(
+            (simd16uint16<SINGLE_SIMD_LEVEL_256>)(a4_1 & mask4),
+            (simd16uint16<SINGLE_SIMD_LEVEL_256>)(shiftr_16(a4_1, 4) & mask4));
 
-    return simd32uint8(hadd(a8_0, a8_1));
+    return simd32uint8<SINGLE_SIMD_LEVEL_256>(hadd(a8_0, a8_1));
 }
 
 template <class Preproc>
-simd16uint16 histogram_16(const uint16_t* data, Preproc pp, size_t n_in) {
+simd16uint16<SINGLE_SIMD_LEVEL_256> histogram_16(
+        const uint16_t* data,
+        Preproc pp,
+        size_t n_in) {
     assert(n_in % 16 == 0);
     int n = n_in / 16;
 
-    simd32uint8 a8lo((uint8_t)0);
-    simd32uint8 a8hi((uint8_t)0);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a8lo((uint8_t)0);
+    simd32uint8<SINGLE_SIMD_LEVEL_256> a8hi((uint8_t)0);
 
     for (int i0 = 0; i0 < n; i0 += 7) {
-        simd32uint8 a4_0(0); // 0, 4, 8, 12
-        simd32uint8 a4_1(0); // 1, 5, 9, 13
-        simd32uint8 a4_2(0); // 2, 6, 10, 14
-        simd32uint8 a4_3(0); // 3, 7, 11, 15
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_0(0); // 0, 4, 8, 12
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_1(0); // 1, 5, 9, 13
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_2(0); // 2, 6, 10, 14
+        simd32uint8<SINGLE_SIMD_LEVEL_256> a4_3(0); // 3, 7, 11, 15
 
         int i1 = std::min(i0 + 7, n);
         int i;
@@ -1072,26 +1095,28 @@ simd16uint16 histogram_16(const uint16_t* data, Preproc pp, size_t n_in) {
     }
 
     // move to 16-bit accu
-    simd16uint16 a16lo = accu8to16(a8lo);
-    simd16uint16 a16hi = accu8to16(a8hi);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16lo = accu8to16(a8lo);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16hi = accu8to16(a8hi);
 
-    simd16uint16 a16 = hadd(a16lo, a16hi);
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16 = hadd(a16lo, a16hi);
 
-    a16 = simd16uint16{simd8uint32{a16}.unzip()};
+    a16 = simd16uint16<SINGLE_SIMD_LEVEL_256>{
+            simd8uint32<SINGLE_SIMD_LEVEL_256>{a16}.unzip()};
 
     return a16;
 }
 
 struct PreprocNOP {
-    simd16uint16 operator()(simd16uint16 x) {
+    simd16uint16<SINGLE_SIMD_LEVEL_256> operator()(
+            simd16uint16<SINGLE_SIMD_LEVEL_256> x) {
         return x;
     }
 };
 
 template <int shift, int nbin>
 struct PreprocMinShift {
-    simd16uint16 min16;
-    simd16uint16 max16;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> min16;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> max16;
 
     explicit PreprocMinShift(uint16_t min) {
         min16.set1(min);
@@ -1100,9 +1125,11 @@ struct PreprocMinShift {
         max16.set1(vmax); // vmax inclusive
     }
 
-    simd16uint16 operator()(simd16uint16 x) {
+    simd16uint16<SINGLE_SIMD_LEVEL_256> operator()(
+            simd16uint16<SINGLE_SIMD_LEVEL_256> x) {
         x = x - min16;
-        simd16uint16 mask = (x == max(x, max16)) - (x == max16);
+        simd16uint16<SINGLE_SIMD_LEVEL_256> mask =
+                (x == max(x, max16)) - (x == max16);
         return (x >> shift) | mask;
     }
 };
@@ -1111,7 +1138,7 @@ struct PreprocMinShift {
 
 void simd_histogram_8_unbounded(const uint16_t* data, int n, int* hist) {
     PreprocNOP pp;
-    simd16uint16 a16 = histogram_8(data, pp, (n & ~15));
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16 = histogram_8(data, pp, (n & ~15));
 
     ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
@@ -1126,7 +1153,8 @@ void simd_histogram_8_unbounded(const uint16_t* data, int n, int* hist) {
 }
 
 void simd_histogram_16_unbounded(const uint16_t* data, int n, int* hist) {
-    simd16uint16 a16 = histogram_16(data, PreprocNOP(), (n & ~15));
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16 =
+            histogram_16(data, PreprocNOP(), (n & ~15));
 
     ALIGNED(32) uint16_t a16_tab[16];
     a16.store(a16_tab);
@@ -1157,7 +1185,7 @@ void simd_histogram_8(
         return;
     }
 
-    simd16uint16 a16;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16;
 
 #define DISPATCH(s)                                                     \
     case s:                                                             \
@@ -1215,7 +1243,7 @@ void simd_histogram_16(
         return;
     }
 
-    simd16uint16 a16;
+    simd16uint16<SINGLE_SIMD_LEVEL_256> a16;
 
 #define DISPATCH(s)                                                       \
     case s:                                                               \
