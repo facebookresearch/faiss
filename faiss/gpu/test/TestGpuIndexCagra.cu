@@ -907,7 +907,7 @@ void testIDSelectorCagra(faiss::MetricType metricType) {
     res.noTempMemory();
 
     faiss::gpu::GpuIndexCagraConfig config;
-    config.device = 0;
+    config.device = opt.device;
     config.graph_degree = opt.graphDegree;
     config.intermediate_graph_degree = opt.intermediateGraphDegree;
     // Use only IVF_PQ to avoid NN_DESCENT + IP combination

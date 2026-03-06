@@ -767,13 +767,14 @@ void testIDSelectorFlat(faiss::MetricType metricType) {
     int dim = faiss::gpu::randVal(64, 200);
     int numQuery = faiss::gpu::randVal(32, 100);
     int k = faiss::gpu::randVal(10, 30);
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
 
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
     auto queryVecs = faiss::gpu::randVecs(numQuery, dim);
     faiss::gpu::GpuIndexFlatConfig config;
-    config.device = 0;
+    config.device = device;
     config.use_cuvs = true;
     for (bool useFloat16 : {false, true}) {
         config.useFloat16 = useFloat16;

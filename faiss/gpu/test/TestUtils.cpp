@@ -482,8 +482,8 @@ void testIDSelectorSearch(
         int k,
         const std::string& selectorName) {
     FAISS_ASSERT(search_params && search_params->sel);
-    std::vector<float> distances(numQuery * k);
-    std::vector<faiss::idx_t> labels(numQuery * k);
+    std::vector<float> distances(numQuery * k, 0);
+    std::vector<faiss::idx_t> labels(numQuery * k, -1);
     index->search(
             numQuery,
             queryVecs.data(),

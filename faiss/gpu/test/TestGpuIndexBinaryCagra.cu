@@ -441,7 +441,7 @@ void testIDSelectorBinaryCagra() {
     res.noTempMemory();
 
     faiss::gpu::GpuIndexCagraConfig config;
-    config.device = 0;
+    config.device = opt.device;
     config.graph_degree = opt.graphDegree;
     config.intermediate_graph_degree = opt.intermediateGraphDegree;
     config.build_algo = faiss::gpu::graph_build_algo::NN_DESCENT;
@@ -455,8 +455,8 @@ void testIDSelectorBinaryCagra() {
     faiss::gpu::SearchParametersCagra search_params;
     for (auto& [selectorName, selector] : selector_struct.selector_map) {
         search_params.sel = selector.get();
-        std::vector<int> distances(opt.numQuery * opt.k);
-        std::vector<faiss::idx_t> labels(opt.numQuery * opt.k);
+        std::vector<int> distances(opt.numQuery * opt.k, 0);
+        std::vector<faiss::idx_t> labels(opt.numQuery * opt.k, -1);
         gpuIndex.search(
                 opt.numQuery,
                 queryVecs.data(),

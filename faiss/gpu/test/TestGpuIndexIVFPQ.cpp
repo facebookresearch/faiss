@@ -901,7 +901,7 @@ void testIDSelectorIVFPQ(faiss::MetricType metricType) {
     res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFPQConfig config;
-    config.device = 0;
+    config.device = opt.device;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     config.interleavedLayout = true;
     config.use_cuvs = true;

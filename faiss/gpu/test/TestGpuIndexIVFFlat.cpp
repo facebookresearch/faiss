@@ -926,7 +926,7 @@ void testIDSelectorIVFFlat(faiss::MetricType metricType) {
     res.noTempMemory();
 
     faiss::gpu::GpuIndexIVFFlatConfig config;
-    config.device = 0;
+    config.device = opt.device;
     config.indicesOptions = faiss::gpu::INDICES_64_BIT;
     config.use_cuvs = true;
 
