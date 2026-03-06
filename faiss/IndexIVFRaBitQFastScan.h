@@ -222,8 +222,11 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
                 const FastScanDistancePostProcessing* ctx = nullptr,
                 bool multibit = false);
 
-        void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1)
-                override;
+        void handle(
+                size_t q,
+                size_t b,
+                simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+                simd16uint16<SINGLE_SIMD_LEVEL_256> d1) override;
 
         /// Override base class virtual method to receive context information
         void set_list_context(size_t list_no, const std::vector<int>& probe_map)

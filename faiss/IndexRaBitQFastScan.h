@@ -92,6 +92,16 @@ struct IndexRaBitQFastScan : IndexFastScan {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /// RaBitQ uses custom handlers; scanner support pending.
+    std::unique_ptr<PQ4CodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            size_t ntotal,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel) const override;
+
     /// Override to create RaBitQ-specific handlers
     SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,
@@ -159,7 +169,11 @@ struct RaBitQHeapHandler
             const FastScanDistancePostProcessing& context,
             bool multi_bit);
 
-    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
+    void handle(
+            size_t q,
+            size_t b,
+            simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+            simd16uint16<SINGLE_SIMD_LEVEL_256> d1) override;
 
     void begin(const float* norms);
 
