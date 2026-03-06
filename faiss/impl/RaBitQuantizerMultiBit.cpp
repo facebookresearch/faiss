@@ -216,25 +216,13 @@ void compute_ex_factors(
         ex_factors.f_add_ex = l2_sqr;
         ex_factors.f_rescale_ex = ipnorm_inv * -2.0f * norm;
     } else {
-        // For IP: Need to compute ||x||^2 for the correction term
-        // The distance formula expects f_add_ex = ||x - c||^2 - ||x||^2
-        // to match the 1-bit formula's or_minus_c_l2sqr for IP metric
-        //
-        // Reconstruct ||x||^2 from residual and centroid:
-        // x = residual + centroid, so ||x||^2 = ||residual + centroid||^2
-        float or_L2sqr = 0;
-        if (centroid != nullptr) {
-            for (size_t i = 0; i < d; i++) {
-                float x_val = residual[i] + centroid[i];
-                or_L2sqr += x_val * x_val;
-            }
-        } else {
-            // If no centroid, x = residual
-            or_L2sqr = l2_sqr;
-        }
-
-        ex_factors.f_add_ex = l2_sqr - or_L2sqr;
-        ex_factors.f_rescale_ex = ipnorm_inv * -2.0f * norm;
+        // For IP: direct dot-product formulation
+        // f_add_ex = <c, r> (dot product of centroid and residual)
+        // f_rescale_ex = ||r|| / ipnorm (positive scaling)
+        float c_dot_r =
+                centroid ? fvec_inner_product(residual, centroid, d) : 0.0f;
+        ex_factors.f_add_ex = c_dot_r;
+        ex_factors.f_rescale_ex = ipnorm_inv * norm;
     }
 }
 
@@ -276,12 +264,14 @@ void quantize_ex_bits(
     float norm_sqr = fvec_norm_L2sqr(residual, d);
     float norm = std::sqrt(norm_sqr);
 
-    // Handle degenerate case
+    // Handle degenerate case: residual is (near-)zero, meaning x ≈ centroid.
+    // For both L2 and IP, f_add_ex and f_rescale_ex are trivially zero:
+    //   L2: ||r||² ≈ 0, IP: <c,r> ≈ 0 and ||r||/ipnorm ≈ 0
     if (norm < 1e-10f) {
         size_t code_size = (d * ex_bits + 7) / 8;
         memset(ex_code, 0, code_size);
         ex_factors.f_add_ex = 0.0f;
-        ex_factors.f_rescale_ex = 1.0f;
+        ex_factors.f_rescale_ex = 0.0f;
         return;
     }
 
