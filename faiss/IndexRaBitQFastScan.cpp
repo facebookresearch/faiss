@@ -559,8 +559,8 @@ template <class C, bool with_id_map>
 void RaBitQHeapHandler<C, with_id_map>::handle(
         size_t q,
         size_t b,
-        simd16uint16 d0,
-        simd16uint16 d1) {
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d0,
+        simd16uint16<SINGLE_SIMD_LEVEL_256> d1) {
     ALIGNED(32) uint16_t d32tab[32];
     d0.store(d32tab);
     d1.store(d32tab + 16);
