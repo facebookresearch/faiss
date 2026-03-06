@@ -1,0 +1,136 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+name: Build GPU pip wheels
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'pyproject-gpu.toml'
+      - 'pyproject-gpu-cuvs.toml'
+      - 'faiss/python/**'
+      - 'faiss/gpu/**'
+      - '.github/workflows/build-pip-gpu.yml'
+
+jobs:
+  build-faiss-gpu:
+    name: Build faiss-gpu ${{ matrix.python }}
+    runs-on: 4-core-ubuntu-gpu-t4
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["cp310", "cp311", "cp312", "cp313"]
+    env:
+      CIBW_BUILD: "${{ matrix.python }}-manylinux_x86_64"
+      CIBW_BUILD_VERBOSITY: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel==2.22.0
+
+      - name: Activate GPU pyproject.toml
+        run: cp pyproject-gpu.toml pyproject.toml
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-gpu-${{ matrix.python }}
+          path: wheelhouse/*.whl
+
+  build-faiss-gpu-cuvs:
+    name: Build faiss-gpu-cuvs ${{ matrix.python }}
+    runs-on: 4-core-ubuntu-gpu-t4
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["cp310", "cp311", "cp312", "cp313"]
+    env:
+      CIBW_BUILD: "${{ matrix.python }}-manylinux_x86_64"
+      CIBW_BUILD_VERBOSITY: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cibuildwheel
+        run: pip install cibuildwheel==2.22.0
+
+      - name: Activate cuVS pyproject.toml
+        run: cp pyproject-gpu-cuvs.toml pyproject.toml
+
+      - name: Build wheels
+        run: cibuildwheel --output-dir wheelhouse
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-gpu-cuvs-${{ matrix.python }}
+          path: wheelhouse/*.whl
+
+  publish-gpu:
+    name: Publish faiss-gpu to PyPI
+    needs: [build-faiss-gpu]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/faiss-gpu
+    permissions:
+      id-token: write
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-gpu-cp*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-gpu-cuvs:
+    name: Publish faiss-gpu-cuvs to PyPI
+    needs: [build-faiss-gpu-cuvs]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/faiss-gpu-cuvs
+    permissions:
+      id-token: write
+    steps:
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-gpu-cuvs-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

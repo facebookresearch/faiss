@@ -1,0 +1,92 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+requires = ["scikit-build-core>=0.10", "numpy>=2.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faiss-gpu"
+version = "1.14.0"
+description = "A library for efficient similarity search and clustering of dense vectors (GPU support)."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+  {name = "Meta AI Research"},
+]
+keywords = ["search", "nearest-neighbors", "clustering", "vectors", "similarity", "gpu", "cuda"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.25",
+  "packaging",
+  "nvidia-cuda-runtime-cu12",
+  "nvidia-cublas-cu12",
+]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/faiss"
+Documentation = "https://github.com/facebookresearch/faiss/wiki"
+Repository = "https://github.com/facebookresearch/faiss"
+Issues = "https://github.com/facebookresearch/faiss/issues"
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+
+# Exclude C++ headers, cmake configs, and pkgconfig from the wheel.
+# Only the Python package (faiss/) and bundled shared libs remain.
+wheel.exclude = ["include/**", "share/**", "lib/cmake/**", "lib/pkgconfig/**"]
+
+[tool.scikit-build.cmake.define]
+FAISS_OPT_LEVEL = "dd"
+FAISS_ENABLE_GPU = "ON"
+FAISS_ENABLE_CUVS = "OFF"
+FAISS_ENABLE_PYTHON = "ON"
+FAISS_ENABLE_MKL = "OFF"
+FAISS_ENABLE_C_API = "OFF"
+FAISS_ENABLE_EXTRAS = "OFF"
+FAISS_ENABLE_SVS = "OFF"
+CMAKE_CUDA_ARCHITECTURES = "70-real;72-real;75-real;80;86-real;90-real"
+BUILD_TESTING = "OFF"
+BUILD_SHARED_LIBS = "ON"
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-*"
+# GPU wheels are Linux x86_64 only (matching conda GPU builds).
+skip = "*-win* *-macosx* *-manylinux_i686 *-manylinux_aarch64 *-musllinux_*"
+test-requires = ["numpy>=2.0,<3.0", "pytest"]
+test-command = "python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v"
+
+[tool.cibuildwheel.linux]
+# Use manylinux_2_28 (AlmaLinux 8) — NVIDIA dropped RHEL 7 CUDA repos for 12.6+.
+manylinux-x86_64-image = "manylinux_2_28"
+# Install CUDA toolkit, OpenBLAS, and SWIG in the manylinux container.
+# NVIDIA's CUDA repo provides nvcc and dev libraries for compilation.
+# CUDA runtime libs are NOT bundled — they come from nvidia-cuda-runtime-cu12
+# pip dependency at install time.
+before-all = "dnf install -y epel-release && dnf install -y openblas-devel swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y cuda-toolkit-12-6"
+# Exclude CUDA runtime libs from the wheel — they are provided by
+# nvidia-cuda-runtime-cu12 and nvidia-cublas-cu12 pip dependencies.
+# libcuda.so.1 is the NVIDIA driver stub, always a system library.
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel} --exclude libcudart.so.12 --exclude libcublas.so.12 --exclude libcublasLt.so.12 --exclude libcuda.so.1"
+
+[tool.cibuildwheel.linux.environment]
+# Point CMake at the CUDA toolkit. CUDACXX is used by CMake to find nvcc
+# without needing PATH modification (which can break {PATH} expansion
+# in cibuildwheel's environment handling).
+CUDA_HOME = "/usr/local/cuda-12.6"
+CUDACXX = "/usr/local/cuda-12.6/bin/nvcc"

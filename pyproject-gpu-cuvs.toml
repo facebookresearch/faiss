@@ -1,0 +1,109 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+# cuVS requires rapids-cmake which needs cmake >= 3.30.4.
+requires = ["scikit-build-core>=0.10", "numpy>=2.0", "cmake>=3.30.4"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faiss-gpu-cuvs"
+version = "1.14.0"
+description = "A library for efficient similarity search and clustering of dense vectors (GPU + cuVS/CAGRA support)."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+  {name = "Meta AI Research"},
+]
+keywords = ["search", "nearest-neighbors", "clustering", "vectors", "similarity", "gpu", "cuda", "cuvs", "cagra"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.25",
+  "packaging",
+  "nvidia-cuda-runtime-cu12",
+  "nvidia-cublas-cu12",
+  "nvidia-nvjitlink-cu12",
+  "libcuvs-cu12==25.10.*",
+]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/faiss"
+Documentation = "https://github.com/facebookresearch/faiss/wiki"
+Repository = "https://github.com/facebookresearch/faiss"
+Issues = "https://github.com/facebookresearch/faiss/issues"
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+
+# Exclude C++ headers, cmake configs, and pkgconfig from the wheel.
+# Only the Python package (faiss/) and bundled shared libs remain.
+wheel.exclude = ["include/**", "share/**", "lib/cmake/**", "lib/pkgconfig/**"]
+
+[tool.scikit-build.cmake.define]
+FAISS_OPT_LEVEL = "dd"
+FAISS_ENABLE_GPU = "ON"
+FAISS_ENABLE_CUVS = "ON"
+FAISS_ENABLE_PYTHON = "ON"
+FAISS_ENABLE_MKL = "OFF"
+FAISS_ENABLE_C_API = "OFF"
+FAISS_ENABLE_EXTRAS = "OFF"
+FAISS_ENABLE_SVS = "OFF"
+CMAKE_CUDA_ARCHITECTURES = "70-real;72-real;75-real;80;86-real;90-real"
+BUILD_TESTING = "OFF"
+BUILD_SHARED_LIBS = "ON"
+# Point find_package(cuvs) at the conda-installed cuVS cmake config.
+# cuvs_DIR is a package-specific hint that doesn't conflict with
+# scikit-build-core's own CMAKE_PREFIX_PATH management.
+cuvs_DIR = "/opt/cuvs/lib/cmake/cuvs"
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-*"
+# GPU wheels are Linux x86_64 only (matching conda GPU builds).
+skip = "*-win* *-macosx* *-manylinux_i686 *-manylinux_aarch64 *-musllinux_*"
+test-requires = ["numpy>=2.0,<3.0", "pytest"]
+# cuVS shared libraries are installed by libcuvs-cu12 pip dependency into
+# site-packages, which is not in LD_LIBRARY_PATH. We use `find` to locate
+# all GPU lib directories and add them to LD_LIBRARY_PATH before testing.
+test-command = "bash -c 'SP=$(python -c \"import site; print(site.getsitepackages()[0])\"); export LD_LIBRARY_PATH=$(find $SP -name \"libcuvs.so*\" -o -name \"libraft.so*\" -o -name \"librmm.so*\" -o -name \"librapids_logger.so*\" 2>/dev/null | xargs -I{{}} dirname {{}} | sort -u | tr \"\\n\" \":\"):$LD_LIBRARY_PATH; python -m pytest {project}/tests/test_wheel_smoke_gpu.py -v'"
+
+[tool.cibuildwheel.linux]
+# Use manylinux_2_28 (AlmaLinux 8) — NVIDIA dropped RHEL 7 CUDA repos for 12.6+.
+manylinux-x86_64-image = "manylinux_2_28"
+# Install CUDA toolkit, OpenBLAS, SWIG, and cuVS dev libraries in the container.
+# cuVS headers + cmake config come from conda (libcuvs); the PyPI libcuvs-cu12
+# package only provides runtime shared libs, not development files.
+# micromamba is used to install libcuvs from the rapidsai conda channel.
+before-all = "dnf install -y epel-release && dnf install -y openblas-devel swig && dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && dnf install -y cuda-toolkit-12-6 && curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj -C /usr/local bin/micromamba && MAMBA_ROOT_PREFIX=/tmp/mamba /usr/local/bin/micromamba create -y -p /opt/cuvs -c rapidsai -c conda-forge libcuvs=25.10 cuda-version=12.6 && rm -f /opt/cuvs/lib/libstdc++.so* /opt/cuvs/lib/libgcc_s.so* /opt/cuvs/lib/libgomp.so*"
+# Exclude CUDA runtime libs and ALL conda-installed RAPIDS libraries from the
+# wheel. CUDA libs come from nvidia-*-cu12 pip deps at install time. cuVS/RAFT
+# and their transitive deps (rmm, nvcomp, spdlog, fmt, etc.) come from the
+# libcuvs-cu12 pip dep. The conda env at /opt/cuvs was only needed at build
+# time for headers + cmake configs; its .so files were compiled against a newer
+# glibc than manylinux_2_28 allows, so we must exclude them all.
+# libcuda.so.1 is the NVIDIA driver stub, always a system library.
+repair-wheel-command = "bash -c 'EXCLUDES=\"--exclude libcudart.so.12 --exclude libcublas.so.12 --exclude libcublasLt.so.12 --exclude libnvJitLink.so.12 --exclude libcuda.so.1\"; for f in /opt/cuvs/lib/lib*.so*; do EXCLUDES=\"$EXCLUDES --exclude $(basename $f)\"; done; auditwheel repair -w {dest_dir} {wheel} $EXCLUDES'"
+
+[tool.cibuildwheel.linux.environment]
+# Point CMake at the CUDA toolkit. CUDACXX is used by CMake to find nvcc
+# without needing PATH modification (which can break {PATH} expansion
+# in cibuildwheel's environment handling).
+# CMAKE_PREFIX_PATH points at the conda env where libcuvs is installed,
+# so that find_package(cuvs) can locate cuvsConfig.cmake.
+CUDA_HOME = "/usr/local/cuda-12.6"
+CUDACXX = "/usr/local/cuda-12.6/bin/nvcc"
+CMAKE_PREFIX_PATH = "/opt/cuvs"

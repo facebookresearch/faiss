@@ -13,6 +13,61 @@ import logging
 import sys
 import inspect
 
+
+def _preload_gpu_libs():
+    """Pre-load GPU shared libraries from pip packages.
+
+    When faiss is installed via pip with GPU support (faiss-gpu or
+    faiss-gpu-cuvs), CUDA and cuVS shared libraries are provided by
+    separate pip packages (nvidia-cuda-runtime-cu12, libcuvs-cu12, etc.)
+    that install .so files under site-packages/. These paths are not in
+    the default ld.so search path, so we pre-load them with RTLD_GLOBAL
+    before importing the SWIG extension module.
+
+    This is a no-op when libraries are already findable (e.g. conda
+    environments where LD_LIBRARY_PATH includes the prefix lib/) or
+    when GPU packages aren't installed (faiss-cpu).
+    """
+    import ctypes
+    import os
+
+    # Specific shared libraries we need, in dependency order.
+    _NEEDED_LIBS = [
+        "libcudart.so", "libcublas.so", "libcublasLt.so",
+        "libnvJitLink.so", "libcusolver.so", "libcusparse.so",
+        "libcurand.so", "libnccl.so",
+        "librapids_logger.so", "librmm.so", "libraft.so", "libcuvs.so",
+    ]
+
+    # Search sys.path (includes site-packages) for lib/ subdirectories
+    # containing GPU shared libraries. Walk up to 3 levels deep to handle
+    # both flat packages (libcuvs/lib/) and namespace packages
+    # (nvidia/cuda_runtime/lib/).
+    found = {}
+    for path_entry in sys.path:
+        if not os.path.isdir(path_entry):
+            continue
+        for root, dirs, files in os.walk(path_entry):
+            depth = root[len(path_entry):].count(os.sep)
+            if depth > 3:
+                dirs.clear()
+                continue
+            for f in files:
+                if any(f.startswith(lib) for lib in _NEEDED_LIBS):
+                    found[f] = os.path.join(root, f)
+            # Prune hidden dirs and __pycache__
+            dirs[:] = [d for d in dirs if not d.startswith(('.', '__'))]
+
+    for f in sorted(found):
+        try:
+            ctypes.CDLL(found[f], mode=ctypes.RTLD_GLOBAL)
+        except OSError:
+            pass
+
+
+_preload_gpu_libs()
+del _preload_gpu_libs
+
 # We import * so that the symbol foo can be accessed as faiss.foo.
 from .loader import *
 
