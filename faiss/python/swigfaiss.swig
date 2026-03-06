@@ -873,6 +873,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
     DOWNCAST (ITQMatrix)
+    DOWNCAST (HadamardRotation)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
@@ -940,6 +941,14 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
     return aq;
 }
 %}
+
+// SWIG cannot handle std::unique_ptr return types; the raw-pointer
+// versions (already annotated with %newobject) are sufficient.
+%ignore faiss::read_index_up;
+%ignore faiss::read_index_binary_up;
+%ignore faiss::read_VectorTransform_up;
+%ignore faiss::read_ProductQuantizer_up;
+%ignore faiss::read_InvertedLists_up;
 
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>
@@ -1228,9 +1237,23 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
 
 %}
 
+%{
+/* See https://github.com/facebookresearch/faiss/issues/4845 */
+static int _faiss_init_numpy() {
+    import_array1(-1);
+    return 0;
+}
+%}
+
 %init %{
     /* needed, else crash at runtime */
-    import_array();
+    if (_faiss_init_numpy() < 0) {
+#if SWIG_VERSION >= 0x040400
+        return -1;
+#else
+        return NULL;
+#endif
+    }
 
     PythonInterruptCallback::reset();
 %}

@@ -177,6 +177,8 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::AVX2>(
 #undef DISPATCH
 }
 
+namespace {
+
 struct AVX2ElementOpIP : public ElementOpIP {
     using ElementOpIP::op;
     static __m256 op(__m256 x, __m256 y) {
@@ -192,6 +194,8 @@ struct AVX2ElementOpL2 : public ElementOpL2 {
         return _mm256_mul_ps(tmp, tmp);
     }
 };
+
+} // namespace
 
 /// helper function for AVX2
 inline float horizontal_sum(const __m256 v) {
@@ -645,7 +649,7 @@ void fvec_L2sqr_ny<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -755,7 +759,7 @@ size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -870,7 +874,7 @@ size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -1027,7 +1031,7 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::AVX2>(
 
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         const float* y_sqlen,

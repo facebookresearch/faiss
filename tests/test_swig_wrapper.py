@@ -49,6 +49,12 @@ class TestSWIGWrap(unittest.TestCase):
 
         assert isinstance(index2, faiss.IndexRefineFlat)
 
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index(
+            faiss.serialize_index(index2)
+        )
+        assert isinstance(index3, faiss.IndexRefineFlat)
+
     def do_test_array_type(self, dtype):
         """ tests swig_ptr and rev_swig_ptr for this type of array """
         a = np.arange(12).astype(dtype)

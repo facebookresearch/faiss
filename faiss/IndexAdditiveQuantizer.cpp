@@ -182,46 +182,19 @@ void search_with_LUT(
     }
 }
 
-struct Run_search_with_decompress {
-    const IndexAdditiveQuantizer& iaq;
-    const float* xq;
-    idx_t n;
-    idx_t k;
-    float* distances;
-    idx_t* labels;
-    using T = void;
-
-    template <class VD>
-    void f(VD vd) {
-        if constexpr (VD::is_similarity) {
-            HeapBlockResultHandler<CMin<float, idx_t>> rh(
-                    n, distances, labels, k);
-            search_with_decompress(iaq, xq, vd, rh);
-        } else {
-            HeapBlockResultHandler<CMax<float, idx_t>> rh(
-                    n, distances, labels, k);
-            search_with_decompress(iaq, xq, vd, rh);
-        }
-    }
-};
-
-struct Run_new_AQDistanceComputerDecompress {
-    const IndexAdditiveQuantizer& iaq;
-    using T = FlatCodesDistanceComputer*;
-
-    template <class VD>
-    T f(VD vd) {
-        return new AQDistanceComputerDecompress<VD>(iaq, vd);
-    }
-};
-
 } // anonymous namespace
 
 FlatCodesDistanceComputer* IndexAdditiveQuantizer::
         get_FlatCodesDistanceComputer() const {
     if (aq->search_type == AdditiveQuantizer::ST_decompress) {
-        Run_new_AQDistanceComputerDecompress consumer{*this};
-        return dispatch_VectorDistance(d, metric_type, metric_arg, consumer);
+        return with_VectorDistance(
+                d,
+                metric_type,
+                metric_arg,
+                [&](auto vd) -> FlatCodesDistanceComputer* {
+                    return new AQDistanceComputerDecompress<decltype(vd)>(
+                            *this, vd);
+                });
     } else {
         if (metric_type == METRIC_INNER_PRODUCT) {
             return new AQDistanceComputerLUT<
@@ -264,8 +237,17 @@ void IndexAdditiveQuantizer::search(
             !params, "search params not supported for this index");
 
     if (aq->search_type == AdditiveQuantizer::ST_decompress) {
-        Run_search_with_decompress consumer{*this, x, n, k, distances, labels};
-        dispatch_VectorDistance(d, metric_type, metric_arg, consumer);
+        with_VectorDistance(d, metric_type, metric_arg, [&](auto vd) {
+            if constexpr (decltype(vd)::is_similarity) {
+                HeapBlockResultHandler<CMin<float, idx_t>> rh(
+                        n, distances, labels, k);
+                search_with_decompress(*this, x, vd, rh);
+            } else {
+                HeapBlockResultHandler<CMax<float, idx_t>> rh(
+                        n, distances, labels, k);
+                search_with_decompress(*this, x, vd, rh);
+            }
+        });
     } else {
         if (metric_type == METRIC_INNER_PRODUCT) {
             HeapBlockResultHandler<CMin<float, idx_t>> rh(

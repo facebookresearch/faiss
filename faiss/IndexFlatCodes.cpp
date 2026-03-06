@@ -182,15 +182,6 @@ struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
     }
 };
 
-struct Run_get_distance_computer {
-    using T = FlatCodesDistanceComputer*;
-
-    template <class VD>
-    FlatCodesDistanceComputer* f(const VD& vd, const IndexFlatCodes* codec) {
-        return new GenericFlatCodesDistanceComputer<VD>(codec, vd);
-    }
-};
-
 template <class BlockResultHandler>
 struct Run_search_with_decompress {
     using T = void;
@@ -235,15 +226,11 @@ struct Run_search_with_decompress_res {
     void f(BlockResultHandler& res,
            const IndexFlatCodes* index,
            const float* xq) {
-        Run_search_with_decompress<BlockResultHandler> r;
-        dispatch_VectorDistance(
-                index->d,
-                index->metric_type,
-                index->metric_arg,
-                r,
-                index,
-                xq,
-                res);
+        with_VectorDistance(
+                index->d, index->metric_type, index->metric_arg, [&](auto vd) {
+                    Run_search_with_decompress<BlockResultHandler> r;
+                    r.template f<decltype(vd)>(vd, index, xq, res);
+                });
     }
 };
 
@@ -251,8 +238,14 @@ struct Run_search_with_decompress_res {
 
 FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
         const {
-    Run_get_distance_computer r;
-    return dispatch_VectorDistance(d, metric_type, metric_arg, r, this);
+    return with_VectorDistance(
+            d,
+            metric_type,
+            metric_arg,
+            [&](auto vd) -> FlatCodesDistanceComputer* {
+                return new GenericFlatCodesDistanceComputer<decltype(vd)>(
+                        this, vd);
+            });
 }
 
 void IndexFlatCodes::search(

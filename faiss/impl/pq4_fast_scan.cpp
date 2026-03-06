@@ -111,7 +111,8 @@ void pq4_pack_codes_range(
         size_t bbs,
         size_t nsq,
         uint8_t* blocks,
-        size_t code_stride) {
+        size_t code_stride,
+        size_t block_stride) {
     // Determine stride: use custom if provided, otherwise use legacy
     // calculation
     size_t actual_stride = (code_stride == 0) ? (M + 1) / 2 : code_stride;
@@ -136,7 +137,7 @@ void pq4_pack_codes_range(
     size_t block1 = ((i1 - 1) / bbs) + 1;
 
     for (size_t b = block0; b < block1; b++) {
-        uint8_t* codes2 = blocks + b * bbs * nsq / 2;
+        uint8_t* codes2 = blocks + b * block_stride;
         int64_t i_base = b * bbs - i0;
         for (int sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
@@ -270,6 +271,10 @@ void CodePackerPQ4::unpack_1(
         code1 = pq4_get_packed_element(block, bbs, nsq, offset, 2 * i + 1);
         flat_code[i] = code0 | (code1 << 4);
     }
+}
+
+CodePacker* CodePackerPQ4::clone() const {
+    return new CodePackerPQ4(*this);
 }
 
 /***************************************************************

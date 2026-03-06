@@ -66,12 +66,14 @@ struct Graph {
     // construct an empty graph
     // NOTE: the newly allocated data needs to be destroyed at destruction time
     Graph(int N, int K) : K(K), N(N), own_fields(true) {
-        data = new node_t[N * K];
+        size_t total = faiss::mul_no_overflow(
+                (size_t)N, (size_t)K, "Graph allocation");
+        data = new node_t[total];
     }
 
     // copy constructor
     Graph(const Graph& g) : Graph(g.N, g.K) {
-        memcpy(data, g.data, N * K * sizeof(node_t));
+        memcpy(data, g.data, (size_t)N * (size_t)K * sizeof(node_t));
     }
 
     // release the allocated memory if needed
@@ -83,21 +85,25 @@ struct Graph {
 
     // access the j-th neighbor of node i
     inline node_t at(int i, int j) const {
-        return data[i * K + j];
+        FAISS_CHECK_RANGE_DEBUG(i, 0, N);
+        FAISS_CHECK_RANGE_DEBUG(j, 0, K);
+        return data[(size_t)i * K + j];
     }
 
     // access the j-th neighbor of node i by reference
     inline node_t& at(int i, int j) {
-        return data[i * K + j];
+        FAISS_CHECK_RANGE_DEBUG(i, 0, N);
+        FAISS_CHECK_RANGE_DEBUG(j, 0, K);
+        return data[(size_t)i * K + j];
     }
 
     // get all neighbors of node i (used during search only)
     virtual size_t get_neighbors(int i, node_t* neighbors) const {
         for (int j = 0; j < K; j++) {
-            if (data[i * K + j] < 0) {
+            if (data[(size_t)i * K + j] < 0) {
                 return j;
             }
-            neighbors[j] = data[i * K + j];
+            neighbors[j] = data[(size_t)i * K + j];
         }
         return K;
     }

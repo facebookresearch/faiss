@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 
 // Only include x86 SIMD intrinsics on x86/x86_64 architectures
 #if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
@@ -423,3 +424,262 @@ inline uint64_t popcount(const uint8_t* data, size_t size) {
 }
 
 } // namespace faiss::rabitq
+
+/*********************************************************
+ * Multi-bit RaBitQ inner product kernels.
+ *
+ * Compute: sum_i rotated_q[i] * ((sign_bit_i << ex_bits) + ex_code_val_i + cb)
+ *
+ * Strategy:
+ *   ex_bits == 1: Specialized kernel — both sign_bits and ex_code are
+ *                 1-bit-per-dim packed, enabling direct bit→mask→float
+ *                 conversion with zero per-element extraction.
+ *   ex_bits >= 2: Bit-plane decomposition (BMI2 required) — PEXT extracts
+ *                 each bit plane in one instruction, then the same
+ *                 bit→mask→float kernel computes each plane's dot product.
+ *   Fallback:     Scalar extraction via 64-bit window read + shift + mask.
+ *********************************************************/
+namespace faiss::rabitq::multibit {
+
+/// Scalar inner product for multi-bit RaBitQ.
+/// Extracts each code value in O(1) via 64-bit window read + shift + mask.
+/// Also serves as the tail handler for SIMD kernels via the @p start parameter.
+inline float ip_scalar(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t start,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    float result = 0.0f;
+    const int sign_shift = static_cast<int>(ex_bits);
+    const uint64_t code_mask = (1ULL << ex_bits) - 1;
+    for (size_t i = start; i < d; i++) {
+        int sb = (sign_bits[i / 8] >> (i % 8)) & 1;
+        size_t bit_pos = i * ex_bits;
+        size_t byte_idx = bit_pos / 8;
+        size_t bit_offset = bit_pos % 8;
+        uint64_t raw = 0;
+        memcpy(&raw, ex_code + byte_idx, sizeof(uint64_t));
+        int ex_val = static_cast<int>((raw >> bit_offset) & code_mask);
+        result += rotated_q[i] *
+                (static_cast<float>((sb << sign_shift) + ex_val) + cb);
+    }
+    return result;
+}
+
+#if defined(__x86_64__) || defined(_M_X64)
+
+#if defined(__AVX2__)
+/// Horizontal sum of 8 floats in a __m256 register.
+inline float hsum_avx2(__m256 v) {
+    __m128 hi = _mm256_extractf128_ps(v, 1);
+    __m128 lo = _mm256_castps256_ps128(v);
+    lo = _mm_add_ps(lo, hi);
+    __m128 shuf = _mm_movehdup_ps(lo);
+    lo = _mm_add_ps(lo, shuf);
+    shuf = _mm_movehl_ps(shuf, lo);
+    return _mm_cvtss_f32(_mm_add_ss(lo, shuf));
+}
+#endif // __AVX2__
+
+/*********************************************************
+ * Specialized 1-bit kernels (ex_bits == 1).
+ *
+ * For 1 extra bit, both sign_bits and ex_code are 1-bit-per-dim packed,
+ * so we convert bits to floats directly — no extraction loops needed.
+ *********************************************************/
+
+#if defined(__AVX512F__)
+/// AVX-512: 16 dims/iter, ex_bits == 1.
+inline float ip_1exbit_avx512(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_two = _mm512_set1_ps(2.0f);
+    const __m512 v_one = _mm512_set1_ps(1.0f);
+
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        uint16_t sb16;
+        memcpy(&sb16, sign_bits + i / 8, sizeof(uint16_t));
+        uint16_t eb16;
+        memcpy(&eb16, ex_code + i / 8, sizeof(uint16_t));
+
+        __m512 sb_f = _mm512_maskz_mov_ps(_cvtu32_mask16(sb16), v_one);
+        __m512 eb_f = _mm512_maskz_mov_ps(_cvtu32_mask16(eb16), v_one);
+
+        __m512 recon = _mm512_add_ps(_mm512_fmadd_ps(sb_f, v_two, eb_f), v_cb);
+        __m512 rq = _mm512_loadu_ps(rotated_q + i);
+        acc = _mm512_fmadd_ps(rq, recon, acc);
+    }
+
+    float result = _mm512_reduce_add_ps(acc);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, 1, cb);
+    return result;
+}
+#endif // __AVX512F__
+
+#if defined(__AVX2__)
+/// AVX2: 8 dims/iter, ex_bits == 1.
+inline float ip_1exbit_avx2(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+    const __m256 v_two = _mm256_set1_ps(2.0f);
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        uint8_t sb = sign_bits[i / 8];
+        uint8_t eb = ex_code[i / 8];
+
+        __m256i sb_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(sb), bit_pos), zero);
+        __m256 sb_f = _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one);
+
+        __m256i eb_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(eb), bit_pos), zero);
+        __m256 eb_f = _mm256_and_ps(_mm256_castsi256_ps(eb_cmp), v_one);
+
+        __m256 recon = _mm256_add_ps(_mm256_fmadd_ps(sb_f, v_two, eb_f), v_cb);
+        __m256 rq = _mm256_loadu_ps(rotated_q + i);
+        acc = _mm256_fmadd_ps(rq, recon, acc);
+    }
+
+    float result = hsum_avx2(acc);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, 1, cb);
+    return result;
+}
+#endif // __AVX2__
+
+/*********************************************************
+ * Bit-plane decomposition kernels (ex_bits >= 2, BMI2 required).
+ *
+ * Decomposes the inner product as:
+ *   ex_ip = (1 << ex_bits) * sign_dot
+ *         + Σ_{b=0}^{ex_bits-1} (1 << b) * plane_dot_b
+ *         + cb * total_q
+ *
+ * Each plane_dot_b is a float × bit-vector dot product, computed using
+ * the same bit→mask→float conversion as the 1-bit kernel. PEXT
+ * extracts each bit plane from the packed ex_code in one instruction
+ * per 8 dimensions.
+ *********************************************************/
+
+#if defined(__AVX2__) && defined(__BMI2__)
+/// AVX2 + BMI2 bit-plane decomposition: 8 dims/iter, ex_bits in [2, 7].
+/// Caller must ensure ex_bits <= 7 (pext_masks[7] / v_weights[8]).
+inline float ip_bitplane_avx2(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+
+    // Precompute PEXT masks and plane weights
+    uint64_t pext_masks[7];
+    __m256 v_weights[8];
+    for (size_t b = 0; b < ex_bits; b++) {
+        uint64_t m = 0;
+        for (int j = 0; j < 8; j++) {
+            m |= (1ULL << (b + j * ex_bits));
+        }
+        pext_masks[b] = m;
+        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+    }
+    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        // Sign bit → float via bit mask comparison
+        __m256i sb_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
+                zero);
+        __m256 recon = _mm256_mul_ps(
+                _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one),
+                v_weights[ex_bits]);
+
+        // Load packed ex_code for 8 dims (8 × ex_bits bits = ex_bits bytes)
+        uint64_t ex64 = 0;
+        memcpy(&ex64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
+
+        // Extract each bit plane via PEXT → bit mask → float
+        for (size_t b = 0; b < ex_bits; b++) {
+            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
+            __m256i p_cmp = _mm256_cmpgt_epi32(
+                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
+            __m256 p_f = _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_one);
+            recon = _mm256_fmadd_ps(p_f, v_weights[b], recon);
+        }
+
+        __m256 rq = _mm256_loadu_ps(rotated_q + i);
+        acc = _mm256_fmadd_ps(rq, _mm256_add_ps(recon, v_cb), acc);
+    }
+
+    float result = hsum_avx2(acc);
+    result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
+    return result;
+}
+#endif // __AVX2__ && __BMI2__
+
+#endif // x86_64
+
+/**
+ * Dispatch to the best available kernel for the given ex_bits.
+ *
+ * Routing (compile-time):
+ *   ex_bits == 1:  specialized 1-bit kernel (AVX-512 > AVX2 > scalar)
+ *   ex_bits >= 2:  bit-plane decomposition (AVX2+BMI2 > scalar)
+ *
+ * @param sign_bits  packed sign bits (1 bit/dim, standard byte packing)
+ * @param ex_code    packed extra-bit codes (ex_bits bits/dim)
+ * @param rotated_q  rotated query vector (float[d])
+ * @param d          dimensionality
+ * @param ex_bits    number of extra bits per dimension (nb_bits - 1)
+ * @param cb         constant bias: -(2^ex_bits - 0.5)
+ * @return           inner product value
+ */
+inline float compute_inner_product(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    if (ex_bits == 1) {
+#if defined(__AVX512F__)
+        return ip_1exbit_avx512(sign_bits, ex_code, rotated_q, d, cb);
+#elif defined(__AVX2__)
+        return ip_1exbit_avx2(sign_bits, ex_code, rotated_q, d, cb);
+#else
+        return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, 1, cb);
+#endif
+    }
+
+#if defined(__AVX2__) && defined(__BMI2__)
+    if (ex_bits <= 7) {
+        return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+    }
+#endif
+    return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+} // namespace faiss::rabitq::multibit

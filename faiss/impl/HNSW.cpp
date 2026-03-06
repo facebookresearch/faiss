@@ -7,6 +7,7 @@
 
 #include <faiss/impl/HNSW.h>
 
+#include <cinttypes>
 #include <cstddef>
 
 #include <faiss/IndexHNSW.h>
@@ -44,11 +45,15 @@ void HNSW::set_nb_neighbors(int level_no, int n) {
 }
 
 int HNSW::cum_nb_neighbors(int layer_no) const {
+    FAISS_CHECK_RANGE_DEBUG(layer_no, 0, (int)cum_nneighbor_per_level.size());
     return cum_nneighbor_per_level[layer_no];
 }
 
 void HNSW::neighbor_range(idx_t no, int layer_no, size_t* begin, size_t* end)
         const {
+    FAISS_CHECK_RANGE_DEBUG(no, 0, (idx_t)offsets.size());
+    FAISS_CHECK_RANGE_DEBUG(
+            layer_no, 0, (int)cum_nneighbor_per_level.size() - 1);
     size_t o = offsets[no];
     *begin = o + cum_nb_neighbors(layer_no);
     *end = o + cum_nb_neighbors(layer_no + 1);

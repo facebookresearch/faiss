@@ -12,18 +12,20 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch faiss-cpu=1.13.2
+$ conda install -c pytorch -c conda-forge faiss-cpu=1.14.1
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia faiss-gpu=1.13.2
+$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.14.1
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.13.2
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.14.1
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
 
-For faiss-gpu, the nvidia channel is required for CUDA, which is not published in the main anaconda channel.
+The conda-forge channel is required for up-to-date dependencies (MKL on x86-64, OpenBLAS on ARM), which are not regularly updated in the default Anaconda channel.
+
+For faiss-gpu, the nvidia channel is additionally required for CUDA, which is not published in the main anaconda channel.
 
 For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
 
@@ -31,10 +33,10 @@ Nightly pre-release packages can be installed as follows:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch/label/nightly faiss-cpu
+$ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia faiss-gpu=1.13.2
+$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.14.1
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 12.6)
 conda install -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=12.6'
@@ -49,31 +51,6 @@ conda create --name faiss_1.8.0
 conda activate faiss_1.8.0
 conda install -c pytorch -c nvidia faiss-gpu=1.8.0 pytorch=*=*cuda* pytorch-cuda=11 numpy
 ```
-
-## Installing from conda-forge
-
-Faiss is also being packaged by [conda-forge](https://conda-forge.org/), the
-community-driven packaging ecosystem for conda. The packaging effort is
-collaborating with the Faiss team to ensure high-quality package builds.
-
-Due to the comprehensive infrastructure of conda-forge, it may even happen that
-certain build combinations are supported in conda-forge that are not available
-through the pytorch channel. To install, use
-
-``` shell
-# CPU version
-$ conda install -c conda-forge faiss-cpu
-
-# GPU version
-$ conda install -c conda-forge faiss-gpu
-
-# NVIDIA cuVS and AMD ROCm version not yet available
-```
-
-You can tell which channel your conda packages come from by using `conda list`.
-If you are having problems using a package built by conda-forge, please raise
-an [issue](https://github.com/conda-forge/faiss-split-feedstock/issues) on the
-conda-forge package "feedstock".
 
 # Building from source
 

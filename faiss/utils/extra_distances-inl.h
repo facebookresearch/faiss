@@ -200,25 +200,25 @@ struct VectorDistance<METRIC_GOWER, SIMDLevel::NONE>
 };
 
 /***************************************************************************
- * Dispatching function that takes a metric type and a consumer object
- * the consumer object should contain a return type T and a operation template
- * function f() that is called to perform the operation.
+ * Dispatching function that takes a lambda directly.
+ * The lambda should be templated on VectorDistance, eg.:
  *
- * The first argument of the function is the VectorDistance object. The rest
- * are passed in as is. The object also dispatches to the current SIMD level.
+ *   auto result = with_VectorDistance(
+ *       metric, metric_arg, [&]<class VD>(VD vd) {
+ *           return vd(x, y);
+ *       });
  **************************************************************************/
 
-template <class Consumer, class... Types>
-typename Consumer::T dispatch_VectorDistance(
+template <typename LambdaType>
+auto with_VectorDistance(
         size_t d,
         MetricType metric,
         float metric_arg,
-        Consumer& consumer,
-        Types... args) {
+        LambdaType&& action) {
     auto dispatch_metric = [&]<MetricType mt>() {
         auto call = [&]<SIMDLevel level>() {
             VectorDistance<mt, level> vd = {d, metric_arg};
-            return consumer.template f<VectorDistance<mt, level>>(vd, args...);
+            return action(vd);
         };
 
         constexpr bool has_simd = mt == METRIC_INNER_PRODUCT ||

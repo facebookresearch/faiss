@@ -29,6 +29,17 @@ enum class SIMDLevel {
     COUNT
 };
 
+/// Number of float32 lanes for a given SIMD level.
+template <SIMDLevel SL>
+constexpr int simd_width() {
+    if constexpr (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+        return 16;
+    else if constexpr (SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON)
+        return 8;
+    else
+        return 1;
+}
+
 /// Convert SIMDLevel to string. Throws FaissException for invalid level.
 std::string to_string(SIMDLevel level);
 

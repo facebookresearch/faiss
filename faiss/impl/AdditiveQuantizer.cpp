@@ -67,8 +67,10 @@ void AdditiveQuantizer::set_derived_values() {
     codebook_offsets.resize(M + 1, 0);
     for (int i = 0; i < M; i++) {
         int nbit = nbits[i];
-        size_t k = 1 << nbit;
-        codebook_offsets[i + 1] = codebook_offsets[i] + k;
+        FAISS_CHECK_RANGE(nbit, 0, 31);
+        size_t k = (size_t)1 << nbit;
+        codebook_offsets[i + 1] =
+                add_no_overflow(codebook_offsets[i], k, "codebook_offsets");
         tot_bits += nbit;
         if (nbit != 0) {
             only_8bit = false;
@@ -154,12 +156,24 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
 
 void AdditiveQuantizer::compute_codebook_tables() {
     centroid_norms.resize(total_codebook_size);
+    FAISS_THROW_IF_NOT_FMT(
+            codebooks.size() >=
+                    mul_no_overflow(
+                            total_codebook_size, d, "codebooks validation"),
+            "codebooks size %zd too small for total_codebook_size=%zd * d=%zd",
+            codebooks.size(),
+            total_codebook_size,
+            d);
     fvec_norms_L2sqr(
             centroid_norms.data(), codebooks.data(), d, total_codebook_size);
     size_t cross_table_size = 0;
     for (int m = 0; m < M; m++) {
+        FAISS_CHECK_RANGE(nbits[m], 0, 31);
         size_t K = (size_t)1 << nbits[m];
-        cross_table_size += K * codebook_offsets[m];
+        size_t product =
+                mul_no_overflow(K, codebook_offsets[m], "cross_table_size");
+        cross_table_size = add_no_overflow(
+                cross_table_size, product, "cross_table_size accumulation");
     }
     codebook_cross_products.resize(cross_table_size);
     size_t ofs = 0;
@@ -168,7 +182,16 @@ void AdditiveQuantizer::compute_codebook_tables() {
         FINTEGER kk = codebook_offsets[m];
         FINTEGER di = d;
         float zero = 0, one = 1;
-        assert(ofs + ki * kk <= cross_table_size);
+        size_t step_size = (size_t)ki * (size_t)kk;
+        FAISS_THROW_IF_NOT_FMT(
+                add_no_overflow(ofs, step_size, "cross product table offset") <=
+                        cross_table_size,
+                "cross product table overflow at step %d: "
+                "%zd + %zd > %zd",
+                m,
+                ofs,
+                step_size,
+                cross_table_size);
         sgemm_("Transposed",
                "Not transposed",
                &ki,
@@ -182,7 +205,7 @@ void AdditiveQuantizer::compute_codebook_tables() {
                &zero,
                codebook_cross_products.data() + ofs,
                &ki);
-        ofs += ki * kk;
+        ofs += step_size;
     }
 }
 
