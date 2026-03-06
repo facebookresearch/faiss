@@ -9672,6 +9672,7 @@
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1aed1a675f6c3299e1610715d295e13039" kind="variable"><name>c34</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a6b958462b60c7900cbccaf423ff49c9f" kind="variable"><name>qr_to_c_L2sqr</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a550dedff101685cefaa5298cf64c9bce" kind="variable"><name>qr_norm_L2sqr</name></member>
+    <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a937531d076cbacad7c4792129c62f96b" kind="variable"><name>q_dot_c</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1ac5162712b614a52247f3a77f3601936d" kind="variable"><name>int_dot_scale</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a57162cc6445d6c321a669a684022e6b0" kind="variable"><name>g_error</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a7bf1ca5dc837e7ac3e8ef97e7bdefe84" kind="variable"><name>rotated_q</name></member>
@@ -12439,7 +12440,7 @@
     <member refid="RaBitQUtils_8h_1a63efa56aca52ce9b6902cd89961de18d" kind="function"><name>compute_1bit_adjusted_distance</name></member>
     <member refid="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" kind="function"><name>should_refine_candidate</name></member>
     <member refid="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" kind="function"><name>extract_code_inline</name></member>
-    <member refid="RaBitQUtils_8h_1acccd7d3d493e13b32e250700d4750f4b" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="RaBitQUtils_8h_1a08836886c8399e129c4bdc89d1f89c24" kind="function"><name>compute_full_multibit_distance</name></member>
     <member refid="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" kind="function"><name>get_block_aux_ptr</name></member>
     <member refid="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" kind="function"><name>populate_block_aux_from_flat_storage</name></member>
