@@ -142,6 +142,10 @@ struct HNSW {
     /// expansion factor at search time
     int efSearch = 16;
 
+    /// when pruning, leave room for more neighbors to avoid O(n^2)
+    /// costs and lock contention on frequently-pruned nodes.
+    float prune_headroom = 0.2f;
+
     /// during search: do we check whether the next best distance is good
     /// enough?
     bool check_relative_distance = true;
