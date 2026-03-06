@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include <faiss/utils/simdlib.h>
+#include <faiss/utils/simdlib_dispatch.h>
 
 /*******************************************
  * The Scaler objects are used to specialize the handling of the

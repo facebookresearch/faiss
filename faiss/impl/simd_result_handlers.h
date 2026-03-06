@@ -12,7 +12,7 @@
 #include <vector>
 
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/utils/simdlib_dispatch.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -33,7 +33,8 @@ struct SIMDResultHandler {
     bool with_fields = false;
 
     /**  called when 32 distances are computed and provided in two
-     *   simd16uint16. (q, b) indicate which entry it is in the block. */
+     *   simd16uint16. (q, b) indicate which entry it is
+     * in the block. */
     virtual void handle(
             size_t q,
             size_t b,
