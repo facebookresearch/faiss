@@ -1,0 +1,115 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+requires = ["scikit-build-core>=0.10", "numpy>=2.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "faiss-cpu"
+version = "1.14.0"
+description = "A library for efficient similarity search and clustering of dense vectors."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+  {name = "Meta AI Research"},
+]
+keywords = ["search", "nearest-neighbors", "clustering", "vectors", "similarity"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: C++",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["numpy>=1.25", "packaging"]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/faiss"
+Documentation = "https://github.com/facebookresearch/faiss/wiki"
+Repository = "https://github.com/facebookresearch/faiss"
+Issues = "https://github.com/facebookresearch/faiss/issues"
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+
+# Exclude C++ headers, cmake configs, and pkgconfig from the wheel.
+# Only the Python package (faiss/) and bundled shared libs remain.
+wheel.exclude = ["include/**", "share/**", "lib/cmake/**", "lib/pkgconfig/**"]
+
+[tool.scikit-build.cmake.define]
+FAISS_OPT_LEVEL = "dd"
+FAISS_ENABLE_GPU = "OFF"
+FAISS_ENABLE_PYTHON = "ON"
+FAISS_ENABLE_MKL = "OFF"
+FAISS_ENABLE_C_API = "OFF"
+FAISS_ENABLE_EXTRAS = "OFF"
+FAISS_ENABLE_SVS = "OFF"
+BUILD_TESTING = "OFF"
+BUILD_SHARED_LIBS = "ON"
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-*"
+skip = "*-win32 *-manylinux_i686 *-musllinux_*"
+test-requires = ["numpy>=2.0,<3.0", "pytest"]
+test-command = "python -m pytest {project}/tests/test_wheel_smoke.py -v"
+
+[tool.cibuildwheel.linux]
+# EPEL needed for openblas-devel on aarch64 (not in CentOS 7 base repos)
+before-all = "yum install -y epel-release && yum install -y openblas-devel swig"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install libomp openblas swig"
+
+[tool.cibuildwheel.macos.environment]
+# Help CMake find brew-installed OpenBLAS and libomp on macOS.
+# FindOpenMP cannot auto-detect AppleClang + brew libomp, so we pass
+# the flags and library path explicitly.
+CMAKE_PREFIX_PATH = "$(brew --prefix openblas);$(brew --prefix libomp)"
+CMAKE_ARGS = "-DOpenMP_CXX_FLAGS=-Xpreprocessor;-fopenmp;-I$(brew --prefix libomp)/include -DOpenMP_CXX_LIB_NAMES=omp -DOpenMP_omp_LIBRARY=$(brew --prefix libomp)/lib/libomp.dylib"
+# Brew libomp targets macOS 14.0+; the wheel must declare the same floor
+# so that delocate does not reject the library.
+MACOSX_DEPLOYMENT_TARGET = "14.0"
+
+[tool.cibuildwheel.windows]
+# Install SWIG and MKL (consistent with conda recipe).
+# MKL is installed via pip into the system Python, then copied to a fixed
+# location (C:\mkl) so FindMKL.cmake can discover it regardless of
+# PEP 517 build isolation.  DLL collection includes MKL, Intel OpenMP
+# (libiomp5md.dll), and TBB — all needed at runtime.
+before-all = "choco install -y swig && pip install mkl==2024.2.2 mkl-devel==2024.2.2 && python -c \"import os,sys,shutil; os.makedirs('C:/mkl/lib',exist_ok=True); os.makedirs('C:/mkl/bin',exist_ok=True); os.makedirs('C:/mkl/include',exist_ok=True); [shutil.copy2(os.path.join(r,f),'C:/mkl/lib/') for r,_,fs in os.walk(sys.prefix) for f in fs if f.endswith('.lib') and 'mkl' in f]; [shutil.copy2(os.path.join(r,f),'C:/mkl/bin/') for r,_,fs in os.walk(sys.prefix) for f in fs if f.endswith('.dll') and ('mkl' in f or 'iomp' in f or 'tbb' in f)]; [shutil.copy2(os.path.join(r,f),'C:/mkl/include/') for r,_,fs in os.walk(sys.prefix) for f in fs if f=='mkl.h']; print('MKL lib:',os.listdir('C:/mkl/lib')); print('MKL bin:',os.listdir('C:/mkl/bin'))\""
+# Bundle MKL runtime DLLs (mkl_rt.dll, libiomp5md.dll, etc.) into the
+# faiss/ package directory using a custom script.  Co-locating DLLs next
+# to _swigfaiss.pyd lets the Windows loader find them without .pth files
+# (which can break pip in the test virtualenv).
+repair-wheel-command = "python .github/scripts/repair_win_wheel.py {wheel} {dest_dir}"
+# On Windows, the pip.EXE console wrapper (distlib launcher) breaks after
+# installing packages with bundled DLLs (numpy's delvewheel .pth triggers
+# "The system cannot find the file specified").  Work around by installing
+# test deps via "python -m pip" in before-test instead of test-requires.
+test-requires = []
+before-test = "python -m pip install \"numpy>=2.0,<3.0\" pytest"
+
+[tool.cibuildwheel.windows.environment]
+# Dynamic Dispatch is not yet supported on Windows (the DD cmake block is
+# gated behind if(NOT WIN32)).  Fall back to generic baseline, matching the
+# conda recipe which also builds "vanilla (no avx)" on Windows.
+# Use MKL for BLAS (consistent with conda).  MKLROOT points at the fixed
+# copy created in before-all.  We intentionally do NOT override LIB or PATH
+# here — $VAR expansion can fail in cibuildwheel on Windows, clobbering
+# MSVC toolchain paths and breaking pip in the test virtualenv.
+# FindMKL.cmake discovers libraries via MKLROOT alone; MKL runtime DLLs
+# are bundled into the wheel by the custom repair script (see repair-wheel-command).
+MKLROOT = "C:/mkl"
+CMAKE_ARGS = "-DFAISS_OPT_LEVEL=generic -DFAISS_ENABLE_MKL=ON -DBLA_VENDOR=Intel10_64_dyn"

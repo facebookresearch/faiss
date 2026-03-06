@@ -299,7 +299,7 @@ find_package(Python REQUIRED
   COMPONENTS Development.Module NumPy
 )
 
-add_library(faiss_python_callbacks EXCLUDE_FROM_ALL
+add_library(faiss_python_callbacks STATIC EXCLUDE_FROM_ALL
   python_callbacks.cpp
 )
 set_property(TARGET faiss_python_callbacks
@@ -332,3 +332,73 @@ configure_file(array_conversions.py array_conversions.py COPYONLY)
 
 # file(GLOB files "${PROJECT_SOURCE_DIR}/../../contrib/*.py")
 file(COPY ${PROJECT_SOURCE_DIR}/../../contrib  DESTINATION .)
+
+# =============================================================================
+# Install targets for scikit-build-core / pip wheel packaging.
+# These install the Python package into the wheel via cmake --install.
+# =============================================================================
+
+# Set RPATH so the SWIG module finds libfaiss in the same directory.
+# auditwheel/delocate follow RPATH to locate libraries for bundling.
+if(APPLE)
+  set_target_properties(swigfaiss PROPERTIES INSTALL_RPATH "@loader_path")
+else()
+  set_target_properties(swigfaiss PROPERTIES INSTALL_RPATH "$ORIGIN")
+endif()
+
+# Install the SWIG extension module (.so/.pyd)
+install(TARGETS swigfaiss
+  LIBRARY DESTINATION faiss
+  RUNTIME DESTINATION faiss
+)
+
+# Install the core faiss shared library into the Python package directory
+# so that auditwheel/delocate can find and bundle it with the SWIG module.
+# Guard: when Python bindings are built standalone (e.g. conda), the faiss
+# target is an installed import library, not a build target.
+if(TARGET faiss)
+  get_target_property(_faiss_imported faiss IMPORTED)
+  if(NOT _faiss_imported)
+    install(TARGETS faiss
+      LIBRARY DESTINATION faiss
+      RUNTIME DESTINATION faiss
+    )
+  endif()
+endif()
+
+# Install SWIG-generated Python wrapper
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/swigfaiss.py"
+  DESTINATION faiss
+)
+
+# Install hand-written Python source files
+install(FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/loader.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/class_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/extra_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/gpu_wrappers.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/array_conversions.py"
+  DESTINATION faiss
+)
+
+# Install type stubs if present
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi")
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi" DESTINATION faiss)
+endif()
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/py.typed")
+  install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/py.typed" DESTINATION faiss)
+endif()
+
+# Install contrib subpackage (excluding Meta-internal *_fb.py files)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/"
+  DESTINATION faiss/contrib
+  FILES_MATCHING PATTERN "*.py"
+  PATTERN "*_fb.py" EXCLUDE
+)
+
+# Install contrib/torch subpackage data files
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/torch/"
+  DESTINATION faiss/contrib/torch
+  FILES_MATCHING PATTERN "*.md"
+)
