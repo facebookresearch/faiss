@@ -13,7 +13,7 @@
 #include <immintrin.h>
 
 #include <faiss/impl/platform_macros.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib.h>
 
 namespace faiss {
 

@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/utils/simdlib_dispatch.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 
 using namespace faiss;
 

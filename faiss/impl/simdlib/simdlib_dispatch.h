@@ -15,7 +15,7 @@
  * (e.g., simdlib_avx2.h).
  */
 
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib.h>
 
 // Platform specializations — guarded by COMPILE_SIMD_* AND compiler macros.
 // In DD mode: COMPILE_SIMD_* are target-wide, compiler macros are per-file.
@@ -25,15 +25,15 @@
 #if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 
 // AVX512 includes AVX2 (simdlib_avx512.h includes simdlib_avx2.h)
-#include <faiss/utils/simdlib_avx512.h>
+#include <faiss/impl/simdlib/simdlib_avx512.h>
 
 #elif defined(COMPILE_SIMD_AVX2) && defined(__AVX2__)
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/impl/simdlib/simdlib_avx2.h>
 
 #elif defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
 
-#include <faiss/utils/simdlib_neon.h>
+#include <faiss/impl/simdlib/simdlib_neon.h>
 
 #endif
 

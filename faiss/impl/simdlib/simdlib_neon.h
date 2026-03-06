@@ -19,7 +19,7 @@
 #include <arm_neon.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib.h>
 
 namespace faiss {
 

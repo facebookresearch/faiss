@@ -11,8 +11,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simdlib_dispatch.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>

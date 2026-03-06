@@ -12,7 +12,7 @@
 #include <cstring>
 #include <string>
 
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib.h>
 
 namespace faiss {
 

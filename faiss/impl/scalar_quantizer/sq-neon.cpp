@@ -7,7 +7,7 @@
 
 #ifdef COMPILE_SIMD_ARM_NEON
 
-#include <faiss/utils/simdlib_neon.h>
+#include <faiss/impl/simdlib/simdlib_neon.h>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>

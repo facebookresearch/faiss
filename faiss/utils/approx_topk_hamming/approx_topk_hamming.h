@@ -11,8 +11,8 @@
 #include <limits>
 #include <utility>
 
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simdlib_dispatch.h>
 
 namespace faiss {
 

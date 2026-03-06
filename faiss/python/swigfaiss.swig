@@ -106,7 +106,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/utils/simdlib_dispatch.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>

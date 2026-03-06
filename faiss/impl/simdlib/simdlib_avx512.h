@@ -13,9 +13,9 @@
 #include <immintrin.h>
 
 #include <faiss/impl/platform_macros.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib.h>
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/impl/simdlib/simdlib_avx2.h>
 
 namespace faiss {
 

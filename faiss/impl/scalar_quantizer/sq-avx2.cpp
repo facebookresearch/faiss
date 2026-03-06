@@ -7,7 +7,7 @@
 
 #ifdef COMPILE_SIMD_AVX2
 
-#include <faiss/utils/simdlib_avx2.h>
+#include <faiss/impl/simdlib/simdlib_avx2.h>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
