@@ -314,13 +314,15 @@ float RaBitQDistanceComputerNotQ::distance_to_code_full(const uint8_t* code) {
             ex_code + (d * ex_bits + 7) / 8);
 
     // Call shared utility directly with rotated_q pointer
+    float qr_base = (metric_type == MetricType::METRIC_INNER_PRODUCT)
+            ? query_fac.q_dot_c
+            : query_fac.qr_to_c_L2sqr;
     return rabitq_utils::compute_full_multibit_distance(
             binary_data,
             ex_code,
             *ex_fac,
             rotated_q.data(),
-            query_fac.qr_to_c_L2sqr,
-            query_fac.qr_norm_L2sqr,
+            qr_base,
             d,
             ex_bits,
             metric_type);
@@ -366,6 +368,8 @@ void RaBitQDistanceComputerNotQ::set_query(const float* x) {
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         // precompute if needed
         query_fac.qr_norm_L2sqr = fvec_norm_L2sqr(x, d);
+        query_fac.q_dot_c =
+                centroid ? fvec_inner_product(x, centroid, d) : 0.0f;
     }
 }
 
@@ -480,13 +484,15 @@ float RaBitQDistanceComputerQ::distance_to_code_full(const uint8_t* code) {
             ex_code + (d * ex_bits + 7) / 8);
 
     // Call shared utility directly with rotated_q pointer
+    float qr_base = (metric_type == MetricType::METRIC_INNER_PRODUCT)
+            ? query_fac.q_dot_c
+            : query_fac.qr_to_c_L2sqr;
     return rabitq_utils::compute_full_multibit_distance(
             binary_data,
             ex_code,
             *ex_fac,
             rotated_q.data(),
-            query_fac.qr_to_c_L2sqr,
-            query_fac.qr_norm_L2sqr,
+            qr_base,
             d,
             ex_bits,
             metric_type);

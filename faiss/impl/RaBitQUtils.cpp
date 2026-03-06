@@ -244,8 +244,12 @@ QueryFactorsData compute_query_factors(
 
     // Compute query norm for inner product metric
     query_factors.qr_norm_L2sqr = 0.0f;
+    query_factors.q_dot_c = 0.0f;
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(query, d);
+        if (centroid != nullptr) {
+            query_factors.q_dot_c = fvec_inner_product(query, centroid, d);
+        }
     }
 
     return query_factors;
@@ -307,8 +311,7 @@ float compute_full_multibit_distance(
         const uint8_t* ex_code,
         const ExtraBitsFactors& ex_fac,
         const float* rotated_q,
-        float qr_to_c_L2sqr,
-        float qr_norm_L2sqr,
+        float qr_base,
         size_t d,
         size_t ex_bits,
         MetricType metric_type) {
@@ -317,11 +320,9 @@ float compute_full_multibit_distance(
     float ex_ip = rabitq::multibit::compute_inner_product(
             sign_bits, ex_code, rotated_q, d, ex_bits, cb);
 
-    float dist = qr_to_c_L2sqr + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
 
-    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
-        dist = -0.5f * (dist - qr_norm_L2sqr);
-    } else {
+    if (metric_type == MetricType::METRIC_L2) {
         dist = std::max(0.0f, dist);
     }
 
