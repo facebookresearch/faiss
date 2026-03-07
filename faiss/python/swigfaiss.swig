@@ -894,6 +894,8 @@ struct faiss::simd16uint16 {};
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
     DOWNCAST (MaskedInvertedLists)
+    DOWNCAST (StopWordsInvertedLists)
+    DOWNCAST (CappedInvertedLists)
     DOWNCAST (InvertedLists)
     {
         assert(false);
