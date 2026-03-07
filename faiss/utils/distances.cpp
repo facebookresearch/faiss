@@ -172,6 +172,30 @@ int fvec_madd_and_argmin(
     return fvec_madd_and_argmin_dispatch(n, a, bf, b, c);
 }
 
+void fvec_sub(size_t d, const float* a, const float* b, float* c) {
+    fvec_sub_dispatch(d, a, b, c);
+}
+
+void fvec_add(size_t d, const float* a, const float* b, float* c) {
+    fvec_add_dispatch(d, a, b, c);
+}
+
+void fvec_add(size_t d, const float* a, float b, float* c) {
+    fvec_add_scalar_dispatch(d, a, b, c);
+}
+
+void compute_PQ_dis_tables_dsub2(
+        size_t d,
+        size_t ksub,
+        const float* all_centroids,
+        size_t nx,
+        const float* x,
+        bool is_inner_product,
+        float* dis_tables) {
+    compute_PQ_dis_tables_dsub2_dispatch(
+            d, ksub, all_centroids, nx, x, is_inner_product, dis_tables);
+}
+
 /***************************************************************************
  * Matrix/vector ops
  ***************************************************************************/

@@ -322,6 +322,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
+  utils/simd_impl/distances_simdlib256.h
   utils/simd_impl/distances_sse-inl.h
 )
 
