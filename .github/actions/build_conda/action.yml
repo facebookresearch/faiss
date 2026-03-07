@@ -45,9 +45,6 @@ runs:
         conda list --show-channel-urls
         conda install -y -q "conda!=24.11.0,<=25.07"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
-        # Add Intel channel with lowest priority for libsvs-runtime only
-        conda config --append channels https://software.repos.intel.com/python/conda
-        conda config --set channel_priority flexible
     - name: Enable anaconda uploads
       if: inputs.label != ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -72,7 +69,7 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss --user pytorch --label ${{ inputs.label }} -c pytorch
+        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch
     - name: Conda build (GPU)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
@@ -89,7 +86,7 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        conda build faiss-gpu --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU w/ cuVS)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs != ''
@@ -107,7 +104,7 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Check installed packages channel
       shell: ${{ steps.choose_shell.outputs.shell }}

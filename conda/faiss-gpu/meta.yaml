@@ -48,18 +48,18 @@ outputs:
         - cmake >=3.24.0
         - make =4.2 # [not win and not (osx and arm64)]
         - make =4.4 # [osx and arm64]
-        - mkl-devel >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl-devel >=2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
-        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
-        - libsvs-runtime =0.1.0  # [x86_64 and linux]
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
       run:
-        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - openblas =0.3.30 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libsvs-runtime =0.1.0  # [x86_64 and linux]
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
@@ -86,15 +86,16 @@ outputs:
         - make =4.4 # [osx and arm64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - cuda-toolkit {{ cudatoolkit }}
-        - mkl-devel >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl-devel >=2024.2.2  # [x86_64]
       host:
-        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - python {{ python }}
         - numpy >=2.0,<3.0
+        - setuptools
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64 and not win]
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
-        - mkl >=2024.2.2,<2025.0a0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - python {{ python }}
         - numpy >=2.0,<3.0
         - packaging
