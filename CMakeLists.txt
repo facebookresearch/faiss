@@ -53,11 +53,7 @@ project(faiss
   LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
-if(FAISS_ENABLE_CUVS)
-  set(CMAKE_CXX_STANDARD 17)
-else()
-  set(CMAKE_CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
