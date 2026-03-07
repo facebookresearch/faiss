@@ -169,7 +169,7 @@ FAISS_API extern int multi_index_quantizer_search_bs;
 struct MultiIndexQuantizer2 : MultiIndexQuantizer {
     /// M Indexes on d / M dimensions
     std::vector<Index*> assign_indexes;
-    bool own_fields;
+    bool own_fields = false;
 
     MultiIndexQuantizer2(int d, size_t M, size_t nbits, Index** indexes);
 
