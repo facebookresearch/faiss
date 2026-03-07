@@ -38,19 +38,14 @@ INDEX_TYPES = [
     "RaBitQ",  # regular
     "IVF256,RaBitQ",  # IVF
     "IVF256,RaBitQ4",  # IVF multibit
-    # RaBitQ FastScan indexes are temporarily disabled because D93538118
-    # changed the serialization format (fourcc "Irfs"->"Irfn", "Iwrf"->"Iwrn")
-    # by embedding auxiliary data directly into SIMD blocks. The conda
-    # faiss-cpu=1.14.0 reader does not understand the new format.
-    # Re-enable these once a new conda release includes the new format.
-    # "RaBitQfs",  # FS
-    # "RaBitQfs_64",  # FS, batch size 64
-    # "IVF256,RaBitQfs",  # IVF FS
-    # "IVF256,RaBitQfs_64",  # IVF FS, batch size 64
-    # "RaBitQfs6",  # multibit FS
-    # "RaBitQfs4_64",  # multibit FS, batch size 64
-    # "IVF256,RaBitQfs3",  # IVF FS multibit
-    # "IVF256,RaBitQfs7_64",  # IVF FS multibit, batch size 64
+    "RaBitQfs",  # FS
+    "RaBitQfs_64",  # FS, batch size 64
+    "IVF256,RaBitQfs",  # IVF FS
+    "IVF256,RaBitQfs_64",  # IVF FS, batch size 64
+    "RaBitQfs6",  # multibit FS
+    "RaBitQfs4_64",  # multibit FS, batch size 64
+    "IVF256,RaBitQfs3",  # IVF FS multibit
+    "IVF256,RaBitQfs7_64",  # IVF FS multibit, batch size 64
     # HNSW indexes
     "HNSW32",
     "HNSW32_SQ8",
@@ -136,6 +131,38 @@ def generate_vectors(d: int, nb: int, seed: int) -> np.ndarray:
     xb = np.random.random((nb, d)).astype("float32")
     xb[:, 0] += np.arange(nb) / 1000.0
     return xb
+
+
+def probe_supported_index_types(index_keys: list, dim: int) -> set:
+    """Probe which index types the current Faiss build supports.
+
+    Tries faiss.index_factory() for each key. Returns the set of keys
+    that succeed. Used by the reader to distinguish "unsupported new
+    index type" (expected skip) from "supported type with broken
+    serialization" (real backward compatibility failure).
+    """
+    supported = set()
+    for key in index_keys:
+        try:
+            faiss.index_factory(dim, key)
+            supported.add(key)
+        except Exception:
+            pass
+    return supported
+
+
+def probe_supported_binary_index_types(
+    index_keys: list, dim: int
+) -> set:
+    """Same as probe_supported_index_types but for binary indexes."""
+    supported = set()
+    for key in index_keys:
+        try:
+            faiss.index_binary_factory(dim, key)
+            supported.add(key)
+        except Exception:
+            pass
+    return supported
 
 
 def write_vectors(
@@ -375,8 +402,31 @@ def write_test_all_files(
     xb = generate_vectors(d, nb, seed=seed)
     write_vectors(output_dir, xb, f"vectors_db_{writer}.npy")
 
+    # Probe which index types this writer's Faiss version supports.
+    # Unsupported types (new types not in this build) are skipped
+    # gracefully rather than counted as failures.
+    supported_types = probe_supported_index_types(INDEX_TYPES, d)
+    unsupported = [k for k in INDEX_TYPES if k not in supported_types]
+    if unsupported:
+        print(
+            f"\n{writer.capitalize()} Faiss (v{faiss.__version__}) does not "
+            f"support {len(unsupported)} index type(s) — these will be "
+            "skipped:"
+        )
+        for key in unsupported:
+            print(f"  - {key}")
+
     results = []
+    skip_count = 0
     for index_key in INDEX_TYPES:
+        if index_key not in supported_types:
+            skip_count += 1
+            results.append({
+                "index_key": index_key,
+                "status": "skipped",
+                "error": "unsupported by this Faiss version",
+            })
+            continue
         result = test_write_index_type(index_key, output_dir, xb, writer)
         results.append(result)
 
@@ -385,15 +435,16 @@ def write_test_all_files(
     )
 
     success_count = sum(1 for r in results if r["status"] == "success")
-    fail_count = len(results) - success_count
+    fail_count = sum(1 for r in results if r["status"] == "failed")
 
     print(f"{writer.capitalize()} Writer: Summary")
-    print(f"Total index types tested: {len(INDEX_TYPES)}")
+    print(f"Total index types: {len(INDEX_TYPES)}")
     print(f"Successful: {success_count}")
     print(f"Failed: {fail_count}")
+    print(f"Skipped (unsupported): {skip_count}")
 
     if fail_count > 0:
-        print("\nSome index types failed to serialize")
+        print("\nSome supported index types failed to serialize")
         for result in results:
             if result["status"] == "failed":
                 print(
@@ -402,7 +453,7 @@ def write_test_all_files(
                 )
         return 1
 
-    print("\nAll index types serialized successfully")
+    print("\nAll supported index types serialized successfully")
 
     # Now write binary indexes
     print(
@@ -415,8 +466,32 @@ def write_test_all_files(
     xb_binary = np.random.randint(256, size=(nb, int(d / 8))).astype('uint8')
     write_vectors(output_dir, xb_binary, f"vectors_db_binary_{writer}.npy")
 
+    supported_binary_types = probe_supported_binary_index_types(
+        INDEX_BINARY_TYPES, d * 8
+    )
+    unsupported_binary = [
+        k for k in INDEX_BINARY_TYPES if k not in supported_binary_types
+    ]
+    if unsupported_binary:
+        print(
+            f"\n{writer.capitalize()} Faiss (v{faiss.__version__}) does not "
+            f"support {len(unsupported_binary)} binary index type(s) — "
+            "these will be skipped:"
+        )
+        for key in unsupported_binary:
+            print(f"  - {key}")
+
     binary_results = []
+    binary_skip_count = 0
     for index_key in INDEX_BINARY_TYPES:
+        if index_key not in supported_binary_types:
+            binary_skip_count += 1
+            binary_results.append({
+                "index_key": index_key,
+                "status": "skipped",
+                "error": "unsupported by this Faiss version",
+            })
+            continue
         result = test_write_binary_index_type(
             index_key, output_dir, xb_binary, writer
         )
@@ -434,15 +509,18 @@ def write_test_all_files(
     binary_success_count = sum(
         1 for r in binary_results if r["status"] == "success"
     )
-    binary_fail_count = len(binary_results) - binary_success_count
+    binary_fail_count = sum(
+        1 for r in binary_results if r["status"] == "failed"
+    )
 
     print(f"{writer.capitalize()} Writer: Binary Summary")
-    print(f"Total binary index types tested: {len(INDEX_BINARY_TYPES)}")
+    print(f"Total binary index types: {len(INDEX_BINARY_TYPES)}")
     print(f"Successful: {binary_success_count}")
     print(f"Failed: {binary_fail_count}")
+    print(f"Skipped (unsupported): {binary_skip_count}")
 
     if binary_fail_count > 0:
-        print("\nSome binary index types failed to serialize")
+        print("\nSome supported binary index types failed to serialize")
         for result in binary_results:
             if result["status"] == "failed":
                 print(
@@ -451,7 +529,7 @@ def write_test_all_files(
                 )
         return 1
 
-    print("\nAll binary index types serialized successfully")
+    print("\nAll supported binary index types serialized successfully")
     return 0
 
 
@@ -462,15 +540,50 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
     print(f"Metadata from {writer} build:")
     print_metadata(metadata)
 
+    # Probe which index types this reader's Faiss version supports.
+    # Index types that the reader can't even create via index_factory
+    # are new types unknown to this version -- read failures on those
+    # are expected and should be skipped, not treated as errors.
+    all_keys = [
+        r["index_key"]
+        for r in metadata["results"]
+        if r["status"] == "success"
+    ]
+    supported_types = probe_supported_index_types(all_keys, metadata["dimension"])
+    unsupported = set(all_keys) - supported_types
+    if unsupported:
+        print(
+            f"\n{reader} Faiss (v{faiss.__version__}) does not support "
+            f"{len(unsupported)} index type(s) — these will be skipped:"
+        )
+        for key in sorted(unsupported):
+            print(f"  - {key}")
+
     results = []
     success_count = 0
     fail_count = 0
+    skip_count = 0
     for index_info in metadata["results"]:
         if index_info["status"] != "success":
             print(
                 f"\nSkipping {index_info['index_key']} "
-                f"(failed during {writer} writing)"
+                f"({index_info['status']} during {writer} writing)"
             )
+            continue
+
+        index_key = index_info["index_key"]
+
+        if index_key not in supported_types:
+            # Clean up the file since we're skipping the read
+            filename = index_info["filename"]
+            index_path = os.path.join(input_dir, filename)
+            if os.path.exists(index_path):
+                os.remove(index_path)
+            print(
+                f"Skipping {index_key} "
+                f"(unsupported by {reader} Faiss v{faiss.__version__})"
+            )
+            skip_count += 1
             continue
 
         result = test_index_file(index_info, input_dir)
@@ -481,10 +594,11 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
         else:
             fail_count += 1
 
-    print(f"{reader} Reader: Summary")
+    print(f"\n{reader} Reader: Summary")
     print(f"Total index types tested: {len(results)}")
     print(f"Successful: {success_count}")
     print(f"Failed: {fail_count}")
+    print(f"Skipped (unsupported by reader): {skip_count}")
 
     # Clean up remaining files
     cleanup_files(
@@ -496,9 +610,9 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
 
     if fail_count > 0:
         print(
-            "\nSome index types failed to deserialize/search. "
-            "Malformed fourcc indicates extra non-backward-compatible bytes "
-            "being written."
+            "\nSome index types that this reader DOES support failed to "
+            "deserialize. This indicates a backward-incompatible "
+            "serialization change."
         )
         for result in results:
             if result["status"] == "failed":
@@ -508,7 +622,7 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
                 )
         return 1
 
-    print("\nAll index types deserialized and searched successfully")
+    print("\nAll supported index types deserialized successfully")
     print(f"Index serialization compatibility verified: {writer} → {reader}")
 
     # Now read binary indexes
@@ -520,15 +634,49 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
     print(f"Binary metadata from {writer} build:")
     print_metadata(binary_metadata)
 
+    # Probe binary index types
+    all_binary_keys = [
+        r["index_key"]
+        for r in binary_metadata["results"]
+        if r["status"] == "success"
+    ]
+    supported_binary_types = probe_supported_binary_index_types(
+        all_binary_keys, metadata["dimension"] * 8
+    )
+    unsupported_binary = set(all_binary_keys) - supported_binary_types
+    if unsupported_binary:
+        print(
+            f"\n{reader} Faiss (v{faiss.__version__}) does not support "
+            f"{len(unsupported_binary)} binary index type(s) — "
+            "these will be skipped:"
+        )
+        for key in sorted(unsupported_binary):
+            print(f"  - {key}")
+
     binary_results = []
     binary_success_count = 0
     binary_fail_count = 0
+    binary_skip_count = 0
     for index_info in binary_metadata["results"]:
         if index_info["status"] != "success":
             print(
                 f"\nSkipping binary {index_info['index_key']} "
-                f"(failed during {writer} writing)"
+                f"({index_info['status']} during {writer} writing)"
             )
+            continue
+
+        index_key = index_info["index_key"]
+
+        if index_key not in supported_binary_types:
+            filename = index_info["filename"]
+            index_path = os.path.join(input_dir, filename)
+            if os.path.exists(index_path):
+                os.remove(index_path)
+            print(
+                f"Skipping binary {index_key} "
+                f"(unsupported by {reader} Faiss v{faiss.__version__})"
+            )
+            binary_skip_count += 1
             continue
 
         result = test_binary_index_file(index_info, input_dir)
@@ -539,10 +687,11 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
         else:
             binary_fail_count += 1
 
-    print(f"{reader} Reader: Binary Summary")
+    print(f"\n{reader} Reader: Binary Summary")
     print(f"Total binary index types tested: {len(binary_results)}")
     print(f"Successful: {binary_success_count}")
     print(f"Failed: {binary_fail_count}")
+    print(f"Skipped (unsupported by reader): {binary_skip_count}")
 
     # Clean up remaining files
     cleanup_files(
@@ -554,9 +703,9 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
 
     if binary_fail_count > 0:
         print(
-            "\nSome binary index types failed to deserialize/search. "
-            "Malformed fourcc indicates extra non-backward-compatible bytes "
-            "being written."
+            "\nSome binary index types that this reader DOES support "
+            "failed to deserialize. This indicates a "
+            "backward-incompatible serialization change."
         )
         for result in binary_results:
             if result["status"] == "failed":
@@ -566,7 +715,7 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
                 )
         return 1
 
-    print("\nAll binary index types deserialized and searched successfully")
+    print("\nAll supported binary index types deserialized successfully")
     print(
         f"Binary index serialization compatibility verified: "
         f"{writer} → {reader}"
