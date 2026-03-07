@@ -11,6 +11,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexSplitVectors::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

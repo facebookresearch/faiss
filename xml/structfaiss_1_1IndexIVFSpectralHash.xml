@@ -101,7 +101,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexIVFSpectralHash::own_fields</qualifiedname>
-        <initializer>= true</initializer>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>own the vt </para>
         </briefdescription>

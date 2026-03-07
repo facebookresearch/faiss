@@ -1418,6 +1418,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexRefine::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>should the base index be deallocated? </para>
         </briefdescription>
@@ -1433,6 +1434,7 @@
         <argsstring></argsstring>
         <name>own_refine_index</name>
         <qualifiedname>faiss::IndexRefine::own_refine_index</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>same with the refinement index </para>
         </briefdescription>

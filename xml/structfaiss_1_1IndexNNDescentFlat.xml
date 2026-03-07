@@ -1470,6 +1470,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexNNDescent::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -1484,6 +1485,7 @@
         <argsstring></argsstring>
         <name>storage</name>
         <qualifiedname>faiss::IndexNNDescent::storage</qualifiedname>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

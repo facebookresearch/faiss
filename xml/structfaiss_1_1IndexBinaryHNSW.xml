@@ -70,6 +70,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexBinaryHNSW::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -84,6 +85,7 @@
         <argsstring></argsstring>
         <name>storage</name>
         <qualifiedname>faiss::IndexBinaryHNSW::storage</qualifiedname>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

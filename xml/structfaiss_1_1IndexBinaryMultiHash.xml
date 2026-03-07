@@ -55,6 +55,7 @@
         <argsstring></argsstring>
         <name>storage</name>
         <qualifiedname>faiss::IndexBinaryMultiHash::storage</qualifiedname>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -69,6 +70,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexBinaryMultiHash::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

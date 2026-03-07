@@ -1471,6 +1471,7 @@
         <argsstring></argsstring>
         <name>own_fields</name>
         <qualifiedname>faiss::IndexRowwiseMinMaxBase::own_fields</qualifiedname>
+        <initializer>= false</initializer>
         <briefdescription>
 <para>whether the subindex needs to be freed in the destructor. </para>
         </briefdescription>
