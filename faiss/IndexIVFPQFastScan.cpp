@@ -15,10 +15,10 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
-#include <faiss/utils/simdlib.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
@@ -349,7 +349,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         const float* x = index.by_residual ? residual.data() : this->xi;
         float accu = 0;
         // implemented for all vector distances, although only L2 and IP are
-        // suppored by FastScan
+        // supported by FastScan
         with_VectorDistance(pq.dsub, index.metric_type, 0.0, [&](auto vd) {
             int m;
             for (m = 0; m + 1 < pq.M; m += 2) {

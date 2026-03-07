@@ -296,12 +296,13 @@ set(FAISS_HEADERS
   utils/rabitq_simd.h
   utils/random.h
   utils/sorting.h
-  utils/simdlib.h
-  utils/simdlib_avx2.h
-  utils/simdlib_avx512.h
-  utils/simdlib_emulated.h
-  utils/simdlib_neon.h
-  utils/simdlib_ppc64.h
+  impl/simdlib/simdlib.h
+  impl/simdlib/simdlib_dispatch.h
+  impl/simdlib/simdlib_avx2.h
+  impl/simdlib/simdlib_avx512.h
+  impl/simdlib/simdlib_emulated.h
+  impl/simdlib/simdlib_neon.h
+  impl/simdlib/simdlib_ppc64.h
   utils/utils.h
   utils/simd_levels.h
   utils/distances_fused/avx512.h
@@ -321,6 +322,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
+  utils/simd_impl/distances_simdlib256.h
   utils/simd_impl/distances_sse-inl.h
 )
 
