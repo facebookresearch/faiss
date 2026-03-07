@@ -13,6 +13,7 @@
 #include <gtest/gtest.h>
 #include <cstring>
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -140,6 +141,28 @@ void testIVFEquality(A& cpuIndex, B& gpuIndex) {
         EXPECT_EQ(cpuIndices, gpuIndex.getListIndices(i));
     }
 }
+
+/// Run search with the given search_params and verify all returned labels are
+/// members of the selector. Works with any Index that supports search with
+/// SearchParameters.
+void testIDSelectorSearch(
+        faiss::Index* index,
+        faiss::SearchParameters* search_params,
+        const std::vector<float>& queryVecs,
+        int numQuery,
+        int k,
+        const std::string& selectorName);
+
+// Structure to hold all IDSelector instances
+struct TestIDSelectorStruct {
+    // Storage for selectors that need it
+    std::vector<faiss::idx_t> array_ids;
+    std::vector<faiss::idx_t> batch_ids;
+    std::vector<uint8_t> bitmap;
+    std::map<std::string, std::unique_ptr<faiss::IDSelector>> selector_map;
+
+    TestIDSelectorStruct(int numAdd);
+};
 
 } // namespace gpu
 } // namespace faiss

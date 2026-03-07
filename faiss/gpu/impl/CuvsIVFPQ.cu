@@ -23,17 +23,20 @@
 
 #include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/impl/CuvsIVFPQ.cuh>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/Transpose.cuh>
 
+#include <cuvs/core/bitset.hpp>
 #include <cuvs/neighbors/common.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
 #include <raft/linalg/map.cuh>
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 namespace faiss {
 namespace gpu {
@@ -296,7 +299,8 @@ void CuvsIVFPQ::search(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices,
+        const IDSelector* sel) {
     uint32_t numQueries = queries.getSize(0);
     uint32_t cols = queries.getSize(1);
     idx_t k_ = std::min(static_cast<idx_t>(k), cuvs_index->size());
@@ -320,13 +324,31 @@ void CuvsIVFPQ::search(
     auto out_dists_view = raft::make_device_matrix_view<float, idx_t>(
             outDistances.data(), (idx_t)numQueries, (idx_t)k_);
 
+    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
+    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
+            bitset_filter_cuvs;
+    cuvs::neighbors::filtering::none_sample_filter none_filter;
+
+    if (sel) {
+        bitset_cuvs = cuvs::core::bitset<uint32_t, int64_t>(
+                raft_handle, cuvs_index->size(), false);
+        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_cuvs->view());
+        bitset_filter_cuvs.emplace(bitset_cuvs->view());
+    }
+    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
+            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      bitset_filter_cuvs.value())
+            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      none_filter);
+
     cuvs::neighbors::ivf_pq::search(
             raft_handle,
             pams,
             *cuvs_index,
             queries_view,
             out_inds_view,
-            out_dists_view);
+            out_dists_view,
+            filter_ref);
 
     /// Identify NaN rows and mask their nearest neighbors
     auto nan_flag = raft::make_device_vector<bool>(raft_handle, numQueries);
