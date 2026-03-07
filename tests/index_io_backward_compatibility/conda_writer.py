@@ -5,10 +5,9 @@
 
 #!/usr/bin/env python3
 """
-Conda Writer: Tests serialization of all Faiss index types using conda-built
-Faiss.
-Creates index files that will be read by conda-built Faiss to test index
-serialization backward compatibility.
+Conda Writer: Serializes all Faiss index types using a conda-installed release.
+Creates index files that will be read by cmake-built Faiss (HEAD) to test
+backward compatibility — new Faiss must always read old indexes.
 """
 
 import sys
