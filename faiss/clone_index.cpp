@@ -102,8 +102,8 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     TRYCLONE(IndexIVFRaBitQ, ivf)
 
     TRYCLONE(IndexIVFFlatDedup, ivf)
-    TRYCLONE(IndexIVFFlat, ivf)
     TRYCLONE(IndexIVFFlatPanorama, ivf)
+    TRYCLONE(IndexIVFFlat, ivf)
 
     TRYCLONE(IndexIVFSpectralHash, ivf)
 
