@@ -136,4 +136,21 @@ inline auto with_simd_level(LambdaType&& action) {
     DISPATCH_SIMDLevel(action.template operator());
 }
 
+/**
+ * Like with_simd_level, but maps to the 256-bit SIMD equivalent:
+ *   AVX512, AVX512_SPR -> AVX2
+ *   ARM_SVE -> ARM_NEON
+ *   AVX2, ARM_NEON, NONE -> unchanged
+ *
+ * Use for functions implemented with simd8float32 (256-bit) operations
+ * that don't have dedicated AVX512 or SVE implementations.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_256bit(LambdaType&& action) {
+    return with_simd_level([&]<SIMDLevel level>() {
+        constexpr SIMDLevel level256 = simd256_level_selector<level>::value;
+        return action.template operator()<level256>();
+    });
+}
+
 } // namespace faiss
