@@ -32,7 +32,7 @@ struct IndexIVFSpectralHash : IndexIVF {
     /// transformation from d to nbit dim
     VectorTransform* vt = nullptr;
     /// own the vt
-    bool own_fields = true;
+    bool own_fields = false;
 
     /// nb of bits of the binary signature
     int nbit = 0;

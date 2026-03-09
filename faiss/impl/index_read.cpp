@@ -320,6 +320,7 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->is_trained);
     if (h == fourcc("HRot")) {
         auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
         hr->init(hr->seed);
     }
     return vt;
@@ -1438,6 +1439,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (h == fourcc("IHfP")) {
             auto idx_panorama =
                     dynamic_cast<IndexHNSWFlatPanorama*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_panorama,
+                    "dynamic_cast to IndexHNSWFlatPanorama failed");
             size_t nlevels;
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
@@ -1448,6 +1452,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_hnsw_cagra, "dynamic_cast to IndexHNSWCagra failed");
             READ1(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
             if (h == fourcc("IHc2")) {
@@ -1461,7 +1467,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
-            dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
+            auto* storage_pq = dynamic_cast<IndexPQ*>(idxhnsw->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    storage_pq,
+                    "dynamic_cast to IndexPQ failed for HNSW storage");
+            storage_pq->pq.compute_sdc_table();
         }
         idx = std::move(idxhnsw);
     } else if (
@@ -1677,7 +1687,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->use_full_search_history);
         READ1(svs->storage_kind);
         if (h == fourcc("ISVL")) {
-            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get())->leanvec_d);
+            auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    leanvec, "dynamic_cast to IndexSVSVamanaLeanVec failed");
+            READ1(leanvec->leanvec_d);
         }
 
         bool initialized;
@@ -1693,8 +1706,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             if (trained) {
                 faiss::svs_io::ReaderStreambuf rbuf(f);
                 std::istream is(&rbuf);
-                dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get())
-                        ->deserialize_training_data(is);
+                auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
+                FAISS_THROW_IF_NOT_MSG(
+                        leanvec,
+                        "dynamic_cast to IndexSVSVamanaLeanVec failed");
+                leanvec->deserialize_training_data(is);
             }
         }
         idx = std::move(svs);
