@@ -595,6 +595,13 @@ def do_test_serde(description):
     np.testing.assert_equal(Dref, Dnew)
     np.testing.assert_equal(Iref, Inew)
 
+    # Verify deserialized index is serializable again
+    b2 = faiss.serialize_index(index2)
+    index3 = faiss.deserialize_index(b2)
+    Dnew3, Inew3 = index3.search(ds.get_queries(), 10)
+    np.testing.assert_equal(Dref, Dnew3)
+    np.testing.assert_equal(Iref, Inew3)
+
 
 class TestMultiBitRaBitQ(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ.
@@ -769,6 +776,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     # ==================== IVF Tests ====================
 
     def test_ivf_basic_operations(self):
@@ -857,6 +873,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     # ==================== Query Quantization Tests ====================
 
     def test_query_quantization_levels(self):
@@ -939,6 +964,48 @@ class TestMultiBitRaBitQ(unittest.TestCase):
             D_ivf, I_ivf = ivf_index.search(ds.get_queries(), 5)
             self.assertEqual(D_ivf.shape, (ds.nq, 5))
             self.assertTrue(np.all(I_ivf >= 0))
+
+    def test_degenerate_centroid_distance(self):
+        """Test that a doc identical to its centroid gets correct distances.
+
+        When a vector's residual (x - centroid) has near-zero norm,
+        quantize_ex_bits hits a degenerate early-return path. A previous
+        bug set f_rescale_ex=1 (should be 0) and f_add_ex=0 (should be
+        metric-dependent), causing wildly wrong multi-bit distances.
+        """
+        d = 128
+        nlist = 16
+        rs = np.random.RandomState(42)
+        xt = rs.randn(2000, d).astype("float32")
+        xt /= np.linalg.norm(xt, axis=1, keepdims=True)
+
+        query = rs.randn(1, d).astype("float32")
+        query /= np.linalg.norm(query)
+
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [2, 3, 4]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    quantizer = faiss.IndexFlat(d, metric)
+                    index = faiss.IndexIVFRaBitQ(
+                        quantizer, d, nlist, metric, True, nb_bits
+                    )
+                    index.train(xt)
+                    index.nprobe = nlist  # exhaustive
+
+                    # Add the centroid itself as the only document
+                    centroid = index.quantizer.reconstruct(0).reshape(1, d)
+                    index.add(centroid)
+
+                    D, I = index.search(query, 1)
+
+                    if metric == faiss.METRIC_INNER_PRODUCT:
+                        true_dist = (query @ centroid.T).item()
+                    else:
+                        true_dist = float(np.sum((query - centroid) ** 2))
+
+                    np.testing.assert_allclose(
+                        D[0, 0], true_dist, atol=0.15,
+                        err_msg=f"nb_bits={nb_bits}")
 
 
 class TestRaBitQStats(unittest.TestCase):

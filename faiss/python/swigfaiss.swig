@@ -106,7 +106,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
@@ -598,14 +598,22 @@ void gpu_sync_all_devices()
 %include  <faiss/Index2Layer.h>
 
 %include  <faiss/impl/FastScanDistancePostProcessing.h>
+
+// Ignore make_knn_handler methods — they return SIMDResultHandlerToFloat*
+// which is an internal SIMD type not exposed to Python.
+%ignore faiss::IndexFastScan::make_knn_handler;
+%ignore faiss::IndexIVFFastScan::make_knn_handler;
+%ignore faiss::IndexRaBitQFastScan::make_knn_handler;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
+
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
 
-// NOTE(matthijs) let's not go into wrapping simdlib
-struct faiss::simd16uint16 {};
-
-%include  <faiss/impl/simd_result_handlers.h>
+// NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
+// class template. SWIG cannot handle this, and the Python API doesn't need
+// the internal SIMD handler types.
+// %include  <faiss/impl/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -873,6 +881,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
     DOWNCAST (ITQMatrix)
+    DOWNCAST (HadamardRotation)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
@@ -1236,9 +1245,23 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
 
 %}
 
+%{
+/* See https://github.com/facebookresearch/faiss/issues/4845 */
+static int _faiss_init_numpy() {
+    import_array1(-1);
+    return 0;
+}
+%}
+
 %init %{
     /* needed, else crash at runtime */
-    import_array();
+    if (_faiss_init_numpy() < 0) {
+#if SWIG_VERSION >= 0x040400
+        return -1;
+#else
+        return NULL;
+#endif
+    }
 
     PythonInterruptCallback::reset();
 %}

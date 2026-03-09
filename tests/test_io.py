@@ -276,6 +276,15 @@ class TestPickle(unittest.TestCase):
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_equal(Dref, Dnew)
 
+        # Verify deserialized index is serializable again
+        buf2 = io.BytesIO()
+        pickle.dump(index2, buf2)
+        buf2.seek(0)
+        index3 = pickle.load(buf2)
+        Dnew3, Inew3 = index3.search(xq, 4)
+        np.testing.assert_array_equal(Iref, Inew3)
+        np.testing.assert_array_equal(Dref, Dnew3)
+
     def test_flat(self):
         self.dump_load_factory("Flat")
 
@@ -311,6 +320,19 @@ class Test_IO_VectorTransform(unittest.TestCase):
             assert vt.d_in == index.vt.d_in
             assert vt.d_out == index.vt.d_out
             assert vt.is_trained
+
+            # Verify deserialized VectorTransform is serializable again
+            fd2, fname2 = tempfile.mkstemp()
+            os.close(fd2)
+            try:
+                faiss.write_VectorTransform(vt, fname2)
+                vt2 = faiss.read_VectorTransform(fname2)
+                assert vt2.d_in == index.vt.d_in
+                assert vt2.d_out == index.vt.d_out
+                assert vt2.is_trained
+            finally:
+                if os.path.exists(fname2):
+                    os.unlink(fname2)
 
         finally:
             if os.path.exists(fname):
@@ -372,6 +394,22 @@ class Test_IO_PQ(unittest.TestCase):
             faiss.vector_to_array(read_pq.centroids)
         )
 
+        # Verify deserialized PQ is serializable again
+        fd2, fname2 = tempfile.mkstemp()
+        os.close(fd2)
+        try:
+            faiss.write_ProductQuantizer(read_pq, fname2)
+            read_pq2 = faiss.read_ProductQuantizer(fname2)
+        finally:
+            if os.path.exists(fname2):
+                os.unlink(fname2)
+        self.assertEqual(index.pq.M, read_pq2.M)
+        self.assertEqual(index.pq.nbits, read_pq2.nbits)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(index.pq.centroids),
+            faiss.vector_to_array(read_pq2.centroids)
+        )
+
 
 
 class Test_IO_IndexLSH(unittest.TestCase):
@@ -407,6 +445,13 @@ class Test_IO_IndexLSH(unittest.TestCase):
 
             np.testing.assert_array_equal(D, D_read)
             np.testing.assert_array_equal(I, I_read)
+
+            # Verify deserialized index is serializable again
+            data3 = faiss.serialize_index(read_index_lsh)
+            index3 = faiss.deserialize_index(data3)
+            D3, I3 = index3.search(xq, 10)
+            np.testing.assert_array_equal(D, D3)
+            np.testing.assert_array_equal(I, I3)
 
         finally:
             if os.path.exists(fname):
@@ -446,6 +491,13 @@ class Test_IO_IndexIVFSpectralHash(unittest.TestCase):
             np.testing.assert_array_equal(D, D_read)
             np.testing.assert_array_equal(I, I_read)
 
+            # Verify deserialized index is serializable again
+            data3 = faiss.serialize_index(read_index)
+            index3 = faiss.deserialize_index(data3)
+            D3, I3 = index3.search(xq, 10)
+            np.testing.assert_array_equal(D, D3)
+            np.testing.assert_array_equal(I, I3)
+
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
@@ -478,6 +530,13 @@ class TestIVFPQRead(unittest.TestCase):
             codes_a = index_a.sa_encode(xq)
             codes_b = index_b.sa_encode(xq)
             np.testing.assert_array_equal(codes_a, codes_b)
+
+            # Verify deserialized indexes are serializable again
+            data3 = faiss.serialize_index(index_a)
+            index3 = faiss.deserialize_index(data3)
+            D3, I3 = index3.search(xq, 10)
+            np.testing.assert_array_equal(Da, D3)
+            np.testing.assert_array_equal(Ia, I3)
 
         finally:
             if os.path.exists(fname):
@@ -533,6 +592,13 @@ class TestIOFlatMMap(unittest.TestCase):
         np.testing.assert_array_equal(Iref, Inew)
         np.testing.assert_array_equal(Dref, Dnew)
 
+        # Verify deserialized index is serializable again
+        data3 = faiss.serialize_index(index2)
+        index3 = faiss.deserialize_index(data3)
+        Dnew3, Inew3 = index3.search(xq, 10)
+        np.testing.assert_array_equal(Iref, Inew3)
+        np.testing.assert_array_equal(Dref, Dnew3)
+
 
 class TestIORoundTrip(unittest.TestCase):
     """Round-trip serialize/deserialize tests covering index types
@@ -584,6 +650,39 @@ class TestIORoundTrip(unittest.TestCase):
         ref = pca.apply(xq)
         out = pca2.apply(xq)
         np.testing.assert_array_equal(ref, out)
+
+    def test_vector_transform_hadamard_rotation(self):
+        """HadamardRotation VectorTransform write/read round-trip."""
+        xt, _, xq = get_dataset_2(d, nt, nb, nq)
+        fr = faiss.HadamardRotation(d, 42)
+
+        writer = faiss.VectorIOWriter()
+        faiss.write_VectorTransform(fr, writer)
+
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(
+            np.array(faiss.vector_to_array(writer.data)), reader.data)
+        fr2 = faiss.read_VectorTransform(reader)
+
+        self.assertEqual(fr2.d_in, d)
+        self.assertEqual(fr2.d_out, d)
+
+        ref = fr.apply(xq)
+        out = fr2.apply(xq)
+        np.testing.assert_array_equal(ref, out)
+
+    def test_index_pretransform_hadamard_rotation(self):
+        """Full index with HadamardRotation pre-transform round-trip."""
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+        index = faiss.index_factory(d, "HR,Flat")
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 5)
+
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(xq, 5)
+        np.testing.assert_array_equal(Iref, I2)
+        np.testing.assert_array_equal(Dref, D2)
 
     def test_null_index(self):
         """Serializing None / null index round-trips to None."""

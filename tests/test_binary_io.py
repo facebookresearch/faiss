@@ -42,6 +42,13 @@ class TestBinaryFlat(unittest.TestCase):
         assert (I2 == I).all()
         assert (D2 == D).all()
 
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        D3, I3 = index3.search(self.xq, 3)
+        assert (I3 == I).all()
+        assert (D3 == D).all()
+
 
 class TestBinaryIVF(unittest.TestCase):
 
@@ -72,6 +79,13 @@ class TestBinaryIVF(unittest.TestCase):
         assert (I2 == I).all()
         assert (D2 == D).all()
 
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        D3, I3 = index3.search(self.xq, 3)
+        assert (I3 == I).all()
+        assert (D3 == D).all()
+
 
 class TestObjectOwnership(unittest.TestCase):
 
@@ -94,6 +108,11 @@ class TestObjectOwnership(unittest.TestCase):
         index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
         assert index2.thisown
+
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        assert index3.thisown
 
 
 class TestBinaryFromFloat(unittest.TestCase):
@@ -121,6 +140,13 @@ class TestBinaryFromFloat(unittest.TestCase):
         assert (I2 == I).all()
         assert (D2 == D).all()
 
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        D3, I3 = index3.search(self.xq, 3)
+        assert (I3 == I).all()
+        assert (D3 == D).all()
+
 class TestBinaryHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -146,6 +172,13 @@ class TestBinaryHNSW(unittest.TestCase):
         assert (I2 == I).all()
         assert (D2 == D).all()
 
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        D3, I3 = index3.search(self.xq, 3)
+        assert (I3 == I).all()
+        assert (D3 == D).all()
+
     def test_ivf_hnsw(self):
         d = self.xq.shape[1] * 8
 
@@ -157,9 +190,16 @@ class TestBinaryHNSW(unittest.TestCase):
         index.add(self.xb)
         D, I = index.search(self.xq, 3)
 
-        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index)) 
-        
+        index2 = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
+
         D2, I2 = index2.search(self.xq, 3)
 
         assert (I2 == I).all()
         assert (D2 == D).all()
+
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index2))
+        D3, I3 = index3.search(self.xq, 3)
+        assert (I3 == I).all()
+        assert (D3 == D).all()

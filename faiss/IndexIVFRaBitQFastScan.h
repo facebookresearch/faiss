@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <faiss/IndexIVFFastScan.h>
@@ -55,17 +56,6 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Use zero-centered scalar quantizer for queries
     bool centered = false;
 
-    /// Per-vector auxiliary data (1-bit codes stored separately in `codes`)
-    ///
-    /// 1-bit codes (sign bits) are stored in the inherited `codes` array from
-    /// IndexFastScan in packed FastScan format for SIMD processing.
-    ///
-    /// This flat_storage holds per-vector factors and refinement-bit codes:
-    /// Layout for 1-bit: [SignBitFactors (8 bytes)]
-    /// Layout for multi-bit: [SignBitFactorsWithError
-    /// (12B)][ref_codes][ExtraBitsFactors (8B)]
-    std::vector<uint8_t> flat_storage;
-
     // Constructors
 
     IndexIVFRaBitQFastScan();
@@ -94,16 +84,20 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             bool include_listnos = false) const override;
 
    protected:
-    /// Extract and store RaBitQ factors from encoded vectors
-    void preprocess_code_metadata(
-            idx_t n,
-            const uint8_t* flat_codes,
-            idx_t start_global_idx) override;
-
     /// Return code_size as stride to skip embedded factor data during packing
     size_t code_packing_stride() const override;
 
    public:
+    /// Return CodePackerRaBitQ with enlarged block size
+    CodePacker* get_CodePacker() const override;
+
+    /// Write per-vector auxiliary data into block auxiliary region
+    void postprocess_packed_codes(
+            idx_t list_no,
+            size_t list_offset,
+            size_t n_added,
+            const uint8_t* flat_codes) override;
+
     /// Reconstruct a single vector from an inverted list
     void reconstruct_from_offset(int64_t list_no, int64_t offset, float* recons)
             const override;
@@ -111,7 +105,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Override sa_decode to handle RaBitQ reconstruction
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-    /// Compute storage size per vector in flat_storage based on nb_bits
+    /// Compute per-vector auxiliary storage size based on nb_bits
     size_t compute_per_vector_storage_size() const;
 
    private:
@@ -199,12 +193,19 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         int64_t* heap_labels;  // [nq * k]
         const size_t nq, k;
         size_t current_list_no = 0;
+        const uint8_t* list_codes_ptr = nullptr; // raw block data for list
         std::vector<int>
                 probe_indices; // probe index for each query in current batch
         const FastScanDistancePostProcessing*
                 context;        // Processing context with query factors
         const bool is_multibit; // Whether to use multi-bit two-stage search
         size_t nup = 0;         // Number of heap updates
+
+        // Cached block-layout constants (invariant for handler lifetime)
+        const size_t storage_size;
+        const size_t packed_block_size;
+        const size_t full_block_size;
+        std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
 
         // Use float-based comparator for heap operations
         using Cfloat = typename std::conditional<
@@ -244,7 +245,7 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
         /// @param global_q Global query index (for storage indexing)
         /// @param local_offset Offset within the current inverted list
         float compute_full_multibit_distance(
-                size_t db_idx,
+                size_t /*db_idx*/,
                 size_t local_q,
                 size_t global_q,
                 size_t local_offset) const;

@@ -12,14 +12,18 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <optional>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/io.h>
 #include <faiss/utils/hamming.h>
 
 #include <faiss/invlists/InvertedListsIOHook.h>
+
+#include <faiss/invlists/BlockInvertedLists.h>
 
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
@@ -218,7 +222,9 @@ static void read_index_header(Index& idx, IOReader* f) {
     READ1(dummy);
     READ1(dummy);
     READ1(idx.is_trained);
-    READ1(idx.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    idx.metric_type = metric_type_from_int(metric_type_int);
     if (idx.metric_type > 1) {
         READ1(idx.metric_arg);
     }
@@ -298,6 +304,10 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
             itqt->pca_then_itq = *pi;
         }
         vt = std::move(itqt);
+    } else if (h == fourcc("HRot")) {
+        auto hr = std::make_unique<HadamardRotation>();
+        READ1(hr->seed);
+        vt = std::move(hr);
     } else {
         FAISS_THROW_FMT(
                 "fourcc %ud (\"%s\") not recognized in %s",
@@ -308,6 +318,11 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_in);
     READ1(vt->d_out);
     READ1(vt->is_trained);
+    if (h == fourcc("HRot")) {
+        auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
+        hr->init(hr->seed);
+    }
     return vt;
 }
 
@@ -432,14 +447,14 @@ InvertedLists* read_InvertedLists(IOReader* f, int io_flags) {
 }
 
 void read_InvertedLists(IndexIVF& ivf, IOReader* f, int io_flags) {
-    InvertedLists* ils = read_InvertedLists(f, io_flags);
+    auto ils = read_InvertedLists_up(f, io_flags);
     if (ils) {
         FAISS_THROW_IF_NOT(ils->nlist == ivf.nlist);
         FAISS_THROW_IF_NOT(
                 ils->code_size == InvertedLists::INVALID_CODE_SIZE ||
                 ils->code_size == ivf.code_size);
     }
-    ivf.invlists = ils;
+    ivf.invlists = ils.release();
     ivf.own_invlists = true;
 }
 
@@ -596,6 +611,18 @@ static void validate_HNSW(const HNSW& hnsw) {
                     hnsw.cum_nneighbor_per_level[i],
                     hnsw.cum_nneighbor_per_level[i - 1]);
         }
+    }
+
+    // every levels[i] must be a valid index into cum_nneighbor_per_level
+    size_t cum_size = hnsw.cum_nneighbor_per_level.size();
+    for (size_t i = 0; i < ntotal; i++) {
+        FAISS_THROW_IF_NOT_FMT(
+                hnsw.levels[i] >= 0 &&
+                        static_cast<size_t>(hnsw.levels[i]) < cum_size,
+                "HNSW levels[%zd] = %d out of range [0, %zd)",
+                i,
+                hnsw.levels[i],
+                cum_size);
     }
 
     // offsets must have size ntotal + 1, be monotonically non-decreasing,
@@ -786,7 +813,9 @@ static void read_RaBitQuantizer(
         bool multi_bit = true) {
     READ1(rabitq.d);
     READ1(rabitq.code_size);
-    READ1(rabitq.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    rabitq.metric_type = metric_type_from_int(metric_type_int);
 
     if (multi_bit) {
         READ1(rabitq.nb_bits);
@@ -1211,7 +1240,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 d,
                 nsq);
         FAISS_THROW_IF_NOT_FMT(
-                r2 >= 0, "invalid IndexLattice r2 %d (must be >= 0)", r2);
+                r2 > 0, "invalid IndexLattice r2 %d (must be > 0)", r2);
+        int dsq = d / nsq;
+        FAISS_THROW_IF_NOT_FMT(
+                dsq >= 2 && (dsq & (dsq - 1)) == 0,
+                "invalid IndexLattice d=%d, nsq=%d: d/nsq=%d must be a power of 2 >= 2",
+                d,
+                nsq,
+                dsq);
         auto idxl = std::make_unique<IndexLattice>(d, nsq, scale_nbit, r2);
         read_index_header(*idxl, f);
         READVECTOR(idxl->trained);
@@ -1298,8 +1334,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (has_vt) {
             indep->vt = read_VectorTransform(f);
         }
-        indep->index_ivf = dynamic_cast<IndexIVF*>(read_index(f, io_flags));
+        auto ivf_idx = read_index_up(f, io_flags);
+        indep->index_ivf = dynamic_cast<IndexIVF*>(ivf_idx.get());
         FAISS_THROW_IF_NOT(indep->index_ivf);
+        ivf_idx.release();
         if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
             READ1(index_ivfpq->use_precomputed_table);
         }
@@ -1327,20 +1365,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IxRF") || h == fourcc("IxRP")) {
         auto idxrf = std::make_unique<IndexRefine>();
         read_index_header(*idxrf, f);
-        idxrf->base_index = read_index(f, io_flags);
-        idxrf->refine_index = read_index(f, io_flags);
+        auto base = read_index_up(f, io_flags);
+        auto refine = read_index_up(f, io_flags);
         READ1(idxrf->k_factor);
         if (h == fourcc("IxRP")) {
             // then make a RefineFlatPanorama with it
             auto idxrf_new = std::make_unique<IndexRefinePanorama>();
             static_cast<IndexRefine&>(*idxrf_new) = *idxrf;
             idxrf = std::move(idxrf_new);
-        } else if (dynamic_cast<IndexFlat*>(idxrf->refine_index)) {
+        } else if (dynamic_cast<IndexFlat*>(refine.get())) {
             // then make a RefineFlat with it
             auto idxrf_new = std::make_unique<IndexRefineFlat>();
             static_cast<IndexRefine&>(*idxrf_new) = *idxrf;
             idxrf = std::move(idxrf_new);
         }
+        idxrf->base_index = base.release();
+        idxrf->refine_index = refine.release();
         idxrf->own_fields = true;
         idxrf->own_refine_index = true;
         idx = std::move(idxrf);
@@ -1399,6 +1439,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (h == fourcc("IHfP")) {
             auto idx_panorama =
                     dynamic_cast<IndexHNSWFlatPanorama*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_panorama,
+                    "dynamic_cast to IndexHNSWFlatPanorama failed");
             size_t nlevels;
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
@@ -1409,6 +1452,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);
             auto idx_hnsw_cagra = dynamic_cast<IndexHNSWCagra*>(idxhnsw.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    idx_hnsw_cagra, "dynamic_cast to IndexHNSWCagra failed");
             READ1(idx_hnsw_cagra->base_level_only);
             READ1(idx_hnsw_cagra->num_base_level_search_entrypoints);
             if (h == fourcc("IHc2")) {
@@ -1422,7 +1467,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
-            dynamic_cast<IndexPQ*>(idxhnsw->storage)->pq.compute_sdc_table();
+            auto* storage_pq = dynamic_cast<IndexPQ*>(idxhnsw->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    storage_pq,
+                    "dynamic_cast to IndexPQ failed for HNSW storage");
+            storage_pq->pq.compute_sdc_table();
         }
         idx = std::move(idxhnsw);
     } else if (
@@ -1511,13 +1560,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         imm->own_fields = true;
 
         idx = std::move(imm);
-    } else if (h == fourcc("Irfs")) {
+    } else if (h == fourcc("Irfn") || h == fourcc("Irfs")) {
+        // Irfn = new format (aux data embedded in SIMD blocks)
+        // Irfs = legacy format (flat_storage separate, needs migration)
+        const bool is_legacy = (h == fourcc("Irfs"));
+
         auto idxqfs = std::make_unique<IndexRaBitQFastScan>();
         read_index_header(*idxqfs, f);
         read_RaBitQuantizer(idxqfs->rabitq, f, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
-        READVECTOR(idxqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (is_legacy) {
+            READVECTOR(legacy_flat_storage);
+        }
 
         READ1(idxqfs->bbs);
         READ1(idxqfs->ntotal2);
@@ -1531,6 +1588,28 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->ksub = (1 << nbits_fastscan);
 
         READVECTOR(idxqfs->codes);
+
+        if (is_legacy) {
+            const size_t storage_size =
+                    rabitq_utils::compute_per_vector_storage_size(
+                            idxqfs->rabitq.nb_bits, idxqfs->d);
+
+            FAISS_THROW_IF_NOT_MSG(
+                    legacy_flat_storage.size() ==
+                            static_cast<size_t>(idxqfs->ntotal) * storage_size,
+                    "legacy flat_storage size mismatch during migration");
+
+            rabitq_utils::populate_block_aux_from_flat_storage(
+                    legacy_flat_storage,
+                    idxqfs->codes,
+                    static_cast<size_t>(idxqfs->ntotal),
+                    idxqfs->bbs,
+                    idxqfs->M2,
+                    ((idxqfs->M2 + 1) / 2) * idxqfs->bbs,
+                    idxqfs->get_block_stride(),
+                    storage_size);
+        }
+
         idx = std::move(idxqfs);
     } else if (h == fourcc("Ixrq")) {
         auto idxq = std::make_unique<IndexRaBitQ>();
@@ -1608,7 +1687,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->use_full_search_history);
         READ1(svs->storage_kind);
         if (h == fourcc("ISVL")) {
-            READ1(dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get())->leanvec_d);
+            auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    leanvec, "dynamic_cast to IndexSVSVamanaLeanVec failed");
+            READ1(leanvec->leanvec_d);
         }
 
         bool initialized;
@@ -1624,8 +1706,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             if (trained) {
                 faiss::svs_io::ReaderStreambuf rbuf(f);
                 std::istream is(&rbuf);
-                dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get())
-                        ->deserialize_training_data(is);
+                auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
+                FAISS_THROW_IF_NOT_MSG(
+                        leanvec,
+                        "dynamic_cast to IndexSVSVamanaLeanVec failed");
+                leanvec->deserialize_training_data(is);
             }
         }
         idx = std::move(svs);
@@ -1643,7 +1728,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idx = std::move(svs);
     }
 #endif // FAISS_ENABLE_SVS
-    else if (h == fourcc("Iwrf")) {
+    else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {
+        // Iwrn = new format (aux data embedded in SIMD blocks)
+        // Iwrf = legacy format (flat_storage separate, needs migration)
+        const bool is_legacy = (h == fourcc("Iwrf"));
+
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
         read_ivf_header(ivrqfs.get(), f);
         read_RaBitQuantizer(ivrqfs->rabitq, f);
@@ -1655,7 +1744,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrqfs->implem);
         READ1(ivrqfs->qb);
         READ1(ivrqfs->centered);
-        READVECTOR(ivrqfs->flat_storage);
+
+        std::vector<uint8_t> legacy_flat_storage;
+        if (is_legacy) {
+            READVECTOR(legacy_flat_storage);
+        }
 
         // Initialize FastScan base class fields
         const size_t M_fastscan = (ivrqfs->d + 3) / 4;
@@ -1666,6 +1759,37 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         read_InvertedLists(*ivrqfs, f, io_flags);
         ivrqfs->init_code_packer();
+
+        if (is_legacy) {
+            auto* bil = dynamic_cast<BlockInvertedLists*>(ivrqfs->invlists);
+            FAISS_THROW_IF_NOT(bil);
+
+            const size_t storage_size =
+                    rabitq_utils::compute_per_vector_storage_size(
+                            ivrqfs->rabitq.nb_bits, ivrqfs->d);
+            const size_t new_block_stride = ivrqfs->get_block_stride();
+
+            for (size_t list_no = 0; list_no < ivrqfs->nlist; list_no++) {
+                if (bil->list_size(list_no) == 0) {
+                    continue;
+                }
+                rabitq_utils::populate_block_aux_from_flat_storage(
+                        legacy_flat_storage,
+                        bil->codes[list_no],
+                        bil->list_size(list_no),
+                        ivrqfs->bbs,
+                        ivrqfs->M2,
+                        bil->block_size,
+                        new_block_stride,
+                        storage_size,
+                        bil->ids[list_no].data());
+            }
+
+            if (bil->block_size < new_block_stride) {
+                bil->block_size = new_block_stride;
+            }
+        }
+
         idx = std::move(ivrqfs);
     } else {
         FAISS_THROW_FMT(
@@ -1727,11 +1851,11 @@ VectorTransform* read_VectorTransform(const char* fname) {
  **************************************************************/
 
 static void read_InvertedLists(IndexBinaryIVF& ivf, IOReader* f, int io_flags) {
-    InvertedLists* ils = read_InvertedLists(f, io_flags);
+    auto ils = read_InvertedLists_up(f, io_flags);
     FAISS_THROW_IF_NOT(
             !ils ||
             (ils->nlist == ivf.nlist && ils->code_size == ivf.code_size));
-    ivf.invlists = ils;
+    ivf.invlists = ils.release();
     ivf.own_invlists = true;
 }
 
@@ -1740,7 +1864,9 @@ static void read_index_binary_header(IndexBinary& idx, IOReader* f) {
     READ1(idx.code_size);
     READ1(idx.ntotal);
     READ1(idx.is_trained);
-    READ1(idx.metric_type);
+    int metric_type_int;
+    READ1(metric_type_int);
+    idx.metric_type = metric_type_from_int(metric_type_int);
     FAISS_THROW_IF_NOT_FMT(
             idx.d >= 0, "invalid binary index dimension %d", idx.d);
     FAISS_THROW_IF_NOT_FMT(
@@ -1777,9 +1903,19 @@ static void read_binary_hash_invlists(
     READ1(il_nbit);
     // buffer for bitstrings
     size_t bits_per_entry = (size_t)b + (size_t)il_nbit;
-    std::vector<uint8_t> buf(
-            mul_no_overflow(bits_per_entry, sz, "binary hash invlists"));
+    size_t total_bits =
+            mul_no_overflow(bits_per_entry, sz, "binary hash invlists");
+    size_t needed_bytes = (total_bits + 7) / 8;
+    std::vector<uint8_t> buf;
     READVECTOR(buf);
+    FAISS_THROW_IF_NOT_FMT(
+            buf.size() >= needed_bytes,
+            "binary hash invlists: buffer size %zd < needed %zd bytes "
+            "for %zd entries of %zd bits each",
+            buf.size(),
+            needed_bytes,
+            sz,
+            bits_per_entry);
     BitstringReader rd(buf.data(), buf.size());
     invlists.reserve(sz);
     for (size_t i = 0; i < sz; i++) {
@@ -1883,9 +2019,11 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IBHm")) {
         auto idxmh = std::make_unique<IndexBinaryMultiHash>();
         read_index_binary_header(*idxmh, f);
-        idxmh->storage = dynamic_cast<IndexBinaryFlat*>(read_index_binary(f));
-        FAISS_THROW_IF_NOT(
-                idxmh->storage && idxmh->storage->ntotal == idxmh->ntotal);
+        auto storage_idx = read_index_binary_up(f);
+        auto* flat_ptr = dynamic_cast<IndexBinaryFlat*>(storage_idx.get());
+        FAISS_THROW_IF_NOT(flat_ptr && flat_ptr->ntotal == idxmh->ntotal);
+        idxmh->storage = flat_ptr;
+        storage_idx.release();
         idxmh->own_fields = true;
         READ1(idxmh->b);
         READ1(idxmh->nhash);

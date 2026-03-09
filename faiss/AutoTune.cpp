@@ -410,10 +410,9 @@ void ParameterSpace::initialize(const Index* index) {
 
 #undef DC
 
-template <typename IndexType, typename SetParamFunc>
+template <typename SetParamFunc>
 static void set_index_parameters_common(
         const ParameterSpace* ps,
-        IndexType* index,
         size_t cno,
         SetParamFunc set_param) {
     for (int i = 0; i < ps->parameter_ranges.size(); i++) {
@@ -425,10 +424,8 @@ static void set_index_parameters_common(
     }
 }
 
-template <typename IndexType, typename SetParamFunc>
+template <typename SetParamFunc>
 static void set_index_parameters_string_common(
-        const ParameterSpace* ps,
-        IndexType* index,
         const char* description_in,
         SetParamFunc set_param) {
     std::string description(description_in);
@@ -448,10 +445,7 @@ static void set_index_parameters_string_common(
 /// set a combination of parameters on an index
 void ParameterSpace::set_index_parameters(Index* index, size_t cno) const {
     set_index_parameters_common(
-            this,
-            index,
-            cno,
-            [this, index](const std::string& name, double val) {
+            this, cno, [this, index](const std::string& name, double val) {
                 this->set_index_parameter(index, name, val);
             });
 }
@@ -461,10 +455,7 @@ void ParameterSpace::set_index_parameters(
         Index* index,
         const char* description_in) const {
     set_index_parameters_string_common(
-            this,
-            index,
-            description_in,
-            [this, index](const std::string& name, double val) {
+            description_in, [this, index](const std::string& name, double val) {
                 this->set_index_parameter(index, name, val);
             });
 }
@@ -473,10 +464,7 @@ void ParameterSpace::set_index_parameters(
 void ParameterSpace::set_index_parameters(IndexBinary* index, size_t cno)
         const {
     set_index_parameters_common(
-            this,
-            index,
-            cno,
-            [this, index](const std::string& name, double val) {
+            this, cno, [this, index](const std::string& name, double val) {
                 this->set_index_parameter(index, name, val);
             });
 }
@@ -486,10 +474,7 @@ void ParameterSpace::set_index_parameters(
         IndexBinary* index,
         const char* description_in) const {
     set_index_parameters_string_common(
-            this,
-            index,
-            description_in,
-            [this, index](const std::string& name, double val) {
+            description_in, [this, index](const std::string& name, double val) {
                 this->set_index_parameter(index, name, val);
             });
 }

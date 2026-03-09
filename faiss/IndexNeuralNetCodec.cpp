@@ -24,7 +24,7 @@ IndexNeuralNetCodec::IndexNeuralNetCodec(
     is_trained = false;
 }
 
-void IndexNeuralNetCodec::train(idx_t n, const float* x) {
+void IndexNeuralNetCodec::train(idx_t /*n*/, const float* /*x*/) {
     FAISS_THROW_MSG("Training not implemented in C++, use Pytorch");
 }
 

@@ -13,6 +13,10 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
+#define THE_SIMDLEVEL SIMDLevel::AVX2
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/distances_simdlib256.h>
+
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_sse-inl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
@@ -649,7 +653,7 @@ void fvec_L2sqr_ny<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -759,7 +763,7 @@ size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -874,7 +878,7 @@ size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX2>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX2>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -1031,7 +1035,7 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::AVX2>(
 
 template <size_t DIM>
 size_t fvec_L2sqr_ny_nearest_y_transposed_D(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         const float* y_sqlen,
