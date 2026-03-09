@@ -28,8 +28,8 @@ struct IndexRefine : Index {
     /// refinement index
     Index* refine_index;
 
-    bool own_fields;       ///< should the base index be deallocated?
-    bool own_refine_index; ///< same with the refinement index
+    bool own_fields = false;       ///< should the base index be deallocated?
+    bool own_refine_index = false; ///< same with the refinement index
 
     /// factor between k requested in search and the k requested from
     /// the base_index (should be >= 1)
