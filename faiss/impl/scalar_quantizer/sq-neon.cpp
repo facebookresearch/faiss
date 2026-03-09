@@ -7,6 +7,8 @@
 
 #ifdef COMPILE_SIMD_ARM_NEON
 
+#include <faiss/impl/simdlib/simdlib_neon.h>
+
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -16,6 +18,8 @@
 namespace faiss {
 
 namespace scalar_quantizer {
+
+using simd8float32 = faiss::simd8float32_tpl<SIMDLevel::ARM_NEON>;
 
 /**********************************************************
  * Codecs
