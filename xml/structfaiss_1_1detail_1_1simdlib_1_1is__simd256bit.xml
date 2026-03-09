@@ -38,7 +38,7 @@
         <label>std::is_same&lt; decltype(reinterpret_u8(std::declval&lt;T&gt;().data)) , uint8x16x2_t &gt;</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/utils/simdlib_neon.h" line="113" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="113" bodyend="113"/>
+    <location file="faiss/impl/simdlib/simdlib_neon.h" line="114" column="1" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="114" bodyend="114"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

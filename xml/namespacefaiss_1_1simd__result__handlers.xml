@@ -54,7 +54,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="760" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="760" bodyend="777"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="761" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="761" bodyend="778"/>
       </memberdef>
       <memberdef kind="function" id="simd__result__handlers_8h_1a739b6efe174b418b92664439772a6d25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="780" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="780" bodyend="789"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="781" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="781" bodyend="790"/>
       </memberdef>
       <memberdef kind="function" id="simd__result__handlers_8h_1a116179974dd04a41323438390f8277c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -129,13 +129,13 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simd_result_handlers.h" line="792" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="792" bodyend="827"/>
+        <location file="faiss/impl/simd_result_handlers.h" line="793" column="6" bodyfile="faiss/impl/simd_result_handlers.h" bodystart="793" bodyend="828"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/simd_result_handlers.h" line="99" column="1"/>
+    <location file="faiss/impl/simd_result_handlers.h" line="100" column="1"/>
   </compounddef>
 </doxygen>

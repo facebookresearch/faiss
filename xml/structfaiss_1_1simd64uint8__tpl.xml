@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd64uint8__tpl" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd64uint8_tpl</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd512bit__tpl" prot="public" virt="non-virtual">faiss::simd512bit_tpl&lt; SL &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::simd512bit_tpl&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1simd512bit__tpl"/>
+      </node>
+      <node id="1">
+        <label>faiss::simd64uint8_tpl&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1simd64uint8__tpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::simd512bit_tpl&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1simd512bit__tpl"/>
+      </node>
+      <node id="1">
+        <label>faiss::simd64uint8_tpl&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1simd64uint8__tpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/simdlib/simdlib.h" line="43" column="1" bodyfile="faiss/impl/simdlib/simdlib.h" bodystart="43" bodyend="43"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

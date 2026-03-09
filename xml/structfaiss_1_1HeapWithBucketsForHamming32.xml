@@ -24,7 +24,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="22" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="22" bodyend="24"/>
+    <location file="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" line="23" column="1" bodyfile="faiss/utils/approx_topk_hamming/approx_topk_hamming.h" bodystart="23" bodyend="25"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>

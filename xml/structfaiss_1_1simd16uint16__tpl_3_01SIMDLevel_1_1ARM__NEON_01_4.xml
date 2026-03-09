@@ -1,0 +1,832 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</compoundname>
+    <includes refid="simdlib__neon_8h" local="no">simdlib_neon.h</includes>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ae98f2918f5901f842faf8d3e5d4be750" prot="public" static="no" mutable="no">
+        <type>uint16x8x2_t</type>
+        <definition>uint16x8x2_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="275" column="18" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="275" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a72d8cb5fa2ae0e3874644d001230b47a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>()=default</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="277" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ad501e6759a873be7f51d721dbf750832" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(int x)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="279" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="279" bodyend="279"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5f85bb40bb63b4859e4406a598654ab9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(uint16_t x)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>uint16_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="281" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="281" bodyend="282"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a276cfd14d990f4aa9416463572ef2252" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(const uint16x8x2_t &amp;v)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>const uint16x8x2_t &amp;</type>
+          <declname>v</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="284" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="284" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2e869b6076d62aa8ae32e6a7dd9f1da0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(uint16_t u0, uint16_t u1, uint16_t u2, uint16_t u3, uint16_t u4, uint16_t u5, uint16_t u6, uint16_t u7, uint16_t u8, uint16_t u9, uint16_t u10, uint16_t u11, uint16_t u12, uint16_t u13, uint16_t u14, uint16_t u15)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>uint16_t</type>
+          <declname>u0</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u1</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u2</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u3</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u4</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u5</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u6</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u7</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u8</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u9</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u10</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u11</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u12</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u13</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u14</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>u15</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="286" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="286" bodyend="322"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5df83210f3d5ed967475a1eb496eb90f" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename std::enable_if&lt; <ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">detail::simdlib::is_simd256bit</ref>&lt; T &gt;::value, std::nullptr_t &gt;::type</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(const T &amp;x)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="329" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="329" bodyend="330"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1abfeea3a488f343fcecef404a96284978" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</definition>
+        <argsstring>(const uint16_t *x)</argsstring>
+        <name>simd16uint16_tpl</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::simd16uint16_tpl</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="332" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="332" bodyend="333"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2dd9addc551abdf5b4cf9ada54289d2a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="335" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="335" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5eb27158eaa10b10d8fbbae8ed1ea4fe" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::storeu</definition>
+        <argsstring>(uint16_t *ptr) const</argsstring>
+        <name>storeu</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::storeu</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="340" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="340" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac6ecd6f01f48cc89b8feff94f249d708" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::loadu</definition>
+        <argsstring>(const uint16_t *ptr)</argsstring>
+        <name>loadu</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::loadu</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="345" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="345" bodyend="348"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1af153c76a4044cc3b3f2323ddef590a07" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::store</definition>
+        <argsstring>(uint16_t *ptr) const</argsstring>
+        <name>store</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::store</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="350" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="350" bodyend="352"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1af5a7d0a7ecb2faafe3bf69d904f57c1e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::bin</definition>
+        <argsstring>(char bits[257]) const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::bin</qualifiedname>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[257]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="354" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="354" bodyend="356"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aab28f677c5caa0e29e85c9d77aa59c18" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::bin</definition>
+        <argsstring>() const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::bin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="358" column="17" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="358" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a528f4e8bc214ccaaab146e103c9d5fb2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::elements_to_string</definition>
+        <argsstring>(const char *fmt) const</argsstring>
+        <name>elements_to_string</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::elements_to_string</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>fmt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="362" column="17" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="362" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a39731e3c634f2ffaa3e625ab908dcceb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::hex</definition>
+        <argsstring>() const</argsstring>
+        <name>hex</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::hex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="366" column="17" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="366" bodyend="368"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1afb736df8b06da877dd0bf53b6b67a1d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::dec</definition>
+        <argsstring>() const</argsstring>
+        <name>dec</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::dec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="370" column="17" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="370" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a9586ed548d0d91cf313f18de9eddc839" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::set1</definition>
+        <argsstring>(uint16_t x)</argsstring>
+        <name>set1</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::set1</qualifiedname>
+        <param>
+          <type>uint16_t</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="374" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="374" bodyend="376"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3822685096d314cebbe7c4f351b02a45" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator*</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other) const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="378" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="378" bodyend="381"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a649bea2fe24619afed4b9d603d60ccad" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&gt;&gt;</definition>
+        <argsstring>(const int shift) const</argsstring>
+        <name>operator&gt;&gt;</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&gt;&gt;</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="384" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="384" bodyend="451"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1a2084b45050291b2758b001ced8d0c9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&lt;&lt;</definition>
+        <argsstring>(const int shift) const</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>const int</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="454" column="5" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="454" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a15f0ad634542bc018be5b6a0a74faadb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+        <definition>simd16uint16_tpl &amp; faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator+=</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="523" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="523" bodyend="526"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1acb0bd6cb40f29233c886b0db6111887f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+        <definition>simd16uint16_tpl &amp; faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator-=</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other)</argsstring>
+        <name>operator-=</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator-=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="528" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="528" bodyend="531"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a678056b37055b24828ab83bf9c146402" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator+</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="533" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="533" bodyend="536"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a144f244f1831b57adcb68f8c4de35ebf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator-</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="538" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="538" bodyend="541"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aa0cd654ebb4be0c34bfc646d95ed833b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename std::enable_if&lt; <ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">detail::simdlib::is_simd256bit</ref>&lt; T &gt;::value, std::nullptr_t &gt;::type</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&amp;</definition>
+        <argsstring>(const T &amp;other) const</argsstring>
+        <name>operator&amp;</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator&amp;</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="548" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="548" bodyend="553"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a944060d23719fb4abc76c3a5be958bcd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename std::enable_if&lt; <ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">detail::simdlib::is_simd256bit</ref>&lt; T &gt;::value, std::nullptr_t &gt;::type</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator|</definition>
+        <argsstring>(const T &amp;other) const</argsstring>
+        <name>operator|</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator|</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="560" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="560" bodyend="565"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a23414805423299244707cd0728dc720e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+          <param>
+            <type>typename std::enable_if&lt; <ref refid="structfaiss_1_1detail_1_1simdlib_1_1is__simd256bit" kindref="compound">detail::simdlib::is_simd256bit</ref>&lt; T &gt;::value, std::nullptr_t &gt;::type</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator^</definition>
+        <argsstring>(const T &amp;other) const</argsstring>
+        <name>operator^</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator^</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="572" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="572" bodyend="577"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a677f7cb639b2845b76a4b0c189fcbe45" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator==</definition>
+        <argsstring>(const simd16uint16_tpl &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="580" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="580" bodyend="583"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a75d1320943d0158d9f6e54ec9732f864" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::is_same_as</definition>
+        <argsstring>(T other) const</argsstring>
+        <name>is_same_as</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::is_same_as</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="587" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="587" bodyend="593"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6344c575aa26959cf7d91a7db0a5d977" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref></type>
+        <definition>simd16uint16_tpl faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator~</definition>
+        <argsstring>() const</argsstring>
+        <name>operator~</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator~</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="595" column="22" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="595" bodyend="598"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a43b095070e86474a425cc7a841bce57c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_scalar_0</definition>
+        <argsstring>() const</argsstring>
+        <name>get_scalar_0</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::get_scalar_0</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="601" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="601" bodyend="603"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1acccc96b938bc7f0d2ff83dc50a677da4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::ge_mask</definition>
+        <argsstring>(const simd16uint16_tpl &amp;thresh) const</argsstring>
+        <name>ge_mask</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::ge_mask</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>thresh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="607" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="607" bodyend="619"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a8f46e781e905f9216819c36c8ccc6849" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::le_mask</definition>
+        <argsstring>(const simd16uint16_tpl &amp;thresh) const</argsstring>
+        <name>le_mask</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::le_mask</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>thresh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="621" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="621" bodyend="623"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ab00c1f3672b18e1568497e06efe75c03" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::gt_mask</definition>
+        <argsstring>(const simd16uint16_tpl &amp;thresh) const</argsstring>
+        <name>gt_mask</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::gt_mask</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>thresh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="625" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="625" bodyend="627"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a437ce3fb4f4556753a43451dd095e36a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::all_gt</definition>
+        <argsstring>(const simd16uint16_tpl &amp;thresh) const</argsstring>
+        <name>all_gt</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::all_gt</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>thresh</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="629" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="629" bodyend="631"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac45ab7adcffef9c40636f2e0056facef" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator[]</definition>
+        <argsstring>(int i) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::operator[]</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="634" column="14" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="634" bodyend="639"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a90659de9e81855b51b02cfed004b9c22" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::accu_min</definition>
+        <argsstring>(const simd16uint16_tpl &amp;incoming)</argsstring>
+        <name>accu_min</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::accu_min</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>incoming</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="641" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="641" bodyend="644"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1d545f649df64aeea741e1339ad252be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::accu_max</definition>
+        <argsstring>(const simd16uint16_tpl &amp;incoming)</argsstring>
+        <name>accu_max</name>
+        <qualifiedname>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;::accu_max</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref> &amp;</type>
+          <declname>incoming</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="646" column="10" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="646" bodyend="649"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>vector of 16 elements in uint16 </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/simdlib/simdlib_neon.h" line="274" column="1" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="274" bodyend="650"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1d545f649df64aeea741e1339ad252be" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>accu_max</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a90659de9e81855b51b02cfed004b9c22" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>accu_min</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a437ce3fb4f4556753a43451dd095e36a" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>all_gt</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1af5a7d0a7ecb2faafe3bf69d904f57c1e" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aab28f677c5caa0e29e85c9d77aa59c18" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2dd9addc551abdf5b4cf9ada54289d2a" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ae98f2918f5901f842faf8d3e5d4be750" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>data</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1afb736df8b06da877dd0bf53b6b67a1d3" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>dec</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a528f4e8bc214ccaaab146e103c9d5fb2" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>elements_to_string</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1acccc96b938bc7f0d2ff83dc50a677da4" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>ge_mask</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a43b095070e86474a425cc7a841bce57c" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>get_scalar_0</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ab00c1f3672b18e1568497e06efe75c03" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>gt_mask</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a39731e3c634f2ffaa3e625ab908dcceb" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>hex</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a75d1320943d0158d9f6e54ec9732f864" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>is_same_as</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a8f46e781e905f9216819c36c8ccc6849" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>le_mask</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac6ecd6f01f48cc89b8feff94f249d708" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>loadu</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1aa0cd654ebb4be0c34bfc646d95ed833b" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator&amp;</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a3822685096d314cebbe7c4f351b02a45" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator*</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a678056b37055b24828ab83bf9c146402" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator+</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a15f0ad634542bc018be5b6a0a74faadb" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator+=</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a144f244f1831b57adcb68f8c4de35ebf" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator-</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1acb0bd6cb40f29233c886b0db6111887f" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator-=</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a1a2084b45050291b2758b001ced8d0c9" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator&lt;&lt;</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a677f7cb639b2845b76a4b0c189fcbe45" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator==</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a649bea2fe24619afed4b9d603d60ccad" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator&gt;&gt;</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ac45ab7adcffef9c40636f2e0056facef" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator[]</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a23414805423299244707cd0728dc720e" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator^</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a944060d23719fb4abc76c3a5be958bcd" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator|</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a6344c575aa26959cf7d91a7db0a5d977" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>operator~</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a9586ed548d0d91cf313f18de9eddc839" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>set1</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a72d8cb5fa2ae0e3874644d001230b47a" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1ad501e6759a873be7f51d721dbf750832" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5f85bb40bb63b4859e4406a598654ab9" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a276cfd14d990f4aa9416463572ef2252" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a2e869b6076d62aa8ae32e6a7dd9f1da0" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5df83210f3d5ed967475a1eb496eb90f" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1abfeea3a488f343fcecef404a96284978" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>simd16uint16_tpl</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1af153c76a4044cc3b3f2323ddef590a07" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>store</name></member>
+      <member refid="structfaiss_1_1simd16uint16__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4_1a5eb27158eaa10b10d8fbbae8ed1ea4fe" prot="public" virt="non-virtual"><scope>faiss::simd16uint16_tpl&lt; SIMDLevel::ARM_NEON &gt;</scope><name>storeu</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

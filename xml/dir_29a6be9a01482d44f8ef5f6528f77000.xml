@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_29a6be9a01482d44f8ef5f6528f77000" kind="dir">
+    <compoundname>faiss/impl/simdlib</compoundname>
+    <innerfile refid="simdlib_8h">simdlib.h</innerfile>
+    <innerfile refid="simdlib__avx2_8h">simdlib_avx2.h</innerfile>
+    <innerfile refid="simdlib__avx512_8h">simdlib_avx512.h</innerfile>
+    <innerfile refid="simdlib__dispatch_8h">simdlib_dispatch.h</innerfile>
+    <innerfile refid="simdlib__emulated_8h">simdlib_emulated.h</innerfile>
+    <innerfile refid="simdlib__neon_8h">simdlib_neon.h</innerfile>
+    <innerfile refid="simdlib__ppc64_8h">simdlib_ppc64.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/simdlib/"/>
+  </compounddef>
+</doxygen>

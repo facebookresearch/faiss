@@ -738,15 +738,15 @@
         </childnode>
         <childnode refid="108" relation="include">
         </childnode>
-        <childnode refid="98" relation="include">
-        </childnode>
         <childnode refid="138" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
         </childnode>
         <childnode refid="139" relation="include">
         </childnode>
-        <childnode refid="125" relation="include">
+        <childnode refid="140" relation="include">
         </childnode>
-        <childnode refid="141" relation="include">
+        <childnode refid="125" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -1059,6 +1059,10 @@
         <childnode refid="64" relation="include">
         </childnode>
       </node>
+      <node id="138">
+        <label>faiss/impl/simdlib/simdlib_neon.h</label>
+        <link refid="simdlib__neon_8h_source"/>
+      </node>
       <node id="62">
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
@@ -1133,18 +1137,18 @@
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="140">
+      <node id="141">
         <label>faiss/utils/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
       </node>
-      <node id="138">
+      <node id="139">
         <label>faiss/utils/approx_topk/avx2-inl.h</label>
         <link refid="approx__topk_2avx2-inl_8h_source"/>
       </node>
-      <node id="139">
+      <node id="140">
         <label>faiss/utils/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="140" relation="include">
+        <childnode refid="141" relation="include">
         </childnode>
       </node>
       <node id="137">
@@ -1182,10 +1186,6 @@
         <link refid="pq__code__distance_8h_source"/>
         <childnode refid="45" relation="include">
         </childnode>
-      </node>
-      <node id="141">
-        <label>faiss/utils/simdlib_neon.h</label>
-        <link refid="simdlib__neon_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>

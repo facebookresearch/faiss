@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="147" column="7" bodyfile="faiss/utils/simdlib_neon.h" bodystart="147" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="148" column="7" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1a1714576893bd9af3ef80b24f15c7057c" prot="public" static="no" mutable="no">
         <type>T</type>
@@ -37,7 +37,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="148" column="7" bodyfile="faiss/utils/simdlib_neon.h" bodystart="148" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="149" column="7" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="149" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -60,14 +60,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simdlib_neon.h" line="150" column="17" bodyfile="faiss/utils/simdlib_neon.h" bodystart="150" bodyend="154"/>
+        <location file="faiss/impl/simdlib/simdlib_neon.h" line="151" column="17" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="151" bodyend="155"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simdlib_neon.h" line="146" column="1" bodyfile="faiss/utils/simdlib_neon.h" bodystart="146" bodyend="155"/>
+    <location file="faiss/impl/simdlib/simdlib_neon.h" line="147" column="1" bodyfile="faiss/impl/simdlib/simdlib_neon.h" bodystart="147" bodyend="156"/>
     <listofallmembers>
       <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1ab16f359e65e60c8419ce65507aa2f3e2" prot="public" virt="non-virtual"><scope>faiss::detail::simdlib::set1_impl</scope><name>call</name></member>
       <member refid="structfaiss_1_1detail_1_1simdlib_1_1set1__impl_1af1a9398a5409c0cc3cfeaa1a4394db92" prot="public" virt="non-virtual"><scope>faiss::detail::simdlib::set1_impl</scope><name>d</name></member>

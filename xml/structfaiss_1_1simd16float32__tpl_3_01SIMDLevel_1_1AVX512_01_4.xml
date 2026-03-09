@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public" virt="non-virtual">faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</basecompoundref>
+    <includes refid="simdlib__avx512_8h" local="no">simdlib_avx512.h</includes>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ab4bf9c8a6a6fda26321405d80c269733" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</definition>
+        <argsstring>()</argsstring>
+        <name>simd16float32_tpl</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="327" column="5" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="327" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a92dafc22307fe3b207df0c07f09cba85" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</definition>
+        <argsstring>(__m512 f)</argsstring>
+        <name>simd16float32_tpl</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</qualifiedname>
+        <param>
+          <type>__m512</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="329" column="14" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="329" bodyend="330"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aebf6494394c71348816d9855d596aa31" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</definition>
+        <argsstring>(float x)</argsstring>
+        <name>simd16float32_tpl</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="332" column="14" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="332" bodyend="333"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1abb8580982762a4610d6e174662bec2eb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</definition>
+        <argsstring>(const float *x)</argsstring>
+        <name>simd16float32_tpl</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::simd16float32_tpl</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="335" column="14" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="335" bodyend="336"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1af94ef0ab5d7cc14377f4bcfe2ae985bb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="338" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="338" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a7458fc780bc251b4456447083f5988e6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::storeu</definition>
+        <argsstring>(float *ptr) const</argsstring>
+        <name>storeu</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::storeu</qualifiedname>
+        <param>
+          <type>float *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="342" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="342" bodyend="344"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a6c65536bfd888ec3847a20ff205d954b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::loadu</definition>
+        <argsstring>(const float *ptr)</argsstring>
+        <name>loadu</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::loadu</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="346" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="346" bodyend="348"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a17c32c7202fc3bb5b4ddd5c3bf0afddd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::store</definition>
+        <argsstring>(float *ptr) const</argsstring>
+        <name>store</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::store</qualifiedname>
+        <param>
+          <type>float *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="350" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="350" bodyend="352"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ae7d1aa275ed2c17e1c53d19b73fbd3ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref></type>
+        <definition>simd16float32_tpl faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator*</definition>
+        <argsstring>(const simd16float32_tpl &amp;other) const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="354" column="23" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="354" bodyend="356"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a36ee3a7d49db738aaa258335e2f700b2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref></type>
+        <definition>simd16float32_tpl faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator+</definition>
+        <argsstring>(const simd16float32_tpl &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="358" column="23" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="358" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a001931518fe98d618b41a3b2dae83500" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref></type>
+        <definition>simd16float32_tpl faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator-</definition>
+        <argsstring>(const simd16float32_tpl &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="362" column="23" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="362" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aaf071b7520eefdecb74a08dc310de041" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref> &amp;</type>
+        <definition>simd16float32_tpl &amp; faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator+=</definition>
+        <argsstring>(const simd16float32_tpl &amp;other)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="366" column="23" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="366" bodyend="369"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a22fed2c7dc655cc94d8bf79929d626ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::tostring</definition>
+        <argsstring>() const</argsstring>
+        <name>tostring</name>
+        <qualifiedname>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;::tostring</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="371" column="17" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="371" bodyend="381"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a06dc64e98e14d1f7c8f7272e764d9326" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::storeu</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>storeu</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::storeu</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="67" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="67" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a0c0d75717e91a377b46d3d09ba9503cc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::loadu</definition>
+        <argsstring>(const void *ptr)</argsstring>
+        <name>loadu</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::loadu</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="71" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a7101dbcef33d3bf29c65a928a5d5c359" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::store</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>store</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::store</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="75" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ab31960f55f6971136fa2fdc8f5b9d4f2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::bin</definition>
+        <argsstring>(char bits[513]) const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::bin</qualifiedname>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[513]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="79" column="10" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="79" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aba7006f33581a9452d08fe14033154ff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::bin</definition>
+        <argsstring>() const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::bin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="88" column="17" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="88" bodyend="92"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a6f8c37a15e0f751c5d99ae44d7bd19b4" prot="public" static="no" mutable="no">
+        <type>__m512i</type>
+        <definition>__m512i faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::i</definition>
+        <argsstring></argsstring>
+        <name>i</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::i</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="34" column="17" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ae5df7e00ee9210f6bb0b908b415c5dce" prot="public" static="no" mutable="no">
+        <type>__m512</type>
+        <definition>__m512 faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::f</definition>
+        <argsstring></argsstring>
+        <name>f</name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::f</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="35" column="16" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a35a926607ed6559f53ef0e59387b2846" prot="public" static="no" mutable="no">
+        <type>union <ref refid="structfaiss_1_1simd512bit__tpl" kindref="compound">faiss::simd512bit_tpl</ref>&lt; SIMDLevel::AVX512 &gt;</type>
+        <definition>union faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt; faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</definition>
+        <argsstring></argsstring>
+        <name></name>
+        <qualifiedname>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_avx512.h" line="36" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>vector of 16 32-bit floats </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</label>
+        <link refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>@3</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/simdlib/simdlib_avx512.h" line="325" column="1" bodyfile="faiss/impl/simdlib/simdlib_avx512.h" bodystart="326" bodyend="382"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ab31960f55f6971136fa2fdc8f5b9d4f2" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aba7006f33581a9452d08fe14033154ff" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1af94ef0ab5d7cc14377f4bcfe2ae985bb" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ae5df7e00ee9210f6bb0b908b415c5dce" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>f</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a6f8c37a15e0f751c5d99ae44d7bd19b4" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>i</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a6c65536bfd888ec3847a20ff205d954b" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>loadu</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a0c0d75717e91a377b46d3d09ba9503cc" prot="public" virt="non-virtual" ambiguityscope="faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>loadu</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ae7d1aa275ed2c17e1c53d19b73fbd3ac" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>operator*</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a36ee3a7d49db738aaa258335e2f700b2" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>operator+</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aaf071b7520eefdecb74a08dc310de041" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>operator+=</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a001931518fe98d618b41a3b2dae83500" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>operator-</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ab4bf9c8a6a6fda26321405d80c269733" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd16float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a92dafc22307fe3b207df0c07f09cba85" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd16float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1aebf6494394c71348816d9855d596aa31" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd16float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1abb8580982762a4610d6e174662bec2eb" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd16float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a7d63f1f83a56483dd9c42682bcc5c3f8" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a4f2801fe0d9e67cc1789f1b3828bb399" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a33d1b7d65e2befecac144108df52614d" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a754f71b1a1505f87385b432ed3afb100" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1ac4acad263593fbb6d815cd8e4231af19" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a440b703ea1f90334b1cb760445b7fbdd" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>simd512bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a17c32c7202fc3bb5b4ddd5c3bf0afddd" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>store</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a7101dbcef33d3bf29c65a928a5d5c359" prot="public" virt="non-virtual" ambiguityscope="faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>store</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a7458fc780bc251b4456447083f5988e6" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>storeu</name></member>
+      <member refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a06dc64e98e14d1f7c8f7272e764d9326" prot="public" virt="non-virtual" ambiguityscope="faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;::"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>storeu</name></member>
+      <member refid="structfaiss_1_1simd16float32__tpl_3_01SIMDLevel_1_1AVX512_01_4_1a22fed2c7dc655cc94d8bf79929d626ab" prot="public" virt="non-virtual"><scope>faiss::simd16float32_tpl&lt; SIMDLevel::AVX512 &gt;</scope><name>tostring</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

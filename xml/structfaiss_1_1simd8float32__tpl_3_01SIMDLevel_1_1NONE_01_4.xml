@@ -1,0 +1,997 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</compoundname>
+    <basecompoundref refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</basecompoundref>
+    <basecompoundref refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public" virt="non-virtual">faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</basecompoundref>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8eb67e0e24dcf95a7e22ac557a7fd2ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>()</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="767" column="5" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="767" bodyend="767"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a01740f2b5c717771a9d7ab0fabccd3e9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(const simd256bit_tpl&lt; SIMDLevel::NONE &gt; &amp;x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">simd256bit_tpl</ref>&lt; SIMDLevel::NONE &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="769" column="14" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="769" bodyend="770"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aeaf88bea52789a5f3ae52d3392dabcb5" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(float x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="772" column="14" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="772" bodyend="774"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1af3f63ed7af81194515f5f35715268030" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(const float *x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="776" column="14" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="776" bodyend="778"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a55175d734e00ad9099a30533c63fa9d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::set1</definition>
+        <argsstring>(float x)</argsstring>
+        <name>set1</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::set1</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="780" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="780" bodyend="784"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac05ebb8f22d2d3affe923935f40b4d87" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(float f0, float f1, float f2, float f3, float f4, float f5, float f6, float f7)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>f0</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f1</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f2</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f3</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f4</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f5</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f6</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f7</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="786" column="14" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="786" bodyend="803"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a7e59afa411a55e28090e85a9cd9c7c84" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator*</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="817" column="22" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="817" bodyend="820"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1843c7c73f0e42ec3c24d2da2e0fb953" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="822" column="22" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="822" bodyend="825"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a66e35507c40ccbabcb81eade33920830" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator-</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="827" column="22" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="827" bodyend="830"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1abba505133af9fefb97cb30b33d36c113" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+        <definition>simd8float32_tpl &amp; faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+=</definition>
+        <argsstring>(const simd8float32_tpl &amp;other)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="832" column="22" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="832" bodyend="838"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aec6077489ced168f3cfaa6c9e01737e2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator==</definition>
+        <argsstring>(simd8float32_tpl other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator==</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="840" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="840" bodyend="848"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a37832f9d3d9e89f3cb5dbb71ff7699af" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator!=</definition>
+        <argsstring>(simd8float32_tpl other) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator!=</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="850" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="850" bodyend="852"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9c9242890e53c925e8b2f17d92cac4d1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::tostring</definition>
+        <argsstring>() const</argsstring>
+        <name>tostring</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::tostring</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="854" column="17" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="854" bodyend="862"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8eb67e0e24dcf95a7e22ac557a7fd2ea" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>()</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="806" column="5" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="806" bodyend="806"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a01740f2b5c717771a9d7ab0fabccd3e9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(const simd256bit_tpl&lt; SIMDLevel::NONE &gt; &amp;x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">simd256bit_tpl</ref>&lt; SIMDLevel::NONE &gt; &amp;</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="808" column="14" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="808" bodyend="809"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aeaf88bea52789a5f3ae52d3392dabcb5" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(float x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="811" column="14" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="811" bodyend="813"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1af3f63ed7af81194515f5f35715268030" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(const float *x)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="815" column="14" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="815" bodyend="817"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a55175d734e00ad9099a30533c63fa9d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::set1</definition>
+        <argsstring>(float x)</argsstring>
+        <name>set1</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::set1</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="819" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="819" bodyend="823"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac05ebb8f22d2d3affe923935f40b4d87" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</definition>
+        <argsstring>(float f0, float f1, float f2, float f3, float f4, float f5, float f6, float f7)</argsstring>
+        <name>simd8float32_tpl</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::simd8float32_tpl</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>f0</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f1</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f2</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f3</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f4</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f5</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f6</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>f7</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="825" column="14" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="825" bodyend="842"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a7e59afa411a55e28090e85a9cd9c7c84" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator*</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="856" column="22" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="856" bodyend="859"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1843c7c73f0e42ec3c24d2da2e0fb953" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="861" column="22" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="861" bodyend="864"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a66e35507c40ccbabcb81eade33920830" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator-</definition>
+        <argsstring>(const simd8float32_tpl &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="866" column="22" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="866" bodyend="869"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1abba505133af9fefb97cb30b33d36c113" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+        <definition>simd8float32_tpl &amp; faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+=</definition>
+        <argsstring>(const simd8float32_tpl &amp;other)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="871" column="22" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="871" bodyend="877"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aec6077489ced168f3cfaa6c9e01737e2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator==</definition>
+        <argsstring>(simd8float32_tpl other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator==</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="879" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="879" bodyend="887"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a37832f9d3d9e89f3cb5dbb71ff7699af" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator!=</definition>
+        <argsstring>(simd8float32_tpl other) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::operator!=</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="889" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="889" bodyend="891"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9c9242890e53c925e8b2f17d92cac4d1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::tostring</definition>
+        <argsstring>() const</argsstring>
+        <name>tostring</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::tostring</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="893" column="17" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="893" bodyend="901"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1adfae5e32d595d1f5690899bcced6b111" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="34" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1adfae5e32d595d1f5690899bcced6b111" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="34" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1af108bf14705b5377b2e5bd127383f56c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::storeu</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>storeu</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::storeu</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="38" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1af108bf14705b5377b2e5bd127383f56c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::storeu</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>storeu</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::storeu</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="38" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ae13e789026097559a562a64398198661" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::loadu</definition>
+        <argsstring>(const void *ptr)</argsstring>
+        <name>loadu</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::loadu</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="42" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="42" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ae13e789026097559a562a64398198661" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::loadu</definition>
+        <argsstring>(const void *ptr)</argsstring>
+        <name>loadu</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::loadu</qualifiedname>
+        <param>
+          <type>const void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="42" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="42" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9d9676c9a1e0222a67473bd27866f1db" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::store</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>store</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::store</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="46" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="46" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9d9676c9a1e0222a67473bd27866f1db" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::store</definition>
+        <argsstring>(void *ptr) const</argsstring>
+        <name>store</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::store</qualifiedname>
+        <param>
+          <type>void *</type>
+          <declname>ptr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="46" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="46" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1aac4168c085a26bad806e32976553d3a3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</definition>
+        <argsstring>(char bits[257]) const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</qualifiedname>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[257]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="50" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="50" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a4f83ce9b8a5b6e7e23a3beace9b8e740" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</definition>
+        <argsstring>() const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="58" column="17" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="58" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1aac4168c085a26bad806e32976553d3a3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</definition>
+        <argsstring>(char bits[257]) const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</qualifiedname>
+        <param>
+          <type>char</type>
+          <declname>bits</declname>
+          <array>[257]</array>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="50" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="50" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a4f83ce9b8a5b6e7e23a3beace9b8e740" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</definition>
+        <argsstring>() const</argsstring>
+        <name>bin</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::bin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="58" column="17" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="58" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a5c448dec098c2594cf0cb65708e5be00" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::is_same_as</definition>
+        <argsstring>(simd256bit_tpl other) const</argsstring>
+        <name>is_same_as</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::is_same_as</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">simd256bit_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="65" column="10" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="65" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a5c448dec098c2594cf0cb65708e5be00" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::is_same_as</definition>
+        <argsstring>(simd256bit_tpl other) const</argsstring>
+        <name>is_same_as</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::is_same_as</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">simd256bit_tpl</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="65" column="10" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="65" bodyend="73"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a338d5dd1d48f8bf4b71232f51e6dba59" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>static simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::binary_func</definition>
+        <argsstring>(const simd8float32_tpl &amp;a, const simd8float32_tpl &amp;b, F &amp;&amp;f)</argsstring>
+        <name>binary_func</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::binary_func</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="806" column="29" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="806" bodyend="815"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a338d5dd1d48f8bf4b71232f51e6dba59" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref></type>
+        <definition>static simd8float32_tpl faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::binary_func</definition>
+        <argsstring>(const simd8float32_tpl &amp;a, const simd8float32_tpl &amp;b, F &amp;&amp;f)</argsstring>
+        <name>binary_func</name>
+        <qualifiedname>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;::binary_func</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref> &amp;</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="845" column="29" bodyfile="faiss/impl/simdlib/simdlib_ppc64.h" bodystart="845" bodyend="854"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a84ea5df01b56493ac6874c4b1ba28ac6" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u8[32]</definition>
+        <argsstring>[32]</argsstring>
+        <name>u8</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u8</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="22" column="17" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8711a4c3865ec6ea0f59618aeff4675f" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u16[16]</definition>
+        <argsstring>[16]</argsstring>
+        <name>u16</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u16</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="23" column="18" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1afb82b4996354ca27fe73f0c3fc2dca18" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u32[8]</definition>
+        <argsstring>[8]</argsstring>
+        <name>u32</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::u32</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="24" column="18" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ad70e4a5b7745cb60ca47a4af96183eaf" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::f32[8]</definition>
+        <argsstring>[8]</argsstring>
+        <name>f32</name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;::f32</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="25" column="15" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac4da2c8772b770d059de8d300ea2cdc1" prot="public" static="no" mutable="no">
+        <type>union <ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">faiss::simd256bit_tpl</ref>&lt; SIMDLevel::NONE &gt;</type>
+        <definition>union faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt; faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring></argsstring>
+        <name></name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_emulated.h" line="26" column="5"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9e26613f0973e1dc13c0b805336b8270" prot="public" static="no" mutable="no">
+        <type>union <ref refid="structfaiss_1_1simd256bit__tpl" kindref="compound">faiss::simd256bit_tpl</ref>&lt; SIMDLevel::NONE &gt;</type>
+        <definition>union faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt; faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring></argsstring>
+        <name></name>
+        <qualifiedname>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/simdlib/simdlib_ppc64.h" line="26" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4"/>
+      </node>
+      <node id="1">
+        <label>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>faiss::simd256bit_tpl&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>@5</edgelabel>
+          <edgelabel>@7</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</label>
+        <link refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/simdlib/simdlib_emulated.h" line="766" column="1" bodyfile="faiss/impl/simdlib/simdlib_emulated.h" bodystart="766" bodyend="863"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1aac4168c085a26bad806e32976553d3a3" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a4f83ce9b8a5b6e7e23a3beace9b8e740" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1aac4168c085a26bad806e32976553d3a3" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a4f83ce9b8a5b6e7e23a3beace9b8e740" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>bin</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a338d5dd1d48f8bf4b71232f51e6dba59" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>binary_func</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a338d5dd1d48f8bf4b71232f51e6dba59" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>binary_func</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1adfae5e32d595d1f5690899bcced6b111" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1adfae5e32d595d1f5690899bcced6b111" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>clear</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ad70e4a5b7745cb60ca47a4af96183eaf" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>f32</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a5c448dec098c2594cf0cb65708e5be00" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>is_same_as</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a5c448dec098c2594cf0cb65708e5be00" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>is_same_as</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ae13e789026097559a562a64398198661" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>loadu</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ae13e789026097559a562a64398198661" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>loadu</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a37832f9d3d9e89f3cb5dbb71ff7699af" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator!=</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a37832f9d3d9e89f3cb5dbb71ff7699af" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator!=</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a7e59afa411a55e28090e85a9cd9c7c84" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator*</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a7e59afa411a55e28090e85a9cd9c7c84" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator*</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1843c7c73f0e42ec3c24d2da2e0fb953" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator+</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1843c7c73f0e42ec3c24d2da2e0fb953" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator+</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1abba505133af9fefb97cb30b33d36c113" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator+=</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1abba505133af9fefb97cb30b33d36c113" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator+=</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a66e35507c40ccbabcb81eade33920830" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator-</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a66e35507c40ccbabcb81eade33920830" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator-</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aec6077489ced168f3cfaa6c9e01737e2" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator==</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aec6077489ced168f3cfaa6c9e01737e2" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>operator==</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a55175d734e00ad9099a30533c63fa9d1" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>set1</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a55175d734e00ad9099a30533c63fa9d1" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>set1</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1c84f89c6e12f0cdca102298cfa88d5e" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd256bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ad4c986f836e36712ddfc78085f23f864" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd256bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a1c84f89c6e12f0cdca102298cfa88d5e" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd256bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ad4c986f836e36712ddfc78085f23f864" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd256bit_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8eb67e0e24dcf95a7e22ac557a7fd2ea" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a01740f2b5c717771a9d7ab0fabccd3e9" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aeaf88bea52789a5f3ae52d3392dabcb5" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1af3f63ed7af81194515f5f35715268030" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac05ebb8f22d2d3affe923935f40b4d87" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8eb67e0e24dcf95a7e22ac557a7fd2ea" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a01740f2b5c717771a9d7ab0fabccd3e9" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1aeaf88bea52789a5f3ae52d3392dabcb5" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1af3f63ed7af81194515f5f35715268030" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac05ebb8f22d2d3affe923935f40b4d87" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>simd8float32_tpl</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9d9676c9a1e0222a67473bd27866f1db" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>store</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9d9676c9a1e0222a67473bd27866f1db" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>store</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1af108bf14705b5377b2e5bd127383f56c" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>storeu</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1af108bf14705b5377b2e5bd127383f56c" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>storeu</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9c9242890e53c925e8b2f17d92cac4d1" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>tostring</name></member>
+      <member refid="structfaiss_1_1simd8float32__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9c9242890e53c925e8b2f17d92cac4d1" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>tostring</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a8711a4c3865ec6ea0f59618aeff4675f" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>u16</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1afb82b4996354ca27fe73f0c3fc2dca18" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>u32</name></member>
+      <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a84ea5df01b56493ac6874c4b1ba28ac6" prot="public" virt="non-virtual"><scope>faiss::simd8float32_tpl&lt; SIMDLevel::NONE &gt;</scope><name>u8</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

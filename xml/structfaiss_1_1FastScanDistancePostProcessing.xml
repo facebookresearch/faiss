@@ -127,19 +127,15 @@
         <label>faiss::rabitq_utils::QueryFactorsData</label>
         <link refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData"/>
       </node>
-      <node id="3">
-        <label>faiss::simd16uint16</label>
-        <link refid="structfaiss_1_1simd16uint16"/>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-        <childnode refid="4" relation="public-inheritance">
-        </childnode>
-      </node>
       <node id="4">
-        <label>faiss::simd256bit</label>
-        <link refid="structfaiss_1_1simd256bit"/>
+        <label>faiss::simd256bit_tpl&lt; SL &gt;</label>
+        <link refid="structfaiss_1_1simd256bit__tpl"/>
+      </node>
+      <node id="3">
+        <label>faiss::simd16uint16_tpl&lt; SINGLE_SIMD_LEVEL_256 &gt;</label>
+        <link refid="structfaiss_1_1simd16uint16__tpl"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
       </node>
     </collaborationgraph>
     <location file="faiss/impl/FastScanDistancePostProcessing.h" line="24" column="1" bodyfile="faiss/impl/FastScanDistancePostProcessing.h" bodystart="24" bodyend="51"/>

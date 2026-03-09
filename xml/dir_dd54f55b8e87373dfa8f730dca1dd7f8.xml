@@ -4,6 +4,7 @@
     <compoundname>faiss/impl</compoundname>
     <innerdir refid="dir_c049bba3e09b3fcad22939d16e82a552">faiss/impl/pq_code_distance</innerdir>
     <innerdir refid="dir_49d07059965bd48f84542aba965b16d6">faiss/impl/scalar_quantizer</innerdir>
+    <innerdir refid="dir_29a6be9a01482d44f8ef5f6528f77000">faiss/impl/simdlib</innerdir>
     <innerfile refid="AdditiveQuantizer_8h">AdditiveQuantizer.h</innerfile>
     <innerfile refid="AuxIndexStructures_8h">AuxIndexStructures.h</innerfile>
     <innerfile refid="ClusteringInitialization_8h">ClusteringInitialization.h</innerfile>

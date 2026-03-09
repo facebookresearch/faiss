@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1simd256__level__selector" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::simd256_level_selector</compoundname>
+    <templateparamlist>
+      <param>
+        <type>SIMDLevel</type>
+        <declname>SL</declname>
+        <defname>SL</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1simd256__level__selector_1a0442d683eb47751eaf1ddd5a57a171f1" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::simd256_level_selector&lt; SL &gt;::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>faiss::simd256_level_selector::value</qualifiedname>
+        <initializer>=
+            (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
+            ? SIMDLevel::AVX2
+            : (SL == SIMDLevel::ARM_SVE ? SIMDLevel::ARM_NEON : SL)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="77" column="32" bodyfile="faiss/utils/simd_levels.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/utils/simd_levels.h" line="76" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="76" bodyend="81"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1simd256__level__selector_1a0442d683eb47751eaf1ddd5a57a171f1" prot="public" virt="non-virtual"><scope>faiss::simd256_level_selector</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
