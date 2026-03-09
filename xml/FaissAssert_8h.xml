@@ -30,6 +30,7 @@
     <includedby refid="approx__topk_2avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
     <includedby refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includedby>
     <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
+    <includedby refid="distances__simdlib256_8h" local="no">faiss/utils/simd_impl/distances_simdlib256.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/impl/FaissAssert.h</label>
@@ -811,6 +812,8 @@
         </childnode>
         <childnode refid="124" relation="include">
         </childnode>
+        <childnode refid="141" relation="include">
+        </childnode>
       </node>
       <node id="85">
         <label>faiss/impl/HNSW.h</label>
@@ -1241,6 +1244,10 @@
         <link refid="pq__code__distance_8h_source"/>
         <childnode refid="44" relation="include">
         </childnode>
+      </node>
+      <node id="141">
+        <label>faiss/utils/simd_impl/distances_simdlib256.h</label>
+        <link refid="distances__simdlib256_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

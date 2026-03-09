@@ -356,8 +356,25 @@
 <codeline lineno="135" refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kindref="member">with_simd_level</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>DISPATCH_SIMDLevel(action.template<sp/></highlight><highlight class="keyword">operator</highlight><highlight class="normal">());</highlight></codeline>
 <codeline lineno="137"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="138"><highlight class="normal"></highlight></codeline>
-<codeline lineno="139"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="139"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/>*<sp/>Like<sp/>with_simd_level,<sp/>but<sp/>maps<sp/>to<sp/>the<sp/>256-bit<sp/>SIMD<sp/>equivalent:</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*<sp/><sp/><sp/>AVX512,<sp/>AVX512_SPR<sp/>-&gt;<sp/>AVX2</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/>*<sp/><sp/><sp/>ARM_SVE<sp/>-&gt;<sp/>ARM_NEON</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/>*<sp/><sp/><sp/>AVX2,<sp/>ARM_NEON,<sp/>NONE<sp/>-&gt;<sp/>unchanged</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/>*<sp/>Use<sp/>for<sp/>functions<sp/>implemented<sp/>with<sp/>simd8float32<sp/>(256-bit)<sp/>operations</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/>*<sp/>that<sp/>don&apos;t<sp/>have<sp/>dedicated<sp/>AVX512<sp/>or<sp/>SVE<sp/>implementations.</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>LambdaType&gt;</highlight></codeline>
+<codeline lineno="149" refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kindref="member">with_simd_level_256bit</ref>(LambdaType&amp;&amp;<sp/>action)<sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kindref="member">with_simd_level</ref>([&amp;]&lt;SIMDLevel<sp/>level&gt;()<sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>level256<sp/>=<sp/><ref refid="structfaiss_1_1simd256__level__selector" kindref="compound">simd256_level_selector&lt;level&gt;::value</ref>;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>action.template<sp/>operator()&lt;level256&gt;();</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="154"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/simd_dispatch.h"/>
   </compounddef>

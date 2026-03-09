@@ -748,6 +748,8 @@
         </childnode>
         <childnode refid="125" relation="include">
         </childnode>
+        <childnode refid="142" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/impl/FaissException.h</label>
@@ -1186,6 +1188,10 @@
         <link refid="pq__code__distance_8h_source"/>
         <childnode refid="45" relation="include">
         </childnode>
+      </node>
+      <node id="142">
+        <label>faiss/utils/simd_impl/distances_simdlib256.h</label>
+        <link refid="distances__simdlib256_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
