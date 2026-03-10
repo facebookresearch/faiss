@@ -12,7 +12,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/distances_dispatch.h>
+#include <faiss/utils/distances.h>
 
 #include <cstring>
 
@@ -24,12 +24,20 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
+void Index::train(
+        idx_t /*n*/,
+        const float* /*x*/,
+        idx_t /*n_train_q*/,
+        const float* /*xq_train*/) {
+    // does nothing by default
+}
+
 void Index::range_search(
         idx_t,
         const float*,
         float,
         RangeSearchResult*,
-        const SearchParameters* params) const {
+        const SearchParameters* /*params*/) const {
     FAISS_THROW_MSG("range search not implemented");
 }
 
@@ -105,13 +113,13 @@ void Index::search_and_reconstruct(
 }
 
 void Index::search_subset(
-        idx_t n,
-        const float* x,
-        idx_t k_base,
-        const idx_t* base_labels,
-        idx_t k,
-        float* distances,
-        idx_t* labels) const {
+        idx_t /*n*/,
+        const float* /*x*/,
+        idx_t /*k_base*/,
+        const idx_t* /*base_labels*/,
+        idx_t /*k*/,
+        float* /*distances*/,
+        idx_t* /*labels*/) const {
     FAISS_THROW_MSG("search_subset not implemented for this type of index");
 }
 
@@ -169,13 +177,13 @@ struct GenericDistanceComputer : DistanceComputer {
 
     float operator()(idx_t i) override {
         storage.reconstruct(i, buf.data());
-        return fvec_L2sqr_dispatch(q, buf.data(), d);
+        return fvec_L2sqr(q, buf.data(), d);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
         storage.reconstruct(i, buf.data());
         storage.reconstruct(j, buf.data() + d);
-        return fvec_L2sqr_dispatch(buf.data() + d, buf.data(), d);
+        return fvec_L2sqr(buf.data() + d, buf.data(), d);
     }
 
     void set_query(const float* x) override {

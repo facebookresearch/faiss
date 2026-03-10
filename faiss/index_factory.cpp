@@ -220,6 +220,9 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     if (match("RR([0-9]+)?")) {
         return new RandomRotationMatrix(d, mres_to_int(sm[1], d));
     }
+    if (match("HR([0-9]+)?")) {
+        return new HadamardRotation(d, mres_to_int(sm[1], 12345));
+    }
     if (match("ITQ([0-9]+)?")) {
         return new ITQTransform(d, mres_to_int(sm[1], d), sm[1].length() > 0);
     }

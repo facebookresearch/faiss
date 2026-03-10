@@ -18,8 +18,8 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/utils/approx_topk/approx_topk.h>
@@ -685,22 +685,24 @@ void LocalSearchQuantizer::perturb_codes(
 void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
     LSQTimerScope scope(&lsq_timer, "compute_binary_terms");
 
+    with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-    for (int64_t m12 = 0; m12 < M * M; m12++) {
-        size_t m1 = m12 / M;
-        size_t m2 = m12 % M;
+        for (int64_t m12 = 0; m12 < M * M; m12++) {
+            size_t m1 = m12 / M;
+            size_t m2 = m12 % M;
 
-        for (size_t code1 = 0; code1 < K; code1++) {
-            for (size_t code2 = 0; code2 < K; code2++) {
-                const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
-                const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
-                float ip = fvec_inner_product_dispatch(c1, c2, d);
-                // binaries[m1, m2, code1, code2] = ip * 2
-                binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
-                        ip * 2;
+            for (size_t code1 = 0; code1 < K; code1++) {
+                for (size_t code2 = 0; code2 < K; code2++) {
+                    const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
+                    const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
+                    float ip = fvec_inner_product<SL>(c1, c2, d);
+                    // binaries[m1, m2, code1, code2] = ip * 2
+                    binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
+                            ip * 2;
+                }
             }
         }
-    }
+    });
 }
 
 void LocalSearchQuantizer::compute_unary_terms(
@@ -761,23 +763,27 @@ float LocalSearchQuantizer::evaluate(
     std::vector<float> decoded_x(n * d, 0.0f);
     float obj = 0.0f;
 
-#pragma omp parallel for reduction(+ : obj)
-    for (int64_t i = 0; i < n; i++) {
-        const auto code = codes + i * M;
-        const auto decoded_i = decoded_x.data() + i * d;
-        for (size_t m = 0; m < M; m++) {
-            // c = codebooks[m, code[m]]
-            const auto c = codebooks.data() + m * K * d + code[m] * d;
-            fvec_add(d, decoded_i, c, decoded_i);
-        }
+    with_simd_level([&]<SIMDLevel SL>() {
+        float local_obj = 0.0f;
+#pragma omp parallel for reduction(+ : local_obj)
+        for (int64_t i = 0; i < n; i++) {
+            const auto code = codes + i * M;
+            const auto decoded_i = decoded_x.data() + i * d;
+            for (size_t m = 0; m < M; m++) {
+                // c = codebooks[m, code[m]]
+                const auto c = codebooks.data() + m * K * d + code[m] * d;
+                fvec_add(d, decoded_i, c, decoded_i);
+            }
 
-        float err = faiss::fvec_L2sqr_dispatch(x + i * d, decoded_i, d);
-        obj += err;
+            float err = fvec_L2sqr<SL>(x + i * d, decoded_i, d);
+            local_obj += err;
 
-        if (objs) {
-            objs[i] = err;
+            if (objs) {
+                objs[i] = err;
+            }
         }
-    }
+        obj = local_obj;
+    });
 
     obj = obj / n;
     return obj;

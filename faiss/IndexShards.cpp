@@ -22,7 +22,7 @@ namespace {
 
 // IndexBinary needs to update the code_size when d is set...
 
-void sync_d(Index* index) {}
+void sync_d(Index* /*index*/) {}
 
 void sync_d(IndexBinary* index) {
     FAISS_THROW_IF_NOT(index->d % 8 == 0);
@@ -71,13 +71,12 @@ IndexShardsTemplate<IndexT>::IndexShardsTemplate(
 }
 
 template <typename IndexT>
-void IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* index /* unused */) {
+void IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* /*index*/) {
     syncWithSubIndexes();
 }
 
 template <typename IndexT>
-void IndexShardsTemplate<IndexT>::onAfterRemoveIndex(
-        IndexT* index /* unused */) {
+void IndexShardsTemplate<IndexT>::onAfterRemoveIndex(IndexT* /*index*/) {
     syncWithSubIndexes();
 }
 

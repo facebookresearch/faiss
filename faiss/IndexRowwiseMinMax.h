@@ -43,7 +43,7 @@ struct IndexRowwiseMinMaxBase : Index {
     Index* index;
 
     /// whether the subindex needs to be freed in the destructor.
-    bool own_fields;
+    bool own_fields = false;
 
     explicit IndexRowwiseMinMaxBase(Index* index);
 

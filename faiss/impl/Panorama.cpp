@@ -11,6 +11,8 @@
 #include <cmath>
 #include <cstring>
 
+#include <faiss/impl/FaissAssert.h>
+
 namespace faiss {
 
 namespace {
@@ -58,6 +60,7 @@ Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
 }
 
 void Panorama::set_derived_values() {
+    FAISS_THROW_IF_NOT_MSG(n_levels > 0, "Panorama: n_levels must be > 0");
     this->d = code_size / sizeof(float);
     this->level_width_floats = ((d + n_levels - 1) / n_levels);
     this->level_width = this->level_width_floats * sizeof(float);

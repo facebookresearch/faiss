@@ -18,7 +18,6 @@
 #include <faiss/IndexPQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/distances.h>
-#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
 
@@ -351,6 +350,126 @@ void RandomRotationMatrix::init(int seed) {
 void RandomRotationMatrix::train(idx_t /*n*/, const float* /*x*/) {
     // initialize with some arbitrary seed
     init(12345);
+}
+
+/*********************************************
+ * HadamardRotation
+ *********************************************/
+
+// In-place Fast Walsh-Hadamard Transform. n must be a power of 2.
+// Applies the unnormalized Hadamard butterfly: O(n log n) add/sub, no
+// multiplies.
+static void fwht_inplace(float* buf, size_t n) {
+    for (size_t step = 1; step < n; step *= 2) {
+        for (size_t i = 0; i < n; i += step * 2) {
+            for (size_t j = i; j < i + step; j++) {
+                float a = buf[j];
+                float b = buf[j + step];
+                buf[j] = a + b;
+                buf[j + step] = a - b;
+            }
+        }
+    }
+}
+
+// Smallest power of 2 >= n.
+static int next_power_of_2(int n) {
+    int p = 1;
+    while (p < n) {
+        p *= 2;
+    }
+    return p;
+}
+
+// Generate three sign-flip vectors from the given seed.
+static void generate_signs(
+        uint32_t seed,
+        size_t p,
+        std::vector<float>& s1,
+        std::vector<float>& s2,
+        std::vector<float>& s3) {
+    FAISS_THROW_IF_NOT(p > 0);
+    SplitMix64RandomGenerator rng(seed);
+    s1.resize(p);
+    s2.resize(p);
+    s3.resize(p);
+    for (size_t j = 0; j < p; j++) {
+        s1[j] = (rng.rand_int(2) == 0) ? -1.0f : 1.0f;
+    }
+    for (size_t j = 0; j < p; j++) {
+        s2[j] = (rng.rand_int(2) == 0) ? -1.0f : 1.0f;
+    }
+    for (size_t j = 0; j < p; j++) {
+        s3[j] = (rng.rand_int(2) == 0) ? -1.0f : 1.0f;
+    }
+}
+
+HadamardRotation::HadamardRotation(int d, uint32_t seed_in)
+        : VectorTransform(d, next_power_of_2(d)), seed(seed_in) {
+    init(seed_in);
+}
+
+void HadamardRotation::init(uint32_t seed_in) {
+    seed = seed_in;
+    is_trained = true;
+    generate_signs(seed, d_out, signs1, signs2, signs3);
+}
+
+void HadamardRotation::train(idx_t, const float*) {
+    init(seed != 0 ? seed : 12345);
+}
+
+void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "Transformation not trained yet");
+
+    size_t d = d_in;
+    size_t p = d_out;
+    FAISS_THROW_IF_NOT(signs1.size() == p);
+    FAISS_THROW_IF_NOT(signs2.size() == p);
+    FAISS_THROW_IF_NOT(signs3.size() == p);
+
+    // Each unnormalized FWHT scales norms by sqrt(p).
+    // Three rounds scale by p^(3/2). Normalize once at the end.
+    float total_scale = 1.0f / (p * std::sqrt(static_cast<float>(p)));
+
+#pragma omp parallel for schedule(dynamic)
+    for (idx_t i = 0; i < n; i++) {
+        const float* xi = x + i * d;
+        float* xo = xt + i * p;
+
+        // Round 1: copy + zero-pad + sign-flip + FWHT
+        for (size_t j = 0; j < d; j++) {
+            xo[j] = xi[j] * signs1[j];
+        }
+        for (size_t j = d; j < p; j++) {
+            xo[j] = 0.0f;
+        }
+        fwht_inplace(xo, p);
+
+        // Round 2: sign-flip + FWHT
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs2[j];
+        }
+        fwht_inplace(xo, p);
+
+        // Round 3: sign-flip + FWHT + normalize
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= signs3[j];
+        }
+        fwht_inplace(xo, p);
+
+        for (size_t j = 0; j < p; j++) {
+            xo[j] *= total_scale;
+        }
+    }
+}
+
+void HadamardRotation::check_identical(const VectorTransform& other) const {
+    auto* hr = dynamic_cast<const HadamardRotation*>(&other);
+    FAISS_THROW_IF_NOT(hr);
+    FAISS_THROW_IF_NOT(d_in == hr->d_in);
+    FAISS_THROW_IF_NOT(d_out == hr->d_out);
+    FAISS_THROW_IF_NOT(seed == hr->seed);
 }
 
 /*********************************************
@@ -1106,8 +1225,7 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
         }
         pq_regular.decode(codes.data(), pq_recons.data(), n);
 
-        float pq_err =
-                fvec_L2sqr_dispatch(pq_recons.data(), xproj.data(), n * d2) / n;
+        float pq_err = fvec_L2sqr(pq_recons.data(), xproj.data(), n * d2) / n;
 
         if (verbose)
             printf("    Iteration %d (%d PQ iterations):"
