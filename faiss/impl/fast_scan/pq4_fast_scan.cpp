@@ -6,8 +6,8 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 #include <array>
 
