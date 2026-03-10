@@ -14,11 +14,11 @@
 
 #include <faiss/impl/CodePackerRaBitQ.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
@@ -938,7 +938,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                 codes,
                 LUT,
                 *handler,
-                nullptr,
+                0,
                 index.get_block_stride());
 
         // Combine results across iterations

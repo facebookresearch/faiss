@@ -13,12 +13,11 @@
 
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/IDSelector.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/RaBitQUtils.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
 #include <faiss/utils/utils.h>
@@ -187,7 +186,7 @@ void estimators_from_tables_generic(
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = 0;
         const dis_t* dt = dis_table;
-        int nscale = context.norm_scaler ? context.norm_scaler->nscale : 0;
+        int nscale = context.pq2x4_scale ? 2 : 0;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
@@ -195,10 +194,10 @@ void estimators_from_tables_generic(
             dt += index.ksub;
         }
 
-        if (nscale && context.norm_scaler) {
+        if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
                 uint64_t c = bsr.read(index.nbits);
-                dis += context.norm_scaler->scale_one(dt[c]);
+                dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
         }
@@ -545,7 +544,7 @@ void IndexFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 *handler.get(),
-                context.norm_scaler,
+                context.pq2x4_scale,
                 get_block_stride());
     }
     if (!(skip & 8)) {
@@ -629,7 +628,7 @@ void IndexFastScan::search_implem_14(
                 codes.get(),
                 LUT.get(),
                 *handler.get(),
-                context.norm_scaler,
+                context.pq2x4_scale,
                 get_block_stride());
     }
     if (!(skip & 8)) {

@@ -15,7 +15,7 @@
 #include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
 
