@@ -7,10 +7,10 @@
 
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/impl/CodePackerRaBitQ.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
 #include <cmath>
