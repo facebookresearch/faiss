@@ -9,16 +9,19 @@
 # Architecture-specific: only include files for the current build architecture
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
+  impl/fast_scan/impl-avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
+  impl/fast_scan/impl-avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
+  impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   utils/simd_impl/distances_aarch64.cpp
 )
@@ -262,6 +265,7 @@ set(FAISS_HEADERS
   impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
+  impl/fast_scan/dispatching.h
   impl/fast_scan/pq4_fast_scan.h
   impl/fast_scan/decompose_qbs.h
   impl/fast_scan/kernels_simd256.h
