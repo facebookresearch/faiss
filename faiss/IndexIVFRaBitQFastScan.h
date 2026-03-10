@@ -159,18 +159,6 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             int impl = 0,
             const FastScanDistancePostProcessing& context = {}) const override;
 
-    /// Override to create RaBitQ-specific handlers
-    SIMDResultHandlerToFloat* make_knn_handler(
-            bool is_max,
-            int /* impl */,
-            idx_t n,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const IDSelector* sel,
-            const FastScanDistancePostProcessing& context,
-            const float* normalizers = nullptr) const override;
-
     /// Get an InvertedListScanner for single-query scanning.
     /// This provides compatibility with the standard IVF search interface
     InvertedListScanner* get_InvertedListScanner(

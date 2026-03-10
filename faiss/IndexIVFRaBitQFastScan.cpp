@@ -18,7 +18,6 @@
 #include <faiss/impl/RaBitQuantizerMultiBit.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/pq4_fast_scan.h>
-#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
@@ -551,29 +550,6 @@ std::unique_ptr<FastScanCodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
     const bool is_multibit = (rabitq.nb_bits - 1) > 0;
     return rabitq_ivf_make_knn_scanner(
             is_max, this, n, k, distances, labels, &context, is_multibit);
-}
-
-// Implementation of virtual make_knn_handler method
-SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
-        bool is_max,
-        int /* impl */,
-        idx_t n,
-        idx_t k,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* /* sel */,
-        const FastScanDistancePostProcessing& context,
-        const float* /* normalizers */) const {
-    const size_t ex_bits = rabitq.nb_bits - 1;
-    const bool is_multibit = ex_bits > 0;
-
-    if (is_max) {
-        return new IVFRaBitQHeapHandler<CMax<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    } else {
-        return new IVFRaBitQHeapHandler<CMin<uint16_t, int64_t>>(
-                this, n, k, distances, labels, &context, is_multibit);
-    }
 }
 
 /*********************************************************

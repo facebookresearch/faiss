@@ -28,8 +28,6 @@
 
 namespace faiss {
 
-using namespace simd_result_handlers;
-
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
@@ -389,24 +387,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         auto scanner = index.make_knn_scanner(
                 !keep_max, nq, k, curr_dists.data(), curr_labels.data(), sel);
 
-        SIMDResultHandlerToFloat* rh;
-        std::unique_ptr<SIMDResultHandlerToFloat> handler_owned;
-        if (scanner) {
-            rh = scanner->handler();
-        } else {
-            FastScanDistancePostProcessing empty_context{};
-            handler_owned.reset(index.make_knn_handler(
-                    !keep_max,
-                    impl,
-                    nq,
-                    k,
-                    curr_dists.data(),
-                    curr_labels.data(),
-                    sel,
-                    empty_context,
-                    &normalizers[0]));
-            rh = handler_owned.get();
-        }
+        SIMDResultHandlerToFloat* rh = scanner->handler();
 
         // This does not quite match search_implem_10, but it is fine because
         // the scanner operates on a single query at a time, and this value is
@@ -420,28 +401,15 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         rh->ntotal = ntotal;
         rh->id_map = ids;
 
-        if (scanner) {
-            scanner->accumulate_loop(
-                    1,
-                    roundup(ntotal, index.bbs),
-                    index.bbs,
-                    static_cast<int>(index.M2),
-                    codes,
-                    dis_tables.get(),
-                    0,
-                    index.get_block_stride());
-        } else {
-            pq4_accumulate_loop(
-                    1,
-                    roundup(ntotal, index.bbs),
-                    index.bbs,
-                    static_cast<int>(index.M2),
-                    codes,
-                    dis_tables.get(),
-                    *rh,
-                    0,
-                    index.get_block_stride());
-        }
+        scanner->accumulate_loop(
+                1,
+                roundup(ntotal, index.bbs),
+                index.bbs,
+                static_cast<int>(index.M2),
+                codes,
+                dis_tables.get(),
+                0,
+                index.get_block_stride());
 
         // The handler is for the results of this iteration.
         // Then we need a second heap to combine across iterations.
