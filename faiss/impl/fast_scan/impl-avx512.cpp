@@ -8,6 +8,7 @@
 #ifdef COMPILE_SIMD_AVX512
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512
-#include <faiss/impl/fast_scan/dispatching.h> // IWYU pragma: keep
+#include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
+#include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 
 #endif // COMPILE_SIMD_AVX512
