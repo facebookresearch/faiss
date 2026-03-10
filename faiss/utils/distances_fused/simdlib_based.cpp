@@ -11,7 +11,7 @@
 
 #if defined(__AVX2__) || defined(__aarch64__)
 
-#include <faiss/utils/simdlib.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 
 #if defined(__AVX2__)
 #include <immintrin.h>

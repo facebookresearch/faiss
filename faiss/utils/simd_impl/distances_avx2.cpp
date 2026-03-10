@@ -13,6 +13,10 @@
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
+#define THE_SIMDLEVEL SIMDLevel::AVX2
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/distances_simdlib256.h>
+
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_sse-inl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)

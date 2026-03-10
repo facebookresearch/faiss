@@ -8,10 +8,10 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/bf16.h>
 #include <faiss/utils/fp16.h>
 #include <faiss/utils/simd_levels.h>
-#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 

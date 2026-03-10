@@ -82,8 +82,8 @@ FAISS_API extern IndexBinaryHashStats indexBinaryHash_stats;
 /** just uses the b first bits as a hash value */
 struct IndexBinaryMultiHash : IndexBinary {
     // where the vectors are actually stored
-    IndexBinaryFlat* storage;
-    bool own_fields;
+    IndexBinaryFlat* storage = nullptr;
+    bool own_fields = false;
 
     // maps hash values to the ids that hash to them
     using Map = std::unordered_map<idx_t, std::vector<idx_t>>;

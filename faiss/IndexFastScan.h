@@ -8,13 +8,12 @@
 #pragma once
 
 #include <faiss/Index.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
 struct IDSelector;
 struct SIMDResultHandlerToFloat;
 
