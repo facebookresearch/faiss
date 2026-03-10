@@ -563,11 +563,11 @@ SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
 }
 
 /*********************************************************
- * IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler implementation
+ * simd_result_handlers::IVFRaBitQHeapHandler implementation
  *********************************************************/
 
-template <class C>
-IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::IVFRaBitQHeapHandler(
+template <class C, SIMDLevel SL>
+simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
         const IndexIVFRaBitQFastScan* idx,
         size_t nq_val,
         size_t k_val,
@@ -601,8 +601,8 @@ IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::IVFRaBitQHeapHandler(
     }
 }
 
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
+template <class C, SIMDLevel SL>
+void simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::handle(
         size_t q,
         size_t b,
         simd16uint16 d0,
@@ -748,8 +748,8 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::handle(
     rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
 }
 
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::set_list_context(
+template <class C, SIMDLevel SL>
+void simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::set_list_context(
         size_t list_no,
         const std::vector<int>& probe_map) {
     current_list_no = list_no;
@@ -757,14 +757,14 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::set_list_context(
     list_codes_ptr = index->invlists->get_codes(list_no);
 }
 
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::begin(
+template <class C, SIMDLevel SL>
+void simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::begin(
         const float* norms) {
     this->normalizers = norms;
 }
 
-template <class C>
-void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::end() {
+template <class C, SIMDLevel SL>
+void simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::end() {
 #pragma omp parallel for
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
         float* heap_dis = heap_distances + q * k;
@@ -773,8 +773,8 @@ void IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::end() {
     }
 }
 
-template <class C>
-float IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler<C>::
+template <class C, SIMDLevel SL>
+float simd_result_handlers::IVFRaBitQHeapHandler<C, SL>::
         compute_full_multibit_distance(
                 size_t /*db_idx*/,
                 size_t local_q,
