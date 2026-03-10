@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
