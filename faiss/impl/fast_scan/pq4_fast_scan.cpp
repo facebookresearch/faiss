@@ -390,4 +390,33 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
             with_id_map);
 }
 
+std::unique_ptr<FastScanCodeScanner> make_range_scanner(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            make_range_scanner_impl, is_max, rres, radius, ntotal, sel);
+}
+
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            make_partial_range_scanner_impl,
+            is_max,
+            pres,
+            radius,
+            ntotal,
+            q0,
+            q1,
+            sel);
+}
+
 } // namespace faiss

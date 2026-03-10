@@ -9,6 +9,7 @@
 
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
@@ -221,6 +222,31 @@ struct IndexIVFFastScan : IndexIVF {
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
+    /** Create a SIMD-dispatched scanner for knn search (IVF variant).
+     *
+     * Returns a FastScanCodeScanner that bundles handler + accumulation
+     * kernel behind the SIMD dispatch boundary. ntotal is not passed
+     * because IVF sets it per-list via handler->ntotal.
+     * Derived classes that need custom handlers (e.g. RaBitQ) override
+     * this to return nullptr, falling back to make_knn_handler.
+     *
+     * @param is_max       whether to use CMax comparator (true) or CMin
+     * @param n            number of queries
+     * @param k            number of neighbors to find
+     * @param distances    output distances array
+     * @param labels       output labels array
+     * @param sel          optional ID selector
+     * @return             scanner, or nullptr if unsupported
+     */
+    virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            int impl = 0) const;
+
     /** Create a KNN handler for this index type
      *
      * This method can be overridden by derived classes to provide
@@ -314,7 +340,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params = nullptr,
+            FastScanCodeScanner* scanner = nullptr) const;
 
     void search_implem_12(
             idx_t n,
@@ -324,7 +351,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params = nullptr,
+            FastScanCodeScanner* scanner = nullptr) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(

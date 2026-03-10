@@ -599,11 +599,25 @@ void gpu_sync_all_devices()
 
 %include  <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 
-// Ignore make_knn_handler methods — they return SIMDResultHandlerToFloat*
-// which is an internal SIMD type not exposed to Python.
+// Ignore FastScanCodeScanner and related factory functions — internal SIMD types.
+%ignore faiss::FastScanCodeScanner;
+%ignore faiss::make_fast_scan_scanner_impl;
+%ignore faiss::make_fast_scan_knn_scanner;
+%ignore faiss::make_range_scanner_impl;
+%ignore faiss::make_range_scanner;
+%ignore faiss::make_partial_range_scanner_impl;
+%ignore faiss::make_partial_range_scanner;
+
+// Ignore make_knn_scanner / make_knn_handler — they return internal SIMD types.
+%ignore faiss::IndexFastScan::make_knn_scanner;
 %ignore faiss::IndexFastScan::make_knn_handler;
+%ignore faiss::IndexIVFFastScan::make_knn_scanner;
 %ignore faiss::IndexIVFFastScan::make_knn_handler;
+%ignore faiss::IndexIVFFastScan::search_implem_10;
+%ignore faiss::IndexIVFFastScan::search_implem_12;
+%ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
 %ignore faiss::IndexRaBitQFastScan::make_knn_handler;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_scanner;
 %ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
 
 %include  <faiss/IndexFastScan.h>

@@ -148,6 +148,16 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
 
+    /// RaBitQ uses custom handlers; scanner not yet wired
+    std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            int impl = 0) const override;
+
     /// Override to create RaBitQ-specific handlers
     SIMDResultHandlerToFloat* make_knn_handler(
             bool is_max,

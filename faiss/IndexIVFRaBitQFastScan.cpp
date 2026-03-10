@@ -539,6 +539,17 @@ void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
     }
 }
 
+std::unique_ptr<FastScanCodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
+        bool /*is_max*/,
+        idx_t /*n*/,
+        idx_t /*k*/,
+        float* /*distances*/,
+        idx_t* /*labels*/,
+        const IDSelector* /*sel*/,
+        int /*impl*/) const {
+    return nullptr;
+}
+
 // Implementation of virtual make_knn_handler method
 SIMDResultHandlerToFloat* IndexIVFRaBitQFastScan::make_knn_handler(
         bool is_max,

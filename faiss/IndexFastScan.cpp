@@ -211,6 +211,19 @@ void estimators_from_tables_generic(
 
 } // anonymous namespace
 
+std::unique_ptr<FastScanCodeScanner> IndexFastScan::make_knn_scanner(
+        bool is_max,
+        idx_t n,
+        idx_t k,
+        size_t ntotal,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        int impl) const {
+    return make_fast_scan_knn_scanner(
+            is_max, impl, n, ntotal, k, distances, labels, sel);
+}
+
 // Default implementation of make_knn_handler with centralized fallback logic
 SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         bool is_max,
@@ -519,36 +532,60 @@ void IndexFastScan::search_implem_12(
             pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    std::unique_ptr<RH> handler(
-            static_cast<RH*>(make_knn_handler(
-                    C::is_max,
-                    impl,
-                    n,
-                    k,
-                    ntotal,
-                    distances,
-                    labels,
-                    nullptr,
-                    context)));
-
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
-
-    if (skip & 4) {
-        // pass
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr, impl);
+    if (scanner) {
+        auto* rh = scanner->handler();
+        rh->normalizers = normalizers.get();
+        // Note: skip & 2 previously set handler->disable (run kernel,
+        // discard results). Through the scanner path, skip & 2 now skips
+        // the kernel entirely (same as skip & 4), since disable is not
+        // accessible through the SIMDResultHandlerToFloat* interface.
+        if (!(skip & (2 | 4))) {
+            scanner->accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    context.pq2x4_scale,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            rh->end();
+        }
     } else {
-        pq4_accumulate_loop_qbs(
-                qbs,
-                ntotal2,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                context.pq2x4_scale,
-                get_block_stride());
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        std::unique_ptr<RH> handler(
+                static_cast<RH*>(make_knn_handler(
+                        C::is_max,
+                        impl,
+                        n,
+                        k,
+                        ntotal,
+                        distances,
+                        labels,
+                        nullptr,
+                        context)));
+
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (skip & 4) {
+            // pass
+        } else {
+            pq4_accumulate_loop_qbs(
+                    qbs,
+                    ntotal2,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    context.pq2x4_scale,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 
@@ -603,36 +640,61 @@ void IndexFastScan::search_implem_14(
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    std::unique_ptr<RH> handler(
-            static_cast<RH*>(make_knn_handler(
-                    C::is_max,
-                    impl,
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr, impl);
+    if (scanner) {
+        auto* rh = scanner->handler();
+        rh->normalizers = normalizers.get();
+        // Note: skip & 2 previously set handler->disable (run kernel,
+        // discard results). Through the scanner path, skip & 2 now skips
+        // the kernel entirely (same as skip & 4), since disable is not
+        // accessible through the SIMDResultHandlerToFloat* interface.
+        if (!(skip & (2 | 4))) {
+            scanner->accumulate_loop(
                     n,
-                    k,
-                    ntotal,
-                    distances,
-                    labels,
-                    nullptr,
-                    context)));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
-
-    if (skip & 4) {
-        // pass
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    context.pq2x4_scale,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            rh->end();
+        }
     } else {
-        pq4_accumulate_loop(
-                n,
-                ntotal2,
-                bbs,
-                M2,
-                codes.get(),
-                LUT.get(),
-                *handler.get(),
-                context.pq2x4_scale,
-                get_block_stride());
-    }
-    if (!(skip & 8)) {
-        handler->end();
+        std::unique_ptr<RH> handler(
+                static_cast<RH*>(make_knn_handler(
+                        C::is_max,
+                        impl,
+                        n,
+                        k,
+                        ntotal,
+                        distances,
+                        labels,
+                        nullptr,
+                        context)));
+        handler->disable = bool(skip & 2);
+        handler->normalizers = normalizers.get();
+
+        if (skip & 4) {
+            // pass
+        } else {
+            pq4_accumulate_loop(
+                    n,
+                    ntotal2,
+                    bbs,
+                    M2,
+                    codes.get(),
+                    LUT.get(),
+                    *handler.get(),
+                    context.pq2x4_scale,
+                    get_block_stride());
+        }
+        if (!(skip & 8)) {
+            handler->end();
+        }
     }
 }
 
