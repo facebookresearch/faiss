@@ -22,8 +22,8 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 namespace faiss {
 
@@ -419,7 +419,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                 codes,
                 LUT,
                 *handler,
-                nullptr,
+                0,
                 index.get_block_stride());
 
         // The handler is for the results of this iteration.

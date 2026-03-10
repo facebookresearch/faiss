@@ -439,3 +439,143 @@ TEST(ReadIndexDeserialize, BinaryHashEmptyInvlistBuffer) {
 
     expect_binary_read_throws_with(buf, "binary hash invlists");
 }
+
+// -----------------------------------------------------------------------
+// Test: NSG with R=0 triggers the R > 0 validation.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, NSGNegativeR) {
+    // "INSf" format: fourcc + index_header + GK + build_type +
+    //   nndescent_S/R/L/iter + read_NSG(ntotal, R, ...)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "INSf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, 0);  // GK
+    push_val<int>(buf, 0);  // build_type
+    push_val<int>(buf, 10); // nndescent_S
+    push_val<int>(buf, 10); // nndescent_R
+    push_val<int>(buf, 10); // nndescent_L
+    push_val<int>(buf, 1);  // nndescent_iter
+    // read_NSG fields:
+    push_val<int>(buf, 0);  // ntotal
+    push_val<int>(buf, -1); // R = -1 (invalid)
+
+    expect_read_throws_with(buf, "invalid NSG R");
+}
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer with out-of-range qtype throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ScalarQuantizerInvalidQtype) {
+    // "IxSQ" format: fourcc + index_header + read_ScalarQuantizer(qtype, ...)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // ScalarQuantizer fields:
+    push_val<int>(buf, 99); // qtype = 99 (out of range)
+
+    expect_read_throws_with(buf, "qtype");
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductAdditiveQuantizer with nsplits=0 throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductAdditiveQuantizerZeroNsplits) {
+    // "IxPR" format: fourcc + index_header +
+    //   read_ProductResidualQuantizer(read_ProductAdditiveQuantizer(
+    //     read_AdditiveQuantizer(...) + nsplits))
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPR");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // AdditiveQuantizer fields:
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // M
+    push_vector<size_t>(buf, {8}); // nbits (1 element matching M=1)
+    push_val<bool>(buf, true);     // is_trained
+    push_vector<float>(buf, {});   // codebooks (empty)
+    push_val<int>(buf, 0);         // search_type = ST_decompress
+    push_val<float>(buf, 0.0f);    // norm_min
+    push_val<float>(buf, 1.0f);    // norm_max
+    // ProductAdditiveQuantizer field:
+    push_val<size_t>(buf, 0); // nsplits = 0 (invalid)
+
+    expect_read_throws_with(buf, "nsplits");
+}
+
+// -----------------------------------------------------------------------
+// Test: PreTransform with negative chain length throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, PreTransformNegativeChainLength) {
+    // "IxPT" format: fourcc + index_header + nt + VT chain + nested index
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, -1); // nt = -1 (invalid)
+
+    expect_read_throws_with(buf, "chain length");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryMultiHash with nhash=0 throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryMultiHashZeroNhash) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    // Nested IBxF storage (ntotal=0 matches outer)
+    push_minimal_binary_flat(buf, /*d=*/16);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nhash = 0 (invalid)
+
+    expect_binary_read_throws_with(buf, "nhash");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryHash with b=0 triggers the b > 0 validation.
+// Without this check, BitstringReader::read(0) would silently produce
+// garbage hash values on every inverted-list entry.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashBZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 0); // b = 0 (invalid)
+
+    expect_binary_read_throws_with(buf, "IndexBinaryHash b=");
+}
+
+// -----------------------------------------------------------------------
+// Test: read_binary_hash_invlists with negative il_nbit triggers the
+// il_nbit >= 0 validation.  Without this check, the negative value would
+// wrap to a huge size_t in the bits-per-entry calculation, causing an
+// out-of-bounds read in BitstringReader.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashNegativeIlNbit) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+    // read_binary_hash_invlists fields:
+    push_val<size_t>(buf, size_t(0)); // sz = 0
+    push_val<int>(buf, -1);           // il_nbit = -1 (invalid)
+
+    expect_binary_read_throws_with(buf, "il_nbit=");
+}
+
+// -----------------------------------------------------------------------
+// Test: read_binary_hash_invlists with il_nbit=0 but sz > 0 triggers
+// the il_nbit > 0 validation.  Without this check, every inverted-list
+// size would silently read as 0, corrupting the deserialized index.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashIlNbitZeroWithEntries) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+    // read_binary_hash_invlists fields:
+    push_val<size_t>(buf, size_t(1)); // sz = 1 (non-zero)
+    push_val<int>(buf, 0);            // il_nbit = 0 (invalid when sz > 0)
+
+    expect_binary_read_throws_with(buf, "il_nbit=");
+}

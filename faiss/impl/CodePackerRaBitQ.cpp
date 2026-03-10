@@ -6,7 +6,7 @@
  */
 
 #include <faiss/impl/CodePackerRaBitQ.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 
 #include <cstring>
 

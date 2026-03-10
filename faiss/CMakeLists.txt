@@ -117,9 +117,9 @@ set(FAISS_SRC
   impl/kmeans1d.cpp
   impl/lattice_Zn.cpp
   impl/mapped_io.cpp
-  impl/pq4_fast_scan.cpp
-  impl/pq4_fast_scan_search_1.cpp
-  impl/pq4_fast_scan_search_qbs.cpp
+  impl/fast_scan/pq4_fast_scan.cpp
+  impl/fast_scan/pq4_fast_scan_search_1.cpp
+  impl/fast_scan/pq4_fast_scan_search_qbs.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
@@ -227,8 +227,8 @@ set(FAISS_HEADERS
   impl/HNSW.h
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
-  impl/LookupTableScaler.h
-  impl/FastScanDistancePostProcessing.h
+  impl/fast_scan/LookupTableScaler.h
+  impl/fast_scan/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
@@ -262,10 +262,13 @@ set(FAISS_HEADERS
   impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
-  impl/pq4_fast_scan.h
+  impl/fast_scan/pq4_fast_scan.h
+  impl/fast_scan/decompose_qbs.h
+  impl/fast_scan/kernels_simd256.h
+  impl/fast_scan/kernels_simd512.h
   impl/residual_quantizer_encode_steps.h
   impl/simd_dispatch.h
-  impl/simd_result_handlers.h
+  impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
   utils/pq_code_distance.h
   impl/pq_code_distance/pq_code_distance-inl.h

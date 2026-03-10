@@ -17,11 +17,10 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/RaBitQUtils.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
@@ -239,7 +238,7 @@ void estimators_from_tables_generic(
         int64_t* heap_ids,
         const FastScanDistancePostProcessing& context) {
     using accu_t = typename C::T;
-    size_t nscale = context.norm_scaler ? context.norm_scaler->nscale : 0;
+    size_t nscale = context.pq2x4_scale ? 2 : 0;
     for (size_t j = 0; j < ncodes; ++j) {
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = bias;
@@ -251,10 +250,10 @@ void estimators_from_tables_generic(
             dt += index.ksub;
         }
 
-        if (context.norm_scaler) {
+        if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
                 uint64_t c = bsr.read(index.nbits);
-                dis += context.norm_scaler->scale_one(dt[c]);
+                dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
         }
@@ -1031,7 +1030,7 @@ void IndexIVFFastScan::search_implem_10(
                     codes.get(),
                     LUT,
                     handler,
-                    context.norm_scaler,
+                    context.pq2x4_scale,
                     get_block_stride());
 
             ndis += ls;
@@ -1183,7 +1182,7 @@ void IndexIVFFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 handler,
-                context.norm_scaler,
+                context.pq2x4_scale,
                 get_block_stride());
         // prepare for next loop
         i0 = i1;
@@ -1407,7 +1406,7 @@ void IndexIVFFastScan::search_implem_14(
                     codes.get(),
                     LUT.get(),
                     *handler.get(),
-                    context.norm_scaler,
+                    context.pq2x4_scale,
                     get_block_stride());
         }
 
