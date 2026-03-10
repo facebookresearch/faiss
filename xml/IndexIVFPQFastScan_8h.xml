@@ -170,12 +170,6 @@
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="40">
-        <label>faiss/impl/FastScanDistancePostProcessing.h</label>
-        <link refid="FastScanDistancePostProcessing_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
       <node id="23">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
@@ -244,6 +238,12 @@
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
+        <link refid="FastScanDistancePostProcessing_8h_source"/>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="38">

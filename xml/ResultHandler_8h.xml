@@ -11,7 +11,7 @@
     <includes local="no">algorithm</includes>
     <includes local="no">iostream</includes>
     <includedby refid="expanded__scanners_8h" local="no">faiss/impl/expanded_scanners.h</includedby>
-    <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
+    <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/fast_scan/simd_result_handlers.h</includedby>
     <includedby refid="avx512_8h" local="no">faiss/utils/distances_fused/avx512.h</includedby>
     <includedby refid="distances__fused_8h" local="no">faiss/utils/distances_fused/distances_fused.h</includedby>
     <includedby refid="simdlib__based_8h" local="no">faiss/utils/distances_fused/simdlib_based.h</includedby>
@@ -235,17 +235,31 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>faiss/impl/expanded_scanners.h</label>
         <link refid="expanded__scanners_8h_source"/>
         <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/fast_scan/decompose_qbs.h</label>
+        <link refid="decompose__qbs_8h_source"/>
+      </node>
+      <node id="5">
+        <label>faiss/impl/fast_scan/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -258,23 +272,15 @@
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
         <link refid="sq-dispatch_8h_source"/>
       </node>
-      <node id="5">
-        <label>faiss/impl/simd_result_handlers.h</label>
-        <link refid="simd__result__handlers_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
+      <node id="9">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="9">
+      <node id="10">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="10">
+      <node id="11">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>

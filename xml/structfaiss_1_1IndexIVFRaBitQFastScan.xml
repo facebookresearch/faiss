@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="44" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="44" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="43" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="43" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a3eeb2caa1304b5366d5c1a3a3cdb289d" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="46" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="46" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="45" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="45" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1aece546e9a73d5d57d276f206b98f6732" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -92,7 +92,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="47" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="46" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="46" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a9a3378df5fa83df43c4f7ac7f6f43597" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="48" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="47" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="47" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a24fb641078982b2740e152638bb9b181" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -120,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="51" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="50" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a014f9cb133b921d93d6892e4b28e4c53" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="54" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="53" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="53" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1af5a65c4801f2d08dee73089242b4f062" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -150,7 +150,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="56" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="56" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="55" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="55" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1adeb24fc87437d1f2396986c34f077cbc" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="59" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="59" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="58" column="9" bodyfile="faiss/IndexIVFFastScan.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1ad802fb59e7c96f6fa7e669ca8e18beeb" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -180,7 +180,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="60" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="60" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="59" column="12" bodyfile="faiss/IndexIVFFastScan.h" bodystart="59" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1a25b808d7ac2bc8a5aac5cfdffe24226f" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1Quantizer" kindref="compound">Quantizer</ref> *</type>
@@ -195,7 +195,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="63" column="15" bodyfile="faiss/IndexIVFFastScan.h" bodystart="63" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="62" column="15" bodyfile="faiss/IndexIVFFastScan.h" bodystart="62" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVFFastScan_1aff5cc59de0bca5c50e62f47ba45bc8b4" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -211,7 +211,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="109" column="19" bodyfile="faiss/IndexIVFFastScan.h" bodystart="109" bodyend="-1"/>
+        <location file="faiss/IndexIVFFastScan.h" line="108" column="19" bodyfile="faiss/IndexIVFFastScan.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexIVF_1aa0e8fc5e04cbd8e0dde61f98bc7dd0bc" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1InvertedLists" kindref="compound">InvertedLists</ref> *</type>
@@ -1215,7 +1215,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="94" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="93" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1aa347150918de4a4b7ea630b6be12415b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1229,7 +1229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="104" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="103" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a8699e7d828750f02bfc86014269e4a6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1283,7 +1283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="117" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="116" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a32429ba6825a6003dbefd0b8eaa86e4d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1384,7 +1384,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="159" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="158" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a9b90e307a2727cd961d9508fbae2b678" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1475,7 +1475,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="177" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="176" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a1f8213db15661df4339ec9ce4e2244a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1554,7 +1554,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="218" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="217" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a8728886aaf8f241ba7410eecf20efcbb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1601,7 +1601,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="266" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="265" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a18bca868977be38c98f9e7a3ab0a03e1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1644,7 +1644,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="276" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="275" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ab20ca592b2eebf1e792c9a132388c5a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1696,7 +1696,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="287" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="286" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1afcb5f2af0e16d9dfd0fb9584bed9d5b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1748,7 +1748,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="298" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="297" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ab3a42cbf9796edb635a5d193f866d49e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1795,7 +1795,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="310" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="309" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ade68bfb359cd7e620c6dde4e46834edd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1842,7 +1842,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="320" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="319" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a478421842b68a1d8e7f08eaf0bced854" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1893,7 +1893,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="331" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="330" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a50cac5c5e31a457925af44f6e518199f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1907,7 +1907,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="349" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="348" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
@@ -1926,7 +1926,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="389" column="12"/>
+        <location file="faiss/IndexIVFFastScan.h" line="388" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>

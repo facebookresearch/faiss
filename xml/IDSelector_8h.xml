@@ -10,8 +10,8 @@
     <includedby refid="CuvsFilterConvert_8h" local="no">faiss/gpu/utils/CuvsFilterConvert.h</includedby>
     <includedby refid="Panorama_8h" local="no">faiss/impl/Panorama.h</includedby>
     <includedby refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includedby>
+    <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/fast_scan/simd_result_handlers.h</includedby>
     <includedby refid="scanners_8h" local="no">faiss/impl/scalar_quantizer/scanners.h</includedby>
-    <includedby refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includedby>
     <includedby refid="python__callbacks_8h" local="no">faiss/python/python_callbacks.h</includedby>
     <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
     <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
@@ -372,17 +372,17 @@
         </childnode>
         <childnode refid="52" relation="include">
         </childnode>
-        <childnode refid="32" relation="include">
-        </childnode>
         <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="58" relation="include">
-        </childnode>
-        <childnode refid="63" relation="include">
+        <childnode refid="59" relation="include">
         </childnode>
         <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
         </childnode>
       </node>
       <node id="43">
@@ -436,17 +436,31 @@
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
-        </childnode>
         <childnode refid="56" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
       <node id="31">
         <label>faiss/impl/expanded_scanners.h</label>
         <link refid="expanded__scanners_8h_source"/>
         <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>faiss/impl/fast_scan/decompose_qbs.h</label>
+        <link refid="decompose__qbs_8h_source"/>
+      </node>
+      <node id="53">
+        <label>faiss/impl/fast_scan/simd_result_handlers.h</label>
+        <link refid="simd__result__handlers_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
         </childnode>
       </node>
       <node id="34">
@@ -462,14 +476,6 @@
       <node id="33">
         <label>faiss/impl/scalar_quantizer/sq-dispatch.h</label>
         <link refid="sq-dispatch_8h_source"/>
-      </node>
-      <node id="53">
-        <label>faiss/impl/simd_result_handlers.h</label>
-        <link refid="simd__result__handlers_8h_source"/>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="54" relation="include">
-        </childnode>
       </node>
       <node id="49">
         <label>faiss/invlists/BlockInvertedLists.h</label>
@@ -513,51 +519,51 @@
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
-      <node id="58">
+      <node id="59">
         <label>faiss/svs/IndexSVSFaissUtils.h</label>
         <link refid="IndexSVSFaissUtils_8h_source"/>
-        <childnode refid="59" relation="include">
-        </childnode>
         <childnode refid="60" relation="include">
         </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
       </node>
-      <node id="59">
+      <node id="60">
         <label>faiss/svs/IndexSVSFlat.h</label>
         <link refid="IndexSVSFlat_8h_source"/>
       </node>
-      <node id="60">
+      <node id="61">
         <label>faiss/svs/IndexSVSVamana.h</label>
         <link refid="IndexSVSVamana_8h_source"/>
-        <childnode refid="61" relation="include">
-        </childnode>
         <childnode refid="62" relation="include">
         </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
       </node>
-      <node id="61">
+      <node id="62">
         <label>faiss/svs/IndexSVSVamanaLVQ.h</label>
         <link refid="IndexSVSVamanaLVQ_8h_source"/>
       </node>
-      <node id="62">
+      <node id="63">
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="55">
+      <node id="56">
         <label>faiss/utils/distances_fused/avx512.h</label>
         <link refid="avx512_8h_source"/>
       </node>
-      <node id="56">
+      <node id="57">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
       </node>
-      <node id="57">
+      <node id="58">
         <label>faiss/utils/distances_fused/simdlib_based.h</label>
         <link refid="simdlib__based_8h_source"/>
       </node>
-      <node id="63">
+      <node id="64">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
       </node>
-      <node id="64">
+      <node id="65">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
       </node>

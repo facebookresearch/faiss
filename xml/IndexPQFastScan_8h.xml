@@ -133,12 +133,6 @@
         <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="17">
-        <label>faiss/impl/FastScanDistancePostProcessing.h</label>
-        <link refid="FastScanDistancePostProcessing_8h_source"/>
-        <childnode refid="18" relation="include">
-        </childnode>
-      </node>
       <node id="29">
         <label>faiss/impl/PolysemousTraining.h</label>
         <link refid="PolysemousTraining_8h_source"/>
@@ -171,6 +165,12 @@
         <label>faiss/impl/Quantizer.h</label>
         <link refid="Quantizer_8h_source"/>
         <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
+        <link refid="FastScanDistancePostProcessing_8h_source"/>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="27">

@@ -2,7 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1simd256bit__tpl" kind="struct" language="C++" prot="public">
     <compoundname>faiss::simd256bit_tpl</compoundname>
-    <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SINGLE_SIMD_LEVEL_256 &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SL256 &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd16uint16__tpl" prot="public" virt="non-virtual">faiss::simd16uint16_tpl&lt; SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd32uint8__tpl" prot="public" virt="non-virtual">faiss::simd32uint8_tpl&lt; SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd8float32__tpl" prot="public" virt="non-virtual">faiss::simd8float32_tpl&lt; SL &gt;</derivedcompoundref>
@@ -48,7 +48,7 @@
         </childnode>
       </node>
       <node id="2">
-        <label>faiss::simd16uint16_tpl&lt; SINGLE_SIMD_LEVEL_256 &gt;</label>
+        <label>faiss::simd16uint16_tpl&lt; SL256 &gt;</label>
         <link refid="structfaiss_1_1simd16uint16__tpl"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>

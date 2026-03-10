@@ -9,7 +9,7 @@
     <includes refid="RaBitQStats_8h" local="no">faiss/impl/RaBitQStats.h</includes>
     <includes refid="RaBitQUtils_8h" local="no">faiss/impl/RaBitQUtils.h</includes>
     <includes refid="RaBitQuantizer_8h" local="no">faiss/impl/RaBitQuantizer.h</includes>
-    <includes refid="simd__result__handlers_8h" local="no">faiss/impl/simd_result_handlers.h</includes>
+    <includes refid="simd__result__handlers_8h" local="no">faiss/impl/fast_scan/simd_result_handlers.h</includes>
     <includes refid="simdlib__dispatch_8h" local="no">faiss/impl/simdlib/simdlib_dispatch.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
     <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
@@ -146,12 +146,6 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="18">
-        <label>faiss/impl/FastScanDistancePostProcessing.h</label>
-        <link refid="FastScanDistancePostProcessing_8h_source"/>
-        <childnode refid="19" relation="include">
-        </childnode>
-      </node>
       <node id="43">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
@@ -228,32 +222,14 @@
         <childnode refid="50" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>faiss/impl/maybe_owned_vector.h</label>
-        <link refid="maybe__owned__vector_8h_source"/>
+      <node id="18">
+        <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
+        <link refid="FastScanDistancePostProcessing_8h_source"/>
         <childnode refid="19" relation="include">
-        </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>faiss/impl/platform_macros.h</label>
-        <link refid="platform__macros_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="33">
-        <label>faiss/impl/simd_result_handlers.h</label>
+        <label>faiss/impl/fast_scan/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
         <childnode refid="23" relation="include">
         </childnode>
@@ -276,6 +252,30 @@
         <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="48" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>faiss/impl/maybe_owned_vector.h</label>
+        <link refid="maybe__owned__vector_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
       <node id="36">
@@ -478,7 +478,7 @@
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/RaBitQStats.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/RaBitQUtils.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/RaBitQuantizer.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/simd_result_handlers.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/fast_scan/simd_result_handlers.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/impl/simdlib/simdlib_dispatch.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/Heap.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight></codeline>
@@ -622,7 +622,7 @@
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref>&amp;<sp/>context,</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>multi_bit);</highlight></codeline>
 <codeline lineno="161"><highlight class="normal"></highlight></codeline>
-<codeline lineno="162" refid="structfaiss_1_1RaBitQHeapHandler_1a057ecb86c300cd7a4680d32d0b2d114b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1RaBitQHeapHandler_1a057ecb86c300cd7a4680d32d0b2d114b" kindref="member">handle</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>q,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref><sp/>d0,<sp/><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref><sp/>d1)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>handle(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>q,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref><sp/>d0,<sp/><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref><sp/>d1)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"></highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>begin(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>norms);</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"></highlight></codeline>
