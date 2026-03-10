@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/LookupTableScaler.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/LookupTableScaler.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 namespace faiss {
 
@@ -182,33 +182,18 @@ void pq4_accumulate_loop_fixed_handler(
         const uint8_t* codes,
         const uint8_t* LUT,
         ResultHandler& res,
-        const NormTableScaler* scaler,
+        int pq2x4_scale,
         size_t block_stride) {
-    if (scaler) {
+    if (pq2x4_scale) {
+        NormTableScaler<> scaler(pq2x4_scale);
         pq4_accumulate_loop_fixed_scaler(
-                nq, nb, bbs, nsq, codes, LUT, res, *scaler, block_stride);
+                nq, nb, bbs, nsq, codes, LUT, res, scaler, block_stride);
     } else {
-        DummyScaler dscaler;
+        DummyScaler<> dscaler;
         pq4_accumulate_loop_fixed_scaler(
                 nq, nb, bbs, nsq, codes, LUT, res, dscaler, block_stride);
     }
 }
-
-struct Run_pq4_accumulate_loop {
-    template <class ResultHandler>
-    void f(ResultHandler& res,
-           int nq,
-           size_t nb,
-           int bbs,
-           int nsq,
-           const uint8_t* codes,
-           const uint8_t* LUT,
-           const NormTableScaler* scaler,
-           size_t block_stride) {
-        pq4_accumulate_loop_fixed_handler(
-                nq, nb, bbs, nsq, codes, LUT, res, scaler, block_stride);
-    }
-};
 
 } // anonymous namespace
 
@@ -220,11 +205,20 @@ void pq4_accumulate_loop(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler,
+        int pq2x4_scale,
         size_t block_stride) {
-    Run_pq4_accumulate_loop consumer;
-    dispatch_SIMDResultHandler(
-            res, consumer, nq, nb, bbs, nsq, codes, LUT, scaler, block_stride);
+    with_SIMDResultHandler(res, [&](auto& handler) {
+        pq4_accumulate_loop_fixed_handler(
+                nq,
+                nb,
+                bbs,
+                nsq,
+                codes,
+                LUT,
+                handler,
+                pq2x4_scale,
+                block_stride);
+    });
 }
 
 } // namespace faiss

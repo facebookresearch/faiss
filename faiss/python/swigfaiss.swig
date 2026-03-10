@@ -105,9 +105,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -597,7 +597,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
-%include  <faiss/impl/FastScanDistancePostProcessing.h>
+%include  <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 
 // Ignore make_knn_handler methods — they return SIMDResultHandlerToFloat*
 // which is an internal SIMD type not exposed to Python.
@@ -613,7 +613,7 @@ void gpu_sync_all_devices()
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
 // the internal SIMD handler types.
-// %include  <faiss/impl/simd_result_handlers.h>
+// %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>

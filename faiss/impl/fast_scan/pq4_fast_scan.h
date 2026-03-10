@@ -24,7 +24,6 @@
 
 namespace faiss {
 
-struct NormTableScaler;
 struct SIMDResultHandler;
 
 /** Pack codes for consumption by the SIMD kernels.
@@ -139,7 +138,7 @@ void pq4_accumulate_loop(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler,
+        int pq2x4_scale,
         size_t block_stride);
 
 /* qbs versions, supported only for bbs=32.
@@ -190,7 +189,7 @@ int pq4_pack_LUT_qbs_q_map(
  * @param codes   encoded database vectors (packed)
  * @param LUT     look-up table (packed)
  * @param res     call-back for the results
- * @param scaler  scaler to scale the encoded norm
+ * @param pq2x4_scale  scaler to scale the encoded norm
  * @param block_stride  stride in bytes between consecutive blocks.
  */
 void pq4_accumulate_loop_qbs(
@@ -200,7 +199,7 @@ void pq4_accumulate_loop_qbs(
         const uint8_t* codes,
         const uint8_t* LUT,
         SIMDResultHandler& res,
-        const NormTableScaler* scaler,
+        int pq2x4_scale,
         size_t block_stride);
 
 /** Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler
