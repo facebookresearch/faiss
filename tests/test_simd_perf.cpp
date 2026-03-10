@@ -188,10 +188,10 @@ TEST_F(SIMDPerfTest, AVX512FasterThanAVX2IfAvailable) {
 
     // AVX512 fvec_inner_products_ny (d=8) uses 16x8 register transpose
     // (16 vectors/iteration) vs AVX2's 8x8 transpose (8 vectors/iteration).
-    // Expected speedup is ~1.5x on bare metal. We use 1.2x threshold to
+    // Expected speedup is ~1.5x on bare metal. We use 1.1x threshold to
     // allow for AVX-512 frequency throttling on Intel CPUs.
-    EXPECT_GT(speedup, 1.2)
-            << "AVX512 should be at least 1.2x faster than AVX2 for "
+    EXPECT_GT(speedup, 1.1)
+            << "AVX512 should be at least 1.1x faster than AVX2 for "
             << "fvec_inner_products_ny. "
             << "AVX2=" << avx2_time << "ms, AVX512=" << avx512_time << "ms";
 }

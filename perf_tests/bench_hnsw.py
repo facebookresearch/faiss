@@ -72,8 +72,13 @@ def run_on_dataset(
     k = 10
     # pyre-ignore[16]: Module `faiss` has no attribute `omp_set_num_threads`.
     faiss.omp_set_num_threads(num_threads)
-    index = faiss.IndexHNSWFlat(d, M)
-    index.hnsw.efConstruction = efConstruction  # default
+    if M == 0:
+        index = faiss.IndexFlatL2(d)
+    else:
+        index = faiss.IndexHNSWFlat(d, M)
+        index.hnsw.efConstruction = efConstruction  # default
+        index.hnsw.efSearch = efSearch
+        index.hnsw.search_bounded_queue = search_bounded_queue
     with timed_execution() as t:
         for _ in range(num_add_iterations):
             index.add(xb)
@@ -82,8 +87,6 @@ def run_on_dataset(
     counters["nb"] = nb
     counters["num_add_iterations"] = num_add_iterations
 
-    index.hnsw.efSearch = efSearch
-    index.hnsw.search_bounded_queue = search_bounded_queue
     with timed_execution() as t:
         for _ in range(num_search_iterations):
             D, I = index.search(xq, k)

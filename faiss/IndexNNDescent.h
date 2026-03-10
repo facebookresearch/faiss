@@ -30,8 +30,8 @@ struct IndexNNDescent : Index {
     NNDescent nndescent;
 
     // the sequential storage
-    bool own_fields;
-    Index* storage;
+    bool own_fields = false;
+    Index* storage = nullptr;
 
     explicit IndexNNDescent(
             int d = 0,

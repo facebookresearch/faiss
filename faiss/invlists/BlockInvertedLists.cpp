@@ -7,6 +7,8 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
+#include <memory>
+
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -81,7 +83,7 @@ const uint8_t* BlockInvertedLists::get_codes(size_t list_no) const {
 
 size_t BlockInvertedLists::remove_ids(const IDSelector& sel) {
     idx_t nremove = 0;
-#pragma omp parallel for
+#pragma omp parallel for reduction(+ : nremove)
     for (idx_t i = 0; i < nlist; i++) {
         std::vector<uint8_t> buffer(packer->code_size);
         idx_t l = ids[i].size(), j = 0;
@@ -95,8 +97,9 @@ size_t BlockInvertedLists::remove_ids(const IDSelector& sel) {
                 j++;
             }
         }
+        idx_t orig_size = ids[i].size();
         resize(i, l);
-        nremove += ids[i].size() - l;
+        nremove += orig_size - l;
     }
 
     return nremove;
@@ -160,7 +163,7 @@ void BlockInvertedListsIOHook::write(const InvertedLists* ils_in, IOWriter* f)
 
 InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         const {
-    BlockInvertedLists* il = new BlockInvertedLists();
+    auto il = std::make_unique<BlockInvertedLists>();
     READ1(il->nlist);
     READ1(il->code_size);
     READ1(il->n_per_block);
@@ -174,7 +177,7 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         READVECTOR(il->codes[i]);
     }
 
-    return il;
+    return il.release();
 }
 
 } // namespace faiss

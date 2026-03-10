@@ -17,11 +17,10 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/impl/LookupTableScaler.h>
 #include <faiss/impl/RaBitQUtils.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
@@ -95,16 +94,17 @@ IndexIVFFastScan::~IndexIVFFastScan() = default;
  * Code management functions
  *********************************************************/
 
-void IndexIVFFastScan::preprocess_code_metadata(
-        idx_t /* n */,
-        const uint8_t* /* flat_codes */,
-        idx_t /* start_global_idx */) {
-    // Default: no-op
-}
-
 size_t IndexIVFFastScan::code_packing_stride() const {
     // Default: use standard M-byte stride
     return 0;
+}
+
+size_t IndexIVFFastScan::get_block_stride() const {
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    FAISS_THROW_IF_NOT_MSG(
+            packer->nvec == static_cast<size_t>(bbs),
+            "CodePacker must pack bbs vectors per block for fast-scan");
+    return packer->block_size;
 }
 
 void IndexIVFFastScan::add_with_ids(
@@ -147,9 +147,6 @@ void IndexIVFFastScan::add_with_ids(
 
     AlignedTable<uint8_t> flat_codes(n * code_size);
     encode_vectors(n, x, idx.get(), flat_codes.get());
-
-    // Allow subclasses to preprocess metadata before packing
-    preprocess_code_metadata(n, flat_codes.get(), ntotal);
 
     DirectMapAdd dm_adder(direct_map, n, xids);
     BlockInvertedLists* bil = dynamic_cast<BlockInvertedLists*>(invlists);
@@ -206,7 +203,11 @@ void IndexIVFFastScan::add_with_ids(
                 bbs,
                 M2,
                 bil->codes[list_no].data(),
-                pack_stride);
+                pack_stride,
+                get_block_stride());
+
+        postprocess_packed_codes(
+                list_no, list_size, i1 - i0, list_codes.data());
 
         i0 = i1;
     }
@@ -237,7 +238,7 @@ void estimators_from_tables_generic(
         int64_t* heap_ids,
         const FastScanDistancePostProcessing& context) {
     using accu_t = typename C::T;
-    size_t nscale = context.norm_scaler ? context.norm_scaler->nscale : 0;
+    size_t nscale = context.pq2x4_scale ? 2 : 0;
     for (size_t j = 0; j < ncodes; ++j) {
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = bias;
@@ -249,10 +250,10 @@ void estimators_from_tables_generic(
             dt += index.ksub;
         }
 
-        if (context.norm_scaler) {
+        if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
                 uint64_t c = bsr.read(index.nbits);
-                dis += context.norm_scaler->scale_one(dt[c]);
+                dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
         }
@@ -1029,7 +1030,8 @@ void IndexIVFFastScan::search_implem_10(
                     codes.get(),
                     LUT,
                     handler,
-                    context.norm_scaler);
+                    context.pq2x4_scale,
+                    get_block_stride());
 
             ndis += ls;
             nlist_visited++;
@@ -1180,7 +1182,8 @@ void IndexIVFFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 handler,
-                context.norm_scaler);
+                context.pq2x4_scale,
+                get_block_stride());
         // prepare for next loop
         i0 = i1;
     }
@@ -1403,7 +1406,8 @@ void IndexIVFFastScan::search_implem_14(
                     codes.get(),
                     LUT.get(),
                     *handler.get(),
-                    context.norm_scaler);
+                    context.pq2x4_scale,
+                    get_block_stride());
         }
 
         // labels is in-place for HeapHC
@@ -1518,6 +1522,12 @@ void IndexIVFFastScan::sa_decode(idx_t n, const uint8_t* codes, float* x)
         }
     }
 }
+
+void IndexIVFFastScan::postprocess_packed_codes(
+        idx_t /*list_no*/,
+        size_t /*list_offset*/,
+        size_t /*n_added*/,
+        const uint8_t* /*flat_codes*/) {}
 
 IVFFastScanStats IVFFastScan_stats;
 

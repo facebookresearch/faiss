@@ -13,7 +13,7 @@
 
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/impl/ProductQuantizer.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 
 namespace {
 

@@ -11,9 +11,9 @@
 #include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/ordered_key_value.h>
-#include <faiss/utils/simdlib.h>
 
 #include <faiss/impl/platform_macros.h>
 

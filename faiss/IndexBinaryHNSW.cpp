@@ -22,6 +22,7 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -171,19 +172,14 @@ IndexBinaryHNSW::IndexBinaryHNSW() {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(int d, int M)
-        : IndexBinary(d),
-          hnsw(M),
-          own_fields(true),
-          storage(new IndexBinaryFlat(d)) {
+IndexBinaryHNSW::IndexBinaryHNSW(int d, int M) : IndexBinary(d), hnsw(M) {
+    storage = std::make_unique<IndexBinaryFlat>(d).release();
+    own_fields = true;
     is_trained = true;
 }
 
 IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage, int M)
-        : IndexBinary(storage->d),
-          hnsw(M),
-          own_fields(false),
-          storage(storage) {
+        : IndexBinary(storage->d), hnsw(M), storage(storage) {
     is_trained = true;
 }
 

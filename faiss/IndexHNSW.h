@@ -9,9 +9,10 @@
 
 #pragma once
 
+#include <optional>
 #include <vector>
-#include "faiss/Index.h"
 
+#include <faiss/Index.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -47,6 +48,9 @@ struct IndexHNSW : Index {
     // IndexHNSWCagra to create a full base layer graph that is
     // used when GpuIndexCagra::copyFrom(IndexHNSWCagra*) is invoked.
     bool keep_max_size_level0 = false;
+
+    // See impl/VisitedTable.h.
+    std::optional<bool> use_visited_hashset;
 
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);

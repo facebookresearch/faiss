@@ -549,5 +549,9 @@ void CuvsIVFFlatCodePackerInterleaved::unpack_1(
             static_cast<uint32_t>(offset));
 }
 
+CodePacker* CuvsIVFFlatCodePackerInterleaved::clone() const {
+    return new CuvsIVFFlatCodePackerInterleaved(*this);
+}
+
 } // namespace gpu
 } // namespace faiss

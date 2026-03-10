@@ -104,4 +104,53 @@ namespace faiss {
 
 #endif // FAISS_ENABLE_DD
 
+/**
+ * Dispatch to a lambda with SIMDLevel as a compile-time constant.
+ *
+ * This function calls the provided templated lambda with the current
+ * runtime SIMD level (from SIMDConfig::level) as a compile-time template
+ * argument. This enables SIMD-specialized code paths while keeping the
+ * dispatch logic centralized.
+ *
+ * The key benefit is that the SIMD dispatch happens once, outside any loops,
+ * so the loop body runs with the optimal SIMD implementation without
+ * per-iteration dispatch overhead.
+ *
+ * Example with a loop (the dispatch happens once, not per iteration):
+ *
+ *   std::vector<float> distances(n);
+ *   with_simd_level([&]<SIMDLevel level>() {
+ *       for (size_t i = 0; i < n; i++) {
+ *           distances[i] = fvec_L2sqr<level>(query, vectors + i * d, d);
+ *       }
+ *   });
+ *
+ * The lambda must be a generic lambda with a SIMDLevel template parameter.
+ *
+ * @param action A generic lambda with signature `template<SIMDLevel> T
+ * operator()()`
+ * @return The return value of the lambda
+ */
+template <typename LambdaType>
+inline auto with_simd_level(LambdaType&& action) {
+    DISPATCH_SIMDLevel(action.template operator());
+}
+
+/**
+ * Like with_simd_level, but maps to the 256-bit SIMD equivalent:
+ *   AVX512, AVX512_SPR -> AVX2
+ *   ARM_SVE -> ARM_NEON
+ *   AVX2, ARM_NEON, NONE -> unchanged
+ *
+ * Use for functions implemented with simd8float32 (256-bit) operations
+ * that don't have dedicated AVX512 or SVE implementations.
+ */
+template <typename LambdaType>
+inline auto with_simd_level_256bit(LambdaType&& action) {
+    return with_simd_level([&]<SIMDLevel level>() {
+        constexpr SIMDLevel level256 = simd256_level_selector<level>::value;
+        return action.template operator()<level256>();
+    });
+}
+
 } // namespace faiss

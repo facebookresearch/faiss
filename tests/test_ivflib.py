@@ -440,3 +440,32 @@ class TestIvfSharding(unittest.TestCase):
         )
         self.verify_sharded_ivf_indexes(
             template, xb, shard_count, self.custom_sharding_function)
+
+    def test_save_index_shards_by_centroids_panorama(self):
+        """Test sharding for IndexIVFFlatPanorama."""
+        xb = np.random.rand(self.nb, self.d).astype('float32')
+        quantizer = faiss.IndexFlatL2(self.d)
+        n_levels = 4
+        index = faiss.IndexIVFFlatPanorama(
+            quantizer, self.d, self.nlist, n_levels)
+        shard_count = 5
+
+        index.quantizer.add(xb)
+
+        template = str(random.randint(0, 100000)) + "shard.%d.panorama.index"
+        faiss.shard_ivf_index_centroids(
+            index,
+            shard_count,
+            template,
+            None,
+            True
+        )
+
+        # Verify shards are IndexIVFFlatPanorama after read-back
+        for i in range(shard_count):
+            fname = template % i
+            shard = faiss.read_index(fname)
+            self.assertIsInstance(shard, faiss.IndexIVFFlatPanorama)
+
+        self.verify_sharded_ivf_indexes(
+            template, xb, shard_count, self.default_sharding_function)
