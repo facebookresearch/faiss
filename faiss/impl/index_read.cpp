@@ -553,6 +553,10 @@ static void read_ProductAdditiveQuantizer(
         IOReader* f) {
     read_AdditiveQuantizer(paq, f);
     READ1(paq.nsplits);
+    FAISS_THROW_IF_NOT_FMT(
+            paq.nsplits > 0,
+            "invalid ProductAdditiveQuantizer nsplits %zd (must be > 0)",
+            paq.nsplits);
 }
 
 static void read_ProductResidualQuantizer(
@@ -581,7 +585,14 @@ static void read_ProductLocalSearchQuantizer(
 }
 
 void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
-    READ1(ivsc->qtype);
+    int qtype_int;
+    READ1(qtype_int);
+    FAISS_THROW_IF_NOT_FMT(
+            qtype_int >= ScalarQuantizer::QT_8bit &&
+                    qtype_int <= ScalarQuantizer::QT_8bit_direct_signed,
+            "invalid ScalarQuantizer qtype %d",
+            qtype_int);
+    ivsc->qtype = static_cast<ScalarQuantizer::QuantizerType>(qtype_int);
     READ1(ivsc->rangestat);
     READ1(ivsc->rangestat_arg);
     READ1(ivsc->d);
@@ -724,6 +735,7 @@ static void read_HNSW(HNSW& hnsw, IOReader* f) {
 static void read_NSG(NSG& nsg, IOReader* f) {
     READ1(nsg.ntotal);
     READ1(nsg.R);
+    FAISS_THROW_IF_NOT_FMT(nsg.R > 0, "invalid NSG R %d (must be > 0)", nsg.R);
     READ1(nsg.L);
     READ1(nsg.C);
     READ1(nsg.search_L);
@@ -1352,6 +1364,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             READ1(nt);
         }
+        FAISS_THROW_IF_NOT_FMT(
+                nt >= 0,
+                "invalid VectorTransform chain length %d (must be >= 0)",
+                nt);
         for (int i = 0; i < nt; i++) {
             ixpt->chain.push_back(read_VectorTransform(f));
         }
@@ -2043,6 +2059,10 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmh->own_fields = true;
         READ1(idxmh->b);
         READ1(idxmh->nhash);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmh->nhash > 0,
+                "invalid IndexBinaryMultiHash nhash %d (must be > 0)",
+                idxmh->nhash);
         READ1(idxmh->nflip);
         idxmh->maps.resize(idxmh->nhash);
         for (int i = 0; i < idxmh->nhash; i++) {
