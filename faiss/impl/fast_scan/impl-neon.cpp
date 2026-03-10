@@ -32,6 +32,32 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
             is_max, impl, nq, ntotal, k, distances, ids, sel, with_id_map);
 }
 
+template <>
+std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
+        SIMDLevel::ARM_SVE>(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    return make_range_scanner_impl<SIMDLevel::ARM_NEON>(
+            is_max, rres, radius, ntotal, sel);
+}
+
+template <>
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
+        SIMDLevel::ARM_SVE>(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    return make_partial_range_scanner_impl<SIMDLevel::ARM_NEON>(
+            is_max, pres, radius, ntotal, q0, q1, sel);
+}
+
 } // namespace faiss
 
 #endif // COMPILE_SIMD_ARM_SVE

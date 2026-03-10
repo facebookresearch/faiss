@@ -362,4 +362,48 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl<
     }
 }
 
+/***************************************************************
+ * Range search scanner factories.
+ ***************************************************************/
+
+template <>
+std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl<
+        THE_LEVEL_TO_DISPATCH>(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    if (is_max) {
+        using C = CMax<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+                rres, radius, ntotal, sel);
+    } else {
+        using C = CMin<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<RangeHandler<C, true>>>(
+                rres, radius, ntotal, sel);
+    }
+}
+
+template <>
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl<
+        THE_LEVEL_TO_DISPATCH>(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    if (is_max) {
+        using C = CMax<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+                pres, radius, ntotal, q0, q1, sel);
+    } else {
+        using C = CMin<uint16_t, int64_t>;
+        return std::make_unique<ScannerMixIn<PartialRangeHandler<C, true>>>(
+                pres, radius, ntotal, q0, q1, sel);
+    }
+}
+
 } // namespace faiss
