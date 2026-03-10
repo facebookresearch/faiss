@@ -263,6 +263,9 @@ set(FAISS_HEADERS
   impl/lattice_Zn.h
   impl/platform_macros.h
   impl/fast_scan/pq4_fast_scan.h
+  impl/fast_scan/decompose_qbs.h
+  impl/fast_scan/kernels_simd256.h
+  impl/fast_scan/kernels_simd512.h
   impl/residual_quantizer_encode_steps.h
   impl/simd_dispatch.h
   impl/fast_scan/simd_result_handlers.h
