@@ -148,7 +148,8 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             const IDSelector* sel,
-            int impl = 0) const;
+            int impl = 0,
+            const FastScanDistancePostProcessing& context = {}) const;
 
     /** Create a KNN handler for this index type
      *

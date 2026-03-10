@@ -607,6 +607,10 @@ void gpu_sync_all_devices()
 %ignore faiss::make_range_scanner;
 %ignore faiss::make_partial_range_scanner_impl;
 %ignore faiss::make_partial_range_scanner;
+%ignore faiss::rabitq_make_knn_scanner_impl;
+%ignore faiss::rabitq_make_knn_scanner;
+%ignore faiss::rabitq_ivf_make_knn_scanner_impl;
+%ignore faiss::rabitq_ivf_make_knn_scanner;
 
 // Ignore make_knn_scanner / make_knn_handler — they return internal SIMD types.
 %ignore faiss::IndexFastScan::make_knn_scanner;

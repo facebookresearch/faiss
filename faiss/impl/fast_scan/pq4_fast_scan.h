@@ -324,4 +324,61 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
         size_t q1,
         const IDSelector* sel);
 
+/***************************************************************
+ * RaBitQ scanner factory: per-SIMD specializations live in
+ * rabitq_dispatching.h, included by each per-SIMD TU.
+ ***************************************************************/
+
+struct IndexRaBitQFastScan;
+struct IndexIVFRaBitQFastScan;
+struct FastScanDistancePostProcessing;
+
+/// Per-SIMD factory (primary template; specializations in rabitq_dispatching.h)
+template <SIMDLevel SL>
+std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner_impl(
+        const IndexRaBitQFastScan* index,
+        bool is_max,
+        size_t nq,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool is_multi_bit);
+
+/// Runtime dispatch wrapper for rabitq_make_knn_scanner_impl
+std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner(
+        const IndexRaBitQFastScan* index,
+        bool is_max,
+        size_t nq,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool is_multi_bit);
+
+/// Per-SIMD IVF RaBitQ scanner factory.
+template <SIMDLevel SL>
+std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit);
+
+/// Runtime dispatch wrapper for IVF RaBitQ scanner.
+std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit);
+
 } // namespace faiss

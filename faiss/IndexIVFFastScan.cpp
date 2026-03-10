@@ -502,7 +502,8 @@ std::unique_ptr<FastScanCodeScanner> IndexIVFFastScan::make_knn_scanner(
         float* distances,
         idx_t* labels,
         const IDSelector* sel,
-        int impl) const {
+        int impl,
+        const FastScanDistancePostProcessing&) const {
     return make_fast_scan_knn_scanner(
             is_max,
             impl,
@@ -613,7 +614,7 @@ void IndexIVFFastScan::search_dispatch_implem(
             } else {
                 // Try SIMD-dispatched scanner first
                 auto scanner = make_knn_scanner(
-                        is_max, n, k, distances, labels, sel, impl);
+                        is_max, n, k, distances, labels, sel, impl, context);
                 if (scanner) {
                     auto* handler = scanner->handler();
                     if (impl == 12 || impl == 13) {
@@ -701,7 +702,14 @@ void IndexIVFFastScan::search_dispatch_implem(
                     }
 
                     auto scanner = make_knn_scanner(
-                            is_max, i1 - i0, k, dis_i, lab_i, sel, impl);
+                            is_max,
+                            i1 - i0,
+                            k,
+                            dis_i,
+                            lab_i,
+                            sel,
+                            impl,
+                            thread_context);
                     if (scanner) {
                         auto* handler = scanner->handler();
                         if (impl == 12 || impl == 13) {
@@ -1437,7 +1445,14 @@ void IndexIVFFastScan::search_implem_14(
 
         // Try SIMD-dispatched scanner; fall back to make_knn_handler
         auto scanner = make_knn_scanner(
-                is_max, n, k, local_dis.data(), local_idx.data(), sel, impl);
+                is_max,
+                n,
+                k,
+                local_dis.data(),
+                local_idx.data(),
+                sel,
+                impl,
+                context);
         SIMDResultHandlerToFloat* handler_ptr;
         std::unique_ptr<SIMDResultHandlerToFloat> handler_owned;
         if (scanner) {

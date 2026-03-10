@@ -11,32 +11,28 @@
 #include <vector>
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQStats.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
 
-// Forward declaration — full definition needed only in implementation
+// Forward declaration — full definition in IndexIVFRaBitQFastScan.h
 struct IndexIVFRaBitQFastScan;
 
 namespace simd_result_handlers {
 
+// Import shared utilities from RaBitQUtils
+using rabitq_utils::ExtraBitsFactors;
+using rabitq_utils::SignBitFactors;
+using rabitq_utils::SignBitFactorsWithError;
+
 /** SIMD result handler for IndexIVFRaBitQFastScan that applies
  * RaBitQ-specific distance corrections during batch processing.
- *
- * This handler processes batches of 32 distance computations from SIMD
- * kernels, applies RaBitQ distance formula adjustments (factors and
- * normalizers), and immediately updates result heaps. This eliminates the
- * need for post-processing and provides significant performance benefits.
- *
- * Key optimizations:
- * - Direct heap integration with no intermediate result storage
- * - Batch-level computation of normalizers and query factors
- * - Specialized handling for both centered and non-centered quantization
- * modes
- * - Efficient inner product metric corrections
- * - Uses runtime boolean for multi-bit mode
  *
  * @tparam C Comparator type (CMin/CMax) for heap operations
  * @tparam SL SIMD level for dynamic dispatch
@@ -71,6 +67,9 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             CMax<float, int64_t>,
             CMin<float, int64_t>>::type;
 
+    // Constructor and method bodies are defined at the bottom of
+    // IndexIVFRaBitQFastScan.h (after the full struct definition is
+    // available) to break the circular header dependency.
     IVFRaBitQHeapHandler(
             const IndexIVFRaBitQFastScan* idx,
             size_t nq_val,
@@ -82,7 +81,6 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) override;
 
-    /// Override base class virtual method to receive context information
     void set_list_context(size_t list_no, const std::vector<int>& probe_map)
             override;
 
@@ -95,14 +93,8 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     }
 
    private:
-    /// Compute full multi-bit distance for a candidate vector (multi-bit
-    /// only)
-    /// @param db_idx Global database vector index
-    /// @param local_q Batch-local query index (for probe_indices access)
-    /// @param global_q Global query index (for storage indexing)
-    /// @param local_offset Offset within the current inverted list
     float compute_full_multibit_distance(
-            size_t /*db_idx*/,
+            size_t db_idx,
             size_t local_q,
             size_t global_q,
             size_t local_offset) const;

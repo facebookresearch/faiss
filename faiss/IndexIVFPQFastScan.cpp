@@ -22,6 +22,7 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
 

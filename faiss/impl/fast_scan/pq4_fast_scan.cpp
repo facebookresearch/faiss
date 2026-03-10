@@ -362,7 +362,8 @@ int pq4_pack_LUT_qbs_q_map(
  ***************************************************************/
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::NONE
-#include <faiss/impl/fast_scan/dispatching.h> // IWYU pragma: keep
+#include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
+#include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 #undef THE_LEVEL_TO_DISPATCH
 
 namespace faiss {
@@ -417,6 +418,50 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
             q0,
             q1,
             sel);
+}
+
+std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner(
+        const IndexRaBitQFastScan* index,
+        bool is_max,
+        size_t nq,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool is_multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_make_knn_scanner_impl,
+            index,
+            is_max,
+            nq,
+            k,
+            distances,
+            ids,
+            sel,
+            context,
+            is_multi_bit);
+}
+
+std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_ivf_make_knn_scanner_impl,
+            is_max,
+            index,
+            nq,
+            k,
+            distances,
+            ids,
+            context,
+            multi_bit);
 }
 
 } // namespace faiss
