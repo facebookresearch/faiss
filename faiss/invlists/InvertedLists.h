@@ -486,7 +486,8 @@ struct CappedInvertedLists : InvertedLists {
     void release_ids(size_t list_no, const idx_t* ids) const override;
 
     idx_t get_single_id(size_t list_no, size_t offset) const override;
-    const uint8_t* get_single_code(size_t list_no, size_t offset) const override;
+    const uint8_t* get_single_code(size_t list_no, size_t offset)
+        const override;
 
     void prefetch_lists(const idx_t* list_nos, int nlist) const override;
 
