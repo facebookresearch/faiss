@@ -12,9 +12,12 @@
 #include <cstring>
 #include <string>
 
+#include <faiss/impl/simdlib/simdlib.h>
+
 namespace faiss {
 
-struct simd256bit {
+template <>
+struct simd256bit_tpl<SIMDLevel::NONE> {
     union {
         uint8_t u8[32];
         uint16_t u16[16];
@@ -22,9 +25,9 @@ struct simd256bit {
         float f32[8];
     };
 
-    simd256bit() {}
+    simd256bit_tpl() {}
 
-    explicit simd256bit(const void* x) {
+    explicit simd256bit_tpl(const void* x) {
         memcpy(u8, x, 32);
     }
 
@@ -59,7 +62,7 @@ struct simd256bit {
     }
 
     // Checks whether the other holds exactly the same bytes.
-    bool is_same_as(simd256bit other) const {
+    bool is_same_as(simd256bit_tpl other) const {
         for (size_t i = 0; i < 8; i++) {
             if (u32[i] != other.u32[i]) {
                 return false;
@@ -71,22 +74,25 @@ struct simd256bit {
 };
 
 /// vector of 16 elements in uint16
-struct simd16uint16 : simd256bit {
-    simd16uint16() {}
+template <>
+struct simd16uint16_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
+    simd16uint16_tpl() {}
 
-    explicit simd16uint16(int x) {
+    explicit simd16uint16_tpl(int x) {
         set1(x);
     }
 
-    explicit simd16uint16(uint16_t x) {
+    explicit simd16uint16_tpl(uint16_t x) {
         set1(x);
     }
 
-    explicit simd16uint16(const simd256bit& x) : simd256bit(x) {}
+    explicit simd16uint16_tpl(const simd256bit_tpl<SIMDLevel::NONE>& x)
+            : simd256bit_tpl<SIMDLevel::NONE>(x) {}
 
-    explicit simd16uint16(const uint16_t* x) : simd256bit((const void*)x) {}
+    explicit simd16uint16_tpl(const uint16_t* x)
+            : simd256bit_tpl<SIMDLevel::NONE>((const void*)x) {}
 
-    explicit simd16uint16(
+    explicit simd16uint16_tpl(
             uint16_t u0,
             uint16_t u1,
             uint16_t u2,
@@ -140,8 +146,8 @@ struct simd16uint16 : simd256bit {
     }
 
     template <typename F>
-    static simd16uint16 unary_func(const simd16uint16& a, F&& f) {
-        simd16uint16 c;
+    static simd16uint16_tpl unary_func(const simd16uint16_tpl& a, F&& f) {
+        simd16uint16_tpl c;
         for (int j = 0; j < 16; j++) {
             c.u16[j] = f(a.u16[j]);
         }
@@ -149,11 +155,11 @@ struct simd16uint16 : simd256bit {
     }
 
     template <typename F>
-    static simd16uint16 binary_func(
-            const simd16uint16& a,
-            const simd16uint16& b,
+    static simd16uint16_tpl binary_func(
+            const simd16uint16_tpl& a,
+            const simd16uint16_tpl& b,
             F&& f) {
-        simd16uint16 c;
+        simd16uint16_tpl c;
         for (int j = 0; j < 16; j++) {
             c.u16[j] = f(a.u16[j], b.u16[j]);
         }
@@ -166,70 +172,73 @@ struct simd16uint16 : simd256bit {
         }
     }
 
-    simd16uint16 operator*(const simd16uint16& other) const {
+    simd16uint16_tpl operator*(const simd16uint16_tpl& other) const {
         return binary_func(
                 *this, other, [](uint16_t a, uint16_t b) { return a * b; });
     }
 
     // shift must be known at compile time
-    simd16uint16 operator>>(const int shift) const {
+    simd16uint16_tpl operator>>(const int shift) const {
         return unary_func(*this, [shift](uint16_t a) { return a >> shift; });
     }
 
     // shift must be known at compile time
-    simd16uint16 operator<<(const int shift) const {
+    simd16uint16_tpl operator<<(const int shift) const {
         return unary_func(*this, [shift](uint16_t a) { return a << shift; });
     }
 
-    simd16uint16 operator+=(const simd16uint16& other) {
+    simd16uint16_tpl& operator+=(const simd16uint16_tpl& other) {
         *this = *this + other;
         return *this;
     }
 
-    simd16uint16 operator-=(const simd16uint16& other) {
+    simd16uint16_tpl& operator-=(const simd16uint16_tpl& other) {
         *this = *this - other;
         return *this;
     }
 
-    simd16uint16 operator+(const simd16uint16& other) const {
+    simd16uint16_tpl operator+(const simd16uint16_tpl& other) const {
         return binary_func(
                 *this, other, [](uint16_t a, uint16_t b) { return a + b; });
     }
 
-    simd16uint16 operator-(const simd16uint16& other) const {
+    simd16uint16_tpl operator-(const simd16uint16_tpl& other) const {
         return binary_func(
                 *this, other, [](uint16_t a, uint16_t b) { return a - b; });
     }
 
-    simd16uint16 operator&(const simd256bit& other) const {
+    simd16uint16_tpl operator&(
+            const simd256bit_tpl<SIMDLevel::NONE>& other) const {
         return binary_func(
-                *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
+                *this, simd16uint16_tpl(other), [](uint16_t a, uint16_t b) {
                     return a & b;
                 });
     }
 
-    simd16uint16 operator|(const simd256bit& other) const {
+    simd16uint16_tpl operator|(
+            const simd256bit_tpl<SIMDLevel::NONE>& other) const {
         return binary_func(
-                *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
+                *this, simd16uint16_tpl(other), [](uint16_t a, uint16_t b) {
                     return a | b;
                 });
     }
 
-    simd16uint16 operator^(const simd256bit& other) const {
+    simd16uint16_tpl operator^(
+            const simd256bit_tpl<SIMDLevel::NONE>& other) const {
         return binary_func(
-                *this, simd16uint16(other), [](uint16_t a, uint16_t b) {
+                *this, simd16uint16_tpl(other), [](uint16_t a, uint16_t b) {
                     return a ^ b;
                 });
     }
 
     // returns binary masks
-    simd16uint16 operator==(const simd16uint16& other) const {
+    simd16uint16_tpl operator==(const simd16uint16_tpl& other) const {
         return binary_func(*this, other, [](uint16_t a, uint16_t b) {
             return a == b ? 0xffff : 0;
         });
     }
 
-    simd16uint16 operator~() const {
+    simd16uint16_tpl operator~() const {
         return unary_func(*this, [](uint16_t a) { return ~a; });
     }
 
@@ -240,7 +249,7 @@ struct simd16uint16 : simd256bit {
 
     // mask of elements where this >= thresh
     // 2 bit per component: 16 * 2 = 32 bit
-    uint32_t ge_mask(const simd16uint16& thresh) const {
+    uint32_t ge_mask(const simd16uint16_tpl& thresh) const {
         uint32_t gem = 0;
         for (int j = 0; j < 16; j++) {
             if (u16[j] >= thresh.u16[j]) {
@@ -250,15 +259,15 @@ struct simd16uint16 : simd256bit {
         return gem;
     }
 
-    uint32_t le_mask(const simd16uint16& thresh) const {
+    uint32_t le_mask(const simd16uint16_tpl& thresh) const {
         return thresh.ge_mask(*this);
     }
 
-    uint32_t gt_mask(const simd16uint16& thresh) const {
+    uint32_t gt_mask(const simd16uint16_tpl& thresh) const {
         return ~le_mask(thresh);
     }
 
-    bool all_gt(const simd16uint16& thresh) const {
+    bool all_gt(const simd16uint16_tpl& thresh) const {
         return le_mask(thresh) == 0;
     }
 
@@ -267,7 +276,7 @@ struct simd16uint16 : simd256bit {
         return u16[i];
     }
 
-    void accu_min(const simd16uint16& incoming) {
+    void accu_min(const simd16uint16_tpl& incoming) {
         for (int j = 0; j < 16; j++) {
             if (incoming.u16[j] < u16[j]) {
                 u16[j] = incoming.u16[j];
@@ -275,7 +284,7 @@ struct simd16uint16 : simd256bit {
         }
     }
 
-    void accu_max(const simd16uint16& incoming) {
+    void accu_max(const simd16uint16_tpl& incoming) {
         for (int j = 0; j < 16; j++) {
             if (incoming.u16[j] > u16[j]) {
                 u16[j] = incoming.u16[j];
@@ -285,21 +294,27 @@ struct simd16uint16 : simd256bit {
 };
 
 // not really a std::min because it returns an elementwise min
-inline simd16uint16 min(const simd16uint16& av, const simd16uint16& bv) {
-    return simd16uint16::binary_func(
+inline simd16uint16_tpl<SIMDLevel::NONE> min(
+        const simd16uint16_tpl<SIMDLevel::NONE>& av,
+        const simd16uint16_tpl<SIMDLevel::NONE>& bv) {
+    return simd16uint16_tpl<SIMDLevel::NONE>::binary_func(
             av, bv, [](uint16_t a, uint16_t b) { return std::min(a, b); });
 }
 
-inline simd16uint16 max(const simd16uint16& av, const simd16uint16& bv) {
-    return simd16uint16::binary_func(
+inline simd16uint16_tpl<SIMDLevel::NONE> max(
+        const simd16uint16_tpl<SIMDLevel::NONE>& av,
+        const simd16uint16_tpl<SIMDLevel::NONE>& bv) {
+    return simd16uint16_tpl<SIMDLevel::NONE>::binary_func(
             av, bv, [](uint16_t a, uint16_t b) { return std::max(a, b); });
 }
 
 // decompose in 128-lanes: a = (a0, a1), b = (b0, b1)
 // return (a0 + a1, b0 + b1)
 // TODO find a better name
-inline simd16uint16 combine2x2(const simd16uint16& a, const simd16uint16& b) {
-    simd16uint16 c;
+inline simd16uint16_tpl<SIMDLevel::NONE> combine2x2(
+        const simd16uint16_tpl<SIMDLevel::NONE>& a,
+        const simd16uint16_tpl<SIMDLevel::NONE>& b) {
+    simd16uint16_tpl<SIMDLevel::NONE> c;
     for (int j = 0; j < 8; j++) {
         c.u16[j] = a.u16[j] + a.u16[j + 8];
         c.u16[j + 8] = b.u16[j] + b.u16[j + 8];
@@ -310,9 +325,9 @@ inline simd16uint16 combine2x2(const simd16uint16& a, const simd16uint16& b) {
 // compare d0 and d1 to thr, return 32 bits corresponding to the concatenation
 // of d0 and d1 with thr
 inline uint32_t cmp_ge32(
-        const simd16uint16& d0,
-        const simd16uint16& d1,
-        const simd16uint16& thr) {
+        const simd16uint16_tpl<SIMDLevel::NONE>& d0,
+        const simd16uint16_tpl<SIMDLevel::NONE>& d1,
+        const simd16uint16_tpl<SIMDLevel::NONE>& thr) {
     uint32_t gem = 0;
     for (int j = 0; j < 16; j++) {
         if (d0.u16[j] >= thr.u16[j]) {
@@ -326,9 +341,9 @@ inline uint32_t cmp_ge32(
 }
 
 inline uint32_t cmp_le32(
-        const simd16uint16& d0,
-        const simd16uint16& d1,
-        const simd16uint16& thr) {
+        const simd16uint16_tpl<SIMDLevel::NONE>& d0,
+        const simd16uint16_tpl<SIMDLevel::NONE>& d1,
+        const simd16uint16_tpl<SIMDLevel::NONE>& thr) {
     uint32_t gem = 0;
     for (int j = 0; j < 16; j++) {
         if (d0.u16[j] <= thr.u16[j]) {
@@ -342,8 +357,10 @@ inline uint32_t cmp_le32(
 }
 
 // hadd does not cross lanes
-inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
-    simd16uint16 c;
+inline simd16uint16_tpl<SIMDLevel::NONE> hadd(
+        const simd16uint16_tpl<SIMDLevel::NONE>& a,
+        const simd16uint16_tpl<SIMDLevel::NONE>& b) {
+    simd16uint16_tpl<SIMDLevel::NONE> c;
     c.u16[0] = a.u16[0] + a.u16[1];
     c.u16[1] = a.u16[2] + a.u16[3];
     c.u16[2] = a.u16[4] + a.u16[5];
@@ -377,14 +394,14 @@ inline simd16uint16 hadd(const simd16uint16& a, const simd16uint16& b) {
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd16uint16 candidateValues,
-        const simd16uint16 candidateIndices,
-        const simd16uint16 currentValues,
-        const simd16uint16 currentIndices,
-        simd16uint16& minValues,
-        simd16uint16& minIndices,
-        simd16uint16& maxValues,
-        simd16uint16& maxIndices) {
+        const simd16uint16_tpl<SIMDLevel::NONE> candidateValues,
+        const simd16uint16_tpl<SIMDLevel::NONE> candidateIndices,
+        const simd16uint16_tpl<SIMDLevel::NONE> currentValues,
+        const simd16uint16_tpl<SIMDLevel::NONE> currentIndices,
+        simd16uint16_tpl<SIMDLevel::NONE>& minValues,
+        simd16uint16_tpl<SIMDLevel::NONE>& minIndices,
+        simd16uint16_tpl<SIMDLevel::NONE>& maxValues,
+        simd16uint16_tpl<SIMDLevel::NONE>& maxIndices) {
     for (size_t i = 0; i < 16; i++) {
         bool flag = (candidateValues.u16[i] < currentValues.u16[i]);
         minValues.u16[i] = flag ? candidateValues.u16[i] : currentValues.u16[i];
@@ -398,14 +415,15 @@ inline void cmplt_min_max_fast(
 }
 
 // vector of 32 unsigned 8-bit integers
-struct simd32uint8 : simd256bit {
-    simd32uint8() {}
+template <>
+struct simd32uint8_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
+    simd32uint8_tpl() {}
 
-    explicit simd32uint8(int x) {
+    explicit simd32uint8_tpl(int x) {
         set1(x);
     }
 
-    explicit simd32uint8(uint8_t x) {
+    explicit simd32uint8_tpl(uint8_t x) {
         set1(x);
     }
     template <
@@ -441,8 +459,8 @@ struct simd32uint8 : simd256bit {
             uint8_t _29,
             uint8_t _30,
             uint8_t _31>
-    static simd32uint8 create() {
-        simd32uint8 ret;
+    static simd32uint8_tpl create() {
+        simd32uint8_tpl ret;
         ret.u8[0] = _0;
         ret.u8[1] = _1;
         ret.u8[2] = _2;
@@ -478,9 +496,11 @@ struct simd32uint8 : simd256bit {
         return ret;
     }
 
-    explicit simd32uint8(const simd256bit& x) : simd256bit(x) {}
+    explicit simd32uint8_tpl(const simd256bit_tpl<SIMDLevel::NONE>& x)
+            : simd256bit_tpl<SIMDLevel::NONE>(x) {}
 
-    explicit simd32uint8(const uint8_t* x) : simd256bit((const void*)x) {}
+    explicit simd32uint8_tpl(const uint8_t* x)
+            : simd256bit_tpl<SIMDLevel::NONE>((const void*)x) {}
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
@@ -507,41 +527,82 @@ struct simd32uint8 : simd256bit {
     }
 
     template <typename F>
-    static simd32uint8 binary_func(
-            const simd32uint8& a,
-            const simd32uint8& b,
+    static simd32uint8_tpl binary_func(
+            const simd32uint8_tpl& a,
+            const simd32uint8_tpl& b,
             F&& f) {
-        simd32uint8 c;
+        simd32uint8_tpl c;
         for (int j = 0; j < 32; j++) {
             c.u8[j] = f(a.u8[j], b.u8[j]);
         }
         return c;
     }
 
-    simd32uint8 operator&(const simd256bit& other) const {
-        return binary_func(*this, simd32uint8(other), [](uint8_t a, uint8_t b) {
-            return a & b;
-        });
+    simd32uint8_tpl operator&(
+            const simd256bit_tpl<SIMDLevel::NONE>& other) const {
+        return binary_func(
+                *this, simd32uint8_tpl(other), [](uint8_t a, uint8_t b) {
+                    return a & b;
+                });
     }
 
-    simd32uint8 operator+(const simd32uint8& other) const {
+    simd32uint8_tpl operator+(const simd32uint8_tpl& other) const {
         return binary_func(
                 *this, other, [](uint8_t a, uint8_t b) { return a + b; });
     }
 
     // The very important operation that everything relies on
-    simd32uint8 lookup_2_lanes(const simd32uint8& idx) const {
-        simd32uint8 c;
-        for (int j = 0; j < 32; j++) {
+    simd32uint8_tpl lookup_2_lanes(const simd32uint8_tpl& idx) const {
+        simd32uint8_tpl c;
+        // The original for loop:
+        // for (int j = 0; j < 32; j++) {
+        //     if (idx.u8[j] & 0x80) {
+        //         c.u8[j] = 0;
+        //     } else {
+        //         uint8_t i = idx.u8[j] & 15;
+        //         if (j < 16) {
+        //             c.u8[j] = u8[i];
+        //         } else {
+        //             c.u8[j] = u8[16 + i];
+        //         }
+        //     }
+
+        // The following function was re-written for Power 10
+        // The loop was unrolled to remove the if (j < 16) statement by doing
+        // the j and j + 16 iterations in parallel.  The additional unrolling
+        // for j + 1 and j + 17, reduces the execution time on Power 10 by
+        // about 50% as the instruction scheduling allows on average 2X more
+        // instructions to be issued per cycle.
+
+        for (int j = 0; j < 16; j = j + 2) {
+            // j < 16, unrolled to depth of 2
             if (idx.u8[j] & 0x80) {
                 c.u8[j] = 0;
             } else {
                 uint8_t i = idx.u8[j] & 15;
-                if (j < 16) {
-                    c.u8[j] = u8[i];
-                } else {
-                    c.u8[j] = u8[16 + i];
-                }
+                c.u8[j] = u8[i];
+            }
+
+            if (idx.u8[j + 1] & 0x80) {
+                c.u8[j + 1] = 0;
+            } else {
+                uint8_t i = idx.u8[j + 1] & 15;
+                c.u8[j + 1] = u8[i];
+            }
+
+            // j >= 16, unrolled to depth of 2
+            if (idx.u8[j + 16] & 0x80) {
+                c.u8[j + 16] = 0;
+            } else {
+                uint8_t i = idx.u8[j + 16] & 15;
+                c.u8[j + 16] = u8[i + 16];
+            }
+
+            if (idx.u8[j + 17] & 0x80) {
+                c.u8[j + 17] = 0;
+            } else {
+                uint8_t i = idx.u8[j + 17] & 15;
+                c.u8[j + 17] = u8[i + 16];
             }
         }
         return c;
@@ -550,7 +611,7 @@ struct simd32uint8 : simd256bit {
     // extract + 0-extend lane
     // this operation is slow (3 cycles)
 
-    simd32uint8 operator+=(const simd32uint8& other) {
+    simd32uint8_tpl& operator+=(const simd32uint8_tpl& other) {
         *this = *this + other;
         return *this;
     }
@@ -563,10 +624,10 @@ struct simd32uint8 : simd256bit {
 
 // convert with saturation
 // careful: this does not cross lanes, so the order is weird
-inline simd32uint8 uint16_to_uint8_saturate(
-        const simd16uint16& a,
-        const simd16uint16& b) {
-    simd32uint8 c;
+inline simd32uint8_tpl<SIMDLevel::NONE> uint16_to_uint8_saturate(
+        const simd16uint16_tpl<SIMDLevel::NONE>& a,
+        const simd16uint16_tpl<SIMDLevel::NONE>& b) {
+    simd32uint8_tpl<SIMDLevel::NONE> c;
 
     auto saturate_16_to_8 = [](uint16_t x) { return x >= 256 ? 0xff : x; };
 
@@ -580,7 +641,7 @@ inline simd32uint8 uint16_to_uint8_saturate(
 }
 
 /// get most significant bit of each byte
-inline uint32_t get_MSBs(const simd32uint8& a) {
+inline uint32_t get_MSBs(const simd32uint8_tpl<SIMDLevel::NONE>& a) {
     uint32_t res = 0;
     for (int i = 0; i < 32; i++) {
         if (a.u8[i] & 0x80) {
@@ -591,11 +652,11 @@ inline uint32_t get_MSBs(const simd32uint8& a) {
 }
 
 /// use MSB of each byte of mask to select a byte between a and b
-inline simd32uint8 blendv(
-        const simd32uint8& a,
-        const simd32uint8& b,
-        const simd32uint8& mask) {
-    simd32uint8 c;
+inline simd32uint8_tpl<SIMDLevel::NONE> blendv(
+        const simd32uint8_tpl<SIMDLevel::NONE>& a,
+        const simd32uint8_tpl<SIMDLevel::NONE>& b,
+        const simd32uint8_tpl<SIMDLevel::NONE>& mask) {
+    simd32uint8_tpl<SIMDLevel::NONE> c;
     for (int i = 0; i < 32; i++) {
         if (mask.u8[i] & 0x80) {
             c.u8[i] = b.u8[i];
@@ -607,18 +668,21 @@ inline simd32uint8 blendv(
 }
 
 /// vector of 8 unsigned 32-bit integers
-struct simd8uint32 : simd256bit {
-    simd8uint32() {}
+template <>
+struct simd8uint32_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
+    simd8uint32_tpl() {}
 
-    explicit simd8uint32(uint32_t x) {
+    explicit simd8uint32_tpl(uint32_t x) {
         set1(x);
     }
 
-    explicit simd8uint32(const simd256bit& x) : simd256bit(x) {}
+    explicit simd8uint32_tpl(const simd256bit_tpl<SIMDLevel::NONE>& x)
+            : simd256bit_tpl<SIMDLevel::NONE>(x) {}
 
-    explicit simd8uint32(const uint32_t* x) : simd256bit((const void*)x) {}
+    explicit simd8uint32_tpl(const uint32_t* x)
+            : simd256bit_tpl<SIMDLevel::NONE>((const void*)x) {}
 
-    explicit simd8uint32(
+    explicit simd8uint32_tpl(
             uint32_t u0,
             uint32_t u1,
             uint32_t u2,
@@ -637,30 +701,30 @@ struct simd8uint32 : simd256bit {
         u32[7] = u7;
     }
 
-    simd8uint32 operator+(simd8uint32 other) const {
-        simd8uint32 result;
+    simd8uint32_tpl operator+(simd8uint32_tpl other) const {
+        simd8uint32_tpl result;
         for (int i = 0; i < 8; i++) {
             result.u32[i] = u32[i] + other.u32[i];
         }
         return result;
     }
 
-    simd8uint32 operator-(simd8uint32 other) const {
-        simd8uint32 result;
+    simd8uint32_tpl operator-(simd8uint32_tpl other) const {
+        simd8uint32_tpl result;
         for (int i = 0; i < 8; i++) {
             result.u32[i] = u32[i] - other.u32[i];
         }
         return result;
     }
 
-    simd8uint32& operator+=(const simd8uint32& other) {
+    simd8uint32_tpl& operator+=(const simd8uint32_tpl& other) {
         for (int i = 0; i < 8; i++) {
             u32[i] += other.u32[i];
         }
         return *this;
     }
 
-    bool operator==(simd8uint32 other) const {
+    bool operator==(simd8uint32_tpl other) const {
         for (size_t i = 0; i < 8; i++) {
             if (u32[i] != other.u32[i]) {
                 return false;
@@ -670,7 +734,7 @@ struct simd8uint32 : simd256bit {
         return true;
     }
 
-    bool operator!=(simd8uint32 other) const {
+    bool operator!=(simd8uint32_tpl other) const {
         return !(*this == other);
     }
 
@@ -698,10 +762,10 @@ struct simd8uint32 : simd256bit {
         }
     }
 
-    simd8uint32 unzip() const {
+    simd8uint32_tpl unzip() const {
         const uint32_t ret[] = {
                 u32[0], u32[2], u32[4], u32[6], u32[1], u32[3], u32[5], u32[7]};
-        return simd8uint32{ret};
+        return simd8uint32_tpl{ret};
     }
 };
 
@@ -717,14 +781,14 @@ struct simd8uint32 : simd256bit {
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd8uint32 candidateValues,
-        const simd8uint32 candidateIndices,
-        const simd8uint32 currentValues,
-        const simd8uint32 currentIndices,
-        simd8uint32& minValues,
-        simd8uint32& minIndices,
-        simd8uint32& maxValues,
-        simd8uint32& maxIndices) {
+        const simd8uint32_tpl<SIMDLevel::NONE> candidateValues,
+        const simd8uint32_tpl<SIMDLevel::NONE> candidateIndices,
+        const simd8uint32_tpl<SIMDLevel::NONE> currentValues,
+        const simd8uint32_tpl<SIMDLevel::NONE> currentIndices,
+        simd8uint32_tpl<SIMDLevel::NONE>& minValues,
+        simd8uint32_tpl<SIMDLevel::NONE>& minIndices,
+        simd8uint32_tpl<SIMDLevel::NONE>& maxValues,
+        simd8uint32_tpl<SIMDLevel::NONE>& maxIndices) {
     for (size_t i = 0; i < 8; i++) {
         bool flag = (candidateValues.u32[i] < currentValues.u32[i]);
         minValues.u32[i] = flag ? candidateValues.u32[i] : currentValues.u32[i];
@@ -737,16 +801,18 @@ inline void cmplt_min_max_fast(
     }
 }
 
-struct simd8float32 : simd256bit {
-    simd8float32() {}
+template <>
+struct simd8float32_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
+    simd8float32_tpl() {}
 
-    explicit simd8float32(const simd256bit& x) : simd256bit(x) {}
+    explicit simd8float32_tpl(const simd256bit_tpl<SIMDLevel::NONE>& x)
+            : simd256bit_tpl<SIMDLevel::NONE>(x) {}
 
-    explicit simd8float32(float x) {
+    explicit simd8float32_tpl(float x) {
         set1(x);
     }
 
-    explicit simd8float32(const float* x) {
+    explicit simd8float32_tpl(const float* x) {
         loadu((void*)x);
     }
 
@@ -756,7 +822,7 @@ struct simd8float32 : simd256bit {
         }
     }
 
-    explicit simd8float32(
+    explicit simd8float32_tpl(
             float f0,
             float f1,
             float f2,
@@ -776,33 +842,33 @@ struct simd8float32 : simd256bit {
     }
 
     template <typename F>
-    static simd8float32 binary_func(
-            const simd8float32& a,
-            const simd8float32& b,
+    static simd8float32_tpl binary_func(
+            const simd8float32_tpl& a,
+            const simd8float32_tpl& b,
             F&& f) {
-        simd8float32 c;
+        simd8float32_tpl c;
         for (int j = 0; j < 8; j++) {
             c.f32[j] = f(a.f32[j], b.f32[j]);
         }
         return c;
     }
 
-    simd8float32 operator*(const simd8float32& other) const {
+    simd8float32_tpl operator*(const simd8float32_tpl& other) const {
         return binary_func(
                 *this, other, [](float a, float b) { return a * b; });
     }
 
-    simd8float32 operator+(const simd8float32& other) const {
+    simd8float32_tpl operator+(const simd8float32_tpl& other) const {
         return binary_func(
                 *this, other, [](float a, float b) { return a + b; });
     }
 
-    simd8float32 operator-(const simd8float32& other) const {
+    simd8float32_tpl operator-(const simd8float32_tpl& other) const {
         return binary_func(
                 *this, other, [](float a, float b) { return a - b; });
     }
 
-    simd8float32& operator+=(const simd8float32& other) {
+    simd8float32_tpl& operator+=(const simd8float32_tpl& other) {
         for (size_t i = 0; i < 8; i++) {
             f32[i] += other.f32[i];
         }
@@ -810,7 +876,7 @@ struct simd8float32 : simd256bit {
         return *this;
     }
 
-    bool operator==(simd8float32 other) const {
+    bool operator==(simd8float32_tpl other) const {
         for (size_t i = 0; i < 8; i++) {
             if (f32[i] != other.f32[i]) {
                 return false;
@@ -820,7 +886,7 @@ struct simd8float32 : simd256bit {
         return true;
     }
 
-    bool operator!=(simd8float32 other) const {
+    bool operator!=(simd8float32_tpl other) const {
         return !(*this == other);
     }
 
@@ -836,8 +902,10 @@ struct simd8float32 : simd256bit {
 };
 
 // hadd does not cross lanes
-inline simd8float32 hadd(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+inline simd8float32_tpl<SIMDLevel::NONE> hadd(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
     c.f32[0] = a.f32[0] + a.f32[1];
     c.f32[1] = a.f32[2] + a.f32[3];
     c.f32[2] = b.f32[0] + b.f32[1];
@@ -851,8 +919,10 @@ inline simd8float32 hadd(const simd8float32& a, const simd8float32& b) {
     return c;
 }
 
-inline simd8float32 unpacklo(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+inline simd8float32_tpl<SIMDLevel::NONE> unpacklo(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
     c.f32[0] = a.f32[0];
     c.f32[1] = b.f32[0];
     c.f32[2] = a.f32[1];
@@ -866,8 +936,10 @@ inline simd8float32 unpacklo(const simd8float32& a, const simd8float32& b) {
     return c;
 }
 
-inline simd8float32 unpackhi(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+inline simd8float32_tpl<SIMDLevel::NONE> unpackhi(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
     c.f32[0] = a.f32[2];
     c.f32[1] = b.f32[2];
     c.f32[2] = a.f32[3];
@@ -882,11 +954,11 @@ inline simd8float32 unpackhi(const simd8float32& a, const simd8float32& b) {
 }
 
 // compute a * b + c
-inline simd8float32 fmadd(
-        const simd8float32& a,
-        const simd8float32& b,
-        const simd8float32& c) {
-    simd8float32 res;
+inline simd8float32_tpl<SIMDLevel::NONE> fmadd(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b,
+        const simd8float32_tpl<SIMDLevel::NONE>& c) {
+    simd8float32_tpl<SIMDLevel::NONE> res;
     for (int i = 0; i < 8; i++) {
         res.f32[i] = a.f32[i] * b.f32[i] + c.f32[i];
     }
@@ -896,8 +968,10 @@ inline simd8float32 fmadd(
 namespace {
 
 // get even float32's of a and b, interleaved
-simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+simd8float32_tpl<SIMDLevel::NONE> geteven(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
 
     c.f32[0] = a.f32[0];
     c.f32[1] = a.f32[2];
@@ -913,8 +987,10 @@ simd8float32 geteven(const simd8float32& a, const simd8float32& b) {
 }
 
 // get odd float32's of a and b, interleaved
-simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+simd8float32_tpl<SIMDLevel::NONE> getodd(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
 
     c.f32[0] = a.f32[1];
     c.f32[1] = a.f32[3];
@@ -931,8 +1007,10 @@ simd8float32 getodd(const simd8float32& a, const simd8float32& b) {
 
 // 3 cycles
 // if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
-simd8float32 getlow128(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+simd8float32_tpl<SIMDLevel::NONE> getlow128(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
 
     c.f32[0] = a.f32[0];
     c.f32[1] = a.f32[1];
@@ -947,8 +1025,10 @@ simd8float32 getlow128(const simd8float32& a, const simd8float32& b) {
     return c;
 }
 
-simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
-    simd8float32 c;
+simd8float32_tpl<SIMDLevel::NONE> gethigh128(
+        const simd8float32_tpl<SIMDLevel::NONE>& a,
+        const simd8float32_tpl<SIMDLevel::NONE>& b) {
+    simd8float32_tpl<SIMDLevel::NONE> c;
 
     c.f32[0] = a.f32[4];
     c.f32[1] = a.f32[5];
@@ -995,10 +1075,10 @@ simd8float32 gethigh128(const simd8float32& a, const simd8float32& b) {
 // confusion for ppl who write in low-level SIMD instructions. Additionally,
 // these two ops (cmp and blend) are very often used together.
 inline void cmplt_and_blend_inplace(
-        const simd8float32 candidateValues,
-        const simd8uint32 candidateIndices,
-        simd8float32& lowestValues,
-        simd8uint32& lowestIndices) {
+        const simd8float32_tpl<SIMDLevel::NONE> candidateValues,
+        const simd8uint32_tpl<SIMDLevel::NONE> candidateIndices,
+        simd8float32_tpl<SIMDLevel::NONE>& lowestValues,
+        simd8uint32_tpl<SIMDLevel::NONE>& lowestIndices) {
     for (size_t j = 0; j < 8; j++) {
         bool comparison = (candidateValues.f32[j] < lowestValues.f32[j]);
         if (comparison) {
@@ -1020,14 +1100,14 @@ inline void cmplt_and_blend_inplace(
 // the last equal value is saved instead of the first one), but this behavior
 // saves instructions.
 inline void cmplt_min_max_fast(
-        const simd8float32 candidateValues,
-        const simd8uint32 candidateIndices,
-        const simd8float32 currentValues,
-        const simd8uint32 currentIndices,
-        simd8float32& minValues,
-        simd8uint32& minIndices,
-        simd8float32& maxValues,
-        simd8uint32& maxIndices) {
+        const simd8float32_tpl<SIMDLevel::NONE> candidateValues,
+        const simd8uint32_tpl<SIMDLevel::NONE> candidateIndices,
+        const simd8float32_tpl<SIMDLevel::NONE> currentValues,
+        const simd8uint32_tpl<SIMDLevel::NONE> currentIndices,
+        simd8float32_tpl<SIMDLevel::NONE>& minValues,
+        simd8uint32_tpl<SIMDLevel::NONE>& minIndices,
+        simd8float32_tpl<SIMDLevel::NONE>& maxValues,
+        simd8uint32_tpl<SIMDLevel::NONE>& maxIndices) {
     for (size_t i = 0; i < 8; i++) {
         bool flag = (candidateValues.f32[i] < currentValues.f32[i]);
         minValues.f32[i] = flag ? candidateValues.f32[i] : currentValues.f32[i];
