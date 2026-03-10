@@ -8,6 +8,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/impl/simd_dispatch.h>
 
 #include <array>
 
@@ -348,6 +349,45 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+} // namespace faiss
+
+/***************************************************************
+ * FastScanCodeScanner: NONE specialization + dispatch wrapper.
+ *
+ * The NONE specialization provides the scalar fallback.
+ * Per-SIMD specializations (AVX2, AVX512, ARM_NEON) are in
+ * impl-avx2.cpp, impl-avx512.cpp, impl-neon.cpp respectively.
+ ***************************************************************/
+
+#define THE_LEVEL_TO_DISPATCH SIMDLevel::NONE
+#include <faiss/impl/fast_scan/dispatching.h> // IWYU pragma: keep
+#undef THE_LEVEL_TO_DISPATCH
+
+namespace faiss {
+
+std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
+        bool is_max,
+        int impl,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map) {
+    DISPATCH_SIMDLevel(
+            make_fast_scan_scanner_impl,
+            is_max,
+            impl,
+            nq,
+            ntotal,
+            k,
+            distances,
+            ids,
+            sel,
+            with_id_map);
 }
 
 } // namespace faiss

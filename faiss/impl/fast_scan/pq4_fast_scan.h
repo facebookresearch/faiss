@@ -9,8 +9,10 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/utils/simd_levels.h>
 
 /** PQ4 SIMD packing and accumulation functions
  *
@@ -25,6 +27,8 @@
 namespace faiss {
 
 struct SIMDResultHandler;
+struct SIMDResultHandlerToFloat;
+struct IDSelector;
 
 /** Pack codes for consumption by the SIMD kernels.
  *  The unused bytes are set to 0.
@@ -219,5 +223,66 @@ void accumulate_to_mem(
         const uint8_t* codes,
         const uint8_t* LUT,
         uint16_t* accu);
+
+/***************************************************************
+ * FastScanCodeScanner: virtual base that bundles handler + kernel
+ * behind the SIMD dispatch boundary. Per-SIMD TUs instantiate this
+ * with the correct SIMDLevel so that handler and kernel share the
+ * same SIMD types.
+ ***************************************************************/
+
+struct FastScanCodeScanner {
+    virtual ~FastScanCodeScanner() = default;
+
+    /// Access the underlying result handler (for begin/end/normalizer calls)
+    virtual SIMDResultHandlerToFloat* handler() = 0;
+
+    /// Run the search_1 accumulation loop (bbs > 32, multi-BB kernel)
+    virtual void accumulate_loop(
+            int nq,
+            size_t nb,
+            int bbs,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            int pq2x4_scale,
+            size_t block_stride) = 0;
+
+    /// Run the QBS accumulation loop (bbs == 32)
+    virtual void accumulate_loop_qbs(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* LUT,
+            int pq2x4_scale,
+            size_t block_stride) = 0;
+};
+
+/// Per-SIMD factory (primary template; specializations in dispatching.h)
+template <SIMDLevel SL>
+std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl(
+        bool is_max,
+        int impl,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map);
+
+/// Create a FastScanCodeScanner for knn search, dispatching to the
+/// best available SIMD level at runtime.
+std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
+        bool is_max,
+        int impl,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map = false);
 
 } // namespace faiss
