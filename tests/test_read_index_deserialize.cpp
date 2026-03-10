@@ -439,3 +439,54 @@ TEST(ReadIndexDeserialize, BinaryHashEmptyInvlistBuffer) {
 
     expect_binary_read_throws_with(buf, "binary hash invlists");
 }
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryHash with b=0 triggers the b > 0 validation.
+// Without this check, BitstringReader::read(0) would silently produce
+// garbage hash values on every inverted-list entry.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashBZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 0); // b = 0 (invalid)
+
+    expect_binary_read_throws_with(buf, "IndexBinaryHash b=");
+}
+
+// -----------------------------------------------------------------------
+// Test: read_binary_hash_invlists with negative il_nbit triggers the
+// il_nbit >= 0 validation.  Without this check, the negative value would
+// wrap to a huge size_t in the bits-per-entry calculation, causing an
+// out-of-bounds read in BitstringReader.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashNegativeIlNbit) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+    // read_binary_hash_invlists fields:
+    push_val<size_t>(buf, size_t(0)); // sz = 0
+    push_val<int>(buf, -1);           // il_nbit = -1 (invalid)
+
+    expect_binary_read_throws_with(buf, "il_nbit=");
+}
+
+// -----------------------------------------------------------------------
+// Test: read_binary_hash_invlists with il_nbit=0 but sz > 0 triggers
+// the il_nbit > 0 validation.  Without this check, every inverted-list
+// size would silently read as 0, corrupting the deserialized index.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashIlNbitZeroWithEntries) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+    // read_binary_hash_invlists fields:
+    push_val<size_t>(buf, size_t(1)); // sz = 1 (non-zero)
+    push_val<int>(buf, 0);            // il_nbit = 0 (invalid when sz > 0)
+
+    expect_binary_read_throws_with(buf, "il_nbit=");
+}

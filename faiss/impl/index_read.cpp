@@ -1901,6 +1901,18 @@ static void read_binary_hash_invlists(
     READ1(sz);
     int il_nbit = 0;
     READ1(il_nbit);
+    FAISS_THROW_IF_NOT_FMT(
+            il_nbit >= 0,
+            "invalid binary hash invlists il_nbit=%d (must be >= 0)",
+            il_nbit);
+    if (sz > 0) {
+        FAISS_THROW_IF_NOT_FMT(
+                il_nbit > 0,
+                "invalid binary hash invlists il_nbit=%d for sz=%zd "
+                "(must be > 0 when entries exist)",
+                il_nbit,
+                sz);
+    }
     // buffer for bitstrings
     size_t bits_per_entry = (size_t)b + (size_t)il_nbit;
     size_t total_bits =
@@ -2013,6 +2025,10 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         auto idxh = std::make_unique<IndexBinaryHash>();
         read_index_binary_header(*idxh, f);
         READ1(idxh->b);
+        FAISS_THROW_IF_NOT_FMT(
+                idxh->b > 0,
+                "invalid IndexBinaryHash b=%d (must be > 0)",
+                idxh->b);
         READ1(idxh->nflip);
         read_binary_hash_invlists(idxh->invlists, idxh->b, f);
         idx = std::move(idxh);
