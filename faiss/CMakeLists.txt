@@ -285,7 +285,6 @@ set(FAISS_HEADERS
   utils/WorkerThread.h
   utils/distances.h
   utils/distances_dispatch.h
-  utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
@@ -327,6 +326,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
 
