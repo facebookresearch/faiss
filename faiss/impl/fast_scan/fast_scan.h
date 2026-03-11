@@ -29,7 +29,6 @@ namespace faiss {
 struct IDSelector;
 struct RangeSearchResult;
 struct RangeSearchPartialResult;
-struct SIMDResultHandler;
 struct SIMDResultHandlerToFloat;
 
 /** Pack codes for consumption by the SIMD kernels.
@@ -125,42 +124,6 @@ struct CodePackerPQ4 : CodePacker {
  */
 void pq4_pack_LUT(int nq, int nsq, const uint8_t* src, uint8_t* dest);
 
-/** Loop over database elements and accumulate results into result handler
- *
- * @param nq      number of queries
- * @param nb      number of database elements
- * @param bbs     size of database blocks (multiple of 32)
- * @param nsq     number of sub-quantizers (multiple of 2)
- * @param codes   packed codes array
- * @param LUT     packed look-up table
- * @param scaler  scaler to scale the encoded norm
- * @param block_stride  stride in bytes between consecutive blocks.
- */
-void pq4_accumulate_loop(
-        int nq,
-        size_t nb,
-        int bbs,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        SIMDResultHandler& res,
-        int pq2x4_scale,
-        size_t block_stride);
-
-/* qbs versions, supported only for bbs=32.
- *
- * The kernel function runs the kernel for *several* query blocks
- * and bbs database vectors. The sizes of the blocks are encoded in qbs as
- * base-16 digits.
- *
- * For example, qbs = 0x1223 means that the kernel will be run 4 times, the
- * first time with 3 query vectors, second time with 2 query vectors, then 2
- * vectors again and finally with 1 query vector. The output block will thus be
- * nq = 3 + 2 + 2 + 1 = 6 queries. For a given total block size, the optimal
- * decomposition into sub-blocks (measured empirically) is given by
- * preferred_qbs().
- */
-
 /* compute the number of queries from a base-16 decomposition */
 int pq4_qbs_to_nq(int qbs);
 
@@ -187,28 +150,7 @@ int pq4_pack_LUT_qbs_q_map(
         const int* q_map,
         uint8_t* dest);
 
-/** Run accumulation loop.
- *
- * @param qbs     4-bit encoded number of queries
- * @param nb      number of database codes (multiple of bbs)
- * @param nsq     number of sub-quantizers
- * @param codes   encoded database vectors (packed)
- * @param LUT     look-up table (packed)
- * @param res     call-back for the results
- * @param pq2x4_scale  scaler to scale the encoded norm
- * @param block_stride  stride in bytes between consecutive blocks.
- */
-void pq4_accumulate_loop_qbs(
-        int qbs,
-        size_t nb,
-        int nsq,
-        const uint8_t* codes,
-        const uint8_t* LUT,
-        SIMDResultHandler& res,
-        int pq2x4_scale,
-        size_t block_stride);
-
-/** Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler
+/** Wrapper using simple StoreResultHandler
  *  and DummyScaler
  *
  * @param nq      number of queries

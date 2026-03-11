@@ -121,8 +121,6 @@ set(FAISS_SRC
   impl/lattice_Zn.cpp
   impl/mapped_io.cpp
   impl/fast_scan/fast_scan.cpp
-  impl/fast_scan/pq4_fast_scan_search_1.cpp
-  impl/fast_scan/pq4_fast_scan_search_qbs.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp

@@ -6,6 +6,8 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/fast_scan/LookupTableScaler.h>
+#include <faiss/impl/fast_scan/decompose_qbs.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -349,6 +351,52 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+// declared in simd_result_handlers.h
+bool simd_result_handlers_accept_virtual = true;
+
+int pq4_qbs_to_nq(int qbs) {
+    int i0 = 0;
+    int qi = qbs;
+    while (qi) {
+        int nq = qi & 15;
+        qi >>= 4;
+        i0 += nq;
+    }
+    return i0;
+}
+
+int pq4_preferred_qbs(int n) {
+    // from timings in P141901742, P141902828
+    static int map[12] = {
+            0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
+    if (n <= 11) {
+        return map[n];
+    } else if (n <= 24) {
+        // override qbs: all first stages with 3 steps
+        // then 1 stage with the rest
+        int nbit = 4 * (n / 3); // nbits with only 3s
+        int qbs = 0x33333333 & ((1 << nbit) - 1);
+        qbs |= (n % 3) << nbit;
+        return qbs;
+    } else {
+        FAISS_THROW_FMT("number of queries %d too large", n);
+    }
+}
+
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    using namespace simd_result_handlers;
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    StoreResultHandler<> handler(accu, ntotal2);
+    DummyScaler<> scaler;
+    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
 }
 
 } // namespace faiss
