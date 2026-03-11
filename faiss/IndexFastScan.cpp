@@ -16,7 +16,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
-#include <faiss/impl/fast_scan/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
