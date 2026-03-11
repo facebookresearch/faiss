@@ -266,6 +266,7 @@ set(FAISS_HEADERS
   impl/fast_scan/decompose_qbs.h
   impl/fast_scan/kernels_simd256.h
   impl/fast_scan/kernels_simd512.h
+  impl/fast_scan/rabitq_result_handler.h
   impl/residual_quantizer_encode_steps.h
   impl/simd_dispatch.h
   impl/fast_scan/simd_result_handlers.h
