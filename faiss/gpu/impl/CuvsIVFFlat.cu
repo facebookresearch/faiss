@@ -84,7 +84,7 @@ void CuvsIVFFlat::reset() {
                 resources_->getRaftHandleCurrentDevice();
         cuvs::neighbors::ivf_flat::helpers::reset_index(
                 raft_handle, cuvs_index.get());
-    }        
+    }
 }
 
 void CuvsIVFFlat::setCuvsIndex(
