@@ -227,8 +227,8 @@ struct IndexIVFFastScan : IndexIVF {
      * Returns a FastScanCodeScanner that bundles handler + accumulation
      * kernel behind the SIMD dispatch boundary. ntotal is not passed
      * because IVF sets it per-list via handler->ntotal.
-     * Derived classes that need custom handlers (e.g. RaBitQ) override
-     * this to return nullptr, falling back to make_knn_handler.
+     * Derived classes override this to provide custom handlers
+     * (e.g. RaBitQ).
      *
      * @param is_max       whether to use CMax comparator (true) or CMin
      * @param n            number of queries
@@ -236,7 +236,7 @@ struct IndexIVFFastScan : IndexIVF {
      * @param distances    output distances array
      * @param labels       output labels array
      * @param sel          optional ID selector
-     * @return             scanner, or nullptr if unsupported
+     * @return             scanner
      */
     virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
             bool is_max,
@@ -245,47 +245,8 @@ struct IndexIVFFastScan : IndexIVF {
             float* distances,
             idx_t* labels,
             const IDSelector* sel,
+            int impl = 0,
             const FastScanDistancePostProcessing& context = {}) const;
-
-    /** Create a KNN handler for this index type
-     *
-     * This method can be overridden by derived classes to provide
-     * specialized handlers (e.g., IVFRaBitQHeapHandler for RaBitQ indexes).
-     * Base implementation creates standard handlers based on k and impl.
-     *
-     * @param is_max        true for max-heap (inner product), false for
-     *                      min-heap (L2 distance)
-     * @param impl          implementation number:
-     *                      - even (10, 12, 14): use heap for top-k
-     *                      - odd (11, 13, 15): use reservoir sampling
-     * @param n             number of queries
-     * @param k             number of neighbors to find per query
-     * @param distances     output array for distances (n * k), will be
-     *                      populated by handler
-     * @param labels        output array for result IDs (n * k), will be
-     *                      populated by handler
-     * @param sel           optional ID selector to filter results (nullptr =
-     *                      no filtering)
-     * @param context       processing context containing additional data
-     * @param normalizers   optional array of size 2*n for converting quantized
-     *                      uint16 distances to float.
-     *
-     * @return Allocated result handler (caller owns and must delete).
-     *         Handler processes SIMD batches and populates distances/labels.
-     *
-     * @note The returned handler must be deleted by caller after use.
-     *       Typical usage: handler->begin() → process batches → handler->end()
-     */
-    virtual SIMDResultHandlerToFloat* make_knn_handler(
-            bool is_max,
-            int impl,
-            idx_t n,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const IDSelector* sel,
-            const FastScanDistancePostProcessing& context,
-            const float* normalizers = nullptr) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
@@ -340,7 +301,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     void search_implem_12(
             idx_t n,
@@ -350,7 +312,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(

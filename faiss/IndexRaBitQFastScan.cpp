@@ -530,32 +530,11 @@ std::unique_ptr<FastScanCodeScanner> IndexRaBitQFastScan::make_knn_scanner(
         float* distances,
         idx_t* labels,
         const IDSelector* sel,
+        int /*impl*/,
         const FastScanDistancePostProcessing& context) const {
     const bool is_multi_bit = rabitq.nb_bits > 1;
     return rabitq_make_knn_scanner(
             this, is_max, n, k, distances, labels, sel, context, is_multi_bit);
-}
-
-// Implementation of virtual make_knn_handler method
-SIMDResultHandlerToFloat* IndexRaBitQFastScan::make_knn_handler(
-        bool is_max,
-        int /*impl*/,
-        idx_t n,
-        idx_t k,
-        size_t /*ntotal*/,
-        float* distances,
-        idx_t* labels,
-        const IDSelector* sel,
-        const FastScanDistancePostProcessing& context) const {
-    const bool multi_bit = rabitq.nb_bits > 1;
-
-    if (is_max) {
-        return new RaBitQHeapHandler<CMax<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, &context, multi_bit);
-    } else {
-        return new RaBitQHeapHandler<CMin<uint16_t, int>, false>(
-                this, n, k, distances, labels, sel, &context, multi_bit);
-    }
 }
 
 } // namespace faiss
