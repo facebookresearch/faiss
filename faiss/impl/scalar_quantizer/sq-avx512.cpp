@@ -7,6 +7,8 @@
 
 #ifdef COMPILE_SIMD_AVX512
 
+#include <faiss/impl/simdlib/simdlib_avx512.h>
+
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -16,6 +18,8 @@
 namespace faiss {
 
 namespace scalar_quantizer {
+
+using simd16float32 = faiss::simd16float32_tpl<SIMDLevel::AVX512>;
 
 /**********************************************************
  * Codecs

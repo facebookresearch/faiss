@@ -14,9 +14,8 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/impl/LookupTableScaler.h>
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/pq4_fast_scan.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
@@ -317,9 +316,8 @@ void IndexIVFAdditiveQuantizerFastScan::search(
         return;
     }
 
-    NormTableScaler scaler(norm_scale);
     FastScanDistancePostProcessing context;
-    context.norm_scaler = &scaler;
+    context.pq2x4_scale = norm_scale;
     IndexIVFFastScan::CoarseQuantized cq{nprobe};
     search_dispatch_implem(n, x, k, distances, labels, cq, context);
 }
