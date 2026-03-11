@@ -18,7 +18,6 @@ namespace faiss {
 
 struct CodePacker;
 struct IDSelector;
-struct SIMDResultHandlerToFloat;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
@@ -138,35 +137,8 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             const IDSelector* sel,
+            int impl = 0,
             const FastScanDistancePostProcessing& context = {}) const;
-
-    /** Create a KNN handler for this index type
-     *
-     * This method can be overridden by derived classes to provide
-     * specialized handlers (e.g., RaBitQHeapHandler for RaBitQ indexes).
-     * Base implementation creates standard handlers based on k and impl.
-     *
-     * @param is_max       whether to use CMax comparator (true) or CMin (false)
-     * @param impl         implementation number
-     * @param n            number of queries
-     * @param k            number of neighbors to find
-     * @param ntotal       total number of vectors in database
-     * @param distances    output distances array
-     * @param labels       output labels array
-     * @param sel          optional ID selector
-     * @param context      processing context for distance post-processing
-     * @return             pointer to created handler (never returns nullptr)
-     */
-    virtual SIMDResultHandlerToFloat* make_knn_handler(
-            bool is_max,
-            int impl,
-            idx_t n,
-            idx_t k,
-            size_t ntotal,
-            float* distances,
-            idx_t* labels,
-            const IDSelector* sel,
-            const FastScanDistancePostProcessing& context) const;
 
     // called by search function
     void compute_quantized_LUT(

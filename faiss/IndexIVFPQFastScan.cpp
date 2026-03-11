@@ -22,12 +22,11 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 namespace faiss {
-
-using namespace simd_result_handlers;
 
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
@@ -384,47 +383,38 @@ struct IVFPQFastScanScanner : InvertedListScanner {
         // the prior loop
         std::vector<float> curr_dists(k, distances[0]);
         std::vector<idx_t> curr_labels(k, labels[0]);
-        FastScanDistancePostProcessing empty_context{};
-        std::unique_ptr<SIMDResultHandlerToFloat> handler(
-                index.make_knn_handler(
-                        !keep_max,
-                        impl,
-                        nq,
-                        k,
-                        curr_dists.data(),
-                        curr_labels.data(),
-                        sel,
-                        empty_context,
-                        &normalizers[0]));
+
+        auto scanner = index.make_knn_scanner(
+                !keep_max, nq, k, curr_dists.data(), curr_labels.data(), sel);
+
+        SIMDResultHandlerToFloat* rh = scanner->handler();
 
         // This does not quite match search_implem_10, but it is fine because
         // the scanner operates on a single query at a time, and this value is
         // used as the query index. For a single query, the value is always 0.
         int qmap1[1] = {0};
 
-        handler->q_map = qmap1;
-        handler->begin(&normalizers[0]);
+        rh->q_map = qmap1;
+        rh->begin(&normalizers[0]);
 
-        const uint8_t* LUT = dis_tables.get();
-        handler->dbias = biases.get();
+        rh->dbias = biases.get();
+        rh->ntotal = ntotal;
+        rh->id_map = ids;
 
-        handler->ntotal = ntotal;
-        handler->id_map = ids;
-
-        pq4_accumulate_loop(
+        scanner->accumulate_loop(
                 1,
                 roundup(ntotal, index.bbs),
                 index.bbs,
                 static_cast<int>(index.M2),
                 codes,
-                LUT,
-                *handler,
+                dis_tables.get(),
                 0,
                 index.get_block_stride());
 
         // The handler is for the results of this iteration.
         // Then we need a second heap to combine across iterations.
-        handler->end();
+        rh->end();
+
         if (keep_max) {
             minheap_addn(
                     k,
@@ -443,7 +433,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                     k);
         }
 
-        return handler->num_updates();
+        return rh->num_updates();
     }
 };
 

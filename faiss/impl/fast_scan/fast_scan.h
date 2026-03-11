@@ -27,6 +27,8 @@
 namespace faiss {
 
 struct IDSelector;
+struct RangeSearchResult;
+struct RangeSearchPartialResult;
 struct SIMDResultHandler;
 struct SIMDResultHandlerToFloat;
 
@@ -287,6 +289,43 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
         int64_t* ids,
         const IDSelector* sel,
         bool with_id_map = false);
+
+/// Per-SIMD range scanner factories (defined in per-SIMD TUs via dispatching.h)
+template <SIMDLevel SL>
+std::unique_ptr<FastScanCodeScanner> make_range_scanner_impl(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner_impl(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel);
+
+/// Runtime dispatch: range search scanner.
+std::unique_ptr<FastScanCodeScanner> make_range_scanner(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel);
+
+/// Runtime dispatch: partial range search scanner (per-thread).
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel);
 
 /***************************************************************
  * RaBitQ scanner factory: per-SIMD specializations live in
