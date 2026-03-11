@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include <memory>
+
 #include <faiss/Index.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
@@ -120,6 +123,22 @@ struct IndexFastScan : Index {
             idx_t n,
             const float* x,
             const FastScanDistancePostProcessing& context) const = 0;
+
+    /** Create a SIMD-dispatched scanner for knn search.
+     *
+     * Returns a FastScanCodeScanner that bundles handler + accumulation
+     * kernel behind the SIMD dispatch boundary.
+     * The scanner's accumulate methods dispatch to the optimal SIMD level.
+     */
+    virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            size_t ntotal,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            const FastScanDistancePostProcessing& context = {}) const;
 
     /** Create a KNN handler for this index type
      *
