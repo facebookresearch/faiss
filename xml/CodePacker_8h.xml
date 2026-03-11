@@ -5,6 +5,7 @@
     <includes refid="MetricType_8h" local="no">faiss/MetricType.h</includes>
     <includedby refid="CodePackerRaBitQ_8h" local="no">faiss/impl/CodePackerRaBitQ.h</includedby>
     <includedby refid="pq4__fast__scan_8h" local="no">faiss/impl/fast_scan/pq4_fast_scan.h</includedby>
+    <includedby refid="rabitq__result__handler_8h" local="no">faiss/impl/fast_scan/rabitq_result_handler.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/MetricType.h</label>
@@ -91,12 +92,18 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
+      <node id="5">
+        <label>faiss/IndexIVFRaBitQFastScan.h</label>
+        <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+      </node>
       <node id="1">
         <label>faiss/impl/CodePacker.h</label>
         <link refid="CodePacker_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -106,6 +113,12 @@
       <node id="3">
         <label>faiss/impl/fast_scan/pq4_fast_scan.h</label>
         <link refid="pq4__fast__scan_8h_source"/>
+      </node>
+      <node id="4">
+        <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
+        <link refid="rabitq__result__handler_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1CodePacker" prot="public">faiss::CodePacker</innerclass>

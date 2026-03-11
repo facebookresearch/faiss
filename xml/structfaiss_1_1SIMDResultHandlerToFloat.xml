@@ -3,9 +3,9 @@
   <compounddef id="structfaiss_1_1SIMDResultHandlerToFloat" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::SIMDResultHandlerToFloat</compoundname>
     <basecompoundref refid="structfaiss_1_1SIMDResultHandler" prot="public" virt="non-virtual">faiss::SIMDResultHandler</basecompoundref>
-    <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, true &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false, SINGLE_SIMD_LEVEL_256 &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, true, SINGLE_SIMD_LEVEL_256 &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public" virt="non-virtual">faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;</derivedcompoundref>
     <sectiondef kind="public-attrib">
@@ -175,9 +175,9 @@
         <name>begin</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::begin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1RaBitQHeapHandler_1af6a2c2b7897260ebfee378e64cca3cfb">begin</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a21468ced783eb7a62e79106b165f76cc">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a753255ac8237196d937bf255cdbb6cf6">begin</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>norms</declname>
@@ -198,12 +198,12 @@
         <qualifiedname>faiss::SIMDResultHandlerToFloat::end</qualifiedname>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler_1a2246c662d41ad1177ffb43b34eea48b7">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1RaBitQHeapHandler_1a8ddf7f85288591573e88c4a1d5b0abf5">end</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a3f3e58a641ad88a557e793ba9add591f">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1ab784919870083ce6df78e4f04239db11">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler_1a3d799cce0b29364f0b32870812091360">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aaf38c9ba5d73429457a93eb7e3cee707">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1aaf38c9ba5d73429457a93eb7e3cee707">end</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler_1a134cc2227c06dde5cedf245e3cf4ad31">end</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a65879cd13a0c459210dfa70a45bc77fb">end</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -218,8 +218,8 @@
         <argsstring>()</argsstring>
         <name>num_updates</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::num_updates</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a14b042dad87fd5ad316436c5b6e5ac1f">num_updates</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler_1aa0f917f7c2e9b77f3ee20c16ea816baf">num_updates</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1aef92a2b15388a3df231bd48e2749b2bd">num_updates</reimplementedby>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -234,7 +234,7 @@
         <argsstring>(size_t, const std::vector&lt; int &gt; &amp;)</argsstring>
         <name>set_list_context</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::set_list_context</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a820fcc9c37393bae8a0169961b12b3d4">set_list_context</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1abe8ee62acdf91c083faef8c07642e11d">set_list_context</reimplementedby>
         <param>
           <type>size_t</type>
         </param>
@@ -337,46 +337,40 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="8">
+      <node id="7">
         <label>faiss::simd_result_handlers::RangeHandler&lt; C, false, SINGLE_SIMD_LEVEL_256 &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler"/>
-        <childnode refid="7" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="3">
         <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="4">
         <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, false, SINGLE_SIMD_LEVEL_256 &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
-        <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, true &gt;</label>
+      <node id="5">
+        <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, true, SINGLE_SIMD_LEVEL_256 &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="6">
         <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
-        <label>faiss::IndexIVFRaBitQFastScan::IVFRaBitQHeapHandler&lt; C &gt;</label>
-        <link refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler"/>
-        <childnode refid="3" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="10">
+      <node id="9">
         <label>faiss::RaBitQHeapHandler&lt; C, with_id_map &gt;</label>
         <link refid="structfaiss_1_1RaBitQHeapHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
@@ -389,10 +383,16 @@
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="10">
         <label>faiss::simd_result_handlers::HeapHandler&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::simd_result_handlers::IVFRaBitQHeapHandler&lt; C, SL &gt;</label>
+        <link refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler"/>
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
       <node id="13">
@@ -404,16 +404,16 @@
       <node id="12">
         <label>faiss::simd_result_handlers::RangeHandler&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
       <node id="14">
         <label>faiss::simd_result_handlers::ReservoirHandler&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="9">
+      <node id="8">
         <label>faiss::simd_result_handlers::ResultHandlerCompare&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare"/>
         <childnode refid="1" relation="public-inheritance">
@@ -422,7 +422,7 @@
       <node id="15">
         <label>faiss::simd_result_handlers::SingleResultHandler&lt; C, with_id_map, SL &gt;</label>
         <link refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler"/>
-        <childnode refid="9" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

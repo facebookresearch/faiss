@@ -574,9 +574,9 @@
         <name>begin</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::begin</qualifiedname>
         <reimplementedby refid="structfaiss_1_1RaBitQHeapHandler_1af6a2c2b7897260ebfee378e64cca3cfb">begin</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a21468ced783eb7a62e79106b165f76cc">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a753255ac8237196d937bf255cdbb6cf6">begin</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>norms</declname>
@@ -595,7 +595,7 @@
         <argsstring>(size_t, const std::vector&lt; int &gt; &amp;)</argsstring>
         <name>set_list_context</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::set_list_context</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1_1IVFRaBitQHeapHandler_1a820fcc9c37393bae8a0169961b12b3d4">set_list_context</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1abe8ee62acdf91c083faef8c07642e11d">set_list_context</reimplementedby>
         <param>
           <type>size_t</type>
         </param>

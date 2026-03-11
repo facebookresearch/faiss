@@ -6,6 +6,7 @@
     <includedby refid="IndexFastScan_8h" local="no">faiss/IndexFastScan.h</includedby>
     <includedby refid="IndexIVFAdditiveQuantizerFastScan_8h" local="no">faiss/IndexIVFAdditiveQuantizerFastScan.h</includedby>
     <includedby refid="IndexIVFFastScan_8h" local="no">faiss/IndexIVFFastScan.h</includedby>
+    <includedby refid="rabitq__result__handler_8h" local="no">faiss/impl/fast_scan/rabitq_result_handler.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
@@ -72,6 +73,14 @@
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
+        <link refid="rabitq__result__handler_8h_source"/>
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

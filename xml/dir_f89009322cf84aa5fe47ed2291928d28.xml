@@ -8,6 +8,7 @@
     <innerfile refid="kernels__simd512_8h">kernels_simd512.h</innerfile>
     <innerfile refid="LookupTableScaler_8h">LookupTableScaler.h</innerfile>
     <innerfile refid="pq4__fast__scan_8h">pq4_fast_scan.h</innerfile>
+    <innerfile refid="rabitq__result__handler_8h">rabitq_result_handler.h</innerfile>
     <innerfile refid="simd__result__handlers_8h">simd_result_handlers.h</innerfile>
     <briefdescription>
     </briefdescription>

@@ -5,6 +5,7 @@
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1DummyResultHandler" prot="public">faiss::simd_result_handlers::DummyResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1FixedStorageHandler" prot="public">faiss::simd_result_handlers::FixedStorageHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1HeapHandler" prot="public">faiss::simd_result_handlers::HeapHandler</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler" prot="public">faiss::simd_result_handlers::IVFRaBitQHeapHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1PartialRangeHandler" prot="public">faiss::simd_result_handlers::PartialRangeHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" prot="public">faiss::simd_result_handlers::RangeHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler" prot="public">faiss::simd_result_handlers::ReservoirHandler</innerclass>
@@ -44,6 +45,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="100" column="1"/>
+    <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="23" column="1"/>
   </compounddef>
 </doxygen>
