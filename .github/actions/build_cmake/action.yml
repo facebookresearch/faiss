@@ -74,7 +74,7 @@ runs:
           conda install -y -q cuda-toolkit=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=12.6' cuda-toolkit=12.6 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-toolkit=12.9 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
         # install SVS runtime for SVS builds
@@ -87,7 +87,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.6"
+          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
