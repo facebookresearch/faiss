@@ -14,6 +14,7 @@
 #include <faiss/impl/scalar_quantizer/quantizers.h>
 #include <faiss/impl/scalar_quantizer/scanners.h>
 #include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/impl/simdlib/simdlib_avx512.h>
 
 #include <faiss/impl/scalar_quantizer/sq-avx512-impl.h>
 

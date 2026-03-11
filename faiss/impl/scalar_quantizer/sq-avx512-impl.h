@@ -11,6 +11,9 @@ namespace faiss {
 
 namespace scalar_quantizer {
 
+using simd16float32 = faiss::simd16float32_tpl<SIMDLevel::AVX512>;
+using simd512bit = faiss::simd512bit_tpl<SIMDLevel::AVX512>;
+
 /**********************************************************
  * Codecs
  **********************************************************/
