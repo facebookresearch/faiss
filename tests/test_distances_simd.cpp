@@ -518,3 +518,138 @@ TEST(TestFvecLinfBatched, identical_vectors) {
             x.data(), x.data(), d, batch_size, 1e10f);
     ASSERT_FLOAT_EQ(result, 0.0f);
 }
+
+// ============================================================
+// Tests that verify the batched sequential path produces the
+// same knn results as the BLAS path. The batched code in
+// exhaustive_L2sqr_seq / exhaustive_inner_product_seq only runs
+// when nx < distance_compute_blas_threshold or an IDSelector is
+// active. These tests force both paths and compare results.
+// ============================================================
+
+#include <algorithm>
+#include <cmath>
+#include <faiss/IndexFlat.h>
+
+// Helper: run knn search with a specific blas threshold, return distances+ids
+static void run_knn_L2(
+        const float* xq,
+        const float* xb,
+        size_t d,
+        size_t nq,
+        size_t nb,
+        size_t k,
+        int blas_threshold,
+        std::vector<float>& distances,
+        std::vector<faiss::idx_t>& ids) {
+    int saved = faiss::distance_compute_blas_threshold;
+    faiss::distance_compute_blas_threshold = blas_threshold;
+
+    distances.resize(nq * k);
+    ids.resize(nq * k);
+    faiss::float_maxheap_array_t res = {nq, k, ids.data(), distances.data()};
+    faiss::knn_L2sqr(xq, xb, d, nq, nb, &res);
+
+    faiss::distance_compute_blas_threshold = saved;
+}
+
+static void run_knn_IP(
+        const float* xq,
+        const float* xb,
+        size_t d,
+        size_t nq,
+        size_t nb,
+        size_t k,
+        int blas_threshold,
+        std::vector<float>& distances,
+        std::vector<faiss::idx_t>& ids) {
+    int saved = faiss::distance_compute_blas_threshold;
+    faiss::distance_compute_blas_threshold = blas_threshold;
+
+    distances.resize(nq * k);
+    ids.resize(nq * k);
+    faiss::float_minheap_array_t res = {nq, k, ids.data(), distances.data()};
+    faiss::knn_inner_product(xq, xb, d, nq, nb, &res);
+
+    faiss::distance_compute_blas_threshold = saved;
+}
+
+// Force BLAS path (threshold=0 means nx is always >= threshold)
+// vs sequential batched path (threshold=INT_MAX means always sequential).
+// Compare that both produce the same top-k result set.
+TEST(TestBatchedKnn, L2_blas_vs_sequential) {
+    const size_t d = 128;
+    const size_t nb = 5000;
+    const size_t nq = 50;
+    const size_t k = 10;
+
+    std::default_random_engine rng(42);
+    std::normal_distribution<float> normal(0.0f, 1.0f);
+    std::vector<float> xb(nb * d), xq(nq * d);
+    for (auto& v : xb) v = normal(rng);
+    for (auto& v : xq) v = normal(rng);
+
+    std::vector<float> d_blas, d_seq;
+    std::vector<faiss::idx_t> i_blas, i_seq;
+
+    // BLAS path: set threshold to 0 so nq >= 0 always takes BLAS
+    run_knn_L2(xq.data(), xb.data(), d, nq, nb, k, 0, d_blas, i_blas);
+    // Sequential (batched) path: threshold very high so always sequential
+    run_knn_L2(xq.data(), xb.data(), d, nq, nb, k,
+               INT_MAX, d_seq, i_seq);
+
+    for (size_t q = 0; q < nq; q++) {
+        for (size_t j = 0; j < k; j++) {
+            size_t idx = q * k + j;
+            ASSERT_EQ(i_blas[idx], i_seq[idx])
+                    << "L2 mismatch at query=" << q << " rank=" << j;
+            ASSERT_NEAR(d_blas[idx], d_seq[idx], 1e-3)
+                    << "L2 distance mismatch at query=" << q
+                    << " rank=" << j;
+        }
+    }
+}
+
+TEST(TestBatchedKnn, IP_blas_vs_sequential) {
+    const size_t d = 128;
+    const size_t nb = 5000;
+    const size_t nq = 50;
+    const size_t k = 10;
+
+    std::default_random_engine rng(42);
+    std::normal_distribution<float> normal(0.0f, 1.0f);
+    std::vector<float> xb(nb * d), xq(nq * d);
+    for (auto& v : xb) v = normal(rng);
+    for (auto& v : xq) v = normal(rng);
+    // Normalize for inner product
+    auto normalize = [&](std::vector<float>& vecs, size_t n) {
+        for (size_t i = 0; i < n; i++) {
+            float norm = 0;
+            for (size_t j = 0; j < d; j++)
+                norm += vecs[i * d + j] * vecs[i * d + j];
+            norm = std::sqrt(norm);
+            for (size_t j = 0; j < d; j++)
+                vecs[i * d + j] /= norm;
+        }
+    };
+    normalize(xb, nb);
+    normalize(xq, nq);
+
+    std::vector<float> d_blas, d_seq;
+    std::vector<faiss::idx_t> i_blas, i_seq;
+
+    run_knn_IP(xq.data(), xb.data(), d, nq, nb, k, 0, d_blas, i_blas);
+    run_knn_IP(xq.data(), xb.data(), d, nq, nb, k,
+               INT_MAX, d_seq, i_seq);
+
+    for (size_t q = 0; q < nq; q++) {
+        for (size_t j = 0; j < k; j++) {
+            size_t idx = q * k + j;
+            ASSERT_EQ(i_blas[idx], i_seq[idx])
+                    << "IP mismatch at query=" << q << " rank=" << j;
+            ASSERT_NEAR(d_blas[idx], d_seq[idx], 1e-4)
+                    << "IP distance mismatch at query=" << q
+                    << " rank=" << j;
+        }
+    }
+}
