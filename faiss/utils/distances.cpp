@@ -107,6 +107,38 @@ float fvec_inner_product(const float* x, const float* y, size_t d) {
     return fvec_inner_product_dispatch(x, y, d);
 }
 
+float fvec_inner_product_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float sum = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_ip = fvec_inner_product(
+                x + processed, y + processed, current_batch);
+        sum += batch_ip;
+        processed += current_batch;
+
+        // Optimistic bound: assume remaining dimensions each contribute +1.
+        // For normalized vectors, each dimension's product is in [-1, +1],
+        // so this is a valid upper bound on the final inner product.
+        size_t remaining = d - processed;
+        float optimistic = sum + static_cast<float>(remaining);
+        if (optimistic < threshold) {
+            return sum;
+        }
+    }
+    return sum;
+}
+
 void fvec_inner_product_batch_4(
         const float* x,
         const float* y0,

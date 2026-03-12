@@ -385,3 +385,80 @@ TEST(TestFvecL2sqrBatched, zero_vectors) {
             zeros.data(), zeros.data(), d, batch_size, 1e10f);
     ASSERT_FLOAT_EQ(result, 0.0f);
 }
+
+
+// Test batched inner product - correctness without early abort (normalized vecs)
+TEST(TestFvecInnerProductBatched, correctness_no_abort) {
+    std::default_random_engine rng(101);
+    std::normal_distribution<float> normal(0.0f, 1.0f);
+
+    for (const auto d : {16, 32, 64, 128, 256, 512, 1024}) {
+        for (const auto batch_size : {4, 8, 16, 32, 64}) {
+            std::vector<float> x(d);
+            std::vector<float> y(d);
+            // Generate and normalize vectors
+            float norm_x = 0.0f, norm_y = 0.0f;
+            for (size_t i = 0; i < d; i++) {
+                x[i] = normal(rng);
+                y[i] = normal(rng);
+                norm_x += x[i] * x[i];
+                norm_y += y[i] * y[i];
+            }
+            norm_x = std::sqrt(norm_x);
+            norm_y = std::sqrt(norm_y);
+            for (size_t i = 0; i < d; i++) {
+                x[i] /= norm_x;
+                y[i] /= norm_y;
+            }
+
+            float expected =
+                    faiss::fvec_inner_product(x.data(), y.data(), d);
+            // Use very low threshold so no abort happens
+            float result = faiss::fvec_inner_product_batched(
+                    x.data(), y.data(), d, batch_size, -1e10f);
+            ASSERT_NEAR(result, expected, 1e-5)
+                    << "d=" << d << ", batch_size=" << batch_size;
+        }
+    }
+}
+
+// Test that early abort triggers for dissimilar normalized vectors
+TEST(TestFvecInnerProductBatched, early_abort) {
+    const size_t d = 1024;
+    const size_t batch_size = 16;
+    // Create two orthogonal-ish normalized vectors
+    std::vector<float> x(d, 0.0f);
+    std::vector<float> y(d, 0.0f);
+    // x is concentrated in first half, y in second half
+    float norm = std::sqrt(static_cast<float>(d / 2));
+    for (size_t i = 0; i < d / 2; i++) {
+        x[i] = 1.0f / norm;
+    }
+    for (size_t i = d / 2; i < d; i++) {
+        y[i] = 1.0f / norm;
+    }
+
+    float full_ip = faiss::fvec_inner_product(x.data(), y.data(), d);
+    // Set threshold high enough that the optimistic bound fails early
+    float threshold = 0.9f;
+    float partial_ip = faiss::fvec_inner_product_batched(
+            x.data(), y.data(), d, batch_size, threshold);
+    // Should have aborted: partial result + remaining can't reach 0.9
+    ASSERT_LT(partial_ip, full_ip + 1e-6);
+    // The full IP of these near-orthogonal vectors is ~0
+    ASSERT_NEAR(full_ip, 0.0f, 1e-6);
+}
+
+// Test with identical normalized vectors (IP should be ~1.0)
+TEST(TestFvecInnerProductBatched, identical_vectors) {
+    const size_t d = 128;
+    const size_t batch_size = 16;
+    std::vector<float> x(d);
+    float norm = std::sqrt(static_cast<float>(d));
+    for (size_t i = 0; i < d; i++) {
+        x[i] = 1.0f / norm;
+    }
+    float result = faiss::fvec_inner_product_batched(
+            x.data(), x.data(), d, batch_size, -1e10f);
+    ASSERT_NEAR(result, 1.0f, 1e-5);
+}
