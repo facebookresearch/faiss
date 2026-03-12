@@ -101,19 +101,8 @@ struct IndexRaBitQFastScan : IndexFastScan {
             float* distances,
             idx_t* labels,
             const IDSelector* sel,
+            int impl = 0,
             const FastScanDistancePostProcessing& context = {}) const override;
-
-    /// Override to create RaBitQ-specific handlers
-    SIMDResultHandlerToFloat* make_knn_handler(
-            bool is_max,
-            int /*impl*/,
-            idx_t n,
-            idx_t k,
-            size_t /*ntotal*/,
-            float* distances,
-            idx_t* labels,
-            const IDSelector* sel,
-            const FastScanDistancePostProcessing& context) const override;
 };
 
 /** SIMD result handler for RaBitQ FastScan that applies distance corrections
