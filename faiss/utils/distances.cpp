@@ -68,6 +68,35 @@ float fvec_Linf(const float* x, const float* y, size_t d) {
     return fvec_Linf_dispatch(x, y, d);
 }
 
+float fvec_Linf_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float max_diff = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_linf =
+                fvec_Linf(x + processed, y + processed, current_batch);
+        if (batch_linf > max_diff) {
+            max_diff = batch_linf;
+        }
+        processed += current_batch;
+
+        if (max_diff > threshold) {
+            return max_diff;
+        }
+    }
+    return max_diff;
+}
+
 float fvec_norm_L2sqr(const float* x, size_t d) {
     return fvec_norm_L2sqr_dispatch(x, d);
 }

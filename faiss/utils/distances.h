@@ -77,6 +77,19 @@ float fvec_Linf(const float* x, const float* y, size_t d);
 template <SIMDLevel>
 float fvec_Linf(const float* x, const float* y, size_t d);
 
+/// Linf (Chebyshev) distance with early abort. Processes dimensions in batches
+/// using existing SIMD fvec_Linf, checking threshold at batch boundaries.
+/// The running maximum is monotonically non-decreasing, so the current max
+/// is a valid lower bound on the final distance.
+/// Returns partial or full Linf distance. If current max exceeds threshold,
+/// returns early (result > threshold indicates abort).
+float fvec_Linf_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold);
+
 /// Special version of inner product that computes 4 distances
 /// between x and yi, which is performance oriented.
 void fvec_inner_product_batch_4(

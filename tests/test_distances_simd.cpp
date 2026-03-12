@@ -462,3 +462,59 @@ TEST(TestFvecInnerProductBatched, identical_vectors) {
             x.data(), x.data(), d, batch_size, -1e10f);
     ASSERT_NEAR(result, 1.0f, 1e-5);
 }
+
+
+// Test batched Linf distance - correctness without early abort
+TEST(TestFvecLinfBatched, correctness_no_abort) {
+    std::default_random_engine rng(202);
+    std::uniform_int_distribution<int32_t> uniform(0, 32);
+
+    for (const auto d : {16, 32, 64, 128, 256, 512, 1024, 2048}) {
+        for (const auto batch_size : {4, 8, 16, 32, 64}) {
+            std::vector<float> x(d);
+            std::vector<float> y(d);
+            for (size_t i = 0; i < d; i++) {
+                x[i] = uniform(rng);
+                y[i] = uniform(rng);
+            }
+            float expected = faiss::fvec_Linf(x.data(), y.data(), d);
+            float result = faiss::fvec_Linf_batched(
+                    x.data(), y.data(), d, batch_size, 1e10f);
+            ASSERT_FLOAT_EQ(result, expected)
+                    << "d=" << d << ", batch_size=" << batch_size;
+        }
+    }
+}
+
+// Test that early abort triggers when max diff exceeds threshold
+TEST(TestFvecLinfBatched, early_abort) {
+    const size_t d = 1024;
+    const size_t batch_size = 16;
+    // Place a large difference early in the vectors
+    std::vector<float> x(d, 0.0f);
+    std::vector<float> y(d, 0.0f);
+    x[5] = 100.0f; // Large difference at dimension 5
+    y[5] = 0.0f;
+    // Also place smaller differences later
+    for (size_t i = 64; i < d; i++) {
+        x[i] = 1.0f;
+        y[i] = 2.0f;
+    }
+    float full_distance = faiss::fvec_Linf(x.data(), y.data(), d);
+    ASSERT_FLOAT_EQ(full_distance, 100.0f);
+    // Threshold below the max diff — should abort in first batch
+    float result = faiss::fvec_Linf_batched(
+            x.data(), y.data(), d, batch_size, 50.0f);
+    ASSERT_GT(result, 50.0f);
+    ASSERT_FLOAT_EQ(result, 100.0f);
+}
+
+// Test with identical vectors (Linf should be 0)
+TEST(TestFvecLinfBatched, identical_vectors) {
+    const size_t d = 128;
+    const size_t batch_size = 16;
+    std::vector<float> x(d, 42.0f);
+    float result = faiss::fvec_Linf_batched(
+            x.data(), x.data(), d, batch_size, 1e10f);
+    ASSERT_FLOAT_EQ(result, 0.0f);
+}
