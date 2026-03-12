@@ -17,14 +17,14 @@
 namespace faiss {
 
 template <>
-void fvec_sub<THE_SIMDLEVEL>(
+void fvec_sub<THE_SIMD_LEVEL>(
         size_t d,
         const float* a,
         const float* b,
         float* c) {
     size_t i;
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32_tpl<THE_SIMDLEVEL> ci, ai, bi;
+        simd8float32_tpl<THE_SIMD_LEVEL> ci, ai, bi;
         ai.loadu(a + i);
         bi.loadu(b + i);
         ci = ai - bi;
@@ -36,14 +36,14 @@ void fvec_sub<THE_SIMDLEVEL>(
 }
 
 template <>
-void fvec_add<THE_SIMDLEVEL>(
+void fvec_add<THE_SIMD_LEVEL>(
         size_t d,
         const float* a,
         const float* b,
         float* c) {
     size_t i;
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32_tpl<THE_SIMDLEVEL> ci, ai, bi;
+        simd8float32_tpl<THE_SIMD_LEVEL> ci, ai, bi;
         ai.loadu(a + i);
         bi.loadu(b + i);
         ci = ai + bi;
@@ -55,11 +55,11 @@ void fvec_add<THE_SIMDLEVEL>(
 }
 
 template <>
-void fvec_add<THE_SIMDLEVEL>(size_t d, const float* a, float b, float* c) {
+void fvec_add<THE_SIMD_LEVEL>(size_t d, const float* a, float b, float* c) {
     size_t i;
-    simd8float32_tpl<THE_SIMDLEVEL> bv(b);
+    simd8float32_tpl<THE_SIMD_LEVEL> bv(b);
     for (i = 0; i + 7 < d; i += 8) {
-        simd8float32_tpl<THE_SIMDLEVEL> ci, ai;
+        simd8float32_tpl<THE_SIMD_LEVEL> ci, ai;
         ai.loadu(a + i);
         ci = ai + bv;
         ci.storeu(c + i);
@@ -137,7 +137,7 @@ simd8float32_tpl<SL> load_simd8float32_partial(const float* x, int n) {
 } // anonymous namespace
 
 template <>
-void compute_PQ_dis_tables_dsub2<THE_SIMDLEVEL>(
+void compute_PQ_dis_tables_dsub2<THE_SIMD_LEVEL>(
         size_t d,
         size_t ksub,
         const float* all_centroids,
@@ -151,7 +151,7 @@ void compute_PQ_dis_tables_dsub2<THE_SIMDLEVEL>(
     for (size_t m0 = 0; m0 < M; m0 += 4) {
         int m1 = std::min(M, m0 + 4);
         for (int k0 = 0; k0 < ksub; k0 += 8) {
-            simd8float32_tpl<THE_SIMDLEVEL> centroids[8];
+            simd8float32_tpl<THE_SIMD_LEVEL> centroids[8];
             for (int k = 0; k < 8; k++) {
                 ALIGNED(32) float centroid[8];
                 size_t wp = 0;
@@ -161,26 +161,26 @@ void compute_PQ_dis_tables_dsub2<THE_SIMDLEVEL>(
                     centroid[wp++] = all_centroids[rp + 1];
                     rp += 2 * ksub;
                 }
-                centroids[k] = simd8float32_tpl<THE_SIMDLEVEL>(centroid);
+                centroids[k] = simd8float32_tpl<THE_SIMD_LEVEL>(centroid);
             }
             for (size_t i = 0; i < nx; i++) {
-                simd8float32_tpl<THE_SIMDLEVEL> xi;
+                simd8float32_tpl<THE_SIMD_LEVEL> xi;
                 if (m1 == m0 + 4) {
                     xi.loadu(x + i * d + m0 * 2);
                 } else {
-                    xi = load_simd8float32_partial<THE_SIMDLEVEL>(
+                    xi = load_simd8float32_partial<THE_SIMD_LEVEL>(
                             x + i * d + m0 * 2, 2 * (m1 - m0));
                 }
 
                 if (is_inner_product) {
-                    pq2_8cents_table<THE_SIMDLEVEL, true>(
+                    pq2_8cents_table<THE_SIMD_LEVEL, true>(
                             centroids,
                             xi,
                             dis_tables + (i * M + m0) * ksub + k0,
                             ksub,
                             m1 - m0);
                 } else {
-                    pq2_8cents_table<THE_SIMDLEVEL, false>(
+                    pq2_8cents_table<THE_SIMD_LEVEL, false>(
                             centroids,
                             xi,
                             dis_tables + (i * M + m0) * ksub + k0,
