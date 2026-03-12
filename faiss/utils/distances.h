@@ -31,6 +31,19 @@ float fvec_L2sqr(const float* x, const float* y, size_t d);
 template <SIMDLevel>
 float fvec_L2sqr(const float* x, const float* y, size_t d);
 
+/// Squared L2 distance with early abort. Processes dimensions in batches
+/// using existing SIMD fvec_L2sqr, checking threshold at batch boundaries.
+/// Returns partial or full distance. If partial distance exceeds threshold,
+/// returns early (result > threshold indicates abort).
+/// Optimal batch_size is typically 16 for most architectures, balancing
+/// early abort latency against branch prediction efficiency.
+float fvec_L2sqr_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold);
+
 /// inner product
 float fvec_inner_product(const float* x, const float* y, size_t d);
 

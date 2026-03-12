@@ -332,3 +332,56 @@ TEST(TestFvecAdd, add_value) {
                 << nrows;
     }
 }
+
+
+// Test batched L2 distance with threshold - correctness without early abort
+TEST(TestFvecL2sqrBatched, correctness_no_abort) {
+    std::default_random_engine rng(456);
+    std::uniform_int_distribution<int32_t> uniform(0, 32);
+
+    for (const auto d : {16, 32, 64, 128, 256, 512, 1024, 2048}) {
+        for (const auto batch_size : {4, 8, 16, 32, 64}) {
+            std::vector<float> x(d);
+            std::vector<float> y(d);
+            for (size_t i = 0; i < d; i++) {
+                x[i] = uniform(rng);
+                y[i] = uniform(rng);
+            }
+            float expected = faiss::fvec_L2sqr(x.data(), y.data(), d);
+            float result = faiss::fvec_L2sqr_batched(
+                    x.data(), y.data(), d, batch_size, 1e10f);
+            ASSERT_FLOAT_EQ(result, expected)
+                    << "d=" << d << ", batch_size=" << batch_size;
+        }
+    }
+}
+
+// Test that early abort triggers and returns a partial result
+TEST(TestFvecL2sqrBatched, early_abort) {
+    std::default_random_engine rng(789);
+    std::uniform_int_distribution<int32_t> uniform(10, 50);
+    const size_t d = 1024;
+    const size_t batch_size = 16;
+    std::vector<float> x(d);
+    std::vector<float> y(d);
+    for (size_t i = 0; i < d; i++) {
+        x[i] = uniform(rng);
+        y[i] = uniform(rng) + 100.0f;
+    }
+    float full_distance = faiss::fvec_L2sqr(x.data(), y.data(), d);
+    float threshold = full_distance * 0.1f;
+    float partial_distance = faiss::fvec_L2sqr_batched(
+            x.data(), y.data(), d, batch_size, threshold);
+    ASSERT_GT(partial_distance, threshold);
+    ASSERT_LT(partial_distance, full_distance);
+}
+
+// Test with zero vectors (distance should be 0)
+TEST(TestFvecL2sqrBatched, zero_vectors) {
+    const size_t d = 64;
+    const size_t batch_size = 16;
+    std::vector<float> zeros(d, 0.0f);
+    float result = faiss::fvec_L2sqr_batched(
+            zeros.data(), zeros.data(), d, batch_size, 1e10f);
+    ASSERT_FLOAT_EQ(result, 0.0f);
+}

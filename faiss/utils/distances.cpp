@@ -76,6 +76,33 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
     return fvec_L2sqr_dispatch(x, y, d);
 }
 
+float fvec_L2sqr_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float sum = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_dist =
+                fvec_L2sqr(x + processed, y + processed, current_batch);
+        sum += batch_dist;
+        processed += current_batch;
+
+        if (sum > threshold) {
+            return sum;
+        }
+    }
+    return sum;
+}
+
 float fvec_inner_product(const float* x, const float* y, size_t d) {
     return fvec_inner_product_dispatch(x, y, d);
 }
