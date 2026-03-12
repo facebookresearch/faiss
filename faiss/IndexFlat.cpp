@@ -20,6 +20,7 @@
 #include <faiss/utils/sorting.h>
 #include <omp.h>
 #include <cstring>
+#include <limits>
 
 namespace faiss {
 
@@ -111,6 +112,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
     float distance_to_code(const uint8_t* code) final {
         ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
+    }
+
+    float operator()(idx_t i, float threshold) override {
+        ndis++;
+        const float* y =
+                reinterpret_cast<const float*>(codes + i * code_size);
+        return fvec_L2sqr_batched(q, y, d, 16, threshold);
+    }
+
+    bool supports_threshold() const override {
+        return true;
+    }
+
+    float degenerate_threshold() const override {
+        return std::numeric_limits<float>::infinity();
     }
 
     float partial_dot_product(
