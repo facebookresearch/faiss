@@ -388,7 +388,12 @@ void exhaustive_inner_product_seq(
                 if (!res.is_in_selection(j)) {
                     continue;
                 }
-                float ip = fvec_inner_product_dispatch(x_i, y_j, d);
+                // Use batched inner product with early abort: if the
+                // optimistic bound (partial sum + remaining dims) is
+                // below threshold, skip full computation. Only effective
+                // for pre-normalized vectors.
+                float ip = fvec_inner_product_batched(
+                        x_i, y_j, d, 16, resi.threshold);
                 resi.add_result(ip, j);
             }
             resi.end();
@@ -420,7 +425,12 @@ void exhaustive_L2sqr_seq(
                 if (!res.is_in_selection(j)) {
                     continue;
                 }
-                float disij = fvec_L2sqr_dispatch(x_i, y_j, d);
+                // Use batched L2 with early abort: if partial distance
+                // exceeds threshold, skip full computation. The threshold
+                // is the k-th best distance (heap top), so candidates
+                // that exceed it cannot enter the top-k results.
+                float disij = fvec_L2sqr_batched(
+                        x_i, y_j, d, 16, resi.threshold);
                 resi.add_result(disij, j);
             }
             resi.end();
