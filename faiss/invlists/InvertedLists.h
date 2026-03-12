@@ -507,7 +507,6 @@ struct CappedInvertedLists : InvertedLists {
     void resize(size_t list_no, size_t new_size) override;
 };
 
-
 } // namespace faiss
 
 #endif

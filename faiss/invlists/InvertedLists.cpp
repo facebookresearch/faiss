@@ -984,5 +984,4 @@ void CappedInvertedLists::resize(size_t list_no, size_t new_size) {
     il0->resize(list_no, new_size);
 }
 
-
 } // namespace faiss
