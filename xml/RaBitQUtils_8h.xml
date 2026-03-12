@@ -12,6 +12,7 @@
     <includedby refid="IndexIVFRaBitQFastScan_8h" local="no">faiss/IndexIVFRaBitQFastScan.h</includedby>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
     <includedby refid="RaBitQuantizerMultiBit_8h" local="no">faiss/impl/RaBitQuantizerMultiBit.h</includedby>
+    <includedby refid="rabitq__result__handler_8h" local="no">faiss/impl/fast_scan/rabitq_result_handler.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/MetricType.h</label>
@@ -141,11 +142,15 @@
       <node id="2">
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
         <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -153,14 +158,26 @@
         <link refid="RaBitQUtils_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
         <link refid="RaBitQuantizerMultiBit_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/impl/fast_scan/rabitq_dispatching.h</label>
+        <link refid="rabitq__dispatching_8h"/>
+      </node>
+      <node id="6">
+        <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
+        <link refid="rabitq__result__handler_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1rabitq__utils_1_1SignBitFactors" prot="public">faiss::rabitq_utils::SignBitFactors</innerclass>

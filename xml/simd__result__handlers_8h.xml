@@ -14,6 +14,7 @@
     <includes refid="AlignedTable_8h" local="no">faiss/utils/AlignedTable.h</includes>
     <includes refid="partitioning_8h" local="no">faiss/utils/partitioning.h</includes>
     <includedby refid="IndexRaBitQFastScan_8h" local="no">faiss/IndexRaBitQFastScan.h</includedby>
+    <includedby refid="accumulate__loops_8h" local="no">faiss/impl/fast_scan/accumulate_loops.h</includedby>
     <includedby refid="decompose__qbs_8h" local="no">faiss/impl/fast_scan/decompose_qbs.h</includedby>
     <includedby refid="rabitq__result__handler_8h" local="no">faiss/impl/fast_scan/rabitq_result_handler.h</includedby>
     <incdepgraph>
@@ -305,18 +306,36 @@
       <node id="3">
         <label>faiss/IndexIVFRaBitQFastScan.h</label>
         <link refid="IndexIVFRaBitQFastScan_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/IndexRaBitQFastScan.h</label>
         <link refid="IndexRaBitQFastScan_8h_source"/>
         <childnode refid="3" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
-      <node id="4">
+      <node id="5">
+        <label>faiss/impl/fast_scan/accumulate_loops.h</label>
+        <link refid="accumulate__loops_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
         <label>faiss/impl/fast_scan/decompose_qbs.h</label>
         <link refid="decompose__qbs_8h_source"/>
       </node>
-      <node id="5">
+      <node id="6">
+        <label>faiss/impl/fast_scan/dispatching.h</label>
+        <link refid="dispatching_8h"/>
+      </node>
+      <node id="4">
+        <label>faiss/impl/fast_scan/rabitq_dispatching.h</label>
+        <link refid="rabitq__dispatching_8h"/>
+      </node>
+      <node id="8">
         <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
         <link refid="rabitq__result__handler_8h_source"/>
         <childnode refid="3" relation="include">
@@ -327,9 +346,11 @@
         <link refid="simd__result__handlers_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

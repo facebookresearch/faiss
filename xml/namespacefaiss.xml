@@ -43,6 +43,7 @@
     <innerclass refid="classfaiss_1_1FaissException" prot="public">faiss::FaissException</innerclass>
     <innerclass refid="structfaiss_1_1FaissIDFilter" prot="public">faiss::FaissIDFilter</innerclass>
     <innerclass refid="structfaiss_1_1FaissResultsAllocator" prot="public">faiss::FaissResultsAllocator</innerclass>
+    <innerclass refid="structfaiss_1_1FastScanCodeScanner" prot="public">faiss::FastScanCodeScanner</innerclass>
     <innerclass refid="structfaiss_1_1FastScanDistancePostProcessing" prot="public">faiss::FastScanDistancePostProcessing</innerclass>
     <innerclass refid="structfaiss_1_1FastScanStats" prot="public">faiss::FastScanStats</innerclass>
     <innerclass refid="structfaiss_1_1FileIOReader" prot="public">faiss::FileIOReader</innerclass>
@@ -275,6 +276,7 @@
     <innerclass refid="structfaiss_1_1ResultHandlerT" prot="public">faiss::ResultHandlerT</innerclass>
     <innerclass refid="structfaiss_1_1ResultHandlerUnordered" prot="public">faiss::ResultHandlerUnordered</innerclass>
     <innerclass refid="structfaiss_1_1ScalarQuantizer" prot="public">faiss::ScalarQuantizer</innerclass>
+    <innerclass refid="structfaiss_1_1ScannerMixIn" prot="public">faiss::ScannerMixIn</innerclass>
     <innerclass refid="structfaiss_1_1SearchParameters" prot="public">faiss::SearchParameters</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersHNSW" prot="public">faiss::SearchParametersHNSW</innerclass>
     <innerclass refid="structfaiss_1_1SearchParametersIVF" prot="public">faiss::SearchParametersIVF</innerclass>
@@ -1311,7 +1313,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="260" column="32" declfile="faiss/IndexFastScan.h" declline="260" declcolumn="32"/>
+        <location file="faiss/IndexFastScan.h" line="251" column="32" declfile="faiss/IndexFastScan.h" declline="251" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
@@ -1353,7 +1355,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="430" column="35" declfile="faiss/IndexIVFFastScan.h" declline="430" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="419" column="35" declfile="faiss/IndexIVFFastScan.h" declline="419" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API size_t</type>
@@ -1859,6 +1861,233 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="61" column="13" declfile="faiss/impl/FaissException.h" declline="61" declcolumn="13"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0ecf7aeb41fa52ecea9997c9bb299465" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>NQ</declname>
+            <defname>NQ</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>BB</declname>
+            <defname>BB</defname>
+          </param>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::accumulate_fixed_blocks</definition>
+        <argsstring>(size_t nb, int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
+        <name>accumulate_fixed_blocks</name>
+        <qualifiedname>faiss::accumulate_fixed_blocks</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="51" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="51" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a41e9eb9902fa6b72e8ac13d2764c7291" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq4_accumulate_loop_fixed_scaler</definition>
+        <argsstring>(int nq, size_t nb, int bbs, int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
+        <name>pq4_accumulate_loop_fixed_scaler</name>
+        <qualifiedname>faiss::pq4_accumulate_loop_fixed_scaler</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bbs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="70" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="70" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aba3af6f1fcc2aeaade605527062cf06f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>QBS</declname>
+            <defname>QBS</defname>
+          </param>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::accumulate_q_4step_256</definition>
+        <argsstring>(size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
+        <name>accumulate_q_4step_256</name>
+        <qualifiedname>faiss::accumulate_q_4step_256</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal2</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="112" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="112" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae22d2a4b71203ce7a29e0aaa76288ef6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq4_accumulate_loop_qbs_fixed_scaler_256</definition>
+        <argsstring>(int qbs, size_t ntotal2, int nsq, const uint8_t *codes, const uint8_t *LUT0, ResultHandler &amp;res, const Scaler &amp;scaler, size_t block_stride)</argsstring>
+        <name>pq4_accumulate_loop_qbs_fixed_scaler_256</name>
+        <qualifiedname>faiss::pq4_accumulate_loop_qbs_fixed_scaler_256</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>qbs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal2</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT0</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="152" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="152" bodyend="224"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a533228fd21a496e24d7a29d10dc2f294" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -2125,49 +2354,49 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/decompose_qbs.h" line="129" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="129" bodyend="203"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1acfe6e3147630ecd2e0638b34b5de1a96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
-          <param>
-            <type>int</type>
-            <declname>NQ</declname>
-            <defname>NQ</defname>
-          </param>
-          <param>
-            <type>int</type>
-            <declname>BB</declname>
-            <defname>BB</defname>
-          </param>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
         </templateparamlist>
-        <type>void</type>
-        <definition>void faiss::kernel_accumulate_block</definition>
-        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
-        <name>kernel_accumulate_block</name>
-        <qualifiedname>faiss::kernel_accumulate_block</qualifiedname>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_fast_scan_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(bool is_max, int impl, size_t nq, size_t ntotal, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, bool with_id_map)</argsstring>
+        <name>make_fast_scan_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::make_fast_scan_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
         <param>
           <type>int</type>
-          <declname>nsq</declname>
+          <declname>impl</declname>
         </param>
         <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
+          <type>size_t</type>
+          <declname>nq</declname>
         </param>
         <param>
-          <type>const uint8_t *</type>
-          <declname>LUT</declname>
+          <type>size_t</type>
+          <declname>ntotal</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
+          <type>int64_t</type>
+          <declname>k</declname>
         </param>
         <param>
-          <type>const Scaler &amp;</type>
-          <declname>scaler</declname>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>with_id_map</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -2175,46 +2404,35 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="19" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="19" bodyend="105"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="127" bodyend="167"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a25f76b72513ae946e5cd5ff8f3e24988" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a2d3e9cd9d40435718609da7c23eb4ba6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
-          <param>
-            <type>int</type>
-            <declname>NQ</declname>
-            <defname>NQ</defname>
-          </param>
-          <param>
-            <type>class ResultHandler</type>
-          </param>
-          <param>
-            <type>class Scaler</type>
-          </param>
         </templateparamlist>
-        <type>void</type>
-        <definition>void faiss::pq4_kernel_qbs_256</definition>
-        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
-        <name>pq4_kernel_qbs_256</name>
-        <qualifiedname>faiss::pq4_kernel_qbs_256</qualifiedname>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(bool is_max, RangeSearchResult &amp;rres, float radius, size_t ntotal, const IDSelector *sel)</argsstring>
+        <name>make_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::make_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
         <param>
-          <type>int</type>
-          <declname>nsq</declname>
+          <type>bool</type>
+          <declname>is_max</declname>
         </param>
         <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> &amp;</type>
+          <declname>rres</declname>
         </param>
         <param>
-          <type>const uint8_t *</type>
-          <declname>LUT</declname>
+          <type>float</type>
+          <declname>radius</declname>
         </param>
         <param>
-          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>res</declname>
+          <type>size_t</type>
+          <declname>ntotal</declname>
         </param>
         <param>
-          <type>const Scaler &amp;</type>
-          <declname>scaler</declname>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -2222,7 +2440,51 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="112" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="112" bodyend="189"/>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="175" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1acb1d57950137617e347418b97d661736" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_partial_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(bool is_max, RangeSearchPartialResult &amp;pres, float radius, size_t ntotal, size_t q0, size_t q1, const IDSelector *sel)</argsstring>
+        <name>make_partial_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::make_partial_range_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref> &amp;</type>
+          <declname>pres</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/dispatching.h" bodystart="194" bodyend="211"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aab1f6406891713b08ba8d132ce580df7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2328,7 +2590,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="42" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="42" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="47" column="6" declfile="faiss/impl/fast_scan/fast_scan.h" declline="47" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad9155a5692f0f07827bfff8a0debe91c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2429,7 +2691,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="63" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="63" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="68" column="6" declfile="faiss/impl/fast_scan/fast_scan.h" declline="68" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a030a643c5acf7feab3bf43c97bb85eaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint8_t</type>
@@ -2482,7 +2744,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="79" column="9" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="79" declcolumn="9"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="84" column="9" declfile="faiss/impl/fast_scan/fast_scan.h" declline="84" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a3fe17a120021581f6ee6db2216fc97d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2539,7 +2801,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="91" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="91" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="96" column="6" declfile="faiss/impl/fast_scan/fast_scan.h" declline="96" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a77259a553814de1ac5bee2d3efd03ee8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2604,124 +2866,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="120" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="120" declcolumn="6"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1ac992ce9c83ea846543e64ace5f97bf1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::pq4_accumulate_loop</definition>
-        <argsstring>(int nq, size_t nb, int bbs, int nsq, const uint8_t *codes, const uint8_t *LUT, SIMDResultHandler &amp;res, int pq2x4_scale, size_t block_stride)</argsstring>
-        <name>pq4_accumulate_loop</name>
-        <qualifiedname>faiss::pq4_accumulate_loop</qualifiedname>
-        <param>
-          <type>int</type>
-          <declname>nq</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>nb</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>bbs</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nsq</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>LUT</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>pq2x4_scale</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>block_stride</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Loop over database elements and accumulate results into result handler</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>nq</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of queries </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>nb</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of database elements </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>bbs</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>size of database blocks (multiple of 32) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>nsq</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of sub-quantizers (multiple of 2) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>codes</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>packed codes array </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>LUT</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>packed look-up table </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>scaler</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>scaler to scale the encoded norm </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>block_stride</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>stride in bytes between consecutive blocks. </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="133" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="133" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="125" column="6" declfile="faiss/impl/fast_scan/fast_scan.h" declline="125" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a323a06b2cc33d2afa49cd54690134ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2739,7 +2884,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="159" column="5" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="159" declcolumn="5"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="128" column="5" declfile="faiss/impl/fast_scan/fast_scan.h" declline="128" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a28b71d8d424de21d8d28edca5cb1119f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2758,7 +2903,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="162" column="5" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="162" declcolumn="5"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="131" column="5" declfile="faiss/impl/fast_scan/fast_scan.h" declline="131" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a50696f89c63ede620d3562a38086c0dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2825,7 +2970,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="173" column="5" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="173" declcolumn="5"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="142" column="5" declfile="faiss/impl/fast_scan/fast_scan.h" declline="142" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a959074948601ffbed84e437dc8078b0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2860,120 +3005,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="177" column="5" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="177" declcolumn="5"/>
-      </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aa73d4d2ff1e9099e56c32a340fe089f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>void</type>
-        <definition>void faiss::pq4_accumulate_loop_qbs</definition>
-        <argsstring>(int qbs, size_t nb, int nsq, const uint8_t *codes, const uint8_t *LUT, SIMDResultHandler &amp;res, int pq2x4_scale, size_t block_stride)</argsstring>
-        <name>pq4_accumulate_loop_qbs</name>
-        <qualifiedname>faiss::pq4_accumulate_loop_qbs</qualifiedname>
-        <param>
-          <type>int</type>
-          <declname>qbs</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>nb</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>nsq</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>codes</declname>
-        </param>
-        <param>
-          <type>const uint8_t *</type>
-          <declname>LUT</declname>
-        </param>
-        <param>
-          <type><ref refid="structfaiss_1_1SIMDResultHandler" kindref="compound">SIMDResultHandler</ref> &amp;</type>
-          <declname>res</declname>
-        </param>
-        <param>
-          <type>int</type>
-          <declname>pq2x4_scale</declname>
-        </param>
-        <param>
-          <type>size_t</type>
-          <declname>block_stride</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>Run accumulation loop.</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>qbs</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>4-bit encoded number of queries </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>nb</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of database codes (multiple of bbs) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>nsq</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>number of sub-quantizers </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>codes</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>encoded database vectors (packed) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>LUT</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>look-up table (packed) </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>res</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>call-back for the results </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>pq2x4_scale</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>scaler to scale the encoded norm </para>
-</parameterdescription>
-</parameteritem>
-<parameteritem>
-<parameternamelist>
-<parametername>block_stride</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>stride in bytes between consecutive blocks. </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="195" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="195" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="146" column="5" declfile="faiss/impl/fast_scan/fast_scan.h" declline="146" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4fa4f35222272afcb674e942f5648741" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3008,7 +3040,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Wrapper of pq4_accumulate_loop_qbs using simple StoreResultHandler and <ref refid="structfaiss_1_1DummyScaler" kindref="compound">DummyScaler</ref></para>
+<para>Wrapper using simple StoreResultHandler and <ref refid="structfaiss_1_1DummyScaler" kindref="compound">DummyScaler</ref></para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nq</parametername>
@@ -3062,7 +3094,695 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/pq4_fast_scan.h" line="215" column="6" declfile="faiss/impl/fast_scan/pq4_fast_scan.h" declline="215" declcolumn="6"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="163" column="6" declfile="faiss/impl/fast_scan/fast_scan.h" declline="163" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1adf079d9bc22415cd4dbefa976e7d01c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_fast_scan_scanner_impl</definition>
+        <argsstring>(bool is_max, int impl, size_t nq, size_t ntotal, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, bool with_id_map)</argsstring>
+        <name>make_fast_scan_scanner_impl</name>
+        <qualifiedname>faiss::make_fast_scan_scanner_impl</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>impl</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>with_id_map</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Per-SIMD factory: explicitly specialized in each per-SIMD TU (impl-avx2.cpp, impl-avx512.cpp, impl-neon.cpp, fast_scan.cpp for NONE). Not called directly — use <ref refid="namespacefaiss_1a35ff7d43fae76cd05f815cd45e581a13" kindref="member">make_fast_scan_knn_scanner()</ref> instead. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="210" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="210" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a35ff7d43fae76cd05f815cd45e581a13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_fast_scan_knn_scanner</definition>
+        <argsstring>(bool is_max, int impl, size_t nq, size_t ntotal, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, bool with_id_map=false)</argsstring>
+        <name>make_fast_scan_knn_scanner</name>
+        <qualifiedname>faiss::make_fast_scan_knn_scanner</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>impl</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>with_id_map</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Runtime dispatch wrapper: selects the best available SIMD level (via DISPATCH_SIMDLevel) and delegates to the corresponding make_fast_scan_scanner_impl&lt;SL&gt; specialization. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="224" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="224" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a3ad34a3ef1406f40d52949627fc77719" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_range_scanner_impl</definition>
+        <argsstring>(bool is_max, RangeSearchResult &amp;rres, float radius, size_t ntotal, const IDSelector *sel)</argsstring>
+        <name>make_range_scanner_impl</name>
+        <qualifiedname>faiss::make_range_scanner_impl</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> &amp;</type>
+          <declname>rres</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+<para>Per-SIMD range scanner factories (defined in per-SIMD TUs via <ref refid="dispatching_8h" kindref="compound">dispatching.h</ref>) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="237" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="237" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4932e7c4893c94e60e3348a1233cd54f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_partial_range_scanner_impl</definition>
+        <argsstring>(bool is_max, RangeSearchPartialResult &amp;pres, float radius, size_t ntotal, size_t q0, size_t q1, const IDSelector *sel)</argsstring>
+        <name>make_partial_range_scanner_impl</name>
+        <qualifiedname>faiss::make_partial_range_scanner_impl</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref> &amp;</type>
+          <declname>pres</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="245" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="245" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a4e160f426b8e5bd0fdda9bdbbafc349d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_range_scanner</definition>
+        <argsstring>(bool is_max, RangeSearchResult &amp;rres, float radius, size_t ntotal, const IDSelector *sel)</argsstring>
+        <name>make_range_scanner</name>
+        <qualifiedname>faiss::make_range_scanner</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchResult" kindref="compound">RangeSearchResult</ref> &amp;</type>
+          <declname>rres</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+<para>Runtime dispatch: range search scanner. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="255" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="255" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0d7e8cf0a84cec66a5aa4bc4e9167c77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::make_partial_range_scanner</definition>
+        <argsstring>(bool is_max, RangeSearchPartialResult &amp;pres, float radius, size_t ntotal, size_t q0, size_t q1, const IDSelector *sel)</argsstring>
+        <name>make_partial_range_scanner</name>
+        <qualifiedname>faiss::make_partial_range_scanner</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1RangeSearchPartialResult" kindref="compound">RangeSearchPartialResult</ref> &amp;</type>
+          <declname>pres</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>radius</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ntotal</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q0</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <briefdescription>
+<para>Runtime dispatch: partial range search scanner (per-thread). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="263" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="263" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a1b4303e9351b4aad6d8f04e1553a081c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_make_knn_scanner_impl</definition>
+        <argsstring>(const IndexRaBitQFastScan *index, bool is_max, size_t nq, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing &amp;context, bool is_multi_bit)</argsstring>
+        <name>rabitq_make_knn_scanner_impl</name>
+        <qualifiedname>faiss::rabitq_make_knn_scanner_impl</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_multi_bit</declname>
+        </param>
+        <briefdescription>
+<para>Per-SIMD factory (primary template; specializations in <ref refid="rabitq__dispatching_8h" kindref="compound">rabitq_dispatching.h</ref>) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="283" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="283" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a92c4821dba6629fe1816728262ea812c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_make_knn_scanner</definition>
+        <argsstring>(const IndexRaBitQFastScan *index, bool is_max, size_t nq, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing &amp;context, bool is_multi_bit)</argsstring>
+        <name>rabitq_make_knn_scanner</name>
+        <qualifiedname>faiss::rabitq_make_knn_scanner</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_multi_bit</declname>
+        </param>
+        <briefdescription>
+<para>Runtime dispatch wrapper for rabitq_make_knn_scanner_impl. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="295" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="295" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aea93318a778529ad745e12672d338d0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner_impl</definition>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <name>rabitq_ivf_make_knn_scanner_impl</name>
+        <qualifiedname>faiss::rabitq_ivf_make_knn_scanner_impl</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexIVFRaBitQFastScan" kindref="compound">IndexIVFRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>multi_bit</declname>
+        </param>
+        <briefdescription>
+<para>Per-SIMD IVF RaBitQ scanner factory. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="308" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="308" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a1735436937d7230c2fd79f9dfa4d6e65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner</definition>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <name>rabitq_ivf_make_knn_scanner</name>
+        <qualifiedname>faiss::rabitq_ivf_make_knn_scanner</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexIVFRaBitQFastScan" kindref="compound">IndexIVFRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>multi_bit</declname>
+        </param>
+        <briefdescription>
+<para>Runtime dispatch wrapper for IVF RaBitQ scanner. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="319" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="319" declcolumn="17"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>NQ</declname>
+            <defname>NQ</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>BB</declname>
+            <defname>BB</defname>
+          </param>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::kernel_accumulate_block</definition>
+        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <name>kernel_accumulate_block</name>
+        <qualifiedname>faiss::kernel_accumulate_block</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="19" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="19" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a25f76b72513ae946e5cd5ff8f3e24988" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>int</type>
+            <declname>NQ</declname>
+            <defname>NQ</defname>
+          </param>
+          <param>
+            <type>class ResultHandler</type>
+          </param>
+          <param>
+            <type>class Scaler</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq4_kernel_qbs_256</definition>
+        <argsstring>(int nsq, const uint8_t *codes, const uint8_t *LUT, ResultHandler &amp;res, const Scaler &amp;scaler)</argsstring>
+        <name>pq4_kernel_qbs_256</name>
+        <qualifiedname>faiss::pq4_kernel_qbs_256</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const Scaler &amp;</type>
+          <declname>scaler</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/kernels_simd256.h" line="112" column="6" bodyfile="faiss/impl/fast_scan/kernels_simd256.h" bodystart="112" bodyend="189"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(const IndexRaBitQFastScan *index, bool is_max, size_t nq, int64_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing &amp;context, bool is_multi_bit)</argsstring>
+        <name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexRaBitQFastScan" kindref="compound">IndexRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_multi_bit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="35" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aad98471b20584eb65131d7049e915a77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
+        <qualifiedname>faiss::rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_max</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexIVFRaBitQFastScan" kindref="compound">IndexIVFRaBitQFastScan</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>multi_bit</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="59" bodyend="79"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>

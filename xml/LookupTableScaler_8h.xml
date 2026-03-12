@@ -5,6 +5,7 @@
     <includes local="no">cstdint</includes>
     <includes local="no">cstdlib</includes>
     <includes refid="simdlib__dispatch_8h" local="no">faiss/impl/simdlib/simdlib_dispatch.h</includes>
+    <includedby refid="accumulate__loops_8h" local="no">faiss/impl/fast_scan/accumulate_loops.h</includedby>
     <incdepgraph>
       <node id="1">
         <label>faiss/impl/fast_scan/LookupTableScaler.h</label>
@@ -81,6 +82,24 @@
         <label>string</label>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>faiss/impl/fast_scan/LookupTableScaler.h</label>
+        <link refid="LookupTableScaler_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss/impl/fast_scan/accumulate_loops.h</label>
+        <link refid="accumulate__loops_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss/impl/fast_scan/dispatching.h</label>
+        <link refid="dispatching_8h"/>
+      </node>
+    </invincdepgraph>
     <innerclass refid="structfaiss_1_1DummyScaler" prot="public">faiss::DummyScaler</innerclass>
     <innerclass refid="structfaiss_1_1NormTableScaler" prot="public">faiss::NormTableScaler</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1FastScanCodeScanner" kind="struct" language="C++" prot="public" abstract="yes">
+    <compoundname>faiss::FastScanCodeScanner</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1ScannerMixIn" prot="public" virt="non-virtual">faiss::ScannerMixIn&lt; Handler &gt;</derivedcompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1adaabb9af08f21df8225ecae92e10cdda" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual faiss::FastScanCodeScanner::~FastScanCodeScanner</definition>
+        <argsstring>()=default</argsstring>
+        <name>~FastScanCodeScanner</name>
+        <qualifiedname>faiss::FastScanCodeScanner::~FastScanCodeScanner</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="179" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1a0af7645f58fb55f768d90363ba3b3fd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="structfaiss_1_1SIMDResultHandlerToFloat" kindref="compound">SIMDResultHandlerToFloat</ref> *</type>
+        <definition>virtual SIMDResultHandlerToFloat * faiss::FastScanCodeScanner::handler</definition>
+        <argsstring>()=0</argsstring>
+        <name>handler</name>
+        <qualifiedname>faiss::FastScanCodeScanner::handler</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ScannerMixIn_1a23eb8ae56c9143004e240861965369aa">handler</reimplementedby>
+        <briefdescription>
+<para>Access the underlying result handler (for begin/end/normalizer calls) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="182" column="38"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1ae2cec99c36ede244e20670032cb80e34" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::FastScanCodeScanner::accumulate_loop</definition>
+        <argsstring>(int nq, size_t nb, int bbs, int nsq, const uint8_t *codes, const uint8_t *LUT, int pq2x4_scale, size_t block_stride)=0</argsstring>
+        <name>accumulate_loop</name>
+        <qualifiedname>faiss::FastScanCodeScanner::accumulate_loop</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ScannerMixIn_1ab28bc50fdd5c5caf15aa8b31b8e59a94">accumulate_loop</reimplementedby>
+        <param>
+          <type>int</type>
+          <declname>nq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>bbs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>pq2x4_scale</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+<para>Run the search_1 accumulation loop (bbs &gt; 32, multi-BB kernel) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="185" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FastScanCodeScanner_1aec4fc179b44c1153c833cb95660c3981" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void faiss::FastScanCodeScanner::accumulate_loop_qbs</definition>
+        <argsstring>(int qbs, size_t nb, int nsq, const uint8_t *codes, const uint8_t *LUT, int pq2x4_scale, size_t block_stride)=0</argsstring>
+        <name>accumulate_loop_qbs</name>
+        <qualifiedname>faiss::FastScanCodeScanner::accumulate_loop_qbs</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1ScannerMixIn_1adfe4dcbae905391707e1e97b5bb1a22e">accumulate_loop_qbs</reimplementedby>
+        <param>
+          <type>int</type>
+          <declname>qbs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>LUT</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>pq2x4_scale</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <briefdescription>
+<para>Run the QBS accumulation loop (bbs == 32) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="196" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::FastScanCodeScanner</label>
+        <link refid="structfaiss_1_1FastScanCodeScanner"/>
+      </node>
+      <node id="2">
+        <label>faiss::ScannerMixIn&lt; Handler &gt;</label>
+        <link refid="structfaiss_1_1ScannerMixIn"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/fast_scan/fast_scan.h" line="178" column="1" bodyfile="faiss/impl/fast_scan/fast_scan.h" bodystart="178" bodyend="204"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FastScanCodeScanner_1ae2cec99c36ede244e20670032cb80e34" prot="public" virt="pure-virtual"><scope>faiss::FastScanCodeScanner</scope><name>accumulate_loop</name></member>
+      <member refid="structfaiss_1_1FastScanCodeScanner_1aec4fc179b44c1153c833cb95660c3981" prot="public" virt="pure-virtual"><scope>faiss::FastScanCodeScanner</scope><name>accumulate_loop_qbs</name></member>
+      <member refid="structfaiss_1_1FastScanCodeScanner_1a0af7645f58fb55f768d90363ba3b3fd2" prot="public" virt="pure-virtual"><scope>faiss::FastScanCodeScanner</scope><name>handler</name></member>
+      <member refid="structfaiss_1_1FastScanCodeScanner_1adaabb9af08f21df8225ecae92e10cdda" prot="public" virt="virtual"><scope>faiss::FastScanCodeScanner</scope><name>~FastScanCodeScanner</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -45,6 +45,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="23" column="1"/>
+    <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="27" column="1"/>
   </compounddef>
 </doxygen>

@@ -2,12 +2,15 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_f89009322cf84aa5fe47ed2291928d28" kind="dir">
     <compoundname>faiss/impl/fast_scan</compoundname>
+    <innerfile refid="accumulate__loops_8h">accumulate_loops.h</innerfile>
     <innerfile refid="decompose__qbs_8h">decompose_qbs.h</innerfile>
+    <innerfile refid="dispatching_8h">dispatching.h</innerfile>
+    <innerfile refid="fast__scan_8h">fast_scan.h</innerfile>
     <innerfile refid="FastScanDistancePostProcessing_8h">FastScanDistancePostProcessing.h</innerfile>
     <innerfile refid="kernels__simd256_8h">kernels_simd256.h</innerfile>
     <innerfile refid="kernels__simd512_8h">kernels_simd512.h</innerfile>
     <innerfile refid="LookupTableScaler_8h">LookupTableScaler.h</innerfile>
-    <innerfile refid="pq4__fast__scan_8h">pq4_fast_scan.h</innerfile>
+    <innerfile refid="rabitq__dispatching_8h">rabitq_dispatching.h</innerfile>
     <innerfile refid="rabitq__result__handler_8h">rabitq_result_handler.h</innerfile>
     <innerfile refid="simd__result__handlers_8h">simd_result_handlers.h</innerfile>
     <briefdescription>
