@@ -7,7 +7,7 @@
     <includedby refid="pq__code__distance-inl_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-inl.h</includedby>
     <includedby refid="scanners_8h" local="no">faiss/impl/scalar_quantizer/scanners.h</includedby>
     <includedby refid="distances__dispatch_8h" local="no">faiss/utils/distances_dispatch.h</includedby>
-    <includedby refid="extra__distances-inl_8h" local="no">faiss/utils/extra_distances-inl.h</includedby>
+    <includedby refid="extra__distances_8h" local="no">faiss/utils/extra_distances.h</includedby>
     <incdepgraph>
       <node id="2">
         <label>faiss/impl/FaissAssert.h</label>
@@ -125,14 +125,14 @@
         <link refid="distances__dispatch_8h"/>
       </node>
       <node id="6">
-        <label>faiss/utils/extra_distances-inl.h</label>
-        <link refid="extra__distances-inl_8h_source"/>
+        <label>faiss/utils/extra_distances.h</label>
+        <link refid="extra__distances_8h_source"/>
         <childnode refid="7" relation="include">
         </childnode>
       </node>
       <node id="7">
-        <label>faiss/utils/extra_distances.h</label>
-        <link refid="extra__distances_8h_source"/>
+        <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
+        <link refid="distances__autovec-inl_8h_source"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

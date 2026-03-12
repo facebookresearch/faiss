@@ -8283,6 +8283,25 @@
     <member refid="structfaiss_1_1IVFFastScanStats_1aceba128b4aa57aa577f85f023cd0f608" kind="function"><name>IVFFastScanStats</name></member>
     <member refid="structfaiss_1_1IVFFastScanStats_1a4cd8fa5b51a2b63352f841eff21b3a31" kind="function"><name>reset</name></member>
   </compound>
+  <compound refid="structfaiss_1_1IVFFlatScanner" kind="struct"><name>faiss::IVFFlatScanner</name>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a119e31ef055bb629d30f3abc33b25514" kind="typedef"><name>C</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1abc5576ffc58db7d8997d34e92f4afa58" kind="variable"><name>vd</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a8c6686919a584b25ac5df2312475b26c" kind="variable"><name>xi</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a843a53d7df43c6dd9f6c550708e3a7fc" kind="variable"><name>list_no</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a00cb1d807f47fe2a21077919e3458db7" kind="variable"><name>keep_max</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e" kind="variable"><name>store_pairs</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a38dcbe4f07c5e6392eac1272ee73befd" kind="function"><name>IVFFlatScanner</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1aa2e6024a4b382cff5dde6b2f1a6b157f" kind="function"><name>set_query</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a554a16daa1af18ccc551f92b9c098b71" kind="function"><name>set_list</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a4a6451c30aa63d933b4eb4edd95f899e" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1IVFFlatScanner_1a89b5d5e7bd65eb09c871d3e6145efbbf" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1ab50ad33ecf0080ca218b27aa2698329e" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" kind="function"><name>iterate_codes_range</name></member>
+  </compound>
   <compound refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig" kind="struct"><name>faiss::gpu::IVFPQBuildCagraConfig</name>
     <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a8a01cd2c61cc670e31e90565296f0d07" kind="variable"><name>n_lists</name></member>
     <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a46e1a050c0276db771da671898801fe5" kind="variable"><name>kmeans_n_iters</name></member>
@@ -11642,107 +11661,24 @@
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1unary__func__impl_1af55381b36dd0844ac3438fd8798221e9" kind="function"><name>call</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorDistance" kind="struct"><name>faiss::VectorDistance</name>
+    <member refid="structfaiss_1_1VectorDistance_1a6a6fba647ba5deb3d402be528b54d5fd" kind="typedef"><name>C</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1acb8013f533aee747c7f4b31dc4100461" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a052ca6a9899353430acf58412d541e84" kind="variable"><name>metric_arg</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a0bbc4a82d079c42320a38c9e4495a5b5" kind="variable"><name>metric</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a53b61814af422ac793ab99cabb4378ba" kind="variable"><name>is_similarity</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a8137459daea53b1c86d635f1a44f0794" kind="function"><name>VectorDistance</name></member>
     <member refid="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__BrayCurtis_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_BrayCurtis, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__BrayCurtis_00_01SIMDLevel_1_1NONE_01_4_1a179ff68c07afb5e0800b579e5ecf0daa" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__Canberra_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_Canberra, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__Canberra_00_01SIMDLevel_1_1NONE_01_4_1aa9a5decc87d2b1a60b7144a7f758725b" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__GOWER_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_GOWER, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__GOWER_00_01SIMDLevel_1_1NONE_01_4_1a7696f25ddcd823ad9622213c53c7a844" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__INNER__PRODUCT_00_01level_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_INNER_PRODUCT, level &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__INNER__PRODUCT_00_01level_01_4_1a593ea0bed2380439312ed560ba36227a" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__Jaccard_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_Jaccard, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__Jaccard_00_01SIMDLevel_1_1NONE_01_4_1a49c88f724b8ffdc481cda70e3f50e0a9" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__JensenShannon_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_JensenShannon, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__JensenShannon_00_01SIMDLevel_1_1NONE_01_4_1a4d4d557472aee3ac0a42e5d9e0f06638" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__L1_00_01level_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_L1, level &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__L1_00_01level_01_4_1ae9c047eebb8789de47f92b43acbe234b" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__L2_00_01level_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_L2, level &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__L2_00_01level_01_4_1a4bf120fd09246230291cd68807eb4dbb" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__Linf_00_01level_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_Linf, level &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__Linf_00_01level_01_4_1a3715f2a70a2d4d22df6838b5439ca3ec" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__Lp_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_Lp, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__Lp_00_01SIMDLevel_1_1NONE_01_4_1ac2d00ad9bfa3598cc0cba971116831cc" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::VectorDistance&lt; METRIC_NaNEuclidean, SIMDLevel::NONE &gt;</name>
-    <member refid="structfaiss_1_1VectorDistance_3_01METRIC__NaNEuclidean_00_01SIMDLevel_1_1NONE_01_4_1a572da2fc2e78940032e9c87fa9be725a" kind="function"><name>operator()</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
-  </compound>
-  <compound refid="structfaiss_1_1VectorDistanceBase" kind="struct"><name>faiss::VectorDistanceBase</name>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" kind="typedef"><name>C</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" kind="variable"><name>d</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" kind="variable"><name>metric_arg</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" kind="variable"><name>metric</name></member>
-    <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" kind="variable"><name>is_similarity</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1ae6080d4ef5c5431a30ea0ad63eb76e16" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a02ffeabe0a8d96fa705c321f871ef23e" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a006487437e4a3977172c15f1505faa59" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a70601b67aff41475400797e591db84aa" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1adcf600021fbabeba3c5e4b1c27c9396a" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1ac7552d23ed844b917f69249e6d0d910a" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a7441f25b679164a43f984f9d95dae5d7" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1afecc306fe16dbf00cb39cdd3e9f6bbdb" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a4de5c34cae633ac9d07261256965ee34" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1ad9b3e593188a37d132f6b89c0f540cca" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1VectorDistance_1a854d44a84027d2162c9cb3a5431d000c" kind="function"><name>operator()</name></member>
   </compound>
   <compound refid="structfaiss_1_1VectorIOReader" kind="struct"><name>faiss::VectorIOReader</name>
     <member refid="structfaiss_1_1VectorIOReader_1a0bc2d0055617f0da626a8377f6d76b42" kind="variable"><name>data</name></member>
@@ -12022,6 +11958,8 @@
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
     <member refid="namespacefaiss_1a807d8fdc887adb34ff028c3ccaeb1fe1" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
+    <member refid="namespacefaiss_1a96faf9c9761559a611b0b3098750506f" kind="variable"><name>SL</name></member>
+    <member refid="namespacefaiss_1a83ba55d434462e9120b5ad24bc36f768" kind="variable"><name>THE_SL</name></member>
     <member refid="namespacefaiss_1a19143c25e59cfe3cc3cf12f370b17643" kind="variable"><name>SINGLE_SIMD_LEVEL</name></member>
     <member refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kind="variable"><name>SINGLE_SIMD_LEVEL_256</name></member>
     <member refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kind="variable"><name>bucket_sort_verbose</name></member>
@@ -12276,11 +12214,11 @@
     <member refid="namespacefaiss_1a422338c96cfd45e052fad9ad95034ed0" kind="function"><name>fvec_add_scalar_dispatch</name></member>
     <member refid="namespacefaiss_1ae01e35f00ff93103140e83f3d3f3713f" kind="function"><name>compute_PQ_dis_tables_dsub2_dispatch</name></member>
     <member refid="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
-    <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a48139e7f38831a4333ca6bf1fb6be650" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" kind="function"><name>get_extra_distance_computer</name></member>
     <member refid="namespacefaiss_1a987ea96650dd763a87affacd88649fc6" kind="function"><name>with_metric_type</name></member>
+    <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" kind="function"><name>encode_fp16</name></member>
     <member refid="namespacefaiss_1ac3f112424a7957effd27187654d90986" kind="function"><name>decode_fp16</name></member>
     <member refid="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" kind="function"><name>bitvec_print</name></member>
@@ -12366,17 +12304,17 @@
     <member refid="namespacefaiss_1ad40228bb4ba7a96e0fe801b9f9b7c900" kind="function"><name>rand_perm</name></member>
     <member refid="namespacefaiss_1a7f900e002856f3db2295abd9d429369e" kind="function"><name>rand_perm_splitmix64</name></member>
     <member refid="namespacefaiss_1a62eb905cf4895b293b0d10b3af2c8df6" kind="function"><name>rand_smooth_vectors</name></member>
-    <member refid="namespacefaiss_1afb2d831ab55abea70afbc36d5ea06ed8" kind="function"><name>fvec_norm_L2sqr&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a04ca31c2517e5af2b6f19b2668ebd25d" kind="function"><name>fvec_L2sqr&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a9aac8163b4d2241bf27b9e16004e5c9e" kind="function"><name>fvec_inner_product&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a6676e98963d49e3b5ebc11ea490d5dde" kind="function"><name>fvec_L1&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a5b8acc991c2a6c0b112f8e7380bcdbcd" kind="function"><name>fvec_Linf&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a5a3e1187ea7104e3438e65a07bbd3a49" kind="function"><name>fvec_inner_product_batch_4&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a185351799d071d6324a616bd6da88f61" kind="function"><name>fvec_L2sqr_batch_4&lt; AUTOVEC_LEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a5dc431f74c88bec0f91db0aa085f50ef" kind="function"><name>fvec_sub&lt; THE_SIMDLEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1ac6a56df6e0e1a015dbd8d88cd3b2fd3a" kind="function"><name>fvec_add&lt; THE_SIMDLEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1a6e784e6f2c527b464485af77f2a7cf26" kind="function"><name>fvec_add&lt; THE_SIMDLEVEL &gt;</name></member>
-    <member refid="namespacefaiss_1aa4d611d45f4d7db0f3659f2b4c6a5689" kind="function"><name>compute_PQ_dis_tables_dsub2&lt; THE_SIMDLEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a18275793405d81eb1cfe57758ac68a60" kind="function"><name>fvec_norm_L2sqr&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a008d9b07f6da039d6dc9d2b5fac966ef" kind="function"><name>fvec_L2sqr&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a1a0b5f554e2b286b5b8e309684210d80" kind="function"><name>fvec_inner_product&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a344691a033151b954d72116236531709" kind="function"><name>fvec_L1&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a5675dc80fd3b6c40e9618500e67a0a77" kind="function"><name>fvec_Linf&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a9349f22b24edbba792df4a5eaa798a6d" kind="function"><name>fvec_inner_product_batch_4&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1af04cf47a86db2ece21be32fd71373634" kind="function"><name>fvec_L2sqr_batch_4&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a2eab39681235500b030a18cd05bfbfbf" kind="function"><name>fvec_sub&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1ab36b9a0816b92a34f26075ab8de4fb13" kind="function"><name>fvec_add&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a873dec9febd065da2e140008db6f4ad6" kind="function"><name>fvec_add&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1ac939534fdedfbcb7f9277539e1572d55" kind="function"><name>compute_PQ_dis_tables_dsub2&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1a5e7d81d1123f3b7a4a074bb5d436e3c9" kind="function"><name>fvec_madd_sse</name></member>
     <member refid="namespacefaiss_1a921ab61fe231e910d725bb64d65ebcdc" kind="function"><name>horizontal_sum</name></member>
     <member refid="namespacefaiss_1a8fd99e0b2406d63dc9e26d5ea62ada10" kind="function"><name>fvec_op_ny_D1</name></member>
@@ -12437,9 +12375,9 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d181" kind="namespace"><name>faiss::@181</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
+  <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
+  <compound refid="namespacefaiss_1_1_0d210" kind="namespace"><name>faiss::@210</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d51" kind="namespace"><name>faiss::@51</name>
   </compound>
@@ -13300,8 +13238,6 @@
   </compound>
   <compound refid="simdlib__based_8h" kind="file"><name>simdlib_based.h</name>
   </compound>
-  <compound refid="extra__distances-inl_8h" kind="file"><name>extra_distances-inl.h</name>
-  </compound>
   <compound refid="extra__distances_8h" kind="file"><name>extra_distances.h</name>
   </compound>
   <compound refid="fp16-arm_8h" kind="file"><name>fp16-arm.h</name>
@@ -13361,6 +13297,9 @@
   <compound refid="distances__sse-inl_8h" kind="file"><name>distances_sse-inl.h</name>
     <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
     <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
+  </compound>
+  <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
+    <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>
   </compound>
   <compound refid="simd__levels_8h" kind="file"><name>simd_levels.h</name>
     <member refid="simd__levels_8h_1a8945b533221b1c3f6d70b4ef8c95d4f2" kind="define"><name>COMPILE_SIMD_NONE</name></member>

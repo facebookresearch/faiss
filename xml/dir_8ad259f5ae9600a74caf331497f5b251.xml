@@ -12,7 +12,6 @@
     <innerfile refid="bf16_8h">bf16.h</innerfile>
     <innerfile refid="distances_8h">distances.h</innerfile>
     <innerfile refid="distances__dispatch_8h">distances_dispatch.h</innerfile>
-    <innerfile refid="extra__distances-inl_8h">extra_distances-inl.h</innerfile>
     <innerfile refid="extra__distances_8h">extra_distances.h</innerfile>
     <innerfile refid="fp16-arm_8h">fp16-arm.h</innerfile>
     <innerfile refid="fp16-fp16c_8h">fp16-fp16c.h</innerfile>

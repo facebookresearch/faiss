@@ -2,7 +2,6 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="structfaiss_1_1VectorDistance" kind="struct" language="C++" prot="public">
     <compoundname>faiss::VectorDistance</compoundname>
-    <basecompoundref refid="structfaiss_1_1VectorDistanceBase" prot="public" virt="non-virtual">faiss::VectorDistanceBase&lt; mt &gt;</basecompoundref>
     <templateparamlist>
       <param>
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -15,8 +14,108 @@
         <defname>level</defname>
       </param>
     </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1VectorDistance_1a6a6fba647ba5deb3d402be528b54d5fd" prot="public" static="no">
+        <type>typename std::conditional&lt; <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt), <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt;, <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt;::type</type>
+        <definition>using faiss::VectorDistance&lt; mt, level &gt;::C =  typename std::conditional&lt; is_similarity_metric(mt), CMin&lt;float, int64_t&gt;, CMax&lt;float, int64_t&gt; &gt;::type</definition>
+        <argsstring></argsstring>
+        <name>C</name>
+        <qualifiedname>faiss::VectorDistance::C</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="120" column="5" bodyfile="faiss/utils/extra_distances.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1acb8013f533aee747c7f4b31dc4100461" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::VectorDistance&lt; mt, level &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::VectorDistance::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="112" column="12" bodyfile="faiss/utils/extra_distances.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1a052ca6a9899353430acf58412d541e84" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; mt, level &gt;::metric_arg</definition>
+        <argsstring></argsstring>
+        <name>metric_arg</name>
+        <qualifiedname>faiss::VectorDistance::metric_arg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="113" column="11" bodyfile="faiss/utils/extra_distances.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1a0bbc4a82d079c42320a38c9e4495a5b5" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>constexpr MetricType faiss::VectorDistance&lt; mt, level &gt;::metric</definition>
+        <argsstring></argsstring>
+        <name>metric</name>
+        <qualifiedname>faiss::VectorDistance::metric</qualifiedname>
+        <initializer>= mt</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="117" column="33" bodyfile="faiss/utils/extra_distances.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1VectorDistance_1a53b61814af422ac793ab99cabb4378ba" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool faiss::VectorDistance&lt; mt, level &gt;::is_similarity</definition>
+        <argsstring></argsstring>
+        <name>is_similarity</name>
+        <qualifiedname>faiss::VectorDistance::is_similarity</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="118" column="27" bodyfile="faiss/utils/extra_distances.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a8137459daea53b1c86d635f1a44f0794" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::VectorDistance&lt; mt, level &gt;::VectorDistance</definition>
+        <argsstring>(size_t d, float metric_arg)</argsstring>
+        <name>VectorDistance</name>
+        <qualifiedname>faiss::VectorDistance::VectorDistance</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>metric_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/extra_distances.h" line="115" column="5" bodyfile="faiss/utils/extra_distances.h" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
         <definition>float faiss::VectorDistance&lt; mt, level &gt;::operator()</definition>
         <argsstring>(const float *x, const float *y) const</argsstring>
@@ -36,123 +135,275 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="45" column="18"/>
+        <location file="faiss/utils/extra_distances.h" line="125" column="11"/>
       </memberdef>
-    </sectiondef>
-    <sectiondef kind="public-type">
-      <memberdef kind="typedef" id="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" prot="public" static="no">
-        <type>typename std::conditional&lt; <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt), <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt;, <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt;::type</type>
-        <definition>using faiss::VectorDistanceBase&lt; mt &gt;::C =  typename std::conditional&lt; is_similarity_metric(mt), CMin&lt;float, int64_t&gt;, CMax&lt;float, int64_t&gt; &gt;::type</definition>
-        <argsstring></argsstring>
-        <name>C</name>
-        <qualifiedname>faiss::VectorDistanceBase::C</qualifiedname>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ae6080d4ef5c5431a30ea0ad63eb76e16" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>FAISS_PRAGMA_IMPRECISE_FUNCTION_END float</type>
+        <definition>FAISS_PRAGMA_IMPRECISE_FUNCTION_END float faiss::VectorDistance&lt; METRIC_L2, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="33" column="5" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="36" bodyend="-1"/>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="168" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="168" bodyend="171"/>
       </memberdef>
-    </sectiondef>
-    <sectiondef kind="public-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" prot="public" static="no" mutable="no">
-        <type>size_t</type>
-        <definition>size_t faiss::VectorDistanceBase&lt; mt &gt;::d</definition>
-        <argsstring></argsstring>
-        <name>d</name>
-        <qualifiedname>faiss::VectorDistanceBase::d</qualifiedname>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="28" column="12" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="28" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" prot="public" static="no" mutable="no">
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a02ffeabe0a8d96fa705c321f871ef23e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
-        <definition>float faiss::VectorDistanceBase&lt; mt &gt;::metric_arg</definition>
-        <argsstring></argsstring>
-        <name>metric_arg</name>
-        <qualifiedname>faiss::VectorDistanceBase::metric_arg</qualifiedname>
+        <definition>float faiss::VectorDistance&lt; METRIC_INNER_PRODUCT, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="29" column="11" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="174" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="174" bodyend="178"/>
       </memberdef>
-    </sectiondef>
-    <sectiondef kind="public-static-attrib">
-      <memberdef kind="variable" id="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" prot="public" static="yes" constexpr="yes" mutable="no">
-        <type>constexpr <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
-        <definition>constexpr MetricType faiss::VectorDistanceBase&lt; mt &gt;::metric</definition>
-        <argsstring></argsstring>
-        <name>metric</name>
-        <qualifiedname>faiss::VectorDistanceBase::metric</qualifiedname>
-        <initializer>= mt</initializer>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a006487437e4a3977172c15f1505faa59" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_L1, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="30" column="33" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="181" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="181" bodyend="184"/>
       </memberdef>
-      <memberdef kind="variable" id="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" prot="public" static="yes" constexpr="yes" mutable="no">
-        <type>constexpr bool</type>
-        <definition>constexpr bool faiss::VectorDistanceBase&lt; mt &gt;::is_similarity</definition>
-        <argsstring></argsstring>
-        <name>is_similarity</name>
-        <qualifiedname>faiss::VectorDistanceBase::is_similarity</qualifiedname>
-        <initializer>= <ref refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kindref="member">is_similarity_metric</ref>(mt)</initializer>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a70601b67aff41475400797e591db84aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_Linf, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/extra_distances-inl.h" line="31" column="27" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="187" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="187" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1adcf600021fbabeba3c5e4b1c27c9396a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_Lp, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="194" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="194" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ac7552d23ed844b917f69249e6d0d910a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_Canberra, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="205" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="205" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a7441f25b679164a43f984f9d95dae5d7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_BrayCurtis, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="217" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="217" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1afecc306fe16dbf00cb39cdd3e9f6bbdb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_JensenShannon, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="230" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="230" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a4de5c34cae633ac9d07261256965ee34" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_Jaccard, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="245" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="245" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1ad9b3e593188a37d132f6b89c0f540cca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_NaNEuclidean, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="257" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="257" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1VectorDistance_1a854d44a84027d2162c9cb3a5431d000c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::VectorDistance&lt; METRIC_GOWER, SL &gt;::operator()</definition>
+        <argsstring>(const float *x, const float *y) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::VectorDistance::operator()</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/distances_autovec-inl.h" line="276" column="22" bodyfile="faiss/utils/simd_impl/distances_autovec-inl.h" bodystart="276" bodyend="304"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <inheritancegraph>
-      <node id="1">
-        <label>faiss::VectorDistance&lt; mt, level &gt;</label>
-        <link refid="structfaiss_1_1VectorDistance"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::VectorDistanceBase&lt; mt &gt;</label>
-        <link refid="structfaiss_1_1VectorDistanceBase"/>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
-      <node id="1">
-        <label>faiss::VectorDistance&lt; mt, level &gt;</label>
-        <link refid="structfaiss_1_1VectorDistance"/>
-        <childnode refid="2" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="2">
-        <label>faiss::VectorDistanceBase&lt; mt &gt;</label>
-        <link refid="structfaiss_1_1VectorDistanceBase"/>
-      </node>
-    </collaborationgraph>
-    <location file="faiss/utils/extra_distances-inl.h" line="44" column="1" bodyfile="faiss/utils/extra_distances-inl.h" bodystart="44" bodyend="46"/>
+    <location file="faiss/utils/extra_distances.h" line="111" column="1" bodyfile="faiss/utils/extra_distances.h" bodystart="111" bodyend="126"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a54aeea04787567413c313b41cd87e13c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>C</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a8730a7c546ede2e840a13301b9b2330c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>d</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a750cbd1c0a69ea4ecf725398b5dec16c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>is_similarity</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1ad464f23a0fbe71eb04b349597ac1ff40" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric</name></member>
-      <member refid="structfaiss_1_1VectorDistanceBase_1a1632ebcd06aad51b09db85f321b8f7a5" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric_arg</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a6a6fba647ba5deb3d402be528b54d5fd" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>C</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1acb8013f533aee747c7f4b31dc4100461" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>d</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a53b61814af422ac793ab99cabb4378ba" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>is_similarity</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a0bbc4a82d079c42320a38c9e4495a5b5" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a052ca6a9899353430acf58412d541e84" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>metric_arg</name></member>
       <member refid="structfaiss_1_1VectorDistance_1ad97851f87dd48a15ef9bc6445c860d50" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1ae6080d4ef5c5431a30ea0ad63eb76e16" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a02ffeabe0a8d96fa705c321f871ef23e" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a006487437e4a3977172c15f1505faa59" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a70601b67aff41475400797e591db84aa" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1adcf600021fbabeba3c5e4b1c27c9396a" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1ac7552d23ed844b917f69249e6d0d910a" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a7441f25b679164a43f984f9d95dae5d7" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1afecc306fe16dbf00cb39cdd3e9f6bbdb" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a4de5c34cae633ac9d07261256965ee34" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1ad9b3e593188a37d132f6b89c0f540cca" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a854d44a84027d2162c9cb3a5431d000c" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1VectorDistance_1a8137459daea53b1c86d635f1a44f0794" prot="public" virt="non-virtual"><scope>faiss::VectorDistance</scope><name>VectorDistance</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>
