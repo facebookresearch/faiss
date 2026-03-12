@@ -12,10 +12,11 @@
 #include <arm_neon.h>
 #include <limits>
 
-#define AUTOVEC_LEVEL SIMDLevel::ARM_NEON
+#define THE_SIMD_LEVEL SIMDLevel::ARM_NEON
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
 
-#define THE_SIMDLEVEL SIMDLevel::ARM_NEON
 #include <faiss/utils/simd_impl/distances_simdlib256.h>
 
 namespace faiss {
