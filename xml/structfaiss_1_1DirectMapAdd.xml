@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="94" column="5" bodyfile="faiss/invlists/DirectMap.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="95" column="5" bodyfile="faiss/invlists/DirectMap.h" bodystart="95" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -32,7 +32,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="96" column="15" bodyfile="faiss/invlists/DirectMap.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="97" column="15" bodyfile="faiss/invlists/DirectMap.h" bodystart="97" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1a48cdcf383204e03f222dfd5268da07f7" prot="public" static="no" mutable="no">
         <type>DirectMap::Type</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="97" column="21" bodyfile="faiss/invlists/DirectMap.h" bodystart="97" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="98" column="21" bodyfile="faiss/invlists/DirectMap.h" bodystart="98" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1a8717801b62dde28c1f6449b866e0d859" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -60,7 +60,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="98" column="12" bodyfile="faiss/invlists/DirectMap.h" bodystart="98" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="99" column="12" bodyfile="faiss/invlists/DirectMap.h" bodystart="99" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1ad53244cf90fa50ab2067622fdac9cff6" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="99" column="12" bodyfile="faiss/invlists/DirectMap.h" bodystart="99" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="100" column="12" bodyfile="faiss/invlists/DirectMap.h" bodystart="100" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1a589d3b9a6160cd5377bc2b509d6785e9" prot="public" static="no" mutable="no">
         <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="100" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="100" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="101" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="101" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1DirectMapAdd_1a2e06dfbace35457f530a462f3efed280" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> &gt;</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="102" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/invlists/DirectMap.h" line="103" column="17" bodyfile="faiss/invlists/DirectMap.h" bodystart="103" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -130,7 +130,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="104" column="5"/>
+        <location file="faiss/invlists/DirectMap.h" line="105" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMapAdd_1af80ac88a6ba7c8eb07c41e4c8cce70f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -157,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="107" column="10"/>
+        <location file="faiss/invlists/DirectMap.h" line="108" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DirectMapAdd_1ace859085fad9a2a5948560b0cf37b342" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -171,7 +171,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/invlists/DirectMap.h" line="109" column="5"/>
+        <location file="faiss/invlists/DirectMap.h" line="110" column="5"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -192,7 +192,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/invlists/DirectMap.h" line="93" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="93" bodyend="110"/>
+    <location file="faiss/invlists/DirectMap.h" line="94" column="1" bodyfile="faiss/invlists/DirectMap.h" bodystart="94" bodyend="111"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DirectMapAdd_1af80ac88a6ba7c8eb07c41e4c8cce70f6" prot="public" virt="non-virtual"><scope>faiss::DirectMapAdd</scope><name>add</name></member>
       <member refid="structfaiss_1_1DirectMapAdd_1a2e06dfbace35457f530a462f3efed280" prot="public" virt="non-virtual"><scope>faiss::DirectMapAdd</scope><name>all_ofs</name></member>

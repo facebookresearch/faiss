@@ -53,6 +53,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a4aeef9f31288a7c28c02a2582616a660" kind="variable"><name>M</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3eda6b9cc0ffa5ce141683f0a6e27349" kind="variable"><name>nbits</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a1bd2810ad54fb243b666e56f5d505d3f" kind="variable"><name>codebooks</name></member>
@@ -707,6 +708,7 @@
     <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085ea69e597c47ff96b59750caf4e3b1c1595" kind="enumvalue"><name>NoMap</name></member>
     <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eadbc69c719b291fd020f9453537e7f9fc" kind="enumvalue"><name>Array</name></member>
     <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eafd50054291023bc688cd56d37eabfdc4" kind="enumvalue"><name>Hashtable</name></member>
+    <member refid="structfaiss_1_1DirectMap_1a62770ef9a5077202ffeaa944837d085eabb59741246a8ccfc2475e45b11d5dc55" kind="enumvalue"><name>DMT_count</name></member>
     <member refid="structfaiss_1_1DirectMap_1af32d92c20410dab605b1852117d84413" kind="variable"><name>type</name></member>
     <member refid="structfaiss_1_1DirectMap_1a5372a8a241fd5cd2940518c523ace9dc" kind="variable"><name>array</name></member>
     <member refid="structfaiss_1_1DirectMap_1a5328b57d925865e464733f3512b0563f" kind="variable"><name>hashtable</name></member>
@@ -8567,6 +8569,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
   </compound>
   <compound refid="structfaiss_1_1lsq_1_1LSQTimer" kind="struct"><name>faiss::lsq::LSQTimer</name>
     <member refid="structfaiss_1_1lsq_1_1LSQTimer_1a6a2b77bdbac4ace2ceef5c93fa968868" kind="variable"><name>t</name></member>
@@ -9360,6 +9363,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
   </compound>
   <compound refid="structfaiss_1_1ProductLocalSearchQuantizer" kind="struct"><name>faiss::ProductLocalSearchQuantizer</name>
     <member refid="structfaiss_1_1ProductLocalSearchQuantizer_1a9fef2a094cd606f45dea7a538134af41" kind="function"><name>ProductLocalSearchQuantizer</name></member>
@@ -9418,6 +9422,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
   </compound>
   <compound refid="structfaiss_1_1ProductQuantizer" kind="struct"><name>faiss::ProductQuantizer</name>
     <member refid="structfaiss_1_1ProductQuantizer_1a3a41c6286095e731be744548d9535a35" kind="enum"><name>train_type_t</name></member>
@@ -9521,6 +9526,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
   </compound>
   <compound refid="structfaiss_1_1ProgressiveDimClustering" kind="struct"><name>faiss::ProgressiveDimClustering</name>
     <member refid="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab" kind="variable"><name>d</name></member>
@@ -10163,6 +10169,7 @@
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da74f8a53f2245497592d362c8a58acca6" kind="enumvalue"><name>ST_norm_cqint4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da3f729a1c733fa6d540887a288beb1da9" kind="enumvalue"><name>ST_norm_lsq2x4</name></member>
     <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437da897fcce2694ddcb88561ccd30967ff18" kind="enumvalue"><name>ST_norm_rq2x4</name></member>
+    <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437daf194c23d75db5c823abb20cee00b678a" kind="enumvalue"><name>ST_count</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1a5c1c8a9eb29fcaeb0eab565bfd2f7eef" kind="variable"><name>train_type</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1a4b1efc57c48c90f0e4b0f52822bf871b" kind="variable"><name>niter_codebook_refine</name></member>
     <member refid="structfaiss_1_1ResidualQuantizer_1adc079ef913e819d33584f11cb50be092" kind="variable"><name>max_beam_size</name></member>
@@ -10273,6 +10280,7 @@
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eaf654ce120baf92b9ac3c43592744fbf8" kind="enumvalue"><name>QT_6bit</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eae6cdb226519ce240694da1a4f21232cd" kind="enumvalue"><name>QT_bf16</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952eaab5c903ada4c52a308aae478d9e40452" kind="enumvalue"><name>QT_8bit_direct_signed</name></member>
+    <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952ea078b633a7a11d97a8a140a56a0648439" kind="enumvalue"><name>QT_count</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" kind="enum"><name>RangeStat</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06aa52f2f14616c61c04baf6323d43588fd" kind="enumvalue"><name>RS_minmax</name></member>
     <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06afb4b9f4ee9003fa0193e6de69632f7a0" kind="enumvalue"><name>RS_meanstd</name></member>
@@ -12148,12 +12156,15 @@
     <member refid="namespacefaiss_1aceed566acb3d5edfa90c70198ba5d962" kind="function"><name>write_InvertedLists</name></member>
     <member refid="namespacefaiss_1aa406bd6a2e1b397ad15954d9fd67c251" kind="function"><name>read_InvertedLists</name></member>
     <member refid="namespacefaiss_1afe18d8b6b6b55ae7468bed708ac58a44" kind="function"><name>read_InvertedLists_up</name></member>
+    <member refid="namespacefaiss_1a33ffe9525bdb0b573df38b7725672149" kind="function"><name>get_deserialization_loop_limit</name></member>
+    <member refid="namespacefaiss_1a8fcd963a2d62d0ee1adf38c6d54f289e" kind="function"><name>set_deserialization_loop_limit</name></member>
     <member refid="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" kind="function"><name>initialize_IVFPQ_precomputed_table</name></member>
     <member refid="namespacefaiss_1aaa38f721404f4610f50d04ab0a01ad28" kind="function"><name>lo_build</name></member>
     <member refid="namespacefaiss_1afe521d71f2a4dd6a99b0a5d9fbe19787" kind="function"><name>lo_listno</name></member>
     <member refid="namespacefaiss_1a31e62b2521dd1eeb8632005add40ecbd" kind="function"><name>lo_offset</name></member>
     <member refid="namespacefaiss_1ac27fd187a128dba0bf95196458a7fbd7" kind="function"><name>is_similarity_metric</name></member>
     <member refid="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" kind="function"><name>metric_type_from_int</name></member>
+    <member refid="namespacefaiss_1a0695c74d2b29888c1c5858e5c6bc1d88" kind="function"><name>metric_type_count</name></member>
     <member refid="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" kind="function"><name>to_svs_metric</name></member>
     <member refid="namespacefaiss_1a4b0faf1e9d9da1c14b118bdef8116f48" kind="function"><name>make_faiss_id_filter</name></member>
     <member refid="namespacefaiss_1a59dea145469ceef3a7710a7163d3e4ab" kind="function"><name>convert_input_buffer</name></member>

@@ -449,7 +449,6 @@
         <qualifiedname>faiss::MetricType</qualifiedname>
         <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752ca96ba216fbb3b4e586edf26637d61c7b2" prot="public">
           <name>METRIC_INNER_PRODUCT</name>
-          <initializer>= 0</initializer>
           <briefdescription>
 <para>maximum inner product search </para>
           </briefdescription>
@@ -458,7 +457,6 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" prot="public">
           <name>METRIC_L2</name>
-          <initializer>= 1</initializer>
           <briefdescription>
 <para>squared L2 search </para>
           </briefdescription>
@@ -541,11 +539,11 @@
         <detaileddescription>
 <para>The metric space for vector comparison for Faiss indices and algorithms.</para>
 <para>Most algorithms support both inner product and L2, with the flat (brute-force) indices supporting additional metric types for vector comparison.</para>
-<para>NOTE: when adding or removing values, update <ref refid="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" kindref="member">metric_type_from_int()</ref> below. </para>
+<para>NOTE: when adding or removing values, update <ref refid="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" kindref="member">metric_type_from_int()</ref> and <ref refid="namespacefaiss_1a0695c74d2b29888c1c5858e5c6bc1d88" kindref="member">metric_type_count()</ref> below. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="28" column="1" bodyfile="faiss/MetricType.h" bodystart="28" bodyend="48"/>
+        <location file="faiss/MetricType.h" line="29" column="1" bodyfile="faiss/MetricType.h" bodystart="29" bodyend="49"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdb" prot="public" static="no" strong="no">
         <type></type>
@@ -978,7 +976,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="51" column="1" bodyfile="faiss/MetricType.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/MetricType.h" line="52" column="1" bodyfile="faiss/MetricType.h" bodystart="52" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ae0c5f7d2638acf960a3b98e7fd8c1167" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HeapArray" kindref="compound">HeapArray</ref>&lt; <ref refid="structfaiss_1_1CMin" kindref="compound">CMin</ref>&lt; float, int64_t &gt; &gt;</type>
@@ -6389,6 +6387,38 @@
         </inbodydescription>
         <location file="faiss/index_io.h" line="112" column="17" declfile="faiss/index_io.h" declline="112" declcolumn="17"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a33ffe9525bdb0b573df38b7725672149" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::get_deserialization_loop_limit</definition>
+        <argsstring>()</argsstring>
+        <name>get_deserialization_loop_limit</name>
+        <qualifiedname>faiss::get_deserialization_loop_limit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="120" column="8" declfile="faiss/index_io.h" declline="120" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a8fcd963a2d62d0ee1adf38c6d54f289e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::set_deserialization_loop_limit</definition>
+        <argsstring>(size_t value)</argsstring>
+        <name>set_deserialization_loop_limit</name>
+        <qualifiedname>faiss::set_deserialization_loop_limit</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="125" column="6" declfile="faiss/index_io.h" declline="125" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::initialize_IVFPQ_precomputed_table</definition>
@@ -6521,7 +6551,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="55" column="16" bodyfile="faiss/MetricType.h" bodystart="55" bodyend="58"/>
+        <location file="faiss/MetricType.h" line="56" column="16" bodyfile="faiss/MetricType.h" bodystart="56" bodyend="59"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa7e1e744f92bdb61d03e304f64243007" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
@@ -6540,7 +6570,22 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/MetricType.h" line="62" column="19" bodyfile="faiss/MetricType.h" bodystart="62" bodyend="69"/>
+        <location file="faiss/MetricType.h" line="63" column="19" bodyfile="faiss/MetricType.h" bodystart="63" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0695c74d2b29888c1c5858e5c6bc1d88" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t faiss::metric_type_count</definition>
+        <argsstring>()</argsstring>
+        <name>metric_type_count</name>
+        <qualifiedname>faiss::metric_type_count</qualifiedname>
+        <briefdescription>
+<para>Count of entries in the MetricType enum. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/MetricType.h" line="73" column="18" bodyfile="faiss/MetricType.h" bodystart="73" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1addadfadce8e5562a06ce187083ea72a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>svs_runtime::MetricType</type>
