@@ -495,6 +495,26 @@ int compute_search_nslice(
 
 } // namespace
 
+std::unique_ptr<FastScanCodeScanner> IndexIVFFastScan::make_knn_scanner(
+        bool is_max,
+        idx_t n,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing&) const {
+    return make_fast_scan_knn_scanner(
+            is_max,
+            0,
+            n,
+            0,
+            k,
+            distances,
+            labels,
+            sel,
+            /*with_id_map=*/true);
+}
+
 SIMDResultHandlerToFloat* IndexIVFFastScan::make_knn_handler(
         bool is_max,
         int impl,

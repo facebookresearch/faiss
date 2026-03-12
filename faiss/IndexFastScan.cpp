@@ -211,6 +211,19 @@ void estimators_from_tables_generic(
 
 } // anonymous namespace
 
+std::unique_ptr<FastScanCodeScanner> IndexFastScan::make_knn_scanner(
+        bool is_max,
+        idx_t n,
+        idx_t k,
+        size_t ntotal,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing&) const {
+    return make_fast_scan_knn_scanner(
+            is_max, 0, n, ntotal, k, distances, labels, sel);
+}
+
 // Default implementation of make_knn_handler with centralized fallback logic
 SIMDResultHandlerToFloat* IndexFastScan::make_knn_handler(
         bool is_max,
