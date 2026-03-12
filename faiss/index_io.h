@@ -113,6 +113,17 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         IOReader* reader,
         int io_flags = 0);
 
+// Returns the current deserialization loop limit.
+// When nonzero, deserialization rejects loop-driving fields (nlist,
+// nsplits, VT chain length, nhash, etc.) that exceed this value.
+// Default: 0 (no limit).
+size_t get_deserialization_loop_limit();
+
+// Sets the deserialization loop limit.
+// NOT thread-safe: set before any concurrent deserialization calls
+// and do not modify while deserialization is in progress on other threads.
+void set_deserialization_loop_limit(size_t value);
+
 } // namespace faiss
 
 #endif

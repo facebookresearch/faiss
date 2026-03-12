@@ -18,11 +18,10 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
-#define AUTOVEC_LEVEL SIMDLevel::NONE
+#define THE_SIMD_LEVEL SIMDLevel::NONE
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
-#define THE_SIMDLEVEL SIMDLevel::NONE
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_simdlib256.h>
 

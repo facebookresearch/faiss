@@ -10,12 +10,12 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <faiss/impl/IDSelector.h>
-
-#include <faiss/utils/Heap.h>
+#include <faiss/impl/simd_dispatch.h>
+#include <faiss/utils/ordered_key_value.h>
 
 namespace faiss {
 
@@ -100,6 +100,64 @@ inline auto with_metric_type(MetricType metric, LambdaType&& action) {
 }
 #endif // SWIG
 
-} // namespace faiss
+#ifndef SWIG
 
-#include <faiss/utils/extra_distances-inl.h>
+/***************************************************************************
+ * VectorDistance base class - contains common data members and type defs
+ * VectorDistance struct template - specializations for each metric type
+ **************************************************************************/
+
+template <MetricType mt, SIMDLevel level>
+struct VectorDistance {
+    size_t d;
+    float metric_arg;
+
+    VectorDistance(size_t d, float metric_arg) : d(d), metric_arg(metric_arg) {}
+
+    static constexpr MetricType metric = mt;
+    static constexpr bool is_similarity = is_similarity_metric(mt);
+
+    using C = typename std::conditional<
+            is_similarity_metric(mt),
+            CMin<float, int64_t>,
+            CMax<float, int64_t>>::type;
+
+    float operator()(const float* x, const float* y) const;
+};
+
+/***************************************************************************
+ * Dispatching function that takes a lambda directly.
+ * The lambda should be templated on VectorDistance, eg.:
+ *
+ *   auto result = with_VectorDistance(
+ *       metric, metric_arg, [&]<class VD>(VD vd) {
+ *           return vd(x, y);
+ *       });
+ **************************************************************************/
+
+template <typename LambdaType>
+auto with_VectorDistance(
+        size_t d,
+        MetricType metric,
+        float metric_arg,
+        LambdaType&& action) {
+    auto dispatch_metric = [&]<MetricType mt>() {
+        auto call = [&]<SIMDLevel level>() {
+            VectorDistance<mt, level> vd = {d, metric_arg};
+            return action(vd);
+        };
+
+        constexpr bool has_simd = mt == METRIC_INNER_PRODUCT ||
+                mt == METRIC_L2 || mt == METRIC_L1 || mt == METRIC_Linf;
+        if constexpr (!has_simd) {
+            return call.template operator()<SIMDLevel::NONE>();
+        } else {
+            DISPATCH_SIMDLevel(call.template operator());
+        }
+    };
+    return with_metric_type(metric, dispatch_metric);
+}
+
+#endif // SWIG
+
+} // namespace faiss
