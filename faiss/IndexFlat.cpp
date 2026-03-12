@@ -252,6 +252,21 @@ struct FlatIPDis : FlatCodesDistanceComputer {
         return fvec_inner_product<SL>(q, (const float*)code, d);
     }
 
+    float operator()(idx_t i, float threshold) override {
+        ndis++;
+        const float* y =
+                reinterpret_cast<const float*>(codes + i * code_size);
+        return fvec_inner_product_batched(q, y, d, 16, threshold);
+    }
+
+    bool supports_threshold() const override {
+        return true;
+    }
+
+    float degenerate_threshold() const override {
+        return -std::numeric_limits<float>::infinity();
+    }
+
     explicit FlatIPDis(const IndexFlat& storage, const float* q = nullptr)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
