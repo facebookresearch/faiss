@@ -539,16 +539,16 @@ void HNSW::add_with_locks(
         std::vector<omp_lock_t>& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
-    //  greedy search on upper levels
-
-    storage_idx_t nearest;
+    storage_idx_t nearest = entry_point;
+    if (nearest == -1) { // avoid locking after the first point.
 #pragma omp critical
-    {
-        nearest = entry_point;
-
-        if (nearest == -1) {
+        if (entry_point == -1) { // double-check under lock.
             max_level = pt_level;
             entry_point = pt_id;
+            // leave nearest = -1 to trigger early exit after critical block.
+        } else {
+            // else: Another thread set the entry point.
+            nearest = entry_point;
         }
     }
 
@@ -561,6 +561,7 @@ void HNSW::add_with_locks(
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
 
+    //  greedy search on upper levels
     for (; level > pt_level; level--) {
         greedy_update_nearest(*this, ptdis, level, nearest, d_nearest);
     }
