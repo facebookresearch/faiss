@@ -169,6 +169,15 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
     READ1(il->n_per_block);
     READ1(il->block_size);
 
+    FAISS_THROW_IF_NOT_FMT(
+            il->n_per_block > 0,
+            "invalid BlockInvertedLists n_per_block %zd (must be > 0)",
+            il->n_per_block);
+    FAISS_THROW_IF_NOT_FMT(
+            il->block_size > 0,
+            "invalid BlockInvertedLists block_size %zd (must be > 0)",
+            il->block_size);
+
     il->ids.resize(il->nlist);
     il->codes.resize(il->nlist);
 
