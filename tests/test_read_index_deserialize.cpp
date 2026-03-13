@@ -642,3 +642,28 @@ TEST(ReadIndexDeserialize, BinaryMultiHashMapIlszExceedsNtotal) {
 
     expect_binary_read_throws_with(buf, "would exceed ntotal");
 }
+
+// -----------------------------------------------------------------------
+// Test: IndexBinaryIDMap ("IBMp") with id_map size != ntotal.  Without
+// the check, construct_rev_map (IBM2) or subsequent search operations
+// would use an inconsistent ID mapping.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryIDMapIdMapSizeMismatch) {
+    // Outer IBMp header has ntotal=2, but the id_map vector has 5
+    // entries.  The check on id_map.size() == ntotal must reject this.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBMp");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/2);
+
+    // Nested IBxF storage with ntotal=2 (matches outer header).
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/2);
+    std::vector<uint8_t> xb(2 * 2, 0); // ntotal * code_size
+    push_vector<uint8_t>(buf, xb);
+
+    // id_map with 5 entries (mismatches ntotal=2).
+    std::vector<int64_t> id_map = {10, 20, 30, 40, 50};
+    push_vector<int64_t>(buf, id_map);
+
+    expect_binary_read_throws_with(buf, "id_map");
+}
