@@ -2081,6 +2081,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
+        FAISS_THROW_IF_NOT(idxmap->id_map.size() == idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexBinaryIDMap2*>(idxmap.get())->construct_rev_map();
         }
