@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <numeric>
 #include <vector>
 
 #include <faiss/Index.h>
@@ -16,6 +17,7 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
+#include <faiss/utils/hamming.h>
 
 using namespace faiss;
 
@@ -578,4 +580,65 @@ TEST(ReadIndexDeserialize, BinaryHashIlNbitZeroWithEntries) {
     push_val<int>(buf, 0);            // il_nbit = 0 (invalid when sz > 0)
 
     expect_binary_read_throws_with(buf, "il_nbit=");
+}
+
+// -----------------------------------------------------------------------
+// Test: read_binary_multi_hash_map with crafted ilsz values that sum to
+// more than ntotal.  Without the check, the inner loop would read past
+// the end of the BitstringReader buffer.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryMultiHashMapIlszExceedsNtotal) {
+    // ntotal=4 → id_bits=2 (writer: while (4 > (1<<id_bits)) id_bits++)
+    // b=4, sz=2 entries
+    // Total bits formula: (b + id_bits) * sz + ntotal * id_bits
+    //                   = (4 + 2) * 2 + 4 * 2 = 20
+    // buf size = (20 + 7) / 8 = 3 bytes
+    //
+    // Craft entry 0: hash=0, ilsz=3  (3 ids follow)
+    // Craft entry 1: hash=1, ilsz=3  (3 ids follow)
+    // Total ilsz = 6, but ntotal = 4 → should throw on entry 1.
+
+    const int b = 4;
+    const int id_bits = 2;
+    const size_t ntotal = 4;
+    const size_t sz = 2;
+    const size_t nbit = (b + id_bits) * sz + ntotal * id_bits;
+    const size_t bitbuf_size = (nbit + 7) / 8;
+
+    // Pack the bitstring with BitstringWriter.
+    std::vector<uint8_t> bitbuf(bitbuf_size, 0);
+    BitstringWriter wr(bitbuf.data(), bitbuf.size());
+    // Entry 0: hash=0, ilsz=3, ids={0,0,0}
+    wr.write(0, b);
+    wr.write(3, id_bits);
+    wr.write(0, id_bits);
+    wr.write(0, id_bits);
+    wr.write(0, id_bits);
+    // Entry 1: hash=1, ilsz=3
+    // (reader should throw before reading ids for this entry)
+    wr.write(1, b);
+    wr.write(3, id_bits);
+
+    // Build the full IBHm serialized buffer.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+
+    // Nested IBxF storage with matching ntotal.
+    // xb needs ntotal * code_size bytes (code_size = d/8 = 2).
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+    std::vector<uint8_t> xb(ntotal * 2, 0);
+    push_vector<uint8_t>(buf, xb);
+
+    push_val<int>(buf, b); // b
+    push_val<int>(buf, 1); // nhash = 1
+    push_val<int>(buf, 0); // nflip
+
+    // Multi hash map fields (1 map):
+    push_val<int>(buf, id_bits);       // id_bits
+    push_val<size_t>(buf, sz);         // sz = 2 entries
+    push_vector<uint8_t>(buf, bitbuf); // packed bitstring
+
+    expect_binary_read_throws_with(buf, "would exceed ntotal");
 }
