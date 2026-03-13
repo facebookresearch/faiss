@@ -184,6 +184,21 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
     for (size_t i = 0; i < il->nlist; i++) {
         READVECTOR(il->ids[i]);
         READVECTOR(il->codes[i]);
+        size_t n_ids = il->ids[i].size();
+        size_t n_block = (n_ids + il->n_per_block - 1) / il->n_per_block;
+        size_t expected_codes_size = mul_no_overflow(
+                n_block, il->block_size, "BlockInvertedLists codes");
+        FAISS_THROW_IF_NOT_FMT(
+                il->codes[i].size() == expected_codes_size,
+                "BlockInvertedLists list %zd: codes size %zd does not "
+                "match expected %zd (ids=%zd, n_per_block=%zd, "
+                "block_size=%zd)",
+                i,
+                il->codes[i].size(),
+                expected_codes_size,
+                n_ids,
+                il->n_per_block,
+                il->block_size);
     }
 
     return il.release();

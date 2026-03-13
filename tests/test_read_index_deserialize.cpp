@@ -721,3 +721,90 @@ TEST(ReadIndexDeserialize, BlockInvertedListsBlockSizeZero) {
 
     expect_invlists_read_throws_with(buf, "block_size");
 }
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with codes vector size inconsistent with ids
+// size, n_per_block, and block_size.  Without the check, a search or
+// add operation would read/write past the end of the codes buffer.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsCodesSizeMismatch) {
+    const size_t n_per_block = 32;
+    const size_t block_size = 128;
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);           // nlist = 1
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // ids: 10 entries → ceil(10/32) = 1 block → expected codes = 128 bytes
+    std::vector<int64_t> ids(10, 0);
+    push_vector<int64_t>(buf, ids);
+    // codes: 64 bytes (wrong, should be 128)
+    std::vector<uint8_t> codes(64, 0);
+    push_vector<uint8_t>(buf, codes);
+
+    expect_invlists_read_throws_with(buf, "codes size");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with n_block * block_size overflow.  Without
+// the mul_no_overflow check, the multiplication wraps around and the
+// size comparison passes spuriously.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsCodesOverflow) {
+    // Choose n_per_block=1 and block_size near SIZE_MAX so that
+    // n_block * block_size overflows.
+    const size_t n_per_block = 1;
+    const size_t block_size = (size_t)-1; // SIZE_MAX
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);           // nlist = 1
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // ids: 2 entries → n_block = 2 → 2 * SIZE_MAX overflows
+    std::vector<int64_t> ids(2, 0);
+    push_vector<int64_t>(buf, ids);
+    // codes: any size, doesn't matter — overflow should be caught first
+    std::vector<uint8_t> codes(0);
+    push_vector<uint8_t>(buf, codes);
+
+    expect_invlists_read_throws_with(buf, "overflow");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with valid ids and codes passes validation.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsValidCodesSize) {
+    const size_t n_per_block = 32;
+    const size_t block_size = 128;
+    const size_t nlist = 2;
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, nlist);       // nlist
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // List 0: 10 ids → ceil(10/32)=1 block → 128 bytes
+    std::vector<int64_t> ids0(10, 0);
+    push_vector<int64_t>(buf, ids0);
+    std::vector<uint8_t> codes0(128, 0);
+    push_vector<uint8_t>(buf, codes0);
+
+    // List 1: 0 ids → 0 blocks → 0 bytes
+    std::vector<int64_t> ids1;
+    push_vector<int64_t>(buf, ids1);
+    std::vector<uint8_t> codes1;
+    push_vector<uint8_t>(buf, codes1);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto il = read_InvertedLists_up(&reader);
+    EXPECT_NE(il, nullptr);
+}
