@@ -17,6 +17,7 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
+#include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/hamming.h>
 
 using namespace faiss;
@@ -666,4 +667,57 @@ TEST(ReadIndexDeserialize, BinaryIDMapIdMapSizeMismatch) {
     push_vector<int64_t>(buf, id_map);
 
     expect_binary_read_throws_with(buf, "id_map");
+}
+
+// -----------------------------------------------------------------------
+// InvertedLists helpers
+// -----------------------------------------------------------------------
+
+/// Try to read an InvertedLists from the given buffer and expect a
+/// FaissException whose message contains the given substring.
+static void expect_invlists_read_throws_with(
+        const std::vector<uint8_t>& data,
+        const std::string& expected_substr) {
+    VectorIOReader reader;
+    reader.data = data;
+    try {
+        read_InvertedLists_up(&reader);
+        FAIL() << "expected FaissException";
+    } catch (const FaissException& e) {
+        EXPECT_NE(
+                std::string(e.what()).find(expected_substr), std::string::npos)
+                << "expected '" << expected_substr << "' in: " << e.what();
+    }
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with n_per_block=0 causes divide-by-zero
+// in resize() and add_entries().  The fix validates n_per_block > 0
+// during deserialization.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsNPerBlockZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);   // nlist
+    push_val<size_t>(buf, 32);  // code_size
+    push_val<size_t>(buf, 0);   // n_per_block = 0 (invalid)
+    push_val<size_t>(buf, 128); // block_size
+
+    expect_invlists_read_throws_with(buf, "n_per_block");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with block_size=0 causes divide-by-zero
+// in add_entries().  The fix validates block_size > 0 during
+// deserialization.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsBlockSizeZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);  // nlist
+    push_val<size_t>(buf, 32); // code_size
+    push_val<size_t>(buf, 32); // n_per_block
+    push_val<size_t>(buf, 0);  // block_size = 0 (invalid)
+
+    expect_invlists_read_throws_with(buf, "block_size");
 }
