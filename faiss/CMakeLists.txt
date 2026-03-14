@@ -12,6 +12,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
+  impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
@@ -23,6 +24,7 @@ set(FAISS_SIMD_AVX512_SRC
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
+  impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
 )
 set(FAISS_SIMD_SVE_SRC
@@ -315,10 +317,11 @@ set(FAISS_HEADERS
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_based.h
-  utils/approx_topk/approx_topk.h
-  utils/approx_topk/avx2-inl.h
-  utils/approx_topk/generic.h
-  utils/approx_topk/mode.h
+  impl/approx_topk/approx_topk.h
+  impl/approx_topk/generic.h
+  impl/approx_topk/rq_beam_search_tab.h
+  impl/approx_topk/rq_beam_search_tab-inl.h
+  impl/approx_topk/simdlib256-inl.h
   utils/approx_topk_hamming/approx_topk_hamming.h
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
