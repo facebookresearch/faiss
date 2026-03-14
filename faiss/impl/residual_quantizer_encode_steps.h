@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <faiss/Index.h>
-#include <faiss/utils/approx_topk/mode.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 namespace faiss {
 

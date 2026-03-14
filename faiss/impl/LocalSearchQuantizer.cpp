@@ -22,7 +22,7 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/utils/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 // this is needed for prefetching
 
