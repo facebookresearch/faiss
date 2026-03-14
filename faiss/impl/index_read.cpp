@@ -2012,9 +2012,19 @@ static void read_binary_multi_hash_map(
     FAISS_THROW_IF_NOT(buf.size() == (nbit + 7) / 8);
     BitstringReader rd(buf.data(), buf.size());
     map.reserve(sz);
+    size_t total_ids = 0;
     for (size_t i = 0; i < sz; i++) {
         uint64_t hash = rd.read(b);
         uint64_t ilsz = rd.read(id_bits);
+        FAISS_THROW_IF_NOT_FMT(
+                ilsz <= ntotal - total_ids,
+                "multi hash map: ilsz=%zu at entry %zu would exceed "
+                "ntotal=%zu (already read %zu ids)",
+                (size_t)ilsz,
+                i,
+                ntotal,
+                total_ids);
+        total_ids += ilsz;
         auto& il = map[hash];
         for (size_t j = 0; j < ilsz; j++) {
             il.push_back(rd.read(id_bits));
@@ -2071,6 +2081,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
+        FAISS_THROW_IF_NOT(idxmap->id_map.size() == idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexBinaryIDMap2*>(idxmap.get())->construct_rev_map();
         }
