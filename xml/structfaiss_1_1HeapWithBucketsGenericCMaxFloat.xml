@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</compoundname>
+  <compounddef id="structfaiss_1_1HeapWithBucketsGenericCMaxFloat" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HeapWithBucketsGenericCMaxFloat</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1HeapWithBucketsGeneric_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public" virt="non-virtual">faiss::HeapWithBucketsGeneric&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</derivedcompoundref>
     <templateparamlist>
       <param>
         <type>uint32_t</type>
@@ -15,12 +16,12 @@
       </param>
     </templateparamlist>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1ad6c756ac84112bbfeaf6fc4601c98c7a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</definition>
+        <definition>static void faiss::HeapWithBucketsGenericCMaxFloat&lt; NBUCKETS, N &gt;::addn</definition>
         <argsstring>(const uint32_t n, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>addn</name>
-        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsGenericCMaxFloat::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -47,14 +48,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/approx_topk/approx_topk.h" line="192" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="192" bodyend="199"/>
+        <location file="faiss/impl/approx_topk/generic.h" line="25" column="17" bodyfile="faiss/impl/approx_topk/generic.h" bodystart="25" bodyend="38"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1aec3062ae0a1017b7f83f2bb8575734f8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</definition>
+        <definition>static void faiss::HeapWithBucketsGenericCMaxFloat&lt; NBUCKETS, N &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>bs_addn</name>
-        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsGenericCMaxFloat::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -85,17 +86,29 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/approx_topk/approx_topk.h" line="201" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="201" bodyend="212"/>
+        <location file="faiss/impl/approx_topk/generic.h" line="40" column="17" bodyfile="faiss/impl/approx_topk/generic.h" bodystart="40" bodyend="131"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/approx_topk/approx_topk.h" line="191" column="1" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="191" bodyend="213"/>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::HeapWithBucketsGeneric&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</label>
+        <link refid="structfaiss_1_1HeapWithBucketsGeneric_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::HeapWithBucketsGenericCMaxFloat&lt; NBUCKETS, N &gt;</label>
+        <link refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat"/>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/approx_topk/generic.h" line="24" column="1" bodyfile="faiss/impl/approx_topk/generic.h" bodystart="24" bodyend="132"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" prot="public" virt="non-virtual"><scope>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</scope><name>addn</name></member>
-      <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" prot="public" virt="non-virtual"><scope>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</scope><name>bs_addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1ad6c756ac84112bbfeaf6fc4601c98c7a" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsGenericCMaxFloat</scope><name>addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1aec3062ae0a1017b7f83f2bb8575734f8" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsGenericCMaxFloat</scope><name>bs_addn</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

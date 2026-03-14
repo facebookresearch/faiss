@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct" language="C++" prot="public">
-    <compoundname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</compoundname>
+  <compounddef id="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;</compoundname>
     <templateparamlist>
       <param>
         <type>uint32_t</type>
@@ -15,12 +15,12 @@
       </param>
     </templateparamlist>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a9e4e41200f8a43c76fa863a6d45004bd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</definition>
+        <definition>static void faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;::addn</definition>
         <argsstring>(const uint32_t n, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>addn</name>
-        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;::addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>n</declname>
@@ -47,14 +47,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/approx_topk/approx_topk.h" line="192" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="192" bodyend="199"/>
+        <location file="faiss/impl/approx_topk/approx_topk.h" line="159" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="159" bodyend="166"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a0ca35c286120d453d22e1b1c0df95adb" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
-        <definition>static void faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</definition>
+        <definition>static void faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;::bs_addn</definition>
         <argsstring>(const uint32_t beam_size, const uint32_t n_per_beam, const float *const __restrict distances, const uint32_t k, float *const __restrict bh_val, int32_t *const __restrict bh_ids)</argsstring>
         <name>bs_addn</name>
-        <qualifiedname>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;::bs_addn</qualifiedname>
+        <qualifiedname>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;::bs_addn</qualifiedname>
         <param>
           <type>const uint32_t</type>
           <declname>beam_size</declname>
@@ -85,17 +85,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/approx_topk/approx_topk.h" line="201" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="201" bodyend="212"/>
+        <location file="faiss/impl/approx_topk/approx_topk.h" line="168" column="17" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="168" bodyend="177"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/approx_topk/approx_topk.h" line="191" column="1" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="191" bodyend="213"/>
+    <location file="faiss/impl/approx_topk/approx_topk.h" line="158" column="1" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="158" bodyend="178"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" prot="public" virt="non-virtual"><scope>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</scope><name>addn</name></member>
-      <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" prot="public" virt="non-virtual"><scope>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</scope><name>bs_addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a9e4e41200f8a43c76fa863a6d45004bd" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;</scope><name>addn</name></member>
+      <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a0ca35c286120d453d22e1b1c0df95adb" prot="public" virt="non-virtual"><scope>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;</scope><name>bs_addn</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

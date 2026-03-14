@@ -2,6 +2,7 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir">
     <compoundname>faiss/impl</compoundname>
+    <innerdir refid="dir_b235d6f839d23d651b2e94c471d792e2">faiss/impl/approx_topk</innerdir>
     <innerdir refid="dir_f89009322cf84aa5fe47ed2291928d28">faiss/impl/fast_scan</innerdir>
     <innerdir refid="dir_c049bba3e09b3fcad22939d16e82a552">faiss/impl/pq_code_distance</innerdir>
     <innerdir refid="dir_49d07059965bd48f84542aba965b16d6">faiss/impl/scalar_quantizer</innerdir>

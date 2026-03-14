@@ -68,10 +68,15 @@
     <innerclass refid="structfaiss_1_1HeapResultHandler" prot="public">faiss::HeapResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBuckets" prot="public">faiss::HeapWithBuckets</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public">faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBucketsCMaxFloat" prot="public">faiss::HeapWithBucketsCMaxFloat</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming16" prot="public">faiss::HeapWithBucketsForHamming16</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming16_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" prot="public">faiss::HeapWithBucketsForHamming16&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming32" prot="public">faiss::HeapWithBucketsForHamming32</innerclass>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4" prot="public">faiss::HeapWithBucketsForHamming32&lt; CMax&lt; int, int64_t &gt;, NBUCKETS, N, HammingComputerT &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBucketsGeneric" prot="public">faiss::HeapWithBucketsGeneric</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBucketsGeneric_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" prot="public">faiss::HeapWithBucketsGeneric&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat" prot="public">faiss::HeapWithBucketsGenericCMaxFloat</innerclass>
     <innerclass refid="structfaiss_1_1HNSW" prot="public">faiss::HNSW</innerclass>
     <innerclass refid="structfaiss_1_1HNSWStats" prot="public">faiss::HNSWStats</innerclass>
     <innerclass refid="structfaiss_1_1HStackInvertedLists" prot="public">faiss::HStackInvertedLists</innerclass>
@@ -1787,6 +1792,515 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/factory_tools.h" line="20" column="13" declfile="faiss/factory_tools.h" declline="20" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aec49be9536d13e5d4c18d7aadb101e0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>size_t</type>
+            <declname>M</declname>
+            <defname>M</defname>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>NK</declname>
+            <defname>NK</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::accum_and_store_tab</definition>
+        <argsstring>(const size_t m_offset, const float *const __restrict codebook_cross_norms, const uint64_t *const __restrict codebook_offsets, const int32_t *const __restrict codes_i, const size_t b, const size_t ldc, const size_t K, float *const __restrict output)</argsstring>
+        <name>accum_and_store_tab</name>
+        <qualifiedname>faiss::accum_and_store_tab</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>m_offset</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>codebook_cross_norms</declname>
+        </param>
+        <param>
+          <type>const uint64_t *__restrict</type>
+          <declname>codebook_offsets</declname>
+        </param>
+        <param>
+          <type>const int32_t *__restrict</type>
+          <declname>codes_i</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ldc</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>float *__restrict</type>
+          <declname>output</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Accumulate cross-norms for M codebooks and store the result.</para>
+<para>Loads M codebook rows (selected by codes_i) and sums them using NK×8-wide SIMD chunks, writing the result to output. Used to initialize the temporary buffer in the m≥8 path.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of codebook rows to accumulate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NK</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of 8-float SIMD chunks per loop iteration </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>SL</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SIMD level (AVX2, ARM_NEON, etc.) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>m_offset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stride between beam entries in codes_i </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_cross_norms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>cross-norm table, shape (total_codes, ldc) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_offsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-codebook offset into cross-norm table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>code indices for the current query </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>beam index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ldc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>leading dimension of cross-norm table (≥ K) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of centroids in the current codebook </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output buffer, size K (overwritten) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" line="25" column="6" bodyfile="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" bodystart="25" bodyend="68" declfile="faiss/impl/approx_topk/rq_beam_search_tab.h" declline="49" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a5036cab9c94ec085cfbbc04df0fc59bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>size_t</type>
+            <declname>M</declname>
+            <defname>M</defname>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>NK</declname>
+            <defname>NK</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::accum_and_add_tab</definition>
+        <argsstring>(const size_t m_offset, const float *const __restrict codebook_cross_norms, const uint64_t *const __restrict codebook_offsets, const int32_t *const __restrict codes_i, const size_t b, const size_t ldc, const size_t K, float *const __restrict output)</argsstring>
+        <name>accum_and_add_tab</name>
+        <qualifiedname>faiss::accum_and_add_tab</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>m_offset</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>codebook_cross_norms</declname>
+        </param>
+        <param>
+          <type>const uint64_t *__restrict</type>
+          <declname>codebook_offsets</declname>
+        </param>
+        <param>
+          <type>const int32_t *__restrict</type>
+          <declname>codes_i</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ldc</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>float *__restrict</type>
+          <declname>output</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Accumulate cross-norms for M codebooks and add to existing output.</para>
+<para>Like accum_and_store_tab, but adds the accumulated result to the existing values in output (output[k] += sum). Used for subsequent chunks of 8 codebooks in the m≥8 path.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of codebook rows to accumulate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NK</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of 8-float SIMD chunks per loop iteration </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>SL</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SIMD level (AVX2, ARM_NEON, etc.) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>m_offset</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stride between beam entries in codes_i </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_cross_norms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>cross-norm table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_offsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-codebook offset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>code indices </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>beam index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ldc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>leading dimension of cross-norm table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of centroids </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output buffer, size K (accumulated into) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" line="71" column="6" bodyfile="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" bodystart="71" bodyend="116" declfile="faiss/impl/approx_topk/rq_beam_search_tab.h" declline="77" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a69b1fa81261ad780a3e08944576302bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>size_t</type>
+            <declname>M</declname>
+            <defname>M</defname>
+          </param>
+          <param>
+            <type>size_t</type>
+            <declname>NK</declname>
+            <defname>NK</defname>
+          </param>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::accum_and_finalize_tab</definition>
+        <argsstring>(const float *const __restrict codebook_cross_norms, const uint64_t *const __restrict codebook_offsets, const int32_t *const __restrict codes_i, const size_t b, const size_t ldc, const size_t K, const float *const __restrict distances_i, const float *const __restrict cd_common, float *const __restrict output)</argsstring>
+        <name>accum_and_finalize_tab</name>
+        <qualifiedname>faiss::accum_and_finalize_tab</qualifiedname>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>codebook_cross_norms</declname>
+        </param>
+        <param>
+          <type>const uint64_t *__restrict</type>
+          <declname>codebook_offsets</declname>
+        </param>
+        <param>
+          <type>const int32_t *__restrict</type>
+          <declname>codes_i</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ldc</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>K</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>distances_i</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>cd_common</declname>
+        </param>
+        <param>
+          <type>float *__restrict</type>
+          <declname>output</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Accumulate cross-norms for M codebooks and finalize distances.</para>
+<para>Accumulates M codebook rows, then computes the final centroid distance: output[b*K + k] = distances_i[b] + cd_common[k] + 2 * sum[k] Used for m=1..7 where the entire accumulation fits in registers.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>M</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of codebook rows to accumulate (equals m) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>NK</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of 8-float SIMD chunks per loop iteration </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>SL</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>SIMD level (AVX2, ARM_NEON, etc.) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codebook_cross_norms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>cross-norm table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codebook_offsets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-codebook offset </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>codes_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>code indices (stride is M) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>beam index </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ldc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>leading dimension of cross-norm table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>K</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of centroids </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>distances_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>per-beam input distances, size beam_size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cd_common</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>common distance term, size K </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>output centroid distances (b*K offset) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" line="119" column="6" bodyfile="faiss/impl/approx_topk/rq_beam_search_tab-inl.h" bodystart="119" bodyend="167" declfile="faiss/impl/approx_topk/rq_beam_search_tab.h" declline="106" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a554e8f45bd29da5a6a31cbe1dceecc71" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref>&lt; SL &gt;</type>
+        <definition>simd8float32_tpl&lt; SL &gt; faiss::simd8float32_max</definition>
+        <argsstring>(simd8float32_tpl&lt; SL &gt; a, simd8float32_tpl&lt; SL &gt; b)</argsstring>
+        <name>simd8float32_max</name>
+        <qualifiedname>faiss::simd8float32_max</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref>&lt; SL &gt;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref>&lt; SL &gt;</type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/simdlib256-inl.h" line="27" column="25" bodyfile="faiss/impl/approx_topk/simdlib256-inl.h" bodystart="27" bodyend="34"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>

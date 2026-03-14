@@ -99,27 +99,27 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="52" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="49" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
-        <childnode refid="56" relation="include">
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
-      <node id="52">
+      <node id="54">
         <label>faiss/IndexIVFFastScan.h</label>
         <link refid="IndexIVFFastScan_8h_source"/>
         <childnode refid="39" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
-        </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="55" relation="include">
         </childnode>
         <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
       <node id="9">
@@ -158,7 +158,7 @@
         <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="55">
+      <node id="57">
         <label>faiss/impl/CodePacker.h</label>
         <link refid="CodePacker_8h_source"/>
         <childnode refid="9" relation="include">
@@ -292,13 +292,43 @@
         <childnode refid="51" relation="include">
         </childnode>
       </node>
-      <node id="53">
+      <node id="51">
+        <label>faiss/impl/approx_topk/approx_topk.h</label>
+        <link refid="approx__topk_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>faiss/impl/approx_topk/generic.h</label>
+        <link refid="generic_8h_source"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="55">
         <label>faiss/impl/fast_scan/FastScanDistancePostProcessing.h</label>
         <link refid="FastScanDistancePostProcessing_8h_source"/>
         <childnode refid="24" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="56">
         <label>faiss/impl/fast_scan/fast_scan.h</label>
         <link refid="fast__scan_8h_source"/>
         <childnode refid="6" relation="include">
@@ -307,7 +337,7 @@
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="55" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
@@ -336,6 +366,14 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
+      <node id="53">
+        <label>faiss/impl/simd_dispatch.h</label>
+        <link refid="simd__dispatch_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
       <node id="42">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
@@ -356,7 +394,7 @@
         <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="56">
+      <node id="58">
         <label>faiss/utils/AlignedTable.h</label>
         <link refid="AlignedTable_8h_source"/>
         <childnode refid="34" relation="include">
@@ -393,10 +431,6 @@
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
-      </node>
-      <node id="51">
-        <label>faiss/utils/approx_topk/mode.h</label>
-        <link refid="mode_8h_source"/>
       </node>
       <node id="30">
         <label>faiss/utils/distances.h</label>

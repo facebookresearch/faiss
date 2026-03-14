@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="rq__beam__search__tab_8h" kind="file" language="C++">
+    <compoundname>rq_beam_search_tab.h</compoundname>
+    <includes local="no">cstddef</includes>
+    <includes local="no">cstdint</includes>
+    <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
+    <includedby refid="rq__beam__search__tab-inl_8h" local="no">faiss/impl/approx_topk/rq_beam_search_tab-inl.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>faiss/impl/approx_topk/rq_beam_search_tab.h</label>
+        <link refid="rq__beam__search__tab_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstddef</label>
+      </node>
+      <node id="3">
+        <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>cstdio</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>faiss/impl/approx_topk/rq_beam_search_tab-inl.h</label>
+        <link refid="rq__beam__search__tab-inl_8h_source"/>
+      </node>
+      <node id="1">
+        <label>faiss/impl/approx_topk/rq_beam_search_tab.h</label>
+        <link refid="rq__beam__search__tab_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+<para>Declarations for SIMDLevel-templatized codebook accumulation functions. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>These functions accumulate codebook cross-norm tables for beam search encoding in the Residual Quantizer. They compute the distance contributions from previously encoded codebooks using SIMD-accelerated register accumulation.</para>
+<para>Definitions are in <ref refid="rq__beam__search__tab-inl_8h_source" kindref="compound">rq_beam_search_tab-inl.h</ref> (only included by per-ISA .cpp files). The common TU only sees these declarations, so no extern template suppression is needed — the linker resolves to the explicit instantiations in avx2.cpp / neon.cpp. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="8"><highlight class="comment">///<sp/>@file<sp/>rq_beam_search_tab.h</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">///<sp/>@brief<sp/>Declarations<sp/>for<sp/>SIMDLevel-templatized<sp/>codebook<sp/>accumulation</highlight></codeline>
+<codeline lineno="10"><highlight class="comment">///<sp/>functions.</highlight></codeline>
+<codeline lineno="11"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">///<sp/>These<sp/>functions<sp/>accumulate<sp/>codebook<sp/>cross-norm<sp/>tables<sp/>for<sp/>beam<sp/>search</highlight></codeline>
+<codeline lineno="13"><highlight class="comment">///<sp/>encoding<sp/>in<sp/>the<sp/>Residual<sp/>Quantizer.<sp/>They<sp/>compute<sp/>the<sp/>distance</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">///<sp/>contributions<sp/>from<sp/>previously<sp/>encoded<sp/>codebooks<sp/>using<sp/>SIMD-accelerated</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">///<sp/>register<sp/>accumulation.</highlight></codeline>
+<codeline lineno="16"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">///<sp/>Definitions<sp/>are<sp/>in<sp/>rq_beam_search_tab-inl.h<sp/>(only<sp/>included<sp/>by<sp/>per-ISA</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">///<sp/>.cpp<sp/>files).<sp/>The<sp/>common<sp/>TU<sp/>only<sp/>sees<sp/>these<sp/>declarations,<sp/>so<sp/>no<sp/>extern</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">///<sp/>template<sp/>suppression<sp/>is<sp/>needed<sp/>—<sp/>the<sp/>linker<sp/>resolves<sp/>to<sp/>the<sp/>explicit</highlight></codeline>
+<codeline lineno="20"><highlight class="comment">///<sp/>instantiations<sp/>in<sp/>avx2.cpp<sp/>/<sp/>neon.cpp.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstddef&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/utils/simd_levels.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="31"><highlight class="comment">///<sp/>Accumulate<sp/>cross-norms<sp/>for<sp/>M<sp/>codebooks<sp/>and<sp/>store<sp/>the<sp/>result.</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="33"><highlight class="comment">///<sp/>Loads<sp/>M<sp/>codebook<sp/>rows<sp/>(selected<sp/>by<sp/>codes_i)<sp/>and<sp/>sums<sp/>them<sp/>using</highlight></codeline>
+<codeline lineno="34"><highlight class="comment">///<sp/>NK×8-wide<sp/>SIMD<sp/>chunks,<sp/>writing<sp/>the<sp/>result<sp/>to<sp/>output.<sp/>Used<sp/>to</highlight></codeline>
+<codeline lineno="35"><highlight class="comment">///<sp/>initialize<sp/>the<sp/>temporary<sp/>buffer<sp/>in<sp/>the<sp/>m≥8<sp/>path.</highlight></codeline>
+<codeline lineno="36"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="37"><highlight class="comment">///<sp/>@tparam<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>codebook<sp/>rows<sp/>to<sp/>accumulate</highlight></codeline>
+<codeline lineno="38"><highlight class="comment">///<sp/>@tparam<sp/>NK<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>8-float<sp/>SIMD<sp/>chunks<sp/>per<sp/>loop<sp/>iteration</highlight></codeline>
+<codeline lineno="39"><highlight class="comment">///<sp/>@tparam<sp/>SL<sp/><sp/><sp/><sp/><sp/>SIMD<sp/>level<sp/>(AVX2,<sp/>ARM_NEON,<sp/>etc.)</highlight></codeline>
+<codeline lineno="40"><highlight class="comment">///<sp/>@param<sp/>m_offset<sp/><sp/>stride<sp/>between<sp/>beam<sp/>entries<sp/>in<sp/>codes_i</highlight></codeline>
+<codeline lineno="41"><highlight class="comment">///<sp/>@param<sp/>codebook_cross_norms<sp/><sp/>cross-norm<sp/>table,<sp/>shape<sp/>(total_codes,<sp/>ldc)</highlight></codeline>
+<codeline lineno="42"><highlight class="comment">///<sp/>@param<sp/>codebook_offsets<sp/><sp/><sp/><sp/><sp/><sp/>per-codebook<sp/>offset<sp/>into<sp/>cross-norm<sp/>table</highlight></codeline>
+<codeline lineno="43"><highlight class="comment">///<sp/>@param<sp/>codes_i<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code<sp/>indices<sp/>for<sp/>the<sp/>current<sp/>query</highlight></codeline>
+<codeline lineno="44"><highlight class="comment">///<sp/>@param<sp/>b<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>beam<sp/>index</highlight></codeline>
+<codeline lineno="45"><highlight class="comment">///<sp/>@param<sp/>ldc<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>leading<sp/>dimension<sp/>of<sp/>cross-norm<sp/>table<sp/>(≥<sp/>K)</highlight></codeline>
+<codeline lineno="46"><highlight class="comment">///<sp/>@param<sp/>K<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>centroids<sp/>in<sp/>the<sp/>current<sp/>codebook</highlight></codeline>
+<codeline lineno="47"><highlight class="comment">///<sp/>@param<sp/>output<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>buffer,<sp/>size<sp/>K<sp/>(overwritten)</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>NK,<sp/>SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aec49be9536d13e5d4c18d7aadb101e0a" kindref="member">accum_and_store_tab</ref>(</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m_offset,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>codebook_cross_norms,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>__restrict<sp/>codebook_offsets,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>__restrict<sp/>codes_i,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ldc,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>K,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>output);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="59"><highlight class="comment">///<sp/>Accumulate<sp/>cross-norms<sp/>for<sp/>M<sp/>codebooks<sp/>and<sp/>add<sp/>to<sp/>existing<sp/>output.</highlight></codeline>
+<codeline lineno="60"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="61"><highlight class="comment">///<sp/>Like<sp/>accum_and_store_tab,<sp/>but<sp/>adds<sp/>the<sp/>accumulated<sp/>result<sp/>to<sp/>the</highlight></codeline>
+<codeline lineno="62"><highlight class="comment">///<sp/>existing<sp/>values<sp/>in<sp/>output<sp/>(output[k]<sp/>+=<sp/>sum).<sp/>Used<sp/>for<sp/>subsequent</highlight></codeline>
+<codeline lineno="63"><highlight class="comment">///<sp/>chunks<sp/>of<sp/>8<sp/>codebooks<sp/>in<sp/>the<sp/>m≥8<sp/>path.</highlight></codeline>
+<codeline lineno="64"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="65"><highlight class="comment">///<sp/>@tparam<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>codebook<sp/>rows<sp/>to<sp/>accumulate</highlight></codeline>
+<codeline lineno="66"><highlight class="comment">///<sp/>@tparam<sp/>NK<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>8-float<sp/>SIMD<sp/>chunks<sp/>per<sp/>loop<sp/>iteration</highlight></codeline>
+<codeline lineno="67"><highlight class="comment">///<sp/>@tparam<sp/>SL<sp/><sp/><sp/><sp/><sp/>SIMD<sp/>level<sp/>(AVX2,<sp/>ARM_NEON,<sp/>etc.)</highlight></codeline>
+<codeline lineno="68"><highlight class="comment">///<sp/>@param<sp/>m_offset<sp/><sp/>stride<sp/>between<sp/>beam<sp/>entries<sp/>in<sp/>codes_i</highlight></codeline>
+<codeline lineno="69"><highlight class="comment">///<sp/>@param<sp/>codebook_cross_norms<sp/><sp/>cross-norm<sp/>table</highlight></codeline>
+<codeline lineno="70"><highlight class="comment">///<sp/>@param<sp/>codebook_offsets<sp/><sp/><sp/><sp/><sp/><sp/>per-codebook<sp/>offset</highlight></codeline>
+<codeline lineno="71"><highlight class="comment">///<sp/>@param<sp/>codes_i<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code<sp/>indices</highlight></codeline>
+<codeline lineno="72"><highlight class="comment">///<sp/>@param<sp/>b<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>beam<sp/>index</highlight></codeline>
+<codeline lineno="73"><highlight class="comment">///<sp/>@param<sp/>ldc<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>leading<sp/>dimension<sp/>of<sp/>cross-norm<sp/>table</highlight></codeline>
+<codeline lineno="74"><highlight class="comment">///<sp/>@param<sp/>K<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>centroids</highlight></codeline>
+<codeline lineno="75"><highlight class="comment">///<sp/>@param<sp/>output<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>buffer,<sp/>size<sp/>K<sp/>(accumulated<sp/>into)</highlight></codeline>
+<codeline lineno="76"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>NK,<sp/>SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5036cab9c94ec085cfbbc04df0fc59bb" kindref="member">accum_and_add_tab</ref>(</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>m_offset,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>codebook_cross_norms,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>__restrict<sp/>codebook_offsets,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>__restrict<sp/>codes_i,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ldc,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>K,</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>output);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="87"><highlight class="comment">///<sp/>Accumulate<sp/>cross-norms<sp/>for<sp/>M<sp/>codebooks<sp/>and<sp/>finalize<sp/>distances.</highlight></codeline>
+<codeline lineno="88"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="89"><highlight class="comment">///<sp/>Accumulates<sp/>M<sp/>codebook<sp/>rows,<sp/>then<sp/>computes<sp/>the<sp/>final<sp/>centroid<sp/>distance:</highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///<sp/><sp/><sp/>output[b*K<sp/>+<sp/>k]<sp/>=<sp/>distances_i[b]<sp/>+<sp/>cd_common[k]<sp/>+<sp/>2<sp/>*<sp/>sum[k]</highlight></codeline>
+<codeline lineno="91"><highlight class="comment">///<sp/>Used<sp/>for<sp/>m=1..7<sp/>where<sp/>the<sp/>entire<sp/>accumulation<sp/>fits<sp/>in<sp/>registers.</highlight></codeline>
+<codeline lineno="92"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="93"><highlight class="comment">///<sp/>@tparam<sp/>M<sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>codebook<sp/>rows<sp/>to<sp/>accumulate<sp/>(equals<sp/>m)</highlight></codeline>
+<codeline lineno="94"><highlight class="comment">///<sp/>@tparam<sp/>NK<sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>8-float<sp/>SIMD<sp/>chunks<sp/>per<sp/>loop<sp/>iteration</highlight></codeline>
+<codeline lineno="95"><highlight class="comment">///<sp/>@tparam<sp/>SL<sp/><sp/><sp/><sp/><sp/>SIMD<sp/>level<sp/>(AVX2,<sp/>ARM_NEON,<sp/>etc.)</highlight></codeline>
+<codeline lineno="96"><highlight class="comment">///<sp/>@param<sp/>codebook_cross_norms<sp/><sp/>cross-norm<sp/>table</highlight></codeline>
+<codeline lineno="97"><highlight class="comment">///<sp/>@param<sp/>codebook_offsets<sp/><sp/><sp/><sp/><sp/><sp/>per-codebook<sp/>offset</highlight></codeline>
+<codeline lineno="98"><highlight class="comment">///<sp/>@param<sp/>codes_i<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>code<sp/>indices<sp/>(stride<sp/>is<sp/>M)</highlight></codeline>
+<codeline lineno="99"><highlight class="comment">///<sp/>@param<sp/>b<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>beam<sp/>index</highlight></codeline>
+<codeline lineno="100"><highlight class="comment">///<sp/>@param<sp/>ldc<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>leading<sp/>dimension<sp/>of<sp/>cross-norm<sp/>table</highlight></codeline>
+<codeline lineno="101"><highlight class="comment">///<sp/>@param<sp/>K<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>number<sp/>of<sp/>centroids</highlight></codeline>
+<codeline lineno="102"><highlight class="comment">///<sp/>@param<sp/>distances_i<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>per-beam<sp/>input<sp/>distances,<sp/>size<sp/>beam_size</highlight></codeline>
+<codeline lineno="103"><highlight class="comment">///<sp/>@param<sp/>cd_common<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>common<sp/>distance<sp/>term,<sp/>size<sp/>K</highlight></codeline>
+<codeline lineno="104"><highlight class="comment">///<sp/>@param<sp/>output<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output<sp/>centroid<sp/>distances<sp/>(b*K<sp/>offset)</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>M,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>NK,<sp/>SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a69b1fa81261ad780a3e08944576302bc" kindref="member">accum_and_finalize_tab</ref>(</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>codebook_cross_norms,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint64_t*<sp/>__restrict<sp/>codebook_offsets,</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t*<sp/>__restrict<sp/>codes_i,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ldc,</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>K,</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>distances_i,</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>cd_common,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>__restrict<sp/>output);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/approx_topk/rq_beam_search_tab.h"/>
+  </compounddef>
+</doxygen>

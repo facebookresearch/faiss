@@ -2262,11 +2262,16 @@
   <compound refid="structfaiss_1_1HeapWithBuckets" kind="struct"><name>faiss::HeapWithBuckets</name>
   </compound>
   <compound refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct"><name>faiss::HeapWithBuckets&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</name>
-    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab65ce3d760f39a27e39532abd3db93f0" kind="variable"><name>NBUCKETS_8</name></member>
     <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" kind="function"><name>addn</name></member>
     <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" kind="function"><name>bs_addn</name></member>
-    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ad181dfc845c17453f6c1f6ef4ecf269a" kind="function"><name>addn</name></member>
-    <member refid="structfaiss_1_1HeapWithBuckets_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4_1ab4c564bf4b18b1b59f1e68c5276bf348" kind="function"><name>bs_addn</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsCMaxFloat" kind="struct"><name>faiss::HeapWithBucketsCMaxFloat</name>
+    <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_1a99ea3025d156b8ebcdf6c3eb48271adb" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_1aae3de457e49ba05cf72aecfc7c513b69" kind="function"><name>bs_addn</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4" kind="struct"><name>faiss::HeapWithBucketsCMaxFloat&lt; NBUCKETS, N, SIMDLevel::NONE &gt;</name>
+    <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a9e4e41200f8a43c76fa863a6d45004bd" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsCMaxFloat_3_01NBUCKETS_00_01N_00_01SIMDLevel_1_1NONE_01_4_1a0ca35c286120d453d22e1b1c0df95adb" kind="function"><name>bs_addn</name></member>
   </compound>
   <compound refid="structfaiss_1_1HeapWithBucketsForHamming16" kind="struct"><name>faiss::HeapWithBucketsForHamming16</name>
   </compound>
@@ -2281,6 +2286,16 @@
     <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1aef817aa1e791be9a5918b1ba487f3ebb" kind="variable"><name>NBUCKETS_8</name></member>
     <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a9d82b4fcbc5b16a0c2020e7962faf444" kind="function"><name>addn</name></member>
     <member refid="structfaiss_1_1HeapWithBucketsForHamming32_3_01CMax_3_01int_00_01int64__t_01_4_00_01NBUCKETS_00_01N_00_01HammingComputerT_01_4_1a661872af0bc9db133c7571de5590be21" kind="function"><name>bs_addn</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsGeneric" kind="struct"><name>faiss::HeapWithBucketsGeneric</name>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsGeneric_3_01CMax_3_01float_00_01int_01_4_00_01NBUCKETS_00_01N_01_4" kind="struct"><name>faiss::HeapWithBucketsGeneric&lt; CMax&lt; float, int &gt;, NBUCKETS, N &gt;</name>
+    <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1ad6c756ac84112bbfeaf6fc4601c98c7a" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1aec3062ae0a1017b7f83f2bb8575734f8" kind="function"><name>bs_addn</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat" kind="struct"><name>faiss::HeapWithBucketsGenericCMaxFloat</name>
+    <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1ad6c756ac84112bbfeaf6fc4601c98c7a" kind="function"><name>addn</name></member>
+    <member refid="structfaiss_1_1HeapWithBucketsGenericCMaxFloat_1aec3062ae0a1017b7f83f2bb8575734f8" kind="function"><name>bs_addn</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSW" kind="struct"><name>faiss::HNSW</name>
     <member refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kind="typedef"><name>storage_idx_t</name></member>
@@ -11969,6 +11984,10 @@
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" kind="function"><name>reverse_index_factory</name></member>
     <member refid="namespacefaiss_1ab296cc828e119931af0b6bb2daf3ebfa" kind="function"><name>reverse_index_factory</name></member>
+    <member refid="namespacefaiss_1aec49be9536d13e5d4c18d7aadb101e0a" kind="function"><name>accum_and_store_tab</name></member>
+    <member refid="namespacefaiss_1a5036cab9c94ec085cfbbc04df0fc59bb" kind="function"><name>accum_and_add_tab</name></member>
+    <member refid="namespacefaiss_1a69b1fa81261ad780a3e08944576302bc" kind="function"><name>accum_and_finalize_tab</name></member>
+    <member refid="namespacefaiss_1a554e8f45bd29da5a6a31cbe1dceecc71" kind="function"><name>simd8float32_max</name></member>
     <member refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" kind="function"><name>mul_no_overflow</name></member>
     <member refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kind="function"><name>add_no_overflow</name></member>
     <member refid="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" kind="function"><name>handleExceptions</name></member>
@@ -12365,21 +12384,21 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d103" kind="namespace"><name>faiss::@103</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d106" kind="namespace"><name>faiss::@106</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d107" kind="namespace"><name>faiss::@107</name>
-  </compound>
   <compound refid="namespacefaiss_1_1_0d108" kind="namespace"><name>faiss::@108</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d181" kind="namespace"><name>faiss::@181</name>
+  <compound refid="namespacefaiss_1_1_0d111" kind="namespace"><name>faiss::@111</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
+  <compound refid="namespacefaiss_1_1_0d112" kind="namespace"><name>faiss::@112</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d210" kind="namespace"><name>faiss::@210</name>
+  <compound refid="namespacefaiss_1_1_0d113" kind="namespace"><name>faiss::@113</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d51" kind="namespace"><name>faiss::@51</name>
+  <compound refid="namespacefaiss_1_1_0d182" kind="namespace"><name>faiss::@182</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d56" kind="namespace"><name>faiss::@56</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -12896,6 +12915,22 @@
   </compound>
   <compound refid="AdditiveQuantizer_8h" kind="file"><name>AdditiveQuantizer.h</name>
   </compound>
+  <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299" kind="enum"><name>ApproxTopK_mode_t</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" kind="enumvalue"><name>EXACT_TOPK</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B32_D2</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D3</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
+    <member refid="approx__topk_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
+  </compound>
+  <compound refid="generic_8h" kind="file"><name>generic.h</name>
+  </compound>
+  <compound refid="rq__beam__search__tab-inl_8h" kind="file"><name>rq_beam_search_tab-inl.h</name>
+  </compound>
+  <compound refid="rq__beam__search__tab_8h" kind="file"><name>rq_beam_search_tab.h</name>
+  </compound>
+  <compound refid="simdlib256-inl_8h" kind="file"><name>simdlib256-inl.h</name>
+  </compound>
   <compound refid="AuxIndexStructures_8h" kind="file"><name>AuxIndexStructures.h</name>
   </compound>
   <compound refid="ClusteringInitialization_8h" kind="file"><name>ClusteringInitialization.h</name>
@@ -13210,18 +13245,6 @@
   </compound>
   <compound refid="AlignedTable_8h" kind="file"><name>AlignedTable.h</name>
   </compound>
-  <compound refid="approx__topk_8h" kind="file"><name>approx_topk.h</name>
-  </compound>
-  <compound refid="generic_8h" kind="file"><name>generic.h</name>
-  </compound>
-  <compound refid="mode_8h" kind="file"><name>mode.h</name>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299" kind="enum"><name>ApproxTopK_mode_t</name></member>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299ac1204d260d27c2d08e206bedfd18c326" kind="enumvalue"><name>EXACT_TOPK</name></member>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a0044fefa2661f72191a2a3222402eb36" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B32_D2</name></member>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a06e74269369ad512432041ca91927cb1" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D3</name></member>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a9d89b4d741aeb17b0cd8489d78fc9dc8" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B16_D2</name></member>
-    <member refid="mode_8h_1a58cd97df40a8121322e0648c49186299a41c71c1de89c506f29fd5c2bd1d89b4d" kind="enumvalue"><name>APPROX_TOPK_BUCKETS_B8_D2</name></member>
-  </compound>
   <compound refid="approx__topk__hamming_8h" kind="file"><name>approx_topk_hamming.h</name>
   </compound>
   <compound refid="bf16_8h" kind="file"><name>bf16.h</name>
@@ -13252,9 +13275,7 @@
   </compound>
   <compound refid="hamming_8h" kind="file"><name>hamming.h</name>
   </compound>
-  <compound refid="approx__topk_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
-  </compound>
-  <compound refid="hamming__distance_2avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
+  <compound refid="avx2-inl_8h" kind="file"><name>avx2-inl.h</name>
   </compound>
   <compound refid="avx512-inl_8h" kind="file"><name>avx512-inl.h</name>
   </compound>
@@ -13316,7 +13337,7 @@
   </compound>
   <compound refid="VectorTransform_8h" kind="file"><name>VectorTransform.h</name>
   </compound>
-  <compound refid="dir_c2dc665bb85977007db19edac984ae84" kind="dir"><name>faiss/utils/approx_topk</name>
+  <compound refid="dir_b235d6f839d23d651b2e94c471d792e2" kind="dir"><name>faiss/impl/approx_topk</name>
   </compound>
   <compound refid="dir_e13a2bd573d2812b9a3a73eeae8e330e" kind="dir"><name>faiss/utils/approx_topk_hamming</name>
   </compound>

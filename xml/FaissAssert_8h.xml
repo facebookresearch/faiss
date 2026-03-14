@@ -21,6 +21,7 @@
     <includedby refid="NSG_8h" local="no">faiss/impl/NSG.h</includedby>
     <includedby refid="ResultHandler_8h" local="no">faiss/impl/ResultHandler.h</includedby>
     <includedby refid="ThreadedIndex-inl_8h" local="no">faiss/impl/ThreadedIndex-inl.h</includedby>
+    <includedby refid="generic_8h" local="no">faiss/impl/approx_topk/generic.h</includedby>
     <includedby refid="accumulate__loops_8h" local="no">faiss/impl/fast_scan/accumulate_loops.h</includedby>
     <includedby refid="decompose__qbs_8h" local="no">faiss/impl/fast_scan/decompose_qbs.h</includedby>
     <includedby refid="rabitq__result__handler_8h" local="no">faiss/impl/fast_scan/rabitq_result_handler.h</includedby>
@@ -30,8 +31,6 @@
     <includedby refid="simd__dispatch_8h" local="no">faiss/impl/simd_dispatch.h</includedby>
     <includedby refid="simdlib__neon_8h" local="no">faiss/impl/simdlib/simdlib_neon.h</includedby>
     <includedby refid="IndexSVSFaissUtils_8h" local="no">faiss/svs/IndexSVSFaissUtils.h</includedby>
-    <includedby refid="approx__topk_2avx2-inl_8h" local="no">faiss/utils/approx_topk/avx2-inl.h</includedby>
-    <includedby refid="generic_8h" local="no">faiss/utils/approx_topk/generic.h</includedby>
     <includedby refid="distances__autovec-inl_8h" local="no">faiss/utils/simd_impl/distances_autovec-inl.h</includedby>
     <includedby refid="distances__simdlib256_8h" local="no">faiss/utils/simd_impl/distances_simdlib256.h</includedby>
     <incdepgraph>
@@ -803,6 +802,8 @@
         </childnode>
         <childnode refid="137" relation="include">
         </childnode>
+        <childnode refid="138" relation="include">
+        </childnode>
         <childnode refid="109" relation="include">
         </childnode>
         <childnode refid="111" relation="include">
@@ -811,19 +812,15 @@
         </childnode>
         <childnode refid="108" relation="include">
         </childnode>
-        <childnode refid="138" relation="include">
+        <childnode refid="141" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
-        <childnode refid="141" relation="include">
-        </childnode>
-        <childnode refid="143" relation="include">
-        </childnode>
-        <childnode refid="99" relation="include">
-        </childnode>
         <childnode refid="144" relation="include">
         </childnode>
-        <childnode refid="145" relation="include">
+        <childnode refid="146" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
         </childnode>
         <childnode refid="127" relation="include">
         </childnode>
@@ -1018,6 +1015,30 @@
         <childnode refid="61" relation="include">
         </childnode>
       </node>
+      <node id="139">
+        <label>faiss/impl/approx_topk/approx_topk.h</label>
+        <link refid="approx__topk_8h_source"/>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="140" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="128" relation="include">
+        </childnode>
+      </node>
+      <node id="138">
+        <label>faiss/impl/approx_topk/generic.h</label>
+        <link refid="generic_8h_source"/>
+        <childnode refid="139" relation="include">
+        </childnode>
+      </node>
+      <node id="140">
+        <label>faiss/impl/approx_topk/simdlib256-inl.h</label>
+        <link refid="simdlib256-inl_8h_source"/>
+      </node>
       <node id="35">
         <label>faiss/impl/expanded_scanners.h</label>
         <link refid="expanded__scanners_8h_source"/>
@@ -1078,7 +1099,7 @@
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="139">
+      <node id="142">
         <label>faiss/impl/io_macros.h</label>
         <link refid="io__macros_8h_source"/>
       </node>
@@ -1086,11 +1107,11 @@
         <label>faiss/impl/kmeans1d.h</label>
         <link refid="kmeans1d_8h_source"/>
       </node>
-      <node id="140">
+      <node id="143">
         <label>faiss/impl/mapped_io.h</label>
         <link refid="mapped__io_8h_source"/>
       </node>
-      <node id="138">
+      <node id="141">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="52" relation="include">
@@ -1099,9 +1120,9 @@
         </childnode>
         <childnode refid="87" relation="include">
         </childnode>
-        <childnode refid="139" relation="include">
+        <childnode refid="142" relation="include">
         </childnode>
-        <childnode refid="140" relation="include">
+        <childnode refid="143" relation="include">
         </childnode>
         <childnode refid="122" relation="include">
         </childnode>
@@ -1160,19 +1181,21 @@
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
-      <node id="141">
+      <node id="144">
         <label>faiss/impl/simd_dispatch.h</label>
         <link refid="simd__dispatch_8h"/>
+        <childnode refid="139" relation="include">
+        </childnode>
         <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
-        <childnode refid="142" relation="include">
+        <childnode refid="145" relation="include">
         </childnode>
         <childnode refid="126" relation="include">
         </childnode>
       </node>
-      <node id="143">
+      <node id="146">
         <label>faiss/impl/simdlib/simdlib_neon.h</label>
         <link refid="simdlib__neon_8h_source"/>
       </node>
@@ -1252,21 +1275,7 @@
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="146">
-        <label>faiss/utils/approx_topk/approx_topk.h</label>
-        <link refid="approx__topk_8h_source"/>
-      </node>
-      <node id="144">
-        <label>faiss/utils/approx_topk/avx2-inl.h</label>
-        <link refid="approx__topk_2avx2-inl_8h_source"/>
-      </node>
       <node id="145">
-        <label>faiss/utils/approx_topk/generic.h</label>
-        <link refid="generic_8h_source"/>
-        <childnode refid="146" relation="include">
-        </childnode>
-      </node>
-      <node id="142">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
       </node>

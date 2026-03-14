@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="dir_c2dc665bb85977007db19edac984ae84" kind="dir">
-    <compoundname>faiss/utils/approx_topk</compoundname>
+  <compounddef id="dir_b235d6f839d23d651b2e94c471d792e2" kind="dir">
+    <compoundname>faiss/impl/approx_topk</compoundname>
     <innerfile refid="approx__topk_8h">approx_topk.h</innerfile>
-    <innerfile refid="approx__topk_2avx2-inl_8h">avx2-inl.h</innerfile>
     <innerfile refid="generic_8h">generic.h</innerfile>
-    <innerfile refid="mode_8h">mode.h</innerfile>
+    <innerfile refid="rq__beam__search__tab-inl_8h">rq_beam_search_tab-inl.h</innerfile>
+    <innerfile refid="rq__beam__search__tab_8h">rq_beam_search_tab.h</innerfile>
+    <innerfile refid="simdlib256-inl_8h">simdlib256-inl.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/approx_topk/"/>
+    <location file="faiss/impl/approx_topk/"/>
   </compounddef>
 </doxygen>
