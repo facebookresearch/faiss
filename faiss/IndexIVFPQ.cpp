@@ -9,13 +9,15 @@
 
 #include <faiss/IndexIVFPQ.h>
 
+#include <immintrin.h>
+#include <algorithm>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
-
-#include <algorithm>
+#include <utility>
 
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances_dispatch.h>
@@ -760,6 +762,65 @@ struct QueryTables {
 
         return dis0;
     }
+
+    float precompute_list_tables_L2_panorama(float* sim_table_ptr) {
+        float dis0 = 0;
+
+        if (use_precomputed_table == 1) {
+            dis0 = coarse_dis;
+
+            const size_t n = pq.M * pq.ksub;
+            const float bf = -2.0f;
+            const float* b = sim_table_2;
+            float* c = sim_table_ptr;
+
+#ifdef __AVX512F__
+            const size_t n16 = n / 16;
+            const size_t n_for_masking = n % 16;
+
+            const __m512 bfmm = _mm512_set1_ps(bf);
+
+            size_t idx = 0;
+            for (idx = 0; idx < n16 * 16; idx += 16) {
+                const __m512 bx = _mm512_loadu_ps(b + idx);
+                const __m512 abmul = _mm512_mul_ps(bfmm, bx);
+                _mm512_storeu_ps(c + idx, abmul);
+            }
+
+            if (n_for_masking > 0) {
+                const __mmask16 mask = (1 << n_for_masking) - 1;
+                const __m512 bx = _mm512_maskz_loadu_ps(mask, b + idx);
+                const __m512 abmul = _mm512_mul_ps(bfmm, bx);
+                _mm512_mask_storeu_ps(c + idx, mask, abmul);
+            }
+#else
+            for (size_t idx = 0; idx < n; idx++) {
+                c[idx] = bf * b[idx];
+            }
+#endif
+
+            sim_table = sim_table_ptr;
+        } else {
+            FAISS_THROW_MSG(
+                    "Panorama PQ only supports use_precomputed_table == 1");
+        }
+
+        return dis0;
+    }
+
+    float precompute_list_tables_panorama(float* sim_table_ptr) {
+        float dis0 = 0;
+        uint64_t t0;
+        TIC;
+        if (by_residual) {
+            if (metric_type == METRIC_INNER_PRODUCT)
+                dis0 = precompute_list_tables_IP();
+            else
+                dis0 = precompute_list_tables_L2_panorama(sim_table_ptr);
+        }
+        init_list_cycles += TOC;
+        return dis0;
+    }
 };
 
 template <class C, bool use_sel>
@@ -791,6 +852,39 @@ struct WrappedSearchResult {
     }
 };
 
+template <class C, bool use_sel>
+struct KnnSearchResultsPanorama {
+    idx_t key;
+    const idx_t* ids;
+    const IDSelector* sel;
+
+    size_t k;
+    float* heap_sim;
+    idx_t* heap_ids;
+
+    size_t nup;
+
+    inline bool skip_entry(idx_t j) {
+        return use_sel && !sel->is_member(ids[j]);
+    }
+
+    inline bool should_keep(float dis) {
+        return C::cmp(heap_sim[0], dis);
+    }
+
+    inline float top() {
+        return heap_sim[0];
+    }
+
+    inline void add(idx_t j, float dis) {
+        if (C::cmp(heap_sim[0], dis)) {
+            idx_t id = ids ? ids[j] : lo_build(key, j);
+            heap_replace_top<C>(k, heap_sim, heap_ids, dis, id);
+            nup++;
+        }
+    }
+};
+
 /*****************************************************
  * Scaning the codes.
  * The scanning functions call their favorite precompute_*
@@ -816,6 +910,26 @@ struct IVFPQScannerT : QueryTables {
 
         if (mode == 2) {
             dis0 = precompute_list_tables();
+        } else if (mode == 1) {
+            dis0 = precompute_list_table_pointers();
+        }
+    }
+
+    void init_list_panorama(
+            idx_t list_no,
+            float coarse_dis,
+            int mode,
+            float* sim_table,
+            float* dis0_ptr,
+            bool update) {
+        this->key = list_no;
+        this->coarse_dis = coarse_dis;
+
+        if (mode == 2) {
+            if (update) {
+                *dis0_ptr = precompute_list_tables_panorama(sim_table);
+            }
+            dis0 = *dis0_ptr;
         } else if (mode == 1) {
             dis0 = precompute_list_table_pointers();
         }
@@ -1206,6 +1320,407 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         this->list_no = list_no;
         this->init_list(list_no, coarse_dis, precompute_mode);
     }
+
+    void set_list_panorama(
+            idx_t list_no,
+            float coarse_dis,
+            float* sim_table,
+            float* dis0_ptr,
+            bool update) override {
+        this->list_no = list_no;
+        this->init_list_panorama(
+                list_no,
+                coarse_dis,
+                precompute_mode,
+                sim_table,
+                dis0_ptr,
+                update);
+    }
+
+    void set_sim_table(float* sim_table, float dis0) override {
+        this->sim_table = sim_table;
+        this->dis0 = dis0;
+    }
+
+#ifdef __AVX512F__
+    inline void process_chunks(
+            size_t chunk_size,
+            size_t max_batch_size,
+            size_t num_active,
+            float* sim_table,
+            uint8_t* compressed_codes,
+            float* exact_distances) {
+        size_t chunk_idx = 0;
+        for (; chunk_idx + 3 < chunk_size; chunk_idx += 4) {
+            size_t chunk_offset0 = (chunk_idx + 0) * max_batch_size;
+            size_t chunk_offset1 = (chunk_idx + 1) * max_batch_size;
+            size_t chunk_offset2 = (chunk_idx + 2) * max_batch_size;
+            size_t chunk_offset3 = (chunk_idx + 3) * max_batch_size;
+
+            float* sim_table0 = sim_table + (chunk_idx + 0) * 256;
+            float* sim_table1 = sim_table + (chunk_idx + 1) * 256;
+            float* sim_table2 = sim_table + (chunk_idx + 2) * 256;
+            float* sim_table3 = sim_table + (chunk_idx + 3) * 256;
+
+            size_t batch_idx = 0;
+            for (; batch_idx + 15 < num_active; batch_idx += 16) {
+                __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
+
+                __m128i comp0 = _mm_loadu_si128(
+                        (__m128i*)(compressed_codes + chunk_offset0 + batch_idx));
+                __m512i codes0 = _mm512_cvtepu8_epi32(comp0);
+                acc = _mm512_add_ps(
+                        acc,
+                        _mm512_i32gather_ps(codes0, sim_table0, sizeof(float)));
+
+                __m128i comp1 = _mm_loadu_si128(
+                        (__m128i*)(compressed_codes + chunk_offset1 + batch_idx));
+                __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
+                acc = _mm512_add_ps(
+                        acc,
+                        _mm512_i32gather_ps(codes1, sim_table1, sizeof(float)));
+
+                __m128i comp2 = _mm_loadu_si128(
+                        (__m128i*)(compressed_codes + chunk_offset2 + batch_idx));
+                __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
+                acc = _mm512_add_ps(
+                        acc,
+                        _mm512_i32gather_ps(codes2, sim_table2, sizeof(float)));
+
+                __m128i comp3 = _mm_loadu_si128(
+                        (__m128i*)(compressed_codes + chunk_offset3 + batch_idx));
+                __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
+                acc = _mm512_add_ps(
+                        acc,
+                        _mm512_i32gather_ps(codes3, sim_table3, sizeof(float)));
+
+                _mm512_storeu_ps(exact_distances + batch_idx, acc);
+            }
+
+            for (; batch_idx < num_active; batch_idx += 1) {
+                float acc = exact_distances[batch_idx];
+                acc += sim_table0[compressed_codes[chunk_offset0 + batch_idx]];
+                acc += sim_table1[compressed_codes[chunk_offset1 + batch_idx]];
+                acc += sim_table2[compressed_codes[chunk_offset2 + batch_idx]];
+                acc += sim_table3[compressed_codes[chunk_offset3 + batch_idx]];
+                exact_distances[batch_idx] = acc;
+            }
+        }
+
+        for (; chunk_idx < chunk_size; chunk_idx++) {
+            size_t chunk_offset = chunk_idx * max_batch_size;
+            float* sim_table_ptr = sim_table + chunk_idx * 256;
+
+            size_t batch_idx = 0;
+            for (; batch_idx + 15 < num_active; batch_idx += 16) {
+                __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
+                __m128i comp = _mm_loadu_si128(
+                        (__m128i*)(compressed_codes + chunk_offset + batch_idx));
+                __m512i codes = _mm512_cvtepu8_epi32(comp);
+                __m512 m_dist = _mm512_i32gather_ps(
+                        codes, sim_table_ptr, sizeof(float));
+                acc = _mm512_add_ps(acc, m_dist);
+                _mm512_storeu_ps(exact_distances + batch_idx, acc);
+            }
+
+            for (; batch_idx < num_active; batch_idx += 1) {
+                exact_distances[batch_idx] += sim_table_ptr
+                        [compressed_codes[chunk_offset + batch_idx]];
+            }
+        }
+    }
+
+    inline size_t process_filtering(
+            size_t num_active,
+            float* exact_distances,
+            uint32_t* active_indices,
+            __m512i batch_offset_broadcast,
+            float* cum_sums,
+            __m512 dis0_broadcast,
+            __m512 query_cum_norm_broadcast,
+            __m512 epsilon_broadcast,
+            __m512 heap_max_broadcast,
+            uint8_t* bitset,
+            size_t batch_offset,
+            float dis0,
+            float query_cum_norm,
+            float epsilon,
+            float heap_max) {
+        size_t next_num_active = 0;
+        size_t batch_idx = 0;
+
+        for (; batch_idx + 15 < num_active; batch_idx += 16) {
+            __m512 exact_distances_batch =
+                    _mm512_loadu_ps(exact_distances + batch_idx);
+
+            __m512i active_indices_batch =
+                    _mm512_loadu_si512(active_indices + batch_idx);
+            __m512i offsetted_active_indices_batch = _mm512_sub_epi32(
+                    active_indices_batch, batch_offset_broadcast);
+            __m512 cum_sums_batch = _mm512_i32gather_ps(
+                    offsetted_active_indices_batch, cum_sums, sizeof(float));
+
+            __m512 exact_distances_batch_dis0 =
+                    _mm512_add_ps(exact_distances_batch, dis0_broadcast);
+            __m512 cauchy_schwarz_bound =
+                    _mm512_mul_ps(query_cum_norm_broadcast, cum_sums_batch);
+            cauchy_schwarz_bound =
+                    _mm512_mul_ps(cauchy_schwarz_bound, epsilon_broadcast);
+
+            __m512 lower_bound = _mm512_sub_ps(
+                    exact_distances_batch_dis0, cauchy_schwarz_bound);
+            __mmask16 mask_should_keep = _mm512_cmp_ps_mask(
+                    lower_bound, heap_max_broadcast, _CMP_LT_OQ);
+
+            __m512i compressed_active_indices_vec = _mm512_mask_compress_epi32(
+                    _mm512_setzero_si512(),
+                    mask_should_keep,
+                    active_indices_batch);
+            _mm512_storeu_si512(
+                    active_indices + next_num_active,
+                    compressed_active_indices_vec);
+
+            __m512 compressed_exact_distances_vec = _mm512_mask_compress_ps(
+                    _mm512_setzero_ps(),
+                    mask_should_keep,
+                    exact_distances_batch);
+            _mm512_storeu_ps(
+                    exact_distances + next_num_active,
+                    compressed_exact_distances_vec);
+
+            alignas(64) uint32_t indices_to_remove[16];
+            __mmask16 mask_should_remove = ~mask_should_keep;
+            size_t num_to_remove = _mm_popcnt_u32(mask_should_remove);
+
+            __m512i compressed_indices_to_remove_vec =
+                    _mm512_mask_compress_epi32(
+                            _mm512_setzero_si512(),
+                            mask_should_remove,
+                            active_indices_batch);
+            _mm512_storeu_si512(
+                    indices_to_remove, compressed_indices_to_remove_vec);
+
+            for (size_t idx = 0; idx < num_to_remove; idx++) {
+                bitset[indices_to_remove[idx] - batch_offset] = 0;
+            }
+
+            next_num_active += _mm_popcnt_u32(mask_should_keep);
+        }
+
+        for (; batch_idx < num_active; batch_idx++) {
+            float exact_distance = exact_distances[batch_idx];
+
+            float cum_sum = cum_sums[active_indices[batch_idx] - batch_offset];
+            float cauchy_schwarz_bound = cum_sum * query_cum_norm;
+            float lower_bound =
+                    exact_distance - cauchy_schwarz_bound * epsilon + dis0;
+
+            uint32_t should_keep = heap_max > lower_bound;
+            active_indices[next_num_active] = active_indices[batch_idx];
+            exact_distances[next_num_active] = exact_distance;
+
+            bitset[active_indices[batch_idx] - batch_offset] = should_keep;
+
+            next_num_active += should_keep;
+        }
+
+        return next_num_active;
+    }
+
+    inline std::pair<uint8_t*, size_t> process_code_compression(
+            size_t level,
+            size_t next_num_active,
+            size_t max_batch_size,
+            size_t chunk_size,
+            uint8_t* compressed_codes_begin,
+            uint8_t* bitset,
+            const uint8_t* codes) {
+        uint8_t* compressed_codes = compressed_codes_begin;
+        size_t num_active = 0;
+
+        if (next_num_active < max_batch_size) {
+            compressed_codes = compressed_codes_begin;
+            for (size_t point_idx = 0; point_idx < max_batch_size;
+                 point_idx += 64) {
+                __m512i active_byteset = _mm512_loadu_si512(bitset + point_idx);
+                __mmask64 mask = _mm512_cmpneq_epi8_mask(
+                        active_byteset, _mm512_setzero_si512());
+
+                for (size_t ci = 0; ci < chunk_size; ci++) {
+                    size_t chunk_offset = ci * max_batch_size;
+                    size_t write_pos = 0;
+                    uint64_t m = (uint64_t)mask;
+                    while (m) {
+                        int bit = __builtin_ctzll(m);
+                        compressed_codes[chunk_offset + num_active + write_pos] =
+                                codes[chunk_offset + point_idx + bit];
+                        write_pos++;
+                        m &= m - 1;
+                    }
+                }
+
+                num_active += _mm_popcnt_u64(mask);
+            }
+        } else {
+            num_active = next_num_active;
+            compressed_codes = const_cast<uint8_t*>(codes);
+        }
+
+        return std::make_pair(compressed_codes, num_active);
+    }
+#endif // __AVX512F__
+
+    inline void process_chunks_sparse(
+            size_t chunk_size,
+            size_t max_batch_size,
+            size_t num_active,
+            float* sim_table,
+            const uint8_t* codes,
+            float* exact_distances,
+            uint32_t* active_indices,
+            size_t batch_offset,
+            size_t ksub) {
+        for (size_t ci = 0; ci < chunk_size; ci++) {
+            size_t chunk_offset = ci * max_batch_size;
+            float* chunk_sim_table = sim_table + ci * ksub;
+
+            for (size_t batch_idx = 0; batch_idx < num_active; batch_idx++) {
+                size_t real_idx = active_indices[batch_idx] - batch_offset;
+                uint8_t code = codes[chunk_offset + real_idx];
+                exact_distances[batch_idx] += chunk_sim_table[code];
+            }
+        }
+    }
+
+#ifdef __AVX512F__
+    size_t process_batch(
+            const ProductQuantizer& pq,
+            uint8_t* compressed_codes,
+            size_t cluster_id,
+            size_t batch_no,
+            float coarse_dis_i,
+            size_t curr_batch_size,
+            size_t max_batch_size,
+            size_t chunk_size,
+            float epsilon,
+            size_t n_levels,
+            const uint8_t* codes_batch,
+            float* cums,
+            float* query_cum_norms,
+            uint32_t* active_indices,
+            uint8_t* bitset,
+            float* exact_distances,
+            const idx_t* ids,
+            float* heap_sim,
+            idx_t* heap_ids,
+            size_t k,
+            float* dis0_cache,
+            float* sim_table_cache) override {
+        KnnSearchResultsPanorama<C, use_sel> res = {
+                this->key,
+                this->store_pairs ? nullptr : ids,
+                this->sel,
+                k,
+                heap_sim,
+                heap_ids,
+                0};
+        uint8_t* compressed_codes_begin = compressed_codes;
+        size_t total_active = 0;
+        __m512 epsilon_broadcast = _mm512_set1_ps(epsilon);
+
+        size_t next_num_active = curr_batch_size;
+        float dis0 = 0;
+        size_t batch_offset = batch_no * max_batch_size;
+        __m512i batch_offset_broadcast = _mm512_set1_epi32(batch_offset);
+        for (size_t level = 0; (level < n_levels) && (next_num_active > 0);
+             level++) {
+            total_active += next_num_active;
+
+            size_t level_offset_sim_table = level * pq.ksub * chunk_size;
+            this->set_list_panorama(
+                    cluster_id,
+                    coarse_dis_i,
+                    sim_table_cache + level_offset_sim_table,
+                    dis0_cache,
+                    level == 0 && batch_no == 0);
+            this->set_sim_table(
+                    sim_table_cache + level_offset_sim_table, *dis0_cache);
+
+            dis0 = this->dis0;
+            __m512 dis0_bcast = _mm512_set1_ps(dis0);
+
+            float query_cum_norm = 2 * query_cum_norms[level + 1];
+            __m512 query_cum_norm_broadcast = _mm512_set1_ps(query_cum_norm);
+
+            float heap_max = res.top();
+            __m512 heap_max_broadcast = _mm512_set1_ps(heap_max);
+
+            float* cum_sums = cums + curr_batch_size * level;
+            const uint8_t* codes =
+                    codes_batch + max_batch_size * chunk_size * level;
+
+            bool is_sparse = next_num_active < max_batch_size / 16;
+            float* sim_table = this->sim_table;
+
+            size_t num_active_for_filtering = 0;
+            if (is_sparse) {
+                process_chunks_sparse(
+                        chunk_size,
+                        max_batch_size,
+                        next_num_active,
+                        sim_table,
+                        codes,
+                        exact_distances,
+                        active_indices,
+                        batch_offset,
+                        pq.ksub);
+                num_active_for_filtering = next_num_active;
+            } else {
+                auto [cc, na] = process_code_compression(
+                        level,
+                        next_num_active,
+                        max_batch_size,
+                        chunk_size,
+                        compressed_codes_begin,
+                        bitset,
+                        codes);
+
+                process_chunks(
+                        chunk_size,
+                        max_batch_size,
+                        na,
+                        sim_table,
+                        cc,
+                        exact_distances);
+                num_active_for_filtering = na;
+            }
+
+            next_num_active = process_filtering(
+                    num_active_for_filtering,
+                    exact_distances,
+                    active_indices,
+                    batch_offset_broadcast,
+                    cum_sums,
+                    dis0_bcast,
+                    query_cum_norm_broadcast,
+                    epsilon_broadcast,
+                    heap_max_broadcast,
+                    bitset,
+                    batch_offset,
+                    dis0,
+                    query_cum_norm,
+                    epsilon,
+                    heap_max);
+        }
+
+        for (size_t batch_idx = 0; batch_idx < next_num_active; batch_idx++) {
+            res.add(active_indices[batch_idx],
+                    dis0 + exact_distances[batch_idx]);
+        }
+
+        return total_active;
+    }
+#endif // __AVX512F__
 
     float distance_to_code(const uint8_t* code) const override {
         assert(precompute_mode == 2);

@@ -19,8 +19,11 @@
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/impl/ProductQuantizer.h>
 
 namespace faiss {
+
+struct IndexIVFPQPanorama;
 
 /** Encapsulates a quantizer object for the IndexIVF
  *
@@ -497,6 +500,15 @@ struct InvertedListScanner {
     /// following codes come from this inverted list
     virtual void set_list(idx_t list_no, float coarse_dis);
 
+    virtual void set_list_panorama(
+            idx_t list_no,
+            float coarse_dis,
+            float* sim_table,
+            float* dis0_ptr,
+            bool update) {}
+
+    virtual void set_sim_table(float* sim_table, float dis0_ptr) {}
+
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
@@ -552,6 +564,32 @@ struct InvertedListScanner {
             const uint8_t* codes,
             const idx_t* ids,
             ResultHandler& handler) const;
+
+    virtual size_t process_batch(
+            const ProductQuantizer& pq,
+            uint8_t* compressed_codes,
+            size_t cluster_id,
+            size_t batch_no,
+            float coarse_dis_i,
+            size_t curr_batch_size,
+            size_t max_batch_size,
+            size_t chunk_size,
+            float epsilon,
+            size_t n_levels,
+            const uint8_t* codes_batch,
+            float* cums,
+            float* query_cum_norms,
+            uint32_t* active_indices,
+            uint8_t* bitset,
+            float* exact_distances,
+            const idx_t* ids,
+            float* heap_sim,
+            idx_t* heap_ids,
+            size_t k,
+            float* dis0_cache,
+            float* sim_table_cache) {
+        return 0;
+    }
 
     virtual ~InvertedListScanner() {}
 };
