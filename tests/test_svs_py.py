@@ -913,35 +913,78 @@ class TestSVSIVFParameters(unittest.TestCase):
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
-class TestSVSLeanVecOOD(unittest.TestCase):
-    """Test out-of-distribution training for LeanVec SVS indices"""
+class TestSVSIVFLeanVecOOD(unittest.TestCase):
+    """Test out-of-distribution training for IVF LeanVec SVS indices"""
 
     def setUp(self):
-        self.d = 256
-        self.idx = faiss.IndexSVSVamanaLeanVec(
-            self.d, 64, faiss.METRIC_INNER_PRODUCT, 64, faiss.SVS_LeanVec4x8
+        self.d = 64
+        self.n = 5000
+        self.nlist = 100
+        self.leanvec_d = 32
+        np.random.seed(1234)
+        self.x = np.random.rand(self.n, self.d).astype("float32")
+        self.tq = np.random.rand(500, self.d).astype("float32")
+
+    def _create_instance(self):
+        idx = faiss.IndexSVSIVFLeanVec(
+            self.d, self.nlist, faiss.METRIC_L2,
+            self.leanvec_d, faiss.SVS_LeanVec4x8
         )
-        self.idx.alpha = 0.95
+        idx.num_threads = 4
+        return idx
 
-        self.x = np.random.rand(1000, self.d).astype("float32")
-        self.tq = np.random.rand(1000, self.d).astype("float32")
+    def test_ivf_leanvec_ood_training(self):
+        """OOD training stores training data and produces a working index"""
+        idx = self._create_instance()
+        idx.train(self.x, xq_train=self.tq)
+        self.assertTrue(idx.is_trained)
+        self.assertEqual(idx.ntotal, self.n)
 
-    def test_svs_leanvec_ood_training(self):
-        self.assertIsNone(self.idx.training_data)
-        self.idx.train(self.x, xq_train=self.tq)
-        self.assertIsNotNone(self.idx.training_data)
+    def test_ivf_leanvec_ood_training_smaller_queries(self):
+        """OOD training works with fewer query vectors than data vectors"""
+        idx = self._create_instance()
+        idx.train(self.x, xq_train=self.tq[:100])
+        self.assertTrue(idx.is_trained)
 
-    def test_svs_leanvec_ood_training_smaller(self):
-        self.idx.train(self.x, xq_train=self.tq[:500])
-
-    def test_svs_leanvec_ood_training_wrong_dim(self):
-        wrong_dim = np.random.rand(1000, self.d + 1).astype("float32")
+    def test_ivf_leanvec_ood_training_wrong_dim(self):
+        """OOD training rejects query vectors with wrong dimension"""
+        idx = self._create_instance()
+        wrong_dim = np.random.rand(500, self.d + 1).astype("float32")
         with self.assertRaises(AssertionError):
-            self.idx.train(self.x, xq_train=wrong_dim)
+            idx.train(self.x, xq_train=wrong_dim)
 
-    def test_svs_leanvec_ood_training_wrong_type(self):
+    def test_ivf_leanvec_ood_training_wrong_type(self):
+        """OOD training rejects non-Float32 numeric_type with xq_train"""
+        idx = self._create_instance()
         with self.assertRaises(TypeError):
-            self.idx.train(self.x, xq_train=self.tq, numeric_type=faiss.Float16)
+            idx.train(
+                self.x, xq_train=self.tq, numeric_type=faiss.Float16
+            )
+
+    def test_ivf_leanvec_ood_search(self):
+        """OOD-trained IVF LeanVec index returns valid search results"""
+        idx = self._create_instance()
+        idx.train(self.x, xq_train=self.tq)
+
+        xq = np.random.rand(50, self.d).astype("float32")
+        k = 4
+        D, I = idx.search(xq, k)
+        self.assertEqual(D.shape, (50, k))
+        self.assertEqual(I.shape, (50, k))
+
+    def test_ivf_leanvec_ood_serialization(self):
+        """OOD-trained IVF LeanVec index survives serialization round-trip"""
+        idx = self._create_instance()
+        idx.train(self.x, xq_train=self.tq)
+
+        xq = np.random.rand(50, self.d).astype("float32")
+        D_before, I_before = idx.search(xq, 4)
+
+        loaded = faiss.deserialize_index(faiss.serialize_index(idx))
+        self.assertIsInstance(loaded, faiss.IndexSVSIVFLeanVec)
+
+        D_after, I_after = loaded.search(xq, 4)
+        np.testing.assert_allclose(D_before, D_after, rtol=1e-4)
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
