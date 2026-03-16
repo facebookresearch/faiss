@@ -80,6 +80,7 @@ namespace faiss {
 
 namespace {
 size_t deserialization_loop_limit_ = 0;
+size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
 } // namespace
 
 size_t get_deserialization_loop_limit() {
@@ -88,6 +89,14 @@ size_t get_deserialization_loop_limit() {
 
 void set_deserialization_loop_limit(size_t value) {
     deserialization_loop_limit_ = value;
+}
+
+size_t get_deserialization_vector_byte_limit() {
+    return deserialization_vector_byte_limit_;
+}
+
+void set_deserialization_vector_byte_limit(size_t value) {
+    deserialization_vector_byte_limit_ = value;
 }
 
 #define FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(val, field_name) \
