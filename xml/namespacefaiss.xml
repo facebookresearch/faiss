@@ -4783,6 +4783,20 @@
         </inbodydescription>
         <location file="faiss/impl/io.h" line="143" column="13" declfile="faiss/impl/io.h" declline="143" declcolumn="13"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a203886fbc91500a6ab7d95cc0bdd9863" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::get_deserialization_vector_byte_limit</definition>
+        <argsstring>()</argsstring>
+        <name>get_deserialization_vector_byte_limit</name>
+        <qualifiedname>faiss::get_deserialization_vector_byte_limit</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/io_macros.h" line="21" column="8" declfile="faiss/impl/io_macros.h" declline="21" declcolumn="8"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a11ce544f3b395e398be8f6d83ea6cddc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::smawk</definition>
@@ -7671,6 +7685,24 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/index_io.h" line="125" column="6" declfile="faiss/index_io.h" declline="125" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a660b1cfd7e024895170604ced06298c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::set_deserialization_vector_byte_limit</definition>
+        <argsstring>(size_t value)</argsstring>
+        <name>set_deserialization_vector_byte_limit</name>
+        <qualifiedname>faiss::set_deserialization_vector_byte_limit</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/index_io.h" line="134" column="6" declfile="faiss/index_io.h" declline="134" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a4f08bb0a568c3f8cd7c5381be1e58ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

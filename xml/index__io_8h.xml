@@ -172,9 +172,18 @@
 <codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>do<sp/>not<sp/>modify<sp/>while<sp/>deserialization<sp/>is<sp/>in<sp/>progress<sp/>on<sp/>other<sp/>threads.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="125"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_deserialization_loop_limit(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"></highlight></codeline>
-<codeline lineno="127"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="128"><highlight class="normal"></highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Returns<sp/>the<sp/>maximum<sp/>number<sp/>of<sp/>bytes<sp/>that<sp/>a<sp/>single<sp/>READVECTOR<sp/>call</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight><highlight class="comment">//<sp/>may<sp/>allocate.<sp/><sp/>Default:<sp/>1<sp/>TB<sp/>(1<sp/>&lt;&lt;<sp/>40).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>get_deserialization_vector_byte_limit();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Sets<sp/>the<sp/>per-vector<sp/>byte<sp/>limit<sp/>for<sp/>deserialization.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NOT<sp/>thread-safe:<sp/>set<sp/>before<sp/>any<sp/>concurrent<sp/>deserialization<sp/>calls</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment">//<sp/>and<sp/>do<sp/>not<sp/>modify<sp/>while<sp/>deserialization<sp/>is<sp/>in<sp/>progress<sp/>on<sp/>other<sp/>threads.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_deserialization_vector_byte_limit(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/index_io.h"/>
   </compounddef>
