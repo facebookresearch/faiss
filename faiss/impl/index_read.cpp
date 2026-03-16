@@ -502,6 +502,15 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->nbits);
     FAISS_THROW_IF_NOT_FMT(
             pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
+    FAISS_THROW_IF_NOT_FMT(
+            pq->nbits <= 24, "invalid ProductQuantizer nbits=%zd", pq->nbits);
+    {
+        size_t ksub = size_t{1} << pq->nbits;
+        size_t n = mul_no_overflow(pq->d, ksub, "PQ centroids");
+        FAISS_THROW_IF_NOT_MSG(
+                n < get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ centroids allocation would exceed deserialization byte limit");
+    }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
 }
