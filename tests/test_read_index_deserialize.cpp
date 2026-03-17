@@ -14,6 +14,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
@@ -190,6 +191,56 @@ TEST(ReadIndexDeserialize, PQCentroidsOverflow) {
     push_pq(buf, /*d=*/huge_d, /*M=*/1, /*nbits=*/24);
 
     expect_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: READVECTOR rejects a vector whose total byte size exceeds the
+// configurable deserialization byte limit.  Uses a LinearTransform
+// ("LTra") whose A vector is read via READVECTOR.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, READVECTORByteLimit) {
+    // Build a "LTra" (LinearTransform) payload.
+    // Format: fourcc + have_bias + READVECTOR(A) + READVECTOR(b)
+    //         + d_in + d_out + is_trained
+    // A contains 1024 floats = 4096 bytes.
+    // READVECTOR check: size < limit / sizeof(float)
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const int d_in = 32;
+    const int d_out = 32;
+    const size_t n_elements = d_in * d_out; // 1024
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "LTra");
+    push_val<bool>(buf, false); // have_bias
+    std::vector<float> A(n_elements, 0.0f);
+    push_vector<float>(buf, A);
+    // b vector: empty (no bias)
+    push_vector<float>(buf, {});
+    // Common VectorTransform fields
+    push_val<int>(buf, d_in);
+    push_val<int>(buf, d_out);
+    push_val<bool>(buf, true); // is_trained
+
+    // Exactly at the boundary: limit = n_elements * sizeof(float).
+    // Check is strict less-than, so this should be rejected.
+    set_deserialization_vector_byte_limit(n_elements * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_THROW(read_VectorTransform_up(&reader), FaissException);
+    }
+
+    // One element above the boundary: limit = (n_elements + 1) * sizeof(float).
+    // Now n_elements < limit / sizeof(float) = n_elements + 1, so it passes.
+    set_deserialization_vector_byte_limit((n_elements + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_VectorTransform_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
 }
 
 // -----------------------------------------------------------------------
@@ -720,4 +771,91 @@ TEST(ReadIndexDeserialize, BlockInvertedListsBlockSizeZero) {
     push_val<size_t>(buf, 0);  // block_size = 0 (invalid)
 
     expect_invlists_read_throws_with(buf, "block_size");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with codes vector size inconsistent with ids
+// size, n_per_block, and block_size.  Without the check, a search or
+// add operation would read/write past the end of the codes buffer.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsCodesSizeMismatch) {
+    const size_t n_per_block = 32;
+    const size_t block_size = 128;
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);           // nlist = 1
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // ids: 10 entries → ceil(10/32) = 1 block → expected codes = 128 bytes
+    std::vector<int64_t> ids(10, 0);
+    push_vector<int64_t>(buf, ids);
+    // codes: 64 bytes (wrong, should be 128)
+    std::vector<uint8_t> codes(64, 0);
+    push_vector<uint8_t>(buf, codes);
+
+    expect_invlists_read_throws_with(buf, "codes size");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with n_block * block_size overflow.  Without
+// the mul_no_overflow check, the multiplication wraps around and the
+// size comparison passes spuriously.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsCodesOverflow) {
+    // Choose n_per_block=1 and block_size near SIZE_MAX so that
+    // n_block * block_size overflows.
+    const size_t n_per_block = 1;
+    const size_t block_size = (size_t)-1; // SIZE_MAX
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, 1);           // nlist = 1
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // ids: 2 entries → n_block = 2 → 2 * SIZE_MAX overflows
+    std::vector<int64_t> ids(2, 0);
+    push_vector<int64_t>(buf, ids);
+    // codes: any size, doesn't matter — overflow should be caught first
+    std::vector<uint8_t> codes(0);
+    push_vector<uint8_t>(buf, codes);
+
+    expect_invlists_read_throws_with(buf, "overflow");
+}
+
+// -----------------------------------------------------------------------
+// Test: BlockInvertedLists with valid ids and codes passes validation.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BlockInvertedListsValidCodesSize) {
+    const size_t n_per_block = 32;
+    const size_t block_size = 128;
+    const size_t nlist = 2;
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ilbl");
+    push_val<size_t>(buf, nlist);       // nlist
+    push_val<size_t>(buf, 32);          // code_size
+    push_val<size_t>(buf, n_per_block); // n_per_block
+    push_val<size_t>(buf, block_size);  // block_size
+
+    // List 0: 10 ids → ceil(10/32)=1 block → 128 bytes
+    std::vector<int64_t> ids0(10, 0);
+    push_vector<int64_t>(buf, ids0);
+    std::vector<uint8_t> codes0(128, 0);
+    push_vector<uint8_t>(buf, codes0);
+
+    // List 1: 0 ids → 0 blocks → 0 bytes
+    std::vector<int64_t> ids1;
+    push_vector<int64_t>(buf, ids1);
+    std::vector<uint8_t> codes1;
+    push_vector<uint8_t>(buf, codes1);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto il = read_InvertedLists_up(&reader);
+    EXPECT_NE(il, nullptr);
 }
