@@ -625,14 +625,14 @@
 <codeline lineno="193"><highlight class="normal"></highlight></codeline>
 <codeline lineno="194" refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02" kindref="member">search_algo</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="195"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>large<sp/>batch<sp/>sizes.</highlight></codeline>
-<codeline lineno="196"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" kindref="member">SINGLE_CTA</ref><sp/>=<sp/>0,</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="196"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" kindref="member">SINGLE_CTA</ref>,</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="197"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>For<sp/>small<sp/>batch<sp/>sizes.</highlight></codeline>
-<codeline lineno="198"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb" kindref="member">MULTI_CTA</ref><sp/>=<sp/>1,</highlight></codeline>
-<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/>MULTI_KERNEL<sp/>=<sp/>2,</highlight></codeline>
-<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>AUTO<sp/>=<sp/>100</highlight></codeline>
+<codeline lineno="198"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb" kindref="member">MULTI_CTA</ref>,</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/>MULTI_KERNEL,</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>AUTO</highlight></codeline>
 <codeline lineno="201"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="202"><highlight class="normal"></highlight></codeline>
-<codeline lineno="203"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>hash_mode<sp/>{<sp/>HASH<sp/>=<sp/>0,<sp/>SMALL<sp/>=<sp/>1,<sp/>AUTO<sp/>=<sp/>100<sp/>};</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>hash_mode<sp/>{<sp/>HASH,<sp/>SMALL,<sp/>AUTO<sp/>};</highlight></codeline>
 <codeline lineno="204"><highlight class="normal"></highlight></codeline>
 <codeline lineno="205" refid="structfaiss_1_1gpu_1_1SearchParametersCagra" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1gpu_1_1SearchParametersCagra" kindref="compound">SearchParametersCagra</ref><sp/>:<sp/><ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="206"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Maximum<sp/>number<sp/>of<sp/>queries<sp/>to<sp/>search<sp/>at<sp/>the<sp/>same<sp/>time<sp/>(batch<sp/>size).<sp/>Auto</highlight></codeline>
