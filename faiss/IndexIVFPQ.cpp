@@ -774,7 +774,6 @@ struct QueryTables {
             const float* b = sim_table_2;
             float* c = sim_table_ptr;
 
-#ifdef __AVX512F__
             const size_t n16 = n / 16;
             const size_t n_for_masking = n % 16;
 
@@ -793,11 +792,6 @@ struct QueryTables {
                 const __m512 abmul = _mm512_mul_ps(bfmm, bx);
                 _mm512_mask_storeu_ps(c + idx, mask, abmul);
             }
-#else
-            for (size_t idx = 0; idx < n; idx++) {
-                c[idx] = bf * b[idx];
-            }
-#endif
 
             sim_table = sim_table_ptr;
         } else {
@@ -1342,7 +1336,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         this->dis0 = dis0;
     }
 
-#ifdef __AVX512F__
     inline void process_chunks(
             size_t chunk_size,
             size_t max_batch_size,
@@ -1366,29 +1359,33 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             for (; batch_idx + 15 < num_active; batch_idx += 16) {
                 __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
 
-                __m128i comp0 = _mm_loadu_si128(
-                        (__m128i*)(compressed_codes + chunk_offset0 + batch_idx));
+                __m128i comp0 =
+                        _mm_loadu_si128((__m128i*)(compressed_codes +
+                                                   chunk_offset0 + batch_idx));
                 __m512i codes0 = _mm512_cvtepu8_epi32(comp0);
                 acc = _mm512_add_ps(
                         acc,
                         _mm512_i32gather_ps(codes0, sim_table0, sizeof(float)));
 
-                __m128i comp1 = _mm_loadu_si128(
-                        (__m128i*)(compressed_codes + chunk_offset1 + batch_idx));
+                __m128i comp1 =
+                        _mm_loadu_si128((__m128i*)(compressed_codes +
+                                                   chunk_offset1 + batch_idx));
                 __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
                 acc = _mm512_add_ps(
                         acc,
                         _mm512_i32gather_ps(codes1, sim_table1, sizeof(float)));
 
-                __m128i comp2 = _mm_loadu_si128(
-                        (__m128i*)(compressed_codes + chunk_offset2 + batch_idx));
+                __m128i comp2 =
+                        _mm_loadu_si128((__m128i*)(compressed_codes +
+                                                   chunk_offset2 + batch_idx));
                 __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
                 acc = _mm512_add_ps(
                         acc,
                         _mm512_i32gather_ps(codes2, sim_table2, sizeof(float)));
 
-                __m128i comp3 = _mm_loadu_si128(
-                        (__m128i*)(compressed_codes + chunk_offset3 + batch_idx));
+                __m128i comp3 =
+                        _mm_loadu_si128((__m128i*)(compressed_codes +
+                                                   chunk_offset3 + batch_idx));
                 __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
                 acc = _mm512_add_ps(
                         acc,
@@ -1414,8 +1411,8 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             size_t batch_idx = 0;
             for (; batch_idx + 15 < num_active; batch_idx += 16) {
                 __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
-                __m128i comp = _mm_loadu_si128(
-                        (__m128i*)(compressed_codes + chunk_offset + batch_idx));
+                __m128i comp = _mm_loadu_si128((
+                        __m128i*)(compressed_codes + chunk_offset + batch_idx));
                 __m512i codes = _mm512_cvtepu8_epi32(comp);
                 __m512 m_dist = _mm512_i32gather_ps(
                         codes, sim_table_ptr, sizeof(float));
@@ -1488,6 +1485,11 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                     exact_distances + next_num_active,
                     compressed_exact_distances_vec);
 
+            // Update bitset for removed items.
+            // Unfortunatelly, this is not vectorized as AVX-512 does not
+            // support a way to scatter at a 1-byte granularity.
+            // However, we can use a mask to compress the indices and then
+            // sequentially set the bitset.
             alignas(64) uint32_t indices_to_remove[16];
             __mmask16 mask_should_remove = ~mask_should_keep;
             size_t num_to_remove = _mm_popcnt_u32(mask_should_remove);
@@ -1538,7 +1540,18 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         uint8_t* compressed_codes = compressed_codes_begin;
         size_t num_active = 0;
 
+        // An important optimization is to skip the compression if we all points
+        // are active, as we can just use the compressed_codes_begin
+        // pointer.
         if (next_num_active < max_batch_size) {
+            // Compress the codes: here we don't need to process remainders
+            // as long as `max_batch_size` is a multiple of 64 (which we
+            // assert in the constructor). Conveniently, compressed_codes is
+            // allocated to `max_batch_size` * `chunk_size` elements.
+            // `num_active` is guaranteed to always be less than or equal to
+            // `max_batch_size`. Only the last batch may be smaller than
+            // `max_batch_size`, the caller ensures that the batch and
+            // bitset are padded with zeros.
             compressed_codes = compressed_codes_begin;
             for (size_t point_idx = 0; point_idx < max_batch_size;
                  point_idx += 64) {
@@ -1546,17 +1559,16 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                 __mmask64 mask = _mm512_cmpneq_epi8_mask(
                         active_byteset, _mm512_setzero_si512());
 
-                for (size_t ci = 0; ci < chunk_size; ci++) {
-                    size_t chunk_offset = ci * max_batch_size;
-                    size_t write_pos = 0;
-                    uint64_t m = (uint64_t)mask;
-                    while (m) {
-                        int bit = __builtin_ctzll(m);
-                        compressed_codes[chunk_offset + num_active + write_pos] =
-                                codes[chunk_offset + point_idx + bit];
-                        write_pos++;
-                        m &= m - 1;
-                    }
+                for (size_t chunk_idx = 0; chunk_idx < chunk_size;
+                     chunk_idx++) {
+                    size_t chunk_offset = chunk_idx * max_batch_size;
+                    __m512i codes_batch_vec = _mm512_loadu_si512(
+                            codes + chunk_offset + point_idx);
+                    __m512i compressed_batch =
+                            _mm512_maskz_compress_epi8(mask, codes_batch_vec);
+                    _mm512_storeu_si512(
+                            compressed_codes + chunk_offset + num_active,
+                            compressed_batch);
                 }
 
                 num_active += _mm_popcnt_u64(mask);
@@ -1568,7 +1580,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
 
         return std::make_pair(compressed_codes, num_active);
     }
-#endif // __AVX512F__
 
     inline void process_chunks_sparse(
             size_t chunk_size,
@@ -1592,7 +1603,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         }
     }
 
-#ifdef __AVX512F__
     size_t process_batch(
             const ProductQuantizer& pq,
             uint8_t* compressed_codes,
@@ -1628,20 +1638,32 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         size_t total_active = 0;
         __m512 epsilon_broadcast = _mm512_set1_ps(epsilon);
 
+        // The remaining active elements computed at the end of each level.
+        // We initialize to `curr_batch_size` for continuity.
         size_t next_num_active = curr_batch_size;
+        // For historical reasons, we initialize dis0 only at
+        // the beginning of the first level, but we need to access it after
+        // all levels have been processed, so we declare dis0 here.
         float dis0 = 0;
+        // Given that `active_indices` indexes the cluster directly, we need
+        // to offset it by the batch offset when updating the bitset and
+        // accessing the cum_sums. This way we avoid yet another layer of
+        // indirection.
         size_t batch_offset = batch_no * max_batch_size;
         __m512i batch_offset_broadcast = _mm512_set1_epi32(batch_offset);
         for (size_t level = 0; (level < n_levels) && (next_num_active > 0);
              level++) {
             total_active += next_num_active;
 
+            // This ensures the LUT is poitning to the right offset, and is
+            // properly initialized. We only compute dis0 distances once for
+            // each cluster, and cache the result.
             size_t level_offset_sim_table = level * pq.ksub * chunk_size;
             this->set_list_panorama(
                     cluster_id,
                     coarse_dis_i,
                     sim_table_cache + level_offset_sim_table,
-                    dis0_cache,
+                    dis0_cache, // Only init once for each cluster.
                     level == 0 && batch_no == 0);
             this->set_sim_table(
                     sim_table_cache + level_offset_sim_table, *dis0_cache);
@@ -1649,12 +1671,15 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             dis0 = this->dis0;
             __m512 dis0_bcast = _mm512_set1_ps(dis0);
 
+            // We multiply by two here so we don't have to do it in the
+            // kernel.
             float query_cum_norm = 2 * query_cum_norms[level + 1];
             __m512 query_cum_norm_broadcast = _mm512_set1_ps(query_cum_norm);
 
             float heap_max = res.top();
             __m512 heap_max_broadcast = _mm512_set1_ps(heap_max);
 
+            // Codes has padding potentially, cumsum does not.
             float* cum_sums = cums + curr_batch_size * level;
             const uint8_t* codes =
                     codes_batch + max_batch_size * chunk_size * level;
@@ -1662,6 +1687,10 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             bool is_sparse = next_num_active < max_batch_size / 16;
             float* sim_table = this->sim_table;
 
+            // Phase 1: Process all chunks and accumulate distances.
+            // We iterate over chunks first as this keeps the same LUT slice
+            // within the L1 cache. To avoid register thrashing, we unroll
+            // 4 chunks at a time.
             size_t num_active_for_filtering = 0;
             if (is_sparse) {
                 process_chunks_sparse(
@@ -1695,6 +1724,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                 num_active_for_filtering = na;
             }
 
+            // Phase 2: Filtering logic using accumulated distances.
             next_num_active = process_filtering(
                     num_active_for_filtering,
                     exact_distances,
@@ -1713,6 +1743,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                     heap_max);
         }
 
+        // Phase 3: Insert remaining candidates to heap.
         for (size_t batch_idx = 0; batch_idx < next_num_active; batch_idx++) {
             res.add(active_indices[batch_idx],
                     dis0 + exact_distances[batch_idx]);
@@ -1720,7 +1751,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
 
         return total_active;
     }
-#endif // __AVX512F__
 
     float distance_to_code(const uint8_t* code) const override {
         assert(precompute_mode == 2);
