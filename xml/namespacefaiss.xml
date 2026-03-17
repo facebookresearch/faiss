@@ -1755,7 +1755,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="216" column="7" declfile="faiss/Clustering.h" declline="216" declcolumn="7"/>
+        <location file="faiss/Clustering.h" line="222" column="7" declfile="faiss/Clustering.h" declline="222" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>

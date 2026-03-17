@@ -245,6 +245,22 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="71" column="14" bodyfile="faiss/Clustering.h" bodystart="71" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::ClusteringParameters::early_stop_threshold</definition>
+        <argsstring></argsstring>
+        <name>early_stop_threshold</name>
+        <qualifiedname>faiss::ClusteringParameters::early_stop_threshold</qualifiedname>
+        <initializer>= 0.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Early stop threshold, the range is [0, 1]. The value of 0 implies a default Faiss behavior, so the training process stops only if an error is unchanged from the previous iteration. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="77" column="12" bodyfile="faiss/Clustering.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -281,11 +297,12 @@
         </childnode>
       </node>
     </inheritancegraph>
-    <location file="faiss/Clustering.h" line="22" column="1" bodyfile="faiss/Clustering.h" bodystart="22" bodyend="72"/>
+    <location file="faiss/Clustering.h" line="22" column="1" bodyfile="faiss/Clustering.h" bodystart="22" bodyend="78"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>afkmc2_chain_length</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>check_input_data_for_NaNs</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>decode_block_size</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>early_stop_threshold</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>frozen_centroids</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>init_method</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" prot="public" virt="non-virtual"><scope>faiss::ClusteringParameters</scope><name>int_centroids</name></member>

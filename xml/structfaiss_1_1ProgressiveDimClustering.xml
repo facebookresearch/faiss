@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="187" column="12" bodyfile="faiss/Clustering.h" bodystart="187" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="193" column="12" bodyfile="faiss/Clustering.h" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a338d2d3a528f377a4d81e76cca8a5a49" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="188" column="12" bodyfile="faiss/Clustering.h" bodystart="188" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="194" column="12" bodyfile="faiss/Clustering.h" bodystart="194" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1a0ef87cca7e3e458f7d4f55e2b1674e63" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -48,7 +48,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="191" column="17" bodyfile="faiss/Clustering.h" bodystart="191" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="197" column="17" bodyfile="faiss/Clustering.h" bodystart="197" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClustering_1ae6fdd783a9008b5b4795d12db20b4cbc" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1ClusteringIterationStats" kindref="compound">ClusteringIterationStats</ref> &gt;</type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="194" column="17" bodyfile="faiss/Clustering.h" bodystart="194" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="200" column="17" bodyfile="faiss/Clustering.h" bodystart="200" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a51a2389b925beba8958e749a28d22ac4" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -78,7 +78,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="159" column="9" bodyfile="faiss/Clustering.h" bodystart="159" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="165" column="9" bodyfile="faiss/Clustering.h" bodystart="165" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -93,7 +93,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="160" column="10" bodyfile="faiss/Clustering.h" bodystart="160" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="166" column="10" bodyfile="faiss/Clustering.h" bodystart="166" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -334,6 +334,22 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="71" column="14" bodyfile="faiss/Clustering.h" bodystart="71" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::ClusteringParameters::early_stop_threshold</definition>
+        <argsstring></argsstring>
+        <name>early_stop_threshold</name>
+        <qualifiedname>faiss::ClusteringParameters::early_stop_threshold</qualifiedname>
+        <initializer>= 0.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Early stop threshold, the range is [0, 1]. The value of 0 implies a default Faiss behavior, so the training process stops only if an error is unchanged from the previous iteration. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="77" column="12" bodyfile="faiss/Clustering.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a2aaf79f1097e2486baa90159beef78c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -356,7 +372,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="196" column="5"/>
+        <location file="faiss/Clustering.h" line="202" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a7f57b272da0c452d8dc0970e2ee25a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -382,7 +398,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="197" column="5"/>
+        <location file="faiss/Clustering.h" line="203" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a084b641b0872a2a9b69af1cedb202d35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -408,7 +424,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="202" column="10"/>
+        <location file="faiss/Clustering.h" line="208" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1ProgressiveDimClustering_1a10837359901a823cc0ae3b98082d4629" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -422,7 +438,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="204" column="13" bodyfile="faiss/Clustering.h" bodystart="204" bodyend="204"/>
+        <location file="faiss/Clustering.h" line="210" column="13" bodyfile="faiss/Clustering.h" bodystart="210" bodyend="210"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -471,7 +487,7 @@ Nearest Neighbor Search&quot;</para>
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="186" column="1" bodyfile="faiss/Clustering.h" bodystart="186" bodyend="205"/>
+    <location file="faiss/Clustering.h" line="192" column="1" bodyfile="faiss/Clustering.h" bodystart="192" bodyend="211"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>afkmc2_chain_length</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClusteringParameters_1a885667df3ae2c66e38c0695a68dbaae9" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>apply_pca</name></member>
@@ -479,6 +495,7 @@ Nearest Neighbor Search&quot;</para>
       <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>check_input_data_for_NaNs</name></member>
       <member refid="structfaiss_1_1ProgressiveDimClustering_1af48112abebada96e4195ffa9a1e760ab" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>d</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>decode_block_size</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>early_stop_threshold</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>frozen_centroids</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>init_method</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" prot="public" virt="non-virtual"><scope>faiss::ProgressiveDimClustering</scope><name>int_centroids</name></member>

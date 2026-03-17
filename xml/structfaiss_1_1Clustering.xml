@@ -19,7 +19,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="95" column="12" bodyfile="faiss/Clustering.h" bodystart="95" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="101" column="12" bodyfile="faiss/Clustering.h" bodystart="101" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Clustering_1a87581785d9516c683bbc7c9392bfa993" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -34,7 +34,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="96" column="12" bodyfile="faiss/Clustering.h" bodystart="96" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="102" column="12" bodyfile="faiss/Clustering.h" bodystart="102" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1" prot="public" static="no" mutable="no">
         <type>std::vector&lt; float &gt;</type>
@@ -49,7 +49,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="102" column="17" bodyfile="faiss/Clustering.h" bodystart="102" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="108" column="17" bodyfile="faiss/Clustering.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Clustering_1a2ea2382ac486aa661ee0338cfb836a02" prot="public" static="no" mutable="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1ClusteringIterationStats" kindref="compound">ClusteringIterationStats</ref> &gt;</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="105" column="17" bodyfile="faiss/Clustering.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/Clustering.h" line="111" column="17" bodyfile="faiss/Clustering.h" bodystart="111" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -305,6 +305,22 @@
         </inbodydescription>
         <location file="faiss/Clustering.h" line="71" column="14" bodyfile="faiss/Clustering.h" bodystart="71" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double faiss::ClusteringParameters::early_stop_threshold</definition>
+        <argsstring></argsstring>
+        <name>early_stop_threshold</name>
+        <qualifiedname>faiss::ClusteringParameters::early_stop_threshold</qualifiedname>
+        <initializer>= 0.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Early stop threshold, the range is [0, 1]. The value of 0 implies a default Faiss behavior, so the training process stops only if an error is unchanged from the previous iteration. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/Clustering.h" line="77" column="12" bodyfile="faiss/Clustering.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1Clustering_1a2fa90a2681dc42faaf2435e63a5ae9b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -327,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="107" column="5"/>
+        <location file="faiss/Clustering.h" line="113" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -353,7 +369,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="108" column="5"/>
+        <location file="faiss/Clustering.h" line="114" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1a097ae80bb9d39da6657f35bd00da39f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -411,7 +427,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="116" column="18"/>
+        <location file="faiss/Clustering.h" line="122" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1ad6ee36738660eaab7e11b3b5ee278912" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -458,7 +474,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="130" column="10"/>
+        <location file="faiss/Clustering.h" line="136" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1adcb47440a792267bb9218c10378cf1a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -473,7 +489,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="139" column="10"/>
+        <location file="faiss/Clustering.h" line="145" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Clustering_1a17403e70a0daaa43c67ac3ea098ce5b3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -487,7 +503,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/Clustering.h" line="141" column="13" bodyfile="faiss/Clustering.h" bodystart="141" bodyend="141"/>
+        <location file="faiss/Clustering.h" line="147" column="13" bodyfile="faiss/Clustering.h" bodystart="147" bodyend="147"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -527,7 +543,7 @@
         <link refid="structfaiss_1_1ClusteringParameters"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/Clustering.h" line="94" column="1" bodyfile="faiss/Clustering.h" bodystart="94" bodyend="142"/>
+    <location file="faiss/Clustering.h" line="100" column="1" bodyfile="faiss/Clustering.h" bodystart="100" bodyend="148"/>
     <listofallmembers>
       <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>afkmc2_chain_length</name></member>
       <member refid="structfaiss_1_1Clustering_1a64c5ec0b4a7967d8be2872974b455ff1" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>centroids</name></member>
@@ -536,6 +552,7 @@
       <member refid="structfaiss_1_1Clustering_1afd25cc6832b576ce4d0d7430e8ee3bff" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>Clustering</name></member>
       <member refid="structfaiss_1_1Clustering_1afbf6efacae54c58586b75ed790facd74" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>d</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>decode_block_size</name></member>
+      <member refid="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>early_stop_threshold</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>frozen_centroids</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>init_method</name></member>
       <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" prot="public" virt="non-virtual"><scope>faiss::Clustering</scope><name>int_centroids</name></member>
