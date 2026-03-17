@@ -1805,6 +1805,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs_ivf->num_threads);
         READ1(svs_ivf->intra_query_threads);
         READ1(svs_ivf->storage_kind);
+        READ1(svs_ivf->is_static);
         if (h == fourcc("ISIL")) {
             auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
             FAISS_THROW_IF_NOT_MSG(

@@ -33,7 +33,8 @@ IndexSVSIVFLVQ::IndexSVSIVFLVQ(
         idx_t d,
         size_t nlist,
         MetricType metric,
-        SVSStorageKind storage)
-        : IndexSVSIVF(d, nlist, metric, storage) {}
+        SVSStorageKind storage,
+        bool is_static)
+        : IndexSVSIVF(d, nlist, metric, storage, is_static) {}
 
 } // namespace faiss

@@ -64,14 +64,19 @@ IndexSVSIVF::IndexSVSIVF(
         idx_t d,
         size_t nlist,
         MetricType metric,
-        SVSStorageKind storage)
-        : Index(d, metric), num_centroids{nlist}, storage_kind{storage} {
+        SVSStorageKind storage,
+        bool is_static)
+        : Index(d, metric),
+          num_centroids{nlist},
+          is_static{is_static},
+          storage_kind{storage} {
     is_trained = false;
 
     // Validate the requested storage kind is available in current runtime.
     auto svs_storage = to_svs_storage_kind(storage_kind);
-    auto status =
-            svs_runtime::DynamicIVFIndex::check_storage_kind(svs_storage);
+    auto status = is_static
+            ? svs_runtime::IVFIndex::check_storage_kind(svs_storage)
+            : svs_runtime::DynamicIVFIndex::check_storage_kind(svs_storage);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -93,7 +98,13 @@ bool IndexSVSIVF::is_lvq_leanvec_enabled() {
 
 IndexSVSIVF::~IndexSVSIVF() {
     if (impl) {
-        auto status = svs_runtime::DynamicIVFIndex::destroy(impl);
+        svs_runtime::Status status;
+        if (is_static) {
+            status = svs_runtime::IVFIndex::destroy(impl);
+        } else {
+            status = svs_runtime::DynamicIVFIndex::destroy(
+                    static_cast<svs_runtime::DynamicIVFIndex*>(impl));
+        }
         FAISS_ASSERT(status.ok());
         impl = nullptr;
     }
@@ -106,14 +117,19 @@ void IndexSVSIVF::train(idx_t n, const float* x) {
 }
 
 void IndexSVSIVF::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !is_static,
+            "Static IVF index does not support add() after initial index "
+            "creation. All data must be provided during train().");
     FAISS_THROW_IF_MSG(
             !is_trained, "Index not trained: call train() before add().");
     FAISS_THROW_IF_NOT(impl);
 
+    auto* dyn = dynamic_impl();
     std::vector<size_t> labels(n);
     std::iota(labels.begin(), labels.end(), ntotal);
 
-    auto status = impl->add(n, labels.data(), x);
+    auto status = dyn->add(n, labels.data(), x);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -122,7 +138,13 @@ void IndexSVSIVF::add(idx_t n, const float* x) {
 
 void IndexSVSIVF::reset() {
     if (impl) {
-        auto status = svs_runtime::DynamicIVFIndex::destroy(impl);
+        svs_runtime::Status status;
+        if (is_static) {
+            status = svs_runtime::IVFIndex::destroy(impl);
+        } else {
+            status = svs_runtime::DynamicIVFIndex::destroy(
+                    static_cast<svs_runtime::DynamicIVFIndex*>(impl));
+        }
         FAISS_ASSERT(status.ok());
         impl = nullptr;
     }
@@ -174,10 +196,15 @@ void IndexSVSIVF::search(
 }
 
 size_t IndexSVSIVF::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_NOT_MSG(
+            !is_static,
+            "Static IVF index does not support remove_ids(). "
+            "The index is immutable after creation.");
     FAISS_THROW_IF_NOT(impl);
+    auto* dyn = dynamic_impl();
     auto id_filter = FaissIDFilter{sel};
     size_t removed = 0;
-    auto status = impl->remove_selected(&removed, id_filter);
+    auto status = dyn->remove_selected(&removed, id_filter);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -204,21 +231,38 @@ void IndexSVSIVF::create_impl(idx_t n, const float* x) {
             .k_reorder = k_reorder,
     };
 
-    std::vector<size_t> labels(n);
-    std::iota(labels.begin(), labels.end(), 0);
+    svs_runtime::Status status;
+    if (is_static) {
+        status = svs_runtime::IVFIndex::build(
+                &impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                static_cast<size_t>(n),
+                x,
+                build_params,
+                search_params,
+                num_threads,
+                intra_query_threads);
+    } else {
+        std::vector<size_t> labels(n);
+        std::iota(labels.begin(), labels.end(), 0);
 
-    auto status = svs_runtime::DynamicIVFIndex::build(
-            &impl,
-            d,
-            svs_metric,
-            svs_storage_kind,
-            static_cast<size_t>(n),
-            x,
-            labels.data(),
-            build_params,
-            search_params,
-            num_threads,
-            intra_query_threads);
+        svs_runtime::DynamicIVFIndex* dyn_impl = nullptr;
+        status = svs_runtime::DynamicIVFIndex::build(
+                &dyn_impl,
+                d,
+                svs_metric,
+                svs_storage_kind,
+                static_cast<size_t>(n),
+                x,
+                labels.data(),
+                build_params,
+                search_params,
+                num_threads,
+                intra_query_threads);
+        impl = dyn_impl;
+    }
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
@@ -241,16 +285,38 @@ void IndexSVSIVF::deserialize_impl(std::istream& in) {
             impl, "Cannot deserialize: SVS IVF index already loaded.");
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
-    auto status = svs_runtime::DynamicIVFIndex::load(
-            &impl,
-            in,
-            svs_metric,
-            svs_storage_kind,
-            num_threads,
-            intra_query_threads);
+
+    svs_runtime::Status status;
+    if (is_static) {
+        status = svs_runtime::IVFIndex::load(
+                &impl,
+                in,
+                svs_metric,
+                svs_storage_kind,
+                num_threads,
+                intra_query_threads);
+    } else {
+        svs_runtime::DynamicIVFIndex* dyn_impl = nullptr;
+        status = svs_runtime::DynamicIVFIndex::load(
+                &dyn_impl,
+                in,
+                svs_metric,
+                svs_storage_kind,
+                num_threads,
+                intra_query_threads);
+        impl = dyn_impl;
+    }
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
+}
+
+svs_runtime::DynamicIVFIndex* IndexSVSIVF::dynamic_impl() const {
+    FAISS_THROW_IF_NOT_MSG(
+            !is_static,
+            "Operation not supported on a static IVF index.");
+    FAISS_THROW_IF_NOT(impl);
+    return static_cast<svs_runtime::DynamicIVFIndex*>(impl);
 }
 
 } // namespace faiss

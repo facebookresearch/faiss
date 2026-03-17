@@ -29,6 +29,7 @@
 
 #include <svs/runtime/api_defs.h>
 #include <svs/runtime/dynamic_ivf_index.h>
+#include <svs/runtime/ivf_index.h>
 
 #include <iostream>
 
@@ -65,6 +66,9 @@ struct IndexSVSIVF : Index {
     /// Number of threads for intra-query parallelism (cluster exploration)
     size_t intra_query_threads = 1;
 
+    /// Whether this is a static (immutable) IVF index
+    bool is_static = false;
+
     SVSStorageKind storage_kind;
 
     IndexSVSIVF();
@@ -73,7 +77,8 @@ struct IndexSVSIVF : Index {
             idx_t d,
             size_t nlist,
             MetricType metric = METRIC_L2,
-            SVSStorageKind storage = SVSStorageKind::SVS_FP32);
+            SVSStorageKind storage = SVSStorageKind::SVS_FP32,
+            bool is_static = false);
 
     ~IndexSVSIVF() override;
 
@@ -101,12 +106,16 @@ struct IndexSVSIVF : Index {
     void serialize_impl(std::ostream& out) const;
     virtual void deserialize_impl(std::istream& in);
 
-    /* The actual SVS implementation */
-    svs_runtime::DynamicIVFIndex* impl{nullptr};
+    /* The actual SVS implementation (IVFIndex is the base for both
+       static and dynamic variants) */
+    svs_runtime::IVFIndex* impl{nullptr};
 
    protected:
     /* Initializes the implementation from training data */
     virtual void create_impl(idx_t n, const float* x);
+
+    /* Returns the dynamic impl pointer, throwing if static */
+    svs_runtime::DynamicIVFIndex* dynamic_impl() const;
 };
 
 } // namespace faiss

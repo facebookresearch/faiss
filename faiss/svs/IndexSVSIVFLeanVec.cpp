@@ -44,8 +44,9 @@ IndexSVSIVFLeanVec::IndexSVSIVFLeanVec(
         size_t nlist,
         MetricType metric,
         size_t leanvec_dims,
-        SVSStorageKind storage_kind)
-        : IndexSVSIVF(d, nlist, metric, storage_kind) {
+        SVSStorageKind storage_kind,
+        bool is_static)
+        : IndexSVSIVF(d, nlist, metric, storage_kind, is_static) {
     is_trained = false;
     leanvec_d = leanvec_dims == 0 ? d / 2 : leanvec_dims;
 }
@@ -137,38 +138,70 @@ void IndexSVSIVFLeanVec::create_impl(idx_t n, const float* x) {
             .k_reorder = k_reorder,
     };
 
-    std::vector<size_t> labels(n);
-    std::iota(labels.begin(), labels.end(), 0);
-
     auto status = svs_runtime::Status_Ok;
-    if (training_data) {
-        status = svs_runtime::DynamicIVFIndexLeanVec::build(
-                &impl,
-                d,
-                svs_metric,
-                svs_storage_kind,
-                static_cast<size_t>(n),
-                x,
-                labels.data(),
-                training_data,
-                build_params,
-                search_params,
-                num_threads,
-                intra_query_threads);
+    if (is_static) {
+        if (training_data) {
+            status = svs_runtime::IVFIndexLeanVec::build(
+                    &impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    static_cast<size_t>(n),
+                    x,
+                    training_data,
+                    build_params,
+                    search_params,
+                    num_threads,
+                    intra_query_threads);
+        } else {
+            status = svs_runtime::IVFIndexLeanVec::build(
+                    &impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    static_cast<size_t>(n),
+                    x,
+                    leanvec_d,
+                    build_params,
+                    search_params,
+                    num_threads,
+                    intra_query_threads);
+        }
     } else {
-        status = svs_runtime::DynamicIVFIndexLeanVec::build(
-                &impl,
-                d,
-                svs_metric,
-                svs_storage_kind,
-                static_cast<size_t>(n),
-                x,
-                labels.data(),
-                leanvec_d,
-                build_params,
-                search_params,
-                num_threads,
-                intra_query_threads);
+        std::vector<size_t> labels(n);
+        std::iota(labels.begin(), labels.end(), 0);
+
+        svs_runtime::DynamicIVFIndex* dyn_impl = nullptr;
+        if (training_data) {
+            status = svs_runtime::DynamicIVFIndexLeanVec::build(
+                    &dyn_impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    static_cast<size_t>(n),
+                    x,
+                    labels.data(),
+                    training_data,
+                    build_params,
+                    search_params,
+                    num_threads,
+                    intra_query_threads);
+        } else {
+            status = svs_runtime::DynamicIVFIndexLeanVec::build(
+                    &dyn_impl,
+                    d,
+                    svs_metric,
+                    svs_storage_kind,
+                    static_cast<size_t>(n),
+                    x,
+                    labels.data(),
+                    leanvec_d,
+                    build_params,
+                    search_params,
+                    num_threads,
+                    intra_query_threads);
+        }
+        impl = dyn_impl;
     }
 
     if (!status.ok()) {

@@ -1096,6 +1096,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs_ivf->num_threads);
         WRITE1(svs_ivf->intra_query_threads);
         WRITE1(svs_ivf->storage_kind);
+        WRITE1(svs_ivf->is_static);
 
         if (lean != nullptr) {
             WRITE1(lean->leanvec_d);

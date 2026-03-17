@@ -35,7 +35,8 @@ struct IndexSVSIVFLeanVec : IndexSVSIVF {
             size_t nlist,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4,
+            bool is_static = false);
 
     ~IndexSVSIVFLeanVec() override;
 
