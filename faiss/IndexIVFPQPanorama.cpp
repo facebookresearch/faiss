@@ -439,10 +439,6 @@ void IndexIVFPQPanorama::search_preassigned(
                                 bitset.begin() + curr_batch_size,
                                 bitset.end(),
                                 0);
-                        std::fill(
-                                compressed_codes.begin(),
-                                compressed_codes.end(),
-                                0);
 
                         for (size_t idx = 0; idx < curr_batch_size; idx++) {
                             exact_distances[idx] = init_exact_distances
@@ -503,7 +499,7 @@ void IndexIVFPQPanorama::search_preassigned(
         }
     }
 
-    printf("v0: total_active: %f\n", (float)total_active / total_points);
+    printf("vv: total_active: %f\n", (float)total_active / total_points);
 }
 
 } // namespace faiss

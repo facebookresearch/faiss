@@ -9,7 +9,6 @@
 
 #include <faiss/IndexIVFPQ.h>
 
-#include <immintrin.h>
 #include <algorithm>
 #include <cassert>
 #include <cinttypes>
@@ -33,6 +32,7 @@
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/panorama_kernels/panorama_kernels.h>
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
@@ -774,23 +774,8 @@ struct QueryTables {
             const float* b = sim_table_2;
             float* c = sim_table_ptr;
 
-            const size_t n16 = n / 16;
-            const size_t n_for_masking = n % 16;
-
-            const __m512 bfmm = _mm512_set1_ps(bf);
-
-            size_t idx = 0;
-            for (idx = 0; idx < n16 * 16; idx += 16) {
-                const __m512 bx = _mm512_loadu_ps(b + idx);
-                const __m512 abmul = _mm512_mul_ps(bfmm, bx);
-                _mm512_storeu_ps(c + idx, abmul);
-            }
-
-            if (n_for_masking > 0) {
-                const __mmask16 mask = (1 << n_for_masking) - 1;
-                const __m512 bx = _mm512_maskz_loadu_ps(mask, b + idx);
-                const __m512 abmul = _mm512_mul_ps(bfmm, bx);
-                _mm512_mask_storeu_ps(c + idx, mask, abmul);
+            for (size_t idx = 0; idx < n; idx++) {
+                c[idx] = bf * b[idx];
             }
 
             sim_table = sim_table_ptr;
@@ -1336,250 +1321,10 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         this->dis0 = dis0;
     }
 
-    inline void process_chunks(
-            size_t chunk_size,
-            size_t max_batch_size,
-            size_t num_active,
-            float* sim_table,
-            uint8_t* compressed_codes,
-            float* exact_distances) {
-        size_t chunk_idx = 0;
-        for (; chunk_idx + 3 < chunk_size; chunk_idx += 4) {
-            size_t chunk_offset0 = (chunk_idx + 0) * max_batch_size;
-            size_t chunk_offset1 = (chunk_idx + 1) * max_batch_size;
-            size_t chunk_offset2 = (chunk_idx + 2) * max_batch_size;
-            size_t chunk_offset3 = (chunk_idx + 3) * max_batch_size;
-
-            float* sim_table0 = sim_table + (chunk_idx + 0) * 256;
-            float* sim_table1 = sim_table + (chunk_idx + 1) * 256;
-            float* sim_table2 = sim_table + (chunk_idx + 2) * 256;
-            float* sim_table3 = sim_table + (chunk_idx + 3) * 256;
-
-            size_t batch_idx = 0;
-            for (; batch_idx + 15 < num_active; batch_idx += 16) {
-                __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
-
-                __m128i comp0 =
-                        _mm_loadu_si128((__m128i*)(compressed_codes +
-                                                   chunk_offset0 + batch_idx));
-                __m512i codes0 = _mm512_cvtepu8_epi32(comp0);
-                acc = _mm512_add_ps(
-                        acc,
-                        _mm512_i32gather_ps(codes0, sim_table0, sizeof(float)));
-
-                __m128i comp1 =
-                        _mm_loadu_si128((__m128i*)(compressed_codes +
-                                                   chunk_offset1 + batch_idx));
-                __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
-                acc = _mm512_add_ps(
-                        acc,
-                        _mm512_i32gather_ps(codes1, sim_table1, sizeof(float)));
-
-                __m128i comp2 =
-                        _mm_loadu_si128((__m128i*)(compressed_codes +
-                                                   chunk_offset2 + batch_idx));
-                __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
-                acc = _mm512_add_ps(
-                        acc,
-                        _mm512_i32gather_ps(codes2, sim_table2, sizeof(float)));
-
-                __m128i comp3 =
-                        _mm_loadu_si128((__m128i*)(compressed_codes +
-                                                   chunk_offset3 + batch_idx));
-                __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
-                acc = _mm512_add_ps(
-                        acc,
-                        _mm512_i32gather_ps(codes3, sim_table3, sizeof(float)));
-
-                _mm512_storeu_ps(exact_distances + batch_idx, acc);
-            }
-
-            for (; batch_idx < num_active; batch_idx += 1) {
-                float acc = exact_distances[batch_idx];
-                acc += sim_table0[compressed_codes[chunk_offset0 + batch_idx]];
-                acc += sim_table1[compressed_codes[chunk_offset1 + batch_idx]];
-                acc += sim_table2[compressed_codes[chunk_offset2 + batch_idx]];
-                acc += sim_table3[compressed_codes[chunk_offset3 + batch_idx]];
-                exact_distances[batch_idx] = acc;
-            }
-        }
-
-        for (; chunk_idx < chunk_size; chunk_idx++) {
-            size_t chunk_offset = chunk_idx * max_batch_size;
-            float* sim_table_ptr = sim_table + chunk_idx * 256;
-
-            size_t batch_idx = 0;
-            for (; batch_idx + 15 < num_active; batch_idx += 16) {
-                __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
-                __m128i comp = _mm_loadu_si128((
-                        __m128i*)(compressed_codes + chunk_offset + batch_idx));
-                __m512i codes = _mm512_cvtepu8_epi32(comp);
-                __m512 m_dist = _mm512_i32gather_ps(
-                        codes, sim_table_ptr, sizeof(float));
-                acc = _mm512_add_ps(acc, m_dist);
-                _mm512_storeu_ps(exact_distances + batch_idx, acc);
-            }
-
-            for (; batch_idx < num_active; batch_idx += 1) {
-                exact_distances[batch_idx] += sim_table_ptr
-                        [compressed_codes[chunk_offset + batch_idx]];
-            }
-        }
-    }
-
-    inline size_t process_filtering(
-            size_t num_active,
-            float* exact_distances,
-            uint32_t* active_indices,
-            __m512i batch_offset_broadcast,
-            float* cum_sums,
-            __m512 dis0_broadcast,
-            __m512 query_cum_norm_broadcast,
-            __m512 epsilon_broadcast,
-            __m512 heap_max_broadcast,
-            uint8_t* bitset,
-            size_t batch_offset,
-            float dis0,
-            float query_cum_norm,
-            float epsilon,
-            float heap_max) {
-        size_t next_num_active = 0;
-        size_t batch_idx = 0;
-
-        for (; batch_idx + 15 < num_active; batch_idx += 16) {
-            __m512 exact_distances_batch =
-                    _mm512_loadu_ps(exact_distances + batch_idx);
-
-            __m512i active_indices_batch =
-                    _mm512_loadu_si512(active_indices + batch_idx);
-            __m512i offsetted_active_indices_batch = _mm512_sub_epi32(
-                    active_indices_batch, batch_offset_broadcast);
-            __m512 cum_sums_batch = _mm512_i32gather_ps(
-                    offsetted_active_indices_batch, cum_sums, sizeof(float));
-
-            __m512 exact_distances_batch_dis0 =
-                    _mm512_add_ps(exact_distances_batch, dis0_broadcast);
-            __m512 cauchy_schwarz_bound =
-                    _mm512_mul_ps(query_cum_norm_broadcast, cum_sums_batch);
-            cauchy_schwarz_bound =
-                    _mm512_mul_ps(cauchy_schwarz_bound, epsilon_broadcast);
-
-            __m512 lower_bound = _mm512_sub_ps(
-                    exact_distances_batch_dis0, cauchy_schwarz_bound);
-            __mmask16 mask_should_keep = _mm512_cmp_ps_mask(
-                    lower_bound, heap_max_broadcast, _CMP_LT_OQ);
-
-            __m512i compressed_active_indices_vec = _mm512_mask_compress_epi32(
-                    _mm512_setzero_si512(),
-                    mask_should_keep,
-                    active_indices_batch);
-            _mm512_storeu_si512(
-                    active_indices + next_num_active,
-                    compressed_active_indices_vec);
-
-            __m512 compressed_exact_distances_vec = _mm512_mask_compress_ps(
-                    _mm512_setzero_ps(),
-                    mask_should_keep,
-                    exact_distances_batch);
-            _mm512_storeu_ps(
-                    exact_distances + next_num_active,
-                    compressed_exact_distances_vec);
-
-            // Update bitset for removed items.
-            // Unfortunatelly, this is not vectorized as AVX-512 does not
-            // support a way to scatter at a 1-byte granularity.
-            // However, we can use a mask to compress the indices and then
-            // sequentially set the bitset.
-            alignas(64) uint32_t indices_to_remove[16];
-            __mmask16 mask_should_remove = ~mask_should_keep;
-            size_t num_to_remove = _mm_popcnt_u32(mask_should_remove);
-
-            __m512i compressed_indices_to_remove_vec =
-                    _mm512_mask_compress_epi32(
-                            _mm512_setzero_si512(),
-                            mask_should_remove,
-                            active_indices_batch);
-            _mm512_storeu_si512(
-                    indices_to_remove, compressed_indices_to_remove_vec);
-
-            for (size_t idx = 0; idx < num_to_remove; idx++) {
-                bitset[indices_to_remove[idx] - batch_offset] = 0;
-            }
-
-            next_num_active += _mm_popcnt_u32(mask_should_keep);
-        }
-
-        for (; batch_idx < num_active; batch_idx++) {
-            float exact_distance = exact_distances[batch_idx];
-
-            float cum_sum = cum_sums[active_indices[batch_idx] - batch_offset];
-            float cauchy_schwarz_bound = cum_sum * query_cum_norm;
-            float lower_bound =
-                    exact_distance - cauchy_schwarz_bound * epsilon + dis0;
-
-            uint32_t should_keep = heap_max > lower_bound;
-            active_indices[next_num_active] = active_indices[batch_idx];
-            exact_distances[next_num_active] = exact_distance;
-
-            bitset[active_indices[batch_idx] - batch_offset] = should_keep;
-
-            next_num_active += should_keep;
-        }
-
-        return next_num_active;
-    }
-
-    inline std::pair<uint8_t*, size_t> process_code_compression(
-            size_t level,
-            size_t next_num_active,
-            size_t max_batch_size,
-            size_t chunk_size,
-            uint8_t* compressed_codes_begin,
-            uint8_t* bitset,
-            const uint8_t* codes) {
-        uint8_t* compressed_codes = compressed_codes_begin;
-        size_t num_active = 0;
-
-        // An important optimization is to skip the compression if we all points
-        // are active, as we can just use the compressed_codes_begin
-        // pointer.
-        if (next_num_active < max_batch_size) {
-            // Compress the codes: here we don't need to process remainders
-            // as long as `max_batch_size` is a multiple of 64 (which we
-            // assert in the constructor). Conveniently, compressed_codes is
-            // allocated to `max_batch_size` * `chunk_size` elements.
-            // `num_active` is guaranteed to always be less than or equal to
-            // `max_batch_size`. Only the last batch may be smaller than
-            // `max_batch_size`, the caller ensures that the batch and
-            // bitset are padded with zeros.
-            compressed_codes = compressed_codes_begin;
-            for (size_t point_idx = 0; point_idx < max_batch_size;
-                 point_idx += 64) {
-                __m512i active_byteset = _mm512_loadu_si512(bitset + point_idx);
-                __mmask64 mask = _mm512_cmpneq_epi8_mask(
-                        active_byteset, _mm512_setzero_si512());
-
-                for (size_t chunk_idx = 0; chunk_idx < chunk_size;
-                     chunk_idx++) {
-                    size_t chunk_offset = chunk_idx * max_batch_size;
-                    __m512i codes_batch_vec = _mm512_loadu_si512(
-                            codes + chunk_offset + point_idx);
-                    __m512i compressed_batch =
-                            _mm512_maskz_compress_epi8(mask, codes_batch_vec);
-                    _mm512_storeu_si512(
-                            compressed_codes + chunk_offset + num_active,
-                            compressed_batch);
-                }
-
-                num_active += _mm_popcnt_u64(mask);
-            }
-        } else {
-            num_active = next_num_active;
-            compressed_codes = const_cast<uint8_t*>(codes);
-        }
-
-        return std::make_pair(compressed_codes, num_active);
-    }
+    // Panorama kernels (process_chunks, process_filtering,
+    // process_code_compression) are implemented in
+    // faiss/impl/panorama_kernels/ with scalar and AVX-512 variants.
+    // The linker selects the right one based on the SIMD compile target.
 
     inline void process_chunks_sparse(
             size_t chunk_size,
@@ -1636,7 +1381,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                 0};
         uint8_t* compressed_codes_begin = compressed_codes;
         size_t total_active = 0;
-        __m512 epsilon_broadcast = _mm512_set1_ps(epsilon);
 
         // The remaining active elements computed at the end of each level.
         // We initialize to `curr_batch_size` for continuity.
@@ -1650,12 +1394,11 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         // accessing the cum_sums. This way we avoid yet another layer of
         // indirection.
         size_t batch_offset = batch_no * max_batch_size;
-        __m512i batch_offset_broadcast = _mm512_set1_epi32(batch_offset);
         for (size_t level = 0; (level < n_levels) && (next_num_active > 0);
              level++) {
             total_active += next_num_active;
 
-            // This ensures the LUT is poitning to the right offset, and is
+            // This ensures the LUT is pointing to the right offset, and is
             // properly initialized. We only compute dis0 distances once for
             // each cluster, and cache the result.
             size_t level_offset_sim_table = level * pq.ksub * chunk_size;
@@ -1669,15 +1412,12 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                     sim_table_cache + level_offset_sim_table, *dis0_cache);
 
             dis0 = this->dis0;
-            __m512 dis0_bcast = _mm512_set1_ps(dis0);
 
             // We multiply by two here so we don't have to do it in the
             // kernel.
             float query_cum_norm = 2 * query_cum_norms[level + 1];
-            __m512 query_cum_norm_broadcast = _mm512_set1_ps(query_cum_norm);
 
             float heap_max = res.top();
-            __m512 heap_max_broadcast = _mm512_set1_ps(heap_max);
 
             // Codes has padding potentially, cumsum does not.
             float* cum_sums = cums + curr_batch_size * level;
@@ -1705,16 +1445,16 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                         pq.ksub);
                 num_active_for_filtering = next_num_active;
             } else {
-                auto [cc, na] = process_code_compression(
-                        level,
-                        next_num_active,
-                        max_batch_size,
-                        chunk_size,
-                        compressed_codes_begin,
-                        bitset,
-                        codes);
+                auto [cc, na] =
+                        panorama_kernels::process_code_compression(
+                                next_num_active,
+                                max_batch_size,
+                                chunk_size,
+                                compressed_codes_begin,
+                                bitset,
+                                codes);
 
-                process_chunks(
+                panorama_kernels::process_chunks(
                         chunk_size,
                         max_batch_size,
                         na,
@@ -1725,16 +1465,11 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             }
 
             // Phase 2: Filtering logic using accumulated distances.
-            next_num_active = process_filtering(
+            next_num_active = panorama_kernels::process_filtering(
                     num_active_for_filtering,
                     exact_distances,
                     active_indices,
-                    batch_offset_broadcast,
                     cum_sums,
-                    dis0_bcast,
-                    query_cum_norm_broadcast,
-                    epsilon_broadcast,
-                    heap_max_broadcast,
                     bitset,
                     batch_offset,
                     dis0,
