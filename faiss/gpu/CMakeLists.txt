@@ -274,6 +274,7 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 add_library(faiss_gpu_objs OBJECT ${FAISS_GPU_SRC})
+faiss_add_warnings(faiss_gpu_objs)
 set_target_properties(faiss_gpu_objs PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   WINDOWS_EXPORT_ALL_SYMBOLS ON

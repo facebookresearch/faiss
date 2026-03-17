@@ -46,6 +46,44 @@ outlined on that page and do not file a public issue.
 * 80 character line length (both for C++ and Python)
 * C++ language level: C++17
 
+## Compiler Warnings
+
+Faiss supports configurable compiler warning levels. We encourage contributors
+to build with warnings enabled to catch potential issues early.
+
+### Warning Levels
+
+Configure the warning level with `-DFAISS_WARNING_LEVEL=<level>`:
+
+| Level | Description | Recommended For |
+|-------|-------------|-----------------|
+| 0 | Disabled (default) | Normal builds |
+| 1 | Basic warnings (`-Wall -Wextra`) | Development builds |
+| 2 | Standard warnings (adds `-Wpedantic`, `-Wshadow`, etc.) | Code review |
+| 3 | Strict warnings (all recommended warnings) | Static analysis |
+
+### Example Usage
+
+```bash
+# Build with basic warnings
+cmake .. -DFAISS_WARNING_LEVEL=1
+
+# Build with warnings as errors (strict mode)
+cmake .. -DFAISS_WARNING_LEVEL=2 -DFAISS_WARNINGS_AS_ERRORS=ON
+```
+
+### Best Practices for New Code
+
+When writing new code:
+
+* Use `static_cast<>`, `reinterpret_cast<>`, or `const_cast<>` instead of C-style casts
+* Initialize all member variables in the member initializer list
+* Order member initializers to match declaration order
+* Use `[[maybe_unused]]` for intentionally unused parameters
+* Use `override` for virtual function overrides
+* Prefer `nullptr` over `NULL` or `0` for null pointers
+* Avoid shadowing variables in inner scopes
+
 ## License
 
 By contributing to Faiss, you agree that your contributions will be licensed
