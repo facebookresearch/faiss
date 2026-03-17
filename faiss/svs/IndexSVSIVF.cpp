@@ -46,8 +46,7 @@ svs_runtime::IVFIndex::SearchParams make_ivf_search_parameters(
     auto n_probes = index.n_probes;
     auto k_reorder = index.k_reorder;
 
-    if (auto svs_params =
-                dynamic_cast<const SearchParametersSVSIVF*>(params)) {
+    if (auto svs_params = dynamic_cast<const SearchParametersSVSIVF*>(params)) {
         if (svs_params->n_probes > 0)
             n_probes = svs_params->n_probes;
         if (svs_params->k_reorder > 0)
@@ -313,8 +312,7 @@ void IndexSVSIVF::deserialize_impl(std::istream& in) {
 
 svs_runtime::DynamicIVFIndex* IndexSVSIVF::dynamic_impl() const {
     FAISS_THROW_IF_NOT_MSG(
-            !is_static,
-            "Operation not supported on a static IVF index.");
+            !is_static, "Operation not supported on a static IVF index.");
     FAISS_THROW_IF_NOT(impl);
     return static_cast<svs_runtime::DynamicIVFIndex*>(impl);
 }

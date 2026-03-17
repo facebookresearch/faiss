@@ -56,12 +56,12 @@
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
-#include <faiss/svs/IndexSVSVamana.h>
-#include <faiss/svs/IndexSVSVamanaLVQ.h>
-#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #include <faiss/svs/IndexSVSIVF.h>
 #include <faiss/svs/IndexSVSIVFLVQ.h>
 #include <faiss/svs/IndexSVSIVFLeanVec.h>
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
@@ -1781,8 +1781,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         idx = std::move(svs);
     } else if (
-            h == fourcc("ISIQ") || h == fourcc("ISIL") ||
-            h == fourcc("ISID")) {
+            h == fourcc("ISIQ") || h == fourcc("ISIL") || h == fourcc("ISID")) {
         std::unique_ptr<IndexSVSIVF> svs_ivf;
         if (h == fourcc("ISIQ")) {
             svs_ivf = std::make_unique<IndexSVSIVFLVQ>();
@@ -1826,10 +1825,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             if (trained) {
                 faiss::svs_io::ReaderStreambuf rbuf(f);
                 std::istream is(&rbuf);
-                auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+                auto* leanvec =
+                        dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
                 FAISS_THROW_IF_NOT_MSG(
-                        leanvec,
-                        "dynamic_cast to IndexSVSIVFLeanVec failed");
+                        leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
                 leanvec->deserialize_training_data(is);
             }
         }
