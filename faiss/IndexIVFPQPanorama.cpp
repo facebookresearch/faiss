@@ -503,7 +503,7 @@ void IndexIVFPQPanorama::search_preassigned(
         }
     }
 
-    printf("total_active: %f\n", (float)total_active / total_points);
+    printf("v0: total_active: %f\n", (float)total_active / total_points);
 }
 
 } // namespace faiss

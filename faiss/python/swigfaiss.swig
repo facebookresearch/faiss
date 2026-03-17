@@ -96,6 +96,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFFlat.h>
@@ -594,6 +595,7 @@ void gpu_sync_all_devices()
 
 %ignore faiss::IndexIVFPQ::alloc_type;
 %include  <faiss/IndexIVFPQ.h>
+%include  <faiss/IndexIVFPQPanorama.h>
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
@@ -779,6 +781,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFRaBitQFastScan )
     DOWNCAST ( IndexIVFIndependentQuantizer)
+    DOWNCAST ( IndexIVFPQPanorama )
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFPQFastScan )
