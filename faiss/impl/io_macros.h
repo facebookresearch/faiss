@@ -17,6 +17,10 @@
  * always called f and thus is not passed in as a macro parameter.
  **************************************************************/
 
+namespace faiss {
+size_t get_deserialization_vector_byte_limit();
+} // namespace faiss
+
 #define READANDCHECK(ptr, n)                         \
     {                                                \
         size_t ret = (*f)(ptr, sizeof(*(ptr)), n);   \
@@ -37,14 +41,18 @@
         READ1(x);           \
     }
 
-// will fail if we write 256G of data at once...
-#define READVECTOR(vec)                                              \
-    {                                                                \
-        size_t size;                                                 \
-        READANDCHECK(&size, 1);                                      \
-        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
-        (vec).resize(size);                                          \
-        READANDCHECK((vec).data(), size);                            \
+// Rejects vectors whose total allocation would exceed the configurable
+// byte limit (default 1 TB).
+#define READVECTOR(vec)                                                  \
+    {                                                                    \
+        size_t size;                                                     \
+        READANDCHECK(&size, 1);                                          \
+        FAISS_THROW_IF_NOT(                                              \
+                size >= 0 &&                                             \
+                size < (faiss::get_deserialization_vector_byte_limit() / \
+                        sizeof(*(vec).data())));                         \
+        (vec).resize(size);                                              \
+        READANDCHECK((vec).data(), size);                                \
     }
 
 #define WRITEANDCHECK(ptr, n)                         \
@@ -78,12 +86,15 @@
         WRITEANDCHECK((vec).data(), size * 4);     \
     }
 
-#define READXBVECTOR(vec)                                            \
-    {                                                                \
-        size_t size;                                                 \
-        READANDCHECK(&size, 1);                                      \
-        FAISS_THROW_IF_NOT(size >= 0 && size < (uint64_t{1} << 40)); \
-        size *= 4;                                                   \
-        (vec).resize(size);                                          \
-        READANDCHECK((vec).data(), size);                            \
+#define READXBVECTOR(vec)                                                \
+    {                                                                    \
+        size_t size;                                                     \
+        READANDCHECK(&size, 1);                                          \
+        FAISS_THROW_IF_NOT(                                              \
+                size >= 0 &&                                             \
+                size < (faiss::get_deserialization_vector_byte_limit() / \
+                        (4 * sizeof(*(vec).data()))));                   \
+        size *= 4;                                                       \
+        (vec).resize(size);                                              \
+        READANDCHECK((vec).data(), size);                                \
     }

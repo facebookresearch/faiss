@@ -13,7 +13,6 @@
 
 #include <cinttypes>
 #include <cstdio>
-#include <numeric>
 
 #include <faiss/IndexFlat.h>
 
@@ -23,6 +22,11 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/expanded_scanners.h>
 #include <faiss/utils/extra_distances.h>
+
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
+
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -144,48 +148,6 @@ void IndexIVFFlat::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
         memcpy(xi, code + coarse_size, code_size);
     }
 }
-
-namespace {
-
-template <typename VectorDistance>
-struct IVFFlatScanner : InvertedListScanner {
-    VectorDistance vd;
-    using C = typename VectorDistance::C;
-
-    IVFFlatScanner(
-            const VectorDistance& vd,
-            bool store_pairs,
-            const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), vd(vd) {
-        keep_max = vd.is_similarity;
-        code_size = vd.d * sizeof(float);
-    }
-
-    const float* xi;
-    void set_query(const float* query) override {
-        this->xi = query;
-    }
-
-    void set_list(idx_t list_no, float /* coarse_dis */) override {
-        this->list_no = list_no;
-    }
-
-    float distance_to_code(const uint8_t* code) const final {
-        const float* yj = (float*)code;
-        return vd(xi, yj);
-    }
-
-    // redefining the scan_codes allows to inline the distance_to_code
-    size_t scan_codes(
-            size_t list_size,
-            const uint8_t* codes,
-            const idx_t* ids,
-            ResultHandler& handler) const {
-        return run_scan_codes_fix_C<C>(*this, list_size, codes, ids, handler);
-    }
-};
-
-} // anonymous namespace
 
 InvertedListScanner* IndexIVFFlat::get_InvertedListScanner(
         bool store_pairs,

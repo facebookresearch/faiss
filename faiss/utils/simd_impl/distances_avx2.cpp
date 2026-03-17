@@ -9,11 +9,10 @@
 
 #include <immintrin.h>
 
-#define AUTOVEC_LEVEL SIMDLevel::AVX2
+#define THE_SIMD_LEVEL SIMDLevel::AVX2
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
-#define THE_SIMDLEVEL SIMDLevel::AVX2
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_simdlib256.h>
 
@@ -21,6 +20,8 @@
 #include <faiss/utils/simd_impl/distances_sse-inl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/transpose/transpose-avx2-inl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
 
 namespace faiss {
 

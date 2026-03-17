@@ -83,6 +83,7 @@ struct AdditiveQuantizer : Quantizer {
         ST_norm_lsq2x4, ///< use a 2x4 bits lsq as norm quantizer (for fast
                         ///< scan)
         ST_norm_rq2x4,  ///< use a 2x4 bits rq as norm quantizer (for fast scan)
+        ST_count
     };
 
     AdditiveQuantizer(

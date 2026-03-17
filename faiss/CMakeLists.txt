@@ -9,17 +9,22 @@
 # Architecture-specific: only include files for the current build architecture
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
+  impl/fast_scan/impl-avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
+  impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
+  impl/fast_scan/impl-avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
+  impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
+  impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
 )
 set(FAISS_SIMD_SVE_SRC
@@ -117,9 +122,7 @@ set(FAISS_SRC
   impl/kmeans1d.cpp
   impl/lattice_Zn.cpp
   impl/mapped_io.cpp
-  impl/fast_scan/pq4_fast_scan.cpp
-  impl/fast_scan/pq4_fast_scan_search_1.cpp
-  impl/fast_scan/pq4_fast_scan_search_qbs.cpp
+  impl/fast_scan/fast_scan.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
@@ -262,10 +265,13 @@ set(FAISS_HEADERS
   impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
-  impl/fast_scan/pq4_fast_scan.h
+  impl/fast_scan/accumulate_loops.h
+  impl/fast_scan/dispatching.h
+  impl/fast_scan/fast_scan.h
   impl/fast_scan/decompose_qbs.h
   impl/fast_scan/kernels_simd256.h
   impl/fast_scan/kernels_simd512.h
+  impl/fast_scan/rabitq_dispatching.h
   impl/fast_scan/rabitq_result_handler.h
   impl/residual_quantizer_encode_steps.h
   impl/simd_dispatch.h
@@ -285,7 +291,6 @@ set(FAISS_HEADERS
   utils/WorkerThread.h
   utils/distances.h
   utils/distances_dispatch.h
-  utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
@@ -312,10 +317,11 @@ set(FAISS_HEADERS
   utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_based.h
-  utils/approx_topk/approx_topk.h
-  utils/approx_topk/avx2-inl.h
-  utils/approx_topk/generic.h
-  utils/approx_topk/mode.h
+  impl/approx_topk/approx_topk.h
+  impl/approx_topk/generic.h
+  impl/approx_topk/rq_beam_search_tab.h
+  impl/approx_topk/rq_beam_search_tab-inl.h
+  impl/approx_topk/simdlib256-inl.h
   utils/approx_topk_hamming/approx_topk_hamming.h
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
@@ -327,6 +333,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
 

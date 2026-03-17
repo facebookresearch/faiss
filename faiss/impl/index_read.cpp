@@ -78,6 +78,41 @@
 
 namespace faiss {
 
+namespace {
+size_t deserialization_loop_limit_ = 0;
+size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
+} // namespace
+
+size_t get_deserialization_loop_limit() {
+    return deserialization_loop_limit_;
+}
+
+void set_deserialization_loop_limit(size_t value) {
+    deserialization_loop_limit_ = value;
+}
+
+size_t get_deserialization_vector_byte_limit() {
+    return deserialization_vector_byte_limit_;
+}
+
+void set_deserialization_vector_byte_limit(size_t value) {
+    deserialization_vector_byte_limit_ = value;
+}
+
+#define FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(val, field_name) \
+    do {                                                        \
+        auto limit_ = get_deserialization_loop_limit();         \
+        if (limit_ > 0) {                                       \
+            FAISS_THROW_IF_NOT_FMT(                             \
+                    static_cast<size_t>(val) <= limit_,         \
+                    "%s=%zd exceeds deserialization_loop_limit" \
+                    " of %zd",                                  \
+                    field_name,                                 \
+                    static_cast<size_t>(val),                   \
+                    limit_);                                    \
+        }                                                       \
+    } while (0)
+
 /*************************************************************
  * Mmap-ing and viewing facilities
  **************************************************************/
@@ -371,6 +406,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
     } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         size_t nlist, code_size, n_levels;
         READ1(nlist);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
@@ -400,6 +436,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
     } else if (h == fourcc("ilar") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         auto ails = std::make_unique<ArrayInvertedLists>(0, 0);
         READ1(ails->nlist);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(ails->nlist, "ilar nlist");
         READ1(ails->code_size);
         ails->ids.resize(ails->nlist);
         ails->codes.resize(ails->nlist);
@@ -430,6 +467,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         int h2 = (io_flags & 0xffff0000) | (fourcc("il__") & 0x0000ffff);
         size_t nlist, code_size;
         READ1(nlist);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilar skip nlist");
         READ1(code_size);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
@@ -464,6 +502,15 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->nbits);
     FAISS_THROW_IF_NOT_FMT(
             pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
+    FAISS_THROW_IF_NOT_FMT(
+            pq->nbits <= 24, "invalid ProductQuantizer nbits=%zd", pq->nbits);
+    {
+        size_t ksub = size_t{1} << pq->nbits;
+        size_t n = mul_no_overflow(pq->d, ksub, "PQ centroids");
+        FAISS_THROW_IF_NOT_MSG(
+                n < get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ centroids allocation would exceed deserialization byte limit");
+    }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
 }
@@ -557,6 +604,7 @@ static void read_ProductAdditiveQuantizer(
             paq.nsplits > 0,
             "invalid ProductAdditiveQuantizer nsplits %zd (must be > 0)",
             paq.nsplits);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(paq.nsplits, "nsplits");
 }
 
 static void read_ProductResidualQuantizer(
@@ -735,6 +783,8 @@ static void read_HNSW(HNSW& hnsw, IOReader* f) {
 static void read_NSG(NSG& nsg, IOReader* f) {
     READ1(nsg.ntotal);
     READ1(nsg.R);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nsg.ntotal, "nsg.ntotal");
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nsg.R, "nsg.R");
     FAISS_THROW_IF_NOT_FMT(nsg.R > 0, "invalid NSG R %d (must be > 0)", nsg.R);
     READ1(nsg.L);
     READ1(nsg.C);
@@ -858,6 +908,7 @@ void read_ivf_header(
         std::vector<std::vector<idx_t>>* ids) {
     read_index_header(*ivf, f);
     READ1(ivf->nlist);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(ivf->nlist, "nlist");
     READ1(ivf->nprobe);
     ivf->quantizer = read_index(f);
     ivf->own_fields = true;
@@ -1368,6 +1419,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 nt >= 0,
                 "invalid VectorTransform chain length %d (must be >= 0)",
                 nt);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(
+                nt, "VectorTransform chain length");
         for (int i = 0; i < nt; i++) {
             ixpt->chain.push_back(read_VectorTransform(f));
         }
@@ -1898,6 +1951,7 @@ static void read_binary_ivf_header(
         std::vector<std::vector<idx_t>>* ids = nullptr) {
     read_index_binary_header(ivf, f);
     READ1(ivf.nlist);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(ivf.nlist, "nlist");
     READ1(ivf.nprobe);
     ivf.quantizer = read_index_binary(f);
     ivf.own_fields = true;
@@ -1915,6 +1969,7 @@ static void read_binary_hash_invlists(
         IOReader* f) {
     size_t sz;
     READ1(sz);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(sz, "binary hash invlists sz");
     int il_nbit = 0;
     READ1(il_nbit);
     FAISS_THROW_IF_NOT_FMT(
@@ -1965,6 +2020,7 @@ static void read_binary_multi_hash_map(
     size_t sz;
     READ1(id_bits);
     READ1(sz);
+    FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(sz, "multi hash map sz");
     std::vector<uint8_t> buf;
     READVECTOR(buf);
     size_t nbit = add_no_overflow(
@@ -1974,9 +2030,19 @@ static void read_binary_multi_hash_map(
     FAISS_THROW_IF_NOT(buf.size() == (nbit + 7) / 8);
     BitstringReader rd(buf.data(), buf.size());
     map.reserve(sz);
+    size_t total_ids = 0;
     for (size_t i = 0; i < sz; i++) {
         uint64_t hash = rd.read(b);
         uint64_t ilsz = rd.read(id_bits);
+        FAISS_THROW_IF_NOT_FMT(
+                ilsz <= ntotal - total_ids,
+                "multi hash map: ilsz=%zu at entry %zu would exceed "
+                "ntotal=%zu (already read %zu ids)",
+                (size_t)ilsz,
+                i,
+                ntotal,
+                total_ids);
+        total_ids += ilsz;
         auto& il = map[hash];
         for (size_t j = 0; j < ilsz; j++) {
             il.push_back(rd.read(id_bits));
@@ -2033,6 +2099,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
+        FAISS_THROW_IF_NOT(idxmap->id_map.size() == idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexBinaryIDMap2*>(idxmap.get())->construct_rev_map();
         }
@@ -2063,6 +2130,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 idxmh->nhash > 0,
                 "invalid IndexBinaryMultiHash nhash %d (must be > 0)",
                 idxmh->nhash);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(idxmh->nhash, "nhash");
         READ1(idxmh->nflip);
         idxmh->maps.resize(idxmh->nhash);
         for (int i = 0; i < idxmh->nhash; i++) {
