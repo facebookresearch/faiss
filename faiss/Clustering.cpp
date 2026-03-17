@@ -569,7 +569,12 @@ void Clustering::train_encoded(
             if (i > 0) {
                 float prev_obj =
                         iteration_stats[iteration_stats.size() - 2].obj;
-                if (obj == prev_obj) {
+
+                double change = (prev_obj == 0)
+                        ? std::numeric_limits<double>::max()
+                        : std::abs(prev_obj - obj) / std::abs(prev_obj);
+
+                if (change >= 0 && change <= early_stop_threshold) {
                     if (verbose) {
                         printf("\n  Converged at iteration %d: "
                                "objective did not change\n",
