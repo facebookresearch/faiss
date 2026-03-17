@@ -193,14 +193,14 @@ struct GpuIndexCagraConfig : public GpuIndexConfig {
 
 enum class search_algo {
     /// For large batch sizes.
-    SINGLE_CTA = 0,
+    SINGLE_CTA,
     /// For small batch sizes.
-    MULTI_CTA = 1,
-    MULTI_KERNEL = 2,
-    AUTO = 100
+    MULTI_CTA,
+    MULTI_KERNEL,
+    AUTO
 };
 
-enum class hash_mode { HASH = 0, SMALL = 1, AUTO = 100 };
+enum class hash_mode { HASH, SMALL, AUTO };
 
 struct SearchParametersCagra : SearchParameters {
     /// Maximum number of queries to search at the same time (batch size). Auto

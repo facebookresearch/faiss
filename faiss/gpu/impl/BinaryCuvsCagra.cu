@@ -49,9 +49,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         IndicesOptions indicesOptions)
         : resources_(resources),
           dim_(dim),
-          store_dataset_(store_dataset),
           graph_build_algo_(graph_build_algo),
-          nn_descent_niter_(nn_descent_niter) {
+          nn_descent_niter_(nn_descent_niter),
+          store_dataset_(store_dataset) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
@@ -161,11 +161,6 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
         cuvs::neighbors::cagra::graph_build_params::iterative_search_params
                 graph_build_params;
         index_params_.graph_build_params = graph_build_params;
-        if (index_params_.graph_degree ==
-            index_params_.intermediate_graph_degree) {
-            index_params_.intermediate_graph_degree =
-                    1.5 * index_params_.graph_degree;
-        }
     }
 
     if (getDeviceForAddress(x) >= 0) {

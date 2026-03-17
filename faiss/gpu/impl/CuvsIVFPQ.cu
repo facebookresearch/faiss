@@ -129,14 +129,8 @@ void CuvsIVFPQ::updateQuantizer(Index* quantizer) {
 
     cuvs::neighbors::ivf_pq::helpers::reset_index(
             raft_handle, cuvs_index.get());
-    auto mutable_rotation_matrix_view =
-            raft::make_device_matrix_view<float, uint32_t>(
-                    const_cast<float*>(
-                            cuvs_index->rotation_matrix().data_handle()),
-                    cuvs_index->rotation_matrix().extent(0),
-                    cuvs_index->rotation_matrix().extent(1));
     cuvs::neighbors::ivf_pq::helpers::make_rotation_matrix(
-            raft_handle, mutable_rotation_matrix_view, false);
+            raft_handle, cuvs_index.get(), false);
 
     // If the index instance is a GpuIndexFlat, then we can use direct access to
     // the centroids within.
@@ -155,60 +149,22 @@ void CuvsIVFPQ::updateQuantizer(Index* quantizer) {
             // as float32 and store locally
             gpuData->reconstruct(0, gpuData->getSize(), centroids);
 
-            auto mutable_centers_view =
-                    raft::make_device_matrix_view<float, uint32_t>(
-                            const_cast<float*>(
-                                    cuvs_index->centers().data_handle()),
-                            numLists_,
-                            cuvs_index->centers().extent(1));
-            auto mutable_centers_rot_view =
-                    raft::make_device_matrix_view<float, uint32_t>(
-                            const_cast<float*>(
-                                    cuvs_index->centers_rot().data_handle()),
-                            cuvs_index->centers_rot().extent(0),
-                            cuvs_index->centers_rot().extent(1));
-
-            cuvs::neighbors::ivf_pq::helpers::pad_centers_with_norms(
+            cuvs::neighbors::ivf_pq::helpers::set_centers(
                     raft_handle,
-                    raft::make_const_mdspan(
-                            raft::make_device_matrix_view<float, uint32_t>(
-                                    centroids.data(), numLists_, dim_)),
-                    mutable_centers_view);
-            cuvs::neighbors::ivf_pq::helpers::rotate_padded_centers(
-                    raft_handle,
-                    cuvs_index->centers(),
-                    cuvs_index->rotation_matrix(),
-                    mutable_centers_rot_view);
+                    cuvs_index.get(),
+                    raft::make_device_matrix_view<float, uint32_t>(
+                            centroids.data(), numLists_, dim_));
         } else {
             /// No reconstruct needed since the centers are already in float32
             // The FlatIndex keeps its data in float32, so we can merely
             // reference it
             auto centroids = gpuData->getVectorsFloat32Ref();
 
-            auto mutable_centers_view =
-                    raft::make_device_matrix_view<float, uint32_t>(
-                            const_cast<float*>(
-                                    cuvs_index->centers().data_handle()),
-                            numLists_,
-                            cuvs_index->centers().extent(1));
-            auto mutable_centers_rot_view =
-                    raft::make_device_matrix_view<float, uint32_t>(
-                            const_cast<float*>(
-                                    cuvs_index->centers_rot().data_handle()),
-                            cuvs_index->centers_rot().extent(0),
-                            cuvs_index->centers_rot().extent(1));
-
-            cuvs::neighbors::ivf_pq::helpers::pad_centers_with_norms(
+            cuvs::neighbors::ivf_pq::helpers::set_centers(
                     raft_handle,
-                    raft::make_const_mdspan(
-                            raft::make_device_matrix_view<float, uint32_t>(
-                                    centroids.data(), numLists_, dim_)),
-                    mutable_centers_view);
-            cuvs::neighbors::ivf_pq::helpers::rotate_padded_centers(
-                    raft_handle,
-                    cuvs_index->centers(),
-                    cuvs_index->rotation_matrix(),
-                    mutable_centers_rot_view);
+                    cuvs_index.get(),
+                    raft::make_device_matrix_view<float, uint32_t>(
+                            centroids.data(), numLists_, dim_));
         }
     } else {
         DeviceTensor<float, 2, true> centroids(
@@ -224,30 +180,11 @@ void CuvsIVFPQ::updateQuantizer(Index* quantizer) {
 
         centroids.copyFrom(vecs, stream);
 
-        // Create mutable views for output parameters
-        auto mutable_centers_view =
-                raft::make_device_matrix_view<float, uint32_t>(
-                        const_cast<float*>(cuvs_index->centers().data_handle()),
-                        numLists_,
-                        cuvs_index->centers().extent(1));
-        auto mutable_centers_rot_view =
-                raft::make_device_matrix_view<float, uint32_t>(
-                        const_cast<float*>(
-                                cuvs_index->centers_rot().data_handle()),
-                        cuvs_index->centers_rot().extent(0),
-                        cuvs_index->centers_rot().extent(1));
-
-        cuvs::neighbors::ivf_pq::helpers::pad_centers_with_norms(
+        cuvs::neighbors::ivf_pq::helpers::set_centers(
                 raft_handle,
-                raft::make_const_mdspan(
-                        raft::make_device_matrix_view<float, uint32_t>(
-                                centroids.data(), numLists_, dim_)),
-                mutable_centers_view);
-        cuvs::neighbors::ivf_pq::helpers::rotate_padded_centers(
-                raft_handle,
-                cuvs_index->centers(),
-                cuvs_index->rotation_matrix(),
-                mutable_centers_rot_view);
+                cuvs_index.get(),
+                raft::make_device_matrix_view<float, uint32_t>(
+                        centroids.data(), numLists_, dim_));
     }
 
     setPQCentroids_();
@@ -467,11 +404,10 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
     auto& cuvs_index_lists = cuvs_index->lists();
 
     // conservative memory alloc for cloning cpu inverted lists
-    cuvs::neighbors::ivf_pq::list_spec_interleaved<uint32_t, idx_t>
-            ivf_list_spec{
-                    static_cast<uint32_t>(bitsPerSubQuantizer_),
-                    static_cast<uint32_t>(numSubQuantizers_),
-                    true};
+    cuvs::neighbors::ivf_pq::list_spec<uint32_t, idx_t> ivf_list_spec{
+            static_cast<uint32_t>(bitsPerSubQuantizer_),
+            static_cast<uint32_t>(numSubQuantizers_),
+            true};
 
     for (size_t i = 0; i < nlist; ++i) {
         size_t listSize = ivf->list_size(i);
@@ -490,7 +426,7 @@ void CuvsIVFPQ::copyInvertedListsFrom(const InvertedLists* ivf) {
         // This cuVS list must currently be empty
         FAISS_ASSERT(getListLength(i) == 0);
 
-        cuvs::neighbors::ivf_pq::helpers::resize_list(
+        cuvs::neighbors::ivf::resize_list(
                 raft_handle,
                 cuvs_index_lists[i],
                 ivf_list_spec,
@@ -584,7 +520,7 @@ void CuvsIVFPQ::setPQCentroids_() {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     raft::copy(
-            const_cast<float*>(cuvs_index->pq_centers().data_handle()),
+            cuvs_index->pq_centers().data_handle(),
             pqCentroidsInnermostCode_.data(),
             pqCentroidsInnermostCode_.numElements(),
             stream);
