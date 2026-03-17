@@ -17,8 +17,8 @@
 
 namespace faiss {
 
-IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, MetricType metric)
-        : Index(d, metric), code_size(code_size) {}
+IndexFlatCodes::IndexFlatCodes(size_t code_size_, idx_t d_, MetricType metric)
+        : Index(d_, metric), code_size(code_size_) {}
 
 IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
@@ -131,12 +131,16 @@ struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
     std::vector<float> vec_buffer;
     const float* query = nullptr;
 
-    GenericFlatCodesDistanceComputer(const IndexFlatCodes* codec, const VD& vd)
-            : FlatCodesDistanceComputer(codec->codes.data(), codec->code_size),
-              codec(*codec),
-              vd(vd),
-              code_buffer(codec->code_size * 4),
-              vec_buffer(codec->d * 4) {}
+    GenericFlatCodesDistanceComputer(
+            const IndexFlatCodes* codec_,
+            const VD& vd_)
+            : FlatCodesDistanceComputer(
+                      codec_->codes.data(),
+                      codec_->code_size),
+              codec(*codec_),
+              vd(vd_),
+              code_buffer(codec_->code_size * 4),
+              vec_buffer(codec_->d * 4) {}
 
     void set_query(const float* x) override {
         query = x;
@@ -204,7 +208,7 @@ struct Run_search_with_decompress {
             std::unique_ptr<DC> dc(new DC(&index, vd));
             SingleResultHandler resi(res);
 #pragma omp for
-            for (int64_t q = 0; q < res.nq; q++) {
+            for (int64_t q = 0; q < static_cast<int64_t>(res.nq); q++) {
                 resi.begin(q);
                 dc->set_query(xq + vd.d * q);
                 for (size_t i = 0; i < ntotal; i++) {
@@ -262,7 +266,7 @@ void IndexFlatCodes::search(
 }
 
 void IndexFlatCodes::range_search(
-        idx_t n,
+        idx_t /* n */,
         const float* x,
         float radius,
         RangeSearchResult* result,
