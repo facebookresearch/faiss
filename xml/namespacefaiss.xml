@@ -1058,7 +1058,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="272" column="28" declfile="faiss/impl/HNSW.h" declline="272" declcolumn="28"/>
+        <location file="faiss/impl/HNSW.h" line="273" column="28" declfile="faiss/impl/HNSW.h" declline="273" declcolumn="28"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4fc6a57cef02014744082168e2f62738" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1PanoramaStats" kindref="compound">PanoramaStats</ref></type>
@@ -4367,7 +4367,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="274" column="5" declfile="faiss/impl/HNSW.h" declline="274" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="275" column="5" declfile="faiss/impl/HNSW.h" declline="275" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5a6ff3b3d4b0a632c286a9967c420718" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -4424,7 +4424,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="289" column="5" declfile="faiss/impl/HNSW.h" declline="289" declcolumn="5"/>
+        <location file="faiss/impl/HNSW.h" line="290" column="5" declfile="faiss/impl/HNSW.h" declline="290" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -4458,7 +4458,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="301" column="11" declfile="faiss/impl/HNSW.h" declline="301" declcolumn="11"/>
+        <location file="faiss/impl/HNSW.h" line="302" column="11" declfile="faiss/impl/HNSW.h" declline="302" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::priority_queue&lt; HNSW::Node &gt;</type>
@@ -4496,7 +4496,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="308" column="21" declfile="faiss/impl/HNSW.h" declline="308" declcolumn="21"/>
+        <location file="faiss/impl/HNSW.h" line="309" column="21" declfile="faiss/impl/HNSW.h" declline="309" declcolumn="21"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -4543,7 +4543,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="316" column="6" declfile="faiss/impl/HNSW.h" declline="316" declcolumn="6"/>
+        <location file="faiss/impl/HNSW.h" line="317" column="6" declfile="faiss/impl/HNSW.h" declline="317" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a97af3c36835c195254ba0312b0f78140" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

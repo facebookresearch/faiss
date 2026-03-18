@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="104" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="104" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="105" column="15" bodyfile="faiss/impl/HNSW.h" bodystart="105" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1ae3dd53c1bafddffadba74013719467f1" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -29,23 +29,23 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="105" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="106" column="13" bodyfile="faiss/impl/HNSW.h" bodystart="106" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6eef6d01c2cbef7a3acce12ec3d021be" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6bf4ca8df81f43a28378224c43da14f5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::HNSW::NodeDistFarther::NodeDistFarther</definition>
-        <argsstring>(float d, int id)</argsstring>
+        <argsstring>(float d_in, int id_in)</argsstring>
         <name>NodeDistFarther</name>
         <qualifiedname>faiss::HNSW::NodeDistFarther::NodeDistFarther</qualifiedname>
         <param>
           <type>float</type>
-          <declname>d</declname>
+          <declname>d_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>id</declname>
+          <declname>id_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -53,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="106" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="106" bodyend="106"/>
+        <location file="faiss/impl/HNSW.h" line="107" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="107" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1_1NodeDistFarther_1a1958eba677d7dc865a269c64b8fb21b4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -71,18 +71,18 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="107" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="107" bodyend="109"/>
+        <location file="faiss/impl/HNSW.h" line="108" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="108" bodyend="110"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/HNSW.h" line="103" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="103" bodyend="110"/>
+    <location file="faiss/impl/HNSW.h" line="104" column="5" bodyfile="faiss/impl/HNSW.h" bodystart="104" bodyend="111"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ab495bcf43675a11fa049560294b8ef94" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFarther</scope><name>d</name></member>
       <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ae3dd53c1bafddffadba74013719467f1" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFarther</scope><name>id</name></member>
-      <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6eef6d01c2cbef7a3acce12ec3d021be" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFarther</scope><name>NodeDistFarther</name></member>
+      <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6bf4ca8df81f43a28378224c43da14f5" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFarther</scope><name>NodeDistFarther</name></member>
       <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a1958eba677d7dc865a269c64b8fb21b4" prot="public" virt="non-virtual"><scope>faiss::HNSW::NodeDistFarther</scope><name>operator&lt;</name></member>
     </listofallmembers>
   </compounddef>

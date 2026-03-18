@@ -70,23 +70,23 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1adce99316683878d3bccc0055026e542e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1aa5c97d639bef3ed49f18b40187f16ae5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::nsg::Graph&lt; node_t &gt;::Graph</definition>
-        <argsstring>(node_t *data, int N, int K)</argsstring>
+        <argsstring>(node_t *data_in, int N_in, int K_in)</argsstring>
         <name>Graph</name>
         <qualifiedname>faiss::nsg::Graph::Graph</qualifiedname>
         <param>
           <type>node_t *</type>
-          <declname>data</declname>
+          <declname>data_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>N</declname>
+          <declname>N_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>K</declname>
+          <declname>K_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -96,19 +96,19 @@
         </inbodydescription>
         <location file="faiss/impl/NSG.h" line="63" column="5" bodyfile="faiss/impl/NSG.h" bodystart="63" bodyend="64"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1a93fa05e785fbd0c82c762d4ea34f6e8c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1nsg_1_1Graph_1aebb3adcf9863637b909894dcf0b85b56" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::nsg::Graph&lt; node_t &gt;::Graph</definition>
-        <argsstring>(int N, int K)</argsstring>
+        <argsstring>(int N_in, int K_in)</argsstring>
         <name>Graph</name>
         <qualifiedname>faiss::nsg::Graph::Graph</qualifiedname>
         <param>
           <type>int</type>
-          <declname>N</declname>
+          <declname>N_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>K</declname>
+          <declname>K_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -227,8 +227,8 @@
       <member refid="structfaiss_1_1nsg_1_1Graph_1ab94df92238ec1a9bb7877382c0e68e53" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>at</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1abfbc843aa65ecd60bcf11b4bf525420c" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>data</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1a7b857463a2dd15fcf6ae5c474d1986da" prot="public" virt="virtual"><scope>faiss::nsg::Graph</scope><name>get_neighbors</name></member>
-      <member refid="structfaiss_1_1nsg_1_1Graph_1adce99316683878d3bccc0055026e542e" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>Graph</name></member>
-      <member refid="structfaiss_1_1nsg_1_1Graph_1a93fa05e785fbd0c82c762d4ea34f6e8c" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>Graph</name></member>
+      <member refid="structfaiss_1_1nsg_1_1Graph_1aa5c97d639bef3ed49f18b40187f16ae5" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>Graph</name></member>
+      <member refid="structfaiss_1_1nsg_1_1Graph_1aebb3adcf9863637b909894dcf0b85b56" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>Graph</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1af9db6b52a82a8c633dfd8bb487106948" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>Graph</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1abf3cc6fa5ff06bd1813ac47511ff0096" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>K</name></member>
       <member refid="structfaiss_1_1nsg_1_1Graph_1a79631a07e12278115cc43a5be78d49cd" prot="public" virt="non-virtual"><scope>faiss::nsg::Graph</scope><name>N</name></member>

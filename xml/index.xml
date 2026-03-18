@@ -1988,8 +1988,8 @@
     <member refid="structfaiss_1_1nsg_1_1Graph_1abf3cc6fa5ff06bd1813ac47511ff0096" kind="variable"><name>K</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a79631a07e12278115cc43a5be78d49cd" kind="variable"><name>N</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1ad4bb864fec6c287da45f18a82f9cf90e" kind="variable"><name>own_fields</name></member>
-    <member refid="structfaiss_1_1nsg_1_1Graph_1adce99316683878d3bccc0055026e542e" kind="function"><name>Graph</name></member>
-    <member refid="structfaiss_1_1nsg_1_1Graph_1a93fa05e785fbd0c82c762d4ea34f6e8c" kind="function"><name>Graph</name></member>
+    <member refid="structfaiss_1_1nsg_1_1Graph_1aa5c97d639bef3ed49f18b40187f16ae5" kind="function"><name>Graph</name></member>
+    <member refid="structfaiss_1_1nsg_1_1Graph_1aebb3adcf9863637b909894dcf0b85b56" kind="function"><name>Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1af9db6b52a82a8c633dfd8bb487106948" kind="function"><name>Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a945f614dcd4f5ccb28c8e7af6165e6d1" kind="function"><name>~Graph</name></member>
     <member refid="structfaiss_1_1nsg_1_1Graph_1a678cdec9f72b63eca1012d657cf74770" kind="function"><name>at</name></member>
@@ -8743,7 +8743,7 @@
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a28f52e6beb031179d2fd3f7c7176db76" kind="variable"><name>nvalid</name></member>
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a872c880f3f90af4e666dce2be4dab87c" kind="variable"><name>ids</name></member>
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a38fa78ac21419dade4efdf69e4852450" kind="variable"><name>dis</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a139d799f393c94dd160922791f6d926c" kind="function"><name>MinimaxHeap</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae864b3964c3e14925698a67258d66194" kind="function"><name>MinimaxHeap</name></member>
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a5bb98fe6de052c6f966d25b4c7fff738" kind="function"><name>push</name></member>
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a87b25c78cf810c5a7249d171e4d2d7fa" kind="function"><name>max</name></member>
     <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adc87106d3cf52c898c5b1d6af78d0918" kind="function"><name>size</name></member>
@@ -8857,7 +8857,7 @@
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1af0ff46e796209339051874343b117ed4" kind="variable"><name>distance</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1aa55f5f7a0e06cd7f24622be770c68a0c" kind="variable"><name>flag</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1aa1069f2718f4448195722a75229ffe2d" kind="function"><name>Neighbor</name></member>
-    <member refid="structfaiss_1_1nndescent_1_1Neighbor_1ae8eebc31a0e887c4c1602d47b030e13d" kind="function"><name>Neighbor</name></member>
+    <member refid="structfaiss_1_1nndescent_1_1Neighbor_1a0958ab5992a24f013d519094bdc6cbca" kind="function"><name>Neighbor</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Neighbor_1ab301a8fcf14ebf8ef5d1597bc17c0595" kind="function"><name>operator&lt;</name></member>
   </compound>
   <compound refid="structfaiss_1_1NeuralNetCodec" kind="struct"><name>faiss::NeuralNetCodec</name>
@@ -8913,13 +8913,13 @@
   <compound refid="structfaiss_1_1HNSW_1_1NodeDistCloser" kind="struct"><name>faiss::HNSW::NodeDistCloser</name>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1aab7d9f3f9986d9a7cad80f9662ce35d8" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a020d36b86bf6ba24b5defe228e4d1431" kind="variable"><name>id</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1af4d7f59dc5da71bdc9623ec3569b0a8a" kind="function"><name>NodeDistCloser</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a650ace895e47e5b8c33447c1761c93e1" kind="function"><name>NodeDistCloser</name></member>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistCloser_1a138d38cec71e97c3d8cc2a6c0d842a3d" kind="function"><name>operator&lt;</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSW_1_1NodeDistFarther" kind="struct"><name>faiss::HNSW::NodeDistFarther</name>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ab495bcf43675a11fa049560294b8ef94" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1ae3dd53c1bafddffadba74013719467f1" kind="variable"><name>id</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6eef6d01c2cbef7a3acce12ec3d021be" kind="function"><name>NodeDistFarther</name></member>
+    <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a6bf4ca8df81f43a28378224c43da14f5" kind="function"><name>NodeDistFarther</name></member>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistFarther_1a1958eba677d7dc865a269c64b8fb21b4" kind="function"><name>operator&lt;</name></member>
   </compound>
   <compound refid="structfaiss_1_1NormalizationTransform" kind="struct"><name>faiss::NormalizationTransform</name>
