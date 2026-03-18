@@ -244,6 +244,48 @@ TEST(ReadIndexDeserialize, READVECTORByteLimit) {
 }
 
 // -----------------------------------------------------------------------
+// Test: ProductQuantizer centroids allocation is rejected when it would
+// exceed the configurable deserialization byte limit.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, PQCentroidsByteLimit) {
+    // d=8, M=1, nbits=8 → ksub=256, centroids = 8*256 = 2048 floats.
+    // PQ check: n < limit / sizeof(float), where n = d * ksub = 2048.
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const size_t d = 8;
+    const size_t M = 1;
+    const size_t nbits = 8;
+    const size_t ksub = size_t{1} << nbits;
+    const size_t n_elements = d * ksub; // 2048
+    std::vector<float> centroids(n_elements, 0.0f);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Imiq");
+    push_index_header(buf, /*d=*/d, /*ntotal=*/0);
+    push_pq(buf, d, M, nbits, centroids);
+
+    // Exactly at the boundary: limit = n_elements * sizeof(float).
+    // Check is strict less-than, so this should be rejected.
+    set_deserialization_vector_byte_limit(n_elements * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_THROW(read_index_up(&reader), FaissException);
+    }
+
+    // One element above the boundary: limit = (n_elements + 1) * sizeof(float).
+    // Now n_elements < limit / sizeof(float) = n_elements + 1, so it passes.
+    set_deserialization_vector_byte_limit((n_elements + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
 // Test: IndexLattice with nsq=0 causes divide-by-zero in the
 // constructor's member initializer list (dsq = d / nsq).  The fix
 // validates nsq > 0 in the deserialization path.
