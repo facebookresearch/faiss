@@ -69,7 +69,7 @@ void IndexSVSVamanaLeanVec::train(idx_t n, const float* x) {
     train(n, x, 0, nullptr);
 }
 
-void IndexSVSVamanaLeanVec::train(
+void IndexSVSVamanaLeanVec::train_with_queries(
         idx_t n,
         const float* x,
         idx_t n_train_q,

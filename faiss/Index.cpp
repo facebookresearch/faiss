@@ -24,7 +24,7 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::train(
+void Index::train_with_queries(
         idx_t /*n*/,
         const float* /*x*/,
         idx_t /*n_train_q*/,
