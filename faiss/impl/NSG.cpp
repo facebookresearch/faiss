@@ -42,8 +42,8 @@ struct Neighbor {
     bool flag;
 
     Neighbor() = default;
-    Neighbor(int id, float distance, bool f)
-            : id(id), distance(distance), flag(f) {}
+    Neighbor(int id_in, float distance_in, bool f)
+            : id(id_in), distance(distance_in), flag(f) {}
 
     inline bool operator<(const Neighbor& other) const {
         return distance < other.distance;
@@ -55,7 +55,7 @@ struct Node {
     float distance;
 
     Node() = default;
-    Node(int id, float distance) : id(id), distance(distance) {}
+    Node(int id_in, float distance_in) : id(id_in), distance(distance_in) {}
 
     inline bool operator<(const Node& other) const {
         return distance < other.distance;
@@ -110,7 +110,7 @@ inline int insert_into_pool(Neighbor* addr, int K, Neighbor nn) {
 
 using namespace nsg;
 
-NSG::NSG(int R) : R(R), rng(0x0903) {
+NSG::NSG(int R_in) : R(R_in), rng(0x0903) {
     L = R + 32;
     C = R + 100;
     srand(0x1998);
@@ -131,7 +131,7 @@ void NSG::search(
     search_on_graph<false>(
             *final_graph, dis, vt, enterpoint, pool_size, retset, tmp);
 
-    for (size_t i = 0; i < k; i++) {
+    for (int i = 0; i < k; i++) {
         I[i] = retset[i].id;
         D[i] = retset[i].distance;
     }
@@ -259,7 +259,7 @@ void NSG::search_on_graph(
     int num_ids = 0;
     std::vector<index_t> neighbors(graph.K);
     size_t nneigh = graph.get_neighbors(ep, neighbors.data());
-    for (int i = 0; i < init_ids.size() && i < nneigh; i++) {
+    for (size_t i = 0; i < init_ids.size() && i < nneigh; i++) {
         int id = (int)neighbors[i];
         if (id >= ntotal) {
             continue;
@@ -281,7 +281,7 @@ void NSG::search_on_graph(
         vt.set(id);
     }
 
-    for (int i = 0; i < init_ids.size(); i++) {
+    for (size_t i = 0; i < init_ids.size(); i++) {
         int id = init_ids[i];
 
         float dist = dis(id);
@@ -303,7 +303,7 @@ void NSG::search_on_graph(
             int n = retset[k].id;
 
             size_t nneigh_for_n = graph.get_neighbors(n, neighbors.data());
-            for (int m = 0; m < nneigh_for_n; m++) {
+            for (size_t m = 0; m < nneigh_for_n; m++) {
                 int id = neighbors[m];
                 if (id >= ntotal || vt.get(id)) {
                     continue;
@@ -403,10 +403,11 @@ void NSG::sync_prune(
     }
     result.push_back(pool[start]);
 
-    while (result.size() < R && (++start) < pool.size() && start < C) {
+    while (result.size() < static_cast<size_t>(R) &&
+           (++start) < static_cast<int>(pool.size()) && start < C) {
         auto& p = pool[start];
         bool occlude = false;
-        for (int t = 0; t < result.size(); t++) {
+        for (size_t t = 0; t < result.size(); t++) {
             if (p.id == result[t].id) {
                 occlude = true;
                 break;
@@ -422,8 +423,8 @@ void NSG::sync_prune(
         }
     }
 
-    for (size_t i = 0; i < R; i++) {
-        if (i < result.size()) {
+    for (int i = 0; i < R; i++) {
+        if (static_cast<size_t>(i) < result.size()) {
             graph.at(q, i).id = result[i].id;
             graph.at(q, i).distance = result[i].distance;
         } else {
@@ -437,7 +438,7 @@ void NSG::add_reverse_links(
         std::vector<std::mutex>& locks,
         DistanceComputer& dis,
         nsg::Graph<Node>& graph) {
-    for (size_t i = 0; i < R; i++) {
+    for (int i = 0; i < R; i++) {
         if (graph.at(q, i).id == EMPTY_ID) {
             break;
         }
@@ -466,17 +467,18 @@ void NSG::add_reverse_links(
         }
 
         tmp_pool.push_back(sn);
-        if (tmp_pool.size() > R) {
+        if (tmp_pool.size() > static_cast<size_t>(R)) {
             std::vector<Node> result;
             int start = 0;
             std::sort(tmp_pool.begin(), tmp_pool.end());
             result.push_back(tmp_pool[start]);
 
-            while (result.size() < R && (++start) < tmp_pool.size()) {
+            while (result.size() < static_cast<size_t>(R) &&
+                   (++start) < static_cast<int>(tmp_pool.size())) {
                 auto& p = tmp_pool[start];
                 bool occlude = false;
 
-                for (int t = 0; t < result.size(); t++) {
+                for (size_t t = 0; t < result.size(); t++) {
                     if (p.id == result[t].id) {
                         occlude = true;
                         break;
@@ -495,7 +497,7 @@ void NSG::add_reverse_links(
 
             {
                 LockGuard guard(locks[des]);
-                for (int t = 0; t < result.size(); t++) {
+                for (size_t t = 0; t < result.size(); t++) {
                     graph.at(des, t) = result[t];
                 }
             }
@@ -614,7 +616,7 @@ int NSG::attach_unlinked(
 
     int node;
     bool found = false;
-    for (int i = 0; i < pool.size(); i++) {
+    for (size_t i = 0; i < pool.size(); i++) {
         node = pool[i].id;
         if (degrees[node] < R && node != id) {
             found = true;
