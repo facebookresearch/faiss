@@ -54,8 +54,13 @@ inline void compute_cum_sums_impl(
  * Panorama structure implementation
  **************************************************************/
 
-Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
-        : code_size(code_size), n_levels(n_levels), batch_size(batch_size) {
+Panorama::Panorama(
+        size_t code_size_in,
+        size_t n_levels_in,
+        size_t batch_size_in)
+        : code_size(code_size_in),
+          n_levels(n_levels_in),
+          batch_size(batch_size_in) {
     set_derived_values();
 }
 
