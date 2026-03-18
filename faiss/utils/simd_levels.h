@@ -139,7 +139,7 @@ struct FAISS_API SIMDConfig {
     static bool is_simd_level_available(SIMDLevel level);
 
     /// Returns the SIMD level via the dispatch mechanism.
-    /// In DD mode, uses DISPATCH_SIMDLevel internally.
+    /// In DD mode, uses with_simd_level internally.
     /// In static mode, returns the compiled-in level.
     /// Useful for verification: get_level() == get_dispatched_level()
     static SIMDLevel get_dispatched_level();

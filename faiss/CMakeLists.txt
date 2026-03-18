@@ -333,6 +333,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
   utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
