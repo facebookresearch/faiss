@@ -61,7 +61,6 @@ size_t process_filtering(
         size_t batch_offset,
         float dis0,
         float query_cum_norm,
-        float epsilon,
         float heap_max);
 
 /// Byte-level stream compaction of PQ codes using the active bitset.

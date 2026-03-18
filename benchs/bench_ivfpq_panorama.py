@@ -43,7 +43,6 @@ M = 960
 nbits = 8
 nlist = 64
 n_levels = 8
-epsilon = 1.0
 batch_size = 128
 
 GT_PATH = os.path.join(CACHE_DIR, "gt_10pct.npy")
@@ -75,37 +74,37 @@ def eval_recall(index, nprobe_val):
     return recall, qps
 
 
-faiss.omp_set_num_threads(mp.cpu_count())
+# faiss.omp_set_num_threads(mp.cpu_count())
 
-# --- IVFPQ baseline (cached) ---
-if os.path.exists(IVFPQ_CACHE):
-    print(f"\nLoading cached IVFPQ from {IVFPQ_CACHE}...", flush=True)
-    t0 = time.time()
-    ivfpq = faiss.read_index(IVFPQ_CACHE)
-    print(f"  Loaded in {time.time() - t0:.1f}s", flush=True)
-else:
-    print(f"\nBuilding IVFPQ: nlist={nlist}, M={M}, nbits={nbits}", flush=True)
-    quantizer = faiss.IndexFlatL2(d)
-    ivfpq = faiss.IndexIVFPQ(quantizer, d, nlist, M, nbits)
-    t0 = time.time()
-    ivfpq.train(xt)
-    print(f"  Training took {time.time() - t0:.1f}s", flush=True)
+# # --- IVFPQ baseline (cached) ---
+# if os.path.exists(IVFPQ_CACHE):
+#     print(f"\nLoading cached IVFPQ from {IVFPQ_CACHE}...", flush=True)
+#     t0 = time.time()
+#     ivfpq = faiss.read_index(IVFPQ_CACHE)
+#     print(f"  Loaded in {time.time() - t0:.1f}s", flush=True)
+# else:
+#     print(f"\nBuilding IVFPQ: nlist={nlist}, M={M}, nbits={nbits}", flush=True)
+#     quantizer = faiss.IndexFlatL2(d)
+#     ivfpq = faiss.IndexIVFPQ(quantizer, d, nlist, M, nbits)
+#     t0 = time.time()
+#     ivfpq.train(xt)
+#     print(f"  Training took {time.time() - t0:.1f}s", flush=True)
 
-    print(f"  Saving trained state to {IVFPQ_TRAINED_CACHE}...", flush=True)
-    faiss.write_index(ivfpq, IVFPQ_TRAINED_CACHE)
+#     print(f"  Saving trained state to {IVFPQ_TRAINED_CACHE}...", flush=True)
+#     faiss.write_index(ivfpq, IVFPQ_TRAINED_CACHE)
 
-    t0 = time.time()
-    ivfpq.add(xb)
-    print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
+#     t0 = time.time()
+#     ivfpq.add(xb)
+#     print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
 
-    print(f"  Saving full index to {IVFPQ_CACHE}...", flush=True)
-    faiss.write_index(ivfpq, IVFPQ_CACHE)
+#     print(f"  Saving full index to {IVFPQ_CACHE}...", flush=True)
+#     faiss.write_index(ivfpq, IVFPQ_CACHE)
 
-faiss.omp_set_num_threads(1)
-print("\n====== IVFPQ baseline", flush=True)
-for nprobe in [1, 2, 4, 8, 16]:
-    ivfpq.nprobe = nprobe
-    eval_recall(ivfpq, nprobe)
+# faiss.omp_set_num_threads(1)
+# print("\n====== IVFPQ baseline", flush=True)
+# for nprobe in [1, 2, 4, 8, 16]:
+#     ivfpq.nprobe = nprobe
+#     eval_recall(ivfpq, nprobe)
 
 # --- IVFPQPanorama (cached separately) ---
 faiss.omp_set_num_threads(mp.cpu_count())
@@ -121,7 +120,7 @@ else:
         trained_index.own_fields = False
 
         pano = faiss.IndexIVFPQPanorama(
-            quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
+            quantizer2, d, nlist, M, nbits, n_levels, batch_size
         )
         centroids = faiss.vector_to_array(trained_index.pq.centroids)
         faiss.copy_array_to_vector(centroids, pano.pq.centroids)

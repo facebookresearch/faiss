@@ -30,7 +30,6 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
         size_t M,
         size_t nbits_per_idx,
         int n_levels,
-        float epsilon,
         size_t batch_size,
         MetricType metric,
         bool own_invlists)
@@ -43,7 +42,6 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
                   metric,
                   own_invlists),
           n_levels(n_levels),
-          epsilon(epsilon),
           batch_size(batch_size),
           chunk_size(code_size / n_levels),
           levels_size(d / n_levels),
@@ -242,7 +240,6 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         const size_t bs = index.batch_size;
         const size_t cs = index.chunk_size;
         const int n_levels = index.n_levels;
-        const float epsilon = index.epsilon;
 
         const size_t n_batches = (list_size + bs - 1) / bs;
         const size_t sim_table_size = pq.ksub * pq.M;
@@ -360,7 +357,6 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                         batch_offset,
                         dis0,
                         query_cum_norm,
-                        epsilon,
                         heap_max);
             }
 

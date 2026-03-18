@@ -119,14 +119,13 @@ size_t process_filtering(
         size_t batch_offset,
         float dis0,
         float query_cum_norm,
-        float epsilon,
         float heap_max) {
     size_t next_num_active = 0;
     for (size_t i = 0; i < num_active; i++) {
         float exact_distance = exact_distances[i];
         float cum_sum = cum_sums[active_indices[i] - batch_offset];
         float lower_bound =
-                exact_distance + dis0 - cum_sum * query_cum_norm * epsilon;
+                exact_distance + dis0 - cum_sum * query_cum_norm;
 
         bool keep = heap_max > lower_bound;
         active_indices[next_num_active] = active_indices[i];

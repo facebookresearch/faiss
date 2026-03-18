@@ -52,7 +52,6 @@ namespace faiss {
 /// orchestration — no search code is duplicated.
 struct IndexIVFPQPanorama : public IndexIVFPQ {
     int n_levels;
-    float epsilon;
     size_t batch_size;
 
     size_t chunk_size;
@@ -78,7 +77,6 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
             size_t M,
             size_t nbits_per_idx,
             int n_levels,
-            float epsilon,
             size_t batch_size = 128,
             MetricType metric = METRIC_L2,
             bool own_invlists = true);
