@@ -303,8 +303,9 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         READ1(lt->have_bias);
         READVECTOR(lt->A);
         READVECTOR(lt->b);
-        FAISS_THROW_IF_NOT(lt->A.size() >= lt->d_in * lt->d_out);
-        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= lt->d_out);
+        FAISS_THROW_IF_NOT(
+                lt->A.size() >= size_t(lt->d_in) * size_t(lt->d_out));
+        FAISS_THROW_IF_NOT(!lt->have_bias || lt->b.size() >= size_t(lt->d_out));
         lt->set_is_orthonormal();
         vt = std::move(lt);
     } else if (h == fourcc("RmDT")) {
@@ -1262,7 +1263,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     "invalid IVFFlatDedup instances table size: %zd "
                     "(must be even)",
                     tab.size());
-            for (long i = 0; i < tab.size(); i += 2) {
+            for (size_t i = 0; i < tab.size(); i += 2) {
                 std::pair<idx_t, idx_t> pair(tab[i], tab[i + 1]);
                 ivfl->instances.insert(pair);
             }
@@ -1322,7 +1323,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ScalarQuantizer(&ivsc->sq, f);
         READ1(ivsc->code_size);
         ArrayInvertedLists* ail = set_array_invlist(ivsc.get(), ids);
-        for (int i = 0; i < ivsc->nlist; i++)
+        for (size_t i = 0; i < ivsc->nlist; i++)
             READVECTOR(ail->codes[i]);
         idx = std::move(ivsc);
     } else if (h == fourcc("IwSQ") || h == fourcc("IwSq")) {
