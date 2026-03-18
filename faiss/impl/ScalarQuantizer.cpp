@@ -29,8 +29,8 @@ namespace faiss {
  * ScalarQuantizer implementation
  ********************************************************************/
 
-ScalarQuantizer::ScalarQuantizer(size_t d, QuantizerType qtype)
-        : Quantizer(d), qtype(qtype) {
+ScalarQuantizer::ScalarQuantizer(size_t d_in, QuantizerType qtype_in)
+        : Quantizer(d_in), qtype(qtype_in) {
     set_derived_sizes();
 }
 
@@ -132,7 +132,7 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
     memset(codes, 0, code_size * n);
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         squant->encode_vector(x + i * d, codes + i * code_size);
     }
 }
@@ -141,7 +141,7 @@ void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         squant->decode_vector(codes + i * code_size, x + i * d);
     }
 }

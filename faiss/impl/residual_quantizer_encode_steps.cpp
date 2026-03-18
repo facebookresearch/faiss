@@ -66,12 +66,12 @@ void beam_search_encode_step(
 
     if (assign_index) {
         // search beam_size distances per query
-        FAISS_THROW_IF_NOT(assign_index->d == d);
+        FAISS_THROW_IF_NOT(assign_index->d == static_cast<int>(d));
         cent_distances.resize(n * beam_size * new_beam_size);
         cent_ids.resize(n * beam_size * new_beam_size);
         if (assign_index->ntotal != 0) {
             // then we assume the codebooks are already added to the index
-            FAISS_THROW_IF_NOT(assign_index->ntotal == K);
+            FAISS_THROW_IF_NOT(assign_index->ntotal == static_cast<idx_t>(K));
         } else {
             assign_index->add(K, cent);
         }
@@ -93,7 +93,7 @@ void beam_search_encode_step(
     InterruptCallback::check();
 
 #pragma omp parallel for if (n > 100)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const int32_t* codes_i = codes + i * m * beam_size;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
         const float* residuals_i = residuals + i * d * beam_size;
@@ -109,7 +109,7 @@ void beam_search_encode_step(
                     cent_ids.data() + i * beam_size * new_beam_size;
 
             // here we could be a tad more efficient by merging sorted arrays
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 new_distances_i[j] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
@@ -122,7 +122,7 @@ void beam_search_encode_step(
                     beam_size * new_beam_size);
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / new_beam_size;
                 int ls = cent_ids_i[perm[j]];
                 if (m > 0) {
@@ -142,7 +142,7 @@ void beam_search_encode_step(
             const float* cent_distances_i =
                     cent_distances.data() + i * beam_size * K;
             // then we have to select the best results
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 new_distances_i[j] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
@@ -180,7 +180,7 @@ void beam_search_encode_step(
             }
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / K;
                 int ls = perm[j] % K;
                 if (m > 0) {
@@ -381,7 +381,7 @@ void beam_search_encode_step_tab(
     FAISS_THROW_IF_NOT(ldc >= K);
 
 #pragma omp parallel for if (n > 100) schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         std::vector<float> cent_distances(beam_size * K);
         std::vector<float> cd_common(K);
 
@@ -427,7 +427,7 @@ void beam_search_encode_step_tab(
         const float* cent_distances_i = cent_distances.data();
 
         // then we have to select the best results
-        for (int j = 0; j < new_beam_size; j++) {
+        for (size_t j = 0; j < new_beam_size; j++) {
             new_distances_i[j] = C::neutral();
         }
         std::vector<int> perm(new_beam_size, -1);
@@ -467,7 +467,7 @@ void beam_search_encode_step_tab(
 
         heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-        for (int j = 0; j < new_beam_size; j++) {
+        for (size_t j = 0; j < new_beam_size; j++) {
             int js = perm[j] / K;
             int ls = perm[j] % K;
             if (m > 0) {
@@ -503,7 +503,7 @@ void refine_beam_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = cur_beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -544,7 +544,7 @@ void refine_beam_mp(
     size_t distances_size = 0;
     size_t residuals_size = 0;
 
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         const float* __restrict codebooks_m =
@@ -583,14 +583,14 @@ void refine_beam_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += pool.distances[j];
             }
 
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    cur_beam_size);
@@ -629,7 +629,7 @@ void refine_beam_LUT_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -662,7 +662,7 @@ void refine_beam_LUT_mp(
     size_t codes_size = 0;
     size_t distances_size = 0;
     size_t cross_ofs = 0;
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         // it is guaranteed that (new_beam_size <= max_beam_size)
@@ -698,13 +698,13 @@ void refine_beam_LUT_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += distances_ptr[j];
             }
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    beam_size);
