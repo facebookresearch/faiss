@@ -2314,6 +2314,7 @@
     <member refid="structfaiss_1_1HNSW_1afba18a290f5f759a8a7a64ed35b950eb" kind="variable"><name>max_level</name></member>
     <member refid="structfaiss_1_1HNSW_1aa7309dd7826761def38233c8bbbc0c63" kind="variable"><name>efConstruction</name></member>
     <member refid="structfaiss_1_1HNSW_1a6d1cb35c4220bf554af90133c71ae04f" kind="variable"><name>efSearch</name></member>
+    <member refid="structfaiss_1_1HNSW_1ae464738f61420ca5c09a7f04c7a28650" kind="variable"><name>prune_headroom</name></member>
     <member refid="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" kind="variable"><name>check_relative_distance</name></member>
     <member refid="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" kind="variable"><name>search_bounded_queue</name></member>
     <member refid="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" kind="variable"><name>is_panorama</name></member>
@@ -2335,7 +2336,7 @@
     <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" kind="function"><name>print_neighbor_stats</name></member>
     <member refid="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" kind="function"><name>prepare_level_tab</name></member>
     <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" kind="function"><name>permute_entries</name></member>
-    <member refid="structfaiss_1_1HNSW_1adad3792128bbe0e57c981de9f7aa25ea" kind="function"><name>shrink_neighbor_list</name></member>
+    <member refid="structfaiss_1_1HNSW_1aac9c40b5205bc148002f1f95dd9d55c8" kind="function"><name>shrink_neighbor_list</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSWStats" kind="struct"><name>faiss::HNSWStats</name>
     <member refid="structfaiss_1_1HNSWStats_1a28e67551d5cf31ab374fc8df2bab7cee" kind="variable"><name>n1</name></member>

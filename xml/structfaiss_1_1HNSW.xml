@@ -204,6 +204,22 @@
         </inbodydescription>
         <location file="faiss/impl/HNSW.h" line="144" column="9" bodyfile="faiss/impl/HNSW.h" bodystart="144" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1HNSW_1ae464738f61420ca5c09a7f04c7a28650" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::HNSW::prune_headroom</definition>
+        <argsstring></argsstring>
+        <name>prune_headroom</name>
+        <qualifiedname>faiss::HNSW::prune_headroom</qualifiedname>
+        <initializer>= 0.2f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>when pruning, leave room for more neighbors to avoid O(n^2) costs and lock contention on frequently-pruned nodes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/HNSW.h" line="148" column="11" bodyfile="faiss/impl/HNSW.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1adbf81f0b21102b942182c904892e0858" prot="public" static="no" mutable="no">
         <type>bool</type>
         <definition>bool faiss::HNSW::check_relative_distance</definition>
@@ -218,7 +234,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="148" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="148" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="152" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="152" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1a683738e8ab8e67fcabd823510c30b074" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -234,7 +250,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="151" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="155" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="155" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1a44007ce4b5c2f38bd4733f6ed101792c" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -250,7 +266,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="154" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="154" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="158" column="10" bodyfile="faiss/impl/HNSW.h" bodystart="158" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1HNSW_1a7b482fea55ce6c7f20a47655b2a8305f" prot="public" static="no" mutable="no">
         <type>std::optional&lt; bool &gt;</type>
@@ -264,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="157" column="19" bodyfile="faiss/impl/HNSW.h" bodystart="157" bodyend="-1"/>
+        <location file="faiss/impl/HNSW.h" line="161" column="19" bodyfile="faiss/impl/HNSW.h" bodystart="161" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -289,7 +305,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="163" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="167" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -312,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="166" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="170" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a38058dce99434348548759d0d6b0a4b4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -331,7 +347,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="171" column="9"/>
+        <location file="faiss/impl/HNSW.h" line="175" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a459a957547e1f003a1b3f4c8b16d4fdd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -350,7 +366,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="174" column="9"/>
+        <location file="faiss/impl/HNSW.h" line="178" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a761ff10e3d7083560c87705b7c38b4fc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -381,7 +397,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="177" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="181" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a1fc852810a2497a8eb2c41635ec05520" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
@@ -401,7 +417,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="181" column="14"/>
+        <location file="faiss/impl/HNSW.h" line="185" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -416,7 +432,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="184" column="9"/>
+        <location file="faiss/impl/HNSW.h" line="188" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a26710980aaca3c1c8729e5e055a42ebe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -435,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="187" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="191" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1ad5daee8b3291db7301a7e0356106516c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -482,7 +498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="189" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="193" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -522,7 +538,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="201" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="205" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a6bcbb9a5f201e8a2514420535c5679ed" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -559,7 +575,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="215" column="15"/>
+        <location file="faiss/impl/HNSW.h" line="219" column="15"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1adce534f6cc99125541497b7f0e861aa6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -611,7 +627,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="223" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="227" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a73b4779053c5281298e1e916bb04d42f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -625,7 +641,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="234" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="238" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1ab0455aedd431a165dea13bac2548066f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -643,7 +659,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="236" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="240" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -661,7 +677,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="237" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="241" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -684,7 +700,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="239" column="9"/>
+        <location file="faiss/impl/HNSW.h" line="243" column="9"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -702,14 +718,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="248" column="10"/>
+        <location file="faiss/impl/HNSW.h" line="252" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
-      <memberdef kind="function" id="structfaiss_1_1HNSW_1adad3792128bbe0e57c981de9f7aa25ea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1HNSW_1aac9c40b5205bc148002f1f95dd9d55c8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>static void faiss::HNSW::shrink_neighbor_list</definition>
-        <argsstring>(DistanceComputer &amp;qdis, std::priority_queue&lt; NodeDistFarther &gt; &amp;input, std::vector&lt; NodeDistFarther &gt; &amp;output, int max_size, bool keep_max_size_level0=false)</argsstring>
+        <argsstring>(DistanceComputer &amp;qdis, std::priority_queue&lt; NodeDistFarther &gt; &amp;input, std::vector&lt; NodeDistFarther &gt; &amp;output, size_t max_size, bool keep_max_size_level0=false)</argsstring>
         <name>shrink_neighbor_list</name>
         <qualifiedname>faiss::HNSW::shrink_neighbor_list</qualifiedname>
         <param>
@@ -725,7 +741,7 @@
           <declname>output</declname>
         </param>
         <param>
-          <type>int</type>
+          <type>size_t</type>
           <declname>max_size</declname>
         </param>
         <param>
@@ -739,7 +755,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/HNSW.h" line="241" column="17"/>
+        <location file="faiss/impl/HNSW.h" line="245" column="17"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -766,7 +782,7 @@
         <link refid="structfaiss_1_1RandomGenerator"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/HNSW.h" line="58" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="58" bodyend="249"/>
+    <location file="faiss/impl/HNSW.h" line="58" column="1" bodyfile="faiss/impl/HNSW.h" bodystart="58" bodyend="253"/>
     <listofallmembers>
       <member refid="structfaiss_1_1HNSW_1ad5daee8b3291db7301a7e0356106516c" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>add_links_starting_from</name></member>
       <member refid="structfaiss_1_1HNSW_1a26ee6c4294298223efbe56561efa8b8b" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>add_with_locks</name></member>
@@ -792,6 +808,7 @@
       <member refid="structfaiss_1_1HNSW_1abbacf5baeb561cc994dfa5e628882a47" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>permute_entries</name></member>
       <member refid="structfaiss_1_1HNSW_1a805fdc261eb2d1fa66e6a457d7cde2a0" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>prepare_level_tab</name></member>
       <member refid="structfaiss_1_1HNSW_1a1281423ad5d779d8c71e6e61bbabd543" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>print_neighbor_stats</name></member>
+      <member refid="structfaiss_1_1HNSW_1ae464738f61420ca5c09a7f04c7a28650" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>prune_headroom</name></member>
       <member refid="structfaiss_1_1HNSW_1aa6dfdaed7bc0ad895774315166fcb197" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>random_level</name></member>
       <member refid="structfaiss_1_1HNSW_1a73b4779053c5281298e1e916bb04d42f" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>reset</name></member>
       <member refid="structfaiss_1_1HNSW_1ae551102a7eda0b853ad85793987e46a2" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>rng</name></member>
@@ -800,7 +817,7 @@
       <member refid="structfaiss_1_1HNSW_1adce534f6cc99125541497b7f0e861aa6" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>search_level_0</name></member>
       <member refid="structfaiss_1_1HNSW_1ae7d955690da5d6376c203e81e124ba94" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>set_default_probas</name></member>
       <member refid="structfaiss_1_1HNSW_1afdb5a17487296267efaaa94e6a08996d" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>set_nb_neighbors</name></member>
-      <member refid="structfaiss_1_1HNSW_1adad3792128bbe0e57c981de9f7aa25ea" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>shrink_neighbor_list</name></member>
+      <member refid="structfaiss_1_1HNSW_1aac9c40b5205bc148002f1f95dd9d55c8" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>shrink_neighbor_list</name></member>
       <member refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>storage_idx_t</name></member>
       <member refid="structfaiss_1_1HNSW_1a7b482fea55ce6c7f20a47655b2a8305f" prot="public" virt="non-virtual"><scope>faiss::HNSW</scope><name>use_visited_hashset</name></member>
     </listofallmembers>
