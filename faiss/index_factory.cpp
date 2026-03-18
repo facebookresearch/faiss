@@ -55,12 +55,12 @@
 
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSFlat.h>
-#include <faiss/svs/IndexSVSVamana.h>
-#include <faiss/svs/IndexSVSVamanaLVQ.h>
-#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #include <faiss/svs/IndexSVSIVF.h>
 #include <faiss/svs/IndexSVSIVFLVQ.h>
 #include <faiss/svs/IndexSVSIVFLeanVec.h>
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
 #endif
 #include <faiss/IndexIDMap.h>
 #include <algorithm>
@@ -707,8 +707,7 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
         std::string nlist_string = sm[1].str();
         std::string datatype_string =
                 sm[2].length() > 0 ? sm[2].str().substr(1) : "";
-        return parse_svs_datatype(
-                "IVF", nlist_string, datatype_string, d, mt);
+        return parse_svs_datatype("IVF", nlist_string, datatype_string, d, mt);
     }
     return nullptr;
 }
