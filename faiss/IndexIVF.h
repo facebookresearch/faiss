@@ -58,7 +58,7 @@ struct Level1Quantizer {
     void encode_listno(idx_t list_no, uint8_t* code) const;
     idx_t decode_listno(const uint8_t* code) const;
 
-    Level1Quantizer(Index* quantizer, size_t nlist);
+    Level1Quantizer(Index* quantizer_in, size_t nlist_in);
 
     Level1Quantizer();
 
@@ -86,8 +86,10 @@ struct IndexIVFInterface : Level1Quantizer {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
-    explicit IndexIVFInterface(Index* quantizer = nullptr, size_t nlist = 0)
-            : Level1Quantizer(quantizer, nlist) {}
+    explicit IndexIVFInterface(
+            Index* quantizer_in = nullptr,
+            size_t nlist_in = 0)
+            : Level1Quantizer(quantizer_in, nlist_in) {}
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
@@ -203,12 +205,12 @@ struct IndexIVF : Index, IndexIVFInterface {
      * identifier.
      */
     IndexIVF(
-            Index* quantizer,
-            size_t d,
-            size_t nlist,
-            size_t code_size,
+            Index* quantizer_in,
+            size_t d_in,
+            size_t nlist_in,
+            size_t code_size_in,
             MetricType metric = METRIC_L2,
-            bool own_invlists = true);
+            bool own_invlists_in = true);
 
     void reset() override;
 
@@ -484,9 +486,9 @@ struct InvertedListScanner {
     const IDSelector* sel;
 
     InvertedListScanner(
-            bool store_pairs = false,
-            const IDSelector* sel = nullptr)
-            : store_pairs(store_pairs), sel(sel) {}
+            bool store_pairs_in = false,
+            const IDSelector* sel_in = nullptr)
+            : store_pairs(store_pairs_in), sel(sel_in) {}
 
     /// used in default implementation of scan_codes
     size_t code_size = 0;
