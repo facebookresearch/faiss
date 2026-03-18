@@ -33,15 +33,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1CodeSet_1a79afebb34054f3e16f4e5b38022b4cff" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::CodeSet::CodeSet</definition>
-        <argsstring>(size_t d)</argsstring>
+        <argsstring>(size_t d_in)</argsstring>
         <name>CodeSet</name>
         <qualifiedname>faiss::CodeSet::CodeSet</qualifiedname>
         <param>
           <type>size_t</type>
-          <declname>d</declname>
+          <declname>d_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -84,7 +84,7 @@
     </detaileddescription>
     <location file="faiss/utils/utils.h" line="199" column="1" bodyfile="faiss/utils/utils.h" bodystart="199" bodyend="205"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1CodeSet_1a86a72861d902f0f51c946ede725cef58" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>CodeSet</name></member>
+      <member refid="structfaiss_1_1CodeSet_1a79afebb34054f3e16f4e5b38022b4cff" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>CodeSet</name></member>
       <member refid="structfaiss_1_1CodeSet_1a011bcc10cd3486f406cbf6b02e606c9e" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>d</name></member>
       <member refid="structfaiss_1_1CodeSet_1a427b0b7caf3bd66c1f27e841ce95d23b" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>insert</name></member>
       <member refid="structfaiss_1_1CodeSet_1afedcaf6cc25213d3d442d0f2f14f60cc" prot="public" virt="non-virtual"><scope>faiss::CodeSet</scope><name>s</name></member>

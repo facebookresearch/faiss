@@ -184,27 +184,27 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1a74330b6afb5296263e2a53482178c35d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1CombinerRangeKNN_1a0e23e2ab3ba2625a3a1f7463468e40f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::CombinerRangeKNN&lt; T &gt;::CombinerRangeKNN</definition>
-        <argsstring>(int64_t nq, size_t k, T r2, bool keep_max)</argsstring>
+        <argsstring>(int64_t nq_in, size_t k_in, T r2_in, bool keep_max_in)</argsstring>
         <name>CombinerRangeKNN</name>
         <qualifiedname>faiss::CombinerRangeKNN::CombinerRangeKNN</qualifiedname>
         <param>
           <type>int64_t</type>
-          <declname>nq</declname>
+          <declname>nq_in</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>k</declname>
+          <declname>k_in</declname>
         </param>
         <param>
           <type>T</type>
-          <declname>r2</declname>
+          <declname>r2_in</declname>
         </param>
         <param>
           <type>bool</type>
-          <declname>keep_max</declname>
+          <declname>keep_max_in</declname>
         </param>
         <briefdescription>
 <para>whether to keep max values instead of min. </para>
@@ -265,7 +265,7 @@
     </detaileddescription>
     <location file="faiss/utils/utils.h" line="169" column="1" bodyfile="faiss/utils/utils.h" bodystart="169" bodyend="197"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1CombinerRangeKNN_1a74330b6afb5296263e2a53482178c35d" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>CombinerRangeKNN</name></member>
+      <member refid="structfaiss_1_1CombinerRangeKNN_1a0e23e2ab3ba2625a3a1f7463468e40f0" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>CombinerRangeKNN</name></member>
       <member refid="structfaiss_1_1CombinerRangeKNN_1adbefea1de2c511a05d0980eaa7134fca" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>compute_sizes</name></member>
       <member refid="structfaiss_1_1CombinerRangeKNN_1adb040f0aab9e0822cf97b7ae8f77554c" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>D</name></member>
       <member refid="structfaiss_1_1CombinerRangeKNN_1a8a4621b4b68545cbd08269086be63fa6" prot="public" virt="non-virtual"><scope>faiss::CombinerRangeKNN</scope><name>D_remain</name></member>

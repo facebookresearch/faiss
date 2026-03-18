@@ -255,7 +255,7 @@
       <member refid="structfaiss_1_1QINCo_1a86455643684af2fe91b4e94f7ca62392" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>K</name></member>
       <member refid="structfaiss_1_1QINCo_1a2432eb6c40747240ea37778cf4d38c7c" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>L</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1afdcfae65efb97a08f453a1a150d53e89" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>M</name></member>
-      <member refid="structfaiss_1_1NeuralNetCodec_1a58f10cbc99e5b1a00e46b49413e43b8a" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>NeuralNetCodec</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1a09cd91eab18fb7babf0d085d7054348f" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>NeuralNetCodec</name></member>
       <member refid="structfaiss_1_1QINCo_1a4542c765bad0b90648edde4767d72580" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>QINCo</name></member>
       <member refid="structfaiss_1_1QINCo_1ac69a89d773eff0bda446b57cd24164c8" prot="public" virt="non-virtual"><scope>faiss::QINCo</scope><name>steps</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1a36ab5714e1db84b4cdd3a625102299ba" prot="public" virt="virtual"><scope>faiss::QINCo</scope><name>~NeuralNetCodec</name></member>

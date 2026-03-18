@@ -34,19 +34,19 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1NeuralNetCodec_1a58f10cbc99e5b1a00e46b49413e43b8a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1NeuralNetCodec_1a09cd91eab18fb7babf0d085d7054348f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::NeuralNetCodec::NeuralNetCodec</definition>
-        <argsstring>(int d, int M)</argsstring>
+        <argsstring>(int d_in, int M_in)</argsstring>
         <name>NeuralNetCodec</name>
         <qualifiedname>faiss::NeuralNetCodec::NeuralNetCodec</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d</declname>
+          <declname>d_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>M</declname>
+          <declname>M_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -131,7 +131,7 @@
       <member refid="structfaiss_1_1NeuralNetCodec_1ae0be71b6ac01d05c8fbe866ee70b1db9" prot="public" virt="pure-virtual"><scope>faiss::NeuralNetCodec</scope><name>decode</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1aa88836faaca529db2783938ce16e3208" prot="public" virt="pure-virtual"><scope>faiss::NeuralNetCodec</scope><name>encode</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1afdcfae65efb97a08f453a1a150d53e89" prot="public" virt="non-virtual"><scope>faiss::NeuralNetCodec</scope><name>M</name></member>
-      <member refid="structfaiss_1_1NeuralNetCodec_1a58f10cbc99e5b1a00e46b49413e43b8a" prot="public" virt="non-virtual"><scope>faiss::NeuralNetCodec</scope><name>NeuralNetCodec</name></member>
+      <member refid="structfaiss_1_1NeuralNetCodec_1a09cd91eab18fb7babf0d085d7054348f" prot="public" virt="non-virtual"><scope>faiss::NeuralNetCodec</scope><name>NeuralNetCodec</name></member>
       <member refid="structfaiss_1_1NeuralNetCodec_1a36ab5714e1db84b4cdd3a625102299ba" prot="public" virt="virtual"><scope>faiss::NeuralNetCodec</scope><name>~NeuralNetCodec</name></member>
     </listofallmembers>
   </compounddef>
