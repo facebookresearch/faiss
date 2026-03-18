@@ -46,10 +46,13 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
           chunk_size(code_size / n_levels),
           levels_size(d / n_levels),
           m_level_width(M / n_levels) {
-    FAISS_THROW_IF_NOT_MSG(M % n_levels == 0, "M must be divisible by n_levels");
-    FAISS_THROW_IF_NOT_MSG(batch_size % 64 == 0, "batch_size must be multiple of 64");
+    FAISS_THROW_IF_NOT_MSG(
+            M % n_levels == 0, "M must be divisible by n_levels");
+    FAISS_THROW_IF_NOT_MSG(
+            batch_size % 64 == 0, "batch_size must be multiple of 64");
     FAISS_THROW_IF_NOT_MSG(nbits_per_idx == 8, "only 8-bit PQ codes supported");
-    FAISS_THROW_IF_NOT_MSG(M == code_size, "M must equal code_size for 8-bit PQ");
+    FAISS_THROW_IF_NOT_MSG(
+            M == code_size, "M must equal code_size for 8-bit PQ");
     FAISS_THROW_IF_NOT_MSG(metric == METRIC_L2, "only L2 metric supported");
 }
 
@@ -58,7 +61,8 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
  ******************************************/
 
 void IndexIVFPQPanorama::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(!added, "IndexIVFPQPanorama only supports a single add() call");
+    FAISS_THROW_IF_NOT_MSG(
+            !added, "IndexIVFPQPanorama only supports a single add() call");
     added = true;
     num_points = n;
 
@@ -89,43 +93,39 @@ void IndexIVFPQPanorama::add(idx_t n, const float* x) {
                     std::min(list_size - batch_no * batch_size, batch_size);
             for (size_t m = 0; m < pq.M; m++) {
                 for (size_t p = 0; p < curr_batch_size; p++) {
-                    column_storage[col_offset + batch_offset +
-                                   m * batch_size + p] =
-                            row_codes[batch_no * batch_size * code_size +
-                                      p * code_size + m];
+                    column_storage
+                            [col_offset + batch_offset + m * batch_size + p] =
+                                    row_codes
+                                            [batch_no * batch_size * code_size +
+                                             p * code_size + m];
                 }
             }
         }
     }
 
-    // Precompute cumulative residual norms and initial exact distances.
+    // Precompute cumulative residual norms (suffix sums of ||y_R||^2).
+    // init_exact_distances are computed on-the-fly during search using
+    // the precomputed_table, so we only need cum_sums here.
     cum_sum_offsets = new size_t[nlist];
-    init_exact_distances_offsets = new size_t[nlist];
 
     size_t cum_size = 0;
-    size_t init_size = 0;
     for (size_t list_no = 0; list_no < nlist; list_no++) {
         cum_sum_offsets[list_no] = cum_size;
         cum_size += invlists->list_size(list_no) * (n_levels + 1);
-        init_exact_distances_offsets[list_no] = init_size;
-        init_size += invlists->list_size(list_no);
     }
 
     cum_sums = new float[cum_size];
-    init_exact_distances = new float[init_size];
 
     for (size_t list_no = 0; list_no < nlist; list_no++) {
         size_t list_size = invlists->list_size(list_no);
-
-        std::vector<float> centroid(d);
-        quantizer->reconstruct(list_no, centroid.data());
+        if (list_size == 0)
+            continue;
 
         size_t n_batches = (list_size + batch_size - 1) / batch_size;
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t b_offset = batch_no * batch_size;
-            size_t curr_batch_size =
-                    std::min(list_size - b_offset, batch_size);
+            size_t curr_batch_size = std::min(list_size - b_offset, batch_size);
 
             for (size_t p = 0; p < curr_batch_size; p++) {
                 std::vector<float> vec(d);
@@ -133,10 +133,8 @@ void IndexIVFPQPanorama::add(idx_t n, const float* x) {
                         invlists->get_single_code(list_no, b_offset + p);
                 pq.decode(code, vec.data());
 
-                float init_dist = 0.0f;
                 std::vector<float> suffix(d + 1, 0.0f);
                 for (int j = d - 1; j >= 0; j--) {
-                    init_dist += vec[j] * vec[j] + 2 * vec[j] * centroid[j];
                     suffix[j] = suffix[j + 1] + vec[j] * vec[j];
                 }
 
@@ -151,13 +149,9 @@ void IndexIVFPQPanorama::add(idx_t n, const float* x) {
                 }
 
                 size_t last_offset = cum_sum_offsets[list_no] +
-                        b_offset * (n_levels + 1) +
-                        n_levels * curr_batch_size + p;
+                        b_offset * (n_levels + 1) + n_levels * curr_batch_size +
+                        p;
                 cum_sums[last_offset] = 0.0f;
-
-                init_exact_distances
-                        [init_exact_distances_offsets[list_no] + b_offset + p] =
-                                init_dist;
             }
         }
     }
@@ -231,8 +225,7 @@ struct IVFPQScannerPanorama : InvertedListScanner {
     }
 
     float distance_to_code(const uint8_t* code) const override {
-        FAISS_THROW_MSG(
-                "IndexIVFPQPanorama does not support distance_to_code");
+        FAISS_THROW_MSG("IndexIVFPQPanorama does not support distance_to_code");
     }
 
     size_t scan_codes(
@@ -254,9 +247,8 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                 index.column_storage + index.column_offsets[list_no];
         const float* list_cum_sums =
                 index.cum_sums + index.cum_sum_offsets[list_no];
-        const float* list_init_dists =
-                index.init_exact_distances +
-                index.init_exact_distances_offsets[list_no];
+        const float* precomp =
+                index.precomputed_table.data() + list_no * pq.M * pq.ksub;
 
         // Scratch buffers.
         std::vector<float> exact_distances(bs);
@@ -266,8 +258,7 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         float dis0 = coarse_dis;
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-            size_t curr_batch_size =
-                    std::min(list_size - batch_no * bs, bs);
+            size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
             size_t b_offset = batch_no * bs;
 
             // Initialize active set.
@@ -278,30 +269,35 @@ struct IVFPQScannerPanorama : InvertedListScanner {
             std::fill(bitset.begin(), bitset.begin() + curr_batch_size, 1);
             std::fill(bitset.begin() + curr_batch_size, bitset.end(), 0);
 
-            for (size_t idx = 0; idx < curr_batch_size; idx++) {
-                exact_distances[idx] = list_init_dists[b_offset + idx];
-            }
-
             const uint8_t* batch_codes = col_codes + b_offset * code_size;
-            const float* batch_cums =
-                    list_cum_sums + b_offset * (n_levels + 1);
+
+            // Compute init_exact_distance on-the-fly from the
+            // precomputed table: sum_m(precomp[m * ksub + code[m]]).
+            // Codes are column-major: point p's code for subquantizer
+            // m is at batch_codes[m * bs + p].
+            for (size_t idx = 0; idx < curr_batch_size; idx++) {
+                float init_dist = 0.0f;
+                for (size_t m = 0; m < pq.M; m++) {
+                    uint8_t code_val = batch_codes[m * bs + idx];
+                    init_dist += precomp[m * pq.ksub + code_val];
+                }
+                exact_distances[idx] = init_dist;
+            }
+            const float* batch_cums = list_cum_sums + b_offset * (n_levels + 1);
 
             size_t next_num_active = curr_batch_size;
             size_t batch_offset = batch_no * bs;
 
-            for (int level = 0;
-                 level < n_levels && next_num_active > 0;
+            for (int level = 0; level < n_levels && next_num_active > 0;
                  level++) {
                 size_t level_sim_offset = level * pq.ksub * cs;
 
-                float query_cum_norm =
-                        2 * query_cum_norms[level + 1];
+                float query_cum_norm = 2 * query_cum_norms[level + 1];
                 float heap_max = distances[0];
 
                 const float* cum_sums_level =
                         batch_cums + curr_batch_size * level;
-                const uint8_t* codes_level =
-                        batch_codes + bs * cs * level;
+                const uint8_t* codes_level = batch_codes + bs * cs * level;
 
                 float* sim_table_level =
                         const_cast<float*>(sim_table_2.data()) +
@@ -316,25 +312,27 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                         size_t chunk_off = ci * bs;
                         float* chunk_sim = sim_table_level + ci * pq.ksub;
                         for (size_t i = 0; i < next_num_active; i++) {
-                            size_t real_idx =
-                                    active_indices[i] - batch_offset;
-                            exact_distances[i] +=
-                                    chunk_sim[codes_level[chunk_off + real_idx]];
+                            size_t real_idx = active_indices[i] - batch_offset;
+                            exact_distances[i] += chunk_sim
+                                    [codes_level[chunk_off + real_idx]];
                         }
                     }
                     num_active_for_filtering = next_num_active;
                 } else {
-                    auto [cc, na] =
-                            panorama_kernels::process_code_compression(
-                                    next_num_active,
-                                    bs,
-                                    cs,
-                                    compressed_codes.data(),
-                                    bitset.data(),
-                                    codes_level);
+                    auto [cc, na] = panorama_kernels::process_code_compression(
+                            next_num_active,
+                            bs,
+                            cs,
+                            compressed_codes.data(),
+                            bitset.data(),
+                            codes_level);
 
                     panorama_kernels::process_chunks(
-                            cs, bs, na, sim_table_level, cc,
+                            cs,
+                            bs,
+                            na,
+                            sim_table_level,
+                            cc,
                             exact_distances.data());
                     num_active_for_filtering = na;
                 }
@@ -392,13 +390,10 @@ InvertedListScanner* IndexIVFPQPanorama::get_InvertedListScanner(
     FAISS_THROW_IF_NOT_MSG(
             use_precomputed_table == 1,
             "Panorama PQ requires use_precomputed_table == 1");
+    FAISS_THROW_IF_NOT_MSG(pq.nbits == 8, "only 8-bit PQ codes supported");
+    FAISS_THROW_IF_NOT_MSG(by_residual, "Panorama PQ requires by_residual");
     FAISS_THROW_IF_NOT_MSG(
-            pq.nbits == 8, "only 8-bit PQ codes supported");
-    FAISS_THROW_IF_NOT_MSG(
-            by_residual, "Panorama PQ requires by_residual");
-    FAISS_THROW_IF_NOT_MSG(
-            polysemous_ht == 0,
-            "Panorama PQ does not support polysemous");
+            polysemous_ht == 0, "Panorama PQ does not support polysemous");
 
     if (sel) {
         return new IVFPQScannerPanorama<CMax<float, idx_t>, true>(

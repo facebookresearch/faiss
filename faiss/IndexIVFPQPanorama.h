@@ -34,10 +34,10 @@ namespace faiss {
 /// distance computation level-by-level.
 ///
 /// OVERHEAD:
-/// Panorama precomputes per-point cumulative residual norms and initial
-/// exact distances at insertion time. Storage overhead is
-/// (n_levels + 1) floats per point for cum_sums, plus 1 float per
-/// point for init_exact_distances.
+/// Panorama precomputes per-point cumulative residual norms at insertion
+/// time. Storage overhead is (n_levels + 1) floats per point for
+/// cum_sums. Initial exact distances are computed on-the-fly during
+/// search using the precomputed_table (no extra per-point storage).
 ///
 /// CONSTRAINTS:
 /// - Only L2 metric is supported.
@@ -66,9 +66,6 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
 
     float* cum_sums = nullptr;
     size_t* cum_sum_offsets = nullptr;
-
-    float* init_exact_distances = nullptr;
-    size_t* init_exact_distances_offsets = nullptr;
 
     IndexIVFPQPanorama(
             Index* quantizer,
