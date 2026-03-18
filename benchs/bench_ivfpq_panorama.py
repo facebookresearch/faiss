@@ -22,6 +22,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 
 IVFPQ_CACHE = os.path.join(CACHE_DIR, "ivfpq_10pct.index")
 IVFPQ_TRAINED_CACHE = os.path.join(CACHE_DIR, "ivfpq_trained_10pct.index")
+IVFPQ_PANO_CACHE = os.path.join(CACHE_DIR, "ivfpq_pano_10pct.index")
 
 print("Loading GIST1M data (10% subset)...", flush=True)
 xb_full = fvecs_read(os.path.join(GIST_DIR, "gist1m_base.fvecs"))
@@ -106,49 +107,59 @@ for nprobe in [1, 2, 4, 8, 16]:
     ivfpq.nprobe = nprobe
     eval_recall(ivfpq, nprobe)
 
-# --- IVFPQPanorama (reuse trained PQ from cache) ---
+# --- IVFPQPanorama (cached separately) ---
 faiss.omp_set_num_threads(mp.cpu_count())
 
-
-def build_panorama_from_trained(trained_index):
-    quantizer2 = trained_index.quantizer
-    trained_index.own_fields = False
-
-    pano = faiss.IndexIVFPQPanorama(
-        quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
-    )
-    centroids = faiss.vector_to_array(trained_index.pq.centroids)
-    faiss.copy_array_to_vector(centroids, pano.pq.centroids)
-    pano.is_trained = True
-    pano.use_precomputed_table = 1
-    pano.precompute_table()
-    return pano
-
-
-if os.path.exists(IVFPQ_TRAINED_CACHE):
-    print(f"\nLoading trained IVFPQ for Panorama from {IVFPQ_TRAINED_CACHE}...", flush=True)
-    trained = faiss.read_index(IVFPQ_TRAINED_CACHE)
-    ivfpq_pano = build_panorama_from_trained(trained)
-    print("  Reused trained PQ (skipped training).", flush=True)
-else:
-    print(
-        f"\nTraining IVFPQ for Panorama from scratch: nlist={nlist}, M={M}, nbits={nbits}",
-        flush=True,
-    )
-    quantizer2 = faiss.IndexFlatL2(d)
-    trained = faiss.IndexIVFPQ(quantizer2, d, nlist, M, nbits)
+if os.path.exists(IVFPQ_PANO_CACHE):
+    print(f"\nLoading cached IVFPQPanorama from {IVFPQ_PANO_CACHE}...", flush=True)
     t0 = time.time()
-    trained.train(xt)
-    print(f"  Training took {time.time() - t0:.1f}s", flush=True)
+    ivfpq_pano = faiss.read_index(IVFPQ_PANO_CACHE)
+    print(f"  Loaded in {time.time() - t0:.1f}s", flush=True)
+else:
+    def build_panorama_from_trained(trained_index):
+        quantizer2 = trained_index.quantizer
+        trained_index.own_fields = False
 
-    print(f"  Saving trained state to {IVFPQ_TRAINED_CACHE}...", flush=True)
-    faiss.write_index(trained, IVFPQ_TRAINED_CACHE)
+        pano = faiss.IndexIVFPQPanorama(
+            quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
+        )
+        centroids = faiss.vector_to_array(trained_index.pq.centroids)
+        faiss.copy_array_to_vector(centroids, pano.pq.centroids)
+        pano.is_trained = True
+        pano.use_precomputed_table = 1
+        pano.precompute_table()
+        return pano
 
-    ivfpq_pano = build_panorama_from_trained(trained)
+    if os.path.exists(IVFPQ_TRAINED_CACHE):
+        print(
+            f"\nLoading trained IVFPQ for Panorama from {IVFPQ_TRAINED_CACHE}...",
+            flush=True,
+        )
+        trained = faiss.read_index(IVFPQ_TRAINED_CACHE)
+        ivfpq_pano = build_panorama_from_trained(trained)
+        print("  Reused trained PQ (skipped training).", flush=True)
+    else:
+        print(
+            f"\nTraining IVFPQ for Panorama from scratch: nlist={nlist}, M={M}, nbits={nbits}",
+            flush=True,
+        )
+        quantizer2 = faiss.IndexFlatL2(d)
+        trained = faiss.IndexIVFPQ(quantizer2, d, nlist, M, nbits)
+        t0 = time.time()
+        trained.train(xt)
+        print(f"  Training took {time.time() - t0:.1f}s", flush=True)
 
-t0 = time.time()
-ivfpq_pano.add(xb)
-print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
+        print(f"  Saving trained state to {IVFPQ_TRAINED_CACHE}...", flush=True)
+        faiss.write_index(trained, IVFPQ_TRAINED_CACHE)
+
+        ivfpq_pano = build_panorama_from_trained(trained)
+
+    t0 = time.time()
+    ivfpq_pano.add(xb)
+    print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
+
+    print(f"  Saving IVFPQPanorama to {IVFPQ_PANO_CACHE}...", flush=True)
+    faiss.write_index(ivfpq_pano, IVFPQ_PANO_CACHE)
 
 faiss.omp_set_num_threads(1)
 print("\n====== IVFPQPanorama", flush=True)
