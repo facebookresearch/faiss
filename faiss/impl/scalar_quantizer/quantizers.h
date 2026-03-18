@@ -30,8 +30,8 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
     const size_t d;
     const float vmin, vdiff;
 
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : d(d), vmin(trained[0]), vdiff(trained[1]) {}
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
+            : d(d_in), vmin(trained[0]), vdiff(trained[1]) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -69,9 +69,9 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
+                      d_in,
                       trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
@@ -87,9 +87,9 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 16>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
+                      d_in,
                       trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -107,9 +107,9 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 8>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<Codec, QuantizerTemplateScaling::UNIFORM, 1>(
-                      d,
+                      d_in,
                       trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -136,8 +136,8 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
     const size_t d;
     const float *vmin, *vdiff;
 
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : d(d), vmin(trained.data()), vdiff(trained.data() + d) {}
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
+            : d(d_in), vmin(trained.data()), vdiff(trained.data() + d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -175,11 +175,11 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -196,11 +196,11 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 16>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -219,11 +219,11 @@ struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
 template <class Codec>
 struct QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 8>
         : QuantizerTemplate<Codec, QuantizerTemplateScaling::NON_UNIFORM, 1> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      1>(d, trained) {}
+                      1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -252,7 +252,8 @@ template <>
 struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
+    QuantizerFP16(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -277,8 +278,8 @@ struct QuantizerFP16<1> : ScalarQuantizer::SQuantizer {
 
 template <>
 struct QuantizerFP16<16> : QuantizerFP16<1> {
-    QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+    QuantizerFP16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -293,8 +294,8 @@ struct QuantizerFP16<16> : QuantizerFP16<1> {
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
-    QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+    QuantizerFP16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -309,8 +310,8 @@ struct QuantizerFP16<8> : QuantizerFP16<1> {
 
 template <>
 struct QuantizerFP16<8> : QuantizerFP16<1> {
-    QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16<1>(d, trained) {}
+    QuantizerFP16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerFP16<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -333,7 +334,8 @@ template <>
 struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerBF16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
+    QuantizerBF16(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -358,8 +360,8 @@ struct QuantizerBF16<1> : ScalarQuantizer::SQuantizer {
 
 template <>
 struct QuantizerBF16<16> : QuantizerBF16<1> {
-    QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+    QuantizerBF16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d_in, trained) {}
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
         __m256i code_256i = _mm256_loadu_si256((const __m256i*)(code + 2 * i));
@@ -373,8 +375,8 @@ struct QuantizerBF16<16> : QuantizerBF16<1> {
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
-    QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+    QuantizerBF16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -391,8 +393,8 @@ struct QuantizerBF16<8> : QuantizerBF16<1> {
 
 template <>
 struct QuantizerBF16<8> : QuantizerBF16<1> {
-    QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16<1>(d, trained) {}
+    QuantizerBF16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerBF16<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -417,8 +419,8 @@ template <>
 struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
-            : d(d) {}
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -443,8 +445,8 @@ struct Quantizer8bitDirect<1> : ScalarQuantizer::SQuantizer {
 
 template <>
 struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
-    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -458,8 +460,8 @@ struct Quantizer8bitDirect<16> : Quantizer8bitDirect<1> {
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
-    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -475,8 +477,8 @@ struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
 
 template <>
 struct Quantizer8bitDirect<8> : Quantizer8bitDirect<1> {
-    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirect<1>(d, trained) {}
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirect<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -505,8 +507,10 @@ template <>
 struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& /* unused */)
-            : d(d) {}
+    Quantizer8bitDirectSigned(
+            size_t d_in,
+            const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -531,8 +535,8 @@ struct Quantizer8bitDirectSigned<1> : ScalarQuantizer::SQuantizer {
 
 template <>
 struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+    Quantizer8bitDirectSigned(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
@@ -548,8 +552,8 @@ struct Quantizer8bitDirectSigned<16> : Quantizer8bitDirectSigned<1> {
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+    Quantizer8bitDirectSigned(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
@@ -567,8 +571,8 @@ struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
 
 template <>
 struct Quantizer8bitDirectSigned<8> : Quantizer8bitDirectSigned<1> {
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSigned<1>(d, trained) {}
+    Quantizer8bitDirectSigned(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirectSigned<1>(d_in, trained) {}
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {

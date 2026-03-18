@@ -27,10 +27,13 @@ using rabitq_utils::QueryFactorsData;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
 
-RaBitQuantizer::RaBitQuantizer(size_t d, MetricType metric, size_t nb_bits)
-        : Quantizer(d, 0), // code_size will be set below
+RaBitQuantizer::RaBitQuantizer(
+        size_t d_in,
+        MetricType metric,
+        size_t nb_bits_in)
+        : Quantizer(d_in, 0), // code_size will be set below
           metric_type{metric},
-          nb_bits{nb_bits} {
+          nb_bits{nb_bits_in} {
     // Validate nb_bits range
     FAISS_THROW_IF_NOT(nb_bits >= 1 && nb_bits <= 9);
 
@@ -38,7 +41,7 @@ RaBitQuantizer::RaBitQuantizer(size_t d, MetricType metric, size_t nb_bits)
     code_size = compute_code_size(d, nb_bits);
 }
 
-size_t RaBitQuantizer::compute_code_size(size_t d, size_t num_bits) const {
+size_t RaBitQuantizer::compute_code_size(size_t d_in, size_t num_bits) const {
     // Validate inputs
     FAISS_THROW_IF_NOT(num_bits >= 1 && num_bits <= 9);
 
@@ -50,7 +53,7 @@ size_t RaBitQuantizer::compute_code_size(size_t d, size_t num_bits) const {
     // Layout for multi-bit: [binary_code: (d+7)/8
     // bytes][SignBitFactorsWithError: 12 bytes]
     //   factors = or_minus_c_l2sqr (4) + dp_multiplier (4) + f_error (4)
-    size_t base_size = (d + 7) / 8 +
+    size_t base_size = (d_in + 7) / 8 +
             (ex_bits == 0 ? sizeof(SignBitFactors)
                           : sizeof(SignBitFactorsWithError));
 
@@ -58,7 +61,7 @@ size_t RaBitQuantizer::compute_code_size(size_t d, size_t num_bits) const {
     // Layout: [ex_code: (d*ex_bits+7)/8 bytes][ex_factors: 8 bytes]
     size_t ex_size = 0;
     if (ex_bits > 0) {
-        ex_size = (d * ex_bits + 7) / 8 + sizeof(ExtraBitsFactors);
+        ex_size = (d_in * ex_bits + 7) / 8 + sizeof(ExtraBitsFactors);
     }
 
     return base_size + ex_size;
@@ -92,7 +95,7 @@ void RaBitQuantizer::compute_codes_core(
 
     // Compute codes
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         // Pointer to this vector's code
         uint8_t* code = codes + i * code_size;
 
@@ -186,7 +189,7 @@ void RaBitQuantizer::decode_core(
     const size_t ex_bits = nb_bits - 1;
 
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const uint8_t* code = codes + i * code_size;
 
         // split the code into parts
