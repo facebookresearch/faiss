@@ -574,6 +574,13 @@ void ParameterSpace::set_index_parameter(
         }
     }
 
+    if (name == "prune_headroom") {
+        if (DC(IndexHNSW)) {
+            ix->hnsw.prune_headroom = val;
+            return;
+        }
+    }
+
     if (name == "efConstruction") {
         if (DC(IndexHNSW)) {
             ix->hnsw.efConstruction = int(val);
