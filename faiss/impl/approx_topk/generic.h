@@ -16,16 +16,12 @@
 
 namespace faiss {
 
-// This is the implementation of the idea and it is very slow,
-// because a compiler is unable to vectorize it properly.
-
-template <typename C, uint32_t NBUCKETS, uint32_t N>
-struct HeapWithBuckets {
-    // this case was not implemented yet.
-};
+// Scalar (generic) implementation of HeapWithBuckets.
+// This is correct but slow because a compiler is unable to
+// vectorize it properly. Used as the SIMDLevel::NONE fallback.
 
 template <uint32_t NBUCKETS, uint32_t N>
-struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
+struct HeapWithBucketsGenericCMaxFloat {
     static void addn(
             // number of elements
             const uint32_t n,
@@ -134,5 +130,16 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
         }
     }
 };
+
+// Legacy name kept for backward compatibility (used when
+// approx_topk.h is not included).
+template <typename C, uint32_t NBUCKETS, uint32_t N>
+struct HeapWithBucketsGeneric {
+    // not implemented for arbitrary C
+};
+
+template <uint32_t NBUCKETS, uint32_t N>
+struct HeapWithBucketsGeneric<CMax<float, int>, NBUCKETS, N>
+        : HeapWithBucketsGenericCMaxFloat<NBUCKETS, N> {};
 
 } // namespace faiss
