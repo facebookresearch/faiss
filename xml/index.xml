@@ -12542,7 +12542,7 @@
     <member refid="namespacefaiss_1_1gpu_1a44bd51d4a1b6c300dbb9ac2192dce14b" kind="function"><name>compareLists</name></member>
     <member refid="namespacefaiss_1_1gpu_1a589a55d85f293c1ed9905e5aac936776" kind="function"><name>testIVFEquality</name></member>
     <member refid="namespacefaiss_1_1gpu_1a0e7259c8fad696cd1c584575b1acf981" kind="function"><name>convert_to_bitset</name></member>
-    <member refid="namespacefaiss_1_1gpu_1a4ad217abc64c139f6788145db3b4b4b6" kind="function"><name>metricFaissToCuvs</name></member>
+    <member refid="namespacefaiss_1_1gpu_1abd145b4a4f9a03963167367460b4fe7a" kind="function"><name>metricFaissToCuvs</name></member>
     <member refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
     <member refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>
     <member refid="namespacefaiss_1_1gpu_1a18ddaf734a629ded5ad2a2f235937298" kind="function"><name>getCurrentDevice</name></member>

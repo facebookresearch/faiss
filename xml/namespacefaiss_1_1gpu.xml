@@ -184,6 +184,7 @@
         <qualifiedname>faiss::gpu::search_algo</qualifiedname>
         <enumvalue id="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02af332a3fd29e620d4e2bef25d02e1aff0" prot="public">
           <name>SINGLE_CTA</name>
+          <initializer>= 0</initializer>
           <briefdescription>
 <para>For large batch sizes. </para>
           </briefdescription>
@@ -192,6 +193,7 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a20aa6f7eb96e3f630bb0c0a8f4acffeb" prot="public">
           <name>MULTI_CTA</name>
+          <initializer>= 1</initializer>
           <briefdescription>
 <para>For small batch sizes. </para>
           </briefdescription>
@@ -200,6 +202,7 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02a244534a9bc2ff7a11ac470ef0eff013b" prot="public">
           <name>MULTI_KERNEL</name>
+          <initializer>= 2</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -207,6 +210,7 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1_1gpu_1a26fa43c3f1c5f5fef391e79a6ced2c02ae1f2d5134ed2543d38a0de9751cf75d9" prot="public">
           <name>AUTO</name>
+          <initializer>= 100</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -226,6 +230,7 @@
         <qualifiedname>faiss::gpu::hash_mode</qualifiedname>
         <enumvalue id="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821ea50b7748612b28db487d115f220bb77ab" prot="public">
           <name>HASH</name>
+          <initializer>= 0</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -233,6 +238,7 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821ea9b9c17e13f0e3dc9860a26e08b59b2a7" prot="public">
           <name>SMALL</name>
+          <initializer>= 1</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -240,6 +246,7 @@
         </enumvalue>
         <enumvalue id="namespacefaiss_1_1gpu_1a9b883db6f85c9d03606d01b0fd01821eae1f2d5134ed2543d38a0de9751cf75d9" prot="public">
           <name>AUTO</name>
+          <initializer>= 100</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
@@ -1589,9 +1596,9 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/CuvsFilterConvert.h" line="36" column="6" declfile="faiss/gpu/utils/CuvsFilterConvert.h" declline="36" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a4ad217abc64c139f6788145db3b4b4b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type>cuvsDistanceType</type>
-        <definition>cuvsDistanceType faiss::gpu::metricFaissToCuvs</definition>
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1abd145b4a4f9a03963167367460b4fe7a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>cuvs::distance::DistanceType</type>
+        <definition>cuvs::distance::DistanceType faiss::gpu::metricFaissToCuvs</definition>
         <argsstring>(MetricType metric, bool exactDistance)</argsstring>
         <name>metricFaissToCuvs</name>
         <qualifiedname>faiss::gpu::metricFaissToCuvs</qualifiedname>
@@ -1609,7 +1616,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/utils/CuvsUtils.h" line="36" column="25" bodyfile="faiss/gpu/utils/CuvsUtils.h" bodystart="36" bodyend="59"/>
+        <location file="faiss/gpu/utils/CuvsUtils.h" line="36" column="37" bodyfile="faiss/gpu/utils/CuvsUtils.h" bodystart="36" bodyend="59"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
