@@ -10,6 +10,7 @@
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler" prot="public">faiss::simd_result_handlers::RangeHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1ReservoirHandler" prot="public">faiss::simd_result_handlers::ReservoirHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare" prot="public">faiss::simd_result_handlers::ResultHandlerCompare</innerclass>
+    <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleQueryResultCollectHandler" prot="public">faiss::simd_result_handlers::SingleQueryResultCollectHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" prot="public">faiss::simd_result_handlers::SingleResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler" prot="public">faiss::simd_result_handlers::StoreResultHandler</innerclass>
     <sectiondef kind="func">
@@ -38,7 +39,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="802" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="802" bodyend="854"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="986" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="986" bodyend="1043"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

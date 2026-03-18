@@ -1044,7 +1044,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="98" column="23" declfile="faiss/impl/fast_scan/simd_result_handlers.h" declline="98" declcolumn="23"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="170" column="23" declfile="faiss/impl/fast_scan/simd_result_handlers.h" declline="170" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>
@@ -2452,7 +2452,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="51" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="51" bodyend="67"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="51" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="51" bodyend="65"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a41e9eb9902fa6b72e8ac13d2764c7291" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2510,7 +2510,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="70" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="70" bodyend="105"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="68" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="68" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aba3af6f1fcc2aeaade605527062cf06f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2565,7 +2565,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="112" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="112" bodyend="149"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="110" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="110" bodyend="145"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ae22d2a4b71203ce7a29e0aaa76288ef6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2619,7 +2619,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="152" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="152" bodyend="224"/>
+        <location file="faiss/impl/fast_scan/accumulate_loops.h" line="148" column="6" bodyfile="faiss/impl/fast_scan/accumulate_loops.h" bodystart="148" bodyend="219"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a533228fd21a496e24d7a29d10dc2f294" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2721,7 +2721,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="41" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="41" bodyend="78"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="41" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="41" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab2cdafb564f602faae14fd86e6446932" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2776,7 +2776,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="81" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="81" bodyend="95"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="79" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="79" bodyend="91"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0d9870d705865445badfccdebd671379" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2830,7 +2830,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="99" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="99" bodyend="126"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="95" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="95" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ab37c374f16eceb3ce5c4fff02d33ed2c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -2885,7 +2885,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="129" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="129" bodyend="203"/>
+        <location file="faiss/impl/fast_scan/decompose_qbs.h" line="125" column="6" bodyfile="faiss/impl/fast_scan/decompose_qbs.h" bodystart="125" bodyend="198"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1acfe6e3147630ecd2e0638b34b5de1a96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
