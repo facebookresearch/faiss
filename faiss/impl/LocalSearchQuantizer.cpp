@@ -154,12 +154,15 @@ lsq::LSQTimer lsq_timer;
 using lsq::LSQTimerScope;
 
 LocalSearchQuantizer::LocalSearchQuantizer(
-        size_t d,
-        size_t M,
-        size_t nbits,
-        Search_type_t search_type)
-        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
-    K = (1 << nbits);
+        size_t d_in,
+        size_t M_in,
+        size_t nbits_in,
+        Search_type_t search_type_in)
+        : AdditiveQuantizer(
+                  d_in,
+                  std::vector<size_t>(M_in, nbits_in),
+                  search_type_in) {
+    K = (1 << nbits_in);
     std::srand(random_seed);
 }
 
@@ -170,7 +173,7 @@ LocalSearchQuantizer::~LocalSearchQuantizer() {
 LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
-    FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
+    FAISS_THROW_IF_NOT(K == static_cast<size_t>(1 << nbits[0]));
     nperts = std::min(nperts, M);
 
     lsq_timer.reset();
@@ -194,7 +197,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     std::vector<float> stddev(d, 0);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < d; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(d); i++) {
         float mean = 0;
         for (size_t j = 0; j < n; j++) {
             mean += x[j * d + i];
@@ -362,7 +365,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -427,7 +430,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -540,7 +543,7 @@ void LocalSearchQuantizer::icm_encode_impl(
         std::mt19937& gen,
         size_t n,
         size_t ils_iters,
-        bool verbose) const {
+        bool verbose_in) const {
     std::vector<float> unaries(n * M * K); // [M, n, K]
     compute_unary_terms(x, unaries.data(), n);
 
@@ -564,7 +567,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         // select the best code for every vector xi
 #pragma omp parallel for reduction(+ : n_betters, mean_obj)
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             if (icm_objs[i] < best_objs[i]) {
                 best_objs[i] = icm_objs[i];
                 memcpy(best_codes.data() + i * M,
@@ -578,7 +581,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
 
-        if (verbose) {
+        if (verbose_in) {
             printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
                    iter1,
                    mean_obj,
@@ -598,7 +601,7 @@ void LocalSearchQuantizer::icm_encode_step(
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
 #pragma omp parallel for schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         std::vector<float> objs(K);
 
         for (size_t iter = 0; iter < n_iters; iter++) {
@@ -635,7 +638,7 @@ void LocalSearchQuantizer::icm_encode_step(
                     }
 #endif
 
-                    for (int32_t code = 0; code < K; code++) {
+                    for (size_t code = 0; code < K; code++) {
                         int32_t code2 = codes[i * M + other_m];
                         size_t binary_idx = other_m * M * K * K + m * K * K +
                                 code2 * K + code;
@@ -687,7 +690,7 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
 
     with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-        for (int64_t m12 = 0; m12 < M * M; m12++) {
+        for (int64_t m12 = 0; m12 < static_cast<int64_t>(M * M); m12++) {
             size_t m1 = m12 / M;
             size_t m2 = m12 % M;
 
@@ -744,7 +747,7 @@ void LocalSearchQuantizer::compute_unary_terms(
     fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         for (size_t m = 0; m < M; m++) {
             float* u = unaries + m * n * K + i * K;
             fvec_add(K, u, norms.data() + m * K, u);
@@ -766,7 +769,7 @@ float LocalSearchQuantizer::evaluate(
     with_simd_level([&]<SIMDLevel SL>() {
         float local_obj = 0.0f;
 #pragma omp parallel for reduction(+ : local_obj)
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             const auto code = codes + i * M;
             const auto decoded_i = decoded_x.data() + i * d;
             for (size_t m = 0; m < M; m++) {
@@ -791,8 +794,8 @@ float LocalSearchQuantizer::evaluate(
 
 namespace lsq {
 
-IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq)
-        : verbose(false), lsq(lsq) {}
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq_in)
+        : verbose(false), lsq(lsq_in) {}
 
 void IcmEncoder::set_binary_term() {
     auto M = lsq->M;
@@ -830,8 +833,8 @@ void LSQTimer::reset() {
     t.clear();
 }
 
-LSQTimerScope::LSQTimerScope(LSQTimer* timer, std::string name)
-        : timer(timer), name(std::move(name)), finished(false) {
+LSQTimerScope::LSQTimerScope(LSQTimer* timer_in, std::string name_in)
+        : timer(timer_in), name(std::move(name_in)), finished(false) {
     t0 = getmillisecs();
 }
 

@@ -37,8 +37,8 @@ struct QuantizerTemplate<
     const size_t d;
     const float vmin, vdiff;
 
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : d(d), vmin(trained[0]), vdiff(trained[1]) {}
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
+            : d(d_in), vmin(trained[0]), vdiff(trained[1]) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -79,8 +79,8 @@ struct QuantizerTemplate<
     const size_t d;
     const float *vmin, *vdiff;
 
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
-            : d(d), vmin(trained.data()), vdiff(trained.data() + d) {}
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
+            : d(d_in), vmin(trained.data()), vdiff(trained.data() + d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -124,7 +124,8 @@ template <>
 struct QuantizerFP16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerFP16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
+    QuantizerFP16(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -161,7 +162,8 @@ template <>
 struct QuantizerBF16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    QuantizerBF16(size_t d, const std::vector<float>& /* unused */) : d(d) {}
+    QuantizerBF16(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -198,8 +200,8 @@ template <>
 struct Quantizer8bitDirect<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirect(size_t d, const std::vector<float>& /* unused */)
-            : d(d) {}
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
@@ -237,8 +239,10 @@ struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
         : ScalarQuantizer::SQuantizer {
     const size_t d;
 
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& /* unused */)
-            : d(d) {}
+    Quantizer8bitDirectSigned(
+            size_t d_in,
+            const std::vector<float>& /* unused */)
+            : d(d_in) {}
 
     void encode_vector(const float* x, uint8_t* code) const final {
         for (size_t i = 0; i < d; i++) {
