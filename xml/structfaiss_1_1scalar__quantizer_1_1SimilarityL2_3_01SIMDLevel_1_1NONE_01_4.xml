@@ -96,15 +96,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1a7f743998576e72e255389b898e04ee37" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1abf82c14316cab5eca99ac289bcb6f3ad" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;::SimilarityL2</definition>
-        <argsstring>(const float *y)</argsstring>
+        <argsstring>(const float *y_in)</argsstring>
         <name>SimilarityL2</name>
         <qualifiedname>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;::SimilarityL2</qualifiedname>
         <param>
           <type>const float *</type>
-          <declname>y</declname>
+          <declname>y_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -197,7 +197,7 @@
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1aad762933b9b63c13a7c58f2a22573529" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>result</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1aa2cde9d452786b9215502816a3d941f9" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>simd_level</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1aae55276c2388da40385a245dfc6689d1" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>simdwidth</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1a7f743998576e72e255389b898e04ee37" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>SimilarityL2</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1abf82c14316cab5eca99ac289bcb6f3ad" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>SimilarityL2</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1af46db60b881446a587990626cd3b5d66" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>y</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1SimilarityL2_3_01SIMDLevel_1_1NONE_01_4_1ab57947560ab8b3c45457443ce55dbd5f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::SimilarityL2&lt; SIMDLevel::NONE &gt;</scope><name>yi</name></member>
     </listofallmembers>

@@ -18,19 +18,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="162" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="162" bodyend="-1"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="163" column="18" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="163" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a7c751f107951912d96f3b7449f3ca17f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a637bf5ababf10345db2de22563d655c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::QuantizerBF16</definition>
-        <argsstring>(size_t d, const std::vector&lt; float &gt; &amp;)</argsstring>
+        <argsstring>(size_t d_in, const std::vector&lt; float &gt; &amp;)</argsstring>
         <name>QuantizerBF16</name>
         <qualifiedname>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;::QuantizerBF16</qualifiedname>
         <param>
           <type>size_t</type>
-          <declname>d</declname>
+          <declname>d_in</declname>
         </param>
         <param>
           <type>const std::vector&lt; float &gt; &amp;</type>
@@ -41,7 +41,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="164" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="164" bodyend="164"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="165" column="5" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="165" bodyend="166"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a0743a049bdadffd7b3823ea3aee3ac79" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -64,7 +64,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="166" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="166" bodyend="170"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="168" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="168" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1aa7f06c29da6036d96eb94a0750dac0b2" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
         <type>void</type>
@@ -87,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="172" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="172" bodyend="176"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="174" column="10" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="174" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab0e067b24664dc0570f2c93280049424" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>FAISS_ALWAYS_INLINE float</type>
@@ -109,7 +109,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="178" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="178" bodyend="182"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="180" column="31" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="180" bodyend="184"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -140,12 +140,12 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="161" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="161" bodyend="183"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="162" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="162" bodyend="185"/>
     <listofallmembers>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a5ee9cb2cce6d52fe0d6a3ec22bc0c8e3" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>d</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1aa7f06c29da6036d96eb94a0750dac0b2" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>decode_vector</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a0743a049bdadffd7b3823ea3aee3ac79" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>encode_vector</name></member>
-      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a7c751f107951912d96f3b7449f3ca17f" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>QuantizerBF16</name></member>
+      <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1a637bf5ababf10345db2de22563d655c4" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>QuantizerBF16</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1QuantizerBF16_3_01SIMDLevel_1_1NONE_01_4_1ab0e067b24664dc0570f2c93280049424" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>reconstruct_component</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1_1SQuantizer_1a7bcf9d28e040273cf78b9c3b76097cb4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::QuantizerBF16&lt; SIMDLevel::NONE &gt;</scope><name>~SQuantizer</name></member>
     </listofallmembers>

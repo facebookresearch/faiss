@@ -156,7 +156,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="129" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="129" declcolumn="20"/>
+        <location file="faiss/impl/scalar_quantizer/distance_computers.h" line="130" column="20" declfile="faiss/impl/scalar_quantizer/distance_computers.h" declline="130" declcolumn="20"/>
       </memberdef>
       <memberdef kind="function" id="quantizers_8h_1a58372b4312405a8863e41082b9bd9c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -189,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="273" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="273" declcolumn="29"/>
+        <location file="faiss/impl/scalar_quantizer/quantizers.h" line="277" column="29" declfile="faiss/impl/scalar_quantizer/quantizers.h" declline="277" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="scanners_8h_1a93720e4ec0d8f806eb62c46db3e0ab04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

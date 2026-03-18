@@ -13,7 +13,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="186" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="186" bodyend="188"/>
+    <location file="faiss/impl/scalar_quantizer/quantizers.h" line="188" column="1" bodyfile="faiss/impl/scalar_quantizer/quantizers.h" bodystart="188" bodyend="190"/>
     <listofallmembers>
     </listofallmembers>
   </compounddef>
