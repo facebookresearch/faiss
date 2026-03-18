@@ -22,18 +22,22 @@ namespace faiss {
  * IndexLSH
  ***************************************************************/
 
-IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
-        : IndexFlatCodes((nbits + 7) / 8, d),
-          nbits(nbits),
-          rotate_data(rotate_data),
-          train_thresholds(train_thresholds),
-          rrot(d, nbits) {
-    is_trained = !train_thresholds;
+IndexLSH::IndexLSH(
+        idx_t d_in,
+        int nbits_in,
+        bool rotate_data_in,
+        bool train_thresholds_in)
+        : IndexFlatCodes((nbits_in + 7) / 8, d_in),
+          nbits(nbits_in),
+          rotate_data(rotate_data_in),
+          train_thresholds(train_thresholds_in),
+          rrot(d_in, nbits_in) {
+    is_trained = !train_thresholds_in;
 
-    if (rotate_data) {
+    if (rotate_data_in) {
         rrot.init(5);
     } else {
-        FAISS_THROW_IF_NOT(d >= nbits);
+        FAISS_THROW_IF_NOT(d_in >= nbits_in);
     }
 }
 
