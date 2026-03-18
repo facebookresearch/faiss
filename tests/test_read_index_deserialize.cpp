@@ -14,6 +14,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
@@ -190,6 +191,98 @@ TEST(ReadIndexDeserialize, PQCentroidsOverflow) {
     push_pq(buf, /*d=*/huge_d, /*M=*/1, /*nbits=*/24);
 
     expect_read_throws(buf);
+}
+
+// -----------------------------------------------------------------------
+// Test: READVECTOR rejects a vector whose total byte size exceeds the
+// configurable deserialization byte limit.  Uses a LinearTransform
+// ("LTra") whose A vector is read via READVECTOR.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, READVECTORByteLimit) {
+    // Build a "LTra" (LinearTransform) payload.
+    // Format: fourcc + have_bias + READVECTOR(A) + READVECTOR(b)
+    //         + d_in + d_out + is_trained
+    // A contains 1024 floats = 4096 bytes.
+    // READVECTOR check: size < limit / sizeof(float)
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const int d_in = 32;
+    const int d_out = 32;
+    const size_t n_elements = d_in * d_out; // 1024
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "LTra");
+    push_val<bool>(buf, false); // have_bias
+    std::vector<float> A(n_elements, 0.0f);
+    push_vector<float>(buf, A);
+    // b vector: empty (no bias)
+    push_vector<float>(buf, {});
+    // Common VectorTransform fields
+    push_val<int>(buf, d_in);
+    push_val<int>(buf, d_out);
+    push_val<bool>(buf, true); // is_trained
+
+    // Exactly at the boundary: limit = n_elements * sizeof(float).
+    // Check is strict less-than, so this should be rejected.
+    set_deserialization_vector_byte_limit(n_elements * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_THROW(read_VectorTransform_up(&reader), FaissException);
+    }
+
+    // One element above the boundary: limit = (n_elements + 1) * sizeof(float).
+    // Now n_elements < limit / sizeof(float) = n_elements + 1, so it passes.
+    set_deserialization_vector_byte_limit((n_elements + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_VectorTransform_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductQuantizer centroids allocation is rejected when it would
+// exceed the configurable deserialization byte limit.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, PQCentroidsByteLimit) {
+    // d=8, M=1, nbits=8 → ksub=256, centroids = 8*256 = 2048 floats.
+    // PQ check: n < limit / sizeof(float), where n = d * ksub = 2048.
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+
+    const size_t d = 8;
+    const size_t M = 1;
+    const size_t nbits = 8;
+    const size_t ksub = size_t{1} << nbits;
+    const size_t n_elements = d * ksub; // 2048
+    std::vector<float> centroids(n_elements, 0.0f);
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Imiq");
+    push_index_header(buf, /*d=*/d, /*ntotal=*/0);
+    push_pq(buf, d, M, nbits, centroids);
+
+    // Exactly at the boundary: limit = n_elements * sizeof(float).
+    // Check is strict less-than, so this should be rejected.
+    set_deserialization_vector_byte_limit(n_elements * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_THROW(read_index_up(&reader), FaissException);
+    }
+
+    // One element above the boundary: limit = (n_elements + 1) * sizeof(float).
+    // Now n_elements < limit / sizeof(float) = n_elements + 1, so it passes.
+    set_deserialization_vector_byte_limit((n_elements + 1) * sizeof(float));
+    {
+        VectorIOReader reader;
+        reader.data = buf;
+        EXPECT_NO_THROW(read_index_up(&reader));
+    }
+
+    set_deserialization_vector_byte_limit(old_limit);
 }
 
 // -----------------------------------------------------------------------

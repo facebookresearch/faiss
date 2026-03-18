@@ -69,6 +69,12 @@ struct ClusteringParameters {
     /// Only used when init_method = AFK_MC2.
     /// Longer chains give better approximation but are slower.
     uint16_t afkmc2_chain_length = 50;
+
+    /// Early stop threshold, the range is [0, 1].
+    /// The value of 0 implies a default Faiss behavior,
+    /// so the training process stops only if an error
+    /// is unchanged from the previous iteration.
+    double early_stop_threshold = 0.0;
 };
 
 struct ClusteringIterationStats {

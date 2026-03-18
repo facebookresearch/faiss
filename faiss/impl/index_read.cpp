@@ -83,6 +83,7 @@ namespace faiss {
 
 namespace {
 size_t deserialization_loop_limit_ = 0;
+size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
 } // namespace
 
 size_t get_deserialization_loop_limit() {
@@ -91,6 +92,14 @@ size_t get_deserialization_loop_limit() {
 
 void set_deserialization_loop_limit(size_t value) {
     deserialization_loop_limit_ = value;
+}
+
+size_t get_deserialization_vector_byte_limit() {
+    return deserialization_vector_byte_limit_;
+}
+
+void set_deserialization_vector_byte_limit(size_t value) {
+    deserialization_vector_byte_limit_ = value;
 }
 
 #define FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(val, field_name) \
@@ -496,6 +505,15 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     READ1(pq->nbits);
     FAISS_THROW_IF_NOT_FMT(
             pq->M > 0, "invalid ProductQuantizer M=%zd (must be > 0)", pq->M);
+    FAISS_THROW_IF_NOT_FMT(
+            pq->nbits <= 24, "invalid ProductQuantizer nbits=%zd", pq->nbits);
+    {
+        size_t ksub = size_t{1} << pq->nbits;
+        size_t n = mul_no_overflow(pq->d, ksub, "PQ centroids");
+        FAISS_THROW_IF_NOT_MSG(
+                n < get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ centroids allocation would exceed deserialization byte limit");
+    }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
 }
