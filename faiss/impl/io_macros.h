@@ -51,6 +51,12 @@ size_t get_deserialization_vector_byte_limit();
                 size >= 0 &&                                             \
                 size < (faiss::get_deserialization_vector_byte_limit() / \
                         sizeof(*(vec).data())));                         \
+        FAISS_THROW_IF_NOT_FMT(                                          \
+                size <= SIZE_MAX / sizeof((vec)[0]),                     \
+                "READVECTOR: size %zu would overflow for element "       \
+                "size %zu",                                              \
+                size,                                                    \
+                sizeof((vec)[0]));                                       \
         (vec).resize(size);                                              \
         READANDCHECK((vec).data(), size);                                \
     }
