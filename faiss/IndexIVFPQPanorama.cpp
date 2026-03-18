@@ -205,6 +205,13 @@ struct IVFPQScannerPanorama : InvertedListScanner {
 
         pq.compute_inner_prod_table(qi, sim_table_2.data());
 
+        // The PQ distance LUT is -2 * inner_prod_table; apply in-place
+        // so scan_codes() can use sim_table_2 directly.
+        const size_t n = pq.M * pq.ksub;
+        for (size_t i = 0; i < n; i++) {
+            sim_table_2[i] *= -2.0f;
+        }
+
         // Compute query suffix sums → cum norms per level.
         std::vector<float> suffix(index.d + 1, 0.0f);
         for (int j = index.d - 1; j >= 0; j--) {
@@ -242,8 +249,6 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         const int n_levels = index.n_levels;
 
         const size_t n_batches = (list_size + bs - 1) / bs;
-        const size_t sim_table_size = pq.ksub * pq.M;
-
         // Panorama column-major codes for this list.
         const uint8_t* col_codes =
                 index.column_storage + index.column_offsets[list_no];
@@ -258,8 +263,7 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         std::vector<uint8_t> bitset(bs);
         std::vector<uint32_t> active_indices(bs);
         std::vector<uint8_t> compressed_codes(bs * cs);
-        std::vector<float> sim_table_cache(sim_table_size);
-        float dis0_cache = 0;
+        float dis0 = coarse_dis;
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t curr_batch_size =
@@ -283,26 +287,12 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                     list_cum_sums + b_offset * (n_levels + 1);
 
             size_t next_num_active = curr_batch_size;
-            float dis0 = 0;
             size_t batch_offset = batch_no * bs;
 
             for (int level = 0;
                  level < n_levels && next_num_active > 0;
                  level++) {
-                // Compute sim table for this level (cached across batches
-                // within same list, only for first batch).
                 size_t level_sim_offset = level * pq.ksub * cs;
-
-                if (level == 0 && batch_no == 0) {
-                    // Precompute LUT: sim_table = -2 * sim_table_2
-                    // (the precomputed_table term is added via dis0).
-                    dis0_cache = coarse_dis;
-                    const size_t n = pq.M * pq.ksub;
-                    for (size_t i = 0; i < n; i++) {
-                        sim_table_cache[i] = -2.0f * sim_table_2[i];
-                    }
-                }
-                dis0 = dis0_cache;
 
                 float query_cum_norm =
                         2 * query_cum_norms[level + 1];
@@ -314,7 +304,8 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                         batch_codes + bs * cs * level;
 
                 float* sim_table_level =
-                        sim_table_cache.data() + level_sim_offset;
+                        const_cast<float*>(sim_table_2.data()) +
+                        level_sim_offset;
 
                 bool is_sparse = next_num_active < bs / 16;
 
