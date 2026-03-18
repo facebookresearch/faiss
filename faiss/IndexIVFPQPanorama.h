@@ -1,34 +1,75 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #ifndef FAISS_INDEX_IVFPQ_PANORAMA_H
 #define FAISS_INDEX_IVFPQ_PANORAMA_H
 
 #include <vector>
 
 #include <faiss/IndexIVFPQ.h>
-#include <faiss/impl/platform_macros.h>
-#include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
+/// Panorama adaptation of IndexIVFPQ following
+/// https://www.arxiv.org/pdf/2510.00566.
+///
+/// IDEA:
+/// Panorama adapts the storage layout within each cluster and uses
+/// Cauchy-Schwarz pruning to skip unnecessary distance computations.
+/// Combined with orthogonal transforms upstream that concentrate signal
+/// energy in the early PQ subquantizers (like PCA), Panorama can prune
+/// the majority of candidates after computing only a fraction of the
+/// full PQ distance.
+///
+/// STORAGE LAYOUT:
+/// Standard IVFPQ stores codes row-major: [point0_code, point1_code, ...].
+/// Panorama transposes codes into column-major within each batch:
+/// for each batch of `batch_size` points, codes are stored as
+/// M columns of `batch_size` bytes each. The M columns are grouped
+/// into `n_levels` levels of `chunk_size` columns, enabling incremental
+/// distance computation level-by-level.
+///
+/// OVERHEAD:
+/// Panorama precomputes per-point cumulative residual norms and initial
+/// exact distances at insertion time. Storage overhead is
+/// (n_levels + 1) floats per point for cum_sums, plus 1 float per
+/// point for init_exact_distances.
+///
+/// CONSTRAINTS:
+/// - Only L2 metric is supported.
+/// - Only 8-bit PQ codes (nbits_per_idx == 8).
+/// - M must be divisible by n_levels.
+/// - batch_size must be a multiple of 64.
+/// - use_precomputed_table must be 1.
+///
+/// NOTE:
+/// We inherit from IndexIVFPQ and override only get_InvertedListScanner()
+/// and add(). The base IndexIVF::search_preassigned() handles all search
+/// orchestration — no search code is duplicated.
 struct IndexIVFPQPanorama : public IndexIVFPQ {
-    const int n_levels;
-    uint8_t* column_storage;
-
-    size_t* column_offsets;
-    float* cum_sums;
-    size_t* cum_sum_offsets;
-
-    float* init_exact_distances;
-    size_t* init_exact_distances_offsets;
-
-    const size_t chunk_size;
-    const size_t levels_size;
-    bool added;
-    size_t num_points;
+    int n_levels;
+    float epsilon;
     size_t batch_size;
-    size_t nbits_per_idx;
+
+    size_t chunk_size;
+    size_t levels_size;
     size_t m_level_width;
 
-    float epsilon;
+    bool added = false;
+    size_t num_points = 0;
+
+    uint8_t* column_storage = nullptr;
+    size_t* column_offsets = nullptr;
+
+    float* cum_sums = nullptr;
+    size_t* cum_sum_offsets = nullptr;
+
+    float* init_exact_distances = nullptr;
+    size_t* init_exact_distances_offsets = nullptr;
 
     IndexIVFPQPanorama(
             Index* quantizer,
@@ -42,27 +83,14 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
             MetricType metric = METRIC_L2,
             bool own_invlists = true);
 
+    IndexIVFPQPanorama() = default;
+
     void add(idx_t n, const float* x) override;
 
-    void search(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            float* distances,
-            idx_t* labels,
-            const SearchParameters* params_in) const;
-
-    void search_preassigned(
-            idx_t n,
-            const float* x,
-            idx_t k,
-            const idx_t* keys,
-            const float* coarse_dis,
-            float* distances,
-            idx_t* labels,
+    InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
-            const IVFSearchParameters* params,
-            IndexIVFStats* ivf_stats) const override;
+            const IDSelector* sel,
+            const IVFSearchParameters* params) const override;
 };
 
 } // namespace faiss

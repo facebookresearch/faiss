@@ -16,7 +16,7 @@ def fvecs_read(fname):
     return a.reshape(-1, d + 1)[:, 1:].copy()
 
 
-GIST_DIR = "/home/lutex/PCA_init"
+GIST_DIR = "/datasets/PCA_init"
 CACHE_DIR = "/home/lutex/faiss-panorama/index_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -74,7 +74,7 @@ def eval_recall(index, nprobe_val):
     return recall, qps
 
 
-# faiss.omp_set_num_threads(mp.cpu_count())
+faiss.omp_set_num_threads(mp.cpu_count())
 
 # --- IVFPQ baseline (cached) ---
 if os.path.exists(IVFPQ_CACHE):
@@ -109,41 +109,46 @@ for nprobe in [1, 2, 4, 8, 16]:
 # --- IVFPQPanorama (reuse trained PQ from cache) ---
 faiss.omp_set_num_threads(mp.cpu_count())
 
+
+def build_panorama_from_trained(trained_index):
+    quantizer2 = trained_index.quantizer
+    trained_index.own_fields = False
+
+    pano = faiss.IndexIVFPQPanorama(
+        quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
+    )
+    centroids = faiss.vector_to_array(trained_index.pq.centroids)
+    faiss.copy_array_to_vector(centroids, pano.pq.centroids)
+    pano.is_trained = True
+    pano.use_precomputed_table = 1
+    pano.precompute_table()
+    return pano
+
+
 if os.path.exists(IVFPQ_TRAINED_CACHE):
     print(f"\nLoading trained IVFPQ for Panorama from {IVFPQ_TRAINED_CACHE}...", flush=True)
     trained = faiss.read_index(IVFPQ_TRAINED_CACHE)
-    quantizer2 = trained.quantizer
-    trained.own_fields = False
-
-    ivfpq_pano = faiss.IndexIVFPQPanorama(
-        quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
-    )
-    centroids = faiss.vector_to_array(trained.pq.centroids)
-    faiss.copy_array_to_vector(centroids, ivfpq_pano.pq.centroids)
-    ivfpq_pano.is_trained = True
-    ivfpq_pano.use_precomputed_table = 1
-    ivfpq_pano.precompute_table()
-
+    ivfpq_pano = build_panorama_from_trained(trained)
     print("  Reused trained PQ (skipped training).", flush=True)
-    t0 = time.time()
-    ivfpq_pano.add(xb)
-    print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
 else:
     print(
-        f"\nBuilding IVFPQPanorama from scratch: nlist={nlist}, M={M}, nbits={nbits}, "
-        f"n_levels={n_levels}, epsilon={epsilon}, batch_size={batch_size}",
+        f"\nTraining IVFPQ for Panorama from scratch: nlist={nlist}, M={M}, nbits={nbits}",
         flush=True,
     )
     quantizer2 = faiss.IndexFlatL2(d)
-    ivfpq_pano = faiss.IndexIVFPQPanorama(
-        quantizer2, d, nlist, M, nbits, n_levels, epsilon, batch_size
-    )
+    trained = faiss.IndexIVFPQ(quantizer2, d, nlist, M, nbits)
     t0 = time.time()
-    ivfpq_pano.train(xt)
+    trained.train(xt)
     print(f"  Training took {time.time() - t0:.1f}s", flush=True)
-    t0 = time.time()
-    ivfpq_pano.add(xb)
-    print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
+
+    print(f"  Saving trained state to {IVFPQ_TRAINED_CACHE}...", flush=True)
+    faiss.write_index(trained, IVFPQ_TRAINED_CACHE)
+
+    ivfpq_pano = build_panorama_from_trained(trained)
+
+t0 = time.time()
+ivfpq_pano.add(xb)
+print(f"  Adding took {time.time() - t0:.1f}s", flush=True)
 
 faiss.omp_set_num_threads(1)
 print("\n====== IVFPQPanorama", flush=True)

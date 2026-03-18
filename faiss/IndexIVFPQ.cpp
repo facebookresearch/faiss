@@ -32,7 +32,6 @@
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
-#include <faiss/impl/panorama_kernels/panorama_kernels.h>
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
@@ -762,44 +761,6 @@ struct QueryTables {
 
         return dis0;
     }
-
-    float precompute_list_tables_L2_panorama(float* sim_table_ptr) {
-        float dis0 = 0;
-
-        if (use_precomputed_table == 1) {
-            dis0 = coarse_dis;
-
-            const size_t n = pq.M * pq.ksub;
-            const float bf = -2.0f;
-            const float* b = sim_table_2;
-            float* c = sim_table_ptr;
-
-            for (size_t idx = 0; idx < n; idx++) {
-                c[idx] = bf * b[idx];
-            }
-
-            sim_table = sim_table_ptr;
-        } else {
-            FAISS_THROW_MSG(
-                    "Panorama PQ only supports use_precomputed_table == 1");
-        }
-
-        return dis0;
-    }
-
-    float precompute_list_tables_panorama(float* sim_table_ptr) {
-        float dis0 = 0;
-        uint64_t t0;
-        TIC;
-        if (by_residual) {
-            if (metric_type == METRIC_INNER_PRODUCT)
-                dis0 = precompute_list_tables_IP();
-            else
-                dis0 = precompute_list_tables_L2_panorama(sim_table_ptr);
-        }
-        init_list_cycles += TOC;
-        return dis0;
-    }
 };
 
 template <class C, bool use_sel>
@@ -831,39 +792,6 @@ struct WrappedSearchResult {
     }
 };
 
-template <class C, bool use_sel>
-struct KnnSearchResultsPanorama {
-    idx_t key;
-    const idx_t* ids;
-    const IDSelector* sel;
-
-    size_t k;
-    float* heap_sim;
-    idx_t* heap_ids;
-
-    size_t nup;
-
-    inline bool skip_entry(idx_t j) {
-        return use_sel && !sel->is_member(ids[j]);
-    }
-
-    inline bool should_keep(float dis) {
-        return C::cmp(heap_sim[0], dis);
-    }
-
-    inline float top() {
-        return heap_sim[0];
-    }
-
-    inline void add(idx_t j, float dis) {
-        if (C::cmp(heap_sim[0], dis)) {
-            idx_t id = ids ? ids[j] : lo_build(key, j);
-            heap_replace_top<C>(k, heap_sim, heap_ids, dis, id);
-            nup++;
-        }
-    }
-};
-
 /*****************************************************
  * Scaning the codes.
  * The scanning functions call their favorite precompute_*
@@ -889,26 +817,6 @@ struct IVFPQScannerT : QueryTables {
 
         if (mode == 2) {
             dis0 = precompute_list_tables();
-        } else if (mode == 1) {
-            dis0 = precompute_list_table_pointers();
-        }
-    }
-
-    void init_list_panorama(
-            idx_t list_no,
-            float coarse_dis,
-            int mode,
-            float* sim_table,
-            float* dis0_ptr,
-            bool update) {
-        this->key = list_no;
-        this->coarse_dis = coarse_dis;
-
-        if (mode == 2) {
-            if (update) {
-                *dis0_ptr = precompute_list_tables_panorama(sim_table);
-            }
-            dis0 = *dis0_ptr;
         } else if (mode == 1) {
             dis0 = precompute_list_table_pointers();
         }
@@ -1298,193 +1206,6 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
     void set_list(idx_t list_no, float coarse_dis) override {
         this->list_no = list_no;
         this->init_list(list_no, coarse_dis, precompute_mode);
-    }
-
-    void set_list_panorama(
-            idx_t list_no,
-            float coarse_dis,
-            float* sim_table,
-            float* dis0_ptr,
-            bool update) override {
-        this->list_no = list_no;
-        this->init_list_panorama(
-                list_no,
-                coarse_dis,
-                precompute_mode,
-                sim_table,
-                dis0_ptr,
-                update);
-    }
-
-    void set_sim_table(float* sim_table, float dis0) override {
-        this->sim_table = sim_table;
-        this->dis0 = dis0;
-    }
-
-    // Panorama kernels (process_chunks, process_filtering,
-    // process_code_compression) are implemented in
-    // faiss/impl/panorama_kernels/ with scalar and AVX-512 variants.
-    // The linker selects the right one based on the SIMD compile target.
-
-    inline void process_chunks_sparse(
-            size_t chunk_size,
-            size_t max_batch_size,
-            size_t num_active,
-            float* sim_table,
-            const uint8_t* codes,
-            float* exact_distances,
-            uint32_t* active_indices,
-            size_t batch_offset,
-            size_t ksub) {
-        for (size_t ci = 0; ci < chunk_size; ci++) {
-            size_t chunk_offset = ci * max_batch_size;
-            float* chunk_sim_table = sim_table + ci * ksub;
-
-            for (size_t batch_idx = 0; batch_idx < num_active; batch_idx++) {
-                size_t real_idx = active_indices[batch_idx] - batch_offset;
-                uint8_t code = codes[chunk_offset + real_idx];
-                exact_distances[batch_idx] += chunk_sim_table[code];
-            }
-        }
-    }
-
-    size_t process_batch(
-            const ProductQuantizer& pq,
-            uint8_t* compressed_codes,
-            size_t cluster_id,
-            size_t batch_no,
-            float coarse_dis_i,
-            size_t curr_batch_size,
-            size_t max_batch_size,
-            size_t chunk_size,
-            float epsilon,
-            size_t n_levels,
-            const uint8_t* codes_batch,
-            float* cums,
-            float* query_cum_norms,
-            uint32_t* active_indices,
-            uint8_t* bitset,
-            float* exact_distances,
-            const idx_t* ids,
-            float* heap_sim,
-            idx_t* heap_ids,
-            size_t k,
-            float* dis0_cache,
-            float* sim_table_cache) override {
-        KnnSearchResultsPanorama<C, use_sel> res = {
-                this->key,
-                this->store_pairs ? nullptr : ids,
-                this->sel,
-                k,
-                heap_sim,
-                heap_ids,
-                0};
-        uint8_t* compressed_codes_begin = compressed_codes;
-        size_t total_active = 0;
-
-        // The remaining active elements computed at the end of each level.
-        // We initialize to `curr_batch_size` for continuity.
-        size_t next_num_active = curr_batch_size;
-        // For historical reasons, we initialize dis0 only at
-        // the beginning of the first level, but we need to access it after
-        // all levels have been processed, so we declare dis0 here.
-        float dis0 = 0;
-        // Given that `active_indices` indexes the cluster directly, we need
-        // to offset it by the batch offset when updating the bitset and
-        // accessing the cum_sums. This way we avoid yet another layer of
-        // indirection.
-        size_t batch_offset = batch_no * max_batch_size;
-        for (size_t level = 0; (level < n_levels) && (next_num_active > 0);
-             level++) {
-            total_active += next_num_active;
-
-            // This ensures the LUT is pointing to the right offset, and is
-            // properly initialized. We only compute dis0 distances once for
-            // each cluster, and cache the result.
-            size_t level_offset_sim_table = level * pq.ksub * chunk_size;
-            this->set_list_panorama(
-                    cluster_id,
-                    coarse_dis_i,
-                    sim_table_cache + level_offset_sim_table,
-                    dis0_cache, // Only init once for each cluster.
-                    level == 0 && batch_no == 0);
-            this->set_sim_table(
-                    sim_table_cache + level_offset_sim_table, *dis0_cache);
-
-            dis0 = this->dis0;
-
-            // We multiply by two here so we don't have to do it in the
-            // kernel.
-            float query_cum_norm = 2 * query_cum_norms[level + 1];
-
-            float heap_max = res.top();
-
-            // Codes has padding potentially, cumsum does not.
-            float* cum_sums = cums + curr_batch_size * level;
-            const uint8_t* codes =
-                    codes_batch + max_batch_size * chunk_size * level;
-
-            bool is_sparse = next_num_active < max_batch_size / 16;
-            float* sim_table = this->sim_table;
-
-            // Phase 1: Process all chunks and accumulate distances.
-            // We iterate over chunks first as this keeps the same LUT slice
-            // within the L1 cache. To avoid register thrashing, we unroll
-            // 4 chunks at a time.
-            size_t num_active_for_filtering = 0;
-            if (is_sparse) {
-                process_chunks_sparse(
-                        chunk_size,
-                        max_batch_size,
-                        next_num_active,
-                        sim_table,
-                        codes,
-                        exact_distances,
-                        active_indices,
-                        batch_offset,
-                        pq.ksub);
-                num_active_for_filtering = next_num_active;
-            } else {
-                auto [cc, na] =
-                        panorama_kernels::process_code_compression(
-                                next_num_active,
-                                max_batch_size,
-                                chunk_size,
-                                compressed_codes_begin,
-                                bitset,
-                                codes);
-
-                panorama_kernels::process_chunks(
-                        chunk_size,
-                        max_batch_size,
-                        na,
-                        sim_table,
-                        cc,
-                        exact_distances);
-                num_active_for_filtering = na;
-            }
-
-            // Phase 2: Filtering logic using accumulated distances.
-            next_num_active = panorama_kernels::process_filtering(
-                    num_active_for_filtering,
-                    exact_distances,
-                    active_indices,
-                    cum_sums,
-                    bitset,
-                    batch_offset,
-                    dis0,
-                    query_cum_norm,
-                    epsilon,
-                    heap_max);
-        }
-
-        // Phase 3: Insert remaining candidates to heap.
-        for (size_t batch_idx = 0; batch_idx < next_num_active; batch_idx++) {
-            res.add(active_indices[batch_idx],
-                    dis0 + exact_distances[batch_idx]);
-        }
-
-        return total_active;
     }
 
     float distance_to_code(const uint8_t* code) const override {
