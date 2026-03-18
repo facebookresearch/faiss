@@ -180,6 +180,7 @@ void beam_search_encode_step(
             }
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
+
             for (size_t j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / K;
                 int ls = perm[j] % K;
@@ -466,6 +467,7 @@ void beam_search_encode_step_tab(
         }
 
         heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
+
 
         for (size_t j = 0; j < new_beam_size; j++) {
             int js = perm[j] / K;

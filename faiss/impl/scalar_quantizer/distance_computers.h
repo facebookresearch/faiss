@@ -133,5 +133,6 @@ SQDistanceComputer* sq_select_distance_computer(
         size_t d,
         const std::vector<float>& trained);
 
+
 } // namespace scalar_quantizer
 } // namespace faiss

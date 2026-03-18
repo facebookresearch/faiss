@@ -59,6 +59,7 @@ struct SimilarityL2<SIMDLevel::NONE> {
 };
 
 template <SIMDLevel SL>
+
 struct SimilarityIP {};
 
 template <>
@@ -89,6 +90,7 @@ struct SimilarityIP<SIMDLevel::NONE> {
         return accu;
     }
 };
+
 
 } // namespace scalar_quantizer
 } // namespace faiss

@@ -162,6 +162,7 @@ ScalarQuantizer::SQDistanceComputer* ScalarQuantizer::get_distance_computer(
     });
 }
 
+
 InvertedListScanner* ScalarQuantizer::select_InvertedListScanner(
         MetricType mt,
         const Index* quantizer,
