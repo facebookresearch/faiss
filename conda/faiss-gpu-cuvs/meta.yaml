@@ -6,9 +6,10 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% set cuda_constraints=">=12.9,<13.0" %}
-{% set libcublas_constraints=">=12.9,<13.0" %}
-{% set cudart_constraints=">=12.9,<13.0" %}
+{% set cuda_major = (cudatoolkit | default("12.0")).split('.')[0] | int %}
+{% set cuda_constraints=">=13.2,<13.3" %}
+{% set libcublas_constraints=">=13.3,<13.4" %}  # libcublas 13.3 is actually for cuda 13.2
+{% set cudart_constraints=">=13.2,<13.3" %}
 
 package:
   name: faiss-pkg
@@ -117,13 +118,20 @@ outputs:
       requires:
         - numpy >=2.0,<2.3
         - scipy
+# TODO: remove cuda_major guard when we move to PyPI (pytorch via PyPI works on CUDA 13)
+{% if cuda_major < 13 %}
         - pytorch-gpu >=2.7
+{% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+{% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+{% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]
