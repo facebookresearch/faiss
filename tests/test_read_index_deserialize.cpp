@@ -16,6 +16,7 @@
 #include <faiss/IndexBinary.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -900,4 +901,40 @@ TEST(ReadIndexDeserialize, BlockInvertedListsValidCodesSize) {
     reader.data = buf;
     auto il = read_InvertedLists_up(&reader);
     EXPECT_NE(il, nullptr);
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductQuantizer centroids size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, PQCentroidsSizeMismatch) {
+    // "Imiq" (MultiIndexQuantizer): fourcc + index_header + PQ
+    // PQ: d=4, M=2, nbits=8 -> ksub=256, expected centroids = 4*256 = 1024
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Imiq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    std::vector<float> bad_centroids(100, 0.0f);
+    push_pq(buf, /*d=*/4, /*M=*/2, /*nbits=*/8, bad_centroids);
+
+    expect_read_throws_with(buf, "centroids size");
+}
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer trained vector size mismatch.
+// For QT_4bit (qtype=1), expected trained.size() = 2 * d.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQTrainedSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // ScalarQuantizer fields:
+    push_val<int>(
+            buf, ScalarQuantizer::QT_4bit); // expects trained.size()=2*d=8
+    push_val<int>(buf, 0);                  // rangestat
+    push_val<float>(buf, 0.0f);             // rangestat_arg
+    push_val<size_t>(buf, 4);               // d
+    push_val<size_t>(buf, 1);               // code_size
+    // trained: 3 floats instead of expected 8
+    push_vector<float>(buf, {1.0f, 2.0f, 3.0f});
+
+    expect_read_throws_with(buf, "ScalarQuantizer trained size");
 }

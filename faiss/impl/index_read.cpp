@@ -513,6 +513,13 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
     }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
+    FAISS_THROW_IF_NOT_FMT(
+            pq->centroids.size() == pq->d * pq->ksub,
+            "ProductQuantizer centroids size %zu != d * ksub (%zu * %zu = %zu)",
+            pq->centroids.size(),
+            pq->d,
+            pq->ksub,
+            pq->d * pq->ksub);
 }
 
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
@@ -646,6 +653,38 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->d);
     READ1(ivsc->code_size);
     READVECTOR(ivsc->trained);
+    // Validate trained vector size matches the quantizer type and dimension.
+    // An untrained ScalarQuantizer legitimately has trained.size() == 0,
+    // so only check when the vector is non-empty.
+    if (!ivsc->trained.empty()) {
+        size_t expected = 0;
+        switch (ivsc->qtype) {
+            case ScalarQuantizer::QT_4bit_uniform:
+            case ScalarQuantizer::QT_8bit_uniform:
+                expected = 2;
+                break;
+            case ScalarQuantizer::QT_4bit:
+            case ScalarQuantizer::QT_8bit:
+            case ScalarQuantizer::QT_6bit:
+                expected = 2 * ivsc->d;
+                break;
+            case ScalarQuantizer::QT_fp16:
+            case ScalarQuantizer::QT_bf16:
+            case ScalarQuantizer::QT_8bit_direct:
+            case ScalarQuantizer::QT_8bit_direct_signed:
+            case ScalarQuantizer::QT_count:
+                expected = 0;
+                break;
+        }
+        FAISS_THROW_IF_NOT_FMT(
+                ivsc->trained.size() == expected,
+                "ScalarQuantizer trained size %zu != expected %zu "
+                "for qtype %d, d %zu",
+                ivsc->trained.size(),
+                expected,
+                (int)ivsc->qtype,
+                ivsc->d);
+    }
     ivsc->set_derived_sizes();
 }
 
