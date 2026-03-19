@@ -68,6 +68,35 @@ float fvec_Linf(const float* x, const float* y, size_t d) {
     return fvec_Linf_dispatch(x, y, d);
 }
 
+float fvec_Linf_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float max_diff = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_linf =
+                fvec_Linf(x + processed, y + processed, current_batch);
+        if (batch_linf > max_diff) {
+            max_diff = batch_linf;
+        }
+        processed += current_batch;
+
+        if (max_diff > threshold) {
+            return max_diff;
+        }
+    }
+    return max_diff;
+}
+
 float fvec_norm_L2sqr(const float* x, size_t d) {
     return fvec_norm_L2sqr_dispatch(x, d);
 }
@@ -76,8 +105,67 @@ float fvec_L2sqr(const float* x, const float* y, size_t d) {
     return fvec_L2sqr_dispatch(x, y, d);
 }
 
+float fvec_L2sqr_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float sum = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_dist =
+                fvec_L2sqr(x + processed, y + processed, current_batch);
+        sum += batch_dist;
+        processed += current_batch;
+
+        if (sum > threshold) {
+            return sum;
+        }
+    }
+    return sum;
+}
+
 float fvec_inner_product(const float* x, const float* y, size_t d) {
     return fvec_inner_product_dispatch(x, y, d);
+}
+
+float fvec_inner_product_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold) {
+    FAISS_THROW_IF_NOT_MSG(batch_size > 0, "batch_size must be > 0");
+    float sum = 0.0f;
+    size_t processed = 0;
+
+    while (processed < d) {
+        size_t current_batch = (processed + batch_size <= d)
+                ? batch_size
+                : (d - processed);
+
+        float batch_ip = fvec_inner_product(
+                x + processed, y + processed, current_batch);
+        sum += batch_ip;
+        processed += current_batch;
+
+        // Optimistic bound: assume remaining dimensions each contribute +1.
+        // For normalized vectors, each dimension's product is in [-1, +1],
+        // so this is a valid upper bound on the final inner product.
+        size_t remaining = d - processed;
+        float optimistic = sum + static_cast<float>(remaining);
+        if (optimistic < threshold) {
+            return sum;
+        }
+    }
+    return sum;
 }
 
 void fvec_inner_product_batch_4(
@@ -300,7 +388,12 @@ void exhaustive_inner_product_seq(
                 if (!res.is_in_selection(j)) {
                     continue;
                 }
-                float ip = fvec_inner_product_dispatch(x_i, y_j, d);
+                // Use batched inner product with early abort: if the
+                // optimistic bound (partial sum + remaining dims) is
+                // below threshold, skip full computation. Only effective
+                // for pre-normalized vectors.
+                float ip = fvec_inner_product_batched(
+                        x_i, y_j, d, 16, resi.threshold);
                 resi.add_result(ip, j);
             }
             resi.end();
@@ -332,7 +425,12 @@ void exhaustive_L2sqr_seq(
                 if (!res.is_in_selection(j)) {
                     continue;
                 }
-                float disij = fvec_L2sqr_dispatch(x_i, y_j, d);
+                // Use batched L2 with early abort: if partial distance
+                // exceeds threshold, skip full computation. The threshold
+                // is the k-th best distance (heap top), so candidates
+                // that exceed it cannot enter the top-k results.
+                float disij = fvec_L2sqr_batched(
+                        x_i, y_j, d, 16, resi.threshold);
                 resi.add_result(disij, j);
             }
             resi.end();

@@ -31,11 +31,39 @@ float fvec_L2sqr(const float* x, const float* y, size_t d);
 template <SIMDLevel>
 float fvec_L2sqr(const float* x, const float* y, size_t d);
 
+/// Squared L2 distance with early abort. Processes dimensions in batches
+/// using existing SIMD fvec_L2sqr, checking threshold at batch boundaries.
+/// Returns partial or full distance. If partial distance exceeds threshold,
+/// returns early (result > threshold indicates abort).
+/// Optimal batch_size is typically 16 for most architectures, balancing
+/// early abort latency against branch prediction efficiency.
+float fvec_L2sqr_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold);
+
 /// inner product
 float fvec_inner_product(const float* x, const float* y, size_t d);
 
 template <SIMDLevel>
 float fvec_inner_product(const float* x, const float* y, size_t d);
+
+/// Inner product with early abort for normalized vectors. Processes dimensions
+/// in batches using existing SIMD fvec_inner_product, checking an optimistic
+/// bound at batch boundaries. The optimistic bound assumes remaining dimensions
+/// each contribute +1 to the dot product. If the optimistic bound is still
+/// below threshold, the candidate cannot beat the threshold and we abort early.
+/// Returns partial or full inner product. For early abort, result will be such
+/// that optimistic_bound < threshold.
+/// Only valid for pre-normalized vectors (||x|| = ||y|| = 1).
+float fvec_inner_product_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold);
 
 /// L1 distance
 float fvec_L1(const float* x, const float* y, size_t d);
@@ -48,6 +76,19 @@ float fvec_Linf(const float* x, const float* y, size_t d);
 
 template <SIMDLevel>
 float fvec_Linf(const float* x, const float* y, size_t d);
+
+/// Linf (Chebyshev) distance with early abort. Processes dimensions in batches
+/// using existing SIMD fvec_Linf, checking threshold at batch boundaries.
+/// The running maximum is monotonically non-decreasing, so the current max
+/// is a valid lower bound on the final distance.
+/// Returns partial or full Linf distance. If current max exceeds threshold,
+/// returns early (result > threshold indicates abort).
+float fvec_Linf_batched(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t batch_size,
+        float threshold);
 
 /// Special version of inner product that computes 4 distances
 /// between x and yi, which is performance oriented.

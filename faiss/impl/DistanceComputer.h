@@ -9,6 +9,8 @@
 
 #include <faiss/Index.h>
 
+#include <limits>
+
 namespace faiss {
 
 /***********************************************************
@@ -29,6 +31,28 @@ struct DistanceComputer {
 
     /// compute distance of vector i to current query
     virtual float operator()(idx_t i) = 0;
+
+    /// Compute distance of vector i to current query with early abort.
+    /// If the implementation can determine that the distance will exceed
+    /// threshold (for distance metrics) or fall below threshold (for
+    /// similarity metrics), it may return a partial result early.
+    /// Default implementation ignores threshold and computes full distance.
+    virtual float operator()(idx_t i, float /*threshold*/) {
+        return operator()(i);
+    }
+
+    /// Returns true if this implementation supports threshold-aware
+    /// distance computation via operator()(idx_t, float).
+    virtual bool supports_threshold() const {
+        return false;
+    }
+
+    /// Returns a degenerate threshold that causes no early abort.
+    /// For distance metrics (L2, Linf): +infinity (all distances pass).
+    /// For similarity metrics (IP): -infinity (all similarities pass).
+    virtual float degenerate_threshold() const {
+        return std::numeric_limits<float>::infinity();
+    }
 
     /// compute distances of current query to 4 stored vectors.
     /// certain DistanceComputer implementations may benefit
@@ -76,6 +100,19 @@ struct NegativeDistanceComputer : DistanceComputer {
     /// compute distance of vector i to current query
     float operator()(idx_t i) override {
         return -(*basedis)(i);
+    }
+
+    float operator()(idx_t i, float threshold) override {
+        // Negate threshold for the underlying similarity metric
+        return -(*basedis)(i, -threshold);
+    }
+
+    bool supports_threshold() const override {
+        return basedis->supports_threshold();
+    }
+
+    float degenerate_threshold() const override {
+        return -basedis->degenerate_threshold();
     }
 
     void distances_batch_4(
