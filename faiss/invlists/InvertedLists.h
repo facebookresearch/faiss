@@ -467,6 +467,46 @@ struct StopWordsInvertedLists : ReadOnlyInvertedLists {
     void prefetch_lists(const idx_t* list_nos, int nlist) const override;
 };
 
+/** Cap list sizes to maxsize for searching, while allowing writes.
+ *  Unlike StopWordsInvertedLists which skips large lists entirely,
+ *  this caps each list to maxsize entries (partial scan). */
+struct CappedInvertedLists : InvertedLists {
+    InvertedLists* il0;
+    size_t maxsize;
+
+    CappedInvertedLists(InvertedLists* il, size_t maxsize);
+
+    size_t list_size(size_t list_no) const override;
+    size_t real_list_size(size_t list_no) const;
+
+    const uint8_t* get_codes(size_t list_no) const override;
+    const idx_t* get_ids(size_t list_no) const override;
+
+    void release_codes(size_t list_no, const uint8_t* codes) const override;
+    void release_ids(size_t list_no, const idx_t* ids) const override;
+
+    idx_t get_single_id(size_t list_no, size_t offset) const override;
+    const uint8_t* get_single_code(size_t list_no, size_t offset)
+            const override;
+
+    void prefetch_lists(const idx_t* list_nos, int nlist) const override;
+
+    size_t add_entries(
+            size_t list_no,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void update_entries(
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const idx_t* ids,
+            const uint8_t* code) override;
+
+    void resize(size_t list_no, size_t new_size) override;
+};
+
 } // namespace faiss
 
 #endif

@@ -911,4 +911,77 @@ void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     il0->prefetch_lists(list0.data(), list0.size());
 }
 
+/*****************************************
+ * CappedInvertedLists implementation
+ ******************************************/
+
+CappedInvertedLists::CappedInvertedLists(InvertedLists* il0, size_t maxsize)
+        : InvertedLists(il0->nlist, il0->code_size),
+          il0(il0),
+          maxsize(maxsize) {}
+
+size_t CappedInvertedLists::list_size(size_t list_no) const {
+    size_t sz = il0->list_size(list_no);
+    return sz < maxsize ? sz : maxsize;
+}
+
+size_t CappedInvertedLists::real_list_size(size_t list_no) const {
+    return il0->list_size(list_no);
+}
+
+const uint8_t* CappedInvertedLists::get_codes(size_t list_no) const {
+    return il0->get_codes(list_no);
+}
+
+const idx_t* CappedInvertedLists::get_ids(size_t list_no) const {
+    return il0->get_ids(list_no);
+}
+
+void CappedInvertedLists::release_codes(size_t list_no, const uint8_t* codes)
+        const {
+    il0->release_codes(list_no, codes);
+}
+
+void CappedInvertedLists::release_ids(size_t list_no, const idx_t* ids) const {
+    il0->release_ids(list_no, ids);
+}
+
+idx_t CappedInvertedLists::get_single_id(size_t list_no, size_t offset) const {
+    FAISS_THROW_IF_NOT(offset < list_size(list_no));
+    return il0->get_single_id(list_no, offset);
+}
+
+const uint8_t* CappedInvertedLists::get_single_code(
+        size_t list_no,
+        size_t offset) const {
+    FAISS_THROW_IF_NOT(offset < list_size(list_no));
+    return il0->get_single_code(list_no, offset);
+}
+
+void CappedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+        const {
+    il0->prefetch_lists(list_nos, nlist);
+}
+
+size_t CappedInvertedLists::add_entries(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code) {
+    return il0->add_entries(list_no, n_entry, ids, code);
+}
+
+void CappedInvertedLists::update_entries(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code) {
+    il0->update_entries(list_no, offset, n_entry, ids, code);
+}
+
+void CappedInvertedLists::resize(size_t list_no, size_t new_size) {
+    il0->resize(list_no, new_size);
+}
+
 } // namespace faiss

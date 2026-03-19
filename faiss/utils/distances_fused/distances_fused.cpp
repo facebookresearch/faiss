@@ -35,6 +35,11 @@ bool exhaustive_L2sqr_fused_cmax(
     return exhaustive_L2sqr_fused_cmax_simdlib(x, y, d, nx, ny, res, y_norms);
 #else
     // not supported, please use a general-purpose kernel
+    (void)x;
+    (void)y;
+    (void)d;
+    (void)res;
+    (void)y_norms;
     return false;
 #endif
 }
