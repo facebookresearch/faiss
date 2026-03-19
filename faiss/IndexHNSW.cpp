@@ -283,6 +283,7 @@ void hnsw_search(
                 ndis += stats.ndis;
                 nhops += stats.nhops;
                 res.end();
+                vt.advance();
             }
         }
         InterruptCallback::check();
@@ -1062,6 +1063,78 @@ void IndexHNSWCagra::search(
                 1, // n_probes
                 1, // search_type
                 params);
+    }
+}
+
+void IndexHNSWCagra::range_search(
+        idx_t n,
+        const float* x,
+        float radius,
+        RangeSearchResult* result,
+        const SearchParameters* params) const {
+    if (!base_level_only) {
+        IndexHNSW::range_search(n, x, radius, result, params);
+        return;
+    }
+
+    const HNSW& hnsw = this->hnsw;
+    size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+    float threshold = is_similarity_metric(metric_type) ? -radius : radius;
+    RangeSearchPartialResult pres(result);
+
+    for (idx_t i = 0; i < n; i++) {
+        std::unique_ptr<DistanceComputer> dis(
+                storage_distance_computer(storage));
+        dis->set_query(x + i * d);
+
+        storage_idx_t nearest = -1;
+        float nearest_d = std::numeric_limits<float>::max();
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+
+        for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
+            auto idx = distrib(gen);
+            auto distance = (*dis)(idx);
+            if (distance < nearest_d) {
+                nearest = idx;
+                nearest_d = distance;
+            }
+        }
+        FAISS_THROW_IF_NOT_MSG(
+                nearest >= 0, "Could not find a valid entrypoint.");
+
+        RangeQueryResult& qres = pres.new_result(i);
+        RangeResultHandler<HNSW::C> res(&qres, threshold);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
+        HNSWStats stats;
+        hnsw.search_level_0(
+                *dis,
+                res,
+                1,
+                &nearest,
+                &nearest_d,
+                1,
+                stats,
+                vt,
+                params);
+        n1 += stats.n1;
+        n2 += stats.n2;
+        ndis += stats.ndis;
+        nhops += stats.nhops;
+    }
+
+    pres.set_lims();
+    result->do_allocation();
+    pres.copy_result();
+
+    hnsw_stats.combine({n1, n2, ndis, nhops});
+
+    if (is_similarity_metric(metric_type)) {
+        for (size_t i = 0; i < result->lims[result->nq]; i++) {
+            result->distances[i] = -result->distances[i];
+        }
     }
 }
 
