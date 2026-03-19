@@ -134,6 +134,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a6398b7faee56b47f1f9817f3763fef01">list_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a5c400887da892a68ce47eff56e30dffc">list_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a779b6acbcdf29e87fac19ea07c50065c">list_size</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a7a8678bf14d55e5f9a35782dbaf36d57">list_size</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a19b264dfe5a541c1427d3b635ad887f5">list_size</reimplementedby>
         <param>
           <type>size_t</type>
@@ -161,6 +162,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a112f9458bd91ca5dbed2cb6d090a0034">get_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a4376b14cd4e349d51848995c102659af">get_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a95ceccb099d392f36747982d2a44f811">get_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1aa8c3df32a1952451d5607ddd06d3bcc8">get_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a1695e1d8d64a00e8e5f57ebf2210cb87">get_codes</reimplementedby>
         <param>
           <type>size_t</type>
@@ -191,6 +193,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a061e9123a506a65a2b72994ae3edc9b7">get_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a924d45d2ab3809c728e7b02ec569b2ba">get_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a8c7573f61358157603dd64afeadc8831">get_ids</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a41f569d33cb9d496ac267fbca584baca">get_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a52575d13fb83bdc9bd7a3af94db2ba82">get_ids</reimplementedby>
         <param>
           <type>size_t</type>
@@ -220,6 +223,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a331222282fb32dc55d6f5847bbd1c848">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a64e66ef4c7dc387091f533cc61d88273">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a5bec50625876ae22b9d092da7ab4fa31">release_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a4beb53b44b44130d47f3ea5a298544f2">release_codes</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -248,6 +252,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3048d4656332d160502cd95b22b53be5">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a86c8d8c022c79c32b3f776f2ad4f3b1e">release_ids</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a50592d220d8c2cef81bb8da4ec9f453e">release_ids</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a2128c06881878ab6b6643cab8b0f9e3d">release_ids</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -276,6 +281,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a568b36928c391086da14f36eaf005fea">get_single_id</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1af0d9f7b61caef91e30124b0f7a9d44b9">get_single_id</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a620a47c96baabbcf3077071651f6e658">get_single_id</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1ad7cddaeb39023ae874123c4104d5efe8">get_single_id</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -307,6 +313,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a3c229e59737b533464f5403c5cf5fca4">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a429657c4c203d472f59147f301de0ede">get_single_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a81569b31806959b50d0799c2763be534">get_single_code</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a135c8ca52e805e6f209f52102fabbba2">get_single_code</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -337,6 +344,7 @@
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1af37c2171d22f7f9200fa5cdedb363471">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a5fbd34b4052c314148c44f14b4d3c2d3">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1af2900ce6738bb1b212c631e8c58cf33f">prefetch_lists</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a80279afe2d77cc347ecd96e878f8c4b8">prefetch_lists</reimplementedby>
         <reimplementedby refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d">prefetch_lists</reimplementedby>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>

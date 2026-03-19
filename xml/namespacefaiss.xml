@@ -18,6 +18,7 @@
     <innerclass refid="structfaiss_1_1BufferedIOReader" prot="public">faiss::BufferedIOReader</innerclass>
     <innerclass refid="structfaiss_1_1BufferedIOWriter" prot="public">faiss::BufferedIOWriter</innerclass>
     <innerclass refid="structfaiss_1_1BufferList" prot="public">faiss::BufferList</innerclass>
+    <innerclass refid="structfaiss_1_1CappedInvertedLists" prot="public">faiss::CappedInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1CenteringTransform" prot="public">faiss::CenteringTransform</innerclass>
     <innerclass refid="structfaiss_1_1Cloner" prot="public">faiss::Cloner</innerclass>
     <innerclass refid="structfaiss_1_1Clustering" prot="public">faiss::Clustering</innerclass>

@@ -382,6 +382,43 @@
     <member refid="structfaiss_1_1BufferList_1aa17f17a53b45bb39b0724d6493ab33c9" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1BufferList_1a78b70417a9ba5b27553b3134f1190958" kind="function"><name>copy_range</name></member>
   </compound>
+  <compound refid="structfaiss_1_1CappedInvertedLists" kind="struct"><name>faiss::CappedInvertedLists</name>
+    <member refid="structfaiss_1_1CappedInvertedLists_1afe6875471a87b766fe958fe881d0c4db" kind="variable"><name>il0</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a8264017bd55ebf5f533d204455b0658a" kind="variable"><name>maxsize</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1afaf8b7aa3e846aa4553f6aae67827ec8" kind="variable"><name>nlist</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1ae06049e4259edb47d443ef87bdedc744" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a8d364ca073bda125730576b8cda17c9d" kind="variable"><name>use_iterator</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a45d2cd4438197cf1640920f93fef2317" kind="function"><name>CappedInvertedLists</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a7a8678bf14d55e5f9a35782dbaf36d57" kind="function"><name>list_size</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a017d25092d89137f7d8e3e07541d4e34" kind="function"><name>real_list_size</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1aa8c3df32a1952451d5607ddd06d3bcc8" kind="function"><name>get_codes</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a41f569d33cb9d496ac267fbca584baca" kind="function"><name>get_ids</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a4beb53b44b44130d47f3ea5a298544f2" kind="function"><name>release_codes</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a2128c06881878ab6b6643cab8b0f9e3d" kind="function"><name>release_ids</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1ad7cddaeb39023ae874123c4104d5efe8" kind="function"><name>get_single_id</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a135c8ca52e805e6f209f52102fabbba2" kind="function"><name>get_single_code</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a80279afe2d77cc347ecd96e878f8c4b8" kind="function"><name>prefetch_lists</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a1d3adca595e09d71a613a5362fea3ac8" kind="function"><name>add_entries</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1afbe8f5cf6451bb130fad392d40cd52c2" kind="function"><name>update_entries</name></member>
+    <member refid="structfaiss_1_1CappedInvertedLists_1a1c661cd0a431559069d1ca4fc8935c38" kind="function"><name>resize</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1adc9d4472a745350a9dcbc92f799e73fe" kind="function"><name>is_empty</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a033771088288195d5098b3760a2e7c3a" kind="function"><name>get_iterator</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1aa8fe060cb73a42c570d7e835ab172356" kind="function"><name>add_entry</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1aa4fca5b69a56ab5b65274f3ff5ca7705" kind="function"><name>update_entry</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1ada14d9bbf04c21b36f61971abece616e" kind="function"><name>reset</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1ac2a0686121ef5bdd6eb70f7eb3cf9b3a" kind="function"><name>merge_from</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a8ceb168dc21abb9f9a711558a7ef4b71" kind="function"><name>copy_subset_to</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8" kind="function"><name>imbalance_factor</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1ac82ad98d664f6478aa919c0ec1b811cc" kind="function"><name>print_stats</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a903eed79c2fd1483c6e0eb500200da9f" kind="function"><name>compute_ntotal</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573" kind="enum"><name>subset_type_t</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573a92622c38feac08c114d0e5da0a46a64f" kind="enumvalue"><name>SUBSET_TYPE_ID_RANGE</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573af2dcf35ecd64791d658dadb082d64119" kind="enumvalue"><name>SUBSET_TYPE_ID_MOD</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573adff0557b40fbf1001a01e45e39bd67ee" kind="enumvalue"><name>SUBSET_TYPE_ELEMENT_RANGE</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573a5d55a8816a2f7a3f98de02e44a4976dc" kind="enumvalue"><name>SUBSET_TYPE_INVLIST_FRACTION</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1a102adbbc3c4457ab23932e9113d98573a28818c3eeac36130c18c2e6bac7ee4ef" kind="enumvalue"><name>SUBSET_TYPE_INVLIST</name></member>
+    <member refid="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7" kind="variable"><name>INVALID_CODE_SIZE</name></member>
+  </compound>
   <compound refid="structfaiss_1_1CenteringTransform" kind="struct"><name>faiss::CenteringTransform</name>
     <member refid="structfaiss_1_1CenteringTransform_1af96e272f0f51d71ed098cdfe3e4ff87d" kind="variable"><name>mean</name></member>
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
