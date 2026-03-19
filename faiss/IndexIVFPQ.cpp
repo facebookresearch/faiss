@@ -1244,49 +1244,74 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
 
 } // anonymous namespace
 
+namespace {
+
+struct IVFPQMakeScanner {
+    const IndexIVFPQ* index;
+    bool store_pairs;
+    const IDSelector* sel;
+
+    template <class PQCodeDist, bool use_sel>
+    InvertedListScanner* operator()() const {
+        if (index->metric_type == METRIC_INNER_PRODUCT) {
+            return new IVFPQScanner<
+                    METRIC_INNER_PRODUCT,
+                    CMin<float, idx_t>,
+                    PQCodeDist,
+                    use_sel>(*index, store_pairs, 2, sel);
+        } else if (index->metric_type == METRIC_L2) {
+            return new IVFPQScanner<
+                    METRIC_L2,
+                    CMax<float, idx_t>,
+                    PQCodeDist,
+                    use_sel>(*index, store_pairs, 2, sel);
+        } else {
+            FAISS_THROW_MSG("unsupported metric type");
+        }
+    }
+};
+
+struct IVFPQWithDecoder {
+    const IndexIVFPQ* index;
+    IVFPQMakeScanner make;
+
+    template <SIMDLevel SL, bool use_sel>
+    InvertedListScanner* operator()() const {
+        if (index->pq.nbits == 8) {
+            return make.template operator()<PQCodeDistance<PQDecoder8, SL>, use_sel>();
+        } else if (index->pq.nbits == 16) {
+            return make.template operator()<PQCodeDistance<PQDecoder16, SL>, use_sel>();
+        } else {
+            return make.template
+                    operator()<PQCodeDistance<PQDecoderGeneric, SL>, use_sel>();
+        }
+    }
+};
+
+struct IVFPQWithSimd {
+    const IndexIVFPQ* index;
+    bool store_pairs;
+    const IDSelector* sel;
+
+    template <SIMDLevel SL>
+    InvertedListScanner* operator()() const {
+        IVFPQMakeScanner make{index, store_pairs, sel};
+        IVFPQWithDecoder with_decoder{index, make};
+        if (sel) {
+            return with_decoder.template operator()<SL, true>();
+        } else {
+            return with_decoder.template operator()<SL, false>();
+        }
+    }
+};
+
+} // anonymous namespace
+
 InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         const IVFSearchParameters*) const {
-    return with_simd_level([&]<SIMDLevel SL>() -> InvertedListScanner* {
-        auto make =
-                [&]<class PQCodeDist, bool use_sel>() -> InvertedListScanner* {
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                return new IVFPQScanner<
-                        METRIC_INNER_PRODUCT,
-                        CMin<float, idx_t>,
-                        PQCodeDist,
-                        use_sel>(*this, store_pairs, 2, sel);
-            } else if (metric_type == METRIC_L2) {
-                return new IVFPQScanner<
-                        METRIC_L2,
-                        CMax<float, idx_t>,
-                        PQCodeDist,
-                        use_sel>(*this, store_pairs, 2, sel);
-            } else {
-                FAISS_THROW_MSG("unsupported metric type");
-            }
-        };
-
-        auto with_decoder = [&]<bool use_sel>() -> InvertedListScanner* {
-            if (pq.nbits == 8) {
-                return make.template
-                operator()<PQCodeDistance<PQDecoder8, SL>, use_sel>();
-            } else if (pq.nbits == 16) {
-                return make.template
-                operator()<PQCodeDistance<PQDecoder16, SL>, use_sel>();
-            } else {
-                return make.template
-                operator()<PQCodeDistance<PQDecoderGeneric, SL>, use_sel>();
-            }
-        };
-
-        if (sel) {
-            return with_decoder.template operator()<true>();
-        } else {
-            return with_decoder.template operator()<false>();
-        }
-    });
+    return with_simd_level(IVFPQWithSimd{this, store_pairs, sel});
 }
 
 IndexIVFPQStats indexIVFPQ_stats;
