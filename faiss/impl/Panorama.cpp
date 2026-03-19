@@ -26,7 +26,7 @@ inline void compute_cum_sums_impl(
         float* output,
         size_t d,
         size_t n_levels,
-        size_t level_width_floats,
+        size_t level_width_dims,
         OffsetFunc&& get_offset) {
     // Iterate backwards through levels, accumulating sum as we go.
     // This avoids computing the suffix sum for each vector, which takes
@@ -34,9 +34,9 @@ inline void compute_cum_sums_impl(
     float sum = 0.0f;
 
     for (int level = n_levels - 1; level >= 0; level--) {
-        size_t start_idx = level * level_width_floats;
+        size_t start_idx = level * level_width_dims;
         size_t end_idx = std::min(
-                (level + 1) * level_width_floats, static_cast<size_t>(d));
+                (level + 1) * level_width_dims, static_cast<size_t>(d));
 
         for (size_t j = start_idx; j < end_idx; j++) {
             sum += vector[j] * vector[j];
@@ -51,19 +51,24 @@ inline void compute_cum_sums_impl(
 } // namespace
 
 /**************************************************************
- * Panorama structure implementation
+ * Panorama base class implementation
  **************************************************************/
 
-Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
-        : code_size(code_size), n_levels(n_levels), batch_size(batch_size) {
+Panorama::Panorama(
+        size_t d,
+        size_t code_size,
+        size_t n_levels,
+        size_t batch_size)
+        : d(d),
+          code_size(code_size),
+          n_levels(n_levels),
+          batch_size(batch_size) {
     set_derived_values();
 }
 
 void Panorama::set_derived_values() {
     FAISS_THROW_IF_NOT_MSG(n_levels > 0, "Panorama: n_levels must be > 0");
-    this->d = code_size / sizeof(float);
-    this->level_width_floats = ((d + n_levels - 1) / n_levels);
-    this->level_width = this->level_width_floats * sizeof(float);
+    level_width_bytes = (code_size + n_levels - 1) / n_levels;
 }
 
 /**
@@ -88,10 +93,10 @@ void Panorama::copy_codes_to_level_layout(
         // Copy entry into level-oriented layout for this batch.
         size_t batch_offset = batch_no * batch_size * code_size;
         for (size_t level = 0; level < n_levels; level++) {
-            size_t level_offset = level * level_width * batch_size;
-            size_t start_byte = level * level_width;
-            size_t actual_level_width =
-                    std::min(level_width, code_size - level * level_width);
+            size_t level_offset = level * level_width_bytes * batch_size;
+            size_t start_byte = level * level_width_bytes;
+            size_t actual_level_width = std::min(
+                    level_width_bytes, code_size - level * level_width_bytes);
 
             const uint8_t* src = code + entry_idx * code_size + start_byte;
             uint8_t* dest = codes + batch_offset + level_offset +
@@ -102,38 +107,12 @@ void Panorama::copy_codes_to_level_layout(
     }
 }
 
-void Panorama::compute_cumulative_sums(
-        float* cumsum_base,
-        size_t offset,
-        size_t n_entry,
-        const float* vectors) const {
-    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
-        size_t current_pos = offset + entry_idx;
-        size_t batch_no = current_pos / batch_size;
-        size_t pos_in_batch = current_pos % batch_size;
-
-        const float* vector = vectors + entry_idx * d;
-        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
-
-        auto get_offset = [&](size_t level) {
-            return cumsum_batch_offset + level * batch_size + pos_in_batch;
-        };
-
-        compute_cum_sums_impl(
-                vector,
-                cumsum_base,
-                d,
-                n_levels,
-                level_width_floats,
-                get_offset);
-    }
-}
-
 void Panorama::compute_query_cum_sums(const float* query, float* query_cum_sums)
         const {
+    size_t level_dims = (d + n_levels - 1) / n_levels;
     auto get_offset = [](size_t level) { return level; };
     compute_cum_sums_impl(
-            query, query_cum_sums, d, n_levels, level_width_floats, get_offset);
+            query, query_cum_sums, d, n_levels, level_dims, get_offset);
 }
 
 void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
@@ -145,12 +124,12 @@ void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
     size_t batch_offset = batch_no * batch_size * code_size;
 
     for (size_t level = 0; level < n_levels; level++) {
-        size_t level_offset = level * level_width * batch_size;
+        size_t level_offset = level * level_width_bytes * batch_size;
         const uint8_t* src = codes_base + batch_offset + level_offset +
-                pos_in_batch * level_width;
-        uint8_t* dest = recons_buffer + level * level_width;
-        size_t copy_size =
-                std::min(level_width, code_size - level * level_width);
+                pos_in_batch * level_width_bytes;
+        uint8_t* dest = recons_buffer + level * level_width_bytes;
+        size_t copy_size = std::min(
+                level_width_bytes, code_size - level * level_width_bytes);
         memcpy(dest, src, copy_size);
     }
 }
@@ -177,9 +156,9 @@ void Panorama::copy_entry(
 
     for (size_t level = 0; level < n_levels; level++) {
         // Copy code
-        size_t level_offset = level * level_width * batch_size;
-        size_t actual_level_width =
-                std::min(level_width, code_size - level * level_width);
+        size_t level_offset = level * level_width_bytes * batch_size;
+        size_t actual_level_width = std::min(
+                level_width_bytes, code_size - level * level_width_bytes);
 
         const uint8_t* src = src_codes + src_batch_offset + level_offset +
                 src_pos_in_batch * actual_level_width;
@@ -197,4 +176,38 @@ void Panorama::copy_entry(
         dest_cum_sums[dest_offset] = src_cum_sums[src_offset];
     }
 }
+
+/**************************************************************
+ * PanoramaFlat implementation
+ **************************************************************/
+
+PanoramaFlat::PanoramaFlat(size_t d, size_t n_levels, size_t batch_size)
+        : Panorama(d, d * sizeof(float), n_levels, batch_size) {
+    level_width_dims = (d + n_levels - 1) / n_levels;
+    level_width_bytes = level_width_dims * sizeof(float);
+}
+
+void PanoramaFlat::compute_cumulative_sums(
+        float* cumsum_base,
+        size_t offset,
+        size_t n_entry,
+        const uint8_t* code) const {
+    const float* vectors = reinterpret_cast<const float*>(code);
+    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
+        size_t current_pos = offset + entry_idx;
+        size_t batch_no = current_pos / batch_size;
+        size_t pos_in_batch = current_pos % batch_size;
+
+        const float* vector = vectors + entry_idx * d;
+        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
+
+        auto get_offset = [&](size_t level) {
+            return cumsum_batch_offset + level * batch_size + pos_in_batch;
+        };
+
+        compute_cum_sums_impl(
+                vector, cumsum_base, d, n_levels, level_width_dims, get_offset);
+    }
+}
+
 } // namespace faiss

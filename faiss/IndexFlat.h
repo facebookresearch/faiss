@@ -104,7 +104,7 @@ struct IndexFlatPanorama : IndexFlat {
     const size_t batch_size;
     const size_t n_levels;
     std::vector<float> cum_sums;
-    Panorama pano;
+    PanoramaFlat pano;
 
     /**
      * @param d dimensionality of the input vectors
@@ -120,7 +120,7 @@ struct IndexFlatPanorama : IndexFlat {
             : IndexFlat(d, metric),
               batch_size(batch_size),
               n_levels(n_levels),
-              pano(code_size, n_levels, batch_size) {
+              pano(d, n_levels, batch_size) {
         FAISS_THROW_IF_NOT(
                 metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
     }

@@ -33,6 +33,10 @@ namespace faiss {
 /// into `n_levels` levels of `chunk_size` columns, enabling incremental
 /// distance computation level-by-level.
 ///
+/// Storage is managed by ArrayInvertedListsPanorama with a PanoramaPQ
+/// instance that handles code transposition and cumulative sum computation
+/// (via PQ decoding) on insertion.
+///
 /// OVERHEAD:
 /// Panorama precomputes per-point cumulative residual norms at insertion
 /// time. Storage overhead is (n_levels + 1) floats per point for
@@ -47,25 +51,17 @@ namespace faiss {
 /// - use_precomputed_table must be 1.
 ///
 /// NOTE:
-/// We inherit from IndexIVFPQ and override only get_InvertedListScanner()
-/// and add(). The base IndexIVF::search_preassigned() handles all search
+/// We inherit from IndexIVFPQ and override only get_InvertedListScanner().
+/// The base IndexIVF::search_preassigned() handles all search
 /// orchestration — no search code is duplicated.
+/// Storage (transposition + cum_sums) is handled by
+/// ArrayInvertedListsPanorama, so no add() override is needed.
 struct IndexIVFPQPanorama : public IndexIVFPQ {
     int n_levels;
     size_t batch_size;
 
     size_t chunk_size;
     size_t levels_size;
-    size_t m_level_width;
-
-    bool added = false;
-    size_t num_points = 0;
-
-    uint8_t* column_storage = nullptr;
-    size_t* column_offsets = nullptr;
-
-    float* cum_sums = nullptr;
-    size_t* cum_sum_offsets = nullptr;
 
     IndexIVFPQPanorama(
             Index* quantizer,
@@ -79,8 +75,6 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
             bool own_invlists = true);
 
     IndexIVFPQPanorama() = default;
-
-    void add(idx_t n, const float* x) override;
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,

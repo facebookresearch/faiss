@@ -38,7 +38,9 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
-    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, n_levels);
+    auto* pano = new PanoramaFlat(
+            d, n_levels, ArrayInvertedListsPanorama::kBatchSize);
+    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
     this->own_invlists = own_invlists;
 }
 
@@ -50,6 +52,7 @@ template <typename VectorDistance, bool use_sel>
 struct IVFFlatScannerPanorama : InvertedListScanner {
     VectorDistance vd;
     const ArrayInvertedListsPanorama* storage;
+    const PanoramaFlat* pano_flat;
     using C = typename VectorDistance::C;
     static constexpr MetricType metric = VectorDistance::metric;
 
@@ -58,10 +61,15 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             const ArrayInvertedListsPanorama* storage,
             bool store_pairs,
             const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), vd(vd), storage(storage) {
+            : InvertedListScanner(store_pairs, sel),
+              vd(vd),
+              storage(storage),
+              pano_flat(
+                      dynamic_cast<const PanoramaFlat*>(storage->pano.get())) {
+        FAISS_THROW_IF_NOT(pano_flat);
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
-        cum_sums.resize(storage->n_levels + 1);
+        cum_sums.resize(pano_flat->n_levels + 1);
     }
 
     const float* xi = nullptr;
@@ -69,7 +77,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
-        this->storage->pano.compute_query_cum_sums(query, cum_sums.data());
+        pano_flat->compute_query_cum_sums(query, cum_sums.data());
         q_norm = cum_sums[0] * cum_sums[0];
     }
 
@@ -107,7 +115,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             size_t batch_start = batch_no * storage->kBatchSize;
 
             size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
-                return storage->pano.progressive_filter_batch<C, M>(
+                return pano_flat->progressive_filter_batch<C, M>(
                         codes,
                         cum_sums_data,
                         xi,

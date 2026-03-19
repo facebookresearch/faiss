@@ -695,7 +695,7 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
 
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
     pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
-    pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+    pano.compute_cumulative_sums(cum_sums.data(), offset, n, code);
 }
 
 void IndexFlatPanorama::search(
@@ -892,12 +892,12 @@ void IndexFlatPanorama::search_subset(
                         bool pruned = false;
                         for (size_t level = 0; level < n_levels; level++) {
                             local_stats.total_dims_scanned +=
-                                    pano.level_width_floats;
+                                    pano.level_width_dims;
 
                             // Refine distance
                             size_t actual_level_width = std::min(
-                                    pano.level_width_floats,
-                                    d - level * pano.level_width_floats);
+                                    pano.level_width_dims,
+                                    d - level * pano.level_width_dims);
                             float dot_product = fvec_inner_product<SL>(
                                     x_ptr, p_ptr, actual_level_width);
                             if constexpr (is_sim) {
@@ -930,8 +930,8 @@ void IndexFlatPanorama::search_subset(
                             }
 
                             cum_sum_offset++;
-                            x_ptr += pano.level_width_floats;
-                            p_ptr += pano.level_width_floats;
+                            x_ptr += pano.level_width_dims;
+                            p_ptr += pano.level_width_dims;
                         }
 
                         if (!pruned) {

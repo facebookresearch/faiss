@@ -131,6 +131,7 @@ set(FAISS_SRC
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
+  impl/PanoramaPQ.cpp
   impl/PanoramaStats.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
@@ -241,6 +242,7 @@ set(FAISS_HEADERS
   impl/NNDescent.h
   impl/NSG.h
   impl/Panorama.h
+  impl/PanoramaPQ.h
   impl/PanoramaStats.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h

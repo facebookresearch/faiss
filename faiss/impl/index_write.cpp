@@ -34,6 +34,7 @@
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -273,7 +274,7 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         WRITE1(h);
         WRITE1(ailp->nlist);
         WRITE1(ailp->code_size);
-        WRITE1(ailp->n_levels);
+        WRITE1(ailp->pano->n_levels);
         uint32_t list_type = fourcc("full");
         WRITE1(list_type);
         std::vector<size_t> sizes;
@@ -774,6 +775,18 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivsp->threshold_type);
         WRITEVECTOR(ivsp->trained);
         write_InvertedLists(ivsp->invlists, f);
+    } else if (
+            const IndexIVFPQPanorama* ivpp =
+                    dynamic_cast<const IndexIVFPQPanorama*>(idx)) {
+        uint32_t h = fourcc("IwPP");
+        WRITE1(h);
+        write_ivf_header(ivpp, f);
+        WRITE1(ivpp->by_residual);
+        WRITE1(ivpp->code_size);
+        write_ProductQuantizer(&ivpp->pq, f);
+        WRITE1(ivpp->n_levels);
+        WRITE1(ivpp->batch_size);
+        write_InvertedLists(ivpp->invlists, f);
     } else if (const IndexIVFPQ* ivpq = dynamic_cast<const IndexIVFPQ*>(idx)) {
         const IndexIVFPQR* ivfpqr = dynamic_cast<const IndexIVFPQR*>(idx);
 

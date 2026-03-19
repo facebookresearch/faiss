@@ -542,6 +542,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexAdditiveQuantizer.h>
 %include  <faiss/impl/io.h>
 
+%ignore faiss::ArrayInvertedListsPanorama::pano;
 %include  <faiss/invlists/InvertedLists.h>
 %include  <faiss/invlists/InvertedListsIOHook.h>
 %ignore BlockInvertedListsIOHook;
