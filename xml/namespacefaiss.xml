@@ -12871,7 +12871,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="353" column="12" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="353" bodyend="359"/>
+        <location file="faiss/utils/hamming_distance/avx2-inl.h" line="359" column="12" bodyfile="faiss/utils/hamming_distance/avx2-inl.h" bodystart="359" bodyend="365"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a020c4142c2661fa5387255c73e1b3510" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>

@@ -2019,7 +2019,7 @@
     <member refid="structfaiss_1_1HammingComputer_1a08ae6f504ef5b2bcd81df5f6ee45f8e4" kind="function"><name>HammingComputer</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a25d763a81a34d5d8e1144eec8b93da20" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
@@ -2157,7 +2157,7 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1a690b6cdae0726c448e6da15ca03817bd" kind="variable"><name>quotient8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a2653ab8230299d8f03f33c202a349850" kind="variable"><name>remainder8</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a935365d3f3dd91d2797c1d20aa3fe569" kind="function"><name>HammingComputerDefault</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a3a15c465bd3c6f1101a5ea465fd6de18" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
@@ -2167,8 +2167,8 @@
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1a7de248d27a0a9bad5f551206f1f7e87c" kind="function"><name>HammingComputerDefault</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a811e3f5db91b6a5f6eba731e514910fa" kind="function"><name>HammingComputerDefault</name></member>
-    <member refid="structfaiss_1_1HammingComputerDefault_1a2738b8c53224a9d51df060d8efd062c8" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a935365d3f3dd91d2797c1d20aa3fe569" kind="function"><name>HammingComputerDefault</name></member>
+    <member refid="structfaiss_1_1HammingComputerDefault_1a25d763a81a34d5d8e1144eec8b93da20" kind="function"><name>set</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1aa114eb107f8cce136689b50d8dffafd1" kind="function"><name>hamming</name></member>
     <member refid="structfaiss_1_1HammingComputerDefault_1afbb41349cd834644fb6a239b2ee53cca" kind="function"><name>get_code_size</name></member>
   </compound>
@@ -2180,7 +2180,7 @@
     <member refid="structfaiss_1_1HCounterState_1abbf19dbccb8d0c988dc7ccdc0c6eb732" kind="variable"><name>count_lt</name></member>
     <member refid="structfaiss_1_1HCounterState_1a2b05f257aa65e0471f3bfe39f9f439ae" kind="variable"><name>count_eq</name></member>
     <member refid="structfaiss_1_1HCounterState_1a4870c60387b35d4805fb3e5bff29ef08" kind="variable"><name>k</name></member>
-    <member refid="structfaiss_1_1HCounterState_1a83bb9102d3f4a543ab5a95d51e539c23" kind="function"><name>HCounterState</name></member>
+    <member refid="structfaiss_1_1HCounterState_1afc1ce19ff7121af9e68a45cd88d7e8b8" kind="function"><name>HCounterState</name></member>
     <member refid="structfaiss_1_1HCounterState_1acbc245f1f1e3dc91a0638fa093e2d4eb" kind="function"><name>update_counter</name></member>
   </compound>
   <compound refid="structfaiss_1_1HeapArray" kind="struct"><name>faiss::HeapArray</name>
