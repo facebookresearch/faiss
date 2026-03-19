@@ -54,6 +54,10 @@ runs:
         conda list --show-channel-urls
         conda install -y -q anaconda-client
         conda config --set anaconda_upload yes
+    - name: Print GPU info
+      if: inputs.cuda != ''
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      run: nvidia-smi
     - name: Conda build (CPU)
       if: inputs.label == '' && inputs.cuda == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
