@@ -76,7 +76,6 @@ struct QuantizerTemplate<
         Codec,
         QuantizerTemplateScaling::NON_UNIFORM,
         SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
-
     const size_t d;
     const float *vmin, *vdiff;
 
@@ -113,7 +112,6 @@ struct QuantizerTemplate<
         return vmin[i] + xi * vdiff[i];
     }
 };
-
 
 /*******************************************************************
  * FP16 quantizer
@@ -153,7 +151,6 @@ struct QuantizerFP16 : QuantizerFP16<SIMDLevel::NONE> {
     using QuantizerFP16<SIMDLevel::NONE>::QuantizerFP16;
 };
 
-
 /*******************************************************************
  * BF16 quantizer
  *******************************************************************/
@@ -192,7 +189,6 @@ struct QuantizerBF16 : QuantizerBF16<SIMDLevel::NONE> {
     using QuantizerBF16<SIMDLevel::NONE>::QuantizerBF16;
 };
 
-
 /*******************************************************************
  * 8bit_direct quantizer
  *******************************************************************/
@@ -230,7 +226,6 @@ template <SIMDLevel SL>
 struct Quantizer8bitDirect : Quantizer8bitDirect<SIMDLevel::NONE> {
     using Quantizer8bitDirect<SIMDLevel::NONE>::Quantizer8bitDirect;
 };
-
 
 /*******************************************************************
  * 8bit_direct_signed quantizer
@@ -271,7 +266,6 @@ struct Quantizer8bitDirectSigned<SIMDLevel::NONE>
 template <SIMDLevel SL>
 struct Quantizer8bitDirectSigned : Quantizer8bitDirectSigned<SIMDLevel::NONE> {
     using Quantizer8bitDirectSigned<SIMDLevel::NONE>::Quantizer8bitDirectSigned;
-
 };
 
 /*******************************************************************
@@ -284,7 +278,6 @@ ScalarQuantizer::SQuantizer* sq_select_quantizer(
         QuantizerType qtype,
         size_t d,
         const std::vector<float>& trained);
-
 
 } // namespace scalar_quantizer
 

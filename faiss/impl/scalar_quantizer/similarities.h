@@ -91,6 +91,5 @@ struct SimilarityIP<SIMDLevel::NONE> {
     }
 };
 
-
 } // namespace scalar_quantizer
 } // namespace faiss
