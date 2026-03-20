@@ -56,20 +56,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::VectorTransform::VectorTransform</definition>
-        <argsstring>(int d_in=0, int d_out=0)</argsstring>
+        <argsstring>(int d_in_val=0, int d_out_val=0)</argsstring>
         <name>VectorTransform</name>
         <qualifiedname>faiss::VectorTransform::VectorTransform</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>d_in_val</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>d_out_val</declname>
           <defval>0</defval>
         </param>
         <briefdescription>
@@ -380,7 +380,7 @@
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" prot="public" virt="virtual"><scope>faiss::VectorTransform</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" prot="public" virt="virtual"><scope>faiss::VectorTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::VectorTransform</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::VectorTransform</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>

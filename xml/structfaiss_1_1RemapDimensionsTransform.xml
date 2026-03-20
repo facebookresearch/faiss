@@ -66,19 +66,19 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1RemapDimensionsTransform_1ac8253ba2e8bbe4c67cdc7c2d53443394" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RemapDimensionsTransform_1ad6fec9f5f55baae037cabd5ffe3f2678" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::RemapDimensionsTransform::RemapDimensionsTransform</definition>
-        <argsstring>(int d_in, int d_out, const int *map)</argsstring>
+        <argsstring>(int din, int dout, const int *map)</argsstring>
         <name>RemapDimensionsTransform</name>
         <qualifiedname>faiss::RemapDimensionsTransform::RemapDimensionsTransform</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>din</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>dout</declname>
         </param>
         <param>
           <type>const int *</type>
@@ -92,19 +92,19 @@
         </inbodydescription>
         <location file="faiss/VectorTransform.h" line="283" column="5"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RemapDimensionsTransform_1a9d0b75731ea2b7cc46c40ee5afe94b14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RemapDimensionsTransform_1a33b3ee09fe64cb96c4ea47a520cc6f50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::RemapDimensionsTransform::RemapDimensionsTransform</definition>
-        <argsstring>(int d_in, int d_out, bool uniform=true)</argsstring>
+        <argsstring>(int din, int dout, bool uniform=true)</argsstring>
         <name>RemapDimensionsTransform</name>
         <qualifiedname>faiss::RemapDimensionsTransform::RemapDimensionsTransform</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>din</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>dout</declname>
         </param>
         <param>
           <type>bool</type>
@@ -363,12 +363,12 @@
       <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>d_out</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1RemapDimensionsTransform_1a09202a195ff5f75f83e68792751a637f" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>map</name></member>
-      <member refid="structfaiss_1_1RemapDimensionsTransform_1ac8253ba2e8bbe4c67cdc7c2d53443394" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>RemapDimensionsTransform</name></member>
-      <member refid="structfaiss_1_1RemapDimensionsTransform_1a9d0b75731ea2b7cc46c40ee5afe94b14" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>RemapDimensionsTransform</name></member>
+      <member refid="structfaiss_1_1RemapDimensionsTransform_1ad6fec9f5f55baae037cabd5ffe3f2678" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>RemapDimensionsTransform</name></member>
+      <member refid="structfaiss_1_1RemapDimensionsTransform_1a33b3ee09fe64cb96c4ea47a520cc6f50" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>RemapDimensionsTransform</name></member>
       <member refid="structfaiss_1_1RemapDimensionsTransform_1a7b23aeea127c7be06165b3da983f6a85" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>RemapDimensionsTransform</name></member>
       <member refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3" prot="public" virt="virtual"><scope>faiss::RemapDimensionsTransform</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" prot="public" virt="virtual"><scope>faiss::RemapDimensionsTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::RemapDimensionsTransform</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::RemapDimensionsTransform</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>

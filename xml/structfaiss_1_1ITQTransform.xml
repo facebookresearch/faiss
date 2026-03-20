@@ -122,25 +122,25 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ITQTransform_1a7174b9210a98a0d9ef2dea1e85f23f2c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ITQTransform_1aa4e3a29d50a38d853c1d2f46a8c6dafa" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ITQTransform::ITQTransform</definition>
-        <argsstring>(int d_in=0, int d_out=0, bool do_pca=false)</argsstring>
+        <argsstring>(int din=0, int dout=0, bool do_pca_in=false)</argsstring>
         <name>ITQTransform</name>
         <qualifiedname>faiss::ITQTransform::ITQTransform</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>din</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>dout</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>bool</type>
-          <declname>do_pca</declname>
+          <declname>do_pca_in</declname>
           <defval>false</defval>
         </param>
         <briefdescription>
@@ -396,13 +396,13 @@
       <member refid="structfaiss_1_1ITQTransform_1ad80da633f23d0a24f320e9253f29c087" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>do_pca</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1ITQTransform_1acaa7b8335a1a55508777825fb7380f07" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>itq</name></member>
-      <member refid="structfaiss_1_1ITQTransform_1a7174b9210a98a0d9ef2dea1e85f23f2c" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>ITQTransform</name></member>
+      <member refid="structfaiss_1_1ITQTransform_1aa4e3a29d50a38d853c1d2f46a8c6dafa" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>ITQTransform</name></member>
       <member refid="structfaiss_1_1ITQTransform_1a3ddcff467c157575e7df14754efa84e8" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>max_train_per_dim</name></member>
       <member refid="structfaiss_1_1ITQTransform_1acae80716a573c8c5806d95a3889210a2" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>mean</name></member>
       <member refid="structfaiss_1_1ITQTransform_1ac5414fa0d38ac7d2b2948801eb491b5e" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>pca_then_itq</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a0913e3b521a6d34f523c291508e82adb" prot="public" virt="virtual"><scope>faiss::ITQTransform</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736" prot="public" virt="virtual"><scope>faiss::ITQTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::ITQTransform</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::ITQTransform</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>

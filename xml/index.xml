@@ -8322,7 +8322,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1ITQTransform_1a7174b9210a98a0d9ef2dea1e85f23f2c" kind="function"><name>ITQTransform</name></member>
+    <member refid="structfaiss_1_1ITQTransform_1aa4e3a29d50a38d853c1d2f46a8c6dafa" kind="function"><name>ITQTransform</name></member>
     <member refid="structfaiss_1_1ITQTransform_1a836c8adc25326ade1a5998276648c736" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1ITQTransform_1af9bbe5be9e3c3f3f2919a46cc931443a" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1ITQTransform_1a84b7defd5ebf855ac2e4038bdbd1fdd6" kind="function"><name>check_identical</name></member>
@@ -8530,7 +8530,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1LinearTransform_1a7bf766de1abac428d18b8817208fcab0" kind="function"><name>LinearTransform</name></member>
+    <member refid="structfaiss_1_1LinearTransform_1a831cb91657f004b6891f98727c8b612b" kind="function"><name>LinearTransform</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" kind="function"><name>transform_transpose</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" kind="function"><name>reverse_transform</name></member>
@@ -8973,7 +8973,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1NormalizationTransform_1a8f51546dbc1303d0872e762e3e2f350c" kind="function"><name>NormalizationTransform</name></member>
+    <member refid="structfaiss_1_1NormalizationTransform_1ab6be3925e0d291552bbff294eee46cb8" kind="function"><name>NormalizationTransform</name></member>
     <member refid="structfaiss_1_1NormalizationTransform_1a0b81cf1bcc8fd322b54c25b8e1d67a37" kind="function"><name>NormalizationTransform</name></member>
     <member refid="structfaiss_1_1NormalizationTransform_1a282007331f7f6d96792c89fe1f9ecefd" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1" kind="function"><name>reverse_transform</name></member>
@@ -9149,7 +9149,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1OPQMatrix_1a377b53c090c7ab05814aaf9d6ec58fcf" kind="function"><name>OPQMatrix</name></member>
+    <member refid="structfaiss_1_1OPQMatrix_1aef5eaa2ee9f7879da7351829ed3a3cc2" kind="function"><name>OPQMatrix</name></member>
     <member refid="structfaiss_1_1OPQMatrix_1abc57f03c88623a5844c7ac06a927ab6a" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1LinearTransform_1aefb0ae9416652e408a96604f18a78d7d" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" kind="function"><name>transform_transpose</name></member>
@@ -9290,7 +9290,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1PCAMatrix_1aacc73b1e114a0331172236745a8f1e25" kind="function"><name>PCAMatrix</name></member>
+    <member refid="structfaiss_1_1PCAMatrix_1a0dd226eb8218a1081efbbe77b3b2cba2" kind="function"><name>PCAMatrix</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1a5eeb75861ade62cf606d003da398a09f" kind="function"><name>copy_from</name></member>
     <member refid="structfaiss_1_1PCAMatrix_1ac13555c4d9007ae338d3392882b8e0db" kind="function"><name>prepare_Ab</name></member>
@@ -9910,7 +9910,7 @@
     <member refid="structfaiss_1_1RandomGenerator_1a8d2ce09ee883bb4e840e6aabafbbbdea" kind="function"><name>RandomGenerator</name></member>
   </compound>
   <compound refid="structfaiss_1_1RandomRotationMatrix" kind="struct"><name>faiss::RandomRotationMatrix</name>
-    <member refid="structfaiss_1_1RandomRotationMatrix_1a64e406c8f73c7692bcf7d97b27305fc6" kind="function"><name>RandomRotationMatrix</name></member>
+    <member refid="structfaiss_1_1RandomRotationMatrix_1a8efd0ee4dda65839747a67f723e6a567" kind="function"><name>RandomRotationMatrix</name></member>
     <member refid="structfaiss_1_1RandomRotationMatrix_1a35d70d2b2e01b10ac041002e8851d5ce" kind="function"><name>init</name></member>
     <member refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1RandomRotationMatrix_1a98da7196e79373717fba4efb6b189781" kind="function"><name>RandomRotationMatrix</name></member>
@@ -10096,8 +10096,8 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1RemapDimensionsTransform_1ac8253ba2e8bbe4c67cdc7c2d53443394" kind="function"><name>RemapDimensionsTransform</name></member>
-    <member refid="structfaiss_1_1RemapDimensionsTransform_1a9d0b75731ea2b7cc46c40ee5afe94b14" kind="function"><name>RemapDimensionsTransform</name></member>
+    <member refid="structfaiss_1_1RemapDimensionsTransform_1ad6fec9f5f55baae037cabd5ffe3f2678" kind="function"><name>RemapDimensionsTransform</name></member>
+    <member refid="structfaiss_1_1RemapDimensionsTransform_1a33b3ee09fe64cb96c4ea47a520cc6f50" kind="function"><name>RemapDimensionsTransform</name></member>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1aa3028183624634f5ab0d7d3fe78ffa9e" kind="function"><name>apply_noalloc</name></member>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1ac94a16755e3eb8693547f3a7ae90cec3" kind="function"><name>reverse_transform</name></member>
     <member refid="structfaiss_1_1RemapDimensionsTransform_1a7b23aeea127c7be06165b3da983f6a85" kind="function"><name>RemapDimensionsTransform</name></member>
@@ -11822,7 +11822,7 @@
     <member refid="structfaiss_1_1VectorTransform_1afdf56cbd261a571cf6b8872be5bd43b6" kind="variable"><name>d_in</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" kind="variable"><name>d_out</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" kind="variable"><name>is_trained</name></member>
-    <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" kind="function"><name>VectorTransform</name></member>
+    <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" kind="function"><name>VectorTransform</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" kind="function"><name>apply</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a90f1a218c224c049f1bd8b77a78d6aa0" kind="function"><name>apply_noalloc</name></member>

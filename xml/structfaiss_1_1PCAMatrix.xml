@@ -246,30 +246,30 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1PCAMatrix_1aacc73b1e114a0331172236745a8f1e25" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1PCAMatrix_1a0dd226eb8218a1081efbbe77b3b2cba2" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::PCAMatrix::PCAMatrix</definition>
-        <argsstring>(int d_in=0, int d_out=0, float eigen_power=0, bool random_rotation=false)</argsstring>
+        <argsstring>(int din=0, int dout=0, float eigen_power_in=0, bool random_rotation_in=false)</argsstring>
         <name>PCAMatrix</name>
         <qualifiedname>faiss::PCAMatrix::PCAMatrix</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>din</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>dout</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>float</type>
-          <declname>eigen_power</declname>
+          <declname>eigen_power_in</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>bool</type>
-          <declname>random_rotation</declname>
+          <declname>random_rotation_in</declname>
           <defval>false</defval>
         </param>
         <briefdescription>
@@ -586,11 +586,11 @@
       <member refid="structfaiss_1_1LinearTransform_1a322401ba80cb96ac1e7846401f2bef24" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>have_bias</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a8a67a0178eab513cf87545f5d12d9569" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>is_orthonormal</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1LinearTransform_1a7bf766de1abac428d18b8817208fcab0" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>LinearTransform</name></member>
+      <member refid="structfaiss_1_1LinearTransform_1a831cb91657f004b6891f98727c8b612b" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>LinearTransform</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1abdce90f57a3c4401f5230f03da901e0d" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>max_points_per_d</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1a721c338c1df5c99471db82e6d3dc8f93" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>mean</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1aef5c130774e5d4f697a3e1c82647bfd3" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>PCAMat</name></member>
-      <member refid="structfaiss_1_1PCAMatrix_1aacc73b1e114a0331172236745a8f1e25" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>PCAMatrix</name></member>
+      <member refid="structfaiss_1_1PCAMatrix_1a0dd226eb8218a1081efbbe77b3b2cba2" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>PCAMatrix</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1ac13555c4d9007ae338d3392882b8e0db" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>prepare_Ab</name></member>
       <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>print_if_verbose</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1af111f055b7571703a3aa270d89e99321" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>random_rotation</name></member>
@@ -598,7 +598,7 @@
       <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>set_is_orthonormal</name></member>
       <member refid="structfaiss_1_1PCAMatrix_1a42f2fefbabe122868c59ea35b4ff080b" prot="public" virt="virtual"><scope>faiss::PCAMatrix</scope><name>train</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>transform_transpose</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1LinearTransform_1ae351ccd1155b71ac9d2fbd8d11b7082a" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a87a85f77d0b49d85f8d2d181b7835a04" prot="public" virt="non-virtual"><scope>faiss::PCAMatrix</scope><name>~LinearTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::PCAMatrix</scope><name>~VectorTransform</name></member>

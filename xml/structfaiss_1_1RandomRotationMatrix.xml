@@ -5,19 +5,19 @@
     <basecompoundref refid="structfaiss_1_1LinearTransform" prot="public" virt="non-virtual">faiss::LinearTransform</basecompoundref>
     <includes refid="VectorTransform_8h" local="no">VectorTransform.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1RandomRotationMatrix_1a64e406c8f73c7692bcf7d97b27305fc6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1RandomRotationMatrix_1a8efd0ee4dda65839747a67f723e6a567" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::RandomRotationMatrix::RandomRotationMatrix</definition>
-        <argsstring>(int d_in, int d_out)</argsstring>
+        <argsstring>(int d_in_val, int d_out_val)</argsstring>
         <name>RandomRotationMatrix</name>
         <qualifiedname>faiss::RandomRotationMatrix::RandomRotationMatrix</qualifiedname>
         <param>
           <type>int</type>
-          <declname>d_in</declname>
+          <declname>d_in_val</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>d_out</declname>
+          <declname>d_out_val</declname>
         </param>
         <briefdescription>
 <para>both d_in &gt; d_out and d_out &lt; d_in are supported </para>
@@ -467,15 +467,15 @@
       <member refid="structfaiss_1_1RandomRotationMatrix_1a35d70d2b2e01b10ac041002e8851d5ce" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>init</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a8a67a0178eab513cf87545f5d12d9569" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>is_orthonormal</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>is_trained</name></member>
-      <member refid="structfaiss_1_1LinearTransform_1a7bf766de1abac428d18b8817208fcab0" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>LinearTransform</name></member>
+      <member refid="structfaiss_1_1LinearTransform_1a831cb91657f004b6891f98727c8b612b" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>LinearTransform</name></member>
       <member refid="structfaiss_1_1LinearTransform_1aeca6faf0c5beb67a66b7a22182422bc5" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>print_if_verbose</name></member>
-      <member refid="structfaiss_1_1RandomRotationMatrix_1a64e406c8f73c7692bcf7d97b27305fc6" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>RandomRotationMatrix</name></member>
+      <member refid="structfaiss_1_1RandomRotationMatrix_1a8efd0ee4dda65839747a67f723e6a567" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>RandomRotationMatrix</name></member>
       <member refid="structfaiss_1_1RandomRotationMatrix_1a98da7196e79373717fba4efb6b189781" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>RandomRotationMatrix</name></member>
       <member refid="structfaiss_1_1LinearTransform_1aabcea47432734c860fdf6fcc3a998563" prot="public" virt="virtual"><scope>faiss::RandomRotationMatrix</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a1f75b8a58b9f452eb08fd8e54c134fe0" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>set_is_orthonormal</name></member>
       <member refid="structfaiss_1_1RandomRotationMatrix_1a8d7cd3057072bc2db0527ae4ac84b181" prot="public" virt="virtual"><scope>faiss::RandomRotationMatrix</scope><name>train</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a29af2cf35a13b538eb327aa64b07e474" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>transform_transpose</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1LinearTransform_1ae351ccd1155b71ac9d2fbd8d11b7082a" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>verbose</name></member>
       <member refid="structfaiss_1_1LinearTransform_1a87a85f77d0b49d85f8d2d181b7835a04" prot="public" virt="non-virtual"><scope>faiss::RandomRotationMatrix</scope><name>~LinearTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::RandomRotationMatrix</scope><name>~VectorTransform</name></member>

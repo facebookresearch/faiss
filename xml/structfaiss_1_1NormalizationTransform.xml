@@ -65,10 +65,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1NormalizationTransform_1a8f51546dbc1303d0872e762e3e2f350c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1NormalizationTransform_1ab6be3925e0d291552bbff294eee46cb8" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::NormalizationTransform::NormalizationTransform</definition>
-        <argsstring>(int d, float norm=2.0)</argsstring>
+        <argsstring>(int d, float norm_in=2.0)</argsstring>
         <name>NormalizationTransform</name>
         <qualifiedname>faiss::NormalizationTransform::NormalizationTransform</qualifiedname>
         <param>
@@ -77,7 +77,7 @@
         </param>
         <param>
           <type>float</type>
-          <declname>norm</declname>
+          <declname>norm_in</declname>
           <defval>2.0</defval>
         </param>
         <briefdescription>
@@ -331,11 +331,11 @@
       <member refid="structfaiss_1_1VectorTransform_1a589d612f7b1773614619a0cbecd728a9" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>d_out</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab511f1ddf608c00204555881ca28cb02" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1NormalizationTransform_1ab79b9cb8dc4cf3a597cab563043568b9" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>norm</name></member>
-      <member refid="structfaiss_1_1NormalizationTransform_1a8f51546dbc1303d0872e762e3e2f350c" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>NormalizationTransform</name></member>
+      <member refid="structfaiss_1_1NormalizationTransform_1ab6be3925e0d291552bbff294eee46cb8" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>NormalizationTransform</name></member>
       <member refid="structfaiss_1_1NormalizationTransform_1a0b81cf1bcc8fd322b54c25b8e1d67a37" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>NormalizationTransform</name></member>
       <member refid="structfaiss_1_1NormalizationTransform_1af280b21563b819ebb292a6f63d011ad1" prot="public" virt="virtual"><scope>faiss::NormalizationTransform</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" prot="public" virt="virtual"><scope>faiss::NormalizationTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::NormalizationTransform</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::NormalizationTransform</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>

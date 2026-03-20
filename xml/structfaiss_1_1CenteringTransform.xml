@@ -268,7 +268,7 @@
       <member refid="structfaiss_1_1CenteringTransform_1af96e272f0f51d71ed098cdfe3e4ff87d" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>mean</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1a01aacceb0950fcb39b0f5e18103ea6d5" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>reverse_transform</name></member>
       <member refid="structfaiss_1_1CenteringTransform_1ae63f2afed997c435fda588b5a8642893" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::CenteringTransform</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::CenteringTransform</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>

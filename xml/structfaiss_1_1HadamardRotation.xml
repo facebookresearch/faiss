@@ -398,7 +398,7 @@
       <member refid="structfaiss_1_1HadamardRotation_1a37c0de897839bded104d29490508047d" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>signs2</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1acc6fec44d3a99d1a246b2fa85c107f41" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>signs3</name></member>
       <member refid="structfaiss_1_1HadamardRotation_1a36e4f4f76f451e7b4724aabca37d867c" prot="public" virt="virtual"><scope>faiss::HadamardRotation</scope><name>train</name></member>
-      <member refid="structfaiss_1_1VectorTransform_1a137f48bab695736f0b1d79a50cddc858" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>VectorTransform</name></member>
+      <member refid="structfaiss_1_1VectorTransform_1a6af0c21e5b727f2202ab2e2fedea5034" prot="public" virt="non-virtual"><scope>faiss::HadamardRotation</scope><name>VectorTransform</name></member>
       <member refid="structfaiss_1_1VectorTransform_1a6e003e61f6f88afb18e65f1493b904a8" prot="public" virt="virtual"><scope>faiss::HadamardRotation</scope><name>~VectorTransform</name></member>
     </listofallmembers>
   </compounddef>
