@@ -436,7 +436,7 @@ void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     codes[list_no].resize(padded * code_size);
     cum_sums[list_no].resize(padded * (pano->n_levels + 1));
 
-    if (init_dists[list_no].size() > 0) {
+    if (dynamic_cast<PanoramaPQ*>(pano.get())) {
         init_dists[list_no].resize(padded);
     }
 }

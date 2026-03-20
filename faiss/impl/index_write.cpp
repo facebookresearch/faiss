@@ -284,11 +284,7 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         }
         WRITEVECTOR(sizes);
 
-        bool has_init_dists = !ailp->init_dists.empty() &&
-                ailp->init_dists[0].size() > 0;
-        WRITE1(has_init_dists);
-
-        // Write codes, ids, cum_sums, and optionally init_dists
+        // Write codes, ids, and cum_sums
         for (size_t i = 0; i < ailp->nlist; i++) {
             size_t n = ailp->ids[i].size();
             if (n > 0) {
@@ -296,11 +292,6 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
                 WRITEANDCHECK(ailp->ids[i].data(), n);
                 WRITEANDCHECK(
                         ailp->cum_sums[i].data(), ailp->cum_sums[i].size());
-                if (has_init_dists) {
-                    WRITEANDCHECK(
-                            ailp->init_dists[i].data(),
-                            ailp->init_dists[i].size());
-                }
             }
         }
     } else if (
