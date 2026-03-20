@@ -1517,13 +1517,13 @@
         </inbodydescription>
         <location file="faiss/gpu/GpuIndex.h" line="133" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Index_1a54ff87dfd8b420f214e610865a70afbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>virtual void faiss::Index::train</definition>
+        <definition>virtual void faiss::Index::train_with_queries</definition>
         <argsstring>(idx_t n, const float *x, idx_t n_train_q, const float *xq_train)</argsstring>
-        <name>train</name>
-        <qualifiedname>faiss::Index::train</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a0be9635c638cc74ca0285df76c690118">train</reimplementedby>
+        <name>train_with_queries</name>
+        <qualifiedname>faiss::Index::train_with_queries</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexSVSVamanaLeanVec_1ae83c352204cc61df4adf2424e5bfe737">train_with_queries</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
           <declname>n</declname>
@@ -1543,7 +1543,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Perfrom training on a representative set of vectors and a representative set of queries</para>
+<para>Perform training on a representative set of vectors and a representative set of queries</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>n</parametername>
@@ -3071,9 +3071,9 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1afda2894c0ce520e0d3d06eeca5ed5f0c" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>setPrecomputedCodes</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a1e0d550a362813a21de6af150ab67b7f" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>subQuantizers_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a83f32135cda2a3e4251737d2eb245324" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>train</name></member>
-      <member refid="structfaiss_1_1Index_1a54ff87dfd8b420f214e610865a70afbf" prot="public" virt="virtual" ambiguityscope="faiss::gpu::GpuIndexIVF::"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>train</name></member>
       <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>train_q1</name></member>
+      <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>train_with_queries</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1ab22c31f717f03a091aafa1b61ad4e8be" prot="protected" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>trainQuantizer_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a5c71f0186ba65d1408cd9ef5cfc12960" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>trainResidualQuantizer_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a9a3a79c3758938846c09206676dd594b" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>updateQuantizer</name></member>
