@@ -66,17 +66,17 @@ DistanceComputer* storage_distance_computer(const Index* storage) {
  * IndexNNDescent implementation
  **************************************************************/
 
-IndexNNDescent::IndexNNDescent(int d, int K, MetricType metric)
-        : Index(d, metric),
-          nndescent(d, K),
+IndexNNDescent::IndexNNDescent(int d_in, int K, MetricType metric)
+        : Index(d_in, metric),
+          nndescent(d_in, K),
           own_fields(false),
           storage(nullptr) {}
 
-IndexNNDescent::IndexNNDescent(Index* storage, int K)
-        : Index(storage->d, storage->metric_type),
-          nndescent(storage->d, K),
+IndexNNDescent::IndexNNDescent(Index* storage_in, int K)
+        : Index(storage_in->d, storage_in->metric_type),
+          nndescent(storage_in->d, K),
           own_fields(false),
-          storage(storage) {}
+          storage(storage_in) {}
 
 IndexNNDescent::~IndexNNDescent() {
     if (own_fields) {
@@ -140,7 +140,7 @@ void IndexNNDescent::search(
 
     if (metric_type == METRIC_INNER_PRODUCT) {
         // we need to revert the negated distances
-        for (size_t i = 0; i < k * n; i++) {
+        for (idx_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
         }
     }
@@ -184,8 +184,8 @@ IndexNNDescentFlat::IndexNNDescentFlat() {
     is_trained = true;
 }
 
-IndexNNDescentFlat::IndexNNDescentFlat(int d, int M, MetricType metric)
-        : IndexNNDescent(new IndexFlat(d, metric), M) {
+IndexNNDescentFlat::IndexNNDescentFlat(int d_in, int M, MetricType metric)
+        : IndexNNDescent(new IndexFlat(d_in, metric), M) {
     own_fields = true;
     is_trained = true;
 }

@@ -16,6 +16,7 @@
 #include <faiss/IndexBinary.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/impl/io.h>
 #include <faiss/index_io.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -900,4 +901,202 @@ TEST(ReadIndexDeserialize, BlockInvertedListsValidCodesSize) {
     reader.data = buf;
     auto il = read_InvertedLists_up(&reader);
     EXPECT_NE(il, nullptr);
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductQuantizer centroids size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, PQCentroidsSizeMismatch) {
+    // "Imiq" (MultiIndexQuantizer): fourcc + index_header + PQ
+    // PQ: d=4, M=2, nbits=8 -> ksub=256, expected centroids = 4*256 = 1024
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Imiq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    std::vector<float> bad_centroids(100, 0.0f);
+    push_pq(buf, /*d=*/4, /*M=*/2, /*nbits=*/8, bad_centroids);
+
+    expect_read_throws_with(buf, "centroids size");
+}
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer trained vector size mismatch.
+// For QT_4bit (qtype=1), expected trained.size() = 2 * d.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQTrainedSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // ScalarQuantizer fields:
+    push_val<int>(
+            buf, ScalarQuantizer::QT_4bit); // expects trained.size()=2*d=8
+    push_val<int>(buf, 0);                  // rangestat
+    push_val<float>(buf, 0.0f);             // rangestat_arg
+    push_val<size_t>(buf, 4);               // d
+    push_val<size_t>(buf, 1);               // code_size
+    // trained: 3 floats instead of expected 8
+    push_vector<float>(buf, {1.0f, 2.0f, 3.0f});
+
+    expect_read_throws_with(buf, "ScalarQuantizer trained size");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexPQ codes vector size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexPQCodesSizeMismatch) {
+    // "IxPq": fourcc + index_header + PQ + codes + search_type +
+    //         encode_signs + polysemous_ht
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // PQ: d=4, M=2, nbits=8 -> code_size=2, ksub=256
+    std::vector<float> centroids(4 * 256, 0.0f);
+    push_pq(buf, /*d=*/4, /*M=*/2, /*nbits=*/8, centroids);
+    // codes: should be ntotal * code_size = 2 * 2 = 4 bytes
+    // Provide wrong size (10 bytes)
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
+    // IxPq format extras:
+    push_val<int>(buf, 0); // search_type
+    push_val<int>(buf, 0); // encode_signs
+    push_val<int>(buf, 0); // polysemous_ht
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
+/// Helper: append a minimal AdditiveQuantizer (d, M, nbits, is_trained,
+/// codebooks, search_type=ST_decompress, norm_min, norm_max).
+static void push_additive_quantizer(
+        std::vector<uint8_t>& buf,
+        size_t d,
+        size_t M,
+        const std::vector<size_t>& nbits) {
+    push_val<size_t>(buf, d);
+    push_val<size_t>(buf, M);
+    push_vector<size_t>(buf, nbits);
+    push_val<bool>(buf, true);   // is_trained
+    push_vector<float>(buf, {}); // codebooks (empty)
+    push_val<int>(buf, 0);       // search_type = ST_decompress
+    push_val<float>(buf, 0.0f);  // norm_min
+    push_val<float>(buf, 1.0f);  // norm_max
+}
+
+/// Helper: append a minimal ResidualQuantizer (AdditiveQuantizer +
+/// train_type + max_beam_size).  Uses Skip_codebook_tables to avoid
+/// compute_codebook_tables on empty codebooks.
+static void push_residual_quantizer(
+        std::vector<uint8_t>& buf,
+        size_t d,
+        size_t M,
+        const std::vector<size_t>& nbits) {
+    push_additive_quantizer(buf, d, M, nbits);
+    push_val<int>(buf, 2048); // train_type = Skip_codebook_tables
+    push_val<int>(buf, 1);    // max_beam_size
+}
+
+/// Helper: append a minimal LocalSearchQuantizer (AdditiveQuantizer +
+/// K + train_iters + encode_ils_iters + train_ils_iters + icm_iters +
+/// p + lambd + chunk_size + random_seed + nperts +
+/// update_codebooks_with_double).
+static void push_local_search_quantizer(
+        std::vector<uint8_t>& buf,
+        size_t d,
+        size_t M,
+        const std::vector<size_t>& nbits) {
+    push_additive_quantizer(buf, d, M, nbits);
+    push_val<size_t>(buf, 256); // K
+    push_val<size_t>(buf, 25);  // train_iters
+    push_val<size_t>(buf, 8);   // encode_ils_iters
+    push_val<size_t>(buf, 8);   // train_ils_iters
+    push_val<size_t>(buf, 4);   // icm_iters
+    push_val<float>(buf, 0.5f); // p
+    push_val<float>(buf, 0.0f); // lambd
+    push_val<size_t>(buf, 0);   // chunk_size
+    push_val<int>(buf, 123);    // random_seed
+    push_val<size_t>(buf, 4);   // nperts
+    push_val<bool>(buf, false); // update_codebooks_with_double
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexResidualQuantizer codes vector size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexResidualQuantizerCodesSizeMismatch) {
+    // "IxRq": fourcc + index_header + ResidualQuantizer + code_size + codes
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxRq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    // code_size = 1 (M=1, nbits=8 → 1 byte per code)
+    push_val<size_t>(buf, 1); // code_size
+    // codes: should be ntotal * code_size = 2 * 1 = 2 bytes
+    // Provide wrong size (10 bytes)
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexLocalSearchQuantizer codes vector size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLocalSearchQuantizerCodesSizeMismatch) {
+    // "IxLS": fourcc + index_header + LocalSearchQuantizer + code_size + codes
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLS");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    push_local_search_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    // code_size = 1 (M=1, nbits=8 → 1 byte per code)
+    push_val<size_t>(buf, 1); // code_size
+    // codes: should be ntotal * code_size = 2 * 1 = 2 bytes
+    // Provide wrong size (10 bytes)
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexProductResidualQuantizer codes vector size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexProductResidualQuantizerCodesSizeMismatch) {
+    // "IxPR": fourcc + index_header + ProductResidualQuantizer + code_size
+    //         + codes
+    // ProductResidualQuantizer = ProductAdditiveQuantizer(AdditiveQuantizer
+    //   + nsplits) + nsplits * ResidualQuantizer
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPR");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // ProductAdditiveQuantizer: AdditiveQuantizer + nsplits
+    push_additive_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    push_val<size_t>(buf, 1); // nsplits = 1
+    // 1 nested ResidualQuantizer (sub-dimension = d / nsplits = 4)
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    // code_size = 1
+    push_val<size_t>(buf, 1); // code_size
+    // codes: should be ntotal * code_size = 2 * 1 = 2 bytes
+    // Provide wrong size (10 bytes)
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
+
+    expect_read_throws_with(buf, "codes.size()");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexProductLocalSearchQuantizer codes vector size mismatch.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexProductLocalSearchQuantizerCodesSizeMismatch) {
+    // "IxPL": fourcc + index_header + ProductLocalSearchQuantizer + code_size
+    //         + codes
+    // ProductLocalSearchQuantizer = ProductAdditiveQuantizer(AdditiveQuantizer
+    //   + nsplits) + nsplits * LocalSearchQuantizer
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPL");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // ProductAdditiveQuantizer: AdditiveQuantizer + nsplits
+    push_additive_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    push_val<size_t>(buf, 1); // nsplits = 1
+    // 1 nested LocalSearchQuantizer (sub-dimension = d / nsplits = 4)
+    push_local_search_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{8});
+    // code_size = 1
+    push_val<size_t>(buf, 1); // code_size
+    // codes: should be ntotal * code_size = 2 * 1 = 2 bytes
+    // Provide wrong size (10 bytes)
+    push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
+
+    expect_read_throws_with(buf, "codes.size()");
 }

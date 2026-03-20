@@ -375,10 +375,10 @@ def handle_Index(the_class):
                 )
             )
 
-        # Dispatch to train_c / train_ex
+        # Dispatch to train_c / train_with_queries / train_ex
         if numeric_type == faiss.Float32:
             if train_q is not None:
-                self.train_c(
+                self.train_with_queries(
                     n, swig_ptr(x), n_train_q, train_q
                 )
             else:

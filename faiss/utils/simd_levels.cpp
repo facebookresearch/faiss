@@ -47,7 +47,7 @@ static bool has_sve() {
 #endif // __linux__ / __APPLE__ / other
 
 #else // Not ARM64
-static bool has_sve() {
+[[maybe_unused]] static bool has_sve() {
     return false;
 }
 #endif
