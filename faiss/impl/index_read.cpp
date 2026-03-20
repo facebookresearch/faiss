@@ -10,6 +10,7 @@
 
 #include <faiss/impl/io_macros.h>
 
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -906,6 +907,26 @@ static void read_NNDescent(NNDescent& nnd, IOReader* f) {
             nnd.ntotal >= 0, "invalid NNDescent ntotal %d", nnd.ntotal);
 
     READVECTOR(nnd.final_graph);
+    // Validate neighbor IDs in the graph
+    if (nnd.has_built && nnd.K > 0 && nnd.ntotal > 0) {
+        FAISS_THROW_IF_NOT_FMT(
+                nnd.final_graph.size() == (size_t)nnd.ntotal * (size_t)nnd.K,
+                "NNDescent final_graph size %zu != ntotal * K (%d * %d = %zu)",
+                nnd.final_graph.size(),
+                nnd.ntotal,
+                nnd.K,
+                (size_t)nnd.ntotal * (size_t)nnd.K);
+        for (size_t i = 0; i < nnd.final_graph.size(); i++) {
+            int id = nnd.final_graph[i];
+            FAISS_THROW_IF_NOT_FMT(
+                    id >= -1 && id < nnd.ntotal,
+                    "NNDescent final_graph[%zu] = %d out of range "
+                    "[-1, %d)",
+                    i,
+                    id,
+                    nnd.ntotal);
+        }
+    }
 }
 
 std::unique_ptr<ProductQuantizer> read_ProductQuantizer_up(const char* fname) {
@@ -1600,9 +1621,28 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             }
         }
         read_HNSW(idxhnsw->hnsw, f);
+        // Cross-check HNSW graph size against index header ntotal
+        FAISS_THROW_IF_NOT_FMT(
+                idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
+                "HNSW levels size %zu != index ntotal %" PRId64,
+                idxhnsw->hnsw.levels.size(),
+                idxhnsw->ntotal);
         idxhnsw->hnsw.is_panorama = (h == fourcc("IHfP"));
         idxhnsw->storage = read_index(f, io_flags);
         idxhnsw->own_fields = idxhnsw->storage != nullptr;
+        // Cross-check storage ntotal and d against index
+        if (idxhnsw->storage) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxhnsw->storage->ntotal == idxhnsw->ntotal,
+                    "HNSW storage ntotal %" PRId64 " != index ntotal %" PRId64,
+                    idxhnsw->storage->ntotal,
+                    idxhnsw->ntotal);
+            FAISS_THROW_IF_NOT_FMT(
+                    idxhnsw->storage->d == idxhnsw->d,
+                    "HNSW storage d %d != index d %d",
+                    idxhnsw->storage->d,
+                    idxhnsw->d);
+        }
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             auto* storage_pq = dynamic_cast<IndexPQ*>(idxhnsw->storage);
             FAISS_THROW_IF_NOT_MSG(
@@ -1631,15 +1671,58 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxnsg->nndescent_L);
         READ1(idxnsg->nndescent_iter);
         read_NSG(idxnsg->nsg, f);
+        // Cross-check NSG graph ntotal against index header ntotal
+        if (idxnsg->nsg.is_built) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnsg->nsg.ntotal == idxnsg->ntotal,
+                    "NSG ntotal %d != index ntotal %" PRId64,
+                    idxnsg->nsg.ntotal,
+                    idxnsg->ntotal);
+        }
         idxnsg->storage = read_index(f, io_flags);
         idxnsg->own_fields = true;
+        // Cross-check storage ntotal and d against index
+        if (idxnsg->storage) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnsg->storage->ntotal == idxnsg->ntotal,
+                    "NSG storage ntotal %" PRId64 " != index ntotal %" PRId64,
+                    idxnsg->storage->ntotal,
+                    idxnsg->ntotal);
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnsg->storage->d == idxnsg->d,
+                    "NSG storage d %d != index d %d",
+                    idxnsg->storage->d,
+                    idxnsg->d);
+        }
         idx = std::move(idxnsg);
     } else if (h == fourcc("INNf")) {
         auto idxnnd = std::make_unique<IndexNNDescentFlat>();
         read_index_header(*idxnnd, f);
         read_NNDescent(idxnnd->nndescent, f);
+        // Cross-check NNDescent ntotal against index header ntotal
+        if (idxnnd->nndescent.has_built) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnnd->nndescent.ntotal == idxnnd->ntotal,
+                    "NNDescent ntotal %d != index ntotal %" PRId64,
+                    idxnnd->nndescent.ntotal,
+                    idxnnd->ntotal);
+        }
         idxnnd->storage = read_index(f, io_flags);
         idxnnd->own_fields = true;
+        // Cross-check storage ntotal and d against index
+        if (idxnnd->storage) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnnd->storage->ntotal == idxnnd->ntotal,
+                    "NNDescent storage ntotal %" PRId64
+                    " != index ntotal %" PRId64,
+                    idxnnd->storage->ntotal,
+                    idxnnd->ntotal);
+            FAISS_THROW_IF_NOT_FMT(
+                    idxnnd->storage->d == idxnnd->d,
+                    "NNDescent storage d %d != index d %d",
+                    idxnnd->storage->d,
+                    idxnnd->d);
+        }
         idx = std::move(idxnnd);
     } else if (h == fourcc("IPfs")) {
         auto idxpqfs = std::make_unique<IndexPQFastScan>();
