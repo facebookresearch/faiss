@@ -576,7 +576,7 @@ void ParameterSpace::set_index_parameter(
 
     if (name == "prune_headroom") {
         if (DC(IndexHNSW)) {
-            ix->hnsw.prune_headroom = val;
+            ix_->hnsw.prune_headroom = val;
             return;
         }
     }
