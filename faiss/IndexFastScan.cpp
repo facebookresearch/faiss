@@ -501,8 +501,7 @@ void IndexFastScan::search_implem_12(
     // accessible through the SIMDResultHandlerToFloat* interface.
     if (!(skip & (2 | 4))) {
         scanner->accumulate_loop_qbs(
-                qbs,
-
+                qbs_,
                 ntotal2,
                 M2,
                 codes.get(),
