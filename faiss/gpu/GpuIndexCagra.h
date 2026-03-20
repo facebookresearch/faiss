@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 
 #include <variant>
+#include <vector>
 #include "faiss/Index.h"
 
 namespace faiss {
@@ -328,6 +329,10 @@ struct GpuIndexCagra : public GpuIndex {
             std::shared_ptr<CuvsCagra<half>>,
             std::shared_ptr<CuvsCagra<int8_t>>>
             index_;
+
+    std::vector<float> host_storage_f32_;
+    std::vector<half> host_storage_f16_;
+    std::vector<int8_t> host_storage_int8_;
 };
 
 } // namespace gpu

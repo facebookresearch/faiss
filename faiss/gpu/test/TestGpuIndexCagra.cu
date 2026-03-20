@@ -32,6 +32,7 @@
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -655,16 +656,18 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         }
 
         // train cpu index
-        faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2, metric);
-        cpuIndex.hnsw.efConstruction = opt.k * 2;
-        cpuIndex.add(opt.numTrain, trainVecs.data());
+        auto cpuIndex = std::make_unique<faiss::IndexHNSWCagra>(
+                opt.dim, opt.graphDegree / 2, metric);
+        cpuIndex->hnsw.efConstruction = opt.k * 2;
+        cpuIndex->add(opt.numTrain, trainVecs.data());
 
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         // convert to gpu index
-        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex);
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
+        copiedGpuIndex.copyFrom(cpuIndex.get());
+        cpuIndex.reset();
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -769,20 +772,21 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         }
 
         // train cpu index
-        faiss::IndexHNSWCagra cpuIndex(
+        auto cpuIndex = std::make_unique<faiss::IndexHNSWCagra>(
                 opt.dim,
                 opt.graphDegree / 2,
                 metric,
                 faiss::NumericType::Float16);
-        cpuIndex.hnsw.efConstruction = opt.k * 2;
-        cpuIndex.add(opt.numTrain, trainVecs.data());
+        cpuIndex->hnsw.efConstruction = opt.k * 2;
+        cpuIndex->add(opt.numTrain, trainVecs.data());
 
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         // convert to gpu index
-        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
-        copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
+        copiedGpuIndex.copyFrom_ex(cpuIndex.get(), faiss::NumericType::Float16);
+        cpuIndex.reset();
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -794,7 +798,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         // faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         // gpuIndex.train(opt.numTrain, trainVecs.data());
 
-        faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
+        faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
 
         // Create half vector
         std::vector<__half> trainVecs_half(trainVecs.size());
