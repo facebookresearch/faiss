@@ -14,6 +14,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexHNSW.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -1282,4 +1283,21 @@ TEST(ReadIndexDeserialize, NNDescentNtotalMismatch) {
             {0, 1, 0, 2, 1, 2});
 
     expect_read_throws_with(buf, "NNDescent ntotal");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexHNSWCagra search with base_level_only on empty index.
+// Without the fix, this would access uninitialized graph nodes.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWCagraEmptyIndexSearch) {
+    IndexHNSWCagra idx(4, 16);
+    idx.base_level_only = true;
+
+    std::vector<float> xq(4, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_NO_THROW(
+            idx.search(1, xq.data(), 1, distances.data(), labels.data()));
+    EXPECT_EQ(labels[0], -1);
 }
