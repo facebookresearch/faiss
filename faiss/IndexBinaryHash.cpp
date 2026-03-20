@@ -287,11 +287,7 @@ IndexBinaryHashStats indexBinaryHash_stats;
  ******************************************************/
 
 IndexBinaryMultiHash::IndexBinaryMultiHash(int d_, int nhash_, int b_)
-        : IndexBinary(d_),
-          maps(nhash_),
-          nhash(nhash_),
-          b(b_),
-          nflip(0) {
+        : IndexBinary(d_), maps(nhash_), nhash(nhash_), b(b_), nflip(0) {
     FAISS_THROW_IF_NOT(nhash_ * b_ <= d_);
     storage = std::make_unique<IndexBinaryFlat>(d_).release();
     own_fields = true;

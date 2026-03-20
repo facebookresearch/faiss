@@ -186,7 +186,6 @@ void estimators_from_tables_generic(
         const dis_t* dt = dis_table;
         int nscale = context.pq2x4_scale ? 2 : 0;
 
-
         for (size_t m = 0; m < index.M - nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
             dis += dt[c];
@@ -222,7 +221,6 @@ std::unique_ptr<FastScanCodeScanner> IndexFastScan::make_knn_scanner(
         const FastScanDistancePostProcessing&) const {
     return make_fast_scan_knn_scanner(
             is_max, impl, n, ntotal, k, distances, labels, sel);
-
 }
 
 using namespace quantize_lut;
