@@ -114,15 +114,21 @@ outputs:
 # TODO: remove cuda_major guard when we move to PyPI (pytorch via PyPI works on CUDA 13)
 {% if cuda_major < 13 %}
         - pytorch-gpu >=2.7
+{% else %}
+        - cuda-compat {{ cuda_constraints }}  # forward compat for CI runners with older drivers
 {% endif %}
       commands:
+{% if cuda_major >= 13 %}
+        # cuda-compat forward compat: list installed compat libs and set LD_LIBRARY_PATH for each command
+        - ls -la $PREFIX/compat/ || ls -la $PREFIX/lib/stubs/ || echo "no compat dir found"
+        - LD_LIBRARY_PATH=$PREFIX/compat:$LD_LIBRARY_PATH python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+        - cp tests/common_faiss_tests.py faiss/gpu/test
+        - LD_LIBRARY_PATH=$PREFIX/compat:$LD_LIBRARY_PATH python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+{% else %}
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
-{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
-{% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
-{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
 {% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]

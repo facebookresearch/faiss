@@ -98,7 +98,8 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        # Python 3.14 excluded: libcuvs -> ucxx -> numba caps numpy <2.3, incompatible with 3.14
+        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "python": ["3.12", "3.13"] }' \
             -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''
@@ -108,7 +109,8 @@ runs:
         PACKAGE_TYPE: ${{ inputs.label }}
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        # Python 3.14 excluded: libcuvs -> ucxx -> numba caps numpy <2.3, incompatible with 3.14
+        conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}", "python": ["3.12", "3.13"] }' \
             --user pytorch --label ${{ inputs.label }} -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Check installed packages channel
       shell: ${{ steps.choose_shell.outputs.shell }}
