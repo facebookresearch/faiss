@@ -135,20 +135,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1a480a32625aa7c6ae5fd49afaacfa7fd1" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1a42d6cbfc07119b277be0e2bb900f1ebf" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexIVFInterface::IndexIVFInterface</definition>
-        <argsstring>(Index *quantizer=nullptr, size_t nlist=0)</argsstring>
+        <argsstring>(Index *quantizer_in=nullptr, size_t nlist_in=0)</argsstring>
         <name>IndexIVFInterface</name>
         <qualifiedname>faiss::IndexIVFInterface::IndexIVFInterface</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>quantizer</declname>
+          <declname>quantizer_in</declname>
           <defval>nullptr</defval>
         </param>
         <param>
           <type>size_t</type>
-          <declname>nlist</declname>
+          <declname>nlist_in</declname>
           <defval>0</defval>
         </param>
         <briefdescription>
@@ -157,7 +157,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="89" column="14" bodyfile="faiss/IndexIVF.h" bodystart="89" bodyend="90"/>
+        <location file="faiss/IndexIVF.h" line="89" column="14" bodyfile="faiss/IndexIVF.h" bodystart="89" bodyend="92"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1a79e6f1be6c93c72138bf591551891374" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -294,7 +294,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="111" column="18"/>
+        <location file="faiss/IndexIVF.h" line="113" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1aa1981dcda1ef525d40c0ef7873ef63d9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>void</type>
@@ -416,7 +416,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="139" column="18"/>
+        <location file="faiss/IndexIVF.h" line="141" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFInterface_1a1f3f3a224926ad0bb98f4fe10aaf8068" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -430,7 +430,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="150" column="13" bodyfile="faiss/IndexIVF.h" bodystart="150" bodyend="150"/>
+        <location file="faiss/IndexIVF.h" line="152" column="13" bodyfile="faiss/IndexIVF.h" bodystart="152" bodyend="152"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a0069a6ee1e32c2e0c1c7df9a95740dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -718,15 +718,15 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVF.h" line="85" column="1" bodyfile="faiss/IndexIVF.h" bodystart="85" bodyend="151"/>
+    <location file="faiss/IndexIVF.h" line="85" column="1" bodyfile="faiss/IndexIVF.h" bodystart="85" bodyend="153"/>
     <listofallmembers>
       <member refid="structfaiss_1_1Level1Quantizer_1a45d29dd6a5c53789c08e5ceb3f63d989" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>clustering_index</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a28fb5379de2f35f1b86ae5019ec4128f" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>coarse_code_size</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>cp</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>decode_listno</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>encode_listno</name></member>
-      <member refid="structfaiss_1_1IndexIVFInterface_1a480a32625aa7c6ae5fd49afaacfa7fd1" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>IndexIVFInterface</name></member>
-      <member refid="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1IndexIVFInterface_1a42d6cbfc07119b277be0e2bb900f1ebf" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>IndexIVFInterface</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1IndexIVFInterface_1a205287f5e7fa7e1d5c5f98e19074c636" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>max_codes</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" virt="non-virtual"><scope>faiss::IndexIVFInterface</scope><name>nlist</name></member>

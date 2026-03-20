@@ -3026,11 +3026,11 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1ac61c4acbe7885170477d6adf044451e7" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>GpuIndexIVFPQ</name></member>
       <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>Index</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a402394900e4e144eb1f8821028f3138f" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>index_</name></member>
-      <member refid="structfaiss_1_1IndexIVFInterface_1a480a32625aa7c6ae5fd49afaacfa7fd1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>IndexIVFInterface</name></member>
+      <member refid="structfaiss_1_1IndexIVFInterface_1a42d6cbfc07119b277be0e2bb900f1ebf" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>IndexIVFInterface</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>is_trained</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVF_1a7e25b7ac093961ab0f58f1bc72f6ea43" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>ivfConfig_</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFPQ_1a34e191c9fa03320f083ca06155faa1a9" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>ivfpqConfig_</name></member>
-      <member refid="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1IndexIVFInterface_1a205287f5e7fa7e1d5c5f98e19074c636" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>max_codes</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexIVFPQ</scope><name>merge_from</name></member>

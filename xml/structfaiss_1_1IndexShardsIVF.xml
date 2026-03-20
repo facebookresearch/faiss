@@ -801,7 +801,7 @@
       <member refid="structfaiss_1_1IndexShardsTemplate_1a0596f5ca67d6c9bfddae1465c5353b29" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>IndexShardsTemplate</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>indices_</name></member>
       <member refid="classfaiss_1_1ThreadedIndex_1a1031b2c900e9ba53573e617539b3c488" prot="protected" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>isThreaded_</name></member>
-      <member refid="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" virt="non-virtual"><scope>faiss::IndexShardsIVF</scope><name>nlist</name></member>
       <member refid="structfaiss_1_1IndexShardsTemplate_1a1d78dd47e9dc49488947e90dbc85e1ac" prot="protected" virt="virtual"><scope>faiss::IndexShardsIVF</scope><name>onAfterAddIndex</name></member>

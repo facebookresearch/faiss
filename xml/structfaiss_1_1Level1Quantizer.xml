@@ -189,19 +189,19 @@
         </inbodydescription>
         <location file="faiss/IndexIVF.h" line="59" column="11"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::Level1Quantizer::Level1Quantizer</definition>
-        <argsstring>(Index *quantizer, size_t nlist)</argsstring>
+        <argsstring>(Index *quantizer_in, size_t nlist_in)</argsstring>
         <name>Level1Quantizer</name>
         <qualifiedname>faiss::Level1Quantizer::Level1Quantizer</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>quantizer</declname>
+          <declname>quantizer_in</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>nlist</declname>
+          <declname>nlist_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -448,7 +448,7 @@
       <member refid="structfaiss_1_1Level1Quantizer_1abb7097ed40b15ba0af08af6d03608f72" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>cp</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>decode_listno</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>encode_listno</name></member>
-      <member refid="structfaiss_1_1Level1Quantizer_1a7262e1eb542b177308dab0c043e90d01" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>Level1Quantizer</name></member>
+      <member refid="structfaiss_1_1Level1Quantizer_1ad2d58826ac8d146e3ecce708714ee06d" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a7623b6432ff9faee737ebe36b415fa18" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>Level1Quantizer</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a1c4fc9d874d9492ee0ea27a5be388fa7" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>nlist</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1ab688c629cd42122d73517078b87f483d" prot="public" virt="non-virtual"><scope>faiss::Level1Quantizer</scope><name>own_fields</name></member>

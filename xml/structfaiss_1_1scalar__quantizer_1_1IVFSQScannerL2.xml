@@ -94,7 +94,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="478" column="11" bodyfile="faiss/IndexIVF.h" bodystart="478" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="480" column="11" bodyfile="faiss/IndexIVF.h" bodystart="480" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListScanner_1a00cb1d807f47fe2a21077919e3458db7" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -110,7 +110,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="479" column="10" bodyfile="faiss/IndexIVF.h" bodystart="479" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="481" column="10" bodyfile="faiss/IndexIVF.h" bodystart="481" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -125,7 +125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="481" column="10" bodyfile="faiss/IndexIVF.h" bodystart="481" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="483" column="10" bodyfile="faiss/IndexIVF.h" bodystart="483" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2" prot="public" static="no" mutable="no">
         <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
@@ -140,7 +140,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="484" column="22" bodyfile="faiss/IndexIVF.h" bodystart="484" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="486" column="22" bodyfile="faiss/IndexIVF.h" bodystart="486" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" prot="public" static="no" mutable="no">
         <type>size_t</type>
@@ -156,7 +156,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="492" column="12" bodyfile="faiss/IndexIVF.h" bodystart="492" bodyend="-1"/>
+        <location file="faiss/IndexIVF.h" line="494" column="12" bodyfile="faiss/IndexIVF.h" bodystart="494" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -386,7 +386,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="515" column="20"/>
+        <location file="faiss/IndexIVF.h" line="517" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
@@ -420,7 +420,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="524" column="20"/>
+        <location file="faiss/IndexIVF.h" line="526" column="20"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -456,7 +456,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="535" column="18"/>
+        <location file="faiss/IndexIVF.h" line="537" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -486,7 +486,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVF.h" line="543" column="18"/>
+        <location file="faiss/IndexIVF.h" line="545" column="18"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -537,7 +537,7 @@
       <member refid="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a88f5e608e9233a02d376acc01e8afe4d" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>dc</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a92a120a2b6f83a9a1037771e134e15f5" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>distance_to_code</name></member>
-      <member refid="structfaiss_1_1InvertedListScanner_1a7a351436a857000778aeabc81f554daf" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>InvertedListScanner</name></member>
+      <member refid="structfaiss_1_1InvertedListScanner_1a567a5905d2c5a1a7afaeddc503dc2dbd" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>InvertedListScanner</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>iterate_codes</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" prot="public" virt="virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>iterate_codes_range</name></member>
       <member refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a86f0324f85d2f98da145ab812db6b424" prot="public" virt="non-virtual"><scope>faiss::scalar_quantizer::IVFSQScannerL2</scope><name>IVFSQScannerL2</name></member>
