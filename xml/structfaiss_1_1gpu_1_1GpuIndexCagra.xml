@@ -1904,7 +1904,7 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9a2b771d7878964590910100688b4aaa" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>getResources</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndex_1a9711f1d478ac1e3b672811226823978d" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>GpuIndex</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a14b5fbde3bb2c8fd6623c061c2f65f4a" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>GpuIndexCagra</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>Index</name></member>
       <member refid="structfaiss_1_1gpu_1_1GpuIndexCagra_1a65bd168068e8fc2138022f8beaae520c" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>index_</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexCagra</scope><name>merge_from</name></member>

@@ -80,7 +80,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="32" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="32" bodyend="-1"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="38" column="31" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="38" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -344,7 +344,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="36" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="36" bodyend="57"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="42" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="42" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a773f12d72ab8a6957ab3ea745abd13c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -374,7 +374,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="61" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="61" bodyend="83"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="67" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="67" bodyend="89"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab442dec47b6199f29e0e7d751255b99c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -416,7 +416,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="90" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="90" bodyend="121"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="96" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="96" bodyend="127"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1aae9a30d80cab1751204b76dbbd77ed18" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -454,7 +454,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="128" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="128" bodyend="158"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="134" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="134" bodyend="164"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1ab5aaa1fb47b362d1024acdc7eeb0c3dc" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -508,7 +508,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="165" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="165" bodyend="206"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="171" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="171" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a1a40a4bd16fdb8cb3dea81e330e7f76a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -554,7 +554,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="213" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="213" bodyend="252"/>
+        <location file="faiss/cppcontrib/sa_decode/PQ-inl.h" line="219" column="17" bodyfile="faiss/cppcontrib/sa_decode/PQ-inl.h" bodystart="219" bodyend="258"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1cppcontrib_1_1IndexPQDecoder_1a6eb92d7c2c495a099887f88358670dfe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>

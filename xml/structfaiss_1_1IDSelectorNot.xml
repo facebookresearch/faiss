@@ -21,15 +21,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1ae4401ab33ff734901c147585ca4ef450" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorNot_1aa1d278311b73d294fa2f3d8e3becd084" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorNot::IDSelectorNot</definition>
-        <argsstring>(const IDSelector *sel)</argsstring>
+        <argsstring>(const IDSelector *sel_)</argsstring>
         <name>IDSelectorNot</name>
         <qualifiedname>faiss::IDSelectorNot::IDSelectorNot</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
-          <declname>sel</declname>
+          <declname>sel_</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -107,7 +107,7 @@
     </collaborationgraph>
     <location file="faiss/impl/IDSelector.h" line="117" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="117" bodyend="124"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IDSelectorNot_1ae4401ab33ff734901c147585ca4ef450" prot="public" virt="non-virtual"><scope>faiss::IDSelectorNot</scope><name>IDSelectorNot</name></member>
+      <member refid="structfaiss_1_1IDSelectorNot_1aa1d278311b73d294fa2f3d8e3becd084" prot="public" virt="non-virtual"><scope>faiss::IDSelectorNot</scope><name>IDSelectorNot</name></member>
       <member refid="structfaiss_1_1IDSelectorNot_1a862c6cd4035e24fdb237621b6e2ff86b" prot="public" virt="virtual"><scope>faiss::IDSelectorNot</scope><name>is_member</name></member>
       <member refid="structfaiss_1_1IDSelectorNot_1ad1aff9ca7358328c64daf17a595bd2c3" prot="public" virt="non-virtual"><scope>faiss::IDSelectorNot</scope><name>sel</name></member>
       <member refid="structfaiss_1_1IDSelector_1a9c0edd3fe1536d9b3193e14f0a2092ee" prot="public" virt="virtual"><scope>faiss::IDSelectorNot</scope><name>~IDSelector</name></member>

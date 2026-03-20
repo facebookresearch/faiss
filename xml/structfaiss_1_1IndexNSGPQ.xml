@@ -1821,7 +1821,7 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexNSGPQ</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexNSG_1ab42dd8a2ccd955bac425b68fc604d7a9" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>GK</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexNSG_1a2c671de0473165fd9372731a2a7065f0" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>IndexNSG</name></member>
       <member refid="structfaiss_1_1IndexNSG_1a055fc2195abfa7237ce15be50d8c385d" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>IndexNSG</name></member>
       <member refid="structfaiss_1_1IndexNSGPQ_1a0196d670a1dc73d9de668b61700880b9" prot="public" virt="non-virtual"><scope>faiss::IndexNSGPQ</scope><name>IndexNSGPQ</name></member>

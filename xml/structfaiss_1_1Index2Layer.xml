@@ -1746,7 +1746,7 @@
       <member refid="structfaiss_1_1IndexFlatCodes_1a4a71af51fe9541ea39f7faff73bea4e6" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index2Layer_1ae148c7b7ab50a2d3859002b64572cb0f" prot="public" virt="virtual"><scope>faiss::Index2Layer</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1af8a139db2a9d17f67e9c9d94a82c470a" prot="public" virt="virtual"><scope>faiss::Index2Layer</scope><name>get_FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>Index</name></member>
       <member refid="structfaiss_1_1Index2Layer_1aea5864830ea5711c1f9e92fc4768f203" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>Index2Layer</name></member>
       <member refid="structfaiss_1_1Index2Layer_1a665a1d9562e040bb0281c2d0f5625d93" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>Index2Layer</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::Index2Layer</scope><name>IndexFlatCodes</name></member>

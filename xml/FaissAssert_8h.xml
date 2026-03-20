@@ -1419,9 +1419,12 @@
         <initializer>    do {                                                       \
         std::string __s;                                       \
         int __size = snprintf(nullptr, 0, FMT, __VA_ARGS__);   \
-        __s.resize(__size + 1);                                \
-        snprintf(&amp;__s[0], __s.size(), FMT, __VA_ARGS__);       \
-        throw <ref refid="classfaiss_1_1FaissException" kindref="compound">::faiss::FaissException</ref>(                         \
+        if (__size &gt; 0) {                                      \
+            __s.resize(static_cast&lt;size_t&gt;(__size) + 1);       \
+            snprintf(&amp;__s[0], __s.size(), FMT, __VA_ARGS__);   \
+            __s.resize(static_cast&lt;size_t&gt;(__size));           \
+        }                                                      \
+        throw <ref refid="classfaiss_1_1FaissException" kindref="compound">faiss::FaissException</ref>(                           \
                 __s, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
     } while (false)</initializer>
         <briefdescription>
@@ -1430,7 +1433,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="77" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="77" bodyend="85"/>
+        <location file="faiss/impl/FaissAssert.h" line="77" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="77" bodyend="88"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1a09f40255f198ee50a67ff9194e364dc9" prot="public" static="no">
         <name>FAISS_THROW_IF_NOT</name>
@@ -1447,7 +1450,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="91" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="91" bodyend="96"/>
+        <location file="faiss/impl/FaissAssert.h" line="94" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="94" bodyend="99"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1a71daf41ca66c1a16bb31c537a958c6aa" prot="public" static="no">
         <name>FAISS_THROW_IF_MSG</name>
@@ -1464,7 +1467,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="98" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="98" bodyend="103"/>
+        <location file="faiss/impl/FaissAssert.h" line="101" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="101" bodyend="106"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1a795f62d9a23626abc3608192db593de3" prot="public" static="no">
         <name>FAISS_THROW_IF_NOT_MSG</name>
@@ -1477,7 +1480,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="105" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="105" bodyend="-1"/>
+        <location file="faiss/impl/FaissAssert.h" line="108" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1af2e88bd5de770a472c175d1a0b47d5b6" prot="public" static="no">
         <name>FAISS_THROW_IF_NOT_FMT</name>
@@ -1495,7 +1498,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="107" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="107" bodyend="112"/>
+        <location file="faiss/impl/FaissAssert.h" line="110" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="110" bodyend="115"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1acc819bbce434d280dcb522c55dca2f4c" prot="public" static="no">
         <name>FAISS_CHECK_RANGE</name>
@@ -1516,7 +1519,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="146" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="146" bodyend="153"/>
+        <location file="faiss/impl/FaissAssert.h" line="149" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="149" bodyend="156"/>
       </memberdef>
       <memberdef kind="define" id="FaissAssert_8h_1ac434f12ded4d8d619d9ce995f06cdcfc" prot="public" static="no">
         <name>FAISS_CHECK_RANGE_DEBUG</name>
@@ -1537,7 +1540,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/FaissAssert.h" line="159" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="159" bodyend="166"/>
+        <location file="faiss/impl/FaissAssert.h" line="162" column="9" bodyfile="faiss/impl/FaissAssert.h" bodystart="162" bodyend="169"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -1625,97 +1628,100 @@
 <codeline lineno="78"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="79"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>__s;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="80"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>__size<sp/>=<sp/>snprintf(nullptr,<sp/>0,<sp/>FMT,<sp/>__VA_ARGS__);<sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="81"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__s.resize(__size<sp/>+<sp/>1);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="82"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snprintf(&amp;__s[0],<sp/>__s.size(),<sp/>FMT,<sp/>__VA_ARGS__);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="83"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>::faiss::FaissException(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="84"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__s,<sp/>__PRETTY_FUNCTION__,<sp/>__FILE__,<sp/>__LINE__);<sp/>\</highlight></codeline>
-<codeline lineno="85"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="87"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="88"><highlight class="comment">///<sp/>Exceptions<sp/>thrown<sp/>upon<sp/>a<sp/>conditional<sp/>failure</highlight></codeline>
-<codeline lineno="89"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="90"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="92"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="93"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(X))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="94"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed&quot;,<sp/>#X);<sp/>\</highlight></codeline>
-<codeline lineno="95"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="96"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="97"><highlight class="normal"></highlight></codeline>
-<codeline lineno="98"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_MSG(X,<sp/>MSG)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="99"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="100"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(X)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="101"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed:<sp/>&quot;<sp/>MSG,<sp/>#X);<sp/>\</highlight></codeline>
-<codeline lineno="102"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="103"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT_MSG(X,<sp/>MSG)<sp/>FAISS_THROW_IF_MSG(!(X),<sp/>MSG)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="106"><highlight class="normal"></highlight></codeline>
-<codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT_FMT(X,<sp/>FMT,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="108"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="109"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(X))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="110"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed:<sp/>&quot;<sp/>FMT,<sp/>#X,<sp/>__VA_ARGS__);<sp/>\</highlight></codeline>
-<codeline lineno="111"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="112"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="114"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="115"><highlight class="comment">///<sp/>Safe<sp/>arithmetic</highlight></codeline>
-<codeline lineno="116"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;limits&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight></codeline>
-<codeline lineno="120"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="122"><highlight class="comment">///<sp/>Multiplication<sp/>that<sp/>throws<sp/>on<sp/>overflow<sp/>instead<sp/>of<sp/>wrapping</highlight></codeline>
-<codeline lineno="123" refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" kindref="member">mul_no_overflow</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>context)<sp/>{</highlight></codeline>
-<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(a<sp/>!=<sp/>0<sp/>&amp;&amp;<sp/>b<sp/>&gt;<sp/>(std::numeric_limits&lt;size_t&gt;::max)()<sp/>/<sp/>a)<sp/>{</highlight></codeline>
-<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(</highlight><highlight class="stringliteral">&quot;integer<sp/>overflow<sp/>in<sp/>%s:<sp/>%zu<sp/>*<sp/>%zu&quot;</highlight><highlight class="normal">,<sp/>context,<sp/>a,<sp/>b);</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a<sp/>*<sp/>b;</highlight></codeline>
-<codeline lineno="128"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="130"><highlight class="comment">///<sp/>Addition<sp/>that<sp/>throws<sp/>on<sp/>overflow<sp/>instead<sp/>of<sp/>wrapping</highlight></codeline>
-<codeline lineno="131" refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kindref="member">add_no_overflow</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>context)<sp/>{</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(a<sp/>&gt;<sp/>(std::numeric_limits&lt;size_t&gt;::max)()<sp/>-<sp/>b)<sp/>{</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(</highlight><highlight class="stringliteral">&quot;integer<sp/>overflow<sp/>in<sp/>%s:<sp/>%zu<sp/>+<sp/>%zu&quot;</highlight><highlight class="normal">,<sp/>context,<sp/>a,<sp/>b);</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a<sp/>+<sp/>b;</highlight></codeline>
-<codeline lineno="136"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="137"><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="140"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="141"><highlight class="comment">///<sp/>Bounds<sp/>checking</highlight></codeline>
-<codeline lineno="142"><highlight class="comment">///</highlight></codeline>
-<codeline lineno="143"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="144"><highlight class="comment">///<sp/>Check<sp/>that<sp/>val<sp/>is<sp/>in<sp/>half-open<sp/>range<sp/>[lo,<sp/>hi).<sp/>Throws<sp/>with<sp/>the</highlight></codeline>
-<codeline lineno="145"><highlight class="comment">///<sp/>stringified<sp/>expression,<sp/>its<sp/>value,<sp/>and<sp/>the<sp/>bounds<sp/>on<sp/>failure.</highlight></codeline>
-<codeline lineno="146"><highlight class="comment"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE(val,<sp/>lo,<sp/>hi)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="147"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="148"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val)<sp/>&gt;=<sp/>(int64_t)(lo)<sp/>&amp;&amp;<sp/>(int64_t)(val)<sp/>&lt;<sp/>(int64_t)(hi),<sp/>\</highlight></codeline>
-<codeline lineno="149"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;%s<sp/>(=<sp/>%&quot;<sp/>PRId64<sp/>&quot;)<sp/>out<sp/>of<sp/>range<sp/>[%&quot;<sp/>PRId64<sp/>&quot;,<sp/>%&quot;<sp/>PRId64<sp/>&quot;)&quot;,<sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#val,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="151"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="152"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(lo),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="153"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(hi))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="155"><highlight class="comment">///<sp/>Debug-only<sp/>variant<sp/>of<sp/>FAISS_CHECK_RANGE.<sp/>Aborts<sp/>in<sp/>debug<sp/>builds</highlight></codeline>
-<codeline lineno="156"><highlight class="comment">///<sp/>(when<sp/>NDEBUG<sp/>is<sp/>not<sp/>defined);<sp/>compiled<sp/>out<sp/>in<sp/>release<sp/>builds<sp/>to</highlight></codeline>
-<codeline lineno="157"><highlight class="comment">///<sp/>avoid<sp/>overhead<sp/>in<sp/>hot<sp/>paths.</highlight></codeline>
-<codeline lineno="158"><highlight class="comment"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="159"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE_DEBUG(val,<sp/>lo,<sp/>hi)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="160"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="161"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val)<sp/>&gt;=<sp/>(int64_t)(lo)<sp/>&amp;&amp;<sp/>(int64_t)(val)<sp/>&lt;<sp/>(int64_t)(hi),<sp/>\</highlight></codeline>
-<codeline lineno="162"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;%s<sp/>(=<sp/>%&quot;<sp/>PRId64<sp/>&quot;)<sp/>out<sp/>of<sp/>range<sp/>[%&quot;<sp/>PRId64<sp/>&quot;,<sp/>%&quot;<sp/>PRId64<sp/>&quot;)&quot;,<sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="163"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#val,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="164"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="165"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(lo),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="166"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(hi))</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="167"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="168"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE_DEBUG(val,<sp/>lo,<sp/>hi)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="169"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="170"><highlight class="normal"></highlight></codeline>
-<codeline lineno="171"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="81"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(__size<sp/>&gt;<sp/>0)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="82"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__s.resize(static_cast&lt;size_t&gt;(__size)<sp/>+<sp/>1);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="83"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>snprintf(&amp;__s[0],<sp/>__s.size(),<sp/>FMT,<sp/>__VA_ARGS__);<sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="84"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__s.resize(static_cast&lt;size_t&gt;(__size));<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="85"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="86"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>faiss::FaissException(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="87"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__s,<sp/>__PRETTY_FUNCTION__,<sp/>__FILE__,<sp/>__LINE__);<sp/>\</highlight></codeline>
+<codeline lineno="88"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="91"><highlight class="comment">///<sp/>Exceptions<sp/>thrown<sp/>upon<sp/>a<sp/>conditional<sp/>failure</highlight></codeline>
+<codeline lineno="92"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="95"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="96"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(X))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="97"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed&quot;,<sp/>#X);<sp/>\</highlight></codeline>
+<codeline lineno="98"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="99"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_MSG(X,<sp/>MSG)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="102"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="103"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(X)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="104"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed:<sp/>&quot;<sp/>MSG,<sp/>#X);<sp/>\</highlight></codeline>
+<codeline lineno="105"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="106"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT_MSG(X,<sp/>MSG)<sp/>FAISS_THROW_IF_MSG(!(X),<sp/>MSG)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_THROW_IF_NOT_FMT(X,<sp/>FMT,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="111"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="112"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!(X))<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="113"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(&quot;Error:<sp/>&apos;%s&apos;<sp/>failed:<sp/>&quot;<sp/>FMT,<sp/>#X,<sp/>__VA_ARGS__);<sp/>\</highlight></codeline>
+<codeline lineno="114"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="115"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/>while<sp/>(false)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="117"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="118"><highlight class="comment">///<sp/>Safe<sp/>arithmetic</highlight></codeline>
+<codeline lineno="119"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;limits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="125"><highlight class="comment">///<sp/>Multiplication<sp/>that<sp/>throws<sp/>on<sp/>overflow<sp/>instead<sp/>of<sp/>wrapping</highlight></codeline>
+<codeline lineno="126" refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aa8b83b549454ccc5c41f385976136eb4" kindref="member">mul_no_overflow</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>context)<sp/>{</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(a<sp/>!=<sp/>0<sp/>&amp;&amp;<sp/>b<sp/>&gt;<sp/>(std::numeric_limits&lt;size_t&gt;::max)()<sp/>/<sp/>a)<sp/>{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(</highlight><highlight class="stringliteral">&quot;integer<sp/>overflow<sp/>in<sp/>%s:<sp/>%zu<sp/>*<sp/>%zu&quot;</highlight><highlight class="normal">,<sp/>context,<sp/>a,<sp/>b);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a<sp/>*<sp/>b;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="133"><highlight class="comment">///<sp/>Addition<sp/>that<sp/>throws<sp/>on<sp/>overflow<sp/>instead<sp/>of<sp/>wrapping</highlight></codeline>
+<codeline lineno="134" refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kindref="member">add_no_overflow</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>context)<sp/>{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(a<sp/>&gt;<sp/>(std::numeric_limits&lt;size_t&gt;::max)()<sp/>-<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FAISS_THROW_FMT(</highlight><highlight class="stringliteral">&quot;integer<sp/>overflow<sp/>in<sp/>%s:<sp/>%zu<sp/>+<sp/>%zu&quot;</highlight><highlight class="normal">,<sp/>context,<sp/>a,<sp/>b);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a<sp/>+<sp/>b;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="143"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="144"><highlight class="comment">///<sp/>Bounds<sp/>checking</highlight></codeline>
+<codeline lineno="145"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="147"><highlight class="comment">///<sp/>Check<sp/>that<sp/>val<sp/>is<sp/>in<sp/>half-open<sp/>range<sp/>[lo,<sp/>hi).<sp/>Throws<sp/>with<sp/>the</highlight></codeline>
+<codeline lineno="148"><highlight class="comment">///<sp/>stringified<sp/>expression,<sp/>its<sp/>value,<sp/>and<sp/>the<sp/>bounds<sp/>on<sp/>failure.</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE(val,<sp/>lo,<sp/>hi)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="150"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>FAISS_THROW_IF_NOT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="151"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val)<sp/>&gt;=<sp/>(int64_t)(lo)<sp/>&amp;&amp;<sp/>(int64_t)(val)<sp/>&lt;<sp/>(int64_t)(hi),<sp/>\</highlight></codeline>
+<codeline lineno="152"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;%s<sp/>(=<sp/>%&quot;<sp/>PRId64<sp/>&quot;)<sp/>out<sp/>of<sp/>range<sp/>[%&quot;<sp/>PRId64<sp/>&quot;,<sp/>%&quot;<sp/>PRId64<sp/>&quot;)&quot;,<sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="153"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#val,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="154"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="155"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(lo),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="156"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(hi))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="158"><highlight class="comment">///<sp/>Debug-only<sp/>variant<sp/>of<sp/>FAISS_CHECK_RANGE.<sp/>Aborts<sp/>in<sp/>debug<sp/>builds</highlight></codeline>
+<codeline lineno="159"><highlight class="comment">///<sp/>(when<sp/>NDEBUG<sp/>is<sp/>not<sp/>defined);<sp/>compiled<sp/>out<sp/>in<sp/>release<sp/>builds<sp/>to</highlight></codeline>
+<codeline lineno="160"><highlight class="comment">///<sp/>avoid<sp/>overhead<sp/>in<sp/>hot<sp/>paths.</highlight></codeline>
+<codeline lineno="161"><highlight class="comment"></highlight><highlight class="preprocessor">#ifndef<sp/>NDEBUG</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE_DEBUG(val,<sp/>lo,<sp/>hi)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="163"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>FAISS_ASSERT_FMT(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="164"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val)<sp/>&gt;=<sp/>(int64_t)(lo)<sp/>&amp;&amp;<sp/>(int64_t)(val)<sp/>&lt;<sp/>(int64_t)(hi),<sp/>\</highlight></codeline>
+<codeline lineno="165"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;%s<sp/>(=<sp/>%&quot;<sp/>PRId64<sp/>&quot;)<sp/>out<sp/>of<sp/>range<sp/>[%&quot;<sp/>PRId64<sp/>&quot;,<sp/>%&quot;<sp/>PRId64<sp/>&quot;)&quot;,<sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="166"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#val,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="167"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(val),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="168"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(lo),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(int64_t)(hi))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>FAISS_CHECK_RANGE_DEBUG(val,<sp/>lo,<sp/>hi)<sp/>((void)0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/impl/FaissAssert.h"/>
   </compounddef>

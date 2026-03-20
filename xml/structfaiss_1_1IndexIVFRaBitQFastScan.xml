@@ -3818,7 +3818,7 @@
       <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a4fa10466c25166b23ee309e05b46dc99" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_InvertedListScanner</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>get_list_size</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a014f9cb133b921d93d6892e4b28e4c53" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>implem</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexIVF_1ac974fa523604ecb180b41d013275da29" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a74c689174e4a82a35512cafdd0878158" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a4b58baf07547bd69abab31409a1ccaab" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQFastScan</scope><name>IndexIVFFastScan</name></member>

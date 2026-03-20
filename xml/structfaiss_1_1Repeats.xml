@@ -35,15 +35,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Repeats_1aca120569a5d9ab9afa2f3e9abafe7403" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::Repeats::Repeats</definition>
-        <argsstring>(int dim=0, const float *c=nullptr)</argsstring>
+        <argsstring>(int dim_in=0, const float *c=nullptr)</argsstring>
         <name>Repeats</name>
         <qualifiedname>faiss::Repeats::Repeats</qualifiedname>
         <param>
           <type>int</type>
-          <declname>dim</declname>
+          <declname>dim_in</declname>
           <defval>0</defval>
         </param>
         <param>
@@ -138,7 +138,7 @@
       <member refid="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>dim</name></member>
       <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>encode</name></member>
       <member refid="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>repeats</name></member>
-      <member refid="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>Repeats</name></member>
+      <member refid="structfaiss_1_1Repeats_1aca120569a5d9ab9afa2f3e9abafe7403" prot="public" virt="non-virtual"><scope>faiss::Repeats</scope><name>Repeats</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

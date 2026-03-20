@@ -200,15 +200,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1SimulatedAnnealingOptimizer_1ab258eaf892742e37dd2c3bfd3b1c39e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1SimulatedAnnealingOptimizer_1af04a2e3b3a335c3909004b8c2ce573a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::SimulatedAnnealingOptimizer::SimulatedAnnealingOptimizer</definition>
-        <argsstring>(PermutationObjective *obj, const SimulatedAnnealingParameters &amp;p)</argsstring>
+        <argsstring>(PermutationObjective *obj_in, const SimulatedAnnealingParameters &amp;p)</argsstring>
         <name>SimulatedAnnealingOptimizer</name>
         <qualifiedname>faiss::SimulatedAnnealingOptimizer::SimulatedAnnealingOptimizer</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1PermutationObjective" kindref="compound">PermutationObjective</ref> *</type>
-          <declname>obj</declname>
+          <declname>obj_in</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1SimulatedAnnealingParameters" kindref="compound">SimulatedAnnealingParameters</ref> &amp;</type>
@@ -332,7 +332,7 @@
       <member refid="structfaiss_1_1SimulatedAnnealingOptimizer_1a3a4020a699836109ada732e3b78d8b71" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>rnd</name></member>
       <member refid="structfaiss_1_1SimulatedAnnealingOptimizer_1a27c4d25179bfa7d2d2701a6599f9fa09" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>run_optimization</name></member>
       <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae6b87ff7698b724937bc00c0845a71ad" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>seed</name></member>
-      <member refid="structfaiss_1_1SimulatedAnnealingOptimizer_1ab258eaf892742e37dd2c3bfd3b1c39e1" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>SimulatedAnnealingOptimizer</name></member>
+      <member refid="structfaiss_1_1SimulatedAnnealingOptimizer_1af04a2e3b3a335c3909004b8c2ce573a4" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>SimulatedAnnealingOptimizer</name></member>
       <member refid="structfaiss_1_1SimulatedAnnealingParameters_1a28b5f88019d5d5ba8c1bb5be6d5820e7" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>SimulatedAnnealingParameters</name></member>
       <member refid="structfaiss_1_1SimulatedAnnealingParameters_1aa504c46bab0faa2ce816df8294b55ce5" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>temperature_decay</name></member>
       <member refid="structfaiss_1_1SimulatedAnnealingParameters_1ae0bbe4df85cb764234d6a700d0db00c4" prot="public" virt="non-virtual"><scope>faiss::SimulatedAnnealingOptimizer</scope><name>verbose</name></member>

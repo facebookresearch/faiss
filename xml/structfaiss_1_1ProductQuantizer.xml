@@ -1025,7 +1025,7 @@
       <member refid="structfaiss_1_1ProductQuantizer_1ac920fea11f02e8407d12cc99a09f5ea5" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>nbits</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a4722cff4131366b124d0a39e934d1460" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>ProductQuantizer</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1aee09cc5fdfa7aa4032604303e3e03eb9" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>ProductQuantizer</name></member>
-      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a6bd65fb4407452f73acb7242931d09e4" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>sdc_table</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a7a1da5dbad9cfdd552590af1df9e96ad" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>search</name></member>
       <member refid="structfaiss_1_1ProductQuantizer_1a7aebd290b0d52de7789d68599002bcf3" prot="public" virt="non-virtual"><scope>faiss::ProductQuantizer</scope><name>search_ip</name></member>

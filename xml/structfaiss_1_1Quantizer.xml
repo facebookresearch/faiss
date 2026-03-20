@@ -40,20 +40,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::Quantizer::Quantizer</definition>
-        <argsstring>(size_t d=0, size_t code_size=0)</argsstring>
+        <argsstring>(size_t d_in=0, size_t code_size_in=0)</argsstring>
         <name>Quantizer</name>
         <qualifiedname>faiss::Quantizer::Quantizer</qualifiedname>
         <param>
           <type>size_t</type>
-          <declname>d</declname>
+          <declname>d_in</declname>
           <defval>0</defval>
         </param>
         <param>
           <type>size_t</type>
-          <declname>code_size</declname>
+          <declname>code_size_in</declname>
           <defval>0</defval>
         </param>
         <briefdescription>
@@ -288,7 +288,7 @@
       <member refid="structfaiss_1_1Quantizer_1a2590aabcafa9fb9ae05587d334fd8205" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>compute_codes</name></member>
       <member refid="structfaiss_1_1Quantizer_1a416da1bab43fefa36563210a86298a75" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>d</name></member>
       <member refid="structfaiss_1_1Quantizer_1a71b20a9a5f98f9e8889bb22cfb7f9fac" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>decode</name></member>
-      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" virt="non-virtual"><scope>faiss::Quantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1Quantizer_1a6e97ff4cce0bb4163aa8fbe95df456c9" prot="public" virt="pure-virtual"><scope>faiss::Quantizer</scope><name>train</name></member>
       <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::Quantizer</scope><name>~Quantizer</name></member>
     </listofallmembers>

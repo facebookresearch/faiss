@@ -544,7 +544,7 @@
       <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952ea078b633a7a11d97a8a140a56a0648439" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>QT_count</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952ea128bcc572501a040ae5eddad599f5dfe" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>QT_fp16</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1a2696491a09e0ad3bbf48506592fb69de" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>qtype</name></member>
-      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1a1201dbd1611fa5c10782ade5d0e4952e" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>QuantizerType</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1a867ad0000e4ccfd40bbb1e01e7882d06" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>RangeStat</name></member>
       <member refid="structfaiss_1_1ScalarQuantizer_1aea7d3bd87a6c82292aed03fcb7e5e265" prot="public" virt="non-virtual"><scope>faiss::ScalarQuantizer</scope><name>rangestat</name></member>

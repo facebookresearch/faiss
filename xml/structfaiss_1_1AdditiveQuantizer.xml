@@ -1276,7 +1276,7 @@
       <member refid="structfaiss_1_1AdditiveQuantizer_1a4c70d7c0f02dba31120d2d3c01982482" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>only_8bit</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1ab3f0bb8418ad4ad36e0ae38a1a596684" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>pack_codes</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1aa5fe31c6a8b80a5bf03bd72bc7744def" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>qnorm</name></member>
-      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a288c9459e71889972f15cbbb74312a92" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>search_type</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a3f99107d33c9a79ab0a4ad1476e8437d" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>Search_type_t</name></member>
       <member refid="structfaiss_1_1AdditiveQuantizer_1a9fa7f67e95b30ca682017ce0389f80ed" prot="public" virt="non-virtual"><scope>faiss::AdditiveQuantizer</scope><name>set_derived_values</name></member>

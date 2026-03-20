@@ -117,19 +117,19 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1SingleQueryBlockResultHandler_1a0b38eaebe9b2f375027f793533c46678" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1SingleQueryBlockResultHandler_1a94d9e59c4ee06344aa7606e7088a58cc" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::SingleQueryBlockResultHandler&lt; C, use_sel &gt;::SingleQueryBlockResultHandler</definition>
-        <argsstring>(ResultHandler &amp;the_handler, const IDSelector *sel=nullptr)</argsstring>
+        <argsstring>(ResultHandler &amp;the_handler_in, const IDSelector *sel_in=nullptr)</argsstring>
         <name>SingleQueryBlockResultHandler</name>
         <qualifiedname>faiss::SingleQueryBlockResultHandler::SingleQueryBlockResultHandler</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
-          <declname>the_handler</declname>
+          <declname>the_handler_in</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
-          <declname>sel</declname>
+          <declname>sel_in</declname>
           <defval>nullptr</defval>
         </param>
         <briefdescription>
@@ -260,18 +260,18 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="102" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="102" bodyend="136"/>
+    <location file="faiss/impl/ResultHandler.h" line="102" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="102" bodyend="134"/>
     <listofallmembers>
       <member refid="structfaiss_1_1BlockResultHandler_1a259777d3c8ce1e5c40d2424610cf3922" prot="public" virt="virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>add_results</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a6fdfd97929109943fec48be75f50f61b" prot="public" virt="virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>begin_multiple</name></member>
-      <member refid="structfaiss_1_1BlockResultHandler_1a3c3be3087bc96f44dc6297771e24d18c" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>BlockResultHandler</name></member>
+      <member refid="structfaiss_1_1BlockResultHandler_1a820cedace89fd61d87f557607fb44bdd" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>BlockResultHandler</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a6839e4eb6d26a994dac3d248918f9f97" prot="public" virt="virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>end_multiple</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a2e770bfbb4502e4e1bd37d391a9f428a" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>i0</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a1c3e90cc9707684048aae3e2c03850ec" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>i1</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a022a3bab1eac3519d0261f5fea92066d" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>is_in_selection</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1adcc4baa7ac5db2b9f431521a795c1510" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>nq</name></member>
       <member refid="structfaiss_1_1BlockResultHandler_1a507fe354f2ab9c2199b28a7d4bd976fb" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>sel</name></member>
-      <member refid="structfaiss_1_1SingleQueryBlockResultHandler_1a0b38eaebe9b2f375027f793533c46678" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>SingleQueryBlockResultHandler</name></member>
+      <member refid="structfaiss_1_1SingleQueryBlockResultHandler_1a94d9e59c4ee06344aa7606e7088a58cc" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>SingleQueryBlockResultHandler</name></member>
       <member refid="structfaiss_1_1SingleQueryBlockResultHandler_1a968b1d375caa9bbf6a0d310895110986" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>T</name></member>
       <member refid="structfaiss_1_1SingleQueryBlockResultHandler_1a0c2fa226f99bee04ecc8c32e299f622d" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>the_handler</name></member>
       <member refid="structfaiss_1_1SingleQueryBlockResultHandler_1a15fa34b803b0bfb9ecad6892ec9b72f9" prot="public" virt="non-virtual"><scope>faiss::SingleQueryBlockResultHandler</scope><name>TI</name></member>

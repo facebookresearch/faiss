@@ -1808,7 +1808,7 @@
       <member refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa" prot="public" virt="virtual"><scope>faiss::IndexFlat</scope><name>get_FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1IndexFlat_1ad2cfa04b291b3fa43aef842de6a2f676" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>get_xb</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a7728074ce264b47e4f80246e85a34444" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>get_xb</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a7c4a216055a21621b5ba48bb042d46df" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>IndexFlat</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a75a158c47a9710c9c268b22d2c6730fa" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>IndexFlat</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexFlat</scope><name>IndexFlatCodes</name></member>

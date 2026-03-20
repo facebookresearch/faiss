@@ -1902,7 +1902,7 @@
       <member refid="structfaiss_1_1IndexHNSW2Level_1a257801d5c05bca5d46442824ed3834f8" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>flip_to_ivf</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1af1f0080b012492ffcab261eaa25b1545" prot="public" virt="virtual"><scope>faiss::IndexHNSW2Level</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>hnsw</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a973769979e047374a8310b9fa891214c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>IndexHNSW</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a74d1ec193f1749a55ec83b6c7779119c" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>IndexHNSW</name></member>
       <member refid="structfaiss_1_1IndexHNSW2Level_1a8253ac892a5536fbc24e7440b2c36677" prot="public" virt="non-virtual"><scope>faiss::IndexHNSW2Level</scope><name>IndexHNSW2Level</name></member>

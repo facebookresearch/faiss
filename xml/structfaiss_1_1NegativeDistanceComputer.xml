@@ -21,15 +21,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1NegativeDistanceComputer_1a4f77b8870029f46cf71eb599100c0bb8" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::NegativeDistanceComputer::NegativeDistanceComputer</definition>
-        <argsstring>(DistanceComputer *basedis)</argsstring>
+        <argsstring>(DistanceComputer *basedis_)</argsstring>
         <name>NegativeDistanceComputer</name>
         <qualifiedname>faiss::NegativeDistanceComputer::NegativeDistanceComputer</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> *</type>
-          <declname>basedis</declname>
+          <declname>basedis_</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -201,7 +201,7 @@
     <listofallmembers>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1a43391d16b8fc618a6ca30010acfe3a8c" prot="public" virt="non-virtual"><scope>faiss::NegativeDistanceComputer</scope><name>basedis</name></member>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>distances_batch_4</name></member>
-      <member refid="structfaiss_1_1NegativeDistanceComputer_1a1a4b71ca60b1e0d2f1ab099261f639e6" prot="public" virt="non-virtual"><scope>faiss::NegativeDistanceComputer</scope><name>NegativeDistanceComputer</name></member>
+      <member refid="structfaiss_1_1NegativeDistanceComputer_1a4f77b8870029f46cf71eb599100c0bb8" prot="public" virt="non-virtual"><scope>faiss::NegativeDistanceComputer</scope><name>NegativeDistanceComputer</name></member>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1a9098b773e2a5cf64a616de0f3b94f3de" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1aa49c65103c68f2d8b56bf3f8d5ee2826" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>set_query</name></member>
       <member refid="structfaiss_1_1NegativeDistanceComputer_1a64ecc52adf1c541e943abb22290da1df" prot="public" virt="virtual"><scope>faiss::NegativeDistanceComputer</scope><name>symmetric_dis</name></member>

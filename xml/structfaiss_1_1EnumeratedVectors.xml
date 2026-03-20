@@ -36,15 +36,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1EnumeratedVectors_1a11dbfb16f72980d69c4e40dc84e64258" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1EnumeratedVectors_1a304616b37bddfb0f8dcf94acac2eeeb2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::EnumeratedVectors::EnumeratedVectors</definition>
-        <argsstring>(int dim)</argsstring>
+        <argsstring>(int dim_in)</argsstring>
         <name>EnumeratedVectors</name>
         <qualifiedname>faiss::EnumeratedVectors::EnumeratedVectors</qualifiedname>
         <param>
           <type>int</type>
-          <declname>dim</declname>
+          <declname>dim_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -242,7 +242,7 @@
       <member refid="structfaiss_1_1EnumeratedVectors_1af35904a18c8ab0a8df9946822588d8a8" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>dim</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a2ed0bdef51f569a62da6ca194143c2e5" prot="public" virt="pure-virtual"><scope>faiss::EnumeratedVectors</scope><name>encode</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a4e75f2b3864128c1d1d3228f470d9e4e" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>encode_multi</name></member>
-      <member refid="structfaiss_1_1EnumeratedVectors_1a11dbfb16f72980d69c4e40dc84e64258" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>EnumeratedVectors</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a304616b37bddfb0f8dcf94acac2eeeb2" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>EnumeratedVectors</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a80c0f4e4cf5394b7fd2e7b91fab16538" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>find_nn</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1ad6da4ac4aeb407f84c2471a38a876878" prot="public" virt="non-virtual"><scope>faiss::EnumeratedVectors</scope><name>nv</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a849f82c1f0e1335eaf5385ebe3434af4" prot="public" virt="virtual"><scope>faiss::EnumeratedVectors</scope><name>~EnumeratedVectors</name></member>

@@ -430,8 +430,8 @@
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1af17809ad73d49dd0b74141972cd6e8a3" prot="public" virt="pure-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_1bit</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a05eaf054b823178549c305432219783c" prot="public" virt="pure-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distance_to_code_full</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>distances_batch_4</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a88114453bff4507a1ec3f3942718ec2d" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aff32b1ddb35a9da80cbc705b5b7716d0" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1aeb5ed1a79c0276954a8a2322df9550b3" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>g_error</name></member>
       <member refid="structfaiss_1_1RaBitQDistanceComputer_1a9d9de7f41b9df4b6542c430a77b836e2" prot="public" virt="non-virtual"><scope>faiss::RaBitQDistanceComputer</scope><name>metric_type</name></member>

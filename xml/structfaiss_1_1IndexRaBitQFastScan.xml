@@ -2445,7 +2445,7 @@
       <member refid="structfaiss_1_1IndexRaBitQFastScan_1a153607ac7c56db1e3147eb664a2dbf93" prot="public" virt="virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>implem</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1adf1f52bc54531170c3cba9e47105416d" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>IndexFastScan</name></member>
       <member refid="structfaiss_1_1IndexRaBitQFastScan_1afbe604d4670663df6c196615de638454" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>IndexRaBitQFastScan</name></member>
       <member refid="structfaiss_1_1IndexRaBitQFastScan_1ac02d9b82b4e1422cc0512dc6f2eb1e5d" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQFastScan</scope><name>IndexRaBitQFastScan</name></member>

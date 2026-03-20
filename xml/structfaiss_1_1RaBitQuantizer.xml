@@ -389,7 +389,7 @@
       <member refid="structfaiss_1_1RaBitQuantizer_1a116ab5a9ce353a8a564e2c1d516546d5" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1ac5bbf60e15a32d80ee98b52db5e2e13f" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>metric_type</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1a0f2b7fea5152bcc0f4c47ba58b7fa9e9" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>nb_bits</name></member>
-      <member refid="structfaiss_1_1Quantizer_1abfc52a9334f44a5251f49e75360027e2" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>Quantizer</name></member>
+      <member refid="structfaiss_1_1Quantizer_1ae7c15223f3783af9edd795af5c5e2272" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>Quantizer</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1aa6f918756a392724167080b7fc3b5637" prot="public" virt="non-virtual"><scope>faiss::RaBitQuantizer</scope><name>RaBitQuantizer</name></member>
       <member refid="structfaiss_1_1RaBitQuantizer_1a253ae543d36c51c3ca63d520d7afb475" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>train</name></member>
       <member refid="structfaiss_1_1Quantizer_1a3983e6b49d0c28523ec650c877214ebc" prot="public" virt="virtual"><scope>faiss::RaBitQuantizer</scope><name>~Quantizer</name></member>

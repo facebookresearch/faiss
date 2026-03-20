@@ -2619,7 +2619,7 @@
       <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1aedc2fa80a9daaad7891766ceb855807a" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>implem</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1adb04aba51f5f26f3c8cdd8fd22845e09" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a44fd82713c87e1bcf064ae18adede582" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ae081d6870a211e35c27db296f9eb1d3c" prot="public" virt="non-virtual"><scope>faiss::IndexResidualQuantizerFastScan</scope><name>IndexAdditiveQuantizerFastScan</name></member>

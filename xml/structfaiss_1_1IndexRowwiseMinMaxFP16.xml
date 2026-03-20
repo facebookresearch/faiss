@@ -1661,7 +1661,7 @@
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a6def68df271f8809c1ed2cfa3107f082" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>index</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1add65ec81582758713652b40bef00b024" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>IndexRowwiseMinMaxBase</name></member>
       <member refid="structfaiss_1_1IndexRowwiseMinMaxBase_1a4f20ffb075b81b0bee2f74b6aea0773b" prot="public" virt="non-virtual"><scope>faiss::IndexRowwiseMinMaxFP16</scope><name>IndexRowwiseMinMaxBase</name></member>

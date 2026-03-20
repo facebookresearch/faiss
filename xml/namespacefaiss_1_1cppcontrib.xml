@@ -20,7 +20,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/cppcontrib/sa_decode/Level2-inl.h" line="20" column="6" bodyfile="faiss/cppcontrib/sa_decode/Level2-inl.h" bodystart="20" bodyend="26"/>
+        <location file="faiss/cppcontrib/sa_decode/Level2-inl.h" line="26" column="6" bodyfile="faiss/cppcontrib/sa_decode/Level2-inl.h" bodystart="26" bodyend="32"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

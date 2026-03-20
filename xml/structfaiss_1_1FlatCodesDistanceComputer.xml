@@ -51,23 +51,23 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a88114453bff4507a1ec3f3942718ec2d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::FlatCodesDistanceComputer::FlatCodesDistanceComputer</definition>
-        <argsstring>(const uint8_t *codes, size_t code_size, const float *q=nullptr)</argsstring>
+        <argsstring>(const uint8_t *codes_, size_t code_size_, const float *q_=nullptr)</argsstring>
         <name>FlatCodesDistanceComputer</name>
         <qualifiedname>faiss::FlatCodesDistanceComputer::FlatCodesDistanceComputer</qualifiedname>
         <param>
           <type>const uint8_t *</type>
-          <declname>codes</declname>
+          <declname>codes_</declname>
         </param>
         <param>
           <type>size_t</type>
-          <declname>code_size</declname>
+          <declname>code_size_</declname>
         </param>
         <param>
           <type>const float *</type>
-          <declname>q</declname>
+          <declname>q_</declname>
           <defval>nullptr</defval>
         </param>
         <briefdescription>
@@ -78,15 +78,15 @@
         </inbodydescription>
         <location file="faiss/impl/DistanceComputer.h" line="118" column="5" bodyfile="faiss/impl/DistanceComputer.h" bodystart="118" bodyend="122"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aff32b1ddb35a9da80cbc705b5b7716d0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::FlatCodesDistanceComputer::FlatCodesDistanceComputer</definition>
-        <argsstring>(const float *q)</argsstring>
+        <argsstring>(const float *q_)</argsstring>
         <name>FlatCodesDistanceComputer</name>
         <qualifiedname>faiss::FlatCodesDistanceComputer::FlatCodesDistanceComputer</qualifiedname>
         <param>
           <type>const float *</type>
-          <declname>q</declname>
+          <declname>q_</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -418,8 +418,8 @@
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>codes</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11" prot="public" virt="pure-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>distance_to_code</name></member>
       <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>distances_batch_4</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a88114453bff4507a1ec3f3942718ec2d" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
-      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aff32b1ddb35a9da80cbc705b5b7716d0" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>operator()</name></member>
       <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::FlatCodesDistanceComputer</scope><name>partial_dot_product</name></member>

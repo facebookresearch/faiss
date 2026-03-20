@@ -3909,7 +3909,7 @@
       <member refid="structfaiss_1_1IndexIVF_1ae6a86ceb8c3e142b6c2f26215f1f55ba" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>get_InvertedListScanner</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>get_list_size</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a014f9cb133b921d93d6892e4b28e4c53" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>implem</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexIVF_1ac974fa523604ecb180b41d013275da29" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a74c689174e4a82a35512cafdd0878158" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a6d746868318598dfb140b2ca1d4f26af" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>IndexIVFAdditiveQuantizerFastScan</name></member>

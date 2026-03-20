@@ -35,19 +35,19 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IDSelectorAnd_1a29761cbdaca7b740363302e1115afc66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IDSelectorAnd_1a3b85f98f0a7a72a02e558cfd64b5ae8b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IDSelectorAnd::IDSelectorAnd</definition>
-        <argsstring>(const IDSelector *lhs, const IDSelector *rhs)</argsstring>
+        <argsstring>(const IDSelector *lhs_, const IDSelector *rhs_)</argsstring>
         <name>IDSelectorAnd</name>
         <qualifiedname>faiss::IDSelectorAnd::IDSelectorAnd</qualifiedname>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
-          <declname>lhs</declname>
+          <declname>lhs_</declname>
         </param>
         <param>
           <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
-          <declname>rhs</declname>
+          <declname>rhs_</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -126,7 +126,7 @@
     </collaborationgraph>
     <location file="faiss/impl/IDSelector.h" line="136" column="1" bodyfile="faiss/impl/IDSelector.h" bodystart="136" bodyend="145"/>
     <listofallmembers>
-      <member refid="structfaiss_1_1IDSelectorAnd_1a29761cbdaca7b740363302e1115afc66" prot="public" virt="non-virtual"><scope>faiss::IDSelectorAnd</scope><name>IDSelectorAnd</name></member>
+      <member refid="structfaiss_1_1IDSelectorAnd_1a3b85f98f0a7a72a02e558cfd64b5ae8b" prot="public" virt="non-virtual"><scope>faiss::IDSelectorAnd</scope><name>IDSelectorAnd</name></member>
       <member refid="structfaiss_1_1IDSelectorAnd_1ad4e5d9d8081d268b5f75e38d4bbaac8b" prot="public" virt="virtual"><scope>faiss::IDSelectorAnd</scope><name>is_member</name></member>
       <member refid="structfaiss_1_1IDSelectorAnd_1af172563e73021fbdac4579d20be34300" prot="public" virt="non-virtual"><scope>faiss::IDSelectorAnd</scope><name>lhs</name></member>
       <member refid="structfaiss_1_1IDSelectorAnd_1af10ef76e10e0d1f16c90ce65b897f9f7" prot="public" virt="non-virtual"><scope>faiss::IDSelectorAnd</scope><name>rhs</name></member>

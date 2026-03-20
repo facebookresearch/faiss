@@ -5,19 +5,19 @@
     <basecompoundref refid="structfaiss_1_1IndexRefine" prot="public" virt="non-virtual">faiss::IndexRefine</basecompoundref>
     <includes refid="IndexRefine_8h" local="no">IndexRefine.h</includes>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexRefinePanorama_1a754e1ba1c52e523522d8f6539ba69ec4" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexRefinePanorama_1a8e6cba2d8b6f6e6e86b2049d192004ec" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexRefinePanorama::IndexRefinePanorama</definition>
-        <argsstring>(Index *base_index, Index *refine_index)</argsstring>
+        <argsstring>(Index *base_index_in, Index *refine_index_in)</argsstring>
         <name>IndexRefinePanorama</name>
         <qualifiedname>faiss::IndexRefinePanorama::IndexRefinePanorama</qualifiedname>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>base_index</declname>
+          <declname>base_index_in</declname>
         </param>
         <param>
           <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
-          <declname>refine_index</declname>
+          <declname>refine_index_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1642,10 +1642,10 @@
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexRefinePanorama</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexRefine_1a873d71af2ad5894ccda0d2319bf7e3b6" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefine</name></member>
       <member refid="structfaiss_1_1IndexRefine_1a80aa8975ad0091a1d0796e092b4734be" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefine</name></member>
-      <member refid="structfaiss_1_1IndexRefinePanorama_1a754e1ba1c52e523522d8f6539ba69ec4" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefinePanorama</name></member>
+      <member refid="structfaiss_1_1IndexRefinePanorama_1a8e6cba2d8b6f6e6e86b2049d192004ec" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefinePanorama</name></member>
       <member refid="structfaiss_1_1IndexRefinePanorama_1a8e94dffef7fb47c7de622b8cef8d7447" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>IndexRefinePanorama</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexRefine_1a520e756ea6610d94edb3fe34c31869cc" prot="public" virt="non-virtual"><scope>faiss::IndexRefinePanorama</scope><name>k_factor</name></member>

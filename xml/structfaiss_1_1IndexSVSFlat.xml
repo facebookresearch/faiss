@@ -1772,7 +1772,7 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexSVSFlat</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexSVSFlat_1a895fd7ee1093ae1e81c3faa1624e91f7" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>impl</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexSVSFlat_1a5fd862c319729b4c625f3efee737b8df" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>IndexSVSFlat</name></member>
       <member refid="structfaiss_1_1IndexSVSFlat_1a016570d378f9dd0693442918198b8adf" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>IndexSVSFlat</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexSVSFlat</scope><name>is_trained</name></member>

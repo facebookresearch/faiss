@@ -4,15 +4,15 @@
     <compoundname>faiss::IndexFlatIP</compoundname>
     <basecompoundref refid="structfaiss_1_1IndexFlat" prot="public" virt="non-virtual">faiss::IndexFlat</basecompoundref>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1IndexFlatIP_1adbe452ac275b8f9be218ba7f4c6b18db" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexFlatIP_1a639591699d3021dfdda22c0b491f6212" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::IndexFlatIP::IndexFlatIP</definition>
-        <argsstring>(idx_t d)</argsstring>
+        <argsstring>(idx_t d_in)</argsstring>
         <name>IndexFlatIP</name>
         <qualifiedname>faiss::IndexFlatIP::IndexFlatIP</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>d</declname>
+          <declname>d_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -1772,12 +1772,12 @@
       <member refid="structfaiss_1_1IndexFlat_1adc0f6246ed1781863da0168ac7d2e1aa" prot="public" virt="virtual"><scope>faiss::IndexFlatIP</scope><name>get_FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1IndexFlat_1ad2cfa04b291b3fa43aef842de6a2f676" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>get_xb</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a7728074ce264b47e4f80246e85a34444" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>get_xb</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a7c4a216055a21621b5ba48bb042d46df" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlat</name></member>
       <member refid="structfaiss_1_1IndexFlat_1a75a158c47a9710c9c268b22d2c6730fa" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlat</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlatCodes</name></member>
-      <member refid="structfaiss_1_1IndexFlatIP_1adbe452ac275b8f9be218ba7f4c6b18db" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlatIP</name></member>
+      <member refid="structfaiss_1_1IndexFlatIP_1a639591699d3021dfdda22c0b491f6212" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlatIP</name></member>
       <member refid="structfaiss_1_1IndexFlatIP_1a3ef4f3a26507f0d9e3c5cf2989c68754" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>IndexFlatIP</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::IndexFlatIP</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1a3648a16e47f5f9567c50ad4fd49453ca" prot="public" virt="virtual"><scope>faiss::IndexFlatIP</scope><name>merge_from</name></member>

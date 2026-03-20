@@ -2653,7 +2653,7 @@
       <member refid="structfaiss_1_1IndexIVFRaBitQ_1ad3bf565bb0446e201db587c39b84176f" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexIVFRaBitQ_1ae53b30d0de4d9a4802a4dc4c197ec0da" prot="public" virt="virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>get_InvertedListScanner</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a521b6f7be5cacd0a1707e42ae9dfd018" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>get_list_size</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexIVF_1ac974fa523604ecb180b41d013275da29" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a74c689174e4a82a35512cafdd0878158" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>IndexIVF</name></member>
       <member refid="structfaiss_1_1IndexIVFInterface_1a42d6cbfc07119b277be0e2bb900f1ebf" prot="public" virt="non-virtual"><scope>faiss::IndexIVFRaBitQ</scope><name>IndexIVFInterface</name></member>

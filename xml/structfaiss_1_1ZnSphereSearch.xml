@@ -64,10 +64,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1ad5e5d02aa8ee21ab17f01f53e9d4f0cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereSearch_1a1ef221315721a58b3e0f726480355146" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZnSphereSearch::ZnSphereSearch</definition>
-        <argsstring>(int dim, int r2)</argsstring>
+        <argsstring>(int dim, int r2_in)</argsstring>
         <name>ZnSphereSearch</name>
         <qualifiedname>faiss::ZnSphereSearch::ZnSphereSearch</qualifiedname>
         <param>
@@ -76,7 +76,7 @@
         </param>
         <param>
           <type>int</type>
-          <declname>r2</declname>
+          <declname>r2_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -209,7 +209,7 @@
       <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>search</name></member>
       <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>search_multi</name></member>
       <member refid="structfaiss_1_1ZnSphereSearch_1a77143a72b6a5048df0fa79b7134740d8" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>voc</name></member>
-      <member refid="structfaiss_1_1ZnSphereSearch_1ad5e5d02aa8ee21ab17f01f53e9d4f0cc" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>ZnSphereSearch</name></member>
+      <member refid="structfaiss_1_1ZnSphereSearch_1a1ef221315721a58b3e0f726480355146" prot="public" virt="non-virtual"><scope>faiss::ZnSphereSearch</scope><name>ZnSphereSearch</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

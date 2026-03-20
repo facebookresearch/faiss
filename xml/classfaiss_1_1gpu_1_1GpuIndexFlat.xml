@@ -1916,7 +1916,7 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ab2fa6f6569c2a72f7efeedb9ac31d076" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>GpuIndexFlat</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ac4076d99808129f2faed97dc82c9cc66" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>GpuIndexFlat</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexFlat_1ae5dabec790659d92a0e2c716da5f9ecd" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>GpuIndexFlat</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>Index</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexFlat</scope><name>metric_arg</name></member>

@@ -1913,7 +1913,7 @@
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1aeeaa43e86cc2133b18d8574013b403a2" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>graph_max_degree</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>impl</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1a6de99d99ca3f28f0854274f53e1a32e6" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>IndexSVSVamana</name></member>
       <member refid="structfaiss_1_1IndexSVSVamana_1a2706df16183bfdf4598694b16904f7c2" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>IndexSVSVamana</name></member>
       <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1afdd5b291c2bf51551a567b9f8169998e" prot="public" virt="non-virtual"><scope>faiss::IndexSVSVamanaLVQ</scope><name>IndexSVSVamanaLVQ</name></member>

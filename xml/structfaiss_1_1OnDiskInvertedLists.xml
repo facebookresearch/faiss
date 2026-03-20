@@ -511,20 +511,20 @@
         </inbodydescription>
         <location file="faiss/invlists/OnDiskInvertedLists.h" line="114" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1OnDiskInvertedLists_1ae15b20276854461b83e4c180724418cc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
         <definition>void faiss::OnDiskInvertedLists::prefetch_lists</definition>
-        <argsstring>(const idx_t *list_nos, int nlist) const override</argsstring>
+        <argsstring>(const idx_t *list_nos, int nlist_in) const override</argsstring>
         <name>prefetch_lists</name>
         <qualifiedname>faiss::OnDiskInvertedLists::prefetch_lists</qualifiedname>
-        <reimplements refid="structfaiss_1_1InvertedLists_1aa661652a062ecb58b02f10d2a671c9fe">prefetch_lists</reimplements>
+        <reimplements refid="structfaiss_1_1InvertedLists_1a70946b6616ada7d8a0321fcb17e7b7e4">prefetch_lists</reimplements>
         <param>
           <type>const <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
           <declname>list_nos</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>nlist</declname>
+          <declname>nlist_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -682,13 +682,13 @@
         <argsstring>(size_t list_no, const uint8_t *codes) const</argsstring>
         <name>release_codes</name>
         <qualifiedname>faiss::InvertedLists::release_codes</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a6d51dff4e225367cf876dae82060071f">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1HStackInvertedLists_1ad431aa76dc678d71747dcbc9379d123a">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1SliceInvertedLists_1a362456fac3002d1a5625a13dbfc0752b">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1VStackInvertedLists_1a331222282fb32dc55d6f5847bbd1c848">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1MaskedInvertedLists_1a64e66ef4c7dc387091f533cc61d88273">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1StopWordsInvertedLists_1a5bec50625876ae22b9d092da7ab4fa31">release_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1CappedInvertedLists_1a4beb53b44b44130d47f3ea5a298544f2">release_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1ArrayInvertedListsPanorama_1a43c502e6d4dbbab5bf359cea2f452c1c">release_codes</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>list_no</declname>
@@ -1108,7 +1108,7 @@
       <member refid="structfaiss_1_1InvertedLists_1ac1fb72410cefa4f4d28ec90677c02ab3" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>get_single_id</name></member>
       <member refid="structfaiss_1_1InvertedLists_1a022deb11a08e2dad3386369e90f946a8" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>imbalance_factor</name></member>
       <member refid="structfaiss_1_1InvertedLists_1aae4b0f912ddda23dfef1085b4b683af7" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>INVALID_CODE_SIZE</name></member>
-      <member refid="structfaiss_1_1InvertedLists_1a83d053d03720d938dc4fc4e2f674619c" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>InvertedLists</name></member>
+      <member refid="structfaiss_1_1InvertedLists_1a0abb61a7f9be829d91e43c4725ce9c5b" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>InvertedLists</name></member>
       <member refid="structfaiss_1_1InvertedLists_1adc9d4472a745350a9dcbc92f799e73fe" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>is_empty</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1ab0bdb727091e04f877db89e733aeab7c" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>List</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a19b264dfe5a541c1427d3b635ad887f5" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>list_size</name></member>
@@ -1121,7 +1121,7 @@
       <member refid="structfaiss_1_1OnDiskInvertedLists_1acce006c1c63aee12d45c7f7dbeb8bb23" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>OnDiskInvertedLists</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a5a2191421cbe2e3be7a3c25fb9de3793" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>OnDiskInvertedLists</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a93eb0db0f7b9774061e956ef20f46550" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>pf</name></member>
-      <member refid="structfaiss_1_1OnDiskInvertedLists_1a04ad61e3a23ced0aea032bf1e699436d" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>prefetch_lists</name></member>
+      <member refid="structfaiss_1_1OnDiskInvertedLists_1ae15b20276854461b83e4c180724418cc" prot="public" virt="virtual"><scope>faiss::OnDiskInvertedLists</scope><name>prefetch_lists</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1af8d76f7a52fe47da75e2845d2ac36797" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>prefetch_nthread</name></member>
       <member refid="structfaiss_1_1InvertedLists_1ac82ad98d664f6478aa919c0ec1b811cc" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>print_stats</name></member>
       <member refid="structfaiss_1_1OnDiskInvertedLists_1a0adc16674053bb53b34b284f0a9c02a6" prot="public" virt="non-virtual"><scope>faiss::OnDiskInvertedLists</scope><name>ptr</name></member>

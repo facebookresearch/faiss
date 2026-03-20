@@ -134,19 +134,19 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a176b3216c6391c42a91730d1ea397387" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1ZnSphereCodecRec_1a245e05f0adff8d004f744ce53dc477e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>faiss::ZnSphereCodecRec::ZnSphereCodecRec</definition>
-        <argsstring>(int dim, int r2)</argsstring>
+        <argsstring>(int dim_in, int r2_in)</argsstring>
         <name>ZnSphereCodecRec</name>
         <qualifiedname>faiss::ZnSphereCodecRec::ZnSphereCodecRec</qualifiedname>
         <param>
           <type>int</type>
-          <declname>dim</declname>
+          <declname>dim_in</declname>
         </param>
         <param>
           <type>int</type>
-          <declname>r2</declname>
+          <declname>r2_in</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -430,7 +430,7 @@
       <member refid="structfaiss_1_1ZnSphereCodecRec_1a271ab5ec4c8447b634d93f6c03a3a07b" prot="public" virt="virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode</name></member>
       <member refid="structfaiss_1_1ZnSphereCodecRec_1a108afcfa71736366f3ee894b0b7dd9ab" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode_centroid</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a4e75f2b3864128c1d1d3228f470d9e4e" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>encode_multi</name></member>
-      <member refid="structfaiss_1_1EnumeratedVectors_1a11dbfb16f72980d69c4e40dc84e64258" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>EnumeratedVectors</name></member>
+      <member refid="structfaiss_1_1EnumeratedVectors_1a304616b37bddfb0f8dcf94acac2eeeb2" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>EnumeratedVectors</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a80c0f4e4cf5394b7fd2e7b91fab16538" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>find_nn</name></member>
       <member refid="structfaiss_1_1ZnSphereCodecRec_1a2f4f57c0ba47e9b93464e908a607d698" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>get_nv</name></member>
       <member refid="structfaiss_1_1ZnSphereCodecRec_1ae3987cf9ded10a13bcda427000e0724d" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>get_nv_cum</name></member>
@@ -438,7 +438,7 @@
       <member refid="structfaiss_1_1EnumeratedVectors_1ad6da4ac4aeb407f84c2471a38a876878" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>nv</name></member>
       <member refid="structfaiss_1_1ZnSphereCodecRec_1aeb070d73e66534ba8e33bb93fcf24805" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>r2</name></member>
       <member refid="structfaiss_1_1ZnSphereCodecRec_1a71ef1cc971166217acdeed4898fdad9f" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>set_nv_cum</name></member>
-      <member refid="structfaiss_1_1ZnSphereCodecRec_1a176b3216c6391c42a91730d1ea397387" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>ZnSphereCodecRec</name></member>
+      <member refid="structfaiss_1_1ZnSphereCodecRec_1a245e05f0adff8d004f744ce53dc477e1" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodecRec</scope><name>ZnSphereCodecRec</name></member>
       <member refid="structfaiss_1_1EnumeratedVectors_1a849f82c1f0e1335eaf5385ebe3434af4" prot="public" virt="virtual"><scope>faiss::ZnSphereCodecRec</scope><name>~EnumeratedVectors</name></member>
     </listofallmembers>
   </compounddef>

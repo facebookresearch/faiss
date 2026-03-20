@@ -2840,7 +2840,7 @@
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a20f55135edbd34cd7e11eda616a6c4a4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1a1625659e229cb834c76b4a4d75db8b7b" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ae651f9385936ad1b9622e21e87e616a4" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>GpuIndexIVFScalarQuantizer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>Index</name></member>
       <member refid="classfaiss_1_1gpu_1_1GpuIndexIVFScalarQuantizer_1ac1309bc4a1fac1a5aaabe077f4f24f5a" prot="protected" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>index_</name></member>
       <member refid="structfaiss_1_1IndexIVFInterface_1a42d6cbfc07119b277be0e2bb900f1ebf" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>IndexIVFInterface</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::gpu::GpuIndexIVFScalarQuantizer</scope><name>is_trained</name></member>

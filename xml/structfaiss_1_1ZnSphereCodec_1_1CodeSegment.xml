@@ -172,7 +172,7 @@
       <member refid="structfaiss_1_1Repeats_1a74f23e78c786b9e5a4531d9ef6f50342" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>dim</name></member>
       <member refid="structfaiss_1_1Repeats_1a09092d0fb0d3c0ccf0d3f4db33e41571" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>encode</name></member>
       <member refid="structfaiss_1_1Repeats_1ad6e89f9b11a08c3855666d14026c63c0" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>repeats</name></member>
-      <member refid="structfaiss_1_1Repeats_1af8778c1c91f6ffb006ba2b1bb51231c4" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>Repeats</name></member>
+      <member refid="structfaiss_1_1Repeats_1aca120569a5d9ab9afa2f3e9abafe7403" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>Repeats</name></member>
       <member refid="structfaiss_1_1ZnSphereCodec_1_1CodeSegment_1a64bd45d95202fc8b15cfcdc0a044bc8e" prot="public" virt="non-virtual"><scope>faiss::ZnSphereCodec::CodeSegment</scope><name>signbits</name></member>
     </listofallmembers>
   </compounddef>

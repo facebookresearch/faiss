@@ -143,15 +143,15 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
         <type></type>
         <definition>faiss::Index::Index</definition>
-        <argsstring>(idx_t d=0, MetricType metric=METRIC_L2)</argsstring>
+        <argsstring>(idx_t d_in=0, MetricType metric=METRIC_L2)</argsstring>
         <name>Index</name>
         <qualifiedname>faiss::Index::Index</qualifiedname>
         <param>
           <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
-          <declname>d</declname>
+          <declname>d_in</declname>
           <defval>0</defval>
         </param>
         <param>
@@ -2310,7 +2310,7 @@
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::Index</scope><name>get_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>Index</name></member>
       <member refid="structfaiss_1_1Index_1a6e92732617c4dbe364e7678dd8773a7f" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>is_trained</name></member>
       <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" prot="public" virt="virtual"><scope>faiss::Index</scope><name>merge_from</name></member>
       <member refid="structfaiss_1_1Index_1a6f60646d6877658ea4df05e0231ed232" prot="public" virt="non-virtual"><scope>faiss::Index</scope><name>metric_arg</name></member>

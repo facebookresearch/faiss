@@ -1692,7 +1692,7 @@
       <member refid="structfaiss_1_1IndexFlatCodes_1ad1f46f8661b11c413c4ba66d842f35ed" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>get_distance_computer</name></member>
       <member refid="structfaiss_1_1IndexRaBitQ_1a4631ebaf645ef681120397fa23cfc053" prot="public" virt="virtual"><scope>faiss::IndexRaBitQ</scope><name>get_FlatCodesDistanceComputer</name></member>
       <member refid="structfaiss_1_1IndexRaBitQ_1a82d6015b15a8f796fc3fd830fe81f066" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>get_quantized_distance_computer</name></member>
-      <member refid="structfaiss_1_1Index_1a7b8cc435b5619d5d8382010a424bf67e" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>Index</name></member>
+      <member refid="structfaiss_1_1Index_1a21006538b84bd86d06ba8c22457c8db1" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>Index</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1afccb3874bf2c6e0ff430aeb2cdb87122" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexFlatCodes_1aadee8e22d573fd5832cb1d8d99781d6f" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>IndexFlatCodes</name></member>
       <member refid="structfaiss_1_1IndexRaBitQ_1afb9a90197991c7b8af4bcf79cef64b6b" prot="public" virt="non-virtual"><scope>faiss::IndexRaBitQ</scope><name>IndexRaBitQ</name></member>
