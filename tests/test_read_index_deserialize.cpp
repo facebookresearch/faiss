@@ -14,7 +14,9 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -1300,4 +1302,41 @@ TEST(ReadIndexDeserialize, HNSWCagraEmptyIndexSearch) {
     EXPECT_NO_THROW(
             idx.search(1, xq.data(), 1, distances.data(), labels.data()));
     EXPECT_EQ(labels[0], -1);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVF search with null invlists (e.g. loaded with
+// IO_FLAG_SKIP_IVF_DATA) throws instead of crashing.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexIVFNullInvlistsSearch) {
+    IndexFlatL2 quantizer(4);
+    IndexIVFFlat idx(&quantizer, 4, 10);
+    idx.own_fields = false;
+    // Simulate IO_FLAG_SKIP_IVF_DATA by deleting invlists
+    delete idx.invlists;
+    idx.invlists = nullptr;
+
+    std::vector<float> xq(4, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_THROW(
+            idx.search(1, xq.data(), 1, distances.data(), labels.data()),
+            FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVF add_with_ids with null invlists throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexIVFNullInvlistsAdd) {
+    IndexFlatL2 quantizer(4);
+    IndexIVFFlat idx(&quantizer, 4, 10);
+    idx.own_fields = false;
+    idx.is_trained = true;
+    delete idx.invlists;
+    idx.invlists = nullptr;
+
+    std::vector<float> xb(4, 1.0f);
+
+    EXPECT_THROW(idx.add(1, xb.data()), FaissException);
 }
