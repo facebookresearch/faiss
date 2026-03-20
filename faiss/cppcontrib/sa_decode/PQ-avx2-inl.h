@@ -1428,63 +1428,63 @@ struct IndexPQDecoderImpl<
 
     // process 1 sample
     static void store(
-            const float* const __restrict pqFineCentroids0,
-            const uint8_t* const __restrict code0,
-            float* const __restrict outputStore) {}
+            const float* const __restrict /*pqFineCentroids0*/,
+            const uint8_t* const __restrict /*code0*/,
+            float* const __restrict /*outputStore*/) {}
 
     // process 1 sample
     static void accum(
-            const float* const __restrict pqFineCentroids0,
-            const uint8_t* const __restrict code0,
-            const float weight0,
-            float* const __restrict outputAccum) {}
+            const float* const __restrict /*pqFineCentroids0*/,
+            const uint8_t* const __restrict /*code0*/,
+            const float /*weight0*/,
+            float* const __restrict /*outputAccum*/) {}
 
     // Process 2 samples.
     // Each code uses its own fine pq centroids table.
     static void accum(
-            const float* const __restrict pqFineCentroids0,
-            const uint8_t* const __restrict code0,
-            const float weight0,
-            const float* const __restrict pqFineCentroids1,
-            const uint8_t* const __restrict code1,
-            const float weight1,
-            float* const __restrict outputAccum) {}
+            const float* const __restrict /*pqFineCentroids0*/,
+            const uint8_t* const __restrict /*code0*/,
+            const float /*weight0*/,
+            const float* const __restrict /*pqFineCentroids1*/,
+            const uint8_t* const __restrict /*code1*/,
+            const float /*weight1*/,
+            float* const __restrict /*outputAccum*/) {}
 
     // Process 2 samples.
     // Fine pq centroids table is shared among codes.
     static void accum(
-            const float* const __restrict pqFineCentroids,
-            const uint8_t* const __restrict code0,
-            const float weight0,
-            const uint8_t* const __restrict code1,
-            const float weight1,
-            float* const __restrict outputAccum) {}
+            const float* const __restrict /*pqFineCentroids*/,
+            const uint8_t* const __restrict /*code0*/,
+            const float /*weight0*/,
+            const uint8_t* const __restrict /*code1*/,
+            const float /*weight1*/,
+            float* const __restrict /*outputAccum*/) {}
 
     // Process 3 samples.
     // Each code uses its own fine pq centroids table.
     static void accum(
-            const float* const __restrict pqFineCentroids0,
-            const uint8_t* const __restrict code0,
-            const float weight0,
-            const float* const __restrict pqFineCentroids1,
-            const uint8_t* const __restrict code1,
-            const float weight1,
-            const float* const __restrict pqFineCentroids2,
-            const uint8_t* const __restrict code2,
-            const float weight2,
-            float* const __restrict outputAccum) {}
+            const float* const __restrict /*pqFineCentroids0*/,
+            const uint8_t* const __restrict /*code0*/,
+            const float /*weight0*/,
+            const float* const __restrict /*pqFineCentroids1*/,
+            const uint8_t* const __restrict /*code1*/,
+            const float /*weight1*/,
+            const float* const __restrict /*pqFineCentroids2*/,
+            const uint8_t* const __restrict /*code2*/,
+            const float /*weight2*/,
+            float* const __restrict /*outputAccum*/) {}
 
     // Process 3 samples.
     // Fine pq centroids table is shared among codes.
     static void accum(
-            const float* const __restrict pqFineCentroids,
-            const uint8_t* const __restrict code0,
-            const float weight0,
-            const uint8_t* const __restrict code1,
-            const float weight1,
-            const uint8_t* const __restrict code2,
-            const float weight2,
-            float* const __restrict outputAccum) {}
+            const float* const __restrict /*pqFineCentroids*/,
+            const uint8_t* const __restrict /*code0*/,
+            const float /*weight0*/,
+            const uint8_t* const __restrict /*code1*/,
+            const float /*weight1*/,
+            const uint8_t* const __restrict /*code2*/,
+            const float /*weight2*/,
+            float* const __restrict /*outputAccum*/) {}
 
     // clang-format on
 };
