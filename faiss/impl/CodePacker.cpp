@@ -33,10 +33,10 @@ void CodePacker::unpack_all(const uint8_t* block, uint8_t* flat_codes) const {
  * CodePackerFlat
  */
 
-CodePackerFlat::CodePackerFlat(size_t code_size) {
-    this->code_size = code_size;
+CodePackerFlat::CodePackerFlat(size_t code_size_in) {
+    this->code_size = code_size_in;
     nvec = 1;
-    block_size = code_size;
+    block_size = code_size_in;
 }
 
 void CodePackerFlat::pack_all(const uint8_t* flat_codes, uint8_t* block) const {
