@@ -1110,6 +1110,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductQuantizer(&idxp->pq, f);
         idxp->code_size = idxp->pq.code_size;
         read_vector(idxp->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxp->codes.size() == idxp->ntotal * idxp->code_size);
         if (h == fourcc("IxPo") || h == fourcc("IxPq")) {
             READ1(idxp->search_type);
             READ1(idxp->encode_signs);
@@ -1132,6 +1134,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxr->codes.size() == idxr->ntotal * idxr->code_size);
         idx = std::move(idxr);
     } else if (h == fourcc("IxLS")) {
         auto idxr = std::make_unique<IndexLocalSearchQuantizer>();
@@ -1139,6 +1143,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_LocalSearchQuantizer(idxr->lsq, f);
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxr->codes.size() == idxr->ntotal * idxr->code_size);
         idx = std::move(idxr);
     } else if (h == fourcc("IxPR")) {
         auto idxpr = std::make_unique<IndexProductResidualQuantizer>();
@@ -1146,6 +1152,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductResidualQuantizer(idxpr->prq, f, io_flags);
         READ1(idxpr->code_size);
         read_vector(idxpr->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxpr->codes.size() == idxpr->ntotal * idxpr->code_size);
         idx = std::move(idxpr);
     } else if (h == fourcc("IxPL")) {
         auto idxpl = std::make_unique<IndexProductLocalSearchQuantizer>();
@@ -1153,6 +1161,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductLocalSearchQuantizer(idxpl->plsq, f);
         READ1(idxpl->code_size);
         read_vector(idxpl->codes, f);
+        FAISS_THROW_IF_NOT(
+                idxpl->codes.size() == idxpl->ntotal * idxpl->code_size);
         idx = std::move(idxpl);
     } else if (h == fourcc("ImRQ")) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
