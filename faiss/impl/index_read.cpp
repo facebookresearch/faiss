@@ -410,6 +410,9 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, pano);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+
+        bool has_init_dists;
+        READ1(has_init_dists);
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
@@ -418,6 +421,9 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     ArrayInvertedListsPanorama::kBatchSize;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
+            if (has_init_dists) {
+                ailp->init_dists[i].resize(num_elems);
+            }
         }
         for (size_t i = 0; i < nlist; i++) {
             size_t n = sizes[i];
@@ -427,6 +433,12 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 read_vector_with_known_size(ailp->ids[i], f, n);
                 read_vector_with_known_size(
                         ailp->cum_sums[i], f, ailp->cum_sums[i].size());
+                if (has_init_dists) {
+                    read_vector_with_known_size(
+                            ailp->init_dists[i],
+                            f,
+                            ailp->init_dists[i].size());
+                }
             }
         }
         return ailp;
@@ -1392,7 +1404,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     ivpp->code_size,
                     ivpp->n_levels,
                     ivpp->batch_size,
-                    &ivpp->pq));
+                    &ivpp->pq,
+                    ivpp->quantizer));
         }
         if (ivpp->is_trained) {
             ivpp->use_precomputed_table = 1;

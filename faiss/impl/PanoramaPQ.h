@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <faiss/Index.h>
 #include <faiss/impl/Panorama.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/panorama_kernels/panorama_kernels.h>
@@ -26,6 +27,7 @@ namespace faiss {
  */
 struct PanoramaPQ : Panorama {
     const ProductQuantizer* pq = nullptr;
+    const Index* quantizer = nullptr;
     size_t chunk_size = 0;
     size_t levels_size = 0;
 
@@ -35,7 +37,8 @@ struct PanoramaPQ : Panorama {
             size_t code_size,
             size_t n_levels,
             size_t batch_size,
-            const ProductQuantizer* pq);
+            const ProductQuantizer* pq,
+            const Index* quantizer = nullptr);
 
     void copy_codes_to_level_layout(
             uint8_t* codes,
@@ -52,17 +55,25 @@ struct PanoramaPQ : Panorama {
             size_t n_entry,
             const uint8_t* code) const override;
 
+    /// Precompute per-point init distances: ||r||^2 + 2<r, c>.
+    /// Requires quantizer to be set. Layout is flat per-list,
+    /// padded to batch_size boundaries.
+    void compute_init_distances(
+            float* init_dists_base,
+            size_t list_no,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code) const;
+
     /// Progressive filtering for PQ codes: processes one batch.
     ///
-    /// Follows the same pattern as PanoramaFlat: initializes exact_distances
-    /// with squared norms (||r||^2 from stored cum_sums + dis0), then
-    /// processes the inner-product contribution level-by-level with pruning.
-    /// The SIMD-optimized process_chunks kernel handles the init phase
-    /// (precomp table over all M subquantizers) in a single vectorized pass.
+    /// Initializes exact_distances from precomputed init_dists
+    /// (||r||^2 + 2<r, c>), then refines with the query-specific
+    /// sim_table_2 level-by-level with Cauchy-Schwarz pruning.
     ///
     /// @param col_codes       Column-major codes for this inverted list.
     /// @param list_cum_sums   Cumulative sums for this inverted list.
-    /// @param precomp         Precomputed table slice for this list.
+    /// @param init_dists      Precomputed init distances for this list.
     /// @param sim_table_2     -2 * inner_prod_table (query-specific LUT).
     /// @param query_cum_norms Query suffix norms per level.
     /// @param coarse_dis      Coarse distance (dis0) for this list.
@@ -79,7 +90,7 @@ struct PanoramaPQ : Panorama {
     size_t progressive_filter_batch(
             const uint8_t* col_codes,
             const float* list_cum_sums,
-            const float* precomp,
+            const float* init_dists,
             const float* sim_table_2,
             const float* query_cum_norms,
             float coarse_dis,
@@ -97,7 +108,7 @@ template <typename C>
 size_t PanoramaPQ::progressive_filter_batch(
         const uint8_t* col_codes,
         const float* list_cum_sums,
-        const float* precomp,
+        const float* init_dists,
         const float* sim_table_2,
         const float* query_cum_norms,
         float coarse_dis,
@@ -111,7 +122,6 @@ size_t PanoramaPQ::progressive_filter_batch(
         PanoramaStats& local_stats) const {
     const size_t bs = batch_size;
     const size_t cs = chunk_size;
-    const size_t M = pq->M;
     const size_t ksub = pq->ksub;
 
     size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
@@ -127,26 +137,15 @@ size_t PanoramaPQ::progressive_filter_batch(
 
     const uint8_t* batch_codes = col_codes + b_offset * code_size;
 
-    // SIMD init: compute precomp distances for all M subquantizers.
-    // process_chunks naturally handles column-major codes and does
-    // cache-friendly 1KB-at-a-time table lookups with AVX-512 gathers.
-    std::fill(
-            exact_distances.begin(),
-            exact_distances.begin() + curr_batch_size,
-            0.0f);
-    panorama_kernels::process_chunks(
-            M,
-            bs,
-            curr_batch_size,
-            const_cast<float*>(precomp),
-            const_cast<uint8_t*>(batch_codes),
-            exact_distances.data());
+    // Load precomputed init distances (||r||^2 + 2<r, c>).
+    const float* batch_init = init_dists + b_offset;
+    std::copy(batch_init, batch_init + curr_batch_size, exact_distances.begin());
 
     const float* batch_cums = list_cum_sums + b_offset * (n_levels + 1);
 
     size_t next_num_active = curr_batch_size;
     size_t batch_offset = batch_no * bs;
-    size_t total_active = next_num_active;
+    const size_t total_active = next_num_active;
 
     for (size_t level = 0; level < n_levels && next_num_active > 0; level++) {
         local_stats.total_dims_scanned += next_num_active;
