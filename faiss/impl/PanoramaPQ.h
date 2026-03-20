@@ -101,111 +101,99 @@ struct PanoramaPQ : Panorama {
             std::vector<uint8_t>& bitset,
             std::vector<uint8_t>& compressed_codes,
             float threshold,
-            PanoramaStats& local_stats) const;
-};
+            PanoramaStats& local_stats) const {
+        const size_t bs = batch_size;
+        const size_t cs = chunk_size;
+        const size_t ksub = pq->ksub;
 
-template <typename C>
-size_t PanoramaPQ::progressive_filter_batch(
-        const uint8_t* col_codes,
-        const float* list_cum_sums,
-        const float* init_dists,
-        const float* sim_table_2,
-        const float* query_cum_norms,
-        float coarse_dis,
-        size_t list_size,
-        size_t batch_no,
-        std::vector<float>& exact_distances,
-        std::vector<uint32_t>& active_indices,
-        std::vector<uint8_t>& bitset,
-        std::vector<uint8_t>& compressed_codes,
-        float threshold,
-        PanoramaStats& local_stats) const {
-    const size_t bs = batch_size;
-    const size_t cs = chunk_size;
-    const size_t ksub = pq->ksub;
+        size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
+        size_t b_offset = batch_no * bs;
 
-    size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
-    size_t b_offset = batch_no * bs;
+        // Initialize active set.
+        std::iota(
+                active_indices.begin(),
+                active_indices.begin() + curr_batch_size,
+                b_offset);
+        std::fill(bitset.begin(), bitset.begin() + curr_batch_size, 1);
+        std::fill(bitset.begin() + curr_batch_size, bitset.end(), 0);
 
-    // Initialize active set.
-    std::iota(
-            active_indices.begin(),
-            active_indices.begin() + curr_batch_size,
-            b_offset);
-    std::fill(bitset.begin(), bitset.begin() + curr_batch_size, 1);
-    std::fill(bitset.begin() + curr_batch_size, bitset.end(), 0);
+        const uint8_t* batch_codes = col_codes + b_offset * code_size;
 
-    const uint8_t* batch_codes = col_codes + b_offset * code_size;
+        // Load precomputed init distances (||r||^2 + 2<r, c>).
+        const float* batch_init = init_dists + b_offset;
+        std::copy(
+                batch_init,
+                batch_init + curr_batch_size,
+                exact_distances.begin());
 
-    // Load precomputed init distances (||r||^2 + 2<r, c>).
-    const float* batch_init = init_dists + b_offset;
-    std::copy(batch_init, batch_init + curr_batch_size, exact_distances.begin());
+        const float* batch_cums = list_cum_sums + b_offset * (n_levels + 1);
 
-    const float* batch_cums = list_cum_sums + b_offset * (n_levels + 1);
+        size_t next_num_active = curr_batch_size;
+        size_t batch_offset = batch_no * bs;
+        const size_t total_active = next_num_active;
 
-    size_t next_num_active = curr_batch_size;
-    size_t batch_offset = batch_no * bs;
-    const size_t total_active = next_num_active;
+        local_stats.total_dims += total_active * n_levels;
 
-    for (size_t level = 0; level < n_levels && next_num_active > 0; level++) {
-        local_stats.total_dims_scanned += next_num_active;
-        local_stats.total_dims += total_active;
+        for (size_t level = 0; level < n_levels && next_num_active > 0;
+             level++) {
+            local_stats.total_dims_scanned += next_num_active;
 
-        size_t level_sim_offset = level * ksub * cs;
+            size_t level_sim_offset = level * ksub * cs;
 
-        float query_cum_norm = 2 * query_cum_norms[level + 1];
+            float query_cum_norm = 2 * query_cum_norms[level + 1];
 
-        const float* cum_sums_level = batch_cums + bs * (level + 1);
-        const uint8_t* codes_level = batch_codes + bs * cs * level;
+            const float* cum_sums_level = batch_cums + bs * (level + 1);
+            const uint8_t* codes_level = batch_codes + bs * cs * level;
 
-        const float* sim_table_level = sim_table_2 + level_sim_offset;
+            const float* sim_table_level = sim_table_2 + level_sim_offset;
 
-        bool is_sparse = next_num_active < bs / 16;
+            bool is_sparse = next_num_active < bs / 16;
 
-        size_t num_active_for_filtering = 0;
-        if (is_sparse) {
-            for (size_t ci = 0; ci < cs; ci++) {
-                size_t chunk_off = ci * bs;
-                const float* chunk_sim = sim_table_level + ci * ksub;
-                for (size_t i = 0; i < next_num_active; i++) {
-                    size_t real_idx = active_indices[i] - batch_offset;
-                    exact_distances[i] +=
-                            chunk_sim[codes_level[chunk_off + real_idx]];
+            size_t num_active_for_filtering = 0;
+            if (is_sparse) {
+                for (size_t ci = 0; ci < cs; ci++) {
+                    size_t chunk_off = ci * bs;
+                    const float* chunk_sim = sim_table_level + ci * ksub;
+                    for (size_t i = 0; i < next_num_active; i++) {
+                        size_t real_idx = active_indices[i] - batch_offset;
+                        exact_distances[i] +=
+                                chunk_sim[codes_level[chunk_off + real_idx]];
+                    }
                 }
-            }
-            num_active_for_filtering = next_num_active;
-        } else {
-            auto [cc, na] = panorama_kernels::process_code_compression(
-                    next_num_active,
-                    bs,
-                    cs,
-                    compressed_codes.data(),
-                    bitset.data(),
-                    codes_level);
+                num_active_for_filtering = next_num_active;
+            } else {
+                auto [cc, na] = panorama_kernels::process_code_compression(
+                        next_num_active,
+                        bs,
+                        cs,
+                        compressed_codes.data(),
+                        bitset.data(),
+                        codes_level);
 
-            panorama_kernels::process_chunks(
-                    cs,
-                    bs,
-                    na,
-                    const_cast<float*>(sim_table_level),
-                    cc,
-                    exact_distances.data());
-            num_active_for_filtering = na;
+                panorama_kernels::process_chunks(
+                        cs,
+                        bs,
+                        na,
+                        const_cast<float*>(sim_table_level),
+                        cc,
+                        exact_distances.data());
+                num_active_for_filtering = na;
+            }
+
+            next_num_active = panorama_kernels::process_filtering(
+                    num_active_for_filtering,
+                    exact_distances.data(),
+                    active_indices.data(),
+                    const_cast<float*>(cum_sums_level),
+                    bitset.data(),
+                    batch_offset,
+                    coarse_dis,
+                    query_cum_norm,
+                    threshold);
         }
 
-        next_num_active = panorama_kernels::process_filtering(
-                num_active_for_filtering,
-                exact_distances.data(),
-                active_indices.data(),
-                const_cast<float*>(cum_sums_level),
-                bitset.data(),
-                batch_offset,
-                coarse_dis,
-                query_cum_norm,
-                threshold);
+        return next_num_active;
     }
-
-    return next_num_active;
-}
+};
 
 } // namespace faiss
