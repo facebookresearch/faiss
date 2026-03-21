@@ -33,6 +33,7 @@ link_to_faiss_lib(faiss_perf_tests_utils)
 
 set(FAISS_PERF_TEST_SRC
   bench_no_multithreading_rcq_search.cpp
+  bench_distance_blas_threshold.cpp
   bench_scalar_quantizer_accuracy.cpp
   bench_scalar_quantizer_decode.cpp
   bench_scalar_quantizer_distance.cpp
