@@ -79,6 +79,8 @@ struct PanoramaPQ : Panorama {
     /// @param coarse_dis      Coarse distance (dis0) for this list.
     /// @param list_size       Total number of vectors in this list.
     /// @param batch_no        Which batch to process.
+    /// @param ids             ID array for the inverted list.
+    /// @param sel             ID selector for filtering (may be nullptr).
     /// @param exact_distances [out] Scratch buffer for partial distances.
     /// @param active_indices  [out] Scratch buffer for survivor indices.
     /// @param bitset          Scratch buffer for code compression.
@@ -86,7 +88,7 @@ struct PanoramaPQ : Panorama {
     /// @param threshold       Current heap threshold for pruning.
     /// @param local_stats     [out] Accumulated pruning statistics.
     /// @return Number of surviving candidates in active_indices.
-    template <typename C>
+    template <typename C, bool use_sel>
     size_t progressive_filter_batch(
             const uint8_t* col_codes,
             const float* list_cum_sums,
@@ -96,6 +98,8 @@ struct PanoramaPQ : Panorama {
             float coarse_dis,
             size_t list_size,
             size_t batch_no,
+            const idx_t* ids,
+            const IDSelector* sel,
             std::vector<float>& exact_distances,
             std::vector<uint32_t>& active_indices,
             std::vector<uint8_t>& bitset,
@@ -109,26 +113,33 @@ struct PanoramaPQ : Panorama {
         size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
         size_t b_offset = batch_no * bs;
 
-        // Initialize active set.
-        std::iota(
-                active_indices.begin(),
-                active_indices.begin() + curr_batch_size,
-                b_offset);
-        std::fill(bitset.begin(), bitset.begin() + curr_batch_size, 1);
-        std::fill(bitset.begin() + curr_batch_size, bitset.end(), 0);
+        // Initialize active set with ID-filtered vectors.
+        std::fill(bitset.begin(), bitset.end(), 0);
+        size_t num_active = 0;
+        const float* batch_init = init_dists + b_offset;
+        for (size_t i = 0; i < curr_batch_size; i++) {
+            size_t global_idx = b_offset + i;
+            if (use_sel) {
+                idx_t id = ids[global_idx];
+                if (!sel->is_member(id)) {
+                    continue;
+                }
+            }
+            active_indices[num_active] = global_idx;
+            exact_distances[num_active] = batch_init[i];
+            bitset[i] = 1;
+            num_active++;
+        }
+
+        if (num_active == 0) {
+            return 0;
+        }
 
         const uint8_t* batch_codes = col_codes + b_offset * code_size;
 
-        // Load precomputed init distances (||r||^2 + 2<r, c>).
-        const float* batch_init = init_dists + b_offset;
-        std::copy(
-                batch_init,
-                batch_init + curr_batch_size,
-                exact_distances.begin());
-
         const float* batch_cums = list_cum_sums + b_offset * (n_levels + 1);
 
-        size_t next_num_active = curr_batch_size;
+        size_t next_num_active = num_active;
         size_t batch_offset = batch_no * bs;
         const size_t total_active = next_num_active;
 
