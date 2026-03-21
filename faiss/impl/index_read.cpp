@@ -431,20 +431,19 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
+        constexpr size_t kFlatBatchSize = 128;
         auto* pano = new PanoramaFlat(
-                code_size / sizeof(float),
-                n_levels,
-                ArrayInvertedListsPanorama::kBatchSize);
+                code_size / sizeof(float), n_levels, kFlatBatchSize);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, pano);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                     ArrayInvertedListsPanorama::kBatchSize) *
-                    ArrayInvertedListsPanorama::kBatchSize;
+                    ((sizes[i] + kFlatBatchSize - 1) / kFlatBatchSize) *
+                    kFlatBatchSize;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
@@ -1494,12 +1493,40 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto* storage =
                 dynamic_cast<ArrayInvertedListsPanorama*>(ivpp->invlists);
         if (storage) {
-            storage->pano.reset(new PanoramaPQ(
+            auto* pano_pq = new PanoramaPQ(
                     ivpp->d,
                     ivpp->code_size,
                     ivpp->n_levels,
                     ivpp->batch_size,
-                    &ivpp->pq));
+                    &ivpp->pq,
+                    ivpp->quantizer);
+            storage->pano.reset(pano_pq);
+
+            // Recompute init_dists from stored codes + quantizer.
+            for (size_t list_no = 0; list_no < ivpp->nlist; list_no++) {
+                size_t list_size = storage->ids[list_no].size();
+                if (list_size == 0)
+                    continue;
+                size_t bs = pano_pq->batch_size;
+                size_t padded =
+                        ((list_size + bs - 1) / bs) * bs;
+                storage->init_dists[list_no].resize(padded);
+
+                // Reconstruct row-major codes, then compute init distances.
+                std::vector<uint8_t> row_code(ivpp->code_size);
+                for (size_t i = 0; i < list_size; i++) {
+                    pano_pq->reconstruct(
+                            i,
+                            reinterpret_cast<float*>(row_code.data()),
+                            storage->codes[list_no].data());
+                    pano_pq->compute_init_distances(
+                            storage->init_dists[list_no].data(),
+                            list_no,
+                            i,
+                            1,
+                            row_code.data());
+                }
+            }
         }
         if (ivpp->is_trained) {
             ivpp->use_precomputed_table = 1;

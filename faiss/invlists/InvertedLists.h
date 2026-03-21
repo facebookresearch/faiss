@@ -283,8 +283,8 @@ struct ArrayInvertedLists : InvertedLists {
 /// Works with both flat codes (PanoramaFlat) and PQ codes (PanoramaPQ)
 /// via the virtual Panorama interface.
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
-    static constexpr size_t kBatchSize = 128;
     std::vector<MaybeOwnedVector<float>> cum_sums;
+    std::vector<MaybeOwnedVector<float>> init_dists;
     std::unique_ptr<Panorama> pano;
 
     /// Takes ownership of the provided Panorama*.
@@ -294,6 +294,7 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
             Panorama* pano_in);
 
     const float* get_cum_sums(size_t list_no) const;
+    const float* get_init_dists(size_t list_no) const;
 
     size_t add_entries(
             size_t list_no,

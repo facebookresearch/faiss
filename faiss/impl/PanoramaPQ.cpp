@@ -71,9 +71,11 @@ PanoramaPQ::PanoramaPQ(
         size_t code_size,
         size_t n_levels,
         size_t batch_size,
-        const ProductQuantizer* pq)
+        const ProductQuantizer* pq,
+        const Index* quantizer)
         : Panorama(d, code_size, n_levels, batch_size),
           pq(pq),
+          quantizer(quantizer),
           chunk_size(code_size / n_levels),
           levels_size(d / n_levels) {
     FAISS_THROW_IF_NOT_MSG(
@@ -116,6 +118,33 @@ void PanoramaPQ::compute_cumulative_sums(
         size_t last_offset = cumsum_batch_offset + n_levels * batch_size +
                 pos_in_batch;
         cumsum_base[last_offset] = 0.0f;
+    }
+}
+
+void PanoramaPQ::compute_init_distances(
+        float* init_dists_base,
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const uint8_t* code) const {
+    FAISS_THROW_IF_NOT_MSG(
+            quantizer != nullptr,
+            "PanoramaPQ: quantizer required for compute_init_distances");
+
+    std::vector<float> centroid(d);
+    quantizer->reconstruct(list_no, centroid.data());
+
+    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
+        std::vector<float> vec(d);
+        pq->decode(code + entry_idx * code_size, vec.data());
+
+        float init_dist = 0.0f;
+        for (size_t j = 0; j < d; j++) {
+            init_dist += vec[j] * vec[j] + 2 * vec[j] * centroid[j];
+        }
+
+        size_t point_idx = offset + entry_idx;
+        init_dists_base[point_idx] = init_dist;
     }
 }
 

@@ -29,6 +29,7 @@
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/IndexIVFPQFastScan.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -354,6 +355,12 @@ IndexIVF* parse_IndexIVF(
                 mt,
                 /*by_residual=*/true,
                 own_il);
+    }
+    if (match("PQ([0-9]+)(x[0-9]+)?Panorama([0-9]+)?")) {
+        int M = mres_to_int(sm[1]), nbit = mres_to_int(sm[2], 8, 1);
+        int nlevels = mres_to_int(sm[3], 8);
+        return new IndexIVFPQPanorama(
+                get_q(), d, nlist, M, nbit, nlevels, 128, mt, own_il);
     }
     if (match("PQ([0-9]+)(x[0-9]+)?(np)?")) {
         int M = mres_to_int(sm[1]), nbit = mres_to_int(sm[2], 8, 1);
