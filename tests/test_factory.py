@@ -70,6 +70,21 @@ class TestFactory(unittest.TestCase):
         assert index.d == 128
         assert index.metric_type == faiss.METRIC_L2
 
+    def test_factory_panorama(self):
+        index = faiss.index_factory(64, "IVF16,PQ16x8Panorama4")
+        assert isinstance(index, faiss.IndexIVFPQPanorama)
+        assert index.n_levels == 4
+        assert index.pq.M == 16
+
+        index = faiss.index_factory(64, "IVF16,PQ16Panorama")
+        assert isinstance(index, faiss.IndexIVFPQPanorama)
+        assert index.n_levels == 8  # default
+
+        index = faiss.index_factory(64, "PCA64,IVF16,PQ16x8Panorama4")
+        ivf = faiss.downcast_index(index.index)
+        assert isinstance(ivf, faiss.IndexIVFPQPanorama)
+        assert ivf.n_levels == 4
+
     def test_factory_HNSW(self):
         index = faiss.index_factory(12, "HNSW32")
         assert index.storage.sa_code_size() == 12 * 4

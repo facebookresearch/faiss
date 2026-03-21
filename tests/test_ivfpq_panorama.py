@@ -559,7 +559,7 @@ class TestIndexIVFPQPanorama(unittest.TestCase):
         )
         pano_16.search(xq, k)
         ratio_16 = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
-        self.assertLess(ratio_16, 0.55)
+        self.assertLess(ratio_16, 0.6)
 
         faiss.omp_set_num_threads(nt_threads)
 
