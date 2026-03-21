@@ -188,6 +188,7 @@ void IndexIVF::add(idx_t n, const float* x) {
 }
 
 void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
+    FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     std::unique_ptr<idx_t[]> coarse_idx(new idx_t[n]);
     quantizer->assign(n, x, coarse_idx.get());
     add_core(n, x, xids, coarse_idx.get());
@@ -308,6 +309,7 @@ void IndexIVF::search(
         idx_t* labels,
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     const IVFSearchParameters* params = nullptr;
     if (params_in) {
         params = dynamic_cast<const IVFSearchParameters*>(params_in);
@@ -408,6 +410,7 @@ void IndexIVF::search_preassigned(
         const IVFSearchParameters* params,
         IndexIVFStats* ivf_stats) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
 
     idx_t cur_nprobe = params ? params->nprobe : this->nprobe;
     cur_nprobe = std::min((idx_t)nlist, cur_nprobe);
