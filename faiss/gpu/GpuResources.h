@@ -33,7 +33,7 @@
 
 #if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device/device_memory_resource.hpp>
+#include <rmm/mr/device_memory_resource.hpp>
 #endif
 
 namespace faiss {

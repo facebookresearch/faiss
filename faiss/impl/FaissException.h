@@ -46,9 +46,8 @@ void handleExceptions(
 struct TransformedVectors {
     const float* x;
     bool own_x;
-    TransformedVectors(const float* x_orig, const float* x) : x(x) {
-        own_x = x_orig != x;
-    }
+    TransformedVectors(const float* x_orig, const float* x_in)
+            : x(x_in), own_x(x_orig != x_in) {}
 
     ~TransformedVectors() {
         if (own_x) {

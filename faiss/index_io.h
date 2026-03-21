@@ -124,6 +124,15 @@ size_t get_deserialization_loop_limit();
 // and do not modify while deserialization is in progress on other threads.
 void set_deserialization_loop_limit(size_t value);
 
+// Returns the maximum number of bytes that a single READVECTOR call
+// may allocate.  Default: 1 TB (1 << 40).
+size_t get_deserialization_vector_byte_limit();
+
+// Sets the per-vector byte limit for deserialization.
+// NOT thread-safe: set before any concurrent deserialization calls
+// and do not modify while deserialization is in progress on other threads.
+void set_deserialization_vector_byte_limit(size_t value);
+
 } // namespace faiss
 
 #endif

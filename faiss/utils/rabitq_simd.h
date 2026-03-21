@@ -233,7 +233,7 @@ inline uint64_t bitwise_and_dot_product(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
@@ -250,7 +250,7 @@ inline uint64_t bitwise_and_dot_product(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -266,7 +266,7 @@ inline uint64_t bitwise_and_dot_product(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -279,14 +279,14 @@ inline uint64_t bitwise_and_dot_product(
 #endif // defined(__SSE4_1__)
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         const auto yv = *(const uint64_t*)(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(const uint64_t*)(query + j * size + offset);
             sum += __builtin_popcountll(qv & yv) << j;
         }
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += __builtin_popcount(qv & yv) << j;
         }
@@ -316,7 +316,7 @@ inline uint64_t bitwise_xor_dot_product(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_xor = _mm512_xor_si512(v_q, v_x);
@@ -333,7 +333,7 @@ inline uint64_t bitwise_xor_dot_product(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_xor = _mm256_xor_si256(v_q, v_x);
@@ -349,7 +349,7 @@ inline uint64_t bitwise_xor_dot_product(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_xor = _mm_xor_si128(v_q, v_x);
@@ -362,14 +362,14 @@ inline uint64_t bitwise_xor_dot_product(
 #endif
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         const auto yv = *(const uint64_t*)(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(const uint64_t*)(query + j * size + offset);
             sum += __builtin_popcountll(qv ^ yv) << j;
         }
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += __builtin_popcount(qv ^ yv) << j;
         }
