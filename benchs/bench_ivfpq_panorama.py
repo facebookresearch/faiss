@@ -47,6 +47,7 @@ else:
 
 print(f"Database: {nb} x {d}, Queries: {nq}, Train: {nt}")
 
+ALPHA = 8
 M_values = [960, 480, 240]
 nbits = 8
 nlist = 128
@@ -105,36 +106,144 @@ def build_ivfpq(M):
     return index
 
 
-def make_pca_level_rotation_transform(xt, n_levels, seed=77):
-    """Build a fused PCA + per-level random rotation as a LinearTransform.
+def compute_level_energies(variances, n_levels, block_size):
+    """Sum per-dimension variances into per-level total energies."""
+    return np.array([
+        np.sum(variances[l * block_size : (l + 1) * block_size])
+        for l in range(n_levels)
+    ])
 
-    FAISS LinearTransform applies: y = A_stored @ x + b  (column-vector)
-    We want: y = R_block @ P @ (x - mean)
-      1. Center x
-      2. PCA project (P @ x_centered)
-      3. Per-level rotation (R_block @ z_pca)
 
-    So: A_stored = R_block @ P,  b = -A_stored @ mean
+def find_n_spill(variances, level_start, block_size, max_energy_per_level, d):
+    """Find the smallest number of extra dimensions to spill into.
+
+    After a random rotation over (block_size + n_spill) dims, each dim gets
+    uniform expected energy.  The level's expected energy becomes:
+        block_size * total_subspace_energy / (block_size + n_spill)
+
+    Returns the smallest n_spill >= 1 where this is <= max_energy_per_level,
+    or all remaining dims if the cap can't be reached.
     """
-    pca = PCA(n_components=d)
-    pca.fit(xt)
+    level_end = level_start + block_size
+    max_extra = d - level_end
+    if max_extra == 0:
+        return 0
 
-    P = pca.components_.astype(np.float32)  # (d, d)
-    mean = pca.mean_.astype(np.float32)     # (d,)
+    total = np.sum(variances[level_start:level_end])
+    for n in range(1, max_extra + 1):
+        total += variances[level_end + n - 1]
+        if block_size * total / (block_size + n) <= max_energy_per_level:
+            return n
 
-    block_size = d // n_levels
+    return max_extra
+
+
+def random_orthogonal(size, rng):
+    """Haar-distributed random orthogonal matrix via QR of Gaussian."""
+    H = rng.randn(size, size).astype(np.float32)
+    Q, R = np.linalg.qr(H)
+    Q *= np.sign(np.diag(R))[:, None]
+    return Q
+
+
+def build_energy_spill_rotation(eigenvalues, n_levels, block_size,
+                                alpha, seed=42):
+    """Orthogonal matrix that caps per-level energy via localized rotations.
+
+    Iterates over levels sequentially.  When a level's effective energy
+    exceeds alpha * avg_energy_per_level, applies a random rotation spanning
+    that level plus enough subsequent dimensions to bring the expected level
+    energy down to the cap.
+
+    Variances are tracked analytically: after each rotation the dims in the
+    rotated subspace are set to uniform expected variance.
+
+    Returns (spill_rotation, effective_variances).
+    """
+    d = len(eigenvalues)
+    total_energy = float(np.sum(eigenvalues))
+    max_energy_per_level = alpha * total_energy / n_levels
+
+    variances = eigenvalues.astype(np.float32).copy()
+    spill_matrix = np.eye(d, dtype=np.float32)
     rng = np.random.RandomState(seed)
-    blocks = []
-    for _ in range(n_levels):
-        H = rng.randn(block_size, block_size).astype(np.float32)
-        Q, R = np.linalg.qr(H)
-        Q *= np.sign(np.diag(R))[:, None]
-        blocks.append(Q)
-    A = block_diag(*blocks).astype(np.float32)  # (d, d)
 
-    combined = A @ P  # (d, d)  -- rotation AFTER PCA
+    for level in range(n_levels):
+        start = level * block_size
+        end = start + block_size
+        level_energy = float(np.sum(variances[start:end]))
 
-    lt = faiss.LinearTransform(d, d, True)
+        if level_energy <= max_energy_per_level:
+            continue
+
+        n_spill = find_n_spill(
+            variances, start, block_size, max_energy_per_level, d,
+        )
+        if n_spill == 0:
+            continue
+
+        sub_end = end + n_spill
+        Q = random_orthogonal(block_size + n_spill, rng)
+
+        full_Q = np.eye(d, dtype=np.float32)
+        full_Q[start:sub_end, start:sub_end] = Q
+        spill_matrix = full_Q @ spill_matrix
+
+        avg_var = float(np.sum(variances[start:sub_end])) / (block_size + n_spill)
+        variances[start:sub_end] = avg_var
+
+    return spill_matrix, variances
+
+
+def build_level_equalization_rotation(d, n_levels, block_size, seed=77):
+    """Block-diagonal random rotation for within-level energy equalization."""
+    rng = np.random.RandomState(seed)
+    blocks = [random_orthogonal(block_size, rng) for _ in range(n_levels)]
+    return block_diag(*blocks).astype(np.float32)
+
+
+def print_energy_diagnostics(eigenvalues, effective_variances, n_levels,
+                             block_size, alpha):
+    """Print per-level energy before/after the spill transform."""
+    before = compute_level_energies(eigenvalues, n_levels, block_size)
+    after = compute_level_energies(effective_variances, n_levels, block_size)
+    total = float(np.sum(eigenvalues))
+    cap = alpha * total / n_levels
+
+
+def make_pca_level_rotation_transform(xt, n_levels, alpha=ALPHA, seed=77):
+    """Build PCA + energy-spill + per-level rotation as one LinearTransform.
+
+    Pipeline:  y = R_eq @ R_spill @ P @ (x - mean)
+      1. Center + PCA project           (P, mean)
+      2. Energy spill across levels      (R_spill)
+      3. Within-level equalization       (R_eq, block-diagonal)
+
+    Stored as:  A = R_eq @ R_spill @ P,  b = -A @ mean
+    """
+    dim = xt.shape[1]
+    block_size = dim // n_levels
+
+    pca = PCA(n_components=dim)
+    pca.fit(xt)
+    P = pca.components_.astype(np.float32)
+    mean = pca.mean_.astype(np.float32)
+    eigenvalues = pca.explained_variance_.astype(np.float32)
+
+    R_spill, effective_variances = build_energy_spill_rotation(
+        eigenvalues, n_levels, block_size, alpha, seed=seed,
+    )
+    print_energy_diagnostics(
+        eigenvalues, effective_variances, n_levels, block_size, alpha,
+    )
+
+    R_eq = build_level_equalization_rotation(
+        dim, n_levels, block_size, seed=seed + 1,
+    )
+
+    combined = (R_eq @ R_spill @ P).astype(np.float32)
+
+    lt = faiss.LinearTransform(dim, dim, True)
     faiss.copy_array_to_vector(combined.ravel(), lt.A)
     faiss.copy_array_to_vector(-(combined @ mean).ravel(), lt.b)
     lt.is_trained = True
@@ -143,9 +252,9 @@ def make_pca_level_rotation_transform(xt, n_levels, seed=77):
     return lt
 
 
-def build_ivfpq_panorama(M, n_levels):
-    """Build PCA + LevelRotation + IVFPQPanorama."""
-    lt = make_pca_level_rotation_transform(xt, n_levels)
+def build_ivfpq_panorama(M, n_levels, alpha=ALPHA):
+    """Build PCA + EnergySpill + LevelRotation + IVFPQPanorama."""
+    lt = make_pca_level_rotation_transform(xt, n_levels, alpha=alpha)
 
     quantizer = faiss.IndexFlatL2(d)
     ivfpq_pano = faiss.IndexIVFPQPanorama(
@@ -169,7 +278,7 @@ for M in M_values:
     del ivfpq
 
     pano = build_ivfpq_panorama(M, n_levels)
-    eval_index(pano, label=f"PCA+Rot + IVFPQPanorama (M={M})")
+    eval_index(pano, label=f"PCA+Spill+Rot + IVFPQPanorama (M={M})")
     del pano
 
 plt.title(f"IVFPQ Panorama on GIST1M (nlist={nlist})")
