@@ -363,6 +363,7 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
             !use_iterator, "Panorama does not support iterators");
 
     cum_sums.resize(nlist_in);
+    init_dists.resize(nlist_in);
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
