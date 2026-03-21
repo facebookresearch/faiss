@@ -1508,8 +1508,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 if (list_size == 0)
                     continue;
                 size_t bs = pano_pq->batch_size;
-                size_t padded =
-                        ((list_size + bs - 1) / bs) * bs;
+                size_t padded = ((list_size + bs - 1) / bs) * bs;
                 storage->init_dists[list_no].resize(padded);
 
                 // Reconstruct row-major codes, then compute init distances.

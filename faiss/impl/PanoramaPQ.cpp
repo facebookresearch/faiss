@@ -7,7 +7,6 @@
 
 #include <faiss/impl/PanoramaPQ.h>
 
-#include <algorithm>
 #include <cmath>
 #include <vector>
 
@@ -59,9 +58,8 @@ void PanoramaPQ::reconstruct(
         size_t start_byte = level * cs;
 
         for (size_t ci = 0; ci < cs && (start_byte + ci) < code_size; ci++) {
-            recons_buffer[start_byte + ci] =
-                    codes_base[batch_offset + level_offset + ci * bs +
-                               pos_in_batch];
+            recons_buffer[start_byte + ci] = codes_base
+                    [batch_offset + level_offset + ci * bs + pos_in_batch];
         }
     }
 }
@@ -108,15 +106,14 @@ void PanoramaPQ::compute_cumulative_sums(
         size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
         for (size_t level = 0; level < n_levels; level++) {
             size_t start_idx = level * levels_size;
-            size_t out_offset = cumsum_batch_offset + level * batch_size +
-                    pos_in_batch;
-            cumsum_base[out_offset] = start_idx < d
-                    ? std::sqrt(suffix[start_idx])
-                    : 0.0f;
+            size_t out_offset =
+                    cumsum_batch_offset + level * batch_size + pos_in_batch;
+            cumsum_base[out_offset] =
+                    start_idx < d ? std::sqrt(suffix[start_idx]) : 0.0f;
         }
 
-        size_t last_offset = cumsum_batch_offset + n_levels * batch_size +
-                pos_in_batch;
+        size_t last_offset =
+                cumsum_batch_offset + n_levels * batch_size + pos_in_batch;
         cumsum_base[last_offset] = 0.0f;
     }
 }

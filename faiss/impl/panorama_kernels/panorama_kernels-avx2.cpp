@@ -100,15 +100,15 @@ void process_chunks(
             __m128i raw = _mm_loadl_epi64(
                     (__m128i*)(compressed_codes + chunk_offset + batch_idx));
             __m256i codes = _mm256_cvtepu8_epi32(raw);
-            __m256 m_dist = _mm256_i32gather_ps(
-                    sim_table_ptr, codes, sizeof(float));
+            __m256 m_dist =
+                    _mm256_i32gather_ps(sim_table_ptr, codes, sizeof(float));
             acc = _mm256_add_ps(acc, m_dist);
             _mm256_storeu_ps(exact_distances + batch_idx, acc);
         }
 
         for (; batch_idx < num_active; batch_idx += 1) {
-            exact_distances[batch_idx] += sim_table_ptr
-                    [compressed_codes[chunk_offset + batch_idx]];
+            exact_distances[batch_idx] +=
+                    sim_table_ptr[compressed_codes[chunk_offset + batch_idx]];
         }
     }
 }
@@ -127,8 +127,7 @@ size_t process_filtering(
     for (size_t i = 0; i < num_active; i++) {
         float exact_distance = exact_distances[i];
         float cum_sum = cum_sums[active_indices[i] - batch_offset];
-        float lower_bound =
-                exact_distance + dis0 - cum_sum * query_cum_norm;
+        float lower_bound = exact_distance + dis0 - cum_sum * query_cum_norm;
 
         bool keep = heap_max > lower_bound;
         active_indices[next_num_active] = active_indices[i];
@@ -170,8 +169,7 @@ std::pair<uint8_t*, size_t> process_code_compression(
             for (int g = 0; g < 8; g++) {
                 uint64_t bytes;
                 memcpy(&bytes, bitset + point_idx + g * 8, 8);
-                uint8_t bits = (uint8_t)_pext_u64(
-                        bytes, 0x0101010101010101ULL);
+                uint8_t bits = (uint8_t)_pext_u64(bytes, 0x0101010101010101ULL);
                 mask |= ((uint64_t)bits << (g * 8));
             }
 #else
@@ -196,8 +194,7 @@ std::pair<uint8_t*, size_t> process_code_compression(
                     memcpy(&src_val, src + g * 8, 8);
                     uint8_t submask = (uint8_t)((mask >> (g * 8)) & 0xFF);
                     uint64_t byte_mask =
-                            _pdep_u64(submask, 0x0101010101010101ULL) *
-                            0xFF;
+                            _pdep_u64(submask, 0x0101010101010101ULL) * 0xFF;
                     uint64_t compressed_val = _pext_u64(src_val, byte_mask);
                     int count = __builtin_popcount(submask);
                     memcpy(dst + write_pos, &compressed_val, 8);

@@ -34,8 +34,8 @@
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
-#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>

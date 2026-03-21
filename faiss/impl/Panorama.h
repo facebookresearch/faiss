@@ -94,8 +94,10 @@ struct Panorama {
             size_t dest_idx,
             size_t src_idx) const;
 
-    virtual void reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
-            const;
+    virtual void reconstruct(
+            idx_t key,
+            float* recons,
+            const uint8_t* codes_base) const;
 };
 
 /**

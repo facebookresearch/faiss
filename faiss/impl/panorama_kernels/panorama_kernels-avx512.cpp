@@ -42,33 +42,29 @@ void process_chunks(
         for (; batch_idx + 15 < num_active; batch_idx += 16) {
             __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
 
-            __m128i comp0 =
-                    _mm_loadu_si128((__m128i*)(compressed_codes +
-                                               chunk_offset0 + batch_idx));
+            __m128i comp0 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + chunk_offset0 + batch_idx));
             __m512i codes0 = _mm512_cvtepu8_epi32(comp0);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes0, sim_table0, sizeof(float)));
 
-            __m128i comp1 =
-                    _mm_loadu_si128((__m128i*)(compressed_codes +
-                                               chunk_offset1 + batch_idx));
+            __m128i comp1 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + chunk_offset1 + batch_idx));
             __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes1, sim_table1, sizeof(float)));
 
-            __m128i comp2 =
-                    _mm_loadu_si128((__m128i*)(compressed_codes +
-                                               chunk_offset2 + batch_idx));
+            __m128i comp2 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + chunk_offset2 + batch_idx));
             __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes2, sim_table2, sizeof(float)));
 
-            __m128i comp3 =
-                    _mm_loadu_si128((__m128i*)(compressed_codes +
-                                               chunk_offset3 + batch_idx));
+            __m128i comp3 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + chunk_offset3 + batch_idx));
             __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
             acc = _mm512_add_ps(
                     acc,
@@ -94,18 +90,18 @@ void process_chunks(
         size_t batch_idx = 0;
         for (; batch_idx + 15 < num_active; batch_idx += 16) {
             __m512 acc = _mm512_loadu_ps(exact_distances + batch_idx);
-            __m128i comp = _mm_loadu_si128((
-                    __m128i*)(compressed_codes + chunk_offset + batch_idx));
+            __m128i comp = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + chunk_offset + batch_idx));
             __m512i codes = _mm512_cvtepu8_epi32(comp);
-            __m512 m_dist = _mm512_i32gather_ps(
-                    codes, sim_table_ptr, sizeof(float));
+            __m512 m_dist =
+                    _mm512_i32gather_ps(codes, sim_table_ptr, sizeof(float));
             acc = _mm512_add_ps(acc, m_dist);
             _mm512_storeu_ps(exact_distances + batch_idx, acc);
         }
 
         for (; batch_idx < num_active; batch_idx += 1) {
-            exact_distances[batch_idx] += sim_table_ptr
-                    [compressed_codes[chunk_offset + batch_idx]];
+            exact_distances[batch_idx] +=
+                    sim_table_ptr[compressed_codes[chunk_offset + batch_idx]];
         }
     }
 }
@@ -124,8 +120,7 @@ size_t process_filtering(
     for (size_t i = 0; i < num_active; i++) {
         float exact_distance = exact_distances[i];
         float cum_sum = cum_sums[active_indices[i] - batch_offset];
-        float lower_bound =
-                exact_distance + dis0 - cum_sum * query_cum_norm;
+        float lower_bound = exact_distance + dis0 - cum_sum * query_cum_norm;
 
         bool keep = heap_max > lower_bound;
         active_indices[next_num_active] = active_indices[i];
@@ -169,8 +164,7 @@ std::pair<uint8_t*, size_t> process_code_compression(
             for (int g = 0; g < 8; g++) {
                 uint64_t bytes;
                 memcpy(&bytes, bitset + point_idx + g * 8, 8);
-                uint8_t bits = (uint8_t)_pext_u64(
-                        bytes, 0x0101010101010101ULL);
+                uint8_t bits = (uint8_t)_pext_u64(bytes, 0x0101010101010101ULL);
                 mask |= ((uint64_t)bits << (g * 8));
             }
 #else
@@ -196,8 +190,7 @@ std::pair<uint8_t*, size_t> process_code_compression(
                     memcpy(&src_val, src + g * 8, 8);
                     uint8_t submask = (uint8_t)((mask >> (g * 8)) & 0xFF);
                     uint64_t byte_mask =
-                            _pdep_u64(submask, 0x0101010101010101ULL) *
-                            0xFF;
+                            _pdep_u64(submask, 0x0101010101010101ULL) * 0xFF;
                     uint64_t compressed_val = _pext_u64(src_val, byte_mask);
                     int count = __builtin_popcount(submask);
                     memcpy(dst + write_pos, &compressed_val, 8);

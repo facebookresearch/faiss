@@ -49,7 +49,8 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
             M == code_size, "M must equal code_size for 8-bit PQ");
     FAISS_THROW_IF_NOT_MSG(metric == METRIC_L2, "only L2 metric supported");
 
-    auto* pano = new PanoramaPQ(d, code_size, n_levels, batch_size, &pq, quantizer);
+    auto* pano =
+            new PanoramaPQ(d, code_size, n_levels, batch_size, &pq, quantizer);
     this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
     this->own_invlists = own_invlists;
 }
@@ -149,24 +150,23 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         local_stats.reset();
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-            size_t num_active =
-                    pano_pq->progressive_filter_batch<C, use_sel>(
-                            col_codes,
-                            list_cum_sums,
-                            list_init_dists,
-                            sim_table_2.data(),
-                            query_cum_norms.data(),
-                            dis0,
-                            list_size,
-                            batch_no,
-                            ids,
-                            sel,
-                            exact_distances,
-                            active_indices,
-                            bitset,
-                            compressed_codes,
-                            distances[0],
-                            local_stats);
+            size_t num_active = pano_pq->progressive_filter_batch<C, use_sel>(
+                    col_codes,
+                    list_cum_sums,
+                    list_init_dists,
+                    sim_table_2.data(),
+                    query_cum_norms.data(),
+                    dis0,
+                    list_size,
+                    batch_no,
+                    ids,
+                    sel,
+                    exact_distances,
+                    active_indices,
+                    bitset,
+                    compressed_codes,
+                    distances[0],
+                    local_stats);
 
             // Insert surviving candidates into heap.
             for (size_t i = 0; i < num_active; i++) {
