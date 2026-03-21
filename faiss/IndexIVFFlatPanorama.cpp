@@ -38,8 +38,7 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
-    auto* pano = new PanoramaFlat(
-            d, n_levels, ArrayInvertedListsPanorama::kBatchSize);
+    auto* pano = new PanoramaFlat(d, n_levels, 128);
     this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
     this->own_invlists = own_invlists;
 }
@@ -100,19 +99,19 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             ResultHandler& handler) const override {
         size_t nup = 0;
 
-        const size_t n_batches =
-                (list_size + storage->kBatchSize - 1) / storage->kBatchSize;
+        const size_t bs = pano_flat->batch_size;
+        const size_t n_batches = (list_size + bs - 1) / bs;
 
         const float* cum_sums_data = storage->get_cum_sums(list_no);
 
-        std::vector<float> exact_distances(storage->kBatchSize);
-        std::vector<uint32_t> active_indices(storage->kBatchSize);
+        std::vector<float> exact_distances(bs);
+        std::vector<uint32_t> active_indices(bs);
 
         PanoramaStats local_stats;
         local_stats.reset();
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-            size_t batch_start = batch_no * storage->kBatchSize;
+            size_t batch_start = batch_no * bs;
 
             size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
                 return pano_flat->progressive_filter_batch<C, M>(

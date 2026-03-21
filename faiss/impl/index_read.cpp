@@ -402,10 +402,9 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
+        constexpr size_t kFlatBatchSize = 128;
         auto* pano = new PanoramaFlat(
-                code_size / sizeof(float),
-                n_levels,
-                ArrayInvertedListsPanorama::kBatchSize);
+                code_size / sizeof(float), n_levels, kFlatBatchSize);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, pano);
         std::vector<size_t> sizes(nlist);
@@ -414,9 +413,8 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                     ArrayInvertedListsPanorama::kBatchSize) *
-                    ArrayInvertedListsPanorama::kBatchSize;
+                    ((sizes[i] + kFlatBatchSize - 1) / kFlatBatchSize) *
+                    kFlatBatchSize;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
@@ -1402,11 +1400,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 size_t list_size = storage->ids[list_no].size();
                 if (list_size == 0)
                     continue;
+                size_t bs = pano_pq->batch_size;
                 size_t padded =
-                        ((list_size +
-                          ArrayInvertedListsPanorama::kBatchSize - 1) /
-                         ArrayInvertedListsPanorama::kBatchSize) *
-                        ArrayInvertedListsPanorama::kBatchSize;
+                        ((list_size + bs - 1) / bs) * bs;
                 storage->init_dists[list_no].resize(padded);
 
                 // Reconstruct row-major codes, then compute init distances.

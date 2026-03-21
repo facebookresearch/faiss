@@ -387,8 +387,9 @@ size_t ArrayInvertedListsPanorama::add_entries(
     memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
 
     size_t new_size = o + n_entry;
-    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
-    size_t padded = num_batches * kBatchSize;
+    size_t bs = pano->batch_size;
+    size_t num_batches = (new_size + bs - 1) / bs;
+    size_t padded = num_batches * bs;
     codes[list_no].resize(padded * code_size);
     cum_sums[list_no].resize(padded * (pano->n_levels + 1));
 
@@ -431,8 +432,9 @@ void ArrayInvertedListsPanorama::update_entries(
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
 
-    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
-    size_t padded = num_batches * kBatchSize;
+    size_t bs = pano->batch_size;
+    size_t num_batches = (new_size + bs - 1) / bs;
+    size_t padded = num_batches * bs;
     codes[list_no].resize(padded * code_size);
     cum_sums[list_no].resize(padded * (pano->n_levels + 1));
 
