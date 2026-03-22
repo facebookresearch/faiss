@@ -72,7 +72,7 @@ void process_level(
             _mm512_storeu_ps(exact_distances + batch_idx, acc);
         }
 
-        for (; batch_idx < num_active; batch_idx++) {
+        for (; batch_idx < num_active; batch_idx += 1) {
             float acc = exact_distances[batch_idx];
             acc += sim_table0[compressed_codes[byte_offset0 + batch_idx]];
             acc += sim_table1[compressed_codes[byte_offset1 + batch_idx]];
@@ -98,7 +98,7 @@ void process_level(
             _mm512_storeu_ps(exact_distances + batch_idx, acc);
         }
 
-        for (; batch_idx < num_active; batch_idx++) {
+        for (; batch_idx < num_active; batch_idx += 1) {
             exact_distances[batch_idx] +=
                     sim_table_ptr[compressed_codes[byte_offset + batch_idx]];
         }
