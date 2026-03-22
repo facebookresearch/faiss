@@ -44,28 +44,27 @@ void process_level(
 
             __m128i comp0 = _mm_loadu_si128(
                     (__m128i*)(compressed_codes + byte_offset0 + batch_idx));
+            __m128i comp1 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
+            __m128i comp2 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
+            __m128i comp3 = _mm_loadu_si128(
+                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
+
             __m512i codes0 = _mm512_cvtepu8_epi32(comp0);
+            __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
+            __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
+            __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
+
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes0, sim_table0, sizeof(float)));
-
-            __m128i comp1 = _mm_loadu_si128(
-                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
-            __m512i codes1 = _mm512_cvtepu8_epi32(comp1);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes1, sim_table1, sizeof(float)));
-
-            __m128i comp2 = _mm_loadu_si128(
-                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
-            __m512i codes2 = _mm512_cvtepu8_epi32(comp2);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes2, sim_table2, sizeof(float)));
-
-            __m128i comp3 = _mm_loadu_si128(
-                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
-            __m512i codes3 = _mm512_cvtepu8_epi32(comp3);
             acc = _mm512_add_ps(
                     acc,
                     _mm512_i32gather_ps(codes3, sim_table3, sizeof(float)));
