@@ -22,7 +22,6 @@
 
 namespace faiss {
 
-
 /** Encapsulates a quantizer object for the IndexIVF
  *
  * The class isolates the fields that are independent of the storage
