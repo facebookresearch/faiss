@@ -12,7 +12,7 @@
  * @brief Panorama search kernels with scalar and AVX-512 implementations.
  *
  * The three core kernels of the Panorama progressive filtering search:
- * - process_chunks: accumulate PQ distance table lookups over chunks
+ * - process_level: accumulate PQ distance table lookups over chunks
  * - process_filtering: Cauchy-Schwarz lower bound pruning with stream
  *   compaction
  * - process_code_compression: byte-level stream compaction of PQ codes
@@ -34,7 +34,7 @@ namespace panorama_kernels {
 /// accumulates into `exact_distances[i]` for all active elements.
 /// Iterates chunks first to keep the LUT slice in L1 cache.
 /// The AVX-512 version unrolls 4 chunks at a time.
-void process_chunks(
+void process_level(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,

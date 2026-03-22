@@ -6,7 +6,7 @@
  */
 
 // AVX2 implementations of Panorama kernels.
-// Uses 256-bit gather for process_chunks, scalar filtering (no
+// Uses 256-bit gather for process_level, scalar filtering (no
 // compress instruction in AVX2), and BMI2 PEXT/PDEP for code
 // compression where available.
 
@@ -22,7 +22,7 @@
 namespace faiss {
 namespace panorama_kernels {
 
-void process_chunks(
+void process_level(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,

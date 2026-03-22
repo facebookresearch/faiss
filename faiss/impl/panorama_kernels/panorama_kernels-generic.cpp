@@ -21,7 +21,7 @@
 namespace faiss {
 namespace panorama_kernels {
 
-void process_chunks(
+void process_level(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,

@@ -180,7 +180,7 @@ struct PanoramaPQ : Panorama {
                         bitset.data(),
                         codes_level);
 
-                panorama_kernels::process_chunks(
+                panorama_kernels::process_level(
                         ls,
                         bs,
                         na,
