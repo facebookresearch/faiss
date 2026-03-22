@@ -69,8 +69,9 @@ def eval_recall(index, nprobe_val):
     speed = t * 1000 / nq
     qps = 1000 / speed
 
-    corrects = (gt == I).sum()
-    recall = corrects / (nq * k)
+    recall = np.mean(
+        [len(set(gt[i]) & set(I[i])) / k for i in range(nq)],
+    )
     ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
     print(
         f"\tnprobe {nprobe_val:3d}, Recall@{k}: "
@@ -281,7 +282,9 @@ for M in M_values:
     eval_index(pano, label=f"PCA+Spill+Rot + IVFPQPanorama (M={M})")
     del pano
 
-plt.title(f"IVFPQ Panorama on GIST1M (nlist={nlist})")
+plt.title(
+    f"IVFPQ Panorama on GIST ({SUBSET*100:.0f}% subset, nlist={nlist})",
+)
 plt.xlabel(f"Recall@{k}")
 plt.ylabel("QPS")
 plt.yscale("log")
