@@ -11,6 +11,7 @@
 #if !defined(COMPILE_SIMD_AVX2) && !defined(COMPILE_SIMD_AVX512)
 
 #include <faiss/impl/panorama_kernels/panorama_kernels.h>
+#include <faiss/impl/platform_macros.h>
 
 #include <cstring>
 
