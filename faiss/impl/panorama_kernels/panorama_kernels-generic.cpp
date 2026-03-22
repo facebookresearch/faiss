@@ -100,8 +100,8 @@ std::pair<uint8_t*, size_t> process_code_compression(
             // PEXT/PDEP path: process 8 bytes at a time. PDEP
             // expands the per-byte mask bits into a per-byte lane
             // mask, then PEXT extracts only the selected bytes.
-            for (size_t ci = 0; ci < level_width_bytes; ci++) {
-                size_t byte_offset = ci * max_batch_size;
+            for (size_t li = 0; li < level_width_bytes; li++) {
+                size_t byte_offset = li * max_batch_size;
                 const uint8_t* src = codes + byte_offset + point_idx;
                 uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
@@ -120,8 +120,8 @@ std::pair<uint8_t*, size_t> process_code_compression(
 #else
             // Scalar fallback: scan set bits one by one and copy
             // the corresponding code byte.
-            for (size_t ci = 0; ci < level_width_bytes; ci++) {
-                size_t byte_offset = ci * max_batch_size;
+            for (size_t li = 0; li < level_width_bytes; li++) {
+                size_t byte_offset = li * max_batch_size;
                 const uint8_t* src = codes + byte_offset + point_idx;
                 uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
