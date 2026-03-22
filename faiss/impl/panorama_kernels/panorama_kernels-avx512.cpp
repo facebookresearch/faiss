@@ -9,14 +9,16 @@
 
 #include <immintrin.h>
 
-#include <faiss/impl/panorama_kernels/panorama_kernels.h>
+#include <faiss/impl/panorama_kernels/panorama_kernels-inl.h>
 
 #include <cstring>
 
 namespace faiss {
 namespace panorama_kernels {
 
-void process_level(
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+void process_level_impl<SIMDLevel::AVX512>(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
@@ -105,32 +107,9 @@ void process_level(
     }
 }
 
-size_t process_filtering(
-        size_t num_active,
-        float* exact_distances,
-        uint32_t* active_indices,
-        float* cum_sums,
-        uint8_t* bitset,
-        size_t batch_offset,
-        float dis0,
-        float query_cum_norm,
-        float heap_max) {
-    size_t next_num_active = 0;
-    for (size_t i = 0; i < num_active; i++) {
-        float exact_distance = exact_distances[i];
-        float cum_sum = cum_sums[active_indices[i] - batch_offset];
-        float lower_bound = exact_distance + dis0 - cum_sum * query_cum_norm;
-
-        bool keep = heap_max > lower_bound;
-        active_indices[next_num_active] = active_indices[i];
-        exact_distances[next_num_active] = exact_distance;
-        bitset[active_indices[i] - batch_offset] = keep;
-        next_num_active += keep;
-    }
-    return next_num_active;
-}
-
-std::pair<uint8_t*, size_t> process_code_compression(
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+std::pair<uint8_t*, size_t> process_code_compression_impl<SIMDLevel::AVX512>(
         size_t next_num_active,
         size_t max_batch_size,
         size_t level_width_bytes,
@@ -222,6 +201,48 @@ std::pair<uint8_t*, size_t> process_code_compression(
 
     return std::make_pair(compressed_codes, num_active);
 }
+
+#ifdef COMPILE_SIMD_AVX512_SPR
+// AVX512_SPR: Sapphire Rapids is a superset of AVX512. Reuse the
+// AVX512 implementation until a dedicated SPR specialization is written.
+
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+void process_level_impl<SIMDLevel::AVX512_SPR>(
+        size_t level_width_bytes,
+        size_t max_batch_size,
+        size_t num_active,
+        float* sim_table,
+        uint8_t* compressed_codes,
+        float* exact_distances) {
+    process_level_impl<SIMDLevel::AVX512>(
+            level_width_bytes,
+            max_batch_size,
+            num_active,
+            sim_table,
+            compressed_codes,
+            exact_distances);
+}
+
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+std::pair<uint8_t*, size_t> process_code_compression_impl<
+        SIMDLevel::AVX512_SPR>(
+        size_t next_num_active,
+        size_t max_batch_size,
+        size_t level_width_bytes,
+        uint8_t* compressed_codes_begin,
+        uint8_t* bitset,
+        const uint8_t* codes) {
+    return process_code_compression_impl<SIMDLevel::AVX512>(
+            next_num_active,
+            max_batch_size,
+            level_width_bytes,
+            compressed_codes_begin,
+            bitset,
+            codes);
+}
+#endif // COMPILE_SIMD_AVX512_SPR
 
 } // namespace panorama_kernels
 } // namespace faiss

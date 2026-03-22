@@ -9,32 +9,50 @@
 
 /**
  * @file panorama_kernels.h
- * @brief Panorama search kernels with scalar and AVX-512 implementations.
+ * @brief Panorama search kernels with SIMD-dispatched implementations.
  *
  * The three core kernels of the Panorama progressive filtering search:
  * - process_level: accumulate PQ distance table lookups over chunks
  * - process_filtering: Cauchy-Schwarz lower bound pruning with stream
  *   compaction
  * - process_code_compression: byte-level stream compaction of PQ codes
- *
- * Implementations live in panorama_kernels-generic.cpp (scalar) and
- * panorama_kernels-avx512.cpp (AVX-512 gather/compress + BMI2 PEXT/PDEP).
  */
 
 #include <cstddef>
 #include <cstdint>
 #include <utility>
 
+#include <faiss/impl/platform_macros.h>
+#include <faiss/utils/simd_levels.h>
+
 namespace faiss {
 namespace panorama_kernels {
+
+template <SIMDLevel SL>
+void process_level_impl(
+        size_t level_width_bytes,
+        size_t max_batch_size,
+        size_t num_active,
+        float* sim_table,
+        uint8_t* compressed_codes,
+        float* exact_distances);
+
+template <SIMDLevel SL>
+std::pair<uint8_t*, size_t> process_code_compression_impl(
+        size_t next_num_active,
+        size_t max_batch_size,
+        size_t level_width_bytes,
+        uint8_t* compressed_codes_begin,
+        uint8_t* bitset,
+        const uint8_t* codes);
 
 /// Accumulate PQ distance table lookups over chunks.
 ///
 /// For each chunk, looks up `sim_table[compressed_codes[i]]` and
 /// accumulates into `exact_distances[i]` for all active elements.
 /// Iterates chunks first to keep the LUT slice in L1 cache.
-/// The AVX-512 version unrolls 4 chunks at a time.
-void process_level(
+/// The AVX2/AVX-512 versions unroll 4 chunks at a time.
+FAISS_API void process_level(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
@@ -48,11 +66,7 @@ void process_level(
 /// and removes elements that cannot improve the current heap top.
 /// Uses stream compaction to pack surviving elements contiguously.
 /// Updates the bitset to reflect which elements were removed.
-///
-/// Unfortunately, AVX-512 does not support a way to scatter at a
-/// 1-byte granularity, so the bitset update for removed items is
-/// done sequentially after compressing the indices.
-size_t process_filtering(
+FAISS_API size_t process_filtering(
         size_t num_active,
         float* exact_distances,
         uint32_t* active_indices,
@@ -76,7 +90,7 @@ size_t process_filtering(
 /// `max_batch_size`. Only the last batch may be smaller than
 /// `max_batch_size`, the caller ensures that the batch and
 /// bitset are padded with zeros.
-std::pair<uint8_t*, size_t> process_code_compression(
+FAISS_API std::pair<uint8_t*, size_t> process_code_compression(
         size_t next_num_active,
         size_t max_batch_size,
         size_t level_width_bytes,

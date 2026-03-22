@@ -25,11 +25,13 @@ set(FAISS_SIMD_AVX512_SRC
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
+  impl/panorama_kernels/panorama_kernels-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
 )
 set(FAISS_SIMD_SVE_SRC
+  impl/panorama_kernels/panorama_kernels-sve.cpp
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
 )
@@ -286,6 +288,7 @@ set(FAISS_HEADERS
   impl/zerocopy_io.h
   utils/pq_code_distance.h
   impl/panorama_kernels/panorama_kernels.h
+  impl/panorama_kernels/panorama_kernels-inl.h
   impl/pq_code_distance/pq_code_distance-inl.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h

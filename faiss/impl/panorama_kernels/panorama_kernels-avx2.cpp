@@ -11,18 +11,19 @@
 // compression where available.
 
 #ifdef COMPILE_SIMD_AVX2
-#ifndef COMPILE_SIMD_AVX512
 
 #include <immintrin.h>
 
-#include <faiss/impl/panorama_kernels/panorama_kernels.h>
+#include <faiss/impl/panorama_kernels/panorama_kernels-inl.h>
 
 #include <cstring>
 
 namespace faiss {
 namespace panorama_kernels {
 
-void process_level(
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+void process_level_impl<SIMDLevel::AVX2>(
         size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
@@ -51,28 +52,27 @@ void process_level(
             // Load 8 byte codes, zero-extend to 32-bit indices.
             __m128i raw0 = _mm_loadl_epi64(
                     (__m128i*)(compressed_codes + byte_offset0 + batch_idx));
+            __m128i raw1 = _mm_loadl_epi64(
+                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
+            __m128i raw2 = _mm_loadl_epi64(
+                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
+            __m128i raw3 = _mm_loadl_epi64(
+                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
+
             __m256i codes0 = _mm256_cvtepu8_epi32(raw0);
+            __m256i codes1 = _mm256_cvtepu8_epi32(raw1);
+            __m256i codes2 = _mm256_cvtepu8_epi32(raw2);
+            __m256i codes3 = _mm256_cvtepu8_epi32(raw3);
+
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table0, codes0, sizeof(float)));
-
-            __m128i raw1 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
-            __m256i codes1 = _mm256_cvtepu8_epi32(raw1);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table1, codes1, sizeof(float)));
-
-            __m128i raw2 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
-            __m256i codes2 = _mm256_cvtepu8_epi32(raw2);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table2, codes2, sizeof(float)));
-
-            __m128i raw3 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
-            __m256i codes3 = _mm256_cvtepu8_epi32(raw3);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table3, codes3, sizeof(float)));
@@ -113,32 +113,9 @@ void process_level(
     }
 }
 
-size_t process_filtering(
-        size_t num_active,
-        float* exact_distances,
-        uint32_t* active_indices,
-        float* cum_sums,
-        uint8_t* bitset,
-        size_t batch_offset,
-        float dis0,
-        float query_cum_norm,
-        float heap_max) {
-    size_t next_num_active = 0;
-    for (size_t i = 0; i < num_active; i++) {
-        float exact_distance = exact_distances[i];
-        float cum_sum = cum_sums[active_indices[i] - batch_offset];
-        float lower_bound = exact_distance + dis0 - cum_sum * query_cum_norm;
-
-        bool keep = heap_max > lower_bound;
-        active_indices[next_num_active] = active_indices[i];
-        exact_distances[next_num_active] = exact_distance;
-        bitset[active_indices[i] - batch_offset] = keep;
-        next_num_active += keep;
-    }
-    return next_num_active;
-}
-
-std::pair<uint8_t*, size_t> process_code_compression(
+// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+template <>
+std::pair<uint8_t*, size_t> process_code_compression_impl<SIMDLevel::AVX2>(
         size_t next_num_active,
         size_t max_batch_size,
         size_t level_width_bytes,
@@ -231,5 +208,4 @@ std::pair<uint8_t*, size_t> process_code_compression(
 } // namespace panorama_kernels
 } // namespace faiss
 
-#endif // COMPILE_SIMD_AVX512
 #endif // COMPILE_SIMD_AVX2
