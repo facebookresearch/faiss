@@ -431,9 +431,9 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
-        constexpr size_t kFlatBatchSize = 128;
+        constexpr size_t bs = Panorama::kDefaultBatchSize;
         auto* pano = new PanoramaFlat(
-                code_size / sizeof(float), n_levels, kFlatBatchSize);
+                code_size / sizeof(float), n_levels, bs);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, pano);
         std::vector<size_t> sizes(nlist);
@@ -442,8 +442,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
-                    ((sizes[i] + kFlatBatchSize - 1) / kFlatBatchSize) *
-                    kFlatBatchSize;
+                    ((sizes[i] + bs - 1) / bs) * bs;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }

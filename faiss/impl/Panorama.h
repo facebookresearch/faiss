@@ -46,6 +46,8 @@ namespace faiss {
  * for their respective code formats.
  */
 struct Panorama {
+    static constexpr size_t kDefaultBatchSize = 128;
+
     size_t d = 0;
     size_t code_size = 0;
     size_t n_levels = 0;

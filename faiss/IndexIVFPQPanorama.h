@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <faiss/IndexIVFPQ.h>
+#include <faiss/impl/Panorama.h>
 
 namespace faiss {
 
@@ -69,7 +70,7 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
             size_t M,
             size_t nbits_per_idx,
             int n_levels,
-            size_t batch_size = 128,
+            size_t batch_size = Panorama::kDefaultBatchSize,
             MetricType metric = METRIC_L2,
             bool own_invlists = true);
 
