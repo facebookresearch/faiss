@@ -57,12 +57,12 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     static constexpr MetricType metric = VectorDistance::metric;
 
     IVFFlatScannerPanorama(
-            const VectorDistance& vd,
+            const VectorDistance& vd_in,
             const ArrayInvertedListsPanorama* storage_in,
             bool store_pairs_in,
             const IDSelector* sel_in)
             : InvertedListScanner(store_pairs_in, sel_in),
-              vd(vd),
+              vd(vd_in),
               storage(storage_in),
               pano_flat(
                       dynamic_cast<const PanoramaFlat*>(
