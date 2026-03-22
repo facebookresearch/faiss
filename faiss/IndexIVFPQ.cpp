@@ -9,14 +9,13 @@
 
 #include <faiss/IndexIVFPQ.h>
 
-#include <algorithm>
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <cstdio>
-#include <utility>
+
+#include <algorithm>
 
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances_dispatch.h>
