@@ -70,8 +70,8 @@ std::vector<idx_t> search_index(Index* index, const float* xq) {
 struct EncapsulateInvertedLists : InvertedLists {
     const InvertedLists* il;
 
-    explicit EncapsulateInvertedLists(const InvertedLists* il)
-            : InvertedLists(il->nlist, il->code_size), il(il) {}
+    explicit EncapsulateInvertedLists(const InvertedLists* il_in)
+            : InvertedLists(il_in->nlist, il_in->code_size), il(il_in) {}
 
     static void* memdup(const void* m, size_t size) {
         if (size == 0) {

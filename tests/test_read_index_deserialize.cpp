@@ -14,6 +14,9 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -1099,4 +1102,241 @@ TEST(ReadIndexDeserialize, IndexProductLocalSearchQuantizerCodesSizeMismatch) {
     push_vector<uint8_t>(buf, std::vector<uint8_t>(10, 0));
 
     expect_read_throws_with(buf, "codes.size()");
+}
+
+// -----------------------------------------------------------------------
+// Graph index helpers
+// -----------------------------------------------------------------------
+
+/// Helper: append a minimal IndexFlatL2 ("IxF2") with the given d and ntotal.
+/// Uses the WRITEXBVECTOR format (size_t num_floats prefix, then raw data).
+static void push_minimal_flat(
+        std::vector<uint8_t>& buf,
+        int d,
+        int64_t ntotal = 0) {
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, d, ntotal);
+    size_t num_floats = (size_t)ntotal * (size_t)d;
+    push_val<size_t>(buf, num_floats);
+    buf.resize(buf.size() + num_floats * sizeof(float), 0);
+}
+
+/// Helper: append a minimal valid HNSW structure with the given number of
+/// nodes.  All nodes are at level 1 with zero neighbors, which passes
+/// validate_HNSW.
+static void push_minimal_hnsw(std::vector<uint8_t>& buf, int ntotal) {
+    // assign_probas (empty)
+    push_vector<double>(buf, {});
+    // cum_nneighbor_per_level: {0, 0} — 0 cumulative neighbors at each level
+    push_vector<int>(buf, {0, 0});
+    // levels: one entry per node, all at level 1 (1-indexed in HNSW)
+    std::vector<int> levels(ntotal, 1);
+    push_vector<int>(buf, levels);
+    // offsets: ntotal + 1 entries, all 0
+    std::vector<size_t> offsets(ntotal + 1, 0);
+    push_vector<size_t>(buf, offsets);
+    // neighbors (empty)
+    push_vector<int32_t>(buf, {});
+    // entry_point
+    push_val<int32_t>(buf, ntotal > 0 ? 0 : -1);
+    // max_level
+    push_val<int>(buf, 0);
+    // efConstruction
+    push_val<int>(buf, 40);
+    // efSearch
+    push_val<int>(buf, 16);
+    // upper_beam (deprecated, always 1)
+    push_val<int>(buf, 1);
+}
+
+/// Helper: append NNDescent fields.
+static void push_nndescent(
+        std::vector<uint8_t>& buf,
+        int ntotal,
+        int d,
+        int K,
+        bool has_built,
+        const std::vector<int>& final_graph) {
+    push_val<int>(buf, ntotal);
+    push_val<int>(buf, d);
+    push_val<int>(buf, K);
+    push_val<int>(buf, 10); // S
+    push_val<int>(buf, 10); // R
+    push_val<int>(buf, 10); // L
+    push_val<int>(buf, 1);  // iter
+    push_val<int>(buf, 10); // search_L
+    push_val<int>(buf, 42); // random_seed
+    push_val<bool>(buf, has_built);
+    push_vector<int>(buf, final_graph);
+}
+
+// -----------------------------------------------------------------------
+// Test: NNDescent final_graph size mismatch (should be ntotal * K).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, NNDescentGraphSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "INNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // NNDescent: ntotal=2, K=3, has_built=true
+    // Expected graph size = 2*3 = 6, but provide 10
+    push_nndescent(
+            buf,
+            /*ntotal=*/2,
+            /*d=*/4,
+            /*K=*/3,
+            /*has_built=*/true,
+            std::vector<int>(10, 0));
+
+    expect_read_throws_with(buf, "NNDescent final_graph size");
+}
+
+// -----------------------------------------------------------------------
+// Test: NNDescent final_graph contains out-of-range neighbor ID.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, NNDescentGraphInvalidId) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "INNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // NNDescent: ntotal=2, K=2, graph size = 4
+    // ID 99 is out of range [-1, 2)
+    push_nndescent(
+            buf,
+            /*ntotal=*/2,
+            /*d=*/4,
+            /*K=*/2,
+            /*has_built=*/true,
+            {0, 1, 99, 0});
+
+    expect_read_throws_with(buf, "out of range");
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW levels.size() != index ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWLevelsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/5);
+    // HNSW with 3 entries (mismatch with ntotal=5)
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+
+    expect_read_throws_with(buf, "HNSW levels size");
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW storage ntotal != index ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWStorageNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/3);
+    // Valid HNSW with 3 entries (matches header)
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+    // Storage with ntotal=99 (mismatch)
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/99);
+
+    expect_read_throws_with(buf, "HNSW storage ntotal");
+}
+
+// -----------------------------------------------------------------------
+// Test: NSG ntotal != index ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, NSGNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "INSf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/5);
+    push_val<int>(buf, 0);  // GK
+    push_val<char>(buf, 0); // build_type (char, not int)
+    push_val<int>(buf, 10); // nndescent_S
+    push_val<int>(buf, 10); // nndescent_R
+    push_val<int>(buf, 10); // nndescent_L
+    push_val<int>(buf, 1);  // nndescent_iter
+    // NSG: ntotal=3 (mismatch with index ntotal=5)
+    push_val<int>(buf, 3);     // ntotal
+    push_val<int>(buf, 2);     // R
+    push_val<int>(buf, 10);    // L
+    push_val<int>(buf, 10);    // C
+    push_val<int>(buf, 10);    // search_L
+    push_val<int>(buf, 0);     // enterpoint
+    push_val<bool>(buf, true); // is_built
+    // Graph: 3 nodes, R=2, all empty (EMPTY_ID terminates each)
+    for (int i = 0; i < 3; i++) {
+        push_val<int>(buf, -1); // EMPTY_ID
+    }
+
+    expect_read_throws_with(buf, "NSG ntotal");
+}
+
+// -----------------------------------------------------------------------
+// Test: NNDescent ntotal != index ntotal.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, NNDescentNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "INNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/5);
+    // NNDescent: ntotal=3, has_built=true (mismatch with index ntotal=5)
+    // Graph is internally valid: ntotal=3, K=2, 6 entries all in range
+    push_nndescent(
+            buf,
+            /*ntotal=*/3,
+            /*d=*/4,
+            /*K=*/2,
+            /*has_built=*/true,
+            {0, 1, 0, 2, 1, 2});
+
+    expect_read_throws_with(buf, "NNDescent ntotal");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexHNSWCagra search with base_level_only on empty index.
+// Without the fix, this would access uninitialized graph nodes.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWCagraEmptyIndexSearch) {
+    IndexHNSWCagra idx(4, 16);
+    idx.base_level_only = true;
+
+    std::vector<float> xq(4, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_NO_THROW(
+            idx.search(1, xq.data(), 1, distances.data(), labels.data()));
+    EXPECT_EQ(labels[0], -1);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVF search with null invlists (e.g. loaded with
+// IO_FLAG_SKIP_IVF_DATA) throws instead of crashing.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexIVFNullInvlistsSearch) {
+    IndexFlatL2 quantizer(4);
+    IndexIVFFlat idx(&quantizer, 4, 10);
+    idx.own_fields = false;
+    // Simulate IO_FLAG_SKIP_IVF_DATA by deleting invlists
+    delete idx.invlists;
+    idx.invlists = nullptr;
+
+    std::vector<float> xq(4, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_THROW(
+            idx.search(1, xq.data(), 1, distances.data(), labels.data()),
+            FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVF add_with_ids with null invlists throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexIVFNullInvlistsAdd) {
+    IndexFlatL2 quantizer(4);
+    IndexIVFFlat idx(&quantizer, 4, 10);
+    idx.own_fields = false;
+    idx.is_trained = true;
+    delete idx.invlists;
+    idx.invlists = nullptr;
+
+    std::vector<float> xb(4, 1.0f);
+
+    EXPECT_THROW(idx.add(1, xb.data()), FaissException);
 }
