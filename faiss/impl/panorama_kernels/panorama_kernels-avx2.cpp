@@ -23,26 +23,26 @@ namespace faiss {
 namespace panorama_kernels {
 
 void process_chunks(
-        size_t chunk_size,
+        size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
         float* sim_table,
         uint8_t* compressed_codes,
         float* exact_distances) {
-    size_t chunk_idx = 0;
+    size_t byte_idx = 0;
 
     // Process 4 chunks at a time to amortize loop overhead and keep
     // the accumulator in registers across chunks.
-    for (; chunk_idx + 3 < chunk_size; chunk_idx += 4) {
-        size_t chunk_offset0 = (chunk_idx + 0) * max_batch_size;
-        size_t chunk_offset1 = (chunk_idx + 1) * max_batch_size;
-        size_t chunk_offset2 = (chunk_idx + 2) * max_batch_size;
-        size_t chunk_offset3 = (chunk_idx + 3) * max_batch_size;
+    for (; byte_idx + 3 < level_width_bytes; byte_idx += 4) {
+        size_t byte_offset0 = (byte_idx + 0) * max_batch_size;
+        size_t byte_offset1 = (byte_idx + 1) * max_batch_size;
+        size_t byte_offset2 = (byte_idx + 2) * max_batch_size;
+        size_t byte_offset3 = (byte_idx + 3) * max_batch_size;
 
-        float* sim_table0 = sim_table + (chunk_idx + 0) * 256;
-        float* sim_table1 = sim_table + (chunk_idx + 1) * 256;
-        float* sim_table2 = sim_table + (chunk_idx + 2) * 256;
-        float* sim_table3 = sim_table + (chunk_idx + 3) * 256;
+        float* sim_table0 = sim_table + (byte_idx + 0) * 256;
+        float* sim_table1 = sim_table + (byte_idx + 1) * 256;
+        float* sim_table2 = sim_table + (byte_idx + 2) * 256;
+        float* sim_table3 = sim_table + (byte_idx + 3) * 256;
 
         size_t batch_idx = 0;
         for (; batch_idx + 7 < num_active; batch_idx += 8) {
@@ -50,28 +50,28 @@ void process_chunks(
 
             // Load 8 byte codes, zero-extend to 32-bit indices.
             __m128i raw0 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + chunk_offset0 + batch_idx));
+                    (__m128i*)(compressed_codes + byte_offset0 + batch_idx));
             __m256i codes0 = _mm256_cvtepu8_epi32(raw0);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table0, codes0, sizeof(float)));
 
             __m128i raw1 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + chunk_offset1 + batch_idx));
+                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
             __m256i codes1 = _mm256_cvtepu8_epi32(raw1);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table1, codes1, sizeof(float)));
 
             __m128i raw2 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + chunk_offset2 + batch_idx));
+                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
             __m256i codes2 = _mm256_cvtepu8_epi32(raw2);
             acc = _mm256_add_ps(
                     acc,
                     _mm256_i32gather_ps(sim_table2, codes2, sizeof(float)));
 
             __m128i raw3 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + chunk_offset3 + batch_idx));
+                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
             __m256i codes3 = _mm256_cvtepu8_epi32(raw3);
             acc = _mm256_add_ps(
                     acc,
@@ -82,23 +82,23 @@ void process_chunks(
 
         for (; batch_idx < num_active; batch_idx += 1) {
             float acc = exact_distances[batch_idx];
-            acc += sim_table0[compressed_codes[chunk_offset0 + batch_idx]];
-            acc += sim_table1[compressed_codes[chunk_offset1 + batch_idx]];
-            acc += sim_table2[compressed_codes[chunk_offset2 + batch_idx]];
-            acc += sim_table3[compressed_codes[chunk_offset3 + batch_idx]];
+            acc += sim_table0[compressed_codes[byte_offset0 + batch_idx]];
+            acc += sim_table1[compressed_codes[byte_offset1 + batch_idx]];
+            acc += sim_table2[compressed_codes[byte_offset2 + batch_idx]];
+            acc += sim_table3[compressed_codes[byte_offset3 + batch_idx]];
             exact_distances[batch_idx] = acc;
         }
     }
 
-    for (; chunk_idx < chunk_size; chunk_idx++) {
-        size_t chunk_offset = chunk_idx * max_batch_size;
-        float* sim_table_ptr = sim_table + chunk_idx * 256;
+    for (; byte_idx < level_width_bytes; byte_idx++) {
+        size_t byte_offset = byte_idx * max_batch_size;
+        float* sim_table_ptr = sim_table + byte_idx * 256;
 
         size_t batch_idx = 0;
         for (; batch_idx + 7 < num_active; batch_idx += 8) {
             __m256 acc = _mm256_loadu_ps(exact_distances + batch_idx);
             __m128i raw = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + chunk_offset + batch_idx));
+                    (__m128i*)(compressed_codes + byte_offset + batch_idx));
             __m256i codes = _mm256_cvtepu8_epi32(raw);
             __m256 m_dist =
                     _mm256_i32gather_ps(sim_table_ptr, codes, sizeof(float));
@@ -108,7 +108,7 @@ void process_chunks(
 
         for (; batch_idx < num_active; batch_idx += 1) {
             exact_distances[batch_idx] +=
-                    sim_table_ptr[compressed_codes[chunk_offset + batch_idx]];
+                    sim_table_ptr[compressed_codes[byte_offset + batch_idx]];
         }
     }
 }
@@ -141,7 +141,7 @@ size_t process_filtering(
 std::pair<uint8_t*, size_t> process_code_compression(
         size_t next_num_active,
         size_t max_batch_size,
-        size_t chunk_size,
+        size_t level_width_bytes,
         uint8_t* compressed_codes_begin,
         uint8_t* bitset,
         const uint8_t* codes) {
@@ -154,7 +154,7 @@ std::pair<uint8_t*, size_t> process_code_compression(
         // Compress the codes: here we don't need to process remainders
         // as long as `max_batch_size` is a multiple of 64 (which we
         // assert in the constructor). Conveniently, compressed_codes is
-        // allocated to `max_batch_size` * `chunk_size` elements.
+        // allocated to `max_batch_size` * `level_width_bytes` elements.
         // `num_active` is guaranteed to always be less than or equal to
         // `max_batch_size`. Only the last batch may be smaller than
         // `max_batch_size`, the caller ensures that the batch and
@@ -184,10 +184,10 @@ std::pair<uint8_t*, size_t> process_code_compression(
             // PEXT/PDEP path: process 8 bytes at a time. PDEP
             // expands the per-byte mask bits into a per-byte lane
             // mask, then PEXT extracts only the selected bytes.
-            for (size_t ci = 0; ci < chunk_size; ci++) {
-                size_t chunk_offset = ci * max_batch_size;
-                const uint8_t* src = codes + chunk_offset + point_idx;
-                uint8_t* dst = compressed_codes + chunk_offset + num_active;
+            for (size_t ci = 0; ci < level_width_bytes; ci++) {
+                size_t byte_offset = ci * max_batch_size;
+                const uint8_t* src = codes + byte_offset + point_idx;
+                uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
                 for (int g = 0; g < 8; g++) {
                     uint64_t src_val;
@@ -204,10 +204,10 @@ std::pair<uint8_t*, size_t> process_code_compression(
 #else
             // Scalar fallback: scan set bits one by one and copy
             // the corresponding code byte.
-            for (size_t ci = 0; ci < chunk_size; ci++) {
-                size_t chunk_offset = ci * max_batch_size;
-                const uint8_t* src = codes + chunk_offset + point_idx;
-                uint8_t* dst = compressed_codes + chunk_offset + num_active;
+            for (size_t ci = 0; ci < level_width_bytes; ci++) {
+                size_t byte_offset = ci * max_batch_size;
+                const uint8_t* src = codes + byte_offset + point_idx;
+                uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
                 uint64_t m = mask;
                 while (m) {

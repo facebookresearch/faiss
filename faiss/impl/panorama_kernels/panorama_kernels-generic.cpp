@@ -22,17 +22,17 @@ namespace faiss {
 namespace panorama_kernels {
 
 void process_chunks(
-        size_t chunk_size,
+        size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
         float* sim_table,
         uint8_t* compressed_codes,
         float* exact_distances) {
-    for (size_t chunk_idx = 0; chunk_idx < chunk_size; chunk_idx++) {
-        size_t chunk_offset = chunk_idx * max_batch_size;
-        float* chunk_sim = sim_table + chunk_idx * 256;
+    for (size_t byte_idx = 0; byte_idx < level_width_bytes; byte_idx++) {
+        size_t byte_offset = byte_idx * max_batch_size;
+        float* chunk_sim = sim_table + byte_idx * 256;
         for (size_t i = 0; i < num_active; i++) {
-            exact_distances[i] += chunk_sim[compressed_codes[chunk_offset + i]];
+            exact_distances[i] += chunk_sim[compressed_codes[byte_offset + i]];
         }
     }
 }
@@ -65,7 +65,7 @@ size_t process_filtering(
 std::pair<uint8_t*, size_t> process_code_compression(
         size_t next_num_active,
         size_t max_batch_size,
-        size_t chunk_size,
+        size_t level_width_bytes,
         uint8_t* compressed_codes_begin,
         uint8_t* bitset,
         const uint8_t* codes) {
@@ -100,10 +100,10 @@ std::pair<uint8_t*, size_t> process_code_compression(
             // PEXT/PDEP path: process 8 bytes at a time. PDEP
             // expands the per-byte mask bits into a per-byte lane
             // mask, then PEXT extracts only the selected bytes.
-            for (size_t ci = 0; ci < chunk_size; ci++) {
-                size_t chunk_offset = ci * max_batch_size;
-                const uint8_t* src = codes + chunk_offset + point_idx;
-                uint8_t* dst = compressed_codes + chunk_offset + num_active;
+            for (size_t ci = 0; ci < level_width_bytes; ci++) {
+                size_t byte_offset = ci * max_batch_size;
+                const uint8_t* src = codes + byte_offset + point_idx;
+                uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
                 for (int g = 0; g < 8; g++) {
                     uint64_t src_val;
@@ -120,10 +120,10 @@ std::pair<uint8_t*, size_t> process_code_compression(
 #else
             // Scalar fallback: scan set bits one by one and copy
             // the corresponding code byte.
-            for (size_t ci = 0; ci < chunk_size; ci++) {
-                size_t chunk_offset = ci * max_batch_size;
-                const uint8_t* src = codes + chunk_offset + point_idx;
-                uint8_t* dst = compressed_codes + chunk_offset + num_active;
+            for (size_t ci = 0; ci < level_width_bytes; ci++) {
+                size_t byte_offset = ci * max_batch_size;
+                const uint8_t* src = codes + byte_offset + point_idx;
+                uint8_t* dst = compressed_codes + byte_offset + num_active;
                 int write_pos = 0;
                 uint64_t m = mask;
                 while (m) {

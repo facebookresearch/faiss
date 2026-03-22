@@ -35,7 +35,7 @@ namespace panorama_kernels {
 /// Iterates chunks first to keep the LUT slice in L1 cache.
 /// The AVX-512 version unrolls 4 chunks at a time.
 void process_chunks(
-        size_t chunk_size,
+        size_t level_width_bytes,
         size_t max_batch_size,
         size_t num_active,
         float* sim_table,
@@ -71,7 +71,7 @@ size_t process_filtering(
 /// Compress the codes: here we don't need to process remainders
 /// as long as `max_batch_size` is a multiple of 64 (which we
 /// assert in the constructor). Conveniently, compressed_codes is
-/// allocated to `max_batch_size` * `chunk_size` elements.
+/// allocated to `max_batch_size` * `level_width_bytes` elements.
 /// `num_active` is guaranteed to always be less than or equal to
 /// `max_batch_size`. Only the last batch may be smaller than
 /// `max_batch_size`, the caller ensures that the batch and
@@ -79,7 +79,7 @@ size_t process_filtering(
 std::pair<uint8_t*, size_t> process_code_compression(
         size_t next_num_active,
         size_t max_batch_size,
-        size_t chunk_size,
+        size_t level_width_bytes,
         uint8_t* compressed_codes_begin,
         uint8_t* bitset,
         const uint8_t* codes);

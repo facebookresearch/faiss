@@ -28,7 +28,6 @@ namespace faiss {
 struct PanoramaPQ : Panorama {
     const ProductQuantizer* pq = nullptr;
     const Index* quantizer = nullptr;
-    size_t chunk_size = 0;
     size_t levels_size = 0;
 
     PanoramaPQ() = default;
@@ -107,7 +106,7 @@ struct PanoramaPQ : Panorama {
             float threshold,
             PanoramaStats& local_stats) const {
         const size_t bs = batch_size;
-        const size_t cs = chunk_size;
+        const size_t ls = level_width_bytes;
         const size_t ksub = pq->ksub;
 
         size_t curr_batch_size = std::min(list_size - batch_no * bs, bs);
@@ -149,12 +148,12 @@ struct PanoramaPQ : Panorama {
              level++) {
             local_stats.total_dims_scanned += next_num_active;
 
-            size_t level_sim_offset = level * ksub * cs;
+            size_t level_sim_offset = level * ksub * ls;
 
             float query_cum_norm = 2 * query_cum_norms[level + 1];
 
             const float* cum_sums_level = batch_cums + bs * (level + 1);
-            const uint8_t* codes_level = batch_codes + bs * cs * level;
+            const uint8_t* codes_level = batch_codes + bs * ls * level;
 
             const float* sim_table_level = sim_table_2 + level_sim_offset;
 
@@ -162,13 +161,13 @@ struct PanoramaPQ : Panorama {
 
             size_t num_active_for_filtering = 0;
             if (is_sparse) {
-                for (size_t ci = 0; ci < cs; ci++) {
-                    size_t chunk_off = ci * bs;
-                    const float* chunk_sim = sim_table_level + ci * ksub;
+                for (size_t li = 0; li < ls; li++) {
+                    size_t byte_off = li * bs;
+                    const float* chunk_sim = sim_table_level + li * ksub;
                     for (size_t i = 0; i < next_num_active; i++) {
                         size_t real_idx = active_indices[i] - batch_offset;
                         exact_distances[i] +=
-                                chunk_sim[codes_level[chunk_off + real_idx]];
+                                chunk_sim[codes_level[byte_off + real_idx]];
                     }
                 }
                 num_active_for_filtering = next_num_active;
@@ -176,13 +175,13 @@ struct PanoramaPQ : Panorama {
                 auto [cc, na] = panorama_kernels::process_code_compression(
                         next_num_active,
                         bs,
-                        cs,
+                        ls,
                         compressed_codes.data(),
                         bitset.data(),
                         codes_level);
 
                 panorama_kernels::process_chunks(
-                        cs,
+                        ls,
                         bs,
                         na,
                         const_cast<float*>(sim_table_level),

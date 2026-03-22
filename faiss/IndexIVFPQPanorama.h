@@ -30,7 +30,7 @@ namespace faiss {
 /// Panorama transposes codes into column-major within each batch:
 /// for each batch of `batch_size` points, codes are stored as
 /// M columns of `batch_size` bytes each. The M columns are grouped
-/// into `n_levels` levels of `chunk_size` columns, enabling incremental
+/// into `n_levels` levels of `level_width_bytes` columns, enabling incremental
 /// distance computation level-by-level.
 ///
 /// Storage is managed by ArrayInvertedListsPanorama with a PanoramaPQ
@@ -60,7 +60,6 @@ struct IndexIVFPQPanorama : public IndexIVFPQ {
     int n_levels;
     size_t batch_size;
 
-    size_t chunk_size;
     size_t levels_size;
 
     IndexIVFPQPanorama(

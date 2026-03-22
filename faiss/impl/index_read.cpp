@@ -1485,7 +1485,6 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ProductQuantizer(&ivpp->pq, f);
         READ1(ivpp->n_levels);
         READ1(ivpp->batch_size);
-        ivpp->chunk_size = ivpp->code_size / ivpp->n_levels;
         ivpp->levels_size = ivpp->d / ivpp->n_levels;
         read_InvertedLists(*ivpp, f, io_flags);
         // The "ilpn" reader creates a PanoramaFlat placeholder; replace

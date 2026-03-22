@@ -19,7 +19,7 @@ void PanoramaPQ::copy_codes_to_level_layout(
         size_t offset,
         size_t n_entry,
         const uint8_t* code) {
-    const size_t cs = chunk_size;
+    const size_t ls = level_width_bytes;
     const size_t bs = batch_size;
 
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
@@ -29,13 +29,13 @@ void PanoramaPQ::copy_codes_to_level_layout(
         size_t batch_offset = batch_no * bs * code_size;
 
         for (size_t level = 0; level < n_levels; level++) {
-            size_t level_offset = level * cs * bs;
-            size_t start_byte = level * cs;
+            size_t level_offset = level * ls * bs;
+            size_t start_byte = level * ls;
 
-            for (size_t ci = 0; ci < cs && (start_byte + ci) < code_size;
-                 ci++) {
-                codes[batch_offset + level_offset + ci * bs + pos_in_batch] =
-                        code[entry_idx * code_size + start_byte + ci];
+            for (size_t li = 0; li < ls && (start_byte + li) < code_size;
+                 li++) {
+                codes[batch_offset + level_offset + li * bs + pos_in_batch] =
+                        code[entry_idx * code_size + start_byte + li];
             }
         }
     }
@@ -46,7 +46,7 @@ void PanoramaPQ::reconstruct(
         float* recons,
         const uint8_t* codes_base) const {
     uint8_t* recons_buffer = reinterpret_cast<uint8_t*>(recons);
-    const size_t cs = chunk_size;
+    const size_t ls = level_width_bytes;
     const size_t bs = batch_size;
 
     size_t batch_no = key / bs;
@@ -54,12 +54,12 @@ void PanoramaPQ::reconstruct(
     size_t batch_offset = batch_no * bs * code_size;
 
     for (size_t level = 0; level < n_levels; level++) {
-        size_t level_offset = level * cs * bs;
-        size_t start_byte = level * cs;
+        size_t level_offset = level * ls * bs;
+        size_t start_byte = level * ls;
 
-        for (size_t ci = 0; ci < cs && (start_byte + ci) < code_size; ci++) {
-            recons_buffer[start_byte + ci] = codes_base
-                    [batch_offset + level_offset + ci * bs + pos_in_batch];
+        for (size_t li = 0; li < ls && (start_byte + li) < code_size; li++) {
+            recons_buffer[start_byte + li] = codes_base
+                    [batch_offset + level_offset + li * bs + pos_in_batch];
         }
     }
 }
@@ -74,7 +74,6 @@ PanoramaPQ::PanoramaPQ(
         : Panorama(d, code_size, n_levels, batch_size),
           pq(pq),
           quantizer(quantizer),
-          chunk_size(code_size / n_levels),
           levels_size(d / n_levels) {
     FAISS_THROW_IF_NOT_MSG(
             code_size % n_levels == 0,

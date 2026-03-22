@@ -38,7 +38,6 @@ IndexIVFPQPanorama::IndexIVFPQPanorama(
         : IndexIVFPQ(quantizer, d, nlist, M, nbits_per_idx, metric, false),
           n_levels(n_levels),
           batch_size(batch_size),
-          chunk_size(code_size / n_levels),
           levels_size(d / n_levels) {
     FAISS_THROW_IF_NOT_MSG(
             M % n_levels == 0, "M must be divisible by n_levels");
@@ -132,7 +131,7 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         size_t nup = 0;
 
         const size_t bs = index.batch_size;
-        const size_t cs = index.chunk_size;
+        const size_t ls = pano_pq->level_width_bytes;
 
         const size_t n_batches = (list_size + bs - 1) / bs;
         const uint8_t* col_codes = storage->get_codes(list_no);
@@ -143,7 +142,7 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         std::vector<float> exact_distances(bs);
         std::vector<uint8_t> bitset(bs);
         std::vector<uint32_t> active_indices(bs);
-        std::vector<uint8_t> compressed_codes(bs * cs);
+        std::vector<uint8_t> compressed_codes(bs * ls);
         float dis0 = coarse_dis;
 
         PanoramaStats local_stats;
