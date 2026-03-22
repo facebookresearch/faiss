@@ -45,7 +45,7 @@ namespace faiss {
 /// search using the precomputed_table (no extra per-point storage).
 ///
 /// CONSTRAINTS:
-/// - Only L2 metric is supported.
+/// - Only L2 metric is supported (for now).
 /// - Only 8-bit PQ codes (nbits_per_idx == 8).
 /// - M must be divisible by n_levels.
 /// - batch_size must be a multiple of 64.
