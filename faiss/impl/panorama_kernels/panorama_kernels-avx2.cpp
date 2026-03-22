@@ -44,43 +44,7 @@ void process_level(
         float* sim_table2 = sim_table + (byte_idx + 2) * 256;
         float* sim_table3 = sim_table + (byte_idx + 3) * 256;
 
-        size_t batch_idx = 0;
-        for (; batch_idx + 7 < num_active; batch_idx += 8) {
-            __m256 acc = _mm256_loadu_ps(exact_distances + batch_idx);
-
-            // Load 8 byte codes, zero-extend to 32-bit indices.
-            __m128i raw0 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset0 + batch_idx));
-            __m256i codes0 = _mm256_cvtepu8_epi32(raw0);
-            acc = _mm256_add_ps(
-                    acc,
-                    _mm256_i32gather_ps(sim_table0, codes0, sizeof(float)));
-
-            __m128i raw1 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset1 + batch_idx));
-            __m256i codes1 = _mm256_cvtepu8_epi32(raw1);
-            acc = _mm256_add_ps(
-                    acc,
-                    _mm256_i32gather_ps(sim_table1, codes1, sizeof(float)));
-
-            __m128i raw2 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset2 + batch_idx));
-            __m256i codes2 = _mm256_cvtepu8_epi32(raw2);
-            acc = _mm256_add_ps(
-                    acc,
-                    _mm256_i32gather_ps(sim_table2, codes2, sizeof(float)));
-
-            __m128i raw3 = _mm_loadl_epi64(
-                    (__m128i*)(compressed_codes + byte_offset3 + batch_idx));
-            __m256i codes3 = _mm256_cvtepu8_epi32(raw3);
-            acc = _mm256_add_ps(
-                    acc,
-                    _mm256_i32gather_ps(sim_table3, codes3, sizeof(float)));
-
-            _mm256_storeu_ps(exact_distances + batch_idx, acc);
-        }
-
-        for (; batch_idx < num_active; batch_idx += 1) {
+        for (size_t batch_idx = 0; batch_idx < num_active; batch_idx++) {
             float acc = exact_distances[batch_idx];
             acc += sim_table0[compressed_codes[byte_offset0 + batch_idx]];
             acc += sim_table1[compressed_codes[byte_offset1 + batch_idx]];
