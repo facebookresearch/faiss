@@ -61,10 +61,10 @@ IndexSVSIVFLeanVec::~IndexSVSIVFLeanVec() {
 }
 
 void IndexSVSIVFLeanVec::train(idx_t n, const float* x) {
-    train(n, x, 0, nullptr);
+    train_with_queries(n, x, 0, nullptr);
 }
 
-void IndexSVSIVFLeanVec::train(
+void IndexSVSIVFLeanVec::train_with_queries(
         idx_t n,
         const float* x,
         idx_t n_train_q,

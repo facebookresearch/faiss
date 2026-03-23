@@ -40,10 +40,19 @@ struct IndexSVSIVFLeanVec : IndexSVSIVF {
 
     ~IndexSVSIVFLeanVec() override;
 
+    /* Default train assumes in-distribution data */
     void train(idx_t n, const float* x) override;
 
-    void train(idx_t n, const float* x, idx_t n_train_q, const float* xq_train)
-            override;
+    /* Generic train with out-of-distribution parameters.
+     * Out-of-distribution (OOD) means database vectors and queries _can_ be
+     * sampled from different distributions (e.g., cross-modal). More details in
+     * the original publication, arXiv:2312.16335.
+     */
+    void train_with_queries(
+            idx_t n,
+            const float* x,
+            idx_t n_train_q,
+            const float* xq_train) override;
 
     void reset() override;
 
