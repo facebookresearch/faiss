@@ -216,7 +216,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                     delta_cost -= w * sqr(wanted - actual);
                     double new_actual = hamming_dis(
                             perm[jw],
-                            perm[j == iw           ? jw
+                            perm[j == iw ? jw
                                          : j == jw ? iw
                                                    : j]);
                     delta_cost += w * sqr(wanted - new_actual);
@@ -229,7 +229,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
                     delta_cost -= w * sqr(wanted - actual);
                     double new_actual = hamming_dis(
                             perm[iw],
-                            perm[j == iw           ? jw
+                            perm[j == iw ? jw
                                          : j == jw ? iw
                                                    : j]);
                     delta_cost += w * sqr(wanted - new_actual);
@@ -333,7 +333,7 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
                 delta_cost -= w * sqr(wanted - actual);
                 double new_actual = get_source_dis(
                         perm[jw],
-                        perm[j == iw           ? jw
+                        perm[j == iw ? jw
                                      : j == jw ? iw
                                                : j]);
                 delta_cost += w * sqr(wanted - new_actual);
@@ -345,7 +345,7 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
                 delta_cost -= w * sqr(wanted - actual);
                 double new_actual = get_source_dis(
                         perm[iw],
-                        perm[j == iw           ? jw
+                        perm[j == iw ? jw
                                      : j == jw ? iw
                                                : j]);
                 delta_cost += w * sqr(wanted - new_actual);

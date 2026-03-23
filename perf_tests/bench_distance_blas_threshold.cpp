@@ -38,8 +38,7 @@ static void bench_flat_search(benchmark::State& state) {
 
     distance_compute_blas_threshold = static_cast<int>(FLAGS_threshold);
     if (FLAGS_blas_query_bs > 0) {
-        distance_compute_blas_query_bs =
-                static_cast<int>(FLAGS_blas_query_bs);
+        distance_compute_blas_query_bs = static_cast<int>(FLAGS_blas_query_bs);
     }
     if (FLAGS_blas_database_bs > 0) {
         distance_compute_blas_database_bs =
