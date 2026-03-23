@@ -282,7 +282,8 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
             dynamic_cast<IndexBinaryFlat*>(index->storage);
     FAISS_ASSERT(flat_storage);
     auto total = static_cast<size_t>(index->ntotal) * this->code_size;
-    host_storage_.assign(flat_storage->xb.data(), flat_storage->xb.data() + total);
+    host_storage_.assign(
+            flat_storage->xb.data(), flat_storage->xb.data() + total);
 
     auto hnsw = index->hnsw;
     // copy level 0 to a dense knn graph matrix

@@ -22,9 +22,9 @@
  */
 
 #include <faiss/IndexHNSW.h>
-#include <algorithm>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
+#include <algorithm>
 #include <cstddef>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <optional>
@@ -374,8 +374,8 @@ void GpuIndexCagra::copyFrom_ex(
         auto total = static_cast<size_t>(index->ntotal) * index->d;
         host_storage_int8_.resize(total);
         for (size_t i = 0; i < total; i++) {
-            host_storage_int8_[i] = static_cast<int8_t>(
-                    static_cast<int>(dataset[i]) - 128);
+            host_storage_int8_[i] =
+                    static_cast<int8_t>(static_cast<int>(dataset[i]) - 128);
         }
 
         index_ = std::make_shared<CuvsCagra<int8_t>>(
