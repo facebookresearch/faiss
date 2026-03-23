@@ -19,10 +19,10 @@ namespace faiss {
 template <>
 void fvec_madd<SIMDLevel::ARM_SVE>(
         const size_t n,
-        const float* __restrict a,
+        const float* a,
         const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
+        const float* b,
+        float* c) {
     const size_t lanes = static_cast<size_t>(svcntw());
     const size_t lanes2 = lanes * 2;
     const size_t lanes3 = lanes * 3;
