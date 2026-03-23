@@ -84,7 +84,8 @@ struct DistanceComputerByte<Similarity, SIMDLevel::NONE> : SQDistanceComputer {
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+    DistanceComputerByte(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {

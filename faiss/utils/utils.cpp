@@ -187,7 +187,7 @@ size_t get_mem_usage_kb() {
         char buf[256];
         if (!fgets(buf, 256, f))
             break;
-        if (sscanf(buf, "VmRSS: %ld kB", &sz) == 1)
+        if (sscanf(buf, "VmRSS: %zu kB", &sz) == 1)
             break;
     }
     fclose(f);
@@ -307,7 +307,7 @@ size_t merge_result_table_with(
         std::vector<float> tmpD(k);
 
 #pragma omp for
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             int64_t* lI0 = I0 + i * k;
             float* lD0 = D0 + i * k;
             const int64_t* lI1 = I1 + i * k;
@@ -437,10 +437,10 @@ void bincode_hist(size_t n, size_t nbits, const uint8_t* codes, int* hist) {
     std::vector<int> accu(d * 256);
     const uint8_t* c = codes;
     for (size_t i = 0; i < n; i++)
-        for (int j = 0; j < d; j++)
+        for (size_t j = 0; j < d; j++)
             accu[j * 256 + *c++]++;
     memset(hist, 0, sizeof(*hist) * nbits);
-    for (int i = 0; i < d; i++) {
+    for (size_t i = 0; i < d; i++) {
         const int* ai = accu.data() + i * 256;
         int* hi = hist + i * 8;
         for (int j = 0; j < 256; j++)
@@ -500,7 +500,7 @@ const float* fvecs_maybe_subsample(
     std::vector<int> subset(*n);
     rand_perm(subset.data(), *n, seed);
     float* x_subset = new float[n2 * d];
-    for (int64_t i = 0; i < n2; i++)
+    for (int64_t i = 0; i < static_cast<int64_t>(n2); i++)
         memcpy(&x_subset[i * d], &x[subset[i] * size_t(d)], sizeof(x[0]) * d);
     *n = n2;
     return x_subset;

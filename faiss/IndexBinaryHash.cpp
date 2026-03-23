@@ -30,8 +30,8 @@ void IndexBinaryHash::InvertedList::add(
     vecs.insert(vecs.end(), code, code + code_size);
 }
 
-IndexBinaryHash::IndexBinaryHash(int d, int b)
-        : IndexBinary(d), b(b), nflip(0) {
+IndexBinaryHash::IndexBinaryHash(int d_, int b_)
+        : IndexBinary(d_), b(b_), nflip(0) {
     is_trained = true;
 }
 
@@ -52,13 +52,13 @@ void IndexBinaryHash::add_with_ids(
         idx_t n,
         const uint8_t* x,
         const idx_t* xids) {
-    uint64_t mask = ((uint64_t)1 << b) - 1;
     // simplistic add function. Cannot really be parallelized.
 
     for (idx_t i = 0; i < n; i++) {
         idx_t id = xids ? xids[i] : ntotal + i;
         const uint8_t* xi = x + i * code_size;
-        idx_t hash = *((uint64_t*)xi) & mask;
+        BitstringReader br(xi, code_size);
+        idx_t hash = br.read(b);
         invlists[hash].add(id, code_size, xi);
     }
     ntotal += n;
@@ -73,7 +73,7 @@ struct FlipEnumerator {
     int nbit, nflip, maxflip;
     uint64_t mask, x;
 
-    FlipEnumerator(int nbit, int maxflip) : nbit(nbit), maxflip(maxflip) {
+    FlipEnumerator(int nbit_, int maxflip_) : nbit(nbit_), maxflip(maxflip_) {
         nflip = 0;
         mask = 0;
         x = 0;
@@ -142,8 +142,8 @@ void search_single_query_template(
         size_t& nlist,
         size_t& ndis) {
     size_t code_size = index.code_size;
-    uint64_t mask = ((uint64_t)1 << index.b) - 1;
-    uint64_t qhash = *((uint64_t*)q) & mask;
+    BitstringReader br(q, code_size);
+    uint64_t qhash = br.read(index.b);
     HammingComputer hc(q, code_size);
     FlipEnumerator fe(index.b, index.nflip);
 
@@ -286,10 +286,10 @@ IndexBinaryHashStats indexBinaryHash_stats;
  * IndexBinaryMultiHash implementation
  ******************************************************/
 
-IndexBinaryMultiHash::IndexBinaryMultiHash(int d, int nhash, int b)
-        : IndexBinary(d), maps(nhash), nhash(nhash), b(b), nflip(0) {
-    FAISS_THROW_IF_NOT(nhash * b <= d);
-    storage = std::make_unique<IndexBinaryFlat>(d).release();
+IndexBinaryMultiHash::IndexBinaryMultiHash(int d_, int nhash_, int b_)
+        : IndexBinary(d_), maps(nhash_), nhash(nhash_), b(b_), nflip(0) {
+    FAISS_THROW_IF_NOT(nhash_ * b_ <= d_);
+    storage = std::make_unique<IndexBinaryFlat>(d_).release();
     own_fields = true;
 }
 
@@ -313,16 +313,12 @@ void IndexBinaryMultiHash::reset() {
 void IndexBinaryMultiHash::add(idx_t n, const uint8_t* x) {
     storage->add(n, x);
     // populate maps
-    uint64_t mask = ((uint64_t)1 << b) - 1;
-
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* xi = x + i * code_size;
-        int ho = 0;
+        BitstringReader br(xi, code_size);
         for (int h = 0; h < nhash; h++) {
-            uint64_t hash = *(uint64_t*)(xi + (ho >> 3)) >> (ho & 7);
-            hash &= mask;
+            uint64_t hash = br.read(b);
             maps[h][hash].push_back(i + ntotal);
-            ho += b;
         }
     }
     ntotal += n;
@@ -365,12 +361,10 @@ void search_1_query_multihash(
         size_t& ndis) {
     std::unordered_set<idx_t> shortlist;
     int b = index.b;
-    uint64_t mask = ((uint64_t)1 << b) - 1;
 
-    int ho = 0;
+    BitstringReader br(xi, index.code_size);
     for (int h = 0; h < index.nhash; h++) {
-        uint64_t qhash = *(uint64_t*)(xi + (ho >> 3)) >> (ho & 7);
-        qhash &= mask;
+        uint64_t qhash = br.read(b);
         const IndexBinaryMultiHash::Map& map = index.maps[h];
 
         FlipEnumerator fe(index.b, index.nflip);
@@ -389,8 +383,6 @@ void search_1_query_multihash(
                 n0++;
             }
         } while (fe.next());
-
-        ho += b;
     }
     ndis += shortlist.size();
 

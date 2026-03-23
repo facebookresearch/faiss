@@ -348,6 +348,7 @@ Certain tests / benchmarks might be outdated.
 * bench_hamming_computer.cpp - specialized implementations for Hamming distance computations
 * bench_heap_replace.cpp - benchmarks different implementations of certain calls for a Heap data structure
 * bench_hnsw.py - benchmarks HNSW in combination with other ones for SIFT1M dataset
+* bench_hnsw_prune_headroom.py - benchmarks HNSW prune_headroom recall and build time impact
 * bench_index_flat.py - benchmarks IndexFlatL2 on a synthetic dataset
 * bench_index_pq.py - benchmarks PQ on SIFT1M dataset
 * bench_ivf_fastscan_single_query.py - benchmarks a single query for different nprobe levels for IVF{nlist},PQ{M}x4fs on BIGANN dataset

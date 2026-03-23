@@ -41,7 +41,7 @@ struct Comb {
     std::vector<uint64_t> tab; // Pascal's triangle
     int nmax;
 
-    explicit Comb(int nmax) : nmax(nmax) {
+    explicit Comb(int nmax_in) : nmax(nmax_in) {
         tab.resize(nmax * nmax, 0);
         tab[0] = 1;
         for (int i = 1; i < nmax; i++) {
@@ -172,9 +172,9 @@ void repeats_decode_64(
 
 } // anonymous namespace
 
-Repeats::Repeats(int dim, const float* c) : dim(dim) {
+Repeats::Repeats(int dim_in, const float* c) : dim(dim_in) {
     for (int i = 0; i < dim; i++) {
-        int j = 0;
+        size_t j = 0;
         for (;;) {
             if (j == repeats.size()) {
                 repeats.push_back(Repeat{c[i], 1});
@@ -192,7 +192,7 @@ Repeats::Repeats(int dim, const float* c) : dim(dim) {
 uint64_t Repeats::count() const {
     uint64_t accu = 1;
     int remain = dim;
-    for (int i = 0; i < repeats.size(); i++) {
+    for (size_t i = 0; i < repeats.size(); i++) {
         accu *= comb(remain, repeats[i].n);
         remain -= repeats[i].n;
     }
@@ -275,7 +275,7 @@ void EnumeratedVectors::encode_multi(size_t n, const float* c, uint64_t* codes)
 #pragma omp parallel if (n > 1000)
     {
 #pragma omp for
-        for (int i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             codes[i] = encode(c + i * dim);
         }
     }
@@ -286,7 +286,7 @@ void EnumeratedVectors::decode_multi(size_t n, const uint64_t* codes, float* c)
 #pragma omp parallel if (n > 1000)
     {
 #pragma omp for
-        for (int i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             decode(codes[i], c + i * dim);
         }
     }
@@ -325,11 +325,11 @@ void EnumeratedVectors::find_nn(
  * ZnSphereSearch
  **********************************************************/
 
-ZnSphereSearch::ZnSphereSearch(int dim, int r2) : dimS(dim), r2(r2) {
+ZnSphereSearch::ZnSphereSearch(int dim, int r2_in) : dimS(dim), r2(r2_in) {
     FAISS_THROW_IF_NOT_MSG(
             dim > 0 && dim <= 64, "ZnSphereSearch: dim must be in [1, 64]");
     FAISS_THROW_IF_NOT_MSG(
-            r2 >= 0 && r2 <= 512,
+            r2_in >= 0 && r2_in <= 512,
             "ZnSphereSearch: r2 must be in [0, 512] to avoid"
             " excessive computation in sum_of_sq");
     voc = sum_of_sq(r2, int(ceil(sqrt(r2)) + 1), dim);
@@ -404,8 +404,8 @@ void ZnSphereSearch::search_multi(
  * ZnSphereCodec
  **********************************************************/
 
-ZnSphereCodec::ZnSphereCodec(int dim, int r2)
-        : ZnSphereSearch(dim, r2), EnumeratedVectors(dim) {
+ZnSphereCodec::ZnSphereCodec(int dim_in, int r2_in)
+        : ZnSphereSearch(dim_in, r2_in), EnumeratedVectors(dim_in) {
     nv = 0;
     for (int i = 0; i < natom; i++) {
         Repeats repeats(dim, &voc[i * dim]);
@@ -497,10 +497,10 @@ void ZnSphereCodecRec::set_nv_cum(int ld, int r2t, int r2a, uint64_t cum) {
     all_nv_cum[(ld * (r2 + 1) + r2t) * (r2 + 1) + r2a] = cum;
 }
 
-ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2)
-        : EnumeratedVectors(dim), r2(r2) {
+ZnSphereCodecRec::ZnSphereCodecRec(int dim_in, int r2_in)
+        : EnumeratedVectors(dim_in), r2(r2_in) {
     FAISS_THROW_IF_NOT_MSG(
-            dim > 0 && r2 >= 0, "invalid ZnSphereCodecRec parameters");
+            dim_in > 0 && r2_in >= 0, "invalid ZnSphereCodecRec parameters");
     log2_dim = 0;
     while (dim > (1 << log2_dim)) {
         log2_dim++;
@@ -533,13 +533,13 @@ ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2)
 
     for (int ld = 1; ld <= log2_dim; ld++) {
         for (int r2sub = 0; r2sub <= r2; r2sub++) {
-            uint64_t nv = 0;
+            uint64_t nv_acc = 0;
             for (int r2a = 0; r2a <= r2sub; r2a++) {
                 int r2b = r2sub - r2a;
-                set_nv_cum(ld, r2sub, r2a, nv);
-                nv += get_nv(ld - 1, r2a) * get_nv(ld - 1, r2b);
+                set_nv_cum(ld, r2sub, r2a, nv_acc);
+                nv_acc += get_nv(ld - 1, r2a) * get_nv(ld - 1, r2b);
             }
-            all_nv[ld * (r2 + 1) + r2sub] = nv;
+            all_nv[ld * (r2 + 1) + r2sub] = nv_acc;
         }
     }
     nv = get_nv(log2_dim, r2);
@@ -564,7 +564,7 @@ ZnSphereCodecRec::ZnSphereCodecRec(int dim, int r2)
         cache.resize(nvi * dimsub);
         std::vector<float> c(dim);
         uint64_t code0 = get_nv_cum(cache_level + 1, r2, r2 - r2sub);
-        for (int i = 0; i < nvi; i++) {
+        for (uint64_t i = 0; i < nvi; i++) {
             decode(i + code0, c.data());
             memcpy(&cache[i * dimsub],
                    c.data() + dim - dimsub,
@@ -670,10 +670,10 @@ void ZnSphereCodecRec::decode(uint64_t code, float* c) const {
 }
 
 // if not use_rec, instantiate an arbitrary harmless znc_rec
-ZnSphereCodecAlt::ZnSphereCodecAlt(int dim, int r2)
-        : ZnSphereCodec(dim, r2),
-          use_rec((dim & (dim - 1)) == 0),
-          znc_rec(use_rec ? dim : 8, use_rec ? r2 : 14) {}
+ZnSphereCodecAlt::ZnSphereCodecAlt(int dim_in, int r2_in)
+        : ZnSphereCodec(dim_in, r2_in),
+          use_rec((dim_in & (dim_in - 1)) == 0),
+          znc_rec(use_rec ? dim_in : 8, use_rec ? r2_in : 14) {}
 
 uint64_t ZnSphereCodecAlt::encode(const float* x) const {
     if (!use_rec) {
