@@ -48,12 +48,12 @@ void interpolate(
         const LookUpFunc& lookup,
         idx_t* argmins) {
     std::unordered_map<idx_t, idx_t> idx_to_col;
-    for (idx_t idx = 0; idx < cols.size(); ++idx) {
+    for (size_t idx = 0; idx < cols.size(); ++idx) {
         idx_to_col[cols[idx]] = idx;
     }
 
     idx_t start = 0;
-    for (idx_t r = 0; r < rows.size(); r += 2) {
+    for (size_t r = 0; r < rows.size(); r += 2) {
         idx_t row = rows[r];
         idx_t end = cols.size() - 1;
         if (r < rows.size() - 1) {
@@ -107,7 +107,7 @@ void smawk_impl(
 
     // call recursively on odd-indexed rows
     std::vector<idx_t> odd_rows;
-    for (idx_t i = 1; i < rows.size(); i += 2) {
+    for (size_t i = 1; i < rows.size(); i += 2) {
         odd_rows.push_back(rows[i]);
     }
     smawk_impl(odd_rows, cols, lookup, argmins);
@@ -175,10 +175,10 @@ class Matrix {
     idx_t ncols;
 
    public:
-    Matrix(idx_t nrows, idx_t ncols) {
-        this->nrows = nrows;
-        this->ncols = ncols;
-        data.resize(nrows * ncols);
+    Matrix(idx_t nrows_in, idx_t ncols_in) {
+        this->nrows = nrows_in;
+        this->ncols = ncols_in;
+        data.resize(nrows_in * ncols_in);
     }
 
     inline T& at(idx_t i, idx_t j) {
@@ -240,14 +240,14 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
     Matrix<float> D(nclusters, n);
     Matrix<idx_t> T(nclusters, n);
 
-    for (idx_t m = 0; m < n; m++) {
+    for (idx_t m = 0; m < static_cast<idx_t>(n); m++) {
         D.at(0, m) = CC(0, m);
         T.at(0, m) = 0;
     }
 
     std::vector<idx_t> indices(nclusters, 0);
 
-    for (idx_t k = 1; k < nclusters; ++k) {
+    for (idx_t k = 1; k < static_cast<idx_t>(nclusters); ++k) {
         // we define C here
         auto C = [&D, &CC, &k](idx_t m, idx_t i) {
             if (i == 0) {
@@ -259,7 +259,7 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
 
         std::vector<idx_t> argmins(n); // argmin of each row
         smawk(n, n, C, argmins.data());
-        for (idx_t m = 0; m < argmins.size(); m++) {
+        for (size_t m = 0; m < argmins.size(); m++) {
             idx_t idx = argmins[m];
             D.at(k, m) = C(m, idx);
             T.at(k, m) = idx;

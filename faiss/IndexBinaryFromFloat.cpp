@@ -18,10 +18,10 @@ namespace faiss {
 
 IndexBinaryFromFloat::IndexBinaryFromFloat() = default;
 
-IndexBinaryFromFloat::IndexBinaryFromFloat(Index* index)
-        : IndexBinary(index->d), index(index), own_fields(false) {
-    is_trained = index->is_trained;
-    ntotal = index->ntotal;
+IndexBinaryFromFloat::IndexBinaryFromFloat(Index* index_)
+        : IndexBinary(index_->d), index(index_), own_fields(false) {
+    is_trained = index_->is_trained;
+    ntotal = index_->ntotal;
 }
 
 IndexBinaryFromFloat::~IndexBinaryFromFloat() {

@@ -114,8 +114,8 @@ struct Index {
     MetricType metric_type;
     float metric_arg; ///< argument of the metric type
 
-    explicit Index(idx_t d = 0, MetricType metric = METRIC_L2)
-            : d(d),
+    explicit Index(idx_t d_in = 0, MetricType metric = METRIC_L2)
+            : d(d_in),
               ntotal(0),
               verbose(false),
               is_trained(true),
@@ -131,7 +131,7 @@ struct Index {
      */
     virtual void train(idx_t n, const float* x);
 
-    /** Perfrom training on a representative set of vectors and a representative
+    /** Perform training on a representative set of vectors and a representative
      * set of queries
      *
      * @param n         nb of training vectors
@@ -139,7 +139,7 @@ struct Index {
      * @param n_train_q nb of training queries
      * @param xq_train  training queries, size n_train_q * d
      */
-    virtual void train(
+    virtual void train_with_queries(
             idx_t n,
             const float* x,
             idx_t n_train_q,

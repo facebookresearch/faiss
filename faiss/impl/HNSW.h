@@ -143,6 +143,10 @@ struct HNSW {
     /// expansion factor at search time
     int efSearch = 16;
 
+    /// when pruning, leave room for more neighbors to avoid O(n^2)
+    /// costs and lock contention on frequently-pruned nodes.
+    float prune_headroom = 0.2f;
+
     /// during search: do we check whether the next best distance is good
     /// enough?
     bool check_relative_distance = true;
@@ -242,7 +246,7 @@ struct HNSW {
             DistanceComputer& qdis,
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
-            int max_size,
+            size_t max_size,
             bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);

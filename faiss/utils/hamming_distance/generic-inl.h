@@ -88,13 +88,15 @@ struct HammingComputer4 {
         set(a, code_size);
     }
 
-    void set(const uint8_t* a, int code_size) {
+    void set(const uint8_t* a, [[maybe_unused]] int code_size) {
         assert(code_size == 4);
-        a0 = *(uint32_t*)a;
+        const uint32_t* a32 = reinterpret_cast<const uint32_t*>(a);
+        a0 = *a32;
     }
 
     inline int hamming(const uint8_t* b) const {
-        return popcount64(*(uint32_t*)b ^ a0);
+        const uint32_t* b32 = reinterpret_cast<const uint32_t*>(b);
+        return popcount64(*b32 ^ a0);
     }
 
     inline static constexpr int get_code_size() {
@@ -111,13 +113,15 @@ struct HammingComputer8 {
         set(a, code_size);
     }
 
-    void set(const uint8_t* a, int code_size) {
+    void set(const uint8_t* a, [[maybe_unused]] int code_size) {
         assert(code_size == 8);
-        a0 = *(uint64_t*)a;
+        const uint64_t* a64 = reinterpret_cast<const uint64_t*>(a);
+        a0 = *a64;
     }
 
     inline int hamming(const uint8_t* b) const {
-        return popcount64(*(uint64_t*)b ^ a0);
+        const uint64_t* b64 = reinterpret_cast<const uint64_t*>(b);
+        return popcount64(*b64 ^ a0);
     }
 
     inline static constexpr int get_code_size() {
@@ -134,15 +138,15 @@ struct HammingComputer16 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 16);
-        const uint64_t* a = (uint64_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
         a0 = a[0];
         a1 = a[1];
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         return popcount64(b[0] ^ a0) + popcount64(b[1] ^ a1);
     }
 
@@ -163,21 +167,22 @@ struct HammingComputer20 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 20);
-        const uint64_t* a = (uint64_t*)a8;
-        const uint32_t* b = (uint32_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
+        const uint32_t* a32 = reinterpret_cast<const uint32_t*>(a8);
         a0 = a[0];
         a1 = a[1];
         // can't read a[2] since it is uint64_t, not uint32_t
         // results in AddressSanitizer failure reading past end of array
-        a2 = b[4];
+        a2 = a32[4];
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
+        const uint32_t* b32_tail = reinterpret_cast<const uint32_t*>(b + 2);
         return popcount64(b[0] ^ a0) + popcount64(b[1] ^ a1) +
-                popcount64(*(uint32_t*)(b + 2) ^ a2);
+                popcount64(*b32_tail ^ a2);
     }
 
     inline static constexpr int get_code_size() {
@@ -194,9 +199,9 @@ struct HammingComputer32 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 32);
-        const uint64_t* a = (uint64_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
         a0 = a[0];
         a1 = a[1];
         a2 = a[2];
@@ -204,7 +209,7 @@ struct HammingComputer32 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         return popcount64(b[0] ^ a0) + popcount64(b[1] ^ a1) +
                 popcount64(b[2] ^ a2) + popcount64(b[3] ^ a3);
     }
@@ -223,9 +228,9 @@ struct HammingComputer64 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 64);
-        const uint64_t* a = (uint64_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
         a0 = a[0];
         a1 = a[1];
         a2 = a[2];
@@ -237,7 +242,7 @@ struct HammingComputer64 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         return popcount64(b[0] ^ a0) + popcount64(b[1] ^ a1) +
                 popcount64(b[2] ^ a2) + popcount64(b[3] ^ a3) +
                 popcount64(b[4] ^ a4) + popcount64(b[5] ^ a5) +
@@ -256,12 +261,12 @@ struct HammingComputerDefault {
 
     HammingComputerDefault() {}
 
-    HammingComputerDefault(const uint8_t* a8, int code_size) {
-        set(a8, code_size);
+    HammingComputerDefault(const uint8_t* a8_in, int code_size) {
+        set(a8_in, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
-        this->a8 = a8;
+    void set(const uint8_t* a8_in, int code_size) {
+        this->a8 = a8_in;
         quotient8 = code_size / 8;
         remainder8 = code_size % 8;
     }
@@ -332,7 +337,7 @@ struct HammingComputerDefault {
                     [[fallthrough]];
                 case 1:
                     accu += hamdis_tab_ham_bytes[a[0] ^ b[0]];
-                    [[fallthrough]];
+                    break;
                 default:
                     break;
             }
@@ -362,13 +367,15 @@ inline int generalized_hamming_64(uint64_t a) {
 struct GenHammingComputer8 {
     uint64_t a0;
 
-    GenHammingComputer8(const uint8_t* a, int code_size) {
+    GenHammingComputer8(const uint8_t* a, [[maybe_unused]] int code_size) {
         assert(code_size == 8);
-        a0 = *(uint64_t*)a;
+        const uint64_t* a64 = reinterpret_cast<const uint64_t*>(a);
+        a0 = *a64;
     }
 
     inline int hamming(const uint8_t* b) const {
-        return generalized_hamming_64(*(uint64_t*)b ^ a0);
+        const uint64_t* b64 = reinterpret_cast<const uint64_t*>(b);
+        return generalized_hamming_64(*b64 ^ a0);
     }
 
     inline static constexpr int get_code_size() {
@@ -378,15 +385,15 @@ struct GenHammingComputer8 {
 
 struct GenHammingComputer16 {
     uint64_t a0, a1;
-    GenHammingComputer16(const uint8_t* a8, int code_size) {
+    GenHammingComputer16(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 16);
-        const uint64_t* a = (uint64_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
         a0 = a[0];
         a1 = a[1];
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         return generalized_hamming_64(b[0] ^ a0) +
                 generalized_hamming_64(b[1] ^ a1);
     }
@@ -399,9 +406,9 @@ struct GenHammingComputer16 {
 struct GenHammingComputer32 {
     uint64_t a0, a1, a2, a3;
 
-    GenHammingComputer32(const uint8_t* a8, int code_size) {
+    GenHammingComputer32(const uint8_t* a8, [[maybe_unused]] int code_size) {
         assert(code_size == 32);
-        const uint64_t* a = (uint64_t*)a8;
+        const uint64_t* a = reinterpret_cast<const uint64_t*>(a8);
         a0 = a[0];
         a1 = a[1];
         a2 = a[2];
@@ -409,7 +416,7 @@ struct GenHammingComputer32 {
     }
 
     inline int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         return generalized_hamming_64(b[0] ^ a0) +
                 generalized_hamming_64(b[1] ^ a1) +
                 generalized_hamming_64(b[2] ^ a2) +
@@ -427,12 +434,12 @@ struct GenHammingComputerM8 {
 
     GenHammingComputerM8(const uint8_t* a8, int code_size) {
         assert(code_size % 8 == 0);
-        a = (uint64_t*)a8;
+        a = reinterpret_cast<const uint64_t*>(a8);
         n = code_size / 8;
     }
 
     int hamming(const uint8_t* b8) const {
-        const uint64_t* b = (uint64_t*)b8;
+        const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
         int accu = 0;
         for (int i = 0; i < n; i++)
             accu += generalized_hamming_64(a[i] ^ b[i]);

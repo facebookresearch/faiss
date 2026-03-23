@@ -71,7 +71,7 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-toolkit=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
+          conda install -y -q cuda-libraries-dev=12.6 cuda-nvcc=12.6 cuda-nvtx=12.6 cuda-cupti=12.6 cuda-cudart-dev=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-toolkit=12.9 sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
@@ -135,6 +135,10 @@ runs:
         sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
         sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
         sudo ln -s $HOME/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
+    - name: Print GPU info
+      if: inputs.gpu == 'ON'
+      shell: bash
+      run: nvidia-smi
     - name: Build all targets
       shell: bash
       run: |

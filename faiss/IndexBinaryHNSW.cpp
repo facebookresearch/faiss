@@ -172,14 +172,19 @@ IndexBinaryHNSW::IndexBinaryHNSW() {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M) : IndexBinary(d_), hnsw(M) {
-    storage = std::make_unique<IndexBinaryFlat>(d_).release();
-    own_fields = true;
+IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M)
+        : IndexBinary(d_),
+          hnsw(M),
+          own_fields(true),
+          storage(std::make_unique<IndexBinaryFlat>(d_).release()) {
     is_trained = true;
 }
 
 IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage_, int M)
-        : IndexBinary(storage_->d), hnsw(M), storage(storage_) {
+        : IndexBinary(storage_->d),
+          hnsw(M),
+          own_fields(false),
+          storage(storage_) {
     is_trained = true;
 }
 

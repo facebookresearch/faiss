@@ -242,7 +242,7 @@ void HNSW::shrink_neighbor_list(
         DistanceComputer& qdis,
         std::priority_queue<NodeDistFarther>& input,
         std::vector<NodeDistFarther>& output,
-        int max_size,
+        size_t max_size,
         bool keep_max_size_level0) {
     // This prevents number of neighbors at
     // level 0 from being shrunk to less than 2 * M.
@@ -296,7 +296,7 @@ using NodeDistFarther = HNSW::NodeDistFarther;
 void shrink_neighbor_list(
         DistanceComputer& qdis,
         std::priority_queue<NodeDistCloser>& resultSet1,
-        int max_size,
+        size_t max_size,
         bool keep_max_size_level0 = false) {
     if (resultSet1.size() < static_cast<size_t>(max_size)) {
         return;
@@ -351,7 +351,9 @@ void add_link(
         resultSet.emplace(qdis.symmetric_dis(src, neigh), neigh);
     }
 
-    shrink_neighbor_list(qdis, resultSet, end - begin, keep_max_size_level0);
+    size_t max_size = end - begin;
+    max_size -= max_size * std::clamp(hnsw.prune_headroom, 0.0f, 0.5f);
+    shrink_neighbor_list(qdis, resultSet, max_size, keep_max_size_level0);
 
     // ...and back
     size_t i = begin;

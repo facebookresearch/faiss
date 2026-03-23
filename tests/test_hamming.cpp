@@ -18,7 +18,7 @@ std::string print_data(
         std::shared_ptr<std::vector<T>> data,
         const size_t divider) {
     std::string ret;
-    for (int i = 0; i < data->size(); ++i) {
+    for (size_t i = 0; i < data->size(); ++i) {
         if (i % divider) {
             ret += " ";
         } else {
@@ -136,16 +136,16 @@ TEST(TestHamming, test_crosshamming_count_thres) {
         const size_t nwords = nbits / 64;
         // 8 to for later conversion to uint64_t, and 2 for buffer
         std::vector<uint8_t> dbs(nwords * n * 8 * 2);
-        for (int i = 0; i < dbs.size(); ++i) {
+        for (size_t i = 0; i < dbs.size(); ++i) {
             dbs[i] = uniform(rng);
         }
 
         // get true distance
         size_t true_count = 0;
         uint64_t* bs1 = (uint64_t*)dbs.data();
-        for (int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             uint64_t* bs2 = bs1 + 2;
-            for (int j = i + 1; j < n; ++j) {
+            for (size_t j = i + 1; j < n; ++j) {
                 if (faiss::hamming(bs1 + i * nwords, bs2 + j * nwords, nwords) <
                     hamming_threshold) {
                     ++true_count;
@@ -185,10 +185,10 @@ TEST(TestHamming, test_hamming_thres) {
         const size_t nwords = nbits / 64;
         std::vector<uint8_t> bs1(nwords * n1 * 8);
         std::vector<uint8_t> bs2(nwords * n2 * 8);
-        for (int i = 0; i < bs1.size(); ++i) {
+        for (size_t i = 0; i < bs1.size(); ++i) {
             bs1[i] = uniform(rng);
         }
-        for (int i = 0; i < bs2.size(); ++i) {
+        for (size_t i = 0; i < bs2.size(); ++i) {
             bs2[i] = uniform(rng);
         }
 
@@ -199,8 +199,8 @@ TEST(TestHamming, test_hamming_thres) {
 
         uint64_t* bs1_64 = (uint64_t*)bs1.data();
         uint64_t* bs2_64 = (uint64_t*)bs2.data();
-        for (int i = 0; i < n1; ++i) {
-            for (int j = 0; j < n2; ++j) {
+        for (size_t i = 0; i < n1; ++i) {
+            for (size_t j = 0; j < n2; ++j) {
                 hamdis_t ham_dist = faiss::hamming(
                         bs1_64 + i * nwords, bs2_64 + j * nwords, nwords);
                 if (ham_dist < hamming_threshold) {
