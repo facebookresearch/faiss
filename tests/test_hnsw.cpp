@@ -209,8 +209,7 @@ void copy_base_level_only(
         size_t dst_begin, dst_end;
         dst.hnsw.neighbor_range(i, 0, &dst_begin, &dst_end);
 
-        for (size_t j = 0; j < graph_degree && j < (dst_end - dst_begin);
-             j++) {
+        for (size_t j = 0; j < graph_degree && j < (dst_end - dst_begin); j++) {
             dst.hnsw.neighbors[dst_begin + j] =
                     src.hnsw.neighbors[src_begin + j];
         }

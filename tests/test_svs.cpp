@@ -116,9 +116,8 @@ void write_and_read_index(T& index, const std::vector<float>& xb, size_t n) {
     EXPECT_EQ(loaded->max_candidate_pool_size, index.max_candidate_pool_size);
     EXPECT_EQ(loaded->prune_to, index.prune_to);
     EXPECT_EQ(loaded->use_full_search_history, index.use_full_search_history);
-    if constexpr (std::is_same_v<
-                          std::decay_t<T>,
-                          faiss::IndexSVSVamanaLeanVec>) {
+    if constexpr (
+            std::is_same_v<std::decay_t<T>, faiss::IndexSVSVamanaLeanVec>) {
         auto* leanvec_loaded =
                 dynamic_cast<faiss::IndexSVSVamanaLeanVec*>(loaded);
         ASSERT_NE(leanvec_loaded, nullptr);

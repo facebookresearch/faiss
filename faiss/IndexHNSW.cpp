@@ -1110,15 +1110,7 @@ void IndexHNSWCagra::range_search(
         VisitedTable vt(ntotal, hnsw.use_visited_hashset);
         HNSWStats stats;
         hnsw.search_level_0(
-                *dis,
-                res,
-                1,
-                &nearest,
-                &nearest_d,
-                1,
-                stats,
-                vt,
-                params);
+                *dis, res, 1, &nearest, &nearest_d, 1, stats, vt, params);
         n1 += stats.n1;
         n2 += stats.n2;
         ndis += stats.ndis;
