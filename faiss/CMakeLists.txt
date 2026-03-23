@@ -481,7 +481,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
 endif()
 
 if(FAISS_ENABLE_SVS)
-  find_package(svs_runtime 0.2.0 REQUIRED)
+  find_package(svs_runtime REQUIRED)
 
   target_link_libraries(faiss PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)
