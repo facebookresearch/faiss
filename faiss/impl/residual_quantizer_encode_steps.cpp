@@ -11,12 +11,12 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/simd_dispatch.h>
-#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/utils/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/rq_beam_search_tab.h>
 
 extern "C" {
 
@@ -38,190 +38,6 @@ int sgemm_(
 }
 
 namespace faiss {
-
-/********************************************************************
- * Basic routines
- ********************************************************************/
-
-namespace {
-
-template <size_t M, size_t NK>
-void accum_and_store_tab(
-        const size_t m_offset,
-        const float* const __restrict codebook_cross_norms,
-        const uint64_t* const __restrict codebook_offsets,
-        const int32_t* const __restrict codes_i,
-        const size_t b,
-        const size_t ldc,
-        const size_t K,
-        float* const __restrict output) {
-    // load pointers into registers
-    const float* cbs[M];
-    for (size_t ij = 0; ij < M; ij++) {
-        const size_t code = static_cast<size_t>(codes_i[b * m_offset + ij]);
-        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
-    }
-
-    // do accumulation in registers using SIMD.
-    // It is possible that compiler may be smart enough so that
-    //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
-    const size_t K8 = (K / (8 * NK)) * (8 * NK);
-
-    // process in chunks of size (8 * NK) floats
-    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
-        for (size_t ik = 0; ik < NK; ik++) {
-            regs[ik].loadu(cbs[0] + kk + ik * 8);
-        }
-
-        for (size_t ij = 1; ij < M; ij++) {
-            for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
-            }
-        }
-
-        // write the result
-        for (size_t ik = 0; ik < NK; ik++) {
-            regs[ik].storeu(output + kk + ik * 8);
-        }
-    }
-#else
-    const size_t K8 = 0;
-#endif
-
-    // process leftovers
-    for (size_t kk = K8; kk < K; kk++) {
-        float reg = cbs[0][kk];
-        for (size_t ij = 1; ij < M; ij++) {
-            reg += cbs[ij][kk];
-        }
-        output[kk] = reg;
-    }
-}
-
-template <size_t M, size_t NK>
-void accum_and_add_tab(
-        const size_t m_offset,
-        const float* const __restrict codebook_cross_norms,
-        const uint64_t* const __restrict codebook_offsets,
-        const int32_t* const __restrict codes_i,
-        const size_t b,
-        const size_t ldc,
-        const size_t K,
-        float* const __restrict output) {
-    // load pointers into registers
-    const float* cbs[M];
-    for (size_t ij = 0; ij < M; ij++) {
-        const size_t code = static_cast<size_t>(codes_i[b * m_offset + ij]);
-        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
-    }
-
-    // do accumulation in registers using SIMD.
-    // It is possible that compiler may be smart enough so that
-    //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
-    const size_t K8 = (K / (8 * NK)) * (8 * NK);
-
-    // process in chunks of size (8 * NK) floats
-    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
-        for (size_t ik = 0; ik < NK; ik++) {
-            regs[ik].loadu(cbs[0] + kk + ik * 8);
-        }
-
-        for (size_t ij = 1; ij < M; ij++) {
-            for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
-            }
-        }
-
-        // write the result
-        for (size_t ik = 0; ik < NK; ik++) {
-            simd8float32 existing(output + kk + ik * 8);
-            existing += regs[ik];
-            existing.storeu(output + kk + ik * 8);
-        }
-    }
-#else
-    const size_t K8 = 0;
-#endif
-
-    // process leftovers
-    for (size_t kk = K8; kk < K; kk++) {
-        float reg = cbs[0][kk];
-        for (size_t ij = 1; ij < M; ij++) {
-            reg += cbs[ij][kk];
-        }
-        output[kk] += reg;
-    }
-}
-
-template <size_t M, size_t NK>
-void accum_and_finalize_tab(
-        const float* const __restrict codebook_cross_norms,
-        const uint64_t* const __restrict codebook_offsets,
-        const int32_t* const __restrict codes_i,
-        const size_t b,
-        const size_t ldc,
-        const size_t K,
-        const float* const __restrict distances_i,
-        const float* const __restrict cd_common,
-        float* const __restrict output) {
-    // load pointers into registers
-    const float* cbs[M];
-    for (size_t ij = 0; ij < M; ij++) {
-        const size_t code = static_cast<size_t>(codes_i[b * M + ij]);
-        cbs[ij] = &codebook_cross_norms[(codebook_offsets[ij] + code) * ldc];
-    }
-
-    // do accumulation in registers using SIMD.
-    // It is possible that compiler may be smart enough so that
-    //   this manual SIMD unrolling might be unneeded.
-#if defined(__AVX2__) || defined(__aarch64__)
-    const size_t K8 = (K / (8 * NK)) * (8 * NK);
-
-    // process in chunks of size (8 * NK) floats
-    for (size_t kk = 0; kk < K8; kk += 8 * NK) {
-        simd8float32 regs[NK];
-        for (size_t ik = 0; ik < NK; ik++) {
-            regs[ik].loadu(cbs[0] + kk + ik * 8);
-        }
-
-        for (size_t ij = 1; ij < M; ij++) {
-            for (size_t ik = 0; ik < NK; ik++) {
-                regs[ik] += simd8float32(cbs[ij] + kk + ik * 8);
-            }
-        }
-
-        simd8float32 two(2.0f);
-        for (size_t ik = 0; ik < NK; ik++) {
-            // cent_distances[b * K + k] = distances_i[b] + cd_common[k]
-            //     + 2 * dp[k];
-
-            simd8float32 common_v(cd_common + kk + ik * 8);
-            common_v = fmadd(two, regs[ik], common_v);
-
-            common_v += simd8float32(distances_i[b]);
-            common_v.storeu(output + b * K + kk + ik * 8);
-        }
-    }
-#else
-    const size_t K8 = 0;
-#endif
-
-    // process leftovers
-    for (size_t kk = K8; kk < K; kk++) {
-        float reg = cbs[0][kk];
-        for (size_t ij = 1; ij < M; ij++) {
-            reg += cbs[ij][kk];
-        }
-
-        output[b * K + kk] = distances_i[b] + cd_common[kk] + 2 * reg;
-    }
-}
-
-} // anonymous namespace
 
 /********************************************************************
  * Single encoding step
@@ -250,12 +66,12 @@ void beam_search_encode_step(
 
     if (assign_index) {
         // search beam_size distances per query
-        FAISS_THROW_IF_NOT(assign_index->d == d);
+        FAISS_THROW_IF_NOT(assign_index->d == static_cast<int>(d));
         cent_distances.resize(n * beam_size * new_beam_size);
         cent_ids.resize(n * beam_size * new_beam_size);
         if (assign_index->ntotal != 0) {
             // then we assume the codebooks are already added to the index
-            FAISS_THROW_IF_NOT(assign_index->ntotal == K);
+            FAISS_THROW_IF_NOT(assign_index->ntotal == static_cast<idx_t>(K));
         } else {
             assign_index->add(K, cent);
         }
@@ -277,7 +93,7 @@ void beam_search_encode_step(
     InterruptCallback::check();
 
 #pragma omp parallel for if (n > 100)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         const int32_t* codes_i = codes + i * m * beam_size;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
         const float* residuals_i = residuals + i * d * beam_size;
@@ -293,7 +109,7 @@ void beam_search_encode_step(
                     cent_ids.data() + i * beam_size * new_beam_size;
 
             // here we could be a tad more efficient by merging sorted arrays
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 new_distances_i[j] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
@@ -306,7 +122,7 @@ void beam_search_encode_step(
                     beam_size * new_beam_size);
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / new_beam_size;
                 int ls = cent_ids_i[perm[j]];
                 if (m > 0) {
@@ -326,27 +142,33 @@ void beam_search_encode_step(
             const float* cent_distances_i =
                     cent_distances.data() + i * beam_size * K;
             // then we have to select the best results
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 new_distances_i[j] = C::neutral();
             }
             std::vector<int> perm(new_beam_size, -1);
 
-#define HANDLE_APPROX(NB, BD)                                  \
-    case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD: \
-        HeapWithBuckets<C, NB, BD>::bs_addn(                   \
-                beam_size,                                     \
-                K,                                             \
-                cent_distances_i,                              \
-                new_beam_size,                                 \
-                new_distances_i,                               \
-                perm.data());                                  \
-        break;
-
+            auto approx = [&]<uint32_t NB, uint32_t ND>() {
+                HeapWithBuckets<C, NB, ND>::bs_addn(
+                        beam_size,
+                        K,
+                        cent_distances_i,
+                        new_beam_size,
+                        new_distances_i,
+                        perm.data());
+            };
             switch (approx_topk_mode) {
-                HANDLE_APPROX(8, 3)
-                HANDLE_APPROX(8, 2)
-                HANDLE_APPROX(16, 2)
-                HANDLE_APPROX(32, 2)
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
+                    approx.template operator()<8, 3>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
+                    approx.template operator()<8, 2>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
+                    approx.template operator()<16, 2>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
+                    approx.template operator()<32, 2>();
+                    break;
                 default:
                     heap_addn<C>(
                             new_beam_size,
@@ -358,9 +180,7 @@ void beam_search_encode_step(
             }
             heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-#undef HANDLE_APPROX
-
-            for (int j = 0; j < new_beam_size; j++) {
+            for (size_t j = 0; j < new_beam_size; j++) {
                 int js = perm[j] / K;
                 int ls = perm[j] % K;
                 if (m > 0) {
@@ -380,6 +200,166 @@ void beam_search_encode_step(
 }
 
 // exposed in the faiss namespace
+
+namespace {
+
+// Baseline (scalar) implementation for computing cent_distances.
+// Accumulates codebook cross-norms via fvec_add into a temporary buffer.
+// Its primary flaw is that it writes too much to the temporary buffer dp.
+// This code is kept because it is easy to understand what the optimized
+// SIMD version (compute_cent_distances_simd) optimizes exactly.
+void compute_cent_distances_baseline(
+        size_t K,
+        size_t beam_size,
+        const float* codebook_cross_norms,
+        size_t ldc,
+        const uint64_t* codebook_offsets,
+        size_t m,
+        const int32_t* codes_i,
+        const float* distances_i,
+        const float* cd_common,
+        float* cent_distances) {
+    for (size_t b = 0; b < beam_size; b++) {
+        std::vector<float> dp(K);
+        for (size_t m1 = 0; m1 < m; m1++) {
+            size_t c = codes_i[b * m + m1];
+            const float* cb =
+                    &codebook_cross_norms[(codebook_offsets[m1] + c) * ldc];
+            fvec_add(K, cb, dp.data(), dp.data());
+        }
+        for (size_t k = 0; k < K; k++) {
+            cent_distances[b * K + k] =
+                    distances_i[b] + cd_common[k] + 2 * dp[k];
+        }
+    }
+}
+
+// SIMD-optimized implementation for computing cent_distances.
+// Uses accum_and_finalize_tab / accum_and_store_tab / accum_and_add_tab
+// to accumulate codebook cross-norms in SIMD registers.
+template <SIMDLevel SL>
+void compute_cent_distances_simd(
+        size_t K,
+        size_t beam_size,
+        const float* codebook_cross_norms,
+        size_t ldc,
+        const uint64_t* codebook_offsets,
+        size_t m,
+        const int32_t* codes_i,
+        const float* distances_i,
+        const float* cd_common,
+        float* cent_distances) {
+    auto do_finalize = [&]<size_t NK>() {
+        for (size_t b = 0; b < beam_size; b++) {
+            accum_and_finalize_tab<NK, 4, SL>(
+                    codebook_cross_norms,
+                    codebook_offsets,
+                    codes_i,
+                    b,
+                    ldc,
+                    K,
+                    distances_i,
+                    cd_common,
+                    cent_distances);
+        }
+    };
+
+    switch (m) {
+        case 0:
+            for (size_t b = 0; b < beam_size; b++) {
+                for (size_t k = 0; k < K; k++) {
+                    cent_distances[b * K + k] = distances_i[b] + cd_common[k];
+                }
+            }
+            break;
+        case 1:
+            do_finalize.template operator()<1>();
+            break;
+        case 2:
+            do_finalize.template operator()<2>();
+            break;
+        case 3:
+            do_finalize.template operator()<3>();
+            break;
+        case 4:
+            do_finalize.template operator()<4>();
+            break;
+        case 5:
+            do_finalize.template operator()<5>();
+            break;
+        case 6:
+            do_finalize.template operator()<6>();
+            break;
+        case 7:
+            do_finalize.template operator()<7>();
+            break;
+        default: {
+            // m >= 8: accumulate in chunks of 8 into a temporary buffer.
+            std::vector<float> dp(K);
+
+            for (size_t b = 0; b < beam_size; b++) {
+                accum_and_store_tab<8, 4, SL>(
+                        m,
+                        codebook_cross_norms,
+                        codebook_offsets,
+                        codes_i,
+                        b,
+                        ldc,
+                        K,
+                        dp.data());
+
+                for (size_t im = 8; im < ((m + 7) / 8) * 8; im += 8) {
+                    size_t m_left = std::min(m - im, size_t(8));
+                    auto do_add = [&]<size_t NK2>() {
+                        accum_and_add_tab<NK2, 4, SL>(
+                                m,
+                                codebook_cross_norms,
+                                codebook_offsets + im,
+                                codes_i + im,
+                                b,
+                                ldc,
+                                K,
+                                dp.data());
+                    };
+                    switch (m_left) {
+                        case 1:
+                            do_add.template operator()<1>();
+                            break;
+                        case 2:
+                            do_add.template operator()<2>();
+                            break;
+                        case 3:
+                            do_add.template operator()<3>();
+                            break;
+                        case 4:
+                            do_add.template operator()<4>();
+                            break;
+                        case 5:
+                            do_add.template operator()<5>();
+                            break;
+                        case 6:
+                            do_add.template operator()<6>();
+                            break;
+                        case 7:
+                            do_add.template operator()<7>();
+                            break;
+                        case 8:
+                            do_add.template operator()<8>();
+                            break;
+                    }
+                }
+
+                for (size_t k = 0; k < K; k++) {
+                    cent_distances[b * K + k] =
+                            distances_i[b] + cd_common[k] + 2 * dp[k];
+                }
+            }
+        }
+    }
+}
+
+} // anonymous namespace
+
 void beam_search_encode_step_tab(
         size_t K,
         size_t n,
@@ -401,7 +381,7 @@ void beam_search_encode_step_tab(
     FAISS_THROW_IF_NOT(ldc >= K);
 
 #pragma omp parallel for if (n > 100) schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         std::vector<float> cent_distances(beam_size * K);
         std::vector<float> cd_common(K);
 
@@ -413,145 +393,33 @@ void beam_search_encode_step_tab(
             cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
         }
 
-        bool use_baseline_implementation = false;
-
-        // This is the baseline implementation. Its primary flaw
-        //   that it writes way too many info to the temporary buffer
-        //   called dp.
-        //
-        // This baseline code is kept intentionally because it is easy to
-        // understand what an optimized version optimizes exactly.
-        //
-        if (use_baseline_implementation) {
-            for (size_t b = 0; b < beam_size; b++) {
-                std::vector<float> dp(K);
-
-                for (size_t m1 = 0; m1 < m; m1++) {
-                    size_t c = codes_i[b * m + m1];
-                    const float* cb =
-                            &codebook_cross_norms
-                                    [(codebook_offsets[m1] + c) * ldc];
-                    fvec_add(K, cb, dp.data(), dp.data());
-                }
-
-                for (size_t k = 0; k < K; k++) {
-                    cent_distances[b * K + k] =
-                            distances_i[b] + cd_common[k] + 2 * dp[k];
-                }
+        with_simd_level_256bit([&]<SIMDLevel SL>() {
+            if constexpr (SL == SIMDLevel::NONE) {
+                compute_cent_distances_baseline(
+                        K,
+                        beam_size,
+                        codebook_cross_norms,
+                        ldc,
+                        codebook_offsets,
+                        m,
+                        codes_i,
+                        distances_i,
+                        cd_common.data(),
+                        cent_distances.data());
+            } else {
+                compute_cent_distances_simd<SL>(
+                        K,
+                        beam_size,
+                        codebook_cross_norms,
+                        ldc,
+                        codebook_offsets,
+                        m,
+                        codes_i,
+                        distances_i,
+                        cd_common.data(),
+                        cent_distances.data());
             }
-
-        } else {
-            // An optimized implementation that avoids using a temporary buffer
-            // and does the accumulation in registers.
-
-            // Compute a sum of NK AQ codes.
-#define ACCUM_AND_FINALIZE_TAB(NK)               \
-    case NK:                                     \
-        for (size_t b = 0; b < beam_size; b++) { \
-            accum_and_finalize_tab<NK, 4>(       \
-                    codebook_cross_norms,        \
-                    codebook_offsets,            \
-                    codes_i,                     \
-                    b,                           \
-                    ldc,                         \
-                    K,                           \
-                    distances_i,                 \
-                    cd_common.data(),            \
-                    cent_distances.data());      \
-        }                                        \
-        break;
-
-            // this version contains many switch-case scenarios, but
-            // they won't affect branch predictor.
-            switch (m) {
-                case 0:
-                    // trivial case
-                    for (size_t b = 0; b < beam_size; b++) {
-                        for (size_t k = 0; k < K; k++) {
-                            cent_distances[b * K + k] =
-                                    distances_i[b] + cd_common[k];
-                        }
-                    }
-                    break;
-
-                    ACCUM_AND_FINALIZE_TAB(1)
-                    ACCUM_AND_FINALIZE_TAB(2)
-                    ACCUM_AND_FINALIZE_TAB(3)
-                    ACCUM_AND_FINALIZE_TAB(4)
-                    ACCUM_AND_FINALIZE_TAB(5)
-                    ACCUM_AND_FINALIZE_TAB(6)
-                    ACCUM_AND_FINALIZE_TAB(7)
-
-                default: {
-                    // m >= 8 case.
-
-                    // A temporary buffer has to be used due to the lack of
-                    // registers. But we'll try to accumulate up to 8 AQ codes
-                    // in registers and issue a single write operation to the
-                    // buffer, while the baseline does no accumulation. So, the
-                    // number of write operations to the temporary buffer is
-                    // reduced 8x.
-
-                    // allocate a temporary buffer
-                    std::vector<float> dp(K);
-
-                    for (size_t b = 0; b < beam_size; b++) {
-                        // Initialize it. Compute a sum of first 8 AQ codes
-                        // because m >= 8 .
-                        accum_and_store_tab<8, 4>(
-                                m,
-                                codebook_cross_norms,
-                                codebook_offsets,
-                                codes_i,
-                                b,
-                                ldc,
-                                K,
-                                dp.data());
-
-#define ACCUM_AND_ADD_TAB(NK)          \
-    case NK:                           \
-        accum_and_add_tab<NK, 4>(      \
-                m,                     \
-                codebook_cross_norms,  \
-                codebook_offsets + im, \
-                codes_i + im,          \
-                b,                     \
-                ldc,                   \
-                K,                     \
-                dp.data());            \
-        break;
-
-                        // accumulate up to 8 additional AQ codes into
-                        // a temporary buffer
-                        for (size_t im = 8; im < ((m + 7) / 8) * 8; im += 8) {
-                            size_t m_left = m - im;
-                            if (m_left > 8) {
-                                m_left = 8;
-                            }
-
-                            switch (m_left) {
-                                ACCUM_AND_ADD_TAB(1)
-                                ACCUM_AND_ADD_TAB(2)
-                                ACCUM_AND_ADD_TAB(3)
-                                ACCUM_AND_ADD_TAB(4)
-                                ACCUM_AND_ADD_TAB(5)
-                                ACCUM_AND_ADD_TAB(6)
-                                ACCUM_AND_ADD_TAB(7)
-                                ACCUM_AND_ADD_TAB(8)
-                            }
-                        }
-
-                        // done. finalize the result
-                        for (size_t k = 0; k < K; k++) {
-                            cent_distances[b * K + k] =
-                                    distances_i[b] + cd_common[k] + 2 * dp[k];
-                        }
-                    }
-                }
-            }
-
-            // the optimized implementation ends here
-        }
+        });
         using C = CMax<float, int>;
         int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
         float* new_distances_i = new_distances + i * new_beam_size;
@@ -559,27 +427,33 @@ void beam_search_encode_step_tab(
         const float* cent_distances_i = cent_distances.data();
 
         // then we have to select the best results
-        for (int j = 0; j < new_beam_size; j++) {
+        for (size_t j = 0; j < new_beam_size; j++) {
             new_distances_i[j] = C::neutral();
         }
         std::vector<int> perm(new_beam_size, -1);
 
-#define HANDLE_APPROX(NB, BD)                                  \
-    case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B##NB##_D##BD: \
-        HeapWithBuckets<C, NB, BD>::bs_addn(                   \
-                beam_size,                                     \
-                K,                                             \
-                cent_distances_i,                              \
-                new_beam_size,                                 \
-                new_distances_i,                               \
-                perm.data());                                  \
-        break;
-
+        auto approx = [&]<uint32_t NB, uint32_t ND>() {
+            HeapWithBuckets<C, NB, ND>::bs_addn(
+                    beam_size,
+                    K,
+                    cent_distances_i,
+                    new_beam_size,
+                    new_distances_i,
+                    perm.data());
+        };
         switch (approx_topk_mode) {
-            HANDLE_APPROX(8, 3)
-            HANDLE_APPROX(8, 2)
-            HANDLE_APPROX(16, 2)
-            HANDLE_APPROX(32, 2)
+            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
+                approx.template operator()<8, 3>();
+                break;
+            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
+                approx.template operator()<8, 2>();
+                break;
+            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
+                approx.template operator()<16, 2>();
+                break;
+            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
+                approx.template operator()<32, 2>();
+                break;
             default:
                 heap_addn<C>(
                         new_beam_size,
@@ -593,9 +467,7 @@ void beam_search_encode_step_tab(
 
         heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
 
-#undef HANDLE_APPROX
-
-        for (int j = 0; j < new_beam_size; j++) {
+        for (size_t j = 0; j < new_beam_size; j++) {
             int js = perm[j] / K;
             int ls = perm[j] % K;
             if (m > 0) {
@@ -631,7 +503,7 @@ void refine_beam_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = cur_beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -672,7 +544,7 @@ void refine_beam_mp(
     size_t distances_size = 0;
     size_t residuals_size = 0;
 
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         const float* __restrict codebooks_m =
@@ -711,14 +583,14 @@ void refine_beam_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += pool.distances[j];
             }
 
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    cur_beam_size);
@@ -757,7 +629,7 @@ void refine_beam_LUT_mp(
     int max_beam_size = 0;
     {
         int tmp_beam_size = beam_size;
-        for (int m = 0; m < rq.M; m++) {
+        for (size_t m = 0; m < rq.M; m++) {
             int K = 1 << rq.nbits[m];
             int new_beam_size = std::min(tmp_beam_size * K, out_beam_size);
             tmp_beam_size = new_beam_size;
@@ -790,7 +662,7 @@ void refine_beam_LUT_mp(
     size_t codes_size = 0;
     size_t distances_size = 0;
     size_t cross_ofs = 0;
-    for (int m = 0; m < rq.M; m++) {
+    for (size_t m = 0; m < rq.M; m++) {
         int K = 1 << rq.nbits[m];
 
         // it is guaranteed that (new_beam_size <= max_beam_size)
@@ -826,13 +698,13 @@ void refine_beam_LUT_mp(
 
         if (rq.verbose) {
             float sum_distances = 0;
-            for (int j = 0; j < distances_size; j++) {
+            for (size_t j = 0; j < distances_size; j++) {
                 sum_distances += distances_ptr[j];
             }
             printf("[%.3f s] encode stage %d, %d bits, "
                    "total error %g, beam_size %d\n",
                    (getmillisecs() - t0) / 1000,
-                   m,
+                   int(m),
                    int(rq.nbits[m]),
                    sum_distances,
                    beam_size);

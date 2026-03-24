@@ -75,7 +75,8 @@ struct HNSW {
         std::vector<float> dis;
         typedef faiss::CMax<float, storage_idx_t> HC;
 
-        explicit MinimaxHeap(int n) : n(n), k(0), nvalid(0), ids(n), dis(n) {}
+        explicit MinimaxHeap(int n_in)
+                : n(n_in), k(0), nvalid(0), ids(n_in), dis(n_in) {}
 
         void push(storage_idx_t i, float v);
 
@@ -94,7 +95,7 @@ struct HNSW {
     struct NodeDistCloser {
         float d;
         int id;
-        NodeDistCloser(float d, int id) : d(d), id(id) {}
+        NodeDistCloser(float d_in, int id_in) : d(d_in), id(id_in) {}
         bool operator<(const NodeDistCloser& obj1) const {
             return d < obj1.d;
         }
@@ -103,7 +104,7 @@ struct HNSW {
     struct NodeDistFarther {
         float d;
         int id;
-        NodeDistFarther(float d, int id) : d(d), id(id) {}
+        NodeDistFarther(float d_in, int id_in) : d(d_in), id(id_in) {}
         bool operator<(const NodeDistFarther& obj1) const {
             return d > obj1.d;
         }
@@ -141,6 +142,10 @@ struct HNSW {
 
     /// expansion factor at search time
     int efSearch = 16;
+
+    /// when pruning, leave room for more neighbors to avoid O(n^2)
+    /// costs and lock contention on frequently-pruned nodes.
+    float prune_headroom = 0.2f;
 
     /// during search: do we check whether the next best distance is good
     /// enough?
@@ -241,7 +246,7 @@ struct HNSW {
             DistanceComputer& qdis,
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
-            int max_size,
+            size_t max_size,
             bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);

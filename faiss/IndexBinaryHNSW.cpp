@@ -62,7 +62,7 @@ void hnsw_add_vertices(
     }
 
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
     }
 
@@ -73,10 +73,10 @@ void hnsw_add_vertices(
     { // make buckets with vectors of the same level
 
         // build histogram
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             HNSW::storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= hist.size()) {
+            while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
             }
             hist[pt_level]++;
@@ -84,12 +84,12 @@ void hnsw_add_vertices(
 
         // accumulate
         std::vector<int> offsets(hist.size() + 1, 0);
-        for (int i = 0; i < hist.size() - 1; i++) {
+        for (size_t i = 0; i < hist.size() - 1; i++) {
             offsets[i + 1] = offsets[i] + hist[i];
         }
 
         // bucket sort
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             HNSW::storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
@@ -101,7 +101,7 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1;
+        for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
             int i0 = i1 - hist[pt_level];
@@ -157,7 +157,7 @@ void hnsw_add_vertices(
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
     }
 }
@@ -172,14 +172,19 @@ IndexBinaryHNSW::IndexBinaryHNSW() {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(int d, int M) : IndexBinary(d), hnsw(M) {
-    storage = std::make_unique<IndexBinaryFlat>(d).release();
-    own_fields = true;
+IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M)
+        : IndexBinary(d_),
+          hnsw(M),
+          own_fields(true),
+          storage(std::make_unique<IndexBinaryFlat>(d_).release()) {
     is_trained = true;
 }
 
-IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage, int M)
-        : IndexBinary(storage->d), hnsw(M), storage(storage) {
+IndexBinaryHNSW::IndexBinaryHNSW(IndexBinary* storage_, int M)
+        : IndexBinary(storage_->d),
+          hnsw(M),
+          own_fields(false),
+          storage(storage_) {
     is_trained = true;
 }
 
@@ -217,13 +222,15 @@ void IndexBinaryHNSW::search(
     using RH = HeapBlockResultHandler<HNSW::C>;
     RH bres(n, distances_f, labels, k);
 
+    size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+
 #pragma omp parallel
     {
         VisitedTable vt(ntotal);
         std::unique_ptr<DistanceComputer> dis(get_distance_computer());
         RH::SingleResultHandler res(bres);
 
-#pragma omp for
+#pragma omp for reduction(+ : n1, n2, ndis, nhops)
         for (idx_t i = 0; i < n; i++) {
             res.begin(i);
             dis->set_query((float*)(x + i * code_size));
@@ -231,13 +238,19 @@ void IndexBinaryHNSW::search(
             // as the index parameter. This state does not get used in the
             // search function, as it is merely there to to enable Panorama
             // execution for IndexHNSWFlatPanorama.
-            hnsw.search(*dis, nullptr, res, vt, params_in);
+            HNSWStats stats = hnsw.search(*dis, nullptr, res, vt, params_in);
+            n1 += stats.n1;
+            n2 += stats.n2;
+            ndis += stats.ndis;
+            nhops += stats.nhops;
             res.end();
         }
     }
 
+    hnsw_stats.combine({n1, n2, ndis, nhops});
+
 #pragma omp parallel for
-    for (int i = 0; i < n * k; ++i) {
+    for (idx_t i = 0; i < n * k; ++i) {
         distances[i] = std::round(distances_f[i]);
     }
 }
@@ -248,7 +261,13 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+    hnsw_add_vertices(
+            *this,
+            n0,
+            n,
+            x,
+            verbose,
+            hnsw.levels.size() == static_cast<size_t>(ntotal));
 }
 
 void IndexBinaryHNSW::reset() {
@@ -267,11 +286,9 @@ template <class HammingComputer>
 struct FlatHammingDis : DistanceComputer {
     const int code_size;
     const uint8_t* b;
-    size_t ndis;
     HammingComputer hc;
 
     float operator()(idx_t i) override {
-        ndis++;
         return hc.hamming(b + i * code_size);
     }
 
@@ -281,22 +298,12 @@ struct FlatHammingDis : DistanceComputer {
     }
 
     explicit FlatHammingDis(const IndexBinaryFlat& storage)
-            : code_size(storage.code_size),
-              b(storage.xb.data()),
-              ndis(0),
-              hc() {}
+            : code_size(storage.code_size), b(storage.xb.data()), hc() {}
 
     // NOTE: Pointers are cast from float in order to reuse the floating-point
     //   DistanceComputer.
     void set_query(const float* x) override {
         hc.set((uint8_t*)x, code_size);
-    }
-
-    ~FlatHammingDis() override {
-#pragma omp critical
-        {
-            hnsw_stats.ndis += ndis;
-        }
     }
 };
 
@@ -325,8 +332,8 @@ IndexBinaryHNSWCagra::IndexBinaryHNSWCagra() : IndexBinaryHNSW() {
     storage = nullptr;
 }
 
-IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d, int M)
-        : IndexBinaryHNSW(d, M) {
+IndexBinaryHNSWCagra::IndexBinaryHNSWCagra(int d_, int M)
+        : IndexBinaryHNSW(d_, M) {
     init_level0 = true;
     keep_max_size_level0 = true;
 }
@@ -407,10 +414,14 @@ void IndexBinaryHNSWCagra::search(
 
                 res.end();
             }
+#pragma omp critical
+            {
+                hnsw_stats.combine(search_stats);
+            }
         }
 
 #pragma omp parallel for
-        for (int i = 0; i < n * k; ++i) {
+        for (idx_t i = 0; i < n * k; ++i) {
             distances[i] = std::round(distances_f[i]);
         }
     }

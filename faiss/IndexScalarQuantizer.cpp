@@ -26,10 +26,10 @@ namespace faiss {
  ********************************************************************/
 
 IndexScalarQuantizer::IndexScalarQuantizer(
-        int d,
+        int d_in,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric)
-        : IndexFlatCodes(0, d, metric), sq(d, qtype) {
+        : IndexFlatCodes(0, d_in, metric), sq(d_in, qtype) {
     is_trained = qtype == ScalarQuantizer::QT_fp16 ||
             qtype == ScalarQuantizer::QT_8bit_direct ||
             qtype == ScalarQuantizer::QT_bf16 ||
@@ -117,16 +117,17 @@ void IndexScalarQuantizer::sa_decode(idx_t n, const uint8_t* bytes, float* x)
  ********************************************************************/
 
 IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_,
+        size_t d_,
+        size_t nlist_,
         ScalarQuantizer::QuantizerType qtype,
         MetricType metric,
-        bool by_residual,
-        bool own_invlists)
-        : IndexIVF(quantizer, d, nlist, 0, metric, own_invlists), sq(d, qtype) {
+        bool by_residual_,
+        bool own_invlists_)
+        : IndexIVF(quantizer_, d_, nlist_, 0, metric, own_invlists_),
+          sq(d_, qtype) {
     code_size = sq.code_size;
-    this->by_residual = by_residual;
+    this->by_residual = by_residual_;
     if (invlists) {
         // was not known at construction time
         invlists->code_size = code_size;
@@ -141,7 +142,7 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer() : IndexIVF() {
 void IndexIVFScalarQuantizer::train_encoder(
         idx_t n,
         const float* x,
-        const idx_t* assign) {
+        const idx_t* /*assign*/) {
     sq.train(n, x);
 }
 
@@ -208,7 +209,7 @@ void IndexIVFScalarQuantizer::sa_decode(idx_t n, const uint8_t* codes, float* x)
             squant->decode_vector(code + coarse_size, xi);
             if (by_residual) {
                 quantizer->reconstruct(list_no, residual.data());
-                for (size_t j = 0; j < d; j++) {
+                for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                     xi[j] += residual[j];
                 }
             }
@@ -236,7 +237,7 @@ void IndexIVFScalarQuantizer::add_core(
         int rank = omp_get_thread_num();
 
         // each thread takes care of a subset of lists
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             int64_t list_no = coarse_idx[i];
             if (list_no >= 0 && list_no % nt == rank) {
                 int64_t id = xids ? xids[i] : ntotal + i;

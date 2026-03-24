@@ -15,7 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <faiss/utils/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 #include <faiss/impl/FaissException.h>
 #include <faiss/utils/Heap.h>

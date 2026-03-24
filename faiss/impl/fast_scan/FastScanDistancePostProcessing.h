@@ -11,9 +11,6 @@
 
 namespace faiss {
 
-// Forward declarations
-struct NormTableScaler;
-
 namespace rabitq_utils {
 struct QueryFactorsData;
 }
@@ -22,8 +19,10 @@ struct QueryFactorsData;
  * Simple context object that holds processors for FastScan operations.
  * */
 struct FastScanDistancePostProcessing {
-    /// Norm scaling processor for Additive Quantizers (nullptr if not needed)
-    const NormTableScaler* norm_scaler = nullptr;
+    /// Norm scaling processor for Additive Quantizers.
+    /// The scale is encoded in a 2x4 bit PQ table, then scaled by this int.
+    /// Set to 0 if unused.
+    int pq2x4_scale = 0;
 
     /// Query factors data pointer for RaBitQ (nullptr if not needed)
     /// This pointer should point to the beginning of the relevant
@@ -41,7 +40,7 @@ struct FastScanDistancePostProcessing {
 
     /// Check if norm scaling is enabled
     bool has_norm_scaling() const {
-        return norm_scaler != nullptr;
+        return pq2x4_scale != 0;
     }
 
     /// Check if query factors processing is enabled

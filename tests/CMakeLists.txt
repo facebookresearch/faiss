@@ -41,6 +41,8 @@ set(FAISS_TEST_SRC
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
+  test_fastscan_filter.cpp
+  test_single_query_collect_handler.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp

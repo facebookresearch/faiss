@@ -105,9 +105,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -597,14 +597,28 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
-%include  <faiss/impl/FastScanDistancePostProcessing.h>
+%include  <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 
-// Ignore make_knn_handler methods — they return SIMDResultHandlerToFloat*
-// which is an internal SIMD type not exposed to Python.
-%ignore faiss::IndexFastScan::make_knn_handler;
-%ignore faiss::IndexIVFFastScan::make_knn_handler;
-%ignore faiss::IndexRaBitQFastScan::make_knn_handler;
-%ignore faiss::IndexIVFRaBitQFastScan::make_knn_handler;
+// Ignore FastScanCodeScanner and related factory functions — internal SIMD types.
+%ignore faiss::FastScanCodeScanner;
+%ignore faiss::make_fast_scan_scanner_impl;
+%ignore faiss::make_fast_scan_knn_scanner;
+%ignore faiss::make_range_scanner_impl;
+%ignore faiss::make_range_scanner;
+%ignore faiss::make_partial_range_scanner_impl;
+%ignore faiss::make_partial_range_scanner;
+%ignore faiss::rabitq_make_knn_scanner_impl;
+%ignore faiss::rabitq_make_knn_scanner;
+%ignore faiss::rabitq_ivf_make_knn_scanner_impl;
+%ignore faiss::rabitq_ivf_make_knn_scanner;
+
+// Ignore make_knn_scanner — they return internal SIMD types.
+%ignore faiss::IndexFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::search_implem_10;
+%ignore faiss::IndexIVFFastScan::search_implem_12;
+%ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_scanner;
 
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
@@ -613,7 +627,7 @@ void gpu_sync_all_devices()
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
 // the internal SIMD handler types.
-// %include  <faiss/impl/simd_result_handlers.h>
+// %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -677,7 +691,7 @@ void gpu_sync_all_devices()
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
 
-%include <faiss/utils/approx_topk/mode.h>
+%include <faiss/impl/approx_topk/approx_topk.h>
 
 #ifdef FAISS_ENABLE_SVS
 %ignore faiss::to_svs_storage_kind;
@@ -902,6 +916,8 @@ void gpu_sync_all_devices()
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
     DOWNCAST (MaskedInvertedLists)
+    DOWNCAST (StopWordsInvertedLists)
+    DOWNCAST (CappedInvertedLists)
     DOWNCAST (InvertedLists)
     {
         assert(false);

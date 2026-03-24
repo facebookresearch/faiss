@@ -9,8 +9,10 @@
 
 #include <faiss/utils/distances.h>
 
-#define AUTOVEC_LEVEL SIMDLevel::ARM_SVE
+#define THE_SIMD_LEVEL SIMDLevel::ARM_SVE
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
 
 namespace faiss {
 
