@@ -24,7 +24,7 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::train(
+void Index::train_with_queries(
         idx_t /*n*/,
         const float* /*x*/,
         idx_t /*n_train_q*/,
@@ -129,7 +129,7 @@ void Index::search1(const float*, ResultHandler&, SearchParameters*) const {
 
 void Index::compute_residual(const float* x, float* residual, idx_t key) const {
     reconstruct(key, residual);
-    for (size_t i = 0; i < d; i++) {
+    for (int i = 0; i < d; i++) {
         residual[i] = x[i] - residual[i];
     }
 }
@@ -170,7 +170,8 @@ struct GenericDistanceComputer : DistanceComputer {
     std::vector<float> buf;
     const float* q;
 
-    explicit GenericDistanceComputer(const Index& storage) : storage(storage) {
+    explicit GenericDistanceComputer(const Index& storage_in)
+            : storage(storage_in) {
         d = storage.d;
         buf.resize(d * 2);
     }

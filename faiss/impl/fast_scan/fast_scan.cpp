@@ -6,8 +6,11 @@
  */
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/LookupTableScaler.h>
+#include <faiss/impl/fast_scan/decompose_qbs.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/impl/simd_dispatch.h>
 
 #include <array>
 
@@ -348,6 +351,165 @@ int pq4_pack_LUT_qbs_q_map(
         i0 += nq;
     }
     return i0;
+}
+
+// declared in simd_result_handlers.h
+bool simd_result_handlers_accept_virtual = true;
+
+int pq4_qbs_to_nq(int qbs) {
+    int i0 = 0;
+    int qi = qbs;
+    while (qi) {
+        int nq = qi & 15;
+        qi >>= 4;
+        i0 += nq;
+    }
+    return i0;
+}
+
+int pq4_preferred_qbs(int n) {
+    // from timings in P141901742, P141902828
+    static int map[12] = {
+            0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
+    if (n <= 11) {
+        return map[n];
+    } else if (n <= 24) {
+        // override qbs: all first stages with 3 steps
+        // then 1 stage with the rest
+        int nbit = 4 * (n / 3); // nbits with only 3s
+        int qbs = 0x33333333 & ((1 << nbit) - 1);
+        qbs |= (n % 3) << nbit;
+        return qbs;
+    } else {
+        FAISS_THROW_FMT("number of queries %d too large", n);
+    }
+}
+
+void accumulate_to_mem(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        uint16_t* accu) {
+    using namespace simd_result_handlers;
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    StoreResultHandler<> handler(accu, ntotal2);
+    DummyScaler<> scaler;
+    accumulate(nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
+}
+
+} // namespace faiss
+
+/***************************************************************
+ * FastScanCodeScanner: NONE specialization + dispatch wrapper.
+ *
+ * The NONE specialization provides the scalar fallback.
+ * Per-SIMD specializations (AVX2, AVX512, ARM_NEON) are in
+ * impl-avx2.cpp, impl-avx512.cpp, impl-neon.cpp respectively.
+ ***************************************************************/
+
+#define THE_LEVEL_TO_DISPATCH SIMDLevel::NONE
+#include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
+#include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
+#undef THE_LEVEL_TO_DISPATCH
+
+namespace faiss {
+
+std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
+        bool is_max,
+        int impl,
+        size_t nq,
+        size_t ntotal,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        bool with_id_map) {
+    DISPATCH_SIMDLevel(
+            make_fast_scan_scanner_impl,
+            is_max,
+            impl,
+            nq,
+            ntotal,
+            k,
+            distances,
+            ids,
+            sel,
+            with_id_map);
+}
+
+std::unique_ptr<FastScanCodeScanner> make_range_scanner(
+        bool is_max,
+        RangeSearchResult& rres,
+        float radius,
+        size_t ntotal,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            make_range_scanner_impl, is_max, rres, radius, ntotal, sel);
+}
+
+std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
+        bool is_max,
+        RangeSearchPartialResult& pres,
+        float radius,
+        size_t ntotal,
+        size_t q0,
+        size_t q1,
+        const IDSelector* sel) {
+    DISPATCH_SIMDLevel(
+            make_partial_range_scanner_impl,
+            is_max,
+            pres,
+            radius,
+            ntotal,
+            q0,
+            q1,
+            sel);
+}
+
+std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner(
+        const IndexRaBitQFastScan* index,
+        bool is_max,
+        size_t nq,
+        int64_t k,
+        float* distances,
+        int64_t* ids,
+        const IDSelector* sel,
+        const FastScanDistancePostProcessing& context,
+        bool is_multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_make_knn_scanner_impl,
+            index,
+            is_max,
+            nq,
+            k,
+            distances,
+            ids,
+            sel,
+            context,
+            is_multi_bit);
+}
+
+std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
+        bool is_max,
+        const IndexIVFRaBitQFastScan* index,
+        size_t nq,
+        size_t k,
+        float* distances,
+        int64_t* ids,
+        const FastScanDistancePostProcessing* context,
+        bool multi_bit) {
+    DISPATCH_SIMDLevel(
+            rabitq_ivf_make_knn_scanner_impl,
+            is_max,
+            index,
+            nq,
+            k,
+            distances,
+            ids,
+            context,
+            multi_bit);
 }
 
 } // namespace faiss

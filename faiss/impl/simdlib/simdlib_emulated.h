@@ -101,7 +101,7 @@ struct simd16uint16_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
             uint16_t u5,
             uint16_t u6,
             uint16_t u7,
-            uint16_t u8,
+            uint16_t v8,
             uint16_t u9,
             uint16_t u10,
             uint16_t u11,
@@ -117,7 +117,7 @@ struct simd16uint16_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
         this->u16[5] = u5;
         this->u16[6] = u6;
         this->u16[7] = u7;
-        this->u16[8] = u8;
+        this->u16[8] = v8;
         this->u16[9] = u9;
         this->u16[10] = u10;
         this->u16[11] = u11;
@@ -129,9 +129,12 @@ struct simd16uint16_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
         for (int i = 0; i < 16; i++) {
             ptr += sprintf(ptr, fmt, u16[i]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -504,9 +507,12 @@ struct simd32uint8_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
         for (int i = 0; i < 32; i++) {
             ptr += sprintf(ptr, fmt, u8[i]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -701,9 +707,12 @@ struct simd8uint32_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
         for (int i = 0; i < 8; i++) {
             ptr += sprintf(ptr, fmt, u32[i]);
         }
+#pragma GCC diagnostic pop
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -929,7 +938,7 @@ inline simd8float32_tpl<SIMDLevel::NONE> fmadd(
 namespace {
 
 // get even float32's of a and b, interleaved
-simd8float32_tpl<SIMDLevel::NONE> geteven(
+[[maybe_unused]] simd8float32_tpl<SIMDLevel::NONE> geteven(
         const simd8float32_tpl<SIMDLevel::NONE>& a,
         const simd8float32_tpl<SIMDLevel::NONE>& b) {
     simd8float32_tpl<SIMDLevel::NONE> c;
@@ -948,7 +957,7 @@ simd8float32_tpl<SIMDLevel::NONE> geteven(
 }
 
 // get odd float32's of a and b, interleaved
-simd8float32_tpl<SIMDLevel::NONE> getodd(
+[[maybe_unused]] simd8float32_tpl<SIMDLevel::NONE> getodd(
         const simd8float32_tpl<SIMDLevel::NONE>& a,
         const simd8float32_tpl<SIMDLevel::NONE>& b) {
     simd8float32_tpl<SIMDLevel::NONE> c;
@@ -968,7 +977,7 @@ simd8float32_tpl<SIMDLevel::NONE> getodd(
 
 // 3 cycles
 // if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
-simd8float32_tpl<SIMDLevel::NONE> getlow128(
+[[maybe_unused]] simd8float32_tpl<SIMDLevel::NONE> getlow128(
         const simd8float32_tpl<SIMDLevel::NONE>& a,
         const simd8float32_tpl<SIMDLevel::NONE>& b) {
     simd8float32_tpl<SIMDLevel::NONE> c;
@@ -986,7 +995,7 @@ simd8float32_tpl<SIMDLevel::NONE> getlow128(
     return c;
 }
 
-simd8float32_tpl<SIMDLevel::NONE> gethigh128(
+[[maybe_unused]] simd8float32_tpl<SIMDLevel::NONE> gethigh128(
         const simd8float32_tpl<SIMDLevel::NONE>& a,
         const simd8float32_tpl<SIMDLevel::NONE>& b) {
     simd8float32_tpl<SIMDLevel::NONE> c;

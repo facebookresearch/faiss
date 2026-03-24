@@ -25,23 +25,23 @@ namespace faiss {
  ******************************************/
 
 IndexIVFPQR::IndexIVFPQR(
-        Index* quantizer,
-        size_t d,
-        size_t nlist,
+        Index* quantizer_in,
+        size_t d_in,
+        size_t nlist_in,
         size_t M,
         size_t nbits_per_idx,
         size_t M_refine,
         size_t nbits_per_idx_refine,
-        bool own_invlists)
+        bool own_invlists_in)
         : IndexIVFPQ(
-                  quantizer,
-                  d,
-                  nlist,
+                  quantizer_in,
+                  d_in,
+                  nlist_in,
                   M,
                   nbits_per_idx,
                   METRIC_L2,
-                  own_invlists),
-          refine_pq(d, M_refine, nbits_per_idx_refine),
+                  own_invlists_in),
+          refine_pq(d_in, M_refine, nbits_per_idx_refine),
           k_factor(4) {
     by_residual = true;
     refine_pq.cp.max_points_per_centroid = 1000;
@@ -126,7 +126,7 @@ void IndexIVFPQR::search_preassigned(
         idx_t* labels,
         bool store_pairs,
         const IVFSearchParameters* params,
-        IndexIVFStats* stats) const {
+        IndexIVFStats* /*stats*/) const {
     uint64_t t0;
     TIC;
     size_t k_coarse = long((size_t)k * k_factor);
@@ -166,7 +166,7 @@ void IndexIVFPQR::search_preassigned(
             idx_t* heap_ids = labels + k * i;
             maxheap_heapify(k, heap_sim, heap_ids);
 
-            for (int j = 0; j < k_coarse; j++) {
+            for (size_t j = 0; j < k_coarse; j++) {
                 idx_t sl = shortlist[j];
 
                 if (sl == -1) {
@@ -176,8 +176,9 @@ void IndexIVFPQR::search_preassigned(
                 int list_no = lo_listno(sl);
                 int ofs = lo_offset(sl);
 
-                assert(list_no >= 0 && list_no < nlist);
-                assert(ofs >= 0 && ofs < invlists->list_size(list_no));
+                assert(list_no >= 0 && static_cast<size_t>(list_no) < nlist);
+                assert(ofs >= 0 &&
+                       static_cast<size_t>(ofs) < invlists->list_size(list_no));
 
                 // 1st level residual
                 quantizer->compute_residual(xq, residual_1.get(), list_no);

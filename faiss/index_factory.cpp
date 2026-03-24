@@ -45,7 +45,6 @@
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
-#include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
 
 #include <faiss/IndexBinaryFlat.h>
@@ -91,10 +90,10 @@ void find_matching_parentheses(
         int begin = 0) {
     int st = 0;
     i0 = i1 = 0;
-    for (int i = begin; i < s.length(); i++) {
+    for (size_t i = begin; i < s.length(); i++) {
         if (s[i] == '(') {
             if (st == 0) {
-                i0 = i;
+                i0 = static_cast<int>(i);
             }
             st++;
         }
@@ -102,7 +101,7 @@ void find_matching_parentheses(
         if (s[i] == ')') {
             st--;
             if (st == 0) {
-                i1 = i;
+                i1 = static_cast<int>(i);
                 return;
             }
             if (st < 0) {
@@ -206,7 +205,7 @@ std::vector<size_t> aq_parse_nbits(std::string stok) {
 
 VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     std::smatch sm;
-    auto match = [&sm, description](std::string pattern) {
+    auto match = [&sm, description](const std::string& pattern) {
         return re_match(description, pattern, sm);
     };
     if (match("PCA(W?)(R?)([0-9]+)")) {
@@ -264,7 +263,7 @@ Index* parse_coarse_quantizer(
         size_t& nlist,
         bool& use_2layer) {
     std::smatch sm;
-    auto match = [&sm, description](std::string pattern) {
+    auto match = [&sm, description](const std::string& pattern) {
         return re_match(description, pattern, sm);
     };
     use_2layer = false;
@@ -294,7 +293,9 @@ Index* parse_coarse_quantizer(
     if (match("IVF([0-9]+[kM]?)\\(Index([0-9])\\)")) {
         nlist = parse_nlist(sm[1].str());
         int no = std::stoi(sm[2].str());
-        FAISS_ASSERT(no >= 0 && no < parenthesis_indexes.size());
+        FAISS_ASSERT(
+                no >= 0 &&
+                static_cast<size_t>(no) < parenthesis_indexes.size());
         return parenthesis_indexes[no].release();
     }
 
@@ -964,7 +965,7 @@ std::unique_ptr<Index> index_factory_sub(
         int i0, i1;
         find_matching_parentheses(description, i0, i1, begin);
         std::string sub_description = description.substr(i0 + 1, i1 - i0 - 1);
-        int no = parenthesis_indexes.size();
+        size_t no = parenthesis_indexes.size();
         parenthesis_indexes.push_back(
                 index_factory_sub(d, sub_description, metric));
         description = description.substr(0, i0 + 1) + "Index" +

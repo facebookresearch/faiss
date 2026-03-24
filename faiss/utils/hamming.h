@@ -34,7 +34,7 @@
 // Low-level Hamming distance computations and hamdis_t.
 #include <faiss/utils/hamming_distance/hamdis-inl.h>
 
-#include <faiss/utils/approx_topk/mode.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 namespace faiss {
 

@@ -9,8 +9,11 @@
 
 #include <immintrin.h>
 
-#define AUTOVEC_LEVEL SIMDLevel::AVX512
+#define THE_SIMD_LEVEL SIMDLevel::AVX512
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
+
 #include <faiss/utils/simd_impl/distances_sse-inl.h>
 #include <faiss/utils/transpose/transpose-avx512-inl.h>
 

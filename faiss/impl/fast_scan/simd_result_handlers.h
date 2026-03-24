@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
@@ -26,11 +27,73 @@
 
 namespace faiss {
 
+namespace {
+
+// a helper that checks whether a ResultHandler has a .sel member
+template <typename T, typename = void>
+struct has_sel_member : std::false_type {};
+template <typename T>
+struct has_sel_member<T, std::void_t<decltype(T::sel)>> : std::true_type {};
+template <typename T>
+inline constexpr bool has_sel_member_v = has_sel_member<T>::value;
+
+/// Check if all vectors in a block are filtered out by the IDSelector.
+/// Returns true if the block should be skipped (all vectors filtered).
+/// Requires set_block_origin() to have been called before this.
+/// Compiles to nothing (returns false) when ResultHandler has no sel member.
+template <class ResultHandler>
+inline bool whether_all_vectors_filtered_out(
+        ResultHandler& res,
+        size_t block_size) {
+    if constexpr (!has_sel_member_v<ResultHandler>) {
+        return false;
+    }
+    if (res.sel != nullptr) {
+        for (size_t jj = 0; jj < block_size; jj++) {
+            if (res.sel->is_member(res.adjust_id(0, jj))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+/// Loop over blocks of Step vectors, advancing codes by block_stride each
+/// iteration. Calls set_block_origin(0, j0) and skips blocks where all
+/// vectors are filtered out. The body lambda receives j0.
+template <size_t Step, class ResultHandler, class Body>
+inline void for_each_block(
+        size_t ntotal,
+        const uint8_t*& codes,
+        size_t block_stride,
+        ResultHandler& res,
+        Body&& body) {
+    for (size_t j0 = 0; j0 < ntotal; j0 += Step, codes += block_stride) {
+        res.set_block_origin(0, j0);
+        if constexpr (has_sel_member_v<ResultHandler>) {
+            if (whether_all_vectors_filtered_out(
+                        res, std::min<size_t>(Step, res.ntotal - j0))) {
+                continue;
+            }
+        }
+        body(j0);
+    }
+}
+
+} // namespace
+
 struct SIMDResultHandler {
     // used to dispatch templates
     bool is_CMax = false;
     uint8_t sizeof_ids = 0;
     bool with_fields = false;
+
+    // the number of elements that were successfully processed up to date,
+    //   for example, hitting the threshold for the range search.
+    // the variable is used to track whether an early stop condition
+    //   should be hit due to having zero search progress.
+    size_t in_range_num = 0;
 
     /**  called when 32 distances are computed and provided in two
      *   simd16uint16. (q, b) indicate which entry it is
@@ -59,17 +122,26 @@ struct SIMDResultHandlerToFloat : SIMDResultHandler {
             nullptr; // table of biases to add to each query (for IVF L2 search)
     const float* normalizers = nullptr; // size 2 * nq, to convert
 
+    size_t scan_cnt = 0; // scanned vector number (except filtered)
+
     SIMDResultHandlerToFloat(size_t nq, size_t ntotal)
             : nq(nq), ntotal(ntotal) {}
 
     virtual void begin(const float* norms) {
         normalizers = norms;
+        scan_cnt = 0;
     }
 
     // called at end of search to convert int16 distances to float, before
     // normalizers are deallocated
     virtual void end() {
         normalizers = nullptr;
+        scan_cnt = 0;
+    }
+
+    // Get the number of scanned vectors
+    size_t count_scanned_rows() {
+        return scan_cnt;
     }
 
     // Number of updates made to the underlying data structure.
@@ -101,7 +173,11 @@ namespace simd_result_handlers {
 
 /** Dummy structure that just computes a checksum on results
  * (to avoid the computation to be optimized away) */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct DummyResultHandler : SIMDResultHandler {
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+
     size_t cs = 0;
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
@@ -117,7 +193,11 @@ struct DummyResultHandler : SIMDResultHandler {
  *
  * j0 is the current upper-left block of the matrix
  */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct StoreResultHandler : SIMDResultHandler {
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+
     uint16_t* data;
     size_t ld; // total number of columns
     size_t i0 = 0;
@@ -138,8 +218,11 @@ struct StoreResultHandler : SIMDResultHandler {
 };
 
 /** stores results in fixed-size matrix. */
-template <int NQ, int BB>
+template <int NQ, int BB, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct FixedStorageHandler : SIMDResultHandler {
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+
     simd16uint16 dis[NQ][BB];
     int i0 = 0;
 
@@ -166,9 +249,11 @@ struct FixedStorageHandler : SIMDResultHandler {
 };
 
 /** Result handler that compares distances to check if they need to be kept */
-template <class C, bool with_id_map>
+template <class C, bool with_id_map, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
 struct ResultHandlerCompare : SIMDResultHandlerToFloat {
     using TI = typename C::TI;
+    static constexpr SIMDLevel SL256 = simd256_level_selector<SL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
 
     bool disable = false;
 
@@ -248,12 +333,16 @@ struct ResultHandlerCompare : SIMDResultHandlerToFloat {
 };
 
 /** Special version for k=1 */
-template <class C, bool with_id_map = false>
-struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
     using RHC::normalizers;
+    using typename RHC::simd16uint16;
 
     std::vector<int16_t> idis;
     float* dis;
@@ -295,10 +384,13 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
+                    this->scan_cnt++;
                     T d = d32tab[j];
                     if (C::cmp(idis[q], d)) {
                         idis[q] = d;
                         ids[q] = real_idx;
+
+                        this->in_range_num++;
                     }
                 }
             }
@@ -307,10 +399,13 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
+                this->scan_cnt++;
                 T d = d32tab[j];
                 if (C::cmp(idis[q], d)) {
                     idis[q] = d;
                     ids[q] = this->adjust_id(b, j);
+
+                    this->in_range_num++;
                 }
             }
         }
@@ -326,16 +421,21 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map> {
                 dis[q] = b + idis[q] * one_a;
             }
         }
+        this->scan_cnt = 0;
     }
 };
 
 /** Structure that collects results in a min- or max-heap */
-template <class C, bool with_id_map = false>
-struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
     using RHC::normalizers;
+    using typename RHC::simd16uint16;
 
     std::vector<uint16_t> idis;
     std::vector<TI> iids;
@@ -407,11 +507,14 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
+                    this->scan_cnt++;
                     T dis_for_j = d32tab[j];
                     if (C::cmp(heap_dis[0], dis_for_j)) {
                         heap_replace_top<C>(
                                 k, heap_dis, heap_ids, dis_for_j, real_idx);
                         nup++;
+
+                        this->in_range_num++;
                     }
                 }
             }
@@ -420,11 +523,14 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 // find first non-zero
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
+                this->scan_cnt++;
                 T dis_for_j = d32tab[j];
                 if (C::cmp(heap_dis[0], dis_for_j)) {
                     int64_t idx = this->adjust_id(b, j);
                     heap_replace_top<C>(k, heap_dis, heap_ids, dis_for_j, idx);
                     nup++;
+
+                    this->in_range_num++;
                 }
             }
         }
@@ -448,6 +554,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
                 heap_ids[j] = heap_ids_in[j];
             }
         }
+        this->scan_cnt = 0;
     }
 
     size_t num_updates() override {
@@ -461,12 +568,16 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map> {
  * reached. Then a partition sort is used to update the threshold. */
 
 /** Handler built from several ReservoirTopN (one per query) */
-template <class C, bool with_id_map = false>
-struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
     using RHC::normalizers;
+    using typename RHC::simd16uint16;
 
     size_t capacity; // rounded up to multiple of 16
 
@@ -525,8 +636,11 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
+                    this->scan_cnt++;
                     T dis_for_j = d32tab[j];
                     res.add(dis_for_j, real_idx);
+
+                    this->in_range_num++;
                 }
             }
         } else {
@@ -535,7 +649,10 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
                 int j = __builtin_ctz(lt_mask);
                 lt_mask -= 1 << j;
                 T dis_for_j = d32tab[j];
+                this->scan_cnt++;
                 res.add(dis_for_j, this->adjust_id(b, j));
+
+                this->in_range_num++;
             }
         }
     }
@@ -577,6 +694,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
             // possibly add empty results
             heap_heapify<Cf>(n - res.i, heap_dis + res.i, heap_ids + res.i);
         }
+        this->scan_cnt = 0;
     }
 };
 
@@ -584,13 +702,17 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map> {
  * have to be scaled using the scaler.
  */
 
-template <class C, bool with_id_map = false>
-struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = ResultHandlerCompare<C, with_id_map>;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
     using RHC::normalizers;
     using RHC::nq;
+    using typename RHC::simd16uint16;
 
     RangeSearchResult& rres;
     float radius;
@@ -651,6 +773,8 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
                     T dis = d32tab[j];
                     n_per_query[q]++;
                     triplets.push_back({idx_t(q + q0), real_idx, dis});
+
+                    this->in_range_num++;
                 }
             }
         } else {
@@ -661,6 +785,8 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
                 T dis = d32tab[j];
                 n_per_query[q]++;
                 triplets.push_back({idx_t(q + q0), this->adjust_id(b, j), dis});
+
+                this->in_range_num++;
             }
         }
     }
@@ -690,11 +816,14 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map> {
 #ifndef SWIG
 
 // handler for a subset of queries
-template <class C, bool with_id_map = false>
-struct PartialRangeHandler : RangeHandler<C, with_id_map> {
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
     using T = typename C::T;
     using TI = typename C::TI;
-    using RHC = RangeHandler<C, with_id_map>;
+    using RHC = RangeHandler<C, with_id_map, SL>;
     using RHC::normalizers;
     using RHC::nq, RHC::q0, RHC::triplets, RHC::n_per_query;
 
@@ -707,7 +836,11 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map> {
             size_t q0,
             size_t q1,
             const IDSelector* sel_in)
-            : RangeHandler<C, with_id_map>(*pres.res, radius, ntotal, sel_in),
+            : RangeHandler<C, with_id_map, SL>(
+                      *pres.res,
+                      radius,
+                      ntotal,
+                      sel_in),
               pres(pres) {
         nq = q1 - q0;
         this->q0 = q0;
@@ -749,78 +882,160 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map> {
     }
 };
 
+/** Handler that collects all matching results for a single query.
+ *
+ * Unlike HeapHandler/ReservoirHandler which maintain a top-k structure,
+ * this handler appends every result that passes the threshold to a
+ * vector of (distance, id) pairs. Useful for exhaustive collection
+ * (e.g., "return all" searches) in the fast_scan SIMD path.
+ */
+template <
+        class C,
+        bool with_id_map = false,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+struct SingleQueryResultCollectHandler
+        : ResultHandlerCompare<C, with_id_map, SL> {
+    using T = typename C::T;
+    using TI = typename C::TI;
+    using RHC = ResultHandlerCompare<C, with_id_map, SL>;
+    using RHC::normalizers;
+    using simd16uint16 = typename RHC::simd16uint16;
+
+    // Store as float (not T=uint16_t) since end() applies normalizer scaling
+    std::vector<std::pair<TI, float>>& collect;
+    const int q_id = 0;
+
+    SingleQueryResultCollectHandler(
+            std::vector<std::pair<TI, float>>& res,
+            size_t ntotal,
+            const IDSelector* sel_in)
+            : RHC(1, ntotal, sel_in), collect(res) {
+        this->q_map = &q_id;
+    }
+
+    void begin(const float* norms) override {
+        normalizers = norms;
+    }
+
+    void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
+        if (this->disable) {
+            return;
+        }
+
+        this->adjust_with_origin(q, d0, d1);
+
+        uint32_t lt_mask = this->get_lt_mask(C::neutral(), b, d0, d1);
+
+        if (!lt_mask) {
+            return;
+        }
+
+        ALIGNED(32) uint16_t d32tab[32];
+        d0.store(d32tab);
+        d1.store(d32tab + 16);
+
+        if (this->sel != nullptr) {
+            while (lt_mask) {
+                int j = __builtin_ctz(lt_mask);
+                auto real_idx = this->adjust_id(b, j);
+                lt_mask -= 1 << j;
+                if (this->sel->is_member(real_idx)) {
+                    T dis = d32tab[j];
+                    collect.emplace_back(real_idx, dis);
+                    this->in_range_num++;
+                }
+            }
+        } else {
+            while (lt_mask) {
+                int j = __builtin_ctz(lt_mask);
+                lt_mask -= 1 << j;
+                T dis = d32tab[j];
+                int64_t idx = this->adjust_id(b, j);
+                collect.emplace_back(idx, dis);
+                this->in_range_num++;
+            }
+        }
+    }
+
+    void end() override {
+        if (normalizers) {
+            float one_a = 1 / normalizers[0];
+            float b = normalizers[1];
+            for (size_t i = 0; i < collect.size(); i++) {
+                collect[i].second = collect[i].second * one_a + b;
+            }
+        }
+        this->scan_cnt = 0;
+    }
+};
+
 #endif
 
 /********************************************************************************
- * Dynamic dispatching function. The consumer should have a templatized method f
- * that will be replaced with the actual SIMDResultHandler that is determined
- * dynamically.
+ * Dynamic dispatching function. Calls a lambda with the concrete
+ * SIMDResultHandler type, determined at runtime via dynamic_cast.
+ *
+ * Usage:
+ *   with_SIMDResultHandler(res, [&](auto& handler) {
+ *       // handler has the concrete type (HeapHandler, ReservoirHandler, etc.)
+ *       kernel(handler, ...);
+ *   });
  */
 
-template <class C, bool W, class Consumer, class... Types>
-void dispatch_SIMDResultHandler_fixedCW(
-        SIMDResultHandler& res,
-        Consumer& consumer,
-        Types... args) {
-    if (auto resh_sh = dynamic_cast<SingleResultHandler<C, W>*>(&res)) {
-        consumer.template f<SingleResultHandler<C, W>>(*resh_sh, args...);
-    } else if (auto resh_hh = dynamic_cast<HeapHandler<C, W>*>(&res)) {
-        consumer.template f<HeapHandler<C, W>>(*resh_hh, args...);
-    } else if (auto resh_rh = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
-        consumer.template f<ReservoirHandler<C, W>>(*resh_rh, args...);
-    } else { // generic handler -- will not be inlined
-        FAISS_THROW_IF_NOT_FMT(
-                simd_result_handlers_accept_virtual,
-                "Running virtual handler for %s",
-                typeid(res).name());
-        consumer.template f<SIMDResultHandler>(res, args...);
-    }
-}
+template <class Lambda>
+void with_SIMDResultHandler(SIMDResultHandler& res, Lambda&& lambda) {
+    auto fixedCW = [&]<class C, bool W>() {
+        if (auto resh = dynamic_cast<SingleResultHandler<C, W>*>(&res)) {
+            lambda(*resh);
+        } else if (auto resh = dynamic_cast<HeapHandler<C, W>*>(&res)) {
+            lambda(*resh);
+        } else if (auto resh = dynamic_cast<ReservoirHandler<C, W>*>(&res)) {
+            lambda(*resh);
+        } else if (
+                auto resh =
+                        dynamic_cast<SingleQueryResultCollectHandler<C, W>*>(
+                                &res)) {
+            lambda(*resh);
+        } else { // generic handler -- will not be inlined
+            FAISS_THROW_IF_NOT_FMT(
+                    simd_result_handlers_accept_virtual,
+                    "Running virtual handler for %s",
+                    typeid(res).name());
+            lambda(res);
+        }
+    };
 
-template <class C, class Consumer, class... Types>
-void dispatch_SIMDResultHandler_fixedC(
-        SIMDResultHandler& res,
-        Consumer& consumer,
-        Types... args) {
-    if (res.with_fields) {
-        dispatch_SIMDResultHandler_fixedCW<C, true>(res, consumer, args...);
-    } else {
-        dispatch_SIMDResultHandler_fixedCW<C, false>(res, consumer, args...);
-    }
-}
+    auto fixedC = [&]<class C>() {
+        if (res.with_fields) {
+            fixedCW.template operator()<C, true>();
+        } else {
+            fixedCW.template operator()<C, false>();
+        }
+    };
 
-template <class Consumer, class... Types>
-void dispatch_SIMDResultHandler(
-        SIMDResultHandler& res,
-        Consumer& consumer,
-        Types... args) {
     if (res.sizeof_ids == 0) {
-        if (auto resh = dynamic_cast<StoreResultHandler*>(&res)) {
-            consumer.template f<StoreResultHandler>(*resh, args...);
-        } else if (auto resh_2 = dynamic_cast<DummyResultHandler*>(&res)) {
-            consumer.template f<DummyResultHandler>(*resh_2, args...);
+        if (auto resh = dynamic_cast<StoreResultHandler<>*>(&res)) {
+            lambda(*resh);
+        } else if (auto resh = dynamic_cast<DummyResultHandler<>*>(&res)) {
+            lambda(*resh);
         } else { // generic path
             FAISS_THROW_IF_NOT_FMT(
                     simd_result_handlers_accept_virtual,
                     "Running virtual handler for %s",
                     typeid(res).name());
-            consumer.template f<SIMDResultHandler>(res, args...);
+            lambda(res);
         }
     } else if (res.sizeof_ids == sizeof(int)) {
         if (res.is_CMax) {
-            dispatch_SIMDResultHandler_fixedC<CMax<uint16_t, int>>(
-                    res, consumer, args...);
+            fixedC.template operator()<CMax<uint16_t, int>>();
         } else {
-            dispatch_SIMDResultHandler_fixedC<CMin<uint16_t, int>>(
-                    res, consumer, args...);
+            fixedC.template operator()<CMin<uint16_t, int>>();
         }
     } else if (res.sizeof_ids == sizeof(int64_t)) {
         if (res.is_CMax) {
-            dispatch_SIMDResultHandler_fixedC<CMax<uint16_t, int64_t>>(
-                    res, consumer, args...);
+            fixedC.template operator()<CMax<uint16_t, int64_t>>();
         } else {
-            dispatch_SIMDResultHandler_fixedC<CMin<uint16_t, int64_t>>(
-                    res, consumer, args...);
+            fixedC.template operator()<CMin<uint16_t, int64_t>>();
         }
     } else {
         FAISS_THROW_FMT("Unknown id size %d", res.sizeof_ids);

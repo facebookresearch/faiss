@@ -261,6 +261,9 @@ void inner_product_to_L2sqr(
  */
 void fvec_add(size_t d, const float* a, const float* b, float* c);
 
+template <SIMDLevel>
+void fvec_add(size_t d, const float* a, const float* b, float* c);
+
 /** compute c := a + b for a, c vectors and b a scalar
  *
  * c and a can overlap
@@ -268,6 +271,9 @@ void fvec_add(size_t d, const float* a, const float* b, float* c);
  * @param a size d
  * @param c size d
  */
+void fvec_add(size_t d, const float* a, float b, float* c);
+
+template <SIMDLevel>
 void fvec_add(size_t d, const float* a, float b, float* c);
 
 /** compute c := a - b for vectors
@@ -278,6 +284,9 @@ void fvec_add(size_t d, const float* a, float b, float* c);
  * @param b size d
  * @param c size d
  */
+void fvec_sub(size_t d, const float* a, const float* b, float* c);
+
+template <SIMDLevel>
 void fvec_sub(size_t d, const float* a, const float* b, float* c);
 
 /***************************************************************************
@@ -533,6 +542,16 @@ void range_search_inner_product(
  ***************************************************************************/
 
 /// specialized function for PQ2
+void compute_PQ_dis_tables_dsub2(
+        size_t d,
+        size_t ksub,
+        const float* centroids,
+        size_t nx,
+        const float* x,
+        bool is_inner_product,
+        float* dis_tables);
+
+template <SIMDLevel>
 void compute_PQ_dis_tables_dsub2(
         size_t d,
         size_t ksub,
