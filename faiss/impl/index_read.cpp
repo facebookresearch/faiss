@@ -1208,6 +1208,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
         read_index_header(*idxr, f);
         read_ResidualQuantizer(idxr->rq, f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(
+                static_cast<size_t>(idxr->ntotal) <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "ResidualCoarseQuantizer centroid_norms allocation would exceed "
+                "deserialization byte limit");
         READ1(idxr->beam_factor);
         if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
             // then we force the beam factor to -1
