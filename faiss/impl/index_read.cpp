@@ -413,15 +413,19 @@ static void read_ArrayInvertedLists_sizes(
     }
 }
 
+bool index_read_warn_on_null_invlists = true;
+
 std::unique_ptr<InvertedLists> read_InvertedLists_up(
         IOReader* f,
         int io_flags) {
     uint32_t h;
     READ1(h);
     if (h == fourcc("il00")) {
-        fprintf(stderr,
-                "read_InvertedLists:"
-                " WARN! inverted lists not stored with IVF object\n");
+        if (index_read_warn_on_null_invlists) {
+            fprintf(stderr,
+                    "read_InvertedLists:"
+                    " WARN! inverted lists not stored with IVF object\n");
+        }
         return nullptr;
     } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         size_t nlist, code_size, n_levels;
