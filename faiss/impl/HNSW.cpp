@@ -995,7 +995,7 @@ int search_from_candidates_panorama(
         stats.ndis += ndis;
         stats.nhops += nstep;
     }
-    
+
     indexPanorama_stats.add(local_pano_stats);
     return nres;
 }
