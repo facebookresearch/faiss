@@ -375,8 +375,12 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
         FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
         FAISS_THROW_IF_NOT_FMT(
                 vt->d_in > 0,
-                "invalid HadamardRotation d_in %d (must be > 0)",
+                "invalid HadamardRotation d_in=%d (must be > 0)",
                 vt->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out > 0,
+                "invalid HadamardRotation d_out=%d (must be > 0)",
+                vt->d_out);
         size_t p = 1;
         while (p < static_cast<size_t>(vt->d_in)) {
             p <<= 1;
@@ -392,6 +396,34 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 p <= byte_limit / (3 * sizeof(float)),
                 "HadamardRotation d_out exceeds deserialization byte limit");
         hr->init(hr->seed);
+    }
+    if (h == fourcc("RmDT")) {
+        auto* rdt = dynamic_cast<RemapDimensionsTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(
+                rdt, "dynamic_cast to RemapDimensionsTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(rdt->map.size()) >= rdt->d_out,
+                "RemapDimensionsTransform map size %d < d_out %d",
+                (int)rdt->map.size(),
+                rdt->d_out);
+    }
+    if (h == fourcc("VCnt")) {
+        auto* ct = dynamic_cast<CenteringTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(ct, "dynamic_cast to CenteringTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(ct->mean.size()) >= ct->d_in,
+                "CenteringTransform mean size %d < d_in %d",
+                (int)ct->mean.size(),
+                ct->d_in);
+    }
+    if (h == fourcc("Viqt")) {
+        auto* itqt = dynamic_cast<ITQTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(itqt, "dynamic_cast to ITQTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(itqt->mean.size()) >= itqt->d_in,
+                "ITQTransform mean size %d < d_in %d",
+                (int)itqt->mean.size(),
+                itqt->d_in);
     }
     return vt;
 }
