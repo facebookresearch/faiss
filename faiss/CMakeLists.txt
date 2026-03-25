@@ -25,7 +25,11 @@ set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
+  impl/pq_code_distance/pq_code_distance-neon.cpp
+  impl/ProductQuantizer-neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/distances_neon.cpp
+  utils/simd_impl/matrix_transpose_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -431,7 +435,12 @@ if(NOT WIN32)
   endif()
 endif()
 target_sources(faiss_sve PRIVATE ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
-target_compile_definitions(faiss_sve PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
+target_compile_definitions(faiss_sve PUBLIC COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
+# ProductQuantizer-neon.cpp uses vdotq_s32/vdotq_u32 which require +dotprod
+set_source_files_properties(impl/ProductQuantizer-neon.cpp
+  TARGET_DIRECTORY faiss_sve
+  PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+dotprod"
+)
 
 # =============================================================================
 # Dynamic Dispatch Mode
@@ -462,11 +471,16 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       # ARM NEON is always available on aarch64, no special compiler flags needed
-      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
+      target_compile_definitions(faiss PUBLIC COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
       # Per-file SVE flags (NEON needs no flags on aarch64)
       set_source_files_properties(${FAISS_SIMD_SVE_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
+      )
+      # ProductQuantizer-neon.cpp uses vdotq_s32/vdotq_u32 which require +dotprod
+      set_source_files_properties(impl/ProductQuantizer-neon.cpp
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+dotprod"
       )
     endif()
   endif()
@@ -476,8 +490,15 @@ endif()
 # and NEON source files are always compiled into the main faiss target.
 # (On x86, AVX2/AVX512 are optional and only compiled per opt_level above.)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
-  target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
+  target_compile_definitions(faiss PUBLIC COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+  # ProductQuantizer-neon.cpp uses vdotq_s32/vdotq_u32 which require +dotprod
+  if(NOT FAISS_OPT_LEVEL STREQUAL "dd")
+    set_source_files_properties(impl/ProductQuantizer-neon.cpp
+      TARGET_DIRECTORY faiss
+      PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+dotprod"
+    )
+  endif()
 endif()
 
 if(FAISS_ENABLE_SVS)

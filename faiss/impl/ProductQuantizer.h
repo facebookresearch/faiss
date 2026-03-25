@@ -63,6 +63,35 @@ struct ProductQuantizer : Quantizer {
     /// Layout: (M, ksub)
     std::vector<float> centroids_sq_lengths;
 
+#ifdef COMPILE_SIMD_ARM_NEON
+    /// NEON optimized centroid storage for PQ distance table computation.
+    /// Supports three precision modes selectable at initialization time.
+    struct NeonTransposedCentroids {
+        /// Precision mode:
+        ///   FP32: block-transposed fp32, layout (num_blocks, dsub, blocksize) per subq
+        ///   FP16: quantized fp16, layout (M, ksub, dsub) — no transpose
+        ///   INT8: quantized int8, layout (M, ksub, dsub) — no transpose
+        enum class Precision { FP32, FP16, INT8 };
+
+        Precision precision = Precision::FP32;
+        size_t blocksize = 64;  ///< 16, 32, or 64 (only used for FP32)
+        size_t ceil_ksub = 0;   ///< ksub rounded up to blocksize (only used for FP32)
+
+        std::vector<float> data;    ///< FP32 block-transposed: M * ceil_ksub * dsub floats
+        std::vector<uint16_t> data_f16; ///< FP16 quantized: M * ksub * dsub uint16_t
+        std::vector<uint8_t> data_u8;   ///< INT8 quantized: M * ksub * dsub uint8_t
+    };
+    NeonTransposedCentroids neon_transposed;
+
+    /// Initialize NEON optimized centroid storage.
+    /// precision: 0=fp32 (block-transpose, default), 1=int8, 2=fp16
+    /// blocksize: 16, 32, or 64 (only relevant for fp32 precision)
+    /// Call after centroids are set (e.g. after train or index load).
+    void initialize_neon_transposed_centroids(
+            size_t blocksize = 64,
+            int precision = 0);
+#endif // COMPILE_SIMD_ARM_NEON
+
     /// return the centroids associated with subvector m
     float* get_centroids(size_t m, size_t i) {
         return &centroids[(m * ksub + i) * dsub];
@@ -187,6 +216,20 @@ struct ProductQuantizer : Quantizer {
 
 // block size used in ProductQuantizer::compute_codes
 FAISS_API extern int product_quantizer_compute_codes_bs;
+
+#ifdef COMPILE_SIMD_ARM_NEON
+/// NEON-optimized inner product table computation using blocksize-aligned transposed centroids.
+void pq_compute_inner_prod_table_neon(
+        const ProductQuantizer& pq,
+        const float* x,
+        float* dis_table);
+
+/// NEON-optimized L2sqr distance table computation using blocksize-aligned transposed centroids.
+void pq_compute_distance_table_neon(
+        const ProductQuantizer& pq,
+        const float* x,
+        float* dis_table);
+#endif // COMPILE_SIMD_ARM_NEON
 
 /*************************************************
  * Objects to encode / decode strings of bits
