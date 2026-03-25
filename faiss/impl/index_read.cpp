@@ -1270,6 +1270,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             // which skips the table precomputation.
             idxr->beam_factor = -1;
         }
+        FAISS_THROW_IF_NOT_MSG(
+                static_cast<size_t>(idxr->ntotal) <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "ResidualCoarseQuantizer centroid norms allocation would "
+                "exceed deserialization byte limit");
         idxr->set_beam_factor(idxr->beam_factor);
         idx = std::move(idxr);
     } else if (
