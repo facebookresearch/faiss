@@ -1459,3 +1459,214 @@ TEST(ReadIndexDeserialize, ITQTransformMeanTooSmall) {
 
     expect_vt_read_throws_with(buf, "ITQTransform mean size");
 }
+
+// -----------------------------------------------------------------------
+// RaBitQ qb deserialization validation tests
+// -----------------------------------------------------------------------
+
+/// Helper: push a minimal RaBitQuantizer (single-bit format, multi_bit=false).
+static void push_rabitq(std::vector<uint8_t>& buf, size_t d) {
+    push_val<size_t>(buf, d); // d
+    push_val<size_t>(buf, 1); // code_size
+    push_val<int>(buf, 1);    // metric_type (L2)
+}
+
+/// Helper: push a minimal RaBitQuantizer (multi-bit format, multi_bit=true).
+static void push_rabitq_multibit(std::vector<uint8_t>& buf, size_t d) {
+    push_val<size_t>(buf, d); // d
+    push_val<size_t>(buf, 1); // code_size
+    push_val<int>(buf, 1);    // metric_type (L2)
+    push_val<size_t>(buf, 1); // nb_bits
+}
+
+/// Helper: push an IVF header (index_header + nlist + nprobe + flat quantizer
+/// + empty direct_map).
+static void push_ivf_header(std::vector<uint8_t>& buf, int d) {
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_minimal_flat(buf, d);
+    push_empty_direct_map(buf);
+}
+
+// -- Ixrq (IndexRaBitQ, single-bit) --
+// qb=0 is valid for Ixrq: disables query quantization, uses raw fp32 values.
+// See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (valid for Ixrq)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Ixrr (IndexRaBitQ, multi-bit) --
+// qb=0 is valid for Ixrr: disables query quantization, uses raw fp32 values.
+// See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (valid for Ixrr)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Irfn (IndexRaBitQFastScan, new format) --
+// qb=0 is not supported: FastScan requires quantized queries for SIMD.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Irfn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Irfn");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroRejected_Irfn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Irfn");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (invalid for FastScan)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+// -- Iwrq (IndexIVFRaBitQ, single-bit) --
+// qb=0 is valid for Iwrq: disables query quantization, uses raw fp32 values.
+// See IndexIVFRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrq");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Iwrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrq");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 0);  // qb = 0 (valid for Iwrq)
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Iwrr (IndexIVFRaBitQ, multi-bit) --
+// qb=0 is valid for Iwrr: disables query quantization, uses raw fp32 values.
+// See IndexIVFRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrr");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Iwrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrr");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 0);  // qb = 0 (valid for Iwrr)
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Iwrn (IndexIVFRaBitQFastScan, new format) --
+// qb=0 is not supported: IVF FastScan requires quantized queries.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrn");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<bool>(buf, false); // by_residual
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<int>(buf, 32);     // bbs
+    push_val<size_t>(buf, 0);   // qbs2
+    push_val<size_t>(buf, 1);   // M2
+    push_val<int>(buf, 0);      // implem
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroRejected_Iwrn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrn");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<bool>(buf, false); // by_residual
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<int>(buf, 32);     // bbs
+    push_val<size_t>(buf, 0);   // qbs2
+    push_val<size_t>(buf, 1);   // M2
+    push_val<int>(buf, 0);      // implem
+    push_val<uint8_t>(buf, 0);  // qb = 0 (invalid for IVF FastScan)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
