@@ -480,6 +480,8 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
+        FAISS_THROW_IF_NOT_FMT(
+                n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, n_levels);
         std::vector<size_t> sizes(nlist);
