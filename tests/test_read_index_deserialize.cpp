@@ -14,6 +14,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
@@ -1843,4 +1844,83 @@ TEST(ReadIndexDeserialize, BinaryMultiHashMapIdOutOfRange) {
     push_vector<uint8_t>(buf, bitbuf); // packed bitstring
 
     expect_binary_read_throws_with(buf, "multi hash map: id=");
+}
+
+// ---- IndexBinaryHNSW runtime safety checks ----
+
+TEST(ReadIndexDeserialize, BinaryHNSWGetDistanceComputerNonFlatThrows) {
+    // Construct an IndexBinaryHNSW with non-flat storage and verify
+    // get_distance_computer throws instead of asserting.
+    IndexBinaryHNSW idx;
+    idx.storage = nullptr;
+    idx.own_fields = false;
+    // storage is nullptr so dynamic_cast will fail
+    EXPECT_THROW(
+            {
+                try {
+                    idx.get_distance_computer();
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("IndexBinaryFlat"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraEmptyIndexSearch) {
+    IndexBinaryHNSWCagra idx(16, 4);
+    idx.base_level_only = true;
+    // ntotal is 0, searching should throw
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2); // d=16 -> code_size=2
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("empty index"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraZeroEntrypoints) {
+    IndexBinaryHNSWCagra idx(16, 4);
+    // Add a vector first (add requires base_level_only == false)
+    std::vector<uint8_t> vec(2, 0xFF);
+    idx.add(1, vec.data());
+    idx.base_level_only = true;
+    idx.num_base_level_search_entrypoints = 0;
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2);
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find(
+                                    "num_base_level_search_entrypoints"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
 }
