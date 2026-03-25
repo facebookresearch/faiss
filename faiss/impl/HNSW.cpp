@@ -815,6 +815,10 @@ int search_from_candidates_panorama(
     float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
 
     int nstep = 0;
+    const size_t d = static_cast<size_t>(panorama_index->d);
+
+    PanoramaStats local_pano_stats;
+    local_pano_stats.reset();
 
     while (candidates.size() > 0) {
         float d0 = 0;
@@ -853,6 +857,7 @@ int search_from_candidates_panorama(
             initial_size += is_selected && vt.set(v1) ? 1 : 0;
         }
 
+        local_pano_stats.total_dims += initial_size * d;
         size_t batch_size = initial_size;
         size_t curr_panorama_level = 0;
         const size_t num_panorama_levels = panorama_index->pano.n_levels;
@@ -968,6 +973,8 @@ int search_from_candidates_panorama(
                 }
             }
 
+            local_pano_stats.total_dims_scanned +=
+                    batch_size * (end_dim - start_dim);
             batch_size = next_batch_size;
             curr_panorama_level++;
         }
@@ -976,6 +983,7 @@ int search_from_candidates_panorama(
         for (size_t i = 0; i < batch_size; i++) {
             idx_t idx = index_array[i];
             if (res.add_result(exact_distances[i], idx)) {
+                threshold = res.threshold;
                 nres += 1;
             }
             candidates.push(idx, exact_distances[i]);
@@ -996,6 +1004,7 @@ int search_from_candidates_panorama(
         stats.nhops += nstep;
     }
 
+    indexPanorama_stats.add(local_pano_stats);
     return nres;
 }
 
