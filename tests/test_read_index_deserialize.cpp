@@ -1670,3 +1670,177 @@ TEST(ReadIndexDeserialize, RaBitQQbZeroRejected_Iwrn) {
 
     expect_read_throws_with(buf, "RaBitQ qb=");
 }
+
+// -----------------------------------------------------------------------
+// Binary index deserialization validation tests
+// -----------------------------------------------------------------------
+
+TEST(ReadIndexDeserialize, BinaryHeaderDimensionNotMultipleOf8) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    push_val<int>(buf, 17);    // d = 17 (not multiple of 8)
+    push_val<int>(buf, 2);     // code_size
+    push_val<int64_t>(buf, 0); // ntotal
+    push_val<bool>(buf, true); // is_trained
+    push_val<int>(buf, 1);     // metric_type
+
+    expect_binary_read_throws_with(buf, "multiple of 8");
+}
+
+TEST(ReadIndexDeserialize, BinaryHeaderCodeSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    push_val<int>(buf, 16);    // d = 16
+    push_val<int>(buf, 5);     // code_size = 5 (should be 2)
+    push_val<int64_t>(buf, 0); // ntotal
+    push_val<bool>(buf, true); // is_trained
+    push_val<int>(buf, 1);     // metric_type
+
+    expect_binary_read_throws_with(buf, "code_size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWLevelsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/5);
+    push_minimal_hnsw(buf, /*ntotal=*/3); // 3 != 5
+
+    expect_binary_read_throws_with(buf, "HNSW levels size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWStorageNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/3);
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+    push_minimal_binary_flat(buf, /*d=*/16); // ntotal=0 != 3
+
+    expect_binary_read_throws_with(buf, "storage ntotal");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWStorageNotFlat) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // Nest an IBwF (IVF) instead of IBxF (flat)
+    push_fourcc(buf, "IBwF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<size_t>(buf, 1);                // nlist
+    push_val<size_t>(buf, 1);                // nprobe
+    push_minimal_binary_flat(buf, /*d=*/16); // quantizer
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    expect_binary_read_throws_with(buf, "IndexBinaryFlat storage");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraLevelsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/5);
+    push_val<bool>(buf, true);            // keep_max_size_level0
+    push_val<bool>(buf, false);           // base_level_only
+    push_val<int>(buf, 10);               // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/3); // 3 != 5
+
+    expect_binary_read_throws_with(buf, "HNSW levels size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraStorageNotFlat) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<bool>(buf, true);  // keep_max_size_level0
+    push_val<bool>(buf, false); // base_level_only
+    push_val<int>(buf, 10);     // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // Nest an IBwF (IVF) instead of IBxF (flat)
+    push_fourcc(buf, "IBwF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<size_t>(buf, 1);                // nlist
+    push_val<size_t>(buf, 1);                // nprobe
+    push_minimal_binary_flat(buf, /*d=*/16); // quantizer
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    expect_binary_read_throws_with(buf, "IndexBinaryFlat storage");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraStorageNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/3);
+    push_val<bool>(buf, true);  // keep_max_size_level0
+    push_val<bool>(buf, false); // base_level_only
+    push_val<int>(buf, 10);     // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+    push_minimal_binary_flat(buf, /*d=*/16); // ntotal=0 != 3
+
+    expect_binary_read_throws_with(buf, "storage ntotal");
+}
+
+TEST(ReadIndexDeserialize, BinaryHashInvlistsVecsSizeMismatch) {
+    // IBHh: fourcc + binary_header + b + nflip + hash_invlists
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+
+    // hash invlists with 1 entry
+    push_val<size_t>(buf, size_t(1)); // sz = 1
+    push_val<int>(buf, 8);            // il_nbit = 8
+
+    // Bitstring: 1 entry needs (b + il_nbit) = 12 bits -> 2 bytes
+    std::vector<uint8_t> bitbuf(2, 0);
+    BitstringWriter wr(bitbuf.data(), bitbuf.size());
+    wr.write(0, 4); // hash = 0
+    wr.write(1, 8); // ilsz = 1
+    push_vector<uint8_t>(buf, bitbuf);
+
+    // ids: 1 entry
+    push_vector<int64_t>(buf, {0});
+    // vecs: wrong size (3 bytes instead of code_size=2)
+    push_vector<uint8_t>(buf, {0, 0, 0});
+
+    expect_binary_read_throws_with(buf, "binary hash invlists: vecs size");
+}
+
+TEST(ReadIndexDeserialize, BinaryMultiHashMapIdOutOfRange) {
+    // IBHm with ntotal=1, one map containing id=1 (>= ntotal).
+    const int b = 4;
+    const int id_bits = 1;
+    const size_t ntotal = 1;
+    const size_t sz = 1;
+    // bits: (b + id_bits) * sz + 1 * id_bits = 6 bits -> 1 byte
+    const size_t nbit = (b + id_bits) * sz + 1 * id_bits;
+    const size_t bitbuf_size = (nbit + 7) / 8;
+
+    std::vector<uint8_t> bitbuf(bitbuf_size, 0);
+    BitstringWriter wr2(bitbuf.data(), bitbuf.size());
+    wr2.write(0, b);       // hash = 0
+    wr2.write(1, id_bits); // ilsz = 1
+    wr2.write(1, id_bits); // id = 1 (>= ntotal=1, invalid)
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+
+    // Nested IBxF storage
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+    std::vector<uint8_t> xb(ntotal * 2, 0); // code_size=2
+    push_vector<uint8_t>(buf, xb);
+
+    push_val<int>(buf, b); // b
+    push_val<int>(buf, 1); // nhash = 1
+    push_val<int>(buf, 0); // nflip
+
+    // Multi hash map fields (1 map):
+    push_val<int>(buf, id_bits);       // id_bits
+    push_val<size_t>(buf, sz);         // sz = 1 entry
+    push_vector<uint8_t>(buf, bitbuf); // packed bitstring
+
+    expect_binary_read_throws_with(buf, "multi hash map: id=");
+}
