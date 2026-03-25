@@ -356,6 +356,21 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_out);
     READ1(vt->is_trained);
     if (h == fourcc("HRot")) {
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out > 0 && (vt->d_out & (vt->d_out - 1)) == 0,
+                "invalid HadamardRotation d_out=%d (must be a power of 2 > 0)",
+                vt->d_out);
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out >= vt->d_in,
+                "invalid HadamardRotation d_out=%d < d_in=%d",
+                vt->d_out,
+                vt->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(vt->d_out) <=
+                        get_deserialization_vector_byte_limit() /
+                                (3 * sizeof(float)),
+                "HadamardRotation d_out=%d would exceed deserialization byte limit",
+                vt->d_out);
         auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
         FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
         FAISS_THROW_IF_NOT_FMT(
