@@ -124,6 +124,7 @@ void IndexBinaryIVF::search(
         idx_t* labels,
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     const IVFSearchParameters* params = nullptr;
     if (params_in) {
         params = dynamic_cast<const IVFSearchParameters*>(params_in);
