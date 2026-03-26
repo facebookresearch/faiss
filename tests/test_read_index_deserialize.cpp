@@ -15,6 +15,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
@@ -1918,6 +1919,36 @@ TEST(ReadIndexDeserialize, BinaryHNSWCagraZeroEntrypoints) {
                     EXPECT_NE(
                             std::string(e.what()).find(
                                     "num_base_level_search_entrypoints"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+// ---- IndexBinaryIVF runtime safety checks ----
+
+TEST(ReadIndexDeserialize, BinaryIVFNullInvlistsSearch) {
+    IndexBinaryIVF idx;
+    idx.d = 16;
+    idx.code_size = 2;
+    idx.invlists = nullptr;
+    idx.own_invlists = false;
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2);
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("inverted lists"),
                             std::string::npos);
                     throw;
                 }
