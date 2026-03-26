@@ -80,6 +80,23 @@ static void push_pq(
     push_vector<float>(buf, centroids);
 }
 
+/// Try to read a VectorTransform from the given buffer and expect a
+/// FaissException whose message contains the given substring.
+static void expect_vt_read_throws_with(
+        const std::vector<uint8_t>& data,
+        const std::string& expected_substr) {
+    VectorIOReader reader;
+    reader.data = data;
+    try {
+        read_VectorTransform_up(&reader);
+        FAIL() << "expected FaissException";
+    } catch (const FaissException& e) {
+        EXPECT_NE(
+                std::string(e.what()).find(expected_substr), std::string::npos)
+                << "expected '" << expected_substr << "' in: " << e.what();
+    }
+}
+
 /// Try to read a float index from the given buffer and expect a FaissException.
 static void expect_read_throws(const std::vector<uint8_t>& data) {
     VectorIOReader reader;
@@ -1339,4 +1356,106 @@ TEST(ReadIndexDeserialize, IndexIVFNullInvlistsAdd) {
     std::vector<float> xb(4, 1.0f);
 
     EXPECT_THROW(idx.add(1, xb.data()), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// VectorTransform deserialization validation tests
+// -----------------------------------------------------------------------
+
+TEST(ReadIndexDeserialize, HadamardRotationInvalidDout) {
+    // HRot format: fourcc("HRot") + seed(int) + d_in(int) + d_out(int) +
+    //              is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);      // seed
+    push_val<int>(buf, 16);      // d_in
+    push_val<int>(buf, 1 << 21); // d_out (not power-of-2 match for d_in)
+    push_val<bool>(buf, true);   // is_trained
+
+    expect_vt_read_throws_with(buf, "d_out must be the smallest power of 2");
+}
+
+TEST(ReadIndexDeserialize, HadamardRotationDinZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 0);     // d_in = 0 (invalid)
+    push_val<int>(buf, 1);     // d_out
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "HadamardRotation d_in=");
+}
+
+TEST(ReadIndexDeserialize, HadamardRotationDoutZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 16);    // d_in
+    push_val<int>(buf, 0);     // d_out = 0 (invalid)
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "HadamardRotation d_out=");
+}
+
+TEST(ReadIndexDeserialize, RemapDimensionsTransformMapTooSmall) {
+    // RmDT format: fourcc("RmDT") + WRITEVECTOR(map) + d_in(int) +
+    //              d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "RmDT");
+    push_vector<int>(buf, {0, 1}); // map with 2 entries
+    push_val<int>(buf, 4);         // d_in
+    push_val<int>(buf, 10);        // d_out = 10 > map.size()=2
+    push_val<bool>(buf, true);     // is_trained
+
+    expect_vt_read_throws_with(buf, "RemapDimensionsTransform map size");
+}
+
+TEST(ReadIndexDeserialize, CenteringTransformMeanTooSmall) {
+    // VCnt format: fourcc("VCnt") + WRITEVECTOR(mean) + d_in(int) +
+    //              d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VCnt");
+    push_vector<float>(buf, {1.0f, 2.0f}); // mean with 2 entries
+    push_val<int>(buf, 8);                 // d_in = 8 > mean.size()=2
+    push_val<int>(buf, 8);                 // d_out
+    push_val<bool>(buf, true);             // is_trained
+
+    expect_vt_read_throws_with(buf, "CenteringTransform mean size");
+}
+
+TEST(ReadIndexDeserialize, ITQTransformMeanTooSmall) {
+    // Viqt format: fourcc("Viqt") + WRITEVECTOR(mean) + do_pca(int) +
+    //              sub_vt(ITQMatrix) + sub_vt(LinearTransform) +
+    //              d_in(int) + d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Viqt");
+    push_vector<float>(buf, {1.0f}); // mean with 1 entry
+    push_val<bool>(buf, false);      // do_pca
+
+    // Sub-VT 1: ITQMatrix ("Viqm")
+    push_fourcc(buf, "Viqm");
+    push_val<int>(buf, 10);      // max_iter
+    push_val<int>(buf, 42);      // seed
+    push_val<bool>(buf, false);  // have_bias
+    push_vector<float>(buf, {}); // A
+    push_vector<float>(buf, {}); // b
+    push_val<int>(buf, 0);       // d_in
+    push_val<int>(buf, 0);       // d_out
+    push_val<bool>(buf, true);   // is_trained
+
+    // Sub-VT 2: LinearTransform ("LTra")
+    push_fourcc(buf, "LTra");
+    push_val<bool>(buf, false);  // have_bias
+    push_vector<float>(buf, {}); // A
+    push_vector<float>(buf, {}); // b
+    push_val<int>(buf, 0);       // d_in
+    push_val<int>(buf, 0);       // d_out
+    push_val<bool>(buf, true);   // is_trained
+
+    // Outer Viqt footer
+    push_val<int>(buf, 4);     // d_in = 4 > mean.size()=1
+    push_val<int>(buf, 4);     // d_out
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "ITQTransform mean size");
 }

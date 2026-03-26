@@ -279,11 +279,11 @@ struct RaBitQHeapHandler
         rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
     }
 
-    void begin(const float* norms) {
+    void begin(const float* norms) override {
         normalizers = norms;
     }
 
-    void end() {
+    void end() override {
 #pragma omp parallel for if (nq > 100)
         for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
             float* heap_dis = heap_distances + q * k;
