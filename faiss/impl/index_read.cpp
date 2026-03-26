@@ -1853,6 +1853,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_RaBitQuantizer(idxqfs->rabitq, f, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->qb > 0 && idxqfs->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [1, 8])",
+                idxqfs->qb);
 
         std::vector<uint8_t> legacy_flat_storage;
         if (is_legacy) {
@@ -1895,12 +1899,19 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         idx = std::move(idxqfs);
     } else if (h == fourcc("Ixrq")) {
+        // Ixrq = original single-bit format
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
         read_RaBitQuantizer(idxq->rabitq, f, false);
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
+        // qb=0: Not quantized - direct distance computation on given float32s.
+        // qb>0 && qb<=8: Scalar-quantized with qb bits of precision.
+        FAISS_THROW_IF_NOT_FMT(
+                idxq->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [0, 8])",
+                idxq->qb);
 
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         idxq->code_size = idxq->rabitq.code_size;
@@ -1913,6 +1924,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
+        // qb=0: Not quantized - direct distance computation on given float32s.
+        // qb>0 && qb<=8: Scalar-quantized with qb bits of precision.
+        FAISS_THROW_IF_NOT_FMT(
+                idxq->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [0, 8])",
+                idxq->qb);
 
         idxq->code_size = idxq->rabitq.code_size;
         idx = std::move(idxq);
@@ -1923,6 +1940,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
+        // qb=0: Not quantized - direct distance computation on given float32s.
+        // qb>0 && qb<=8: Scalar-quantized with qb bits of precision.
+        FAISS_THROW_IF_NOT_FMT(
+                ivrq->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [0, 8])",
+                ivrq->qb);
 
         // rabitq.nb_bits is already set to 1 by read_RaBitQuantizer
         // Update rabitq to match nb_bits
@@ -1939,6 +1962,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
+        // qb=0: Not quantized - direct distance computation on given float32s.
+        // qb>0 && qb<=8: Scalar-quantized with qb bits of precision.
+        FAISS_THROW_IF_NOT_FMT(
+                ivrq->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [0, 8])",
+                ivrq->qb);
 
         // Update rabitq to match nb_bits
         ivrq->rabitq.code_size =
@@ -2026,6 +2055,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivrqfs->M2);
         READ1(ivrqfs->implem);
         READ1(ivrqfs->qb);
+        FAISS_THROW_IF_NOT_FMT(
+                ivrqfs->qb > 0 && ivrqfs->qb <= 8,
+                "invalid RaBitQ qb=%d (must be in [1, 8])",
+                ivrqfs->qb);
         READ1(ivrqfs->centered);
 
         std::vector<uint8_t> legacy_flat_storage;
