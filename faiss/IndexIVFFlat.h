@@ -91,7 +91,7 @@ struct IVFFlatScanner : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            ResultHandler& handler) const;
+            ResultHandler& handler) const override;
 };
 
 struct IndexIVFFlatDedup : IndexIVFFlat {
