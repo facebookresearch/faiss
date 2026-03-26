@@ -22,10 +22,10 @@ namespace faiss {
 template <>
 void fvec_madd<SIMDLevel::AVX512>(
         const size_t n,
-        const float* __restrict a,
+        const float* a,
         const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
+        const float* b,
+        float* c) {
     const size_t n16 = n / 16;
     const size_t n_for_masking = n % 16;
 

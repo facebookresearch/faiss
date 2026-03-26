@@ -358,12 +358,31 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_out);
     READ1(vt->is_trained);
     if (h == fourcc("HRot")) {
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out > 0 && (vt->d_out & (vt->d_out - 1)) == 0,
+                "invalid HadamardRotation d_out=%d (must be a power of 2 > 0)",
+                vt->d_out);
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out >= vt->d_in,
+                "invalid HadamardRotation d_out=%d < d_in=%d",
+                vt->d_out,
+                vt->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(vt->d_out) <=
+                        get_deserialization_vector_byte_limit() /
+                                (3 * sizeof(float)),
+                "HadamardRotation d_out=%d would exceed deserialization byte limit",
+                vt->d_out);
         auto* hr = dynamic_cast<HadamardRotation*>(vt.get());
         FAISS_THROW_IF_NOT_MSG(hr, "dynamic_cast to HadamardRotation failed");
         FAISS_THROW_IF_NOT_FMT(
                 vt->d_in > 0,
-                "invalid HadamardRotation d_in %d (must be > 0)",
+                "invalid HadamardRotation d_in=%d (must be > 0)",
                 vt->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_out > 0,
+                "invalid HadamardRotation d_out=%d (must be > 0)",
+                vt->d_out);
         size_t p = 1;
         while (p < static_cast<size_t>(vt->d_in)) {
             p <<= 1;
@@ -379,6 +398,34 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 p <= byte_limit / (3 * sizeof(float)),
                 "HadamardRotation d_out exceeds deserialization byte limit");
         hr->init(hr->seed);
+    }
+    if (h == fourcc("RmDT")) {
+        auto* rdt = dynamic_cast<RemapDimensionsTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(
+                rdt, "dynamic_cast to RemapDimensionsTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(rdt->map.size()) >= rdt->d_out,
+                "RemapDimensionsTransform map size %d < d_out %d",
+                (int)rdt->map.size(),
+                rdt->d_out);
+    }
+    if (h == fourcc("VCnt")) {
+        auto* ct = dynamic_cast<CenteringTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(ct, "dynamic_cast to CenteringTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(ct->mean.size()) >= ct->d_in,
+                "CenteringTransform mean size %d < d_in %d",
+                (int)ct->mean.size(),
+                ct->d_in);
+    }
+    if (h == fourcc("Viqt")) {
+        auto* itqt = dynamic_cast<ITQTransform*>(vt.get());
+        FAISS_THROW_IF_NOT_MSG(itqt, "dynamic_cast to ITQTransform failed");
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<int>(itqt->mean.size()) >= itqt->d_in,
+                "ITQTransform mean size %d < d_in %d",
+                (int)itqt->mean.size(),
+                itqt->d_in);
     }
     return vt;
 }
@@ -415,15 +462,19 @@ static void read_ArrayInvertedLists_sizes(
     }
 }
 
+bool index_read_warn_on_null_invlists = true;
+
 std::unique_ptr<InvertedLists> read_InvertedLists_up(
         IOReader* f,
         int io_flags) {
     uint32_t h;
     READ1(h);
     if (h == fourcc("il00")) {
-        fprintf(stderr,
-                "read_InvertedLists:"
-                " WARN! inverted lists not stored with IVF object\n");
+        if (index_read_warn_on_null_invlists) {
+            fprintf(stderr,
+                    "read_InvertedLists:"
+                    " WARN! inverted lists not stored with IVF object\n");
+        }
         return nullptr;
     } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         size_t nlist, code_size, n_levels;
@@ -432,6 +483,8 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         READ1(code_size);
         READ1(n_levels);
         constexpr size_t bs = Panorama::kDefaultBatchSize;
+      FAISS_THROW_IF_NOT_FMT(
+                n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
         auto* pano = new PanoramaFlat(code_size / sizeof(float), n_levels, bs);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, pano);
@@ -1210,12 +1263,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
         read_index_header(*idxr, f);
         read_ResidualQuantizer(idxr->rq, f, io_flags);
+        FAISS_THROW_IF_NOT_MSG(
+                static_cast<size_t>(idxr->ntotal) <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "ResidualCoarseQuantizer centroid_norms allocation would exceed "
+                "deserialization byte limit");
         READ1(idxr->beam_factor);
         if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
             // then we force the beam factor to -1
             // which skips the table precomputation.
             idxr->beam_factor = -1;
         }
+        FAISS_THROW_IF_NOT_MSG(
+                static_cast<size_t>(idxr->ntotal) <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "ResidualCoarseQuantizer centroid norms allocation would "
+                "exceed deserialization byte limit");
         idxr->set_beam_factor(idxr->beam_factor);
         idx = std::move(idxr);
     } else if (
