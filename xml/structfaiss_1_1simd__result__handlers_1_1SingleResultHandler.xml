@@ -536,11 +536,11 @@
         <argsstring>(const float *norms)</argsstring>
         <name>begin</name>
         <qualifiedname>faiss::SIMDResultHandlerToFloat::begin</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1RaBitQHeapHandler_1abac2d1554efe727353732a1ae5275eeb">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a21468ced783eb7a62e79106b165f76cc">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1RangeHandler_1a7ba9193b309506fc3b8c88be96488423">begin</reimplementedby>
         <reimplementedby refid="structfaiss_1_1simd__result__handlers_1_1SingleQueryResultCollectHandler_1af6303cd43e826a848612ddd3ff63fb32">begin</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1RaBitQHeapHandler_1aca11d9d95187be40398407f0b2f5dcc3">begin</reimplementedby>
         <param>
           <type>const float *</type>
           <declname>norms</declname>

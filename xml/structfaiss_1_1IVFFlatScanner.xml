@@ -223,10 +223,10 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFlat.h" line="88" column="11"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IVFFlatScanner_1a89b5d5e7bd65eb09c871d3e6145efbbf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>size_t</type>
         <definition>size_t faiss::IVFFlatScanner&lt; VectorDistance &gt;::scan_codes</definition>
-        <argsstring>(size_t list_size, const uint8_t *codes, const idx_t *ids, ResultHandler &amp;handler) const</argsstring>
+        <argsstring>(size_t list_size, const uint8_t *codes, const idx_t *ids, ResultHandler &amp;handler) const override</argsstring>
         <name>scan_codes</name>
         <qualifiedname>faiss::IVFFlatScanner::scan_codes</qualifiedname>
         <reimplements refid="structfaiss_1_1InvertedListScanner_1a9f01f56555294a395bd527f761f32ab0">scan_codes</reimplements>
@@ -499,7 +499,7 @@
       <member refid="structfaiss_1_1IVFFlatScanner_1a38dcbe4f07c5e6392eac1272ee73befd" prot="public" virt="non-virtual"><scope>faiss::IVFFlatScanner</scope><name>IVFFlatScanner</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a00cb1d807f47fe2a21077919e3458db7" prot="public" virt="non-virtual"><scope>faiss::IVFFlatScanner</scope><name>keep_max</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a843a53d7df43c6dd9f6c550708e3a7fc" prot="public" virt="non-virtual"><scope>faiss::IVFFlatScanner</scope><name>list_no</name></member>
-      <member refid="structfaiss_1_1IVFFlatScanner_1a89b5d5e7bd65eb09c871d3e6145efbbf" prot="public" virt="virtual"><scope>faiss::IVFFlatScanner</scope><name>scan_codes</name></member>
+      <member refid="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7" prot="public" virt="virtual"><scope>faiss::IVFFlatScanner</scope><name>scan_codes</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1ab50ad33ecf0080ca218b27aa2698329e" prot="public" virt="virtual" ambiguityscope="faiss::InvertedListScanner::"><scope>faiss::IVFFlatScanner</scope><name>scan_codes</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" prot="public" virt="virtual"><scope>faiss::IVFFlatScanner</scope><name>scan_codes_range</name></member>
       <member refid="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2" prot="public" virt="non-virtual"><scope>faiss::IVFFlatScanner</scope><name>sel</name></member>

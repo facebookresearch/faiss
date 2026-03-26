@@ -539,10 +539,10 @@
         </inbodydescription>
         <location file="faiss/IndexRaBitQFastScan.h" line="187" column="10" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="187" bodyend="280"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1abac2d1554efe727353732a1ae5275eeb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1aca11d9d95187be40398407f0b2f5dcc3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::RaBitQHeapHandler&lt; C, with_id_map, SL &gt;::begin</definition>
-        <argsstring>(const float *norms)</argsstring>
+        <argsstring>(const float *norms) override</argsstring>
         <name>begin</name>
         <qualifiedname>faiss::RaBitQHeapHandler::begin</qualifiedname>
         <reimplements refid="structfaiss_1_1SIMDResultHandlerToFloat_1a74f32a4cce1b9da87de4a2149d8efb44">begin</reimplements>
@@ -558,10 +558,10 @@
         </inbodydescription>
         <location file="faiss/IndexRaBitQFastScan.h" line="282" column="10" bodyfile="faiss/IndexRaBitQFastScan.h" bodystart="282" bodyend="284"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1a1b295a3c15d56beb0be8f84b9e36be2a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+      <memberdef kind="function" id="structfaiss_1_1RaBitQHeapHandler_1a12c34bf1d6c04c6b8292bf5f01114484" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
         <definition>void faiss::RaBitQHeapHandler&lt; C, with_id_map, SL &gt;::end</definition>
-        <argsstring>()</argsstring>
+        <argsstring>() override</argsstring>
         <name>end</name>
         <qualifiedname>faiss::RaBitQHeapHandler::end</qualifiedname>
         <reimplements refid="structfaiss_1_1SIMDResultHandlerToFloat_1a707f8e0cbcd9674627d734518ae29fb6">end</reimplements>
@@ -961,14 +961,14 @@
     <listofallmembers>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a907dc5c1142d316c35c2856251143fc7" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>adjust_id</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1accca23229dd97c08791abb1d530e3155" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>adjust_with_origin</name></member>
-      <member refid="structfaiss_1_1RaBitQHeapHandler_1abac2d1554efe727353732a1ae5275eeb" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>begin</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1aca11d9d95187be40398407f0b2f5dcc3" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>begin</name></member>
       <member refid="structfaiss_1_1RaBitQHeapHandler_1a8c6bb5c99a070b78a6aa4bdf0851ebe8" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>Cfloat</name></member>
       <member refid="structfaiss_1_1RaBitQHeapHandler_1ad60f8c2724c559701b262311873b03be" prot="private" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>compute_full_multibit_distance</name></member>
       <member refid="structfaiss_1_1RaBitQHeapHandler_1ae590e96909f0016a96f20b5496dc0371" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>context</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a23a416943defceea8d0cd7811a61fa60" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>count_scanned_rows</name></member>
       <member refid="structfaiss_1_1SIMDResultHandlerToFloat_1a67796e9243267d22ead7d678a77fc6a1" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>dbias</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1add21d14cc5acbea717996ff6da3208f6" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>disable</name></member>
-      <member refid="structfaiss_1_1RaBitQHeapHandler_1a1b295a3c15d56beb0be8f84b9e36be2a" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>end</name></member>
+      <member refid="structfaiss_1_1RaBitQHeapHandler_1a12c34bf1d6c04c6b8292bf5f01114484" prot="public" virt="virtual"><scope>faiss::RaBitQHeapHandler</scope><name>end</name></member>
       <member refid="structfaiss_1_1RaBitQHeapHandler_1a69b2571df50357e12f58544518a12e87" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>full_block_size</name></member>
       <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1ad15f3bb2ca56b7f1a5baed8a743079ea" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>get_lt_mask</name></member>
       <member refid="structfaiss_1_1RaBitQHeapHandler_1a3b3262052cee629a28c8c6e5ced48e75" prot="public" virt="non-virtual"><scope>faiss::RaBitQHeapHandler</scope><name>handle</name></member>

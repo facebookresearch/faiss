@@ -378,9 +378,9 @@
         <argsstring>(size_t n, const uint8_t *codes, const idx_t *ids, ResultHandler &amp;handler) const</argsstring>
         <name>scan_codes</name>
         <qualifiedname>faiss::InvertedListScanner::scan_codes</qualifiedname>
-        <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1a89b5d5e7bd65eb09c871d3e6145efbbf">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1af4602275509ac492f5e37de3ede50b2a">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1aa0a064413a7205841ad31070dc839901">scan_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7">scan_codes</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>n</declname>
