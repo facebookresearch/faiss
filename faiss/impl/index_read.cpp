@@ -483,8 +483,8 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         READ1(code_size);
         READ1(n_levels);
         constexpr size_t bs = Panorama::kDefaultBatchSize;
-      FAISS_THROW_IF_NOT_FMT(
-                n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
+        FAISS_THROW_IF_NOT_FMT(
+            n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
         auto* pano = new PanoramaFlat(code_size / sizeof(float), n_levels, bs);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, pano);
