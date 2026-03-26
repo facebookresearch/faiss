@@ -127,9 +127,17 @@ struct simd32uint16_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
         storeu((void*)bytes);
         char res[2000];
         char* ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int i = 0; i < 32; i++) {
-            ptr += sprintf(ptr, fmt, bytes[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[i]);
         }
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -263,9 +271,17 @@ struct simd64uint8_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
         storeu((void*)bytes);
         char res[2000];
         char* ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int i = 0; i < 64; i++) {
-            ptr += sprintf(ptr, fmt, bytes[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[i]);
         }
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -374,7 +390,8 @@ struct simd16float32_tpl<SIMDLevel::AVX512>
         char res[1000];
         char* ptr = res;
         for (int i = 0; i < 16; i++) {
-            ptr += sprintf(ptr, "%g,", tab[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), "%g,", tab[i]);
         }
         ptr[-1] = 0;
         return std::string(res);

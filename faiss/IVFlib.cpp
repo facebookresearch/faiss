@@ -601,10 +601,14 @@ void handle_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index(sharded_index, fname);
         delete sharded_index;
     }
@@ -655,10 +659,14 @@ void handle_binary_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index_binary(sharded_index, fname);
         delete sharded_index;
     }

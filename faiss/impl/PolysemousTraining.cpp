@@ -823,10 +823,14 @@ void PolysemousTraining::optimize_reproduce_distances(
 
         if (log_pattern.size()) {
             char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
             snprintf(fname, 256, log_pattern.c_str(), m);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
             printf("opening log file %s\n", fname);
             optim.logfile = fopen(fname, "w");
             FAISS_THROW_IF_NOT_MSG(optim.logfile, "could not open logfile");
@@ -938,10 +942,14 @@ void PolysemousTraining::optimize_ranking(
 
         if (log_pattern.size()) {
             char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
             snprintf(fname, 256, log_pattern.c_str(), m);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
             printf("opening log file %s\n", fname);
             optim.logfile = fopen(fname, "w");
             FAISS_THROW_IF_NOT_FMT(
