@@ -2184,7 +2184,14 @@ static void read_index_binary_header(IndexBinary& idx, IOReader* f) {
     READ1(metric_type_int);
     idx.metric_type = metric_type_from_int(metric_type_int);
     FAISS_THROW_IF_NOT_FMT(
-            idx.d >= 0, "invalid binary index dimension %d", idx.d);
+            idx.d > 0 && idx.d % 8 == 0,
+            "invalid binary index dimension %d (must be > 0 and a multiple of 8)",
+            idx.d);
+    FAISS_THROW_IF_NOT_FMT(
+            idx.code_size == idx.d / 8,
+            "binary index code_size=%d does not match d/8=%d",
+            (int)idx.code_size,
+            idx.d / 8);
     FAISS_THROW_IF_NOT_FMT(
             idx.ntotal >= 0,
             "invalid binary index ntotal %" PRId64,
@@ -2213,6 +2220,7 @@ static void read_binary_ivf_header(
 static void read_binary_hash_invlists(
         IndexBinaryHash::InvertedListMap& invlists,
         int b,
+        size_t code_size,
         IOReader* f) {
     size_t sz;
     READ1(sz);
@@ -2255,6 +2263,13 @@ static void read_binary_hash_invlists(
         READVECTOR(il.ids);
         FAISS_THROW_IF_NOT(il.ids.size() == ilsz);
         READVECTOR(il.vecs);
+        FAISS_THROW_IF_NOT_FMT(
+                il.vecs.size() == il.ids.size() * code_size,
+                "binary hash invlists: vecs size %zu != ids size %zu * "
+                "code_size %zu",
+                il.vecs.size(),
+                il.ids.size(),
+                code_size);
     }
 }
 
@@ -2292,7 +2307,13 @@ static void read_binary_multi_hash_map(
         total_ids += ilsz;
         auto& il = map[hash];
         for (size_t j = 0; j < ilsz; j++) {
-            il.push_back(rd.read(id_bits));
+            uint64_t id = rd.read(id_bits);
+            FAISS_THROW_IF_NOT_FMT(
+                    id < ntotal,
+                    "multi hash map: id=%zu >= ntotal=%zu",
+                    (size_t)id,
+                    ntotal);
+            il.push_back(id);
         }
     }
 }
@@ -2323,8 +2344,21 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         read_index_binary_header(*idxhnsw, f);
         read_HNSW(idxhnsw->hnsw, f);
         idxhnsw->hnsw.is_panorama = false;
+        FAISS_THROW_IF_NOT_FMT(
+                idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
+                "IndexBinaryHNSW HNSW levels size %zu != ntotal %" PRId64,
+                idxhnsw->hnsw.levels.size(),
+                idxhnsw->ntotal);
         idxhnsw->storage = read_index_binary(f, io_flags);
         idxhnsw->own_fields = true;
+        FAISS_THROW_IF_NOT_MSG(
+                idxhnsw->storage &&
+                        dynamic_cast<IndexBinaryFlat*>(idxhnsw->storage) !=
+                                nullptr,
+                "IndexBinaryHNSW requires IndexBinaryFlat storage");
+        FAISS_THROW_IF_NOT_MSG(
+                idxhnsw->storage->ntotal == idxhnsw->ntotal,
+                "IndexBinaryHNSW storage ntotal mismatch");
         idx = std::move(idxhnsw);
     } else if (h == fourcc("IBHc")) {
         auto idxhnsw = std::make_unique<IndexBinaryHNSWCagra>();
@@ -2334,8 +2368,21 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         READ1(idxhnsw->num_base_level_search_entrypoints);
         read_HNSW(idxhnsw->hnsw, f);
         idxhnsw->hnsw.is_panorama = false;
+        FAISS_THROW_IF_NOT_FMT(
+                idxhnsw->hnsw.levels.size() == (size_t)idxhnsw->ntotal,
+                "IndexBinaryHNSWCagra HNSW levels size %zu != ntotal %" PRId64,
+                idxhnsw->hnsw.levels.size(),
+                idxhnsw->ntotal);
         idxhnsw->storage = read_index_binary(f, io_flags);
         idxhnsw->own_fields = true;
+        FAISS_THROW_IF_NOT_MSG(
+                idxhnsw->storage &&
+                        dynamic_cast<IndexBinaryFlat*>(idxhnsw->storage) !=
+                                nullptr,
+                "IndexBinaryHNSWCagra requires IndexBinaryFlat storage");
+        FAISS_THROW_IF_NOT_MSG(
+                idxhnsw->storage->ntotal == idxhnsw->ntotal,
+                "IndexBinaryHNSWCagra storage ntotal mismatch");
         idx = std::move(idxhnsw);
     } else if (h == fourcc("IBMp") || h == fourcc("IBM2")) {
         bool is_map2 = h == fourcc("IBM2");
@@ -2360,7 +2407,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 "invalid IndexBinaryHash b=%d (must be > 0)",
                 idxh->b);
         READ1(idxh->nflip);
-        read_binary_hash_invlists(idxh->invlists, idxh->b, f);
+        read_binary_hash_invlists(idxh->invlists, idxh->b, idxh->code_size, f);
         idx = std::move(idxh);
     } else if (h == fourcc("IBHm")) {
         auto idxmh = std::make_unique<IndexBinaryMultiHash>();
