@@ -8,6 +8,7 @@
 #include <faiss/utils/partitioning.h>
 
 #include <cassert>
+#include <cinttypes>
 #include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
@@ -432,7 +433,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
     // lower bound inclusive, upper exclusive
     size_t s0 = s0i, s1 = s1i + 1;
 
-    IFV printf("bounds: %ld %ld\n", s0, s1 - 1);
+    IFV printf("bounds: %zu %zu\n", s0, s1 - 1);
 
     int thresh;
     size_t n_eq = 0, n_lt = 0;
@@ -444,7 +445,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
         count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
         IFV printf(
-                "   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                "   [%zu %zu] thresh=%d n_lt=%zu n_eq=%zu, q=%zu:%zu/%zu\n",
                 s0,
                 s1,
                 thresh,
@@ -481,7 +482,8 @@ uint16_t simd_partition_fuzzy_with_bounds(
     // number of equal values to keep
     int64_t n_eq_1 = q - n_lt;
 
-    IFV printf("shrink: thresh=%d q=%ld n_eq_1=%ld\n", thresh, q, n_eq_1);
+    IFV printf(
+            "shrink: thresh=%d q=%zu n_eq_1=%" PRId64 "\n", thresh, q, n_eq_1);
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         assert(s0 + 1 == s1);
         q = q_min;
@@ -491,14 +493,15 @@ uint16_t simd_partition_fuzzy_with_bounds(
             thresh++;
         }
         n_eq_1 = q;
-        IFV printf("  override: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
+        IFV printf(
+                "  override: thresh=%d n_eq_1=%" PRId64 "\n", thresh, n_eq_1);
     } else {
         assert(n_eq_1 <= n_eq);
     }
 
     size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
-    IFV printf("wp=%ld\n", wp);
+    IFV printf("wp=%zu\n", wp);
     assert(wp == q);
     if (q_out) {
         *q_out = q;

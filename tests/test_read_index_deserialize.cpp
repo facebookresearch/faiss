@@ -14,6 +14,8 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
@@ -78,6 +80,23 @@ static void push_pq(
     push_val<size_t>(buf, M);
     push_val<size_t>(buf, nbits);
     push_vector<float>(buf, centroids);
+}
+
+/// Try to read a VectorTransform from the given buffer and expect a
+/// FaissException whose message contains the given substring.
+static void expect_vt_read_throws_with(
+        const std::vector<uint8_t>& data,
+        const std::string& expected_substr) {
+    VectorIOReader reader;
+    reader.data = data;
+    try {
+        read_VectorTransform_up(&reader);
+        FAIL() << "expected FaissException";
+    } catch (const FaissException& e) {
+        EXPECT_NE(
+                std::string(e.what()).find(expected_substr), std::string::npos)
+                << "expected '" << expected_substr << "' in: " << e.what();
+    }
 }
 
 /// Try to read a float index from the given buffer and expect a FaissException.
@@ -1339,4 +1358,636 @@ TEST(ReadIndexDeserialize, IndexIVFNullInvlistsAdd) {
     std::vector<float> xb(4, 1.0f);
 
     EXPECT_THROW(idx.add(1, xb.data()), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// VectorTransform deserialization validation tests
+// -----------------------------------------------------------------------
+
+TEST(ReadIndexDeserialize, HadamardRotationInvalidDout) {
+    // HRot format: fourcc("HRot") + seed(int) + d_in(int) + d_out(int) +
+    //              is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);      // seed
+    push_val<int>(buf, 16);      // d_in
+    push_val<int>(buf, 1 << 21); // d_out (not power-of-2 match for d_in)
+    push_val<bool>(buf, true);   // is_trained
+
+    expect_vt_read_throws_with(buf, "d_out must be the smallest power of 2");
+}
+
+TEST(ReadIndexDeserialize, HadamardRotationDinZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 0);     // d_in = 0 (invalid)
+    push_val<int>(buf, 1);     // d_out
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "HadamardRotation d_in=");
+}
+
+TEST(ReadIndexDeserialize, HadamardRotationDoutZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "HRot");
+    push_val<int>(buf, 42);    // seed
+    push_val<int>(buf, 16);    // d_in
+    push_val<int>(buf, 0);     // d_out = 0 (invalid)
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "HadamardRotation d_out=");
+}
+
+TEST(ReadIndexDeserialize, RemapDimensionsTransformMapTooSmall) {
+    // RmDT format: fourcc("RmDT") + WRITEVECTOR(map) + d_in(int) +
+    //              d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "RmDT");
+    push_vector<int>(buf, {0, 1}); // map with 2 entries
+    push_val<int>(buf, 4);         // d_in
+    push_val<int>(buf, 10);        // d_out = 10 > map.size()=2
+    push_val<bool>(buf, true);     // is_trained
+
+    expect_vt_read_throws_with(buf, "RemapDimensionsTransform map size");
+}
+
+TEST(ReadIndexDeserialize, CenteringTransformMeanTooSmall) {
+    // VCnt format: fourcc("VCnt") + WRITEVECTOR(mean) + d_in(int) +
+    //              d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VCnt");
+    push_vector<float>(buf, {1.0f, 2.0f}); // mean with 2 entries
+    push_val<int>(buf, 8);                 // d_in = 8 > mean.size()=2
+    push_val<int>(buf, 8);                 // d_out
+    push_val<bool>(buf, true);             // is_trained
+
+    expect_vt_read_throws_with(buf, "CenteringTransform mean size");
+}
+
+TEST(ReadIndexDeserialize, ITQTransformMeanTooSmall) {
+    // Viqt format: fourcc("Viqt") + WRITEVECTOR(mean) + do_pca(int) +
+    //              sub_vt(ITQMatrix) + sub_vt(LinearTransform) +
+    //              d_in(int) + d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Viqt");
+    push_vector<float>(buf, {1.0f}); // mean with 1 entry
+    push_val<bool>(buf, false);      // do_pca
+
+    // Sub-VT 1: ITQMatrix ("Viqm")
+    push_fourcc(buf, "Viqm");
+    push_val<int>(buf, 10);      // max_iter
+    push_val<int>(buf, 42);      // seed
+    push_val<bool>(buf, false);  // have_bias
+    push_vector<float>(buf, {}); // A
+    push_vector<float>(buf, {}); // b
+    push_val<int>(buf, 0);       // d_in
+    push_val<int>(buf, 0);       // d_out
+    push_val<bool>(buf, true);   // is_trained
+
+    // Sub-VT 2: LinearTransform ("LTra")
+    push_fourcc(buf, "LTra");
+    push_val<bool>(buf, false);  // have_bias
+    push_vector<float>(buf, {}); // A
+    push_vector<float>(buf, {}); // b
+    push_val<int>(buf, 0);       // d_in
+    push_val<int>(buf, 0);       // d_out
+    push_val<bool>(buf, true);   // is_trained
+
+    // Outer Viqt footer
+    push_val<int>(buf, 4);     // d_in = 4 > mean.size()=1
+    push_val<int>(buf, 4);     // d_out
+    push_val<bool>(buf, true); // is_trained
+
+    expect_vt_read_throws_with(buf, "ITQTransform mean size");
+}
+
+// -----------------------------------------------------------------------
+// RaBitQ qb deserialization validation tests
+// -----------------------------------------------------------------------
+
+/// Helper: push a minimal RaBitQuantizer (single-bit format, multi_bit=false).
+static void push_rabitq(std::vector<uint8_t>& buf, size_t d) {
+    push_val<size_t>(buf, d); // d
+    push_val<size_t>(buf, 1); // code_size
+    push_val<int>(buf, 1);    // metric_type (L2)
+}
+
+/// Helper: push a minimal RaBitQuantizer (multi-bit format, multi_bit=true).
+static void push_rabitq_multibit(std::vector<uint8_t>& buf, size_t d) {
+    push_val<size_t>(buf, d); // d
+    push_val<size_t>(buf, 1); // code_size
+    push_val<int>(buf, 1);    // metric_type (L2)
+    push_val<size_t>(buf, 1); // nb_bits
+}
+
+/// Helper: push an IVF header (index_header + nlist + nprobe + flat quantizer
+/// + empty direct_map).
+static void push_ivf_header(std::vector<uint8_t>& buf, int d) {
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_minimal_flat(buf, d);
+    push_empty_direct_map(buf);
+}
+
+// -- Ixrq (IndexRaBitQ, single-bit) --
+// qb=0 is valid for Ixrq: disables query quantization, uses raw fp32 values.
+// See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (valid for Ixrq)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Ixrr (IndexRaBitQ, multi-bit) --
+// qb=0 is valid for Ixrr: disables query quantization, uses raw fp32 values.
+// See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Ixrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ixrr");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<uint8_t>(buf, {});         // codes
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (valid for Ixrr)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Irfn (IndexRaBitQFastScan, new format) --
+// qb=0 is not supported: FastScan requires quantized queries for SIMD.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Irfn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Irfn");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 9);             // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroRejected_Irfn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Irfn");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_rabitq_multibit(buf, 4);
+    push_vector<float>(buf, {0, 0, 0, 0}); // center
+    push_val<uint8_t>(buf, 0);             // qb = 0 (invalid for FastScan)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+// -- Iwrq (IndexIVFRaBitQ, single-bit) --
+// qb=0 is valid for Iwrq: disables query quantization, uses raw fp32 values.
+// See IndexIVFRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrq");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Iwrq) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrq");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 0);  // qb = 0 (valid for Iwrq)
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Iwrr (IndexIVFRaBitQ, multi-bit) --
+// qb=0 is valid for Iwrr: disables query quantization, uses raw fp32 values.
+// See IndexIVFRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrr");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroAccepted_Iwrr) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrr");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_val<uint8_t>(buf, 0);  // qb = 0 (valid for Iwrr)
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -- Iwrn (IndexIVFRaBitQFastScan, new format) --
+// qb=0 is not supported: IVF FastScan requires quantized queries.
+
+TEST(ReadIndexDeserialize, RaBitQQbTooLarge_Iwrn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrn");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<bool>(buf, false); // by_residual
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<int>(buf, 32);     // bbs
+    push_val<size_t>(buf, 0);   // qbs2
+    push_val<size_t>(buf, 1);   // M2
+    push_val<int>(buf, 0);      // implem
+    push_val<uint8_t>(buf, 9);  // qb = 9 (> 8, invalid)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+TEST(ReadIndexDeserialize, RaBitQQbZeroRejected_Iwrn) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Iwrn");
+    push_ivf_header(buf, /*d=*/4);
+    push_rabitq_multibit(buf, 4);
+    push_val<bool>(buf, false); // by_residual
+    push_val<size_t>(buf, 1);   // code_size
+    push_val<int>(buf, 32);     // bbs
+    push_val<size_t>(buf, 0);   // qbs2
+    push_val<size_t>(buf, 1);   // M2
+    push_val<int>(buf, 0);      // implem
+    push_val<uint8_t>(buf, 0);  // qb = 0 (invalid for IVF FastScan)
+
+    expect_read_throws_with(buf, "RaBitQ qb=");
+}
+
+// -----------------------------------------------------------------------
+// Binary index deserialization validation tests
+// -----------------------------------------------------------------------
+
+TEST(ReadIndexDeserialize, BinaryHeaderDimensionNotMultipleOf8) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    push_val<int>(buf, 17);    // d = 17 (not multiple of 8)
+    push_val<int>(buf, 2);     // code_size
+    push_val<int64_t>(buf, 0); // ntotal
+    push_val<bool>(buf, true); // is_trained
+    push_val<int>(buf, 1);     // metric_type
+
+    expect_binary_read_throws_with(buf, "multiple of 8");
+}
+
+TEST(ReadIndexDeserialize, BinaryHeaderCodeSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBxF");
+    push_val<int>(buf, 16);    // d = 16
+    push_val<int>(buf, 5);     // code_size = 5 (should be 2)
+    push_val<int64_t>(buf, 0); // ntotal
+    push_val<bool>(buf, true); // is_trained
+    push_val<int>(buf, 1);     // metric_type
+
+    expect_binary_read_throws_with(buf, "code_size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWLevelsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/5);
+    push_minimal_hnsw(buf, /*ntotal=*/3); // 3 != 5
+
+    expect_binary_read_throws_with(buf, "HNSW levels size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWStorageNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/3);
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+    push_minimal_binary_flat(buf, /*d=*/16); // ntotal=0 != 3
+
+    expect_binary_read_throws_with(buf, "storage ntotal");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWStorageNotFlat) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // Nest an IBwF (IVF) instead of IBxF (flat)
+    push_fourcc(buf, "IBwF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<size_t>(buf, 1);                // nlist
+    push_val<size_t>(buf, 1);                // nprobe
+    push_minimal_binary_flat(buf, /*d=*/16); // quantizer
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    expect_binary_read_throws_with(buf, "IndexBinaryFlat storage");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraLevelsSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/5);
+    push_val<bool>(buf, true);            // keep_max_size_level0
+    push_val<bool>(buf, false);           // base_level_only
+    push_val<int>(buf, 10);               // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/3); // 3 != 5
+
+    expect_binary_read_throws_with(buf, "HNSW levels size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraStorageNotFlat) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<bool>(buf, true);  // keep_max_size_level0
+    push_val<bool>(buf, false); // base_level_only
+    push_val<int>(buf, 10);     // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // Nest an IBwF (IVF) instead of IBxF (flat)
+    push_fourcc(buf, "IBwF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<size_t>(buf, 1);                // nlist
+    push_val<size_t>(buf, 1);                // nprobe
+    push_minimal_binary_flat(buf, /*d=*/16); // quantizer
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    expect_binary_read_throws_with(buf, "IndexBinaryFlat storage");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraStorageNtotalMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHc");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/3);
+    push_val<bool>(buf, true);  // keep_max_size_level0
+    push_val<bool>(buf, false); // base_level_only
+    push_val<int>(buf, 10);     // num_base_level_search_entrypoints
+    push_minimal_hnsw(buf, /*ntotal=*/3);
+    push_minimal_binary_flat(buf, /*d=*/16); // ntotal=0 != 3
+
+    expect_binary_read_throws_with(buf, "storage ntotal");
+}
+
+TEST(ReadIndexDeserialize, BinaryHashInvlistsVecsSizeMismatch) {
+    // IBHh: fourcc + binary_header + b + nflip + hash_invlists
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_val<int>(buf, 4); // b
+    push_val<int>(buf, 0); // nflip
+
+    // hash invlists with 1 entry
+    push_val<size_t>(buf, size_t(1)); // sz = 1
+    push_val<int>(buf, 8);            // il_nbit = 8
+
+    // Bitstring: 1 entry needs (b + il_nbit) = 12 bits -> 2 bytes
+    std::vector<uint8_t> bitbuf(2, 0);
+    BitstringWriter wr(bitbuf.data(), bitbuf.size());
+    wr.write(0, 4); // hash = 0
+    wr.write(1, 8); // ilsz = 1
+    push_vector<uint8_t>(buf, bitbuf);
+
+    // ids: 1 entry
+    push_vector<int64_t>(buf, {0});
+    // vecs: wrong size (3 bytes instead of code_size=2)
+    push_vector<uint8_t>(buf, {0, 0, 0});
+
+    expect_binary_read_throws_with(buf, "binary hash invlists: vecs size");
+}
+
+TEST(ReadIndexDeserialize, BinaryMultiHashMapIdOutOfRange) {
+    // IBHm with ntotal=1, one map containing id=1 (>= ntotal).
+    const int b = 4;
+    const int id_bits = 1;
+    const size_t ntotal = 1;
+    const size_t sz = 1;
+    // bits: (b + id_bits) * sz + 1 * id_bits = 6 bits -> 1 byte
+    const size_t nbit = (b + id_bits) * sz + 1 * id_bits;
+    const size_t bitbuf_size = (nbit + 7) / 8;
+
+    std::vector<uint8_t> bitbuf(bitbuf_size, 0);
+    BitstringWriter wr2(bitbuf.data(), bitbuf.size());
+    wr2.write(0, b);       // hash = 0
+    wr2.write(1, id_bits); // ilsz = 1
+    wr2.write(1, id_bits); // id = 1 (>= ntotal=1, invalid)
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+
+    // Nested IBxF storage
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+    std::vector<uint8_t> xb(ntotal * 2, 0); // code_size=2
+    push_vector<uint8_t>(buf, xb);
+
+    push_val<int>(buf, b); // b
+    push_val<int>(buf, 1); // nhash = 1
+    push_val<int>(buf, 0); // nflip
+
+    // Multi hash map fields (1 map):
+    push_val<int>(buf, id_bits);       // id_bits
+    push_val<size_t>(buf, sz);         // sz = 1 entry
+    push_vector<uint8_t>(buf, bitbuf); // packed bitstring
+
+    expect_binary_read_throws_with(buf, "multi hash map: id=");
+}
+
+TEST(ReadIndexDeserialize, BinaryMultiHashBZero) {
+    // b must be positive; BitstringReader::read(0) produces garbage hash
+    // values and b is used as a bit-width for hash extraction.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+
+    // Nested IBxF storage with ntotal=0
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_vector<uint8_t>(buf, {}); // empty xb
+
+    push_val<int>(buf, 0); // b = 0 (invalid)
+
+    expect_binary_read_throws_with(buf, "IndexBinaryMultiHash b=");
+}
+
+TEST(ReadIndexDeserialize, BinaryMultiHashNhashTimesBExceedsCodeSize) {
+    // nhash * b must not exceed code_size * 8, otherwise BitstringReader
+    // overflows the query buffer during search.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+
+    // Nested IBxF storage with ntotal=0
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_vector<uint8_t>(buf, {}); // empty xb
+
+    push_val<int>(buf, 12); // b = 12
+    push_val<int>(buf, 2);  // nhash = 2 => nhash*b = 24 > code_size*8 = 16
+    // (code_size = d/8 = 2, so 2*8 = 16 bits available)
+
+    expect_binary_read_throws_with(buf, "exceeds code_size");
+}
+
+// ---- IndexBinaryHNSW runtime safety checks ----
+
+TEST(ReadIndexDeserialize, BinaryHNSWGetDistanceComputerNonFlatThrows) {
+    // Construct an IndexBinaryHNSW with non-flat storage and verify
+    // get_distance_computer throws instead of asserting.
+    IndexBinaryHNSW idx;
+    idx.storage = nullptr;
+    idx.own_fields = false;
+    // storage is nullptr so dynamic_cast will fail
+    EXPECT_THROW(
+            {
+                try {
+                    idx.get_distance_computer();
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("IndexBinaryFlat"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraEmptyIndexSearch) {
+    IndexBinaryHNSWCagra idx(16, 4);
+    idx.base_level_only = true;
+    // ntotal is 0, searching should throw
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2); // d=16 -> code_size=2
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("empty index"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWCagraZeroEntrypoints) {
+    IndexBinaryHNSWCagra idx(16, 4);
+    // Add a vector first (add requires base_level_only == false)
+    std::vector<uint8_t> vec(2, 0xFF);
+    idx.add(1, vec.data());
+    idx.base_level_only = true;
+    idx.num_base_level_search_entrypoints = 0;
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2);
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find(
+                                    "num_base_level_search_entrypoints"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
+}
+
+// ---- IndexBinaryIVF runtime safety checks ----
+
+TEST(ReadIndexDeserialize, BinaryIVFNullInvlistsSearch) {
+    IndexBinaryIVF idx;
+    idx.d = 16;
+    idx.code_size = 2;
+    idx.invlists = nullptr;
+    idx.own_invlists = false;
+    std::vector<int32_t> distances(1);
+    std::vector<idx_t> labels(1);
+    std::vector<uint8_t> query(2);
+    EXPECT_THROW(
+            {
+                try {
+                    idx.search(
+                            1,
+                            query.data(),
+                            1,
+                            distances.data(),
+                            labels.data());
+                } catch (const faiss::FaissException& e) {
+                    EXPECT_NE(
+                            std::string(e.what()).find("inverted lists"),
+                            std::string::npos);
+                    throw;
+                }
+            },
+            faiss::FaissException);
 }

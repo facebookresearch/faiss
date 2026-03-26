@@ -521,3 +521,39 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
                     count += 1
 
         print(f"IDSelectorBatch test: {count} results")
+
+    def test_panorama_stats(self):
+        """Test that ratio_dims_scanned decreases as nlevels increases."""
+        d, nb, nq, k = 128, 10000, 10, 10
+
+        rs = np.random.RandomState(42)
+        xb = rs.rand(nb, d).astype("float32")
+        xq = rs.rand(nq, d).astype("float32")
+
+        nt = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+
+        try:
+            ratios = []
+            nlevels_list = [1, 4, 8, 16]
+            for nlevels in nlevels_list:
+                faiss.cvar.indexPanorama_stats.reset()
+
+                index = faiss.IndexHNSWFlatPanorama(d, 32, nlevels)
+                index.hnsw.efSearch = 64
+                index.add(xb)
+                index.search(xq, k)
+
+                ratio = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
+                ratios.append(ratio)
+                print(f"  nlevels={nlevels:2d}  ratio={ratio:.4f}")
+
+            for i in range(1, len(ratios)):
+                self.assertLessEqual(
+                    ratios[i], ratios[i - 1],
+                    f"ratio should decrease: nlevels={nlevels_list[i]} "
+                    f"ratio={ratios[i]:.4f} > prev={ratios[i-1]:.4f}",
+                )
+            self.assertLess(ratios[-1], 1.0, "Some pruning should occur")
+        finally:
+            faiss.omp_set_num_threads(nt)
