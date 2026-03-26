@@ -1847,6 +1847,42 @@ TEST(ReadIndexDeserialize, BinaryMultiHashMapIdOutOfRange) {
     expect_binary_read_throws_with(buf, "multi hash map: id=");
 }
 
+TEST(ReadIndexDeserialize, BinaryMultiHashBZero) {
+    // b must be positive; BitstringReader::read(0) produces garbage hash
+    // values and b is used as a bit-width for hash extraction.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+
+    // Nested IBxF storage with ntotal=0
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_vector<uint8_t>(buf, {}); // empty xb
+
+    push_val<int>(buf, 0); // b = 0 (invalid)
+
+    expect_binary_read_throws_with(buf, "IndexBinaryMultiHash b=");
+}
+
+TEST(ReadIndexDeserialize, BinaryMultiHashNhashTimesBExceedsCodeSize) {
+    // nhash * b must not exceed code_size * 8, otherwise BitstringReader
+    // overflows the query buffer during search.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHm");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+
+    // Nested IBxF storage with ntotal=0
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    push_vector<uint8_t>(buf, {}); // empty xb
+
+    push_val<int>(buf, 12); // b = 12
+    push_val<int>(buf, 2);  // nhash = 2 => nhash*b = 24 > code_size*8 = 16
+    // (code_size = d/8 = 2, so 2*8 = 16 bits available)
+
+    expect_binary_read_throws_with(buf, "exceeds code_size");
+}
+
 // ---- IndexBinaryHNSW runtime safety checks ----
 
 TEST(ReadIndexDeserialize, BinaryHNSWGetDistanceComputerNonFlatThrows) {

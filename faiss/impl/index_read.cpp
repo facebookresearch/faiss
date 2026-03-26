@@ -2419,12 +2419,23 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         storage_idx.release();
         idxmh->own_fields = true;
         READ1(idxmh->b);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmh->b > 0,
+                "invalid IndexBinaryMultiHash b=%d (must be > 0)",
+                idxmh->b);
         READ1(idxmh->nhash);
         FAISS_THROW_IF_NOT_FMT(
                 idxmh->nhash > 0,
                 "invalid IndexBinaryMultiHash nhash %d (must be > 0)",
                 idxmh->nhash);
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(idxmh->nhash, "nhash");
+        FAISS_THROW_IF_NOT_FMT(
+                mul_no_overflow(idxmh->nhash, idxmh->b, "nhash * b") <=
+                        mul_no_overflow(idxmh->code_size, 8, "code_size * 8"),
+                "IndexBinaryMultiHash nhash=%d * b=%d exceeds code_size=%d bits",
+                idxmh->nhash,
+                idxmh->b,
+                idxmh->code_size);
         READ1(idxmh->nflip);
         idxmh->maps.resize(idxmh->nhash);
         for (int i = 0; i < idxmh->nhash; i++) {
