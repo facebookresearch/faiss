@@ -21,6 +21,7 @@
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/expanded_scanners.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::NONE
