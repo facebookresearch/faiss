@@ -67,14 +67,6 @@
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="27">
-        <label>faiss/impl/simd_dispatch.h</label>
-        <link refid="simd__dispatch_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
       <node id="16">
         <label>faiss/utils/Heap.h</label>
         <link refid="Heap_8h_source"/>
@@ -116,11 +108,13 @@
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="27" relation="include">
-        </childnode>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
       <node id="21">

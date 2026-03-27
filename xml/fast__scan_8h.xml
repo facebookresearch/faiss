@@ -424,7 +424,7 @@
 <codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_id_map);</highlight></codeline>
 <codeline lineno="220"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="221"><highlight class="comment">///<sp/>Runtime<sp/>dispatch<sp/>wrapper:<sp/>selects<sp/>the<sp/>best<sp/>available<sp/>SIMD<sp/>level</highlight></codeline>
-<codeline lineno="222"><highlight class="comment">///<sp/>(via<sp/>DISPATCH_SIMDLevel)<sp/>and<sp/>delegates<sp/>to<sp/>the<sp/>corresponding</highlight></codeline>
+<codeline lineno="222"><highlight class="comment">///<sp/>(via<sp/>with_simd_level)<sp/>and<sp/>delegates<sp/>to<sp/>the<sp/>corresponding</highlight></codeline>
 <codeline lineno="223"><highlight class="comment">///<sp/>make_fast_scan_scanner_impl&lt;SL&gt;<sp/>specialization.</highlight></codeline>
 <codeline lineno="224" refid="namespacefaiss_1a35ff7d43fae76cd05f815cd45e581a13" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::unique_ptr&lt;FastScanCodeScanner&gt;<sp/><ref refid="namespacefaiss_1a35ff7d43fae76cd05f815cd45e581a13" kindref="member">make_fast_scan_knn_scanner</ref>(</highlight></codeline>
 <codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_max,</highlight></codeline>

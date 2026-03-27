@@ -275,7 +275,7 @@
 <codeline lineno="29"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="30"><highlight class="comment"><sp/>*<sp/>PQCodeDistance&lt;PQDecoderT,<sp/>SL&gt;<sp/>computes<sp/>PQ<sp/>code<sp/>distances<sp/>at<sp/>a<sp/>given</highlight></codeline>
 <codeline lineno="31"><highlight class="comment"><sp/>*<sp/>SIMD<sp/>level.<sp/>The<sp/>dispatch<sp/>site<sp/>(IndexIVFPQ.cpp,<sp/>IndexPQ.cpp)<sp/>uses</highlight></codeline>
-<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>DISPATCH_SIMDLevel<sp/>to<sp/>select<sp/>SL<sp/>at<sp/>runtime,<sp/>which<sp/>instantiates</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/>with_simd_level<sp/>to<sp/>select<sp/>SL<sp/>at<sp/>runtime,<sp/>which<sp/>instantiates</highlight></codeline>
 <codeline lineno="33"><highlight class="comment"><sp/>*<sp/>PQCodeDistance<sp/>for<sp/>ALL<sp/>decoder<sp/>types<sp/>(PQDecoder8,<sp/>PQDecoder16,</highlight></codeline>
 <codeline lineno="34"><highlight class="comment"><sp/>*<sp/>PQDecoderGeneric)<sp/>at<sp/>the<sp/>chosen<sp/>level.</highlight></codeline>
 <codeline lineno="35"><highlight class="comment"><sp/>*</highlight></codeline>
@@ -457,7 +457,7 @@
 <codeline lineno="211"><highlight class="comment"><sp/>*<sp/>Non-templated<sp/>PQ<sp/>code<sp/>distance<sp/>dispatch<sp/>(PQDecoder8<sp/>only).</highlight></codeline>
 <codeline lineno="212"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="213"><highlight class="comment"><sp/>*<sp/>These<sp/>follow<sp/>the<sp/>same<sp/>pattern<sp/>as<sp/>distances.h:<sp/>the<sp/>caller<sp/>does<sp/>not</highlight></codeline>
-<codeline lineno="214"><highlight class="comment"><sp/>*<sp/>name<sp/>a<sp/>SIMDLevel.<sp/>Internally<sp/>they<sp/>dispatch<sp/>via<sp/>DISPATCH_SIMDLevel</highlight></codeline>
+<codeline lineno="214"><highlight class="comment"><sp/>*<sp/>name<sp/>a<sp/>SIMDLevel.<sp/>Internally<sp/>they<sp/>dispatch<sp/>via<sp/>with_simd_level</highlight></codeline>
 <codeline lineno="215"><highlight class="comment"><sp/>*<sp/>to<sp/>the<sp/>best<sp/>available<sp/>SIMD<sp/>implementation<sp/>(DD:<sp/>runtime<sp/>detection,</highlight></codeline>
 <codeline lineno="216"><highlight class="comment"><sp/>*<sp/>static:<sp/>compile-time<sp/>selection).<sp/>Definitions<sp/>are<sp/>in</highlight></codeline>
 <codeline lineno="217"><highlight class="comment"><sp/>*<sp/>pq_code_distance-generic.cpp.</highlight></codeline>

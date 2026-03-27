@@ -12054,6 +12054,12 @@
     <member refid="namespacefaiss_1ad91730bea51315222b985f9aba4359b2" kind="variable"><name>product_quantizer_compute_codes_bs</name></member>
     <member refid="namespacefaiss_1a2f4ea8fd40c67176293aada5c5d2cd65" kind="variable"><name>rabitq_stats</name></member>
     <member refid="namespacefaiss_1a5ba348773d3fc46e3ea6f668c70bade1" kind="variable"><name>distance_compute_min_k_reservoir</name></member>
+    <member refid="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" kind="variable"><name>AVAILABLE_SIMD_LEVELS_NONE</name></member>
+    <member refid="namespacefaiss_1a03185176b24e9b601eb79d7b7949cd1e" kind="variable"><name>AVAILABLE_SIMD_LEVELS_AVX2_NEON</name></member>
+    <member refid="namespacefaiss_1a9b43fb0796b0483d4d4130299cec2003" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A0</name></member>
+    <member refid="namespacefaiss_1a0d8ae4f704665bcac4c7cfc5d9e12263" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A1</name></member>
+    <member refid="namespacefaiss_1ab8d377f6d5b19269ac10ad54227a805d" kind="variable"><name>AVAILABLE_SIMD_LEVELS_A2</name></member>
+    <member refid="namespacefaiss_1a1fb891890806e64ce75bb0aa12704659" kind="variable"><name>AVAILABLE_SIMD_LEVELS_ALL</name></member>
     <member refid="namespacefaiss_1acba18e3a152e4eb878768d4d5fe1d911" kind="variable"><name>visited_table_hashset_threshold</name></member>
     <member refid="namespacefaiss_1ae62bfad0b4bad9f738b7e8c5fe3d50b1" kind="variable"><name>index2layer_sa_encode_bs</name></member>
     <member refid="namespacefaiss_1a4be4e1eb72f2c8a0b9e634b7a658514a" kind="variable"><name>index_factory_verbose</name></member>
@@ -12164,6 +12170,7 @@
     <member refid="namespacefaiss_1abbf2bb1faef7c8072b82a7db323397a0" kind="function"><name>beam_search_encode_step_tab</name></member>
     <member refid="namespacefaiss_1ae298d588e823c407f64b5a0aab4c9148" kind="function"><name>dispatch_knn_ResultHandler</name></member>
     <member refid="namespacefaiss_1a61318d8d9c7759e9de47a97bfba9b318" kind="function"><name>dispatch_range_ResultHandler</name></member>
+    <member refid="namespacefaiss_1af531ac2f72724e9abcc311a12a71b1db" kind="function"><name>with_selected_simd_levels</name></member>
     <member refid="namespacefaiss_1ae20d9852f7ee86d7be2a4af07e51f0c8" kind="function"><name>with_simd_level</name></member>
     <member refid="namespacefaiss_1ae781ed20ba5c00d9d1d50d0847e98ac3" kind="function"><name>with_simd_level_256bit</name></member>
     <member refid="namespacefaiss_1aa850ed8ca17317a9c9f63c6ccea22581" kind="function"><name>min</name></member>
@@ -12345,12 +12352,12 @@
     <member refid="namespacefaiss_1a179d314ce824495fcb328af40b63572f" kind="function"><name>fvec_add_dispatch</name></member>
     <member refid="namespacefaiss_1a422338c96cfd45e052fad9ad95034ed0" kind="function"><name>fvec_add_scalar_dispatch</name></member>
     <member refid="namespacefaiss_1ae01e35f00ff93103140e83f3d3f3713f" kind="function"><name>compute_PQ_dis_tables_dsub2_dispatch</name></member>
+    <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a48139e7f38831a4333ca6bf1fb6be650" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" kind="function"><name>get_extra_distance_computer</name></member>
     <member refid="namespacefaiss_1a987ea96650dd763a87affacd88649fc6" kind="function"><name>with_metric_type</name></member>
-    <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1a302c4546543d05d555edf18af88edaa2" kind="function"><name>encode_fp16</name></member>
     <member refid="namespacefaiss_1ac3f112424a7957effd27187654d90986" kind="function"><name>decode_fp16</name></member>
     <member refid="namespacefaiss_1a0e10b0864a93653945dbd950b9fcdacf" kind="function"><name>bitvec_print</name></member>
@@ -12463,6 +12470,7 @@
     <member refid="namespacefaiss_1a984d3aed4da2349d880cb3973634ed5a" kind="function"><name>fvec_madd_and_argmin_sse_ref</name></member>
     <member refid="namespacefaiss_1a6d2ac818c8d058b1cc926a28fbd9e4ba" kind="function"><name>fvec_madd_and_argmin_sse</name></member>
     <member refid="namespacefaiss_1ad1b6ea1858c274ec9aed96539f5c0259" kind="function"><name>masked_read</name></member>
+    <member refid="namespacefaiss_1aa0dbe6e1a44f8bf5ee8ecb7ef94161c2" kind="function"><name>exhaustive_L2sqr_blas_cmax</name></member>
     <member refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" kind="function"><name>simd_width</name></member>
     <member refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kind="function"><name>to_string</name></member>
     <member refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kind="function"><name>to_simd_level</name></member>
@@ -13198,12 +13206,6 @@
   <compound refid="ScalarQuantizer_8h" kind="file"><name>ScalarQuantizer.h</name>
   </compound>
   <compound refid="simd__dispatch_8h" kind="file"><name>simd_dispatch.h</name>
-    <member refid="simd__dispatch_8h_1a1adafbf42b5a602178a31f352299dac0" kind="define"><name>DISPATCH_SIMDLevel_AVX2</name></member>
-    <member refid="simd__dispatch_8h_1ac83f98dbe06e36bf82099759fb448658" kind="define"><name>DISPATCH_SIMDLevel_AVX512</name></member>
-    <member refid="simd__dispatch_8h_1ae93f2f76ce339f9b9af2f680fa5d599a" kind="define"><name>DISPATCH_SIMDLevel_AVX512_SPR</name></member>
-    <member refid="simd__dispatch_8h_1ab8cea65c6e662cfbab3664ed02cfd9c3" kind="define"><name>DISPATCH_SIMDLevel_ARM_NEON</name></member>
-    <member refid="simd__dispatch_8h_1ad78583652b1e9de1aa30619429ee9b78" kind="define"><name>DISPATCH_SIMDLevel_ARM_SVE</name></member>
-    <member refid="simd__dispatch_8h_1ab9ef1664628e287fac403ee332c5bbff" kind="define"><name>DISPATCH_SIMDLevel</name></member>
   </compound>
   <compound refid="simdlib_8h" kind="file"><name>simdlib.h</name>
   </compound>
@@ -13433,6 +13435,8 @@
   <compound refid="distances__sse-inl_8h" kind="file"><name>distances_sse-inl.h</name>
     <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
     <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
+  </compound>
+  <compound refid="exhaustive__L2sqr__blas__cmax_8h" kind="file"><name>exhaustive_L2sqr_blas_cmax.h</name>
   </compound>
   <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
     <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>

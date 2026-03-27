@@ -67,6 +67,8 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
       </node>
       <node id="3">
         <label>faiss/impl/expanded_scanners.h</label>
@@ -145,6 +147,10 @@
       <node id="6">
         <label>faiss/utils/simd_impl/IVFFlatScanner-inl.h</label>
         <link refid="IVFFlatScanner-inl_8h_source"/>
+      </node>
+      <node id="18">
+        <label>faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</label>
+        <link refid="exhaustive__L2sqr__blas__cmax_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1PartitionStats" prot="public">faiss::PartitionStats</innerclass>
