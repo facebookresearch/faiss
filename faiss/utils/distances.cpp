@@ -590,19 +590,8 @@ int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
 
-/*******************************************************
- * Database-parallel KNN search
- *
- * When the number of queries (nx) is small relative to the number of
- * available threads, the standard query-parallel approach underutilizes
- * CPU cores. These functions instead parallelize over segments of the
- * database, giving each thread a disjoint slice of the vectors to scan.
- * Each thread uses single-threaded BLAS and maintains its own per-query
- * heaps, which are merged after the parallel region.
- *******************************************************/
-
-// Minimum database size (in vectors) to justify the overhead of
-// database-parallel search (per-thread heap allocation + merge).
+// Database-parallel KNN: parallelizes over database segments instead of
+// queries, for the case where nx < nthreads and the database is large.
 static constexpr size_t kDbParallelMinVectors = 10000;
 
 template <class C>
@@ -627,16 +616,7 @@ static void knn_db_parallel_impl(
     std::vector<T> all_dis(static_cast<size_t>(nt) * nx * k);
     std::vector<TI> all_ids(static_cast<size_t>(nt) * nx * k);
 
-    for (int t = 0; t < nt; t++) {
-        for (size_t i = 0; i < nx; i++) {
-            heap_heapify<C>(
-                    k,
-                    all_dis.data() + (t * nx + i) * k,
-                    all_ids.data() + (t * nx + i) * k);
-        }
-    }
-
-    // Precompute norms for L2 (CMax) if not provided
+    // Precompute norms for L2
     std::unique_ptr<float[]> x_norms_storage;
     std::unique_ptr<float[]> y_norms_storage;
     const float* x_norms = nullptr;
@@ -659,12 +639,15 @@ static void knn_db_parallel_impl(
         size_t j_end = std::min(j_begin + segment, ny);
         size_t local_ny = (j_begin < ny) ? (j_end - j_begin) : 0;
 
-        if (local_ny > 0) {
-            T* my_dis = all_dis.data() + tid * nx * k;
-            TI* my_ids = all_ids.data() + tid * nx * k;
+        T* my_dis = all_dis.data() + tid * nx * k;
+        TI* my_ids = all_ids.data() + tid * nx * k;
 
-            // Process the local database segment in blocks for cache
-            // friendliness. ip_block holds nx * block_size floats.
+        // Each thread initializes its own heaps
+        for (size_t i = 0; i < nx; i++) {
+            heap_heapify<C>(k, my_dis + i * k, my_ids + i * k);
+        }
+
+        if (local_ny > 0) {
             size_t max_block = std::min(bs_y, local_ny);
             std::unique_ptr<float[]> ip_block(new float[nx * max_block]);
 
@@ -672,7 +655,6 @@ static void knn_db_parallel_impl(
                 size_t jj1 = std::min(jj0 + bs_y, local_ny);
                 size_t block_ny = jj1 - jj0;
 
-                // Single-threaded sgemm: compute all queries x this block
                 {
                     float one = 1, zero = 0;
                     FINTEGER nyi = block_ny, nxi = nx, di = d;
@@ -691,7 +673,6 @@ static void knn_db_parallel_impl(
                            &nyi);
                 }
 
-                // Update thread-local heaps from the ip_block
                 for (size_t i = 0; i < nx; i++) {
                     T* heap_dis = my_dis + i * k;
                     TI* heap_ids = my_ids + i * k;
@@ -705,13 +686,11 @@ static void knn_db_parallel_impl(
                         T dis;
 
                         if constexpr (C::is_max) {
-                            // L2: dis = ||x||^2 + ||y||^2 - 2*<x,y>
                             dis = x_norms[i] + y_norms[global_j] -
                                     2 * ip;
                             if (dis < 0)
                                 dis = 0;
                         } else {
-                            // Inner product: distance = ip directly
                             dis = ip;
                         }
 
@@ -730,13 +709,12 @@ static void knn_db_parallel_impl(
         }
     }
 
-    // Merge per-thread results into output
-    for (size_t i = 0; i < nx; i++) {
+    // Merge per-thread heaps into output, parallelized over queries
+#pragma omp parallel for
+    for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
         heap_heapify<C>(k, vals + i * k, ids + i * k);
-    }
 
-    for (int t = 0; t < nt; t++) {
-        for (size_t i = 0; i < nx; i++) {
+        for (int t = 0; t < nt; t++) {
             T* t_dis = all_dis.data() + (t * nx + i) * k;
             TI* t_ids = all_ids.data() + (t * nx + i) * k;
             T* out_dis = vals + i * k;
@@ -749,15 +727,11 @@ static void knn_db_parallel_impl(
                 }
             }
         }
-    }
 
-    // Sort output heaps
-    for (size_t i = 0; i < nx; i++) {
         heap_reorder<C>(k, vals + i * k, ids + i * k);
     }
 }
 
-// Returns true if database-parallel search should be used.
 static bool should_use_db_parallel(
         size_t nx,
         size_t ny,
@@ -766,7 +740,6 @@ static bool should_use_db_parallel(
         return false;
     }
     int nt = omp_get_max_threads();
-    // Require enough vectors so each thread gets at least one full BLAS block
     size_t min_ny = std::max(
             kDbParallelMinVectors,
             static_cast<size_t>(nt) *
