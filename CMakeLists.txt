@@ -55,7 +55,7 @@ include(GNUInstallDirs)
 
 set(CMAKE_CXX_STANDARD 20)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
