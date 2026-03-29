@@ -319,7 +319,9 @@ struct BuildDistanceComputer {
 
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
-    FAISS_ASSERT(flat_storage != nullptr);
+    FAISS_THROW_IF_NOT_MSG(
+            flat_storage != nullptr,
+            "IndexBinaryHNSW requires IndexBinaryFlat storage");
     BuildDistanceComputer bd;
     return dispatch_HammingComputer(code_size, bd, flat_storage);
 }
@@ -356,6 +358,13 @@ void IndexBinaryHNSWCagra::search(
     if (!base_level_only) {
         IndexBinaryHNSW::search(n, x, k, distances, labels, params);
     } else {
+        FAISS_THROW_IF_NOT_MSG(
+                ntotal > 0, "IndexBinaryHNSWCagra: cannot search empty index");
+        FAISS_THROW_IF_NOT_MSG(
+                num_base_level_search_entrypoints > 0,
+                "IndexBinaryHNSWCagra: "
+                "num_base_level_search_entrypoints must be > 0");
+
         float* distances_f = (float*)distances;
 
         using RH = HeapBlockResultHandler<HNSW::C>;

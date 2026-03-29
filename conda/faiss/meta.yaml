@@ -69,7 +69,7 @@ outputs:
         - mkl >=2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.30  # [not x86_64]
+        - openblas =0.3.32  # [not x86_64]
         - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
       run:
         - python {{ python }}
@@ -83,7 +83,7 @@ outputs:
         - mkl >=2024.2.2  # [x86_64 and win]
         - python_abi =3.12
         {% endif %}
-        - openblas =0.3.30  # [not x86_64]
+        - openblas =0.3.32  # [not x86_64]
         - libopenblas=0.3.30=openmp_h60d53f8_1  # [osx]
     test:
       requires:
