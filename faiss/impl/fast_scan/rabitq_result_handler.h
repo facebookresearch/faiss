@@ -60,6 +60,9 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     const size_t packed_block_size;
     const size_t full_block_size;
     std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
+    // Handler-local scratch reused across refinements. This assumes a handler
+    // instance is confined to one search slice and not entered concurrently.
+    mutable std::vector<uint8_t> unpack_buf; // reusable buffer for unpack_1
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
