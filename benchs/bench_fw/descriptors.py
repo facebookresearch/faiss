@@ -326,7 +326,7 @@ class IndexDescriptor(IndexBaseDescriptor):
         self.flat_desc_name = self.codec_desc.flat_name() + self.database_desc.get_filename(prefix=IndexDescriptor.FILENAME_PREFIX)
         return self.flat_desc_name
 
-    # alias is used to refer when index is uploaded to blobstore and refered again
+    # alias is used to refer when index is uploaded to blobstore and referred again
     def alias(self, benchmark_io: BenchmarkIO):
         if hasattr(benchmark_io, "bucket"):
             return IndexDescriptor(desc_name=self.get_name(), bucket=benchmark_io.bucket, path=self.get_path(benchmark_io), d=self.d, metric=self.metric)

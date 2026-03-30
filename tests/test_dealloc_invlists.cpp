@@ -70,8 +70,8 @@ std::vector<idx_t> search_index(Index* index, const float* xq) {
 struct EncapsulateInvertedLists : InvertedLists {
     const InvertedLists* il;
 
-    explicit EncapsulateInvertedLists(const InvertedLists* il)
-            : InvertedLists(il->nlist, il->code_size), il(il) {}
+    explicit EncapsulateInvertedLists(const InvertedLists* il_in)
+            : InvertedLists(il_in->nlist, il_in->code_size), il(il_in) {}
 
     static void* memdup(const void* m, size_t size) {
         if (size == 0) {
@@ -109,17 +109,17 @@ struct EncapsulateInvertedLists : InvertedLists {
     }
 
     size_t add_entries(size_t, size_t, const idx_t*, const uint8_t*) override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
         return 0;
     }
 
     void update_entries(size_t, size_t, size_t, const idx_t*, const uint8_t*)
             override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
     }
 
     void resize(size_t, size_t) override {
-        assert(!"not implemented");
+        assert(false && "not implemented");
     }
 
     ~EncapsulateInvertedLists() override {}

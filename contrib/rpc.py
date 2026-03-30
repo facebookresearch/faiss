@@ -110,7 +110,7 @@ class Server:
 
 
     def log(self, s):
-        self.logf.write("Sever log %s: %s\n" % (self.log_prefix, s))
+        self.logf.write("Server log %s: %s\n" % (self.log_prefix, s))
 
     def one_function(self):
         """
@@ -179,7 +179,7 @@ class Server:
             traceback.print_exc(50,sys.stderr)
             sys.exit(1)
 
-        LOG.info("exit sever")
+        LOG.info("exit server")
 
     def exec_loop_cleanup(self):
         pass

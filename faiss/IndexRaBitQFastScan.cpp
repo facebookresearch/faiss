@@ -1,0 +1,545 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/impl/CodePackerRaBitQ.h>
+#include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/RaBitQuantizerMultiBit.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/utils/utils.h>
+#include <algorithm>
+#include <cmath>
+
+namespace faiss {
+
+static inline size_t roundup(size_t a, size_t b) {
+    return (a + b - 1) / b * b;
+}
+
+size_t IndexRaBitQFastScan::compute_per_vector_storage_size() const {
+    return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
+}
+
+IndexRaBitQFastScan::IndexRaBitQFastScan() = default;
+
+IndexRaBitQFastScan::IndexRaBitQFastScan(
+        idx_t d_in,
+        MetricType metric,
+        int bbs_in,
+        uint8_t nb_bits)
+        : rabitq(d_in, metric, nb_bits) {
+    // RaBitQ-specific validation
+    FAISS_THROW_IF_NOT_MSG(d_in > 0, "Dimension must be positive");
+    FAISS_THROW_IF_NOT_MSG(
+            metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
+            "RaBitQ FastScan only supports L2 and Inner Product metrics");
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 1 && nb_bits <= 9, "nb_bits must be between 1 and 9");
+
+    // RaBitQ uses 1 bit per dimension packed into 4-bit FastScan sub-quantizers
+    // Each FastScan sub-quantizer handles 4 RaBitQ dimensions
+    const size_t M_fastscan = (d_in + 3) / 4;
+    constexpr size_t nbits_fastscan = 4;
+
+    // init_fastscan will validate bbs % 32 == 0 and nbits_fastscan == 4
+    init_fastscan(
+            static_cast<int>(d_in), M_fastscan, nbits_fastscan, metric, bbs_in);
+
+    // Compute code_size directly using RaBitQuantizer
+    code_size = rabitq.compute_code_size(d_in, nb_bits);
+
+    // Set RaBitQ-specific parameters
+    qb = 8;
+    center.resize(d_in, 0.0f);
+}
+
+CodePacker* IndexRaBitQFastScan::get_CodePacker() const {
+    return new CodePackerRaBitQ(M2, bbs, compute_per_vector_storage_size());
+}
+
+size_t IndexRaBitQFastScan::remove_ids(const IDSelector& sel) {
+    const size_t block_stride = get_block_stride();
+
+    idx_t j = 0;
+    std::vector<uint8_t> buffer(code_size);
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+        } else {
+            if (i > j) {
+                packer->unpack_1(codes.data(), i, buffer.data());
+                packer->pack_1(buffer.data(), j, codes.data());
+            }
+            j++;
+        }
+    }
+    size_t nremove = ntotal - j;
+    if (nremove > 0) {
+        ntotal = j;
+        ntotal2 = roundup(ntotal, bbs);
+        size_t new_size = ntotal2 / bbs * block_stride;
+
+        // Zero out stale data in the last block beyond the retained vectors.
+        // This is necessary because pq4_pack_codes_range uses |= to write
+        // new codes, so any stale non-zero nibbles would corrupt future adds.
+        // pack_1 with a zero buffer zeroes both PQ4 codes and aux data.
+        const size_t last_pos = ntotal % bbs;
+        if (last_pos > 0) {
+            const size_t last_block = ntotal / bbs;
+            std::vector<uint8_t> zero_code(code_size, 0);
+            for (size_t pos = last_pos; pos < bbs; pos++) {
+                packer->pack_1(
+                        zero_code.data(), last_block * bbs + pos, codes.data());
+            }
+        }
+
+        codes.resize(new_size);
+    }
+    return nremove;
+}
+
+IndexRaBitQFastScan::IndexRaBitQFastScan(const IndexRaBitQ& orig, int bbs_in)
+        : rabitq(orig.rabitq) {
+    // RaBitQ-specific validation
+    FAISS_THROW_IF_NOT_MSG(orig.d > 0, "Dimension must be positive");
+    FAISS_THROW_IF_NOT_MSG(
+            orig.metric_type == METRIC_L2 ||
+                    orig.metric_type == METRIC_INNER_PRODUCT,
+            "RaBitQ FastScan only supports L2 and Inner Product metrics");
+
+    // RaBitQ uses 1 bit per dimension packed into 4-bit FastScan sub-quantizers
+    // Each FastScan sub-quantizer handles 4 RaBitQ dimensions
+    const size_t M_fastscan = (orig.d + 3) / 4;
+    constexpr size_t nbits_fastscan = 4;
+
+    // Initialize FastScan base with the original index's parameters
+    init_fastscan(
+            static_cast<int>(orig.d),
+            M_fastscan,
+            nbits_fastscan,
+            orig.metric_type,
+            bbs_in);
+
+    code_size = rabitq.compute_code_size(d, rabitq.nb_bits);
+
+    // Copy properties from original index
+    ntotal = orig.ntotal;
+    ntotal2 = roundup(ntotal, bbs);
+    is_trained = orig.is_trained;
+    orig_codes = orig.codes.data();
+    qb = orig.qb;
+    centered = orig.centered;
+    center = orig.center;
+
+    // If the original index has data, extract factors and pack codes
+    if (ntotal > 0) {
+        const size_t storage_size = compute_per_vector_storage_size();
+        const size_t bit_pattern_size = (d + 7) / 8;
+
+        // Convert RaBitQ bit format to FastScan 4-bit sub-quantizer format
+        AlignedTable<uint8_t> fastscan_codes(ntotal * code_size);
+        memset(fastscan_codes.get(), 0, ntotal * code_size);
+
+        for (idx_t i = 0; i < ntotal; i++) {
+            const uint8_t* orig_code = orig.codes.data() + i * orig.code_size;
+            uint8_t* fs_code = fastscan_codes.get() + i * code_size;
+
+            for (size_t j = 0; j < static_cast<size_t>(orig.d); j++) {
+                const size_t orig_byte_idx = j / 8;
+                const size_t orig_bit_offset = j % 8;
+                const bool bit_value =
+                        (orig_code[orig_byte_idx] >> orig_bit_offset) & 1;
+
+                if (bit_value) {
+                    rabitq_utils::set_bit_fastscan(fs_code, j);
+                }
+            }
+        }
+
+        // Pack the converted codes using enlarged block layout
+        const size_t block_stride = get_block_stride();
+        const size_t n_blocks = ntotal2 / bbs;
+        codes.resize(n_blocks * block_stride);
+        memset(codes.get(), 0, n_blocks * block_stride);
+        pq4_pack_codes_range(
+                fastscan_codes.get(),
+                M,
+                0,
+                ntotal,
+                bbs,
+                M2,
+                codes.get(),
+                code_size,
+                block_stride);
+
+        // Copy auxiliary data from original codes into block aux region
+        const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+        for (idx_t i = 0; i < ntotal; i++) {
+            const uint8_t* src =
+                    orig.codes.data() + i * orig.code_size + bit_pattern_size;
+            uint8_t* dst = rabitq_utils::get_block_aux_ptr(
+                    codes.get(),
+                    i,
+                    bbs,
+                    packed_block_size,
+                    block_stride,
+                    storage_size);
+            memcpy(dst, src, storage_size);
+        }
+    }
+}
+
+void IndexRaBitQFastScan::train(idx_t n, const float* x) {
+    // compute a centroid
+    std::vector<float> centroid(d, 0);
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+            centroid[j] += x[i * d + j];
+        }
+    }
+
+    if (n != 0) {
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+            centroid[j] /= (float)n;
+        }
+    }
+
+    center = std::move(centroid);
+
+    rabitq.train(n, x);
+    is_trained = true;
+}
+
+void IndexRaBitQFastScan::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT(is_trained);
+
+    // Handle blocking to avoid excessive allocations
+    constexpr idx_t bs = 65536;
+    if (n > bs) {
+        for (idx_t i0 = 0; i0 < n; i0 += bs) {
+            idx_t i1 = std::min(n, i0 + bs);
+            if (verbose) {
+                printf("IndexRaBitQFastScan::add %zd/%zd\n",
+                       size_t(i1),
+                       size_t(n));
+            }
+            add(i1 - i0, x + i0 * d);
+        }
+        return;
+    }
+    InterruptCallback::check();
+
+    // Create codes with embedded factors using our compute_codes
+    AlignedTable<uint8_t> tmp_codes(n * code_size);
+    compute_codes(tmp_codes.get(), n, x);
+
+    const size_t storage_size = compute_per_vector_storage_size();
+    const size_t bit_pattern_size = (d + 7) / 8;
+
+    // Resize main storage with enlarged block layout
+    ntotal2 = roundup(ntotal + n, bbs);
+    const size_t block_stride = get_block_stride();
+    const size_t n_blocks = ntotal2 / bbs;
+    size_t new_size = n_blocks * block_stride;
+    size_t old_size = codes.size();
+    if (new_size > old_size) {
+        codes.resize(new_size);
+        memset(codes.get() + old_size, 0, new_size - old_size);
+    }
+
+    // Use our custom packing function with correct stride
+    pq4_pack_codes_range(
+            tmp_codes.get(),
+            M,
+            ntotal,
+            ntotal + n,
+            bbs,
+            M2,
+            codes.get(),
+            code_size,
+            block_stride);
+
+    const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+    for (idx_t i = 0; i < n; i++) {
+        const uint8_t* src = tmp_codes.get() + i * code_size + bit_pattern_size;
+        uint8_t* dst = rabitq_utils::get_block_aux_ptr(
+                codes.get(),
+                ntotal + i,
+                bbs,
+                packed_block_size,
+                block_stride,
+                storage_size);
+        memcpy(dst, src, storage_size);
+    }
+
+    ntotal += n;
+}
+
+void IndexRaBitQFastScan::compute_codes(
+        uint8_t* out_codes,
+        idx_t n,
+        const float* x) const {
+    FAISS_ASSERT(out_codes != nullptr);
+    FAISS_ASSERT(x != nullptr);
+    FAISS_ASSERT(
+            (metric_type == MetricType::METRIC_L2 ||
+             metric_type == MetricType::METRIC_INNER_PRODUCT));
+    if (n == 0) {
+        return;
+    }
+
+    // Hoist loop-invariant computations
+    const float* centroid_data = center.data();
+    const size_t bit_pattern_size = (d + 7) / 8;
+    const size_t ex_bits = rabitq.nb_bits - 1;
+    const size_t ex_code_size = (d * ex_bits + 7) / 8;
+
+    memset(out_codes, 0, n * code_size);
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        uint8_t* const code = out_codes + i * code_size;
+        const float* const x_row = x + i * d;
+
+        // Compute residual once, reuse for both sign bits and ex-bits
+        std::vector<float> residual(d);
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+            const float centroid_val = centroid_data ? centroid_data[j] : 0.0f;
+            residual[j] = x_row[j] - centroid_val;
+        }
+
+        // Pack sign bits directly into FastScan format using precomputed
+        // residual
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+            if (residual[j] > 0.0f) {
+                rabitq_utils::set_bit_fastscan(code, j);
+            }
+        }
+
+        SignBitFactorsWithError factors = rabitq_utils::compute_vector_factors(
+                x_row, d, centroid_data, metric_type, ex_bits > 0);
+
+        if (ex_bits == 0) {
+            // 1-bit: store only SignBitFactors (8 bytes)
+            memcpy(code + bit_pattern_size, &factors, sizeof(SignBitFactors));
+        } else {
+            // Multi-bit: store full SignBitFactorsWithError (12 bytes)
+            memcpy(code + bit_pattern_size,
+                   &factors,
+                   sizeof(SignBitFactorsWithError));
+
+            // Add mag-codes and ExtraBitsFactors using precomputed
+            // residual
+            uint8_t* ex_code =
+                    code + bit_pattern_size + sizeof(SignBitFactorsWithError);
+            ExtraBitsFactors ex_factors_temp;
+
+            rabitq_multibit::quantize_ex_bits(
+                    residual.data(),
+                    d,
+                    rabitq.nb_bits,
+                    ex_code,
+                    ex_factors_temp,
+                    metric_type,
+                    centroid_data);
+
+            memcpy(ex_code + ex_code_size,
+                   &ex_factors_temp,
+                   sizeof(ExtraBitsFactors));
+        }
+    }
+}
+
+void IndexRaBitQFastScan::compute_float_LUT(
+        float* lut,
+        idx_t n,
+        const float* x,
+        const FastScanDistancePostProcessing& context) const {
+    FAISS_THROW_IF_NOT(is_trained);
+
+    // Pre-allocate working buffers to avoid repeated allocations
+    std::vector<float> rotated_q(d);
+    std::vector<uint8_t> rotated_qq(d);
+
+    // Compute lookup tables for FastScan SIMD operations
+    // For each query vector, computes distance contributions for all
+    // possible 4-bit codes per sub-quantizer. Also computes and stores
+    // query factors for distance reconstruction.
+    for (idx_t i = 0; i < n; i++) {
+        const float* query = x + i * d;
+
+        // Compute query factors and store in array if available
+        rabitq_utils::QueryFactorsData query_factors_data =
+                rabitq_utils::compute_query_factors(
+                        query,
+                        d,
+                        center.data(),
+                        qb,
+                        centered,
+                        metric_type,
+                        rotated_q,
+                        rotated_qq);
+
+        // Store query factors in context array if provided
+        if (context.query_factors != nullptr) {
+            query_factors_data.rotated_q = rotated_q;
+            context.query_factors[i] = query_factors_data;
+        }
+
+        // Create lookup table storing distance contributions for all possible
+        // 4-bit codes per sub-quantizer for FastScan SIMD operations
+        float* query_lut = lut + i * M * 16;
+
+        if (centered) {
+            // For centered mode, we use the signed odd integer quantization
+            // scheme.
+            // Formula:
+            // int_dot = ((1 << qb) - 1) * d - 2 * xor_dot_product
+            // We precompute the XOR contribution for each
+            // sub-quantizer
+
+            const float max_code_value = (1 << qb) - 1;
+
+            for (size_t m = 0; m < M; m++) {
+                const size_t dim_start = m * 4;
+
+                for (int code_val = 0; code_val < 16; code_val++) {
+                    float xor_contribution = 0.0f;
+
+                    // Process 4 bits per sub-quantizer
+                    for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
+                        const size_t dim_idx = dim_start + dim_offset;
+
+                        if (dim_idx < static_cast<size_t>(d)) {
+                            const bool db_bit = (code_val >> dim_offset) & 1;
+                            const float query_value = rotated_qq[dim_idx];
+
+                            // XOR contribution:
+                            // If db_bit == 0: XOR result = query_value
+                            // If db_bit == 1: XOR result = (2^qb - 1) -
+                            // query_value
+                            xor_contribution += db_bit
+                                    ? (max_code_value - query_value)
+                                    : query_value;
+                        }
+                    }
+
+                    // Store the XOR contribution (will be scaled by -2 *
+                    // int_dot_scale during distance computation)
+                    query_lut[m * 16 + code_val] = xor_contribution;
+                }
+            }
+
+        } else {
+            // For non-centered quantization, use traditional AND dot
+            // product Compute lookup table entries by processing popcount
+            // and inner product together
+            for (size_t m = 0; m < M; m++) {
+                const size_t dim_start = m * 4;
+
+                for (int code_val = 0; code_val < 16; code_val++) {
+                    float inner_product = 0.0f;
+                    int popcount = 0;
+
+                    // Process 4 bits per sub-quantizer
+                    for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
+                        const size_t dim_idx = dim_start + dim_offset;
+
+                        if (dim_idx < static_cast<size_t>(d) &&
+                            ((code_val >> dim_offset) & 1)) {
+                            inner_product += rotated_qq[dim_idx];
+                            popcount++;
+                        }
+                    }
+
+                    // Store pre-computed distance contribution
+                    query_lut[m * 16 + code_val] =
+                            query_factors_data.c1 * inner_product +
+                            query_factors_data.c2 * popcount;
+                }
+            }
+        }
+    }
+}
+
+void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
+        const {
+    const float* centroid_in =
+            (center.data() == nullptr) ? nullptr : center.data();
+    const uint8_t* input_codes = bytes;
+    FAISS_ASSERT(input_codes != nullptr);
+    FAISS_ASSERT(x != nullptr);
+
+    const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
+    const size_t bit_pattern_size = (d + 7) / 8;
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t i = 0; i < n; i++) {
+        // Access code using correct FastScan format
+        const uint8_t* code = input_codes + i * code_size;
+
+        // Extract factors directly from embedded codes
+        const uint8_t* factors_ptr = code + bit_pattern_size;
+        const rabitq_utils::SignBitFactors* fac =
+                reinterpret_cast<const rabitq_utils::SignBitFactors*>(
+                        factors_ptr);
+
+        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+            // Use RaBitQUtils for consistent bit extraction
+            bool bit_value = rabitq_utils::extract_bit_fastscan(code, j);
+            float bit = bit_value ? 1.0f : 0.0f;
+
+            // Compute the output using RaBitQ reconstruction formula
+            x[i * d + j] = (bit - 0.5f) * fac->dp_multiplier * 2 * inv_d_sqrt +
+                    ((centroid_in == nullptr) ? 0 : centroid_in[j]);
+        }
+    }
+}
+
+void IndexRaBitQFastScan::search(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(
+            !params, "search params not supported for this index");
+
+    // Create query factors array on stack - memory managed by caller
+    std::vector<rabitq_utils::QueryFactorsData> query_factors_storage(n);
+
+    // Use the faster search_dispatch_implem flow from IndexFastScan
+    // Pass the query factors array - factors will be computed during LUT
+    // computation
+    FastScanDistancePostProcessing context;
+    context.query_factors = query_factors_storage.data();
+    if (metric_type == METRIC_L2) {
+        search_dispatch_implem<true>(n, x, k, distances, labels, context);
+    } else {
+        search_dispatch_implem<false>(n, x, k, distances, labels, context);
+    }
+}
+
+std::unique_ptr<FastScanCodeScanner> IndexRaBitQFastScan::make_knn_scanner(
+
+        bool is_max,
+        idx_t n,
+        idx_t k,
+        size_t /*ntotal*/,
+        float* distances,
+        idx_t* labels,
+        const IDSelector* sel,
+        int /*impl*/,
+        const FastScanDistancePostProcessing& context) const {
+    const bool is_multi_bit = rabitq.nb_bits > 1;
+    return rabitq_make_knn_scanner(
+            this, is_max, n, k, distances, labels, sel, context, is_multi_bit);
+}
+
+} // namespace faiss

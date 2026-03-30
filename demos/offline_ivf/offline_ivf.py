@@ -284,7 +284,7 @@ class OfflineIVF:
                         logging.info(jj)
                         assert (
                             jj <= self.shard_size
-                        ), f"jj {jj} and shard_zide {self.shard_size}"
+                        ), f"jj {jj} and shard_size {self.shard_size}"
                         if jj == self.shard_size:
                             break
                 logging.info(f"writing {sfn}...")

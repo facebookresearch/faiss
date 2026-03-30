@@ -59,7 +59,7 @@ typedef uint64_t size_t;
             PyErr_SetString(PyExc_RuntimeError, e.what());
         }
         SWIG_fail;
-    } catch(std::bad_alloc & ba) {
+    } catch(std::bad_alloc&) {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
         SWIG_fail;
@@ -77,7 +77,7 @@ struct IDSelectorModulo : faiss::IDSelector {
 
     IDSelectorModulo(int mod): mod(mod) {}
 
-    bool is_member(faiss::idx_t id) const {
+    bool is_member(faiss::idx_t id) const override {
         return id % mod == 0;
     }
 

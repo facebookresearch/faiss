@@ -75,7 +75,7 @@ struct Embedding {
 };
 
 /// Feed forward layer that expands to a hidden dimension, applies a ReLU non
-/// linearity and maps back to the orignal dimension
+/// linearity and maps back to the original dimension
 struct FFN {
     Linear linear1, linear2;
 
@@ -103,7 +103,7 @@ struct QINCoStep {
         return residual_blocks[i];
     }
 
-    /** encode a set of vectors x with intial estimate xhat. Optionally return
+    /** encode a set of vectors x with initial estimate xhat. Optionally return
      * the delta to be added to xhat to form the new xhat */
     nn::Int32Tensor2D encode(
             const nn::Tensor2D& xhat,
@@ -118,7 +118,7 @@ struct QINCoStep {
 struct NeuralNetCodec {
     int d, M;
 
-    NeuralNetCodec(int d, int M) : d(d), M(M) {}
+    NeuralNetCodec(int d_in, int M_in) : d(d_in), M(M_in) {}
 
     virtual nn::Tensor2D decode(const nn::Int32Tensor2D& codes) const = 0;
     virtual nn::Int32Tensor2D encode(const nn::Tensor2D& x) const = 0;

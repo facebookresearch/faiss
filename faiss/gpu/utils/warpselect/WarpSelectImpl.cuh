@@ -27,8 +27,9 @@
             cudaStream_t stream) {                                             \
         int warpSize = getWarpSizeCurrentDevice();                             \
         constexpr int kWarpSelectNumThreads = 128;                             \
-        auto grid = dim3(utils::divUp(                                         \
-                in.getSize(0), (kWarpSelectNumThreads / warpSize)));           \
+        auto grid =                                                            \
+                dim3(utils::divUp(                                             \
+                        in.getSize(0), (kWarpSelectNumThreads / warpSize)));   \
         auto block = dim3(kWarpSelectNumThreads);                              \
                                                                                \
         FAISS_ASSERT(k <= WARP_Q);                                             \

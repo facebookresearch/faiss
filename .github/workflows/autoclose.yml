@@ -2,9 +2,24 @@ name: Close Inactive Issues
 on:
   schedule:
     - cron: "30 1 * * *"
+  issues:
+    types: [labeled]
 
 jobs:
+  notify-on-label:
+    if: github.event_name == 'issues' && github.event.label.name == 'autoclose'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Comment on autoclose label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: gh issue comment ${{ github.event.issue.number }} --body "This issue has been marked for autoclose and will be closed after 14 days of inactivity."
+
   close-issues:
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     permissions:
       issues: write

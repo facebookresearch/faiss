@@ -7,11 +7,13 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
+
 import numpy as np
 import faiss
 
 # reduce number of threads to avoid excessive nb of threads in opt
-# mode (recuces runtime from 100s to 4s!)
+# mode (reduces runtime from 100s to 4s!)
 faiss.omp_set_num_threads(4)
 
 
@@ -125,3 +127,59 @@ def compare_binary_result_lists(D1, I1, D2, I2):
         return Dr
     ndiff = (normalize_DI(D1, I1) != normalize_DI(D2, I2)).sum()
     assert ndiff == 0, '%d differences in normalized D matrix' % ndiff
+
+
+# Map SIMDLevel enum values to their string names.
+_SIMD_LEVEL_NAMES = {
+    faiss.SIMDLevel_NONE: "NONE",
+    faiss.SIMDLevel_AVX2: "AVX2",
+    faiss.SIMDLevel_AVX512: "AVX512",
+    faiss.SIMDLevel_AVX512_SPR: "AVX512_SPR",
+    faiss.SIMDLevel_ARM_NEON: "ARM_NEON",
+    faiss.SIMDLevel_ARM_SVE: "ARM_SVE",
+}
+
+
+def for_all_simd_levels(cls):
+    """Parameterize a test class to run at each available SIMD level.
+
+    In DD builds, creates TestClass_NONE, TestClass_AVX2, etc.
+    In static builds, only one level is available so one class is created.
+    Each subclass calls set_level() in setUp and restores in tearDown.
+
+    Usage::
+
+        @for_all_simd_levels
+        class TestDistances(unittest.TestCase):
+            def test_L2(self):
+                ...
+    """
+    caller_globals = sys._getframe(1).f_globals
+
+    for level, name in _SIMD_LEVEL_NAMES.items():
+        if not faiss.SIMDConfig.is_simd_level_available(level):
+            continue
+
+        def make_class(lv, ln):
+            class Parameterized(cls):
+                simd_level = lv
+                simd_level_name = ln
+
+                def setUp(self):
+                    faiss.SIMDConfig.set_level(self.simd_level)
+                    super().setUp()
+
+                def tearDown(self):
+                    super().tearDown()
+                    faiss.SIMDConfig.set_level(
+                        faiss.SIMDConfig.get_dispatched_level())
+
+            Parameterized.__name__ = f"{cls.__name__}_{ln}"
+            Parameterized.__qualname__ = f"{cls.__qualname__}_{ln}"
+            Parameterized.__module__ = cls.__module__
+            return Parameterized
+
+        caller_globals[f"{cls.__name__}_{name}"] = make_class(level, name)
+
+    # Remove original class from test discovery.
+    return None

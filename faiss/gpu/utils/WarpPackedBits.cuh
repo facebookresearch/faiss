@@ -134,11 +134,11 @@ struct WarpPackedBits<uint8_t, 5> {
             uint8_t v,
             bool valid,
             uint8_t* out) {
-        // Lower 24 lanes wwrite out packed data
+        // Lower 24 lanes write out packed data
         int laneFrom = (laneId * 8) / 5;
 
         v = valid ? v : 0;
-        v &= 0x1f; // ensure we have only 6 bits
+        v &= 0x1f; // ensure we have only 5 bits
 
         uint8_t lo = (uint8_t)SHFL_SYNC((unsigned int)v, laneFrom, kWarpSize);
         uint8_t hi =

@@ -22,14 +22,17 @@ RocksDBInvertedListsIterator::RocksDBInvertedListsIterator(
           list_no(list_no),
           code_size(code_size),
           codes(code_size) {
-    it->Seek(rocksdb::Slice(
-            reinterpret_cast<const char*>(&list_no), sizeof(size_t)));
+    it->Seek(
+            rocksdb::Slice(
+                    reinterpret_cast<const char*>(&list_no), sizeof(size_t)));
 }
 
 bool RocksDBInvertedListsIterator::is_available() const {
     return it->Valid() &&
-            it->key().starts_with(rocksdb::Slice(
-                    reinterpret_cast<const char*>(&list_no), sizeof(size_t)));
+            it->key().starts_with(
+                    rocksdb::Slice(
+                            reinterpret_cast<const char*>(&list_no),
+                            sizeof(size_t)));
 }
 
 void RocksDBInvertedListsIterator::next() {

@@ -7,33 +7,38 @@
 
 #include <faiss/invlists/BlockInvertedLists.h>
 
+#include <memory>
+
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
+#include <faiss/index_io.h>
 
 namespace faiss {
 
 BlockInvertedLists::BlockInvertedLists(
-        size_t nlist,
-        size_t n_per_block,
-        size_t block_size)
-        : InvertedLists(nlist, InvertedLists::INVALID_CODE_SIZE),
-          n_per_block(n_per_block),
-          block_size(block_size) {
-    ids.resize(nlist);
-    codes.resize(nlist);
+        size_t nlist_in,
+        size_t n_per_block_in,
+        size_t block_size_in)
+        : InvertedLists(nlist_in, InvertedLists::INVALID_CODE_SIZE),
+          n_per_block(n_per_block_in),
+          block_size(block_size_in) {
+    ids.resize(nlist_in);
+    codes.resize(nlist_in);
 }
 
-BlockInvertedLists::BlockInvertedLists(size_t nlist, const CodePacker* packer)
-        : InvertedLists(nlist, InvertedLists::INVALID_CODE_SIZE),
-          n_per_block(packer->nvec),
-          block_size(packer->block_size),
-          packer(packer) {
-    ids.resize(nlist);
-    codes.resize(nlist);
+BlockInvertedLists::BlockInvertedLists(
+        size_t nlist_in,
+        const CodePacker* packer_in)
+        : InvertedLists(nlist_in, InvertedLists::INVALID_CODE_SIZE),
+          n_per_block(packer_in->nvec),
+          block_size(packer_in->block_size),
+          packer(packer_in) {
+    ids.resize(nlist_in);
+    codes.resize(nlist_in);
 }
 
 BlockInvertedLists::BlockInvertedLists()
@@ -81,8 +86,8 @@ const uint8_t* BlockInvertedLists::get_codes(size_t list_no) const {
 
 size_t BlockInvertedLists::remove_ids(const IDSelector& sel) {
     idx_t nremove = 0;
-#pragma omp parallel for
-    for (idx_t i = 0; i < nlist; i++) {
+#pragma omp parallel for reduction(+ : nremove)
+    for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         std::vector<uint8_t> buffer(packer->code_size);
         idx_t l = ids[i].size(), j = 0;
         while (j < l) {
@@ -95,8 +100,9 @@ size_t BlockInvertedLists::remove_ids(const IDSelector& sel) {
                 j++;
             }
         }
+        idx_t orig_size = ids[i].size();
         resize(i, l);
-        nremove += ids[i].size() - l;
+        nremove += orig_size - l;
     }
 
     return nremove;
@@ -160,11 +166,31 @@ void BlockInvertedListsIOHook::write(const InvertedLists* ils_in, IOWriter* f)
 
 InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         const {
-    BlockInvertedLists* il = new BlockInvertedLists();
+    auto il = std::make_unique<BlockInvertedLists>();
     READ1(il->nlist);
+    {
+        auto limit_ = get_deserialization_loop_limit();
+        if (limit_ > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    static_cast<size_t>(il->nlist) <= limit_,
+                    "BlockInvertedLists nlist=%zd exceeds "
+                    "deserialization_loop_limit of %zd",
+                    static_cast<size_t>(il->nlist),
+                    limit_);
+        }
+    }
     READ1(il->code_size);
     READ1(il->n_per_block);
     READ1(il->block_size);
+
+    FAISS_THROW_IF_NOT_FMT(
+            il->n_per_block > 0,
+            "invalid BlockInvertedLists n_per_block %zd (must be > 0)",
+            il->n_per_block);
+    FAISS_THROW_IF_NOT_FMT(
+            il->block_size > 0,
+            "invalid BlockInvertedLists block_size %zd (must be > 0)",
+            il->block_size);
 
     il->ids.resize(il->nlist);
     il->codes.resize(il->nlist);
@@ -172,9 +198,24 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
     for (size_t i = 0; i < il->nlist; i++) {
         READVECTOR(il->ids[i]);
         READVECTOR(il->codes[i]);
+        size_t n_ids = il->ids[i].size();
+        size_t n_block = (n_ids + il->n_per_block - 1) / il->n_per_block;
+        size_t expected_codes_size = mul_no_overflow(
+                n_block, il->block_size, "BlockInvertedLists codes");
+        FAISS_THROW_IF_NOT_FMT(
+                il->codes[i].size() == expected_codes_size,
+                "BlockInvertedLists list %zd: codes size %zd does not "
+                "match expected %zd (ids=%zd, n_per_block=%zd, "
+                "block_size=%zd)",
+                i,
+                il->codes[i].size(),
+                expected_codes_size,
+                n_ids,
+                il->n_per_block,
+                il->block_size);
     }
 
-    return il;
+    return il.release();
 }
 
 } // namespace faiss

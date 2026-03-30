@@ -16,6 +16,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 
 int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
@@ -63,7 +64,7 @@ void test_popmin(int heap_size, int amount_to_put) {
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -125,7 +126,7 @@ void test_popmin_identical_distances(
 
     // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
-    while (indices.size() < amount_to_put) {
+    while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
@@ -249,7 +250,7 @@ class HNSWTest : public testing::Test {
 int reference_search_from_candidates(
         const faiss::HNSW& hnsw,
         faiss::DistanceComputer& qdis,
-        faiss::ResultHandler<faiss::HNSW::C>& res,
+        faiss::ResultHandler& res,
         faiss::HNSW::MinimaxHeap& candidates,
         faiss::VisitedTable& vt,
         faiss::HNSWStats& stats,
@@ -429,11 +430,12 @@ std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded
             float d1 = qdis(v1);
             ++ndis;
 
-            if (top_candidates.top().first > d1 || top_candidates.size() < ef) {
+            if (top_candidates.top().first > d1 ||
+                static_cast<int>(top_candidates.size()) < ef) {
                 candidates.emplace(d1, v1);
                 top_candidates.emplace(d1, v1);
 
-                if (top_candidates.size() > ef) {
+                if (static_cast<int>(top_candidates.size()) > ef) {
                     top_candidates.pop();
                 }
             }

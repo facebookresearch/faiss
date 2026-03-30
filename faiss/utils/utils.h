@@ -8,7 +8,7 @@
 // -*- c++ -*-
 
 /*
- *  A few utilitary functions for similarity search:
+ *  A few utility functions for similarity search:
  * - optimized exhaustive distance and knn search functions
  * - some functions reimplemented from torch for speed
  */
@@ -64,7 +64,7 @@ void matrix_qr(int m, int n, float* a);
 void ranklist_handle_ties(int k, int64_t* idx, const float* dis);
 
 /** count the number of common elements between v1 and v2
- * algorithm = sorting + bissection to avoid double-counting duplicates
+ * algorithm = sorting + bisection to avoid double-counting duplicates
  */
 size_t ranklist_intersection_size(
         size_t k1,
@@ -172,8 +172,8 @@ struct CombinerRangeKNN {
     T r2;          /// range search radius
     bool keep_max; /// whether to keep max values instead of min.
 
-    CombinerRangeKNN(int64_t nq, size_t k, T r2, bool keep_max)
-            : nq(nq), k(k), r2(r2), keep_max(keep_max) {}
+    CombinerRangeKNN(int64_t nq_in, size_t k_in, T r2_in, bool keep_max_in)
+            : nq(nq_in), k(k_in), r2(r2_in), keep_max(keep_max_in) {}
 
     /// Knn search results
     const int64_t* I = nullptr; /// size nq * k
@@ -200,7 +200,7 @@ struct CodeSet {
     size_t d;
     std::set<std::vector<uint8_t>> s;
 
-    explicit CodeSet(size_t d) : d(d) {}
+    explicit CodeSet(size_t d_in) : d(d_in) {}
     void insert(size_t n, const uint8_t* codes, bool* inserted);
 };
 

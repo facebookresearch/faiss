@@ -7,43 +7,40 @@
 
 #include <faiss/IndexFastScan.h>
 
-#include <cassert>
-#include <climits>
+#include <omp.h>
+#include <cstring>
 #include <memory>
 
-#include <omp.h>
-
+#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-#include <faiss/impl/LookupTableScaler.h>
-#include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/utils/hamming.h>
-
-#include <faiss/impl/pq4_fast_scan.h>
-#include <faiss/impl/simd_result_handlers.h>
 #include <faiss/utils/quantize_lut.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
-
-using namespace simd_result_handlers;
 
 inline size_t roundup(size_t a, size_t b) {
     return (a + b - 1) / b * b;
 }
 
 void IndexFastScan::init_fastscan(
-        int d,
+        int d_,
         size_t M_init,
         size_t nbits_init,
         MetricType metric,
-        int bbs) {
+        int bbs_) {
     FAISS_THROW_IF_NOT(nbits_init == 4);
-    FAISS_THROW_IF_NOT(bbs % 32 == 0);
-    this->d = d;
+    FAISS_THROW_IF_NOT(bbs_ % 32 == 0);
+    this->d = d_;
     this->M = M_init;
     this->nbits = nbits_init;
     this->metric_type = metric;
-    this->bbs = bbs;
+    this->bbs = bbs_;
     ksub = (1 << nbits_init);
 
     code_size = (M_init * nbits_init + 7) / 8;
@@ -81,7 +78,8 @@ void IndexFastScan::add(idx_t n, const float* x) {
     compute_codes(tmp_codes.get(), n, x);
 
     ntotal2 = roundup(ntotal + n, bbs);
-    size_t new_size = ntotal2 * M2 / 2; // assume nbits = 4
+    size_t n_blocks = ntotal2 / bbs;
+    size_t new_size = n_blocks * get_block_stride();
     size_t old_size = codes.size();
     if (new_size > old_size) {
         codes.resize(new_size);
@@ -89,7 +87,15 @@ void IndexFastScan::add(idx_t n, const float* x) {
     }
 
     pq4_pack_codes_range(
-            tmp_codes.get(), M, ntotal, ntotal + n, bbs, M2, codes.get());
+            tmp_codes.get(),
+            M,
+            ntotal,
+            ntotal + n,
+            bbs,
+            M2,
+            codes.get(),
+            0,
+            get_block_stride());
 
     ntotal += n;
 }
@@ -98,17 +104,25 @@ CodePacker* IndexFastScan::get_CodePacker() const {
     return new CodePackerPQ4(M, bbs);
 }
 
+size_t IndexFastScan::get_block_stride() const {
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    FAISS_THROW_IF_NOT_MSG(
+            packer->nvec == static_cast<size_t>(bbs),
+            "CodePacker must pack bbs vectors per block for fast-scan");
+    return packer->block_size;
+}
+
 size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     idx_t j = 0;
     std::vector<uint8_t> buffer(code_size);
-    CodePackerPQ4 packer(M, bbs);
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
     for (idx_t i = 0; i < ntotal; i++) {
         if (sel.is_member(i)) {
             // should be removed
         } else {
             if (i > j) {
-                packer.unpack_1(codes.data(), i, buffer.data());
-                packer.pack_1(buffer.data(), j, codes.data());
+                packer->unpack_1(codes.data(), i, buffer.data());
+                packer->pack_1(buffer.data(), j, codes.data());
             }
             j++;
         }
@@ -117,8 +131,7 @@ size_t IndexFastScan::remove_ids(const IDSelector& sel) {
     if (nremove > 0) {
         ntotal = j;
         ntotal2 = roundup(ntotal, bbs);
-        size_t new_size = ntotal2 * M2 / 2;
-        codes.resize(new_size);
+        codes.resize(ntotal2 / bbs * get_block_stride());
     }
     return nremove;
 }
@@ -136,17 +149,18 @@ void IndexFastScan::check_compatible_for_merge(const Index& otherIndex) const {
             "can only merge indexes of the same type");
 }
 
-void IndexFastScan::merge_from(Index& otherIndex, idx_t add_id) {
+void IndexFastScan::merge_from(Index& otherIndex, idx_t /*add_id*/) {
     check_compatible_for_merge(otherIndex);
     IndexFastScan* other = static_cast<IndexFastScan*>(&otherIndex);
     ntotal2 = roundup(ntotal + other->ntotal, bbs);
-    codes.resize(ntotal2 * M2 / 2);
+    codes.resize(ntotal2 / bbs * get_block_stride());
     std::vector<uint8_t> buffer(code_size);
-    CodePackerPQ4 packer(M, bbs);
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    std::unique_ptr<CodePacker> other_packer(other->get_CodePacker());
 
-    for (int i = 0; i < other->ntotal; i++) {
-        packer.unpack_1(other->codes.data(), i, buffer.data());
-        packer.pack_1(buffer.data(), ntotal + i, codes.data());
+    for (idx_t i = 0; i < other->ntotal; i++) {
+        other_packer->unpack_1(other->codes.data(), i, buffer.data());
+        packer->pack_1(buffer.data(), ntotal + i, codes.data());
     }
     ntotal += other->ntotal;
     other->reset();
@@ -163,14 +177,14 @@ void estimators_from_tables_generic(
         size_t k,
         typename C::T* heap_dis,
         int64_t* heap_ids,
-        const NormTableScaler* scaler) {
+        const FastScanDistancePostProcessing& context) {
     using accu_t = typename C::T;
 
     for (size_t j = 0; j < ncodes; ++j) {
         BitstringReader bsr(codes + j * index.code_size, index.code_size);
         accu_t dis = 0;
         const dis_t* dt = dis_table;
-        int nscale = scaler ? scaler->nscale : 0;
+        int nscale = context.pq2x4_scale ? 2 : 0;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
             uint64_t c = bsr.read(index.nbits);
@@ -181,7 +195,7 @@ void estimators_from_tables_generic(
         if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
                 uint64_t c = bsr.read(index.nbits);
-                dis += scaler->scale_one(dt[c]);
+                dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
         }
@@ -193,29 +207,21 @@ void estimators_from_tables_generic(
     }
 }
 
-template <class C>
-ResultHandlerCompare<C, false>* make_knn_handler(
-        int impl,
+} // anonymous namespace
+
+std::unique_ptr<FastScanCodeScanner> IndexFastScan::make_knn_scanner(
+        bool is_max,
         idx_t n,
         idx_t k,
-        size_t ntotal,
+        size_t ntotal_,
         float* distances,
         idx_t* labels,
-        const IDSelector* sel = nullptr) {
-    using HeapHC = HeapHandler<C, false>;
-    using ReservoirHC = ReservoirHandler<C, false>;
-    using SingleResultHC = SingleResultHandler<C, false>;
-
-    if (k == 1) {
-        return new SingleResultHC(n, ntotal, distances, labels, sel);
-    } else if (impl % 2 == 0) {
-        return new HeapHC(n, ntotal, k, distances, labels, sel);
-    } else /* if (impl % 2 == 1) */ {
-        return new ReservoirHC(n, ntotal, k, 2 * k, distances, labels, sel);
-    }
+        const IDSelector* sel,
+        int impl,
+        const FastScanDistancePostProcessing&) const {
+    return make_fast_scan_knn_scanner(
+            is_max, impl, n, ntotal_, k, distances, labels, sel);
 }
-
-} // anonymous namespace
 
 using namespace quantize_lut;
 
@@ -223,12 +229,13 @@ void IndexFastScan::compute_quantized_LUT(
         idx_t n,
         const float* x,
         uint8_t* lut,
-        float* normalizers) const {
+        float* normalizers,
+        const FastScanDistancePostProcessing& context) const {
     size_t dim12 = ksub * M;
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    compute_float_LUT(dis_tables.get(), n, x);
+    compute_float_LUT(dis_tables.get(), n, x, context);
 
-    for (uint64_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         round_uint8_per_column(
                 dis_tables.get() + i * dim12,
                 M,
@@ -237,11 +244,11 @@ void IndexFastScan::compute_quantized_LUT(
                 &normalizers[2 * i + 1]);
     }
 
-    for (uint64_t i = 0; i < n; i++) {
+    for (idx_t i = 0; i < n; i++) {
         const float* t_in = dis_tables.get() + i * dim12;
         uint8_t* t_out = lut + i * M2 * ksub;
 
-        for (int j = 0; j < dim12; j++) {
+        for (size_t j = 0; j < dim12; j++) {
             t_out[j] = int(t_in[j]);
         }
         memset(t_out + dim12, 0, (M2 - M) * ksub);
@@ -263,10 +270,12 @@ void IndexFastScan::search(
             !params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
+    FastScanDistancePostProcessing empty_context{};
     if (metric_type == METRIC_L2) {
-        search_dispatch_implem<true>(n, x, k, distances, labels, nullptr);
+        search_dispatch_implem<true>(n, x, k, distances, labels, empty_context);
     } else {
-        search_dispatch_implem<false>(n, x, k, distances, labels, nullptr);
+        search_dispatch_implem<false>(
+                n, x, k, distances, labels, empty_context);
     }
 }
 
@@ -277,7 +286,7 @@ void IndexFastScan::search_dispatch_implem(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const NormTableScaler* scaler) const {
+        const FastScanDistancePostProcessing& context) const {
     using Cfloat = typename std::conditional<
             is_max,
             CMax<float, int64_t>,
@@ -308,15 +317,20 @@ void IndexFastScan::search_dispatch_implem(
         FAISS_THROW_MSG("not implemented");
     } else if (implem == 2 || implem == 3 || implem == 4) {
         FAISS_THROW_IF_NOT(orig_codes != nullptr);
-        search_implem_234<Cfloat>(n, x, k, distances, labels, scaler);
+        search_implem_234<Cfloat>(n, x, k, distances, labels, context);
     } else if (impl >= 12 && impl <= 15) {
         FAISS_THROW_IF_NOT(ntotal < INT_MAX);
         int nt = std::min(omp_get_max_threads(), int(n));
+        // Fall back to single-threaded implementations when parallelization not
+        // beneficial:
+        // - Single-core system (omp_get_max_threads() = 1)
+        // - Single query (n = 1)
+        // - OpenMP disabled (omp_get_max_threads() = 1)
         if (nt < 2) {
             if (impl == 12 || impl == 13) {
-                search_implem_12<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_12<C>(n, x, k, distances, labels, impl, context);
             } else {
-                search_implem_14<C>(n, x, k, distances, labels, impl, scaler);
+                search_implem_14<C>(n, x, k, distances, labels, impl, context);
             }
         } else {
             // explicitly slice over threads
@@ -324,14 +338,33 @@ void IndexFastScan::search_dispatch_implem(
             for (int slice = 0; slice < nt; slice++) {
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
+
+                // Create per-thread context with adjusted query_factors pointer
+                FastScanDistancePostProcessing thread_context = context;
+                if (thread_context.query_factors != nullptr) {
+                    thread_context.query_factors += i0;
+                }
+
                 float* dis_i = distances + i0 * k;
                 idx_t* lab_i = labels + i0 * k;
                 if (impl == 12 || impl == 13) {
                     search_implem_12<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            thread_context);
                 } else {
                     search_implem_14<C>(
-                            i1 - i0, x + i0 * d, k, dis_i, lab_i, impl, scaler);
+                            i1 - i0,
+                            x + i0 * d,
+                            k,
+                            dis_i,
+                            lab_i,
+                            impl,
+                            thread_context);
                 }
             }
         }
@@ -347,19 +380,19 @@ void IndexFastScan::search_implem_234(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const NormTableScaler* scaler) const {
+        const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(implem == 2 || implem == 3 || implem == 4);
 
     const size_t dim12 = ksub * M;
     std::unique_ptr<float[]> dis_tables(new float[n * dim12]);
-    compute_float_LUT(dis_tables.get(), n, x);
+    compute_float_LUT(dis_tables.get(), n, x, context);
 
     std::vector<float> normalizers(n * 2);
 
     if (implem == 2) {
         // default float
     } else if (implem == 3 || implem == 4) {
-        for (uint64_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             round_uint8_per_column(
                     dis_tables.get() + i * dim12,
                     M,
@@ -384,7 +417,7 @@ void IndexFastScan::search_implem_234(
                 k,
                 heap_dis,
                 heap_ids,
-                scaler);
+                context);
 
         heap_reorder<Cfloat>(k, heap_dis, heap_ids);
 
@@ -392,7 +425,7 @@ void IndexFastScan::search_implem_234(
             float a = normalizers[2 * i];
             float b = normalizers[2 * i + 1];
 
-            for (int j = 0; j < k; j++) {
+            for (idx_t j = 0; j < k; j++) {
                 heap_dis[j] = heap_dis[j] / a + b;
             }
         }
@@ -407,8 +440,7 @@ void IndexFastScan::search_implem_12(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
-    using RH = ResultHandlerCompare<C, false>;
+        const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(bbs == 32);
 
     // handle qbs2 blocking by recursive call
@@ -416,6 +448,11 @@ void IndexFastScan::search_implem_12(
     if (n > qbs2) {
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
+            // Create sub-context with adjusted query_factors pointer
+            FastScanDistancePostProcessing sub_context = context;
+            if (sub_context.query_factors != nullptr) {
+                sub_context.query_factors += i0;
+            }
             search_implem_12<C>(
                     i1 - i0,
                     x + d * i0,
@@ -423,7 +460,7 @@ void IndexFastScan::search_implem_12(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    sub_context);
         }
         return;
     }
@@ -436,7 +473,7 @@ void IndexFastScan::search_implem_12(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n, x, quantized_dis_tables.get(), normalizers.get(), context);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
@@ -444,35 +481,37 @@ void IndexFastScan::search_implem_12(
     // block sizes are encoded in qbs, 4 bits at a time
 
     // caution: we override an object field
-    int qbs = this->qbs;
+    int qbs_ = this->qbs;
 
-    if (n != pq4_qbs_to_nq(qbs)) {
-        qbs = pq4_preferred_qbs(n);
+    if (n != pq4_qbs_to_nq(qbs_)) {
+        qbs_ = pq4_preferred_qbs(static_cast<int>(n));
     }
 
     int LUT_nq =
-            pq4_pack_LUT_qbs(qbs, M2, quantized_dis_tables.get(), LUT.get());
+            pq4_pack_LUT_qbs(qbs_, M2, quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr, impl, context);
+    auto* rh = scanner->handler();
+    rh->normalizers = normalizers.get();
+    // Note: skip & 2 previously set handler->disable (run kernel,
+    // discard results). Through the scanner path, skip & 2 now skips
+    // the kernel entirely (same as skip & 4), since disable is not
+    // accessible through the SIMDResultHandlerToFloat* interface.
+    if (!(skip & (2 | 4))) {
+        scanner->accumulate_loop_qbs(
+                qbs_,
 
-    if (skip & 4) {
-        // pass
-    } else {
-        pq4_accumulate_loop_qbs(
-                qbs,
                 ntotal2,
                 M2,
                 codes.get(),
                 LUT.get(),
-                *handler.get(),
-                scaler);
+                context.pq2x4_scale,
+                get_block_stride());
     }
     if (!(skip & 8)) {
-        handler->end();
+        rh->end();
     }
 }
 
@@ -486,8 +525,7 @@ void IndexFastScan::search_implem_14(
         float* distances,
         idx_t* labels,
         int impl,
-        const NormTableScaler* scaler) const {
-    using RH = ResultHandlerCompare<C, false>;
+        const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
     int qbs2 = qbs == 0 ? 4 : qbs;
@@ -496,6 +534,11 @@ void IndexFastScan::search_implem_14(
     if (n > qbs2) {
         for (int64_t i0 = 0; i0 < n; i0 += qbs2) {
             int64_t i1 = std::min(i0 + qbs2, n);
+            // Create sub-context with adjusted query_factors pointer
+            FastScanDistancePostProcessing sub_context = context;
+            if (sub_context.query_factors != nullptr) {
+                sub_context.query_factors += i0;
+            }
             search_implem_14<C>(
                     i1 - i0,
                     x + d * i0,
@@ -503,7 +546,7 @@ void IndexFastScan::search_implem_14(
                     distances + i0 * k,
                     labels + i0 * k,
                     impl,
-                    scaler);
+                    sub_context);
         }
         return;
     }
@@ -516,32 +559,33 @@ void IndexFastScan::search_implem_14(
         quantized_dis_tables.clear();
     } else {
         compute_quantized_LUT(
-                n, x, quantized_dis_tables.get(), normalizers.get());
+                n, x, quantized_dis_tables.get(), normalizers.get(), context);
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
     pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
 
-    std::unique_ptr<RH> handler(
-            make_knn_handler<C>(impl, n, k, ntotal, distances, labels));
-    handler->disable = bool(skip & 2);
-    handler->normalizers = normalizers.get();
-
-    if (skip & 4) {
-        // pass
-    } else {
-        pq4_accumulate_loop(
+    auto scanner = make_knn_scanner(
+            C::is_max, n, k, ntotal, distances, labels, nullptr, impl, context);
+    auto* rh = scanner->handler();
+    rh->normalizers = normalizers.get();
+    // Note: skip & 2 previously set handler->disable (run kernel,
+    // discard results). Through the scanner path, skip & 2 now skips
+    // the kernel entirely (same as skip & 4), since disable is not
+    // accessible through the SIMDResultHandlerToFloat* interface.
+    if (!(skip & (2 | 4))) {
+        scanner->accumulate_loop(
                 n,
                 ntotal2,
                 bbs,
                 M2,
                 codes.get(),
                 LUT.get(),
-                *handler.get(),
-                scaler);
+                context.pq2x4_scale,
+                get_block_stride());
     }
     if (!(skip & 8)) {
-        handler->end();
+        rh->end();
     }
 }
 
@@ -551,7 +595,7 @@ template void IndexFastScan::search_dispatch_implem<true>(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const NormTableScaler* scaler) const;
+        const FastScanDistancePostProcessing& context) const;
 
 template void IndexFastScan::search_dispatch_implem<false>(
         idx_t n,
@@ -559,15 +603,12 @@ template void IndexFastScan::search_dispatch_implem<false>(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const NormTableScaler* scaler) const;
+        const FastScanDistancePostProcessing& context) const;
 
 void IndexFastScan::reconstruct(idx_t key, float* recons) const {
     std::vector<uint8_t> code(code_size, 0);
-    BitstringWriter bsw(code.data(), code_size);
-    for (size_t m = 0; m < M; m++) {
-        uint8_t c = pq4_get_packed_element(codes.data(), bbs, M2, key, m);
-        bsw.write(c, nbits);
-    }
+    std::unique_ptr<CodePacker> packer(get_CodePacker());
+    packer->unpack_1(codes.data(), key, code.data());
     sa_decode(1, code.data(), recons);
 }
 

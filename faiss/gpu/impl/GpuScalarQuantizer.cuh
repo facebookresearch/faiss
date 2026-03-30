@@ -37,10 +37,11 @@ inline bool isSQSupported(ScalarQuantizer::QuantizerType qtype) {
 struct GpuScalarQuantizer : public ScalarQuantizer {
     GpuScalarQuantizer(GpuResources* res, const ScalarQuantizer& sq)
             : ScalarQuantizer(sq),
-              gpuTrained(DeviceTensor<float, 1, true>(
-                      res,
-                      makeDevAlloc(AllocType::Quantizer, 0),
-                      {(idx_t)sq.trained.size()})) {
+              gpuTrained(
+                      DeviceTensor<float, 1, true>(
+                              res,
+                              makeDevAlloc(AllocType::Quantizer, 0),
+                              {(idx_t)sq.trained.size()})) {
         HostTensor<float, 1, true> cpuTrained(
                 (float*)sq.trained.data(), {(idx_t)sq.trained.size()});
 

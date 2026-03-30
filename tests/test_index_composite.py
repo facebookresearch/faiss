@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 """ more elaborate that test_index.py """
-from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import unittest
@@ -193,13 +192,7 @@ class TestRemove(unittest.TestCase):
             assert False, 'should have raised an exception'
 
         # while we are there, let's test I/O as well...
-        fd, tmpnam = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index_binary(index, tmpnam)
-            index = faiss.read_index_binary(tmpnam)
-        finally:
-            os.remove(tmpnam)
+        index = faiss.deserialize_index_binary(faiss.serialize_index_binary(index))
 
         assert index.reconstruct(1004)[0] == 104
         try:
@@ -208,6 +201,11 @@ class TestRemove(unittest.TestCase):
             pass
         else:
             assert False, 'should have raised an exception'
+
+        # Verify deserialized index is serializable again
+        index2 = faiss.deserialize_index_binary(
+            faiss.serialize_index_binary(index))
+        assert index2.reconstruct(1004)[0] == 104
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -469,17 +467,15 @@ class TestIVFFlatDedup(unittest.TestCase):
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
         # test I/O
-        fd, tmpfile = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index_new, tmpfile)
-            index_st = faiss.read_index(tmpfile)
-        finally:
-            if os.path.exists(tmpfile):
-                os.unlink(tmpfile)
+        index_st = faiss.deserialize_index(faiss.serialize_index(index_new))
         Dst, Ist = index_st.search(xq, 20)
 
         check_ref_knn_with_draws(Dnew, Inew, Dst, Ist)
+
+        # Verify deserialized index is serializable again
+        index_st2 = faiss.deserialize_index(faiss.serialize_index(index_st))
+        Dst2, Ist2 = index_st2.search(xq, 20)
+        check_ref_knn_with_draws(Dnew, Inew, Dst2, Ist2)
 
         # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
@@ -666,6 +662,52 @@ class TestInvlistMeta(unittest.TestCase):
         # avoid mem leak
         index.replace_invlists(il, True)
 
+    def test_capped_invlists(self):
+        d = 10
+        nb = 1000
+        nq = 1
+        nt = 200
+
+        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
+
+        index = faiss.index_factory(d, "IVF32,Flat")
+        index.nprobe = 4
+        index.train(xt)
+        index.add(xb)
+        Dref, Iref = index.search(xq, 10)
+
+        il = index.invlists
+        maxsz = max(il.list_size(i) for i in range(il.nlist))
+
+        # cap at half the max size
+        cap = max(maxsz // 2, 1)
+        il2 = faiss.CappedInvertedLists(il, cap)
+
+        # verify capping works
+        for i in range(il.nlist):
+            orig_sz = il.list_size(i)
+            capped_sz = il2.list_size(i)
+            self.assertEqual(capped_sz, min(orig_sz, cap))
+            self.assertEqual(il2.real_list_size(i), orig_sz)
+
+        index.own_invlists = False
+        index.replace_invlists(il2, False)
+
+        # search with capped lists - should still return valid results
+        D1, I1 = index.search(xq, 10)
+        # results may differ due to capping, but should be valid
+        self.assertTrue(np.all(I1 >= -1))
+
+        # test that writes pass through
+        index.replace_invlists(il, False)
+        orig_ntotal = index.ntotal
+        index.replace_invlists(il2, False)
+        index.add(xb[:10])  # add through capped wrapper
+        self.assertEqual(index.ntotal, orig_ntotal + 10)
+
+        # cleanup
+        index.replace_invlists(il, True)
+
 
 class TestSplitMerge(unittest.TestCase):
 
@@ -825,6 +867,12 @@ class TestIndependentQuantizer(unittest.TestCase):
 
         np.testing.assert_array_equal(Dnew, D2)
         np.testing.assert_array_equal(Inew, I2)
+
+        # Verify deserialized index is serializable again
+        index3 = faiss.deserialize_index(faiss.serialize_index(index2))
+        D3, I3 = index3.search(ds.get_queries(), 10)
+        np.testing.assert_array_equal(Dnew, D3)
+        np.testing.assert_array_equal(Inew, I3)
 
 
 

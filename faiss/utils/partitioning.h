@@ -28,7 +28,7 @@ typename C::T partition_fuzzy(
         size_t q_max,
         size_t* q_out);
 
-/** simplified interface for when the parition is not fuzzy */
+/** simplified interface for when the partition is not fuzzy */
 template <class C>
 inline typename C::T partition(
         typename C::T* vals,
@@ -59,7 +59,7 @@ void simd_histogram_16(
         int* hist);
 
 struct PartitionStats {
-    uint64_t bissect_cycles;
+    uint64_t bisect_cycles;
     uint64_t compress_cycles;
 
     PartitionStats() {

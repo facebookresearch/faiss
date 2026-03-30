@@ -7,14 +7,13 @@
 
 #pragma once
 
-#include <memory>
-
 #include <faiss/IndexIVF.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
-struct NormTableScaler;
 struct SIMDResultHandlerToFloat;
 struct Quantizer;
 
@@ -63,6 +62,15 @@ struct IndexIVFFastScan : IndexIVF {
     // quantizer used to pack the codes
     Quantizer* fine_quantizer = nullptr;
 
+    /** Constructor for IndexIVFFastScan
+     *
+     * @param quantizer     coarse quantizer for IVF clustering
+     * @param d             dimensionality of vectors
+     * @param nlist         number of inverted lists
+     * @param code_size     size of each code in bytes
+     * @param metric        distance metric to use
+     * @param own_invlists  whether to own the inverted lists
+     */
     IndexIVFFastScan(
             Index* quantizer,
             size_t d,
@@ -73,7 +81,16 @@ struct IndexIVFFastScan : IndexIVF {
 
     IndexIVFFastScan();
 
-    /// called by implementations
+    /** Initialize the fast scan functionality (called by implementations)
+     *
+     * @param fine_quantizer  fine quantizer for encoding
+     * @param M               number of subquantizers
+     * @param nbits           number of bits per subquantizer
+     * @param nlist           number of inverted lists
+     * @param metric          distance metric to use
+     * @param bbs             block size for SIMD processing
+     * @param own_invlists    whether to own the inverted lists
+     */
     void init_fastscan(
             Quantizer* fine_quantizer,
             size_t M,
@@ -91,34 +108,72 @@ struct IndexIVFFastScan : IndexIVF {
     /// orig's inverted lists (for debugging)
     InvertedLists* orig_invlists = nullptr;
 
+    /** Add vectors with specific IDs to the index
+     *
+     * @param n     number of vectors to add
+     * @param x     vectors to add (n * d)
+     * @param xids  IDs for the vectors (n)
+     */
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
-
     // prepare look-up tables
 
     virtual bool lookup_table_is_3d() const = 0;
 
     // compact way of conveying coarse quantization results
     struct CoarseQuantized {
-        size_t nprobe;
+        size_t nprobe = 0;
         const float* dis = nullptr;
         const idx_t* ids = nullptr;
     };
 
+    /* Compute distance table for query set, given a list of coarse
+     * quantizers.
+     *
+     * @param n             number of queries
+     * @param x             query vectors (n, d)
+     * @param cq            coarse quantization results
+     * @param dis_tables    output distance tables
+     * @param biases        output bias values
+     * @param context       processing context containing query factors
+    processor
+     */
     virtual void compute_LUT(
             size_t n,
             const float* x,
             const CoarseQuantized& cq,
             AlignedTable<float>& dis_tables,
-            AlignedTable<float>& biases) const = 0;
+            AlignedTable<float>& biases,
+            const FastScanDistancePostProcessing& context) const = 0;
 
+    /** Compute quantized lookup tables for distance computation
+     *
+     * @param n             number of query vectors
+     * @param x             query vectors (n * d)
+     * @param cq            coarse quantization results
+     * @param dis_tables    output quantized distance tables
+     * @param biases        output quantized bias values
+     * @param normalizers   output normalization factors
+     * @param context       processing context containing query factors
+     * processor
+     */
     void compute_LUT_uint8(
             size_t n,
             const float* x,
             const CoarseQuantized& cq,
             AlignedTable<uint8_t>& dis_tables,
             AlignedTable<uint16_t>& biases,
-            float* normalizers) const;
+            float* normalizers,
+            const FastScanDistancePostProcessing& context) const;
 
+    /** Search for k nearest neighbors
+     *
+     * @param n          number of query vectors
+     * @param x          query vectors (n * d)
+     * @param k          number of nearest neighbors to find
+     * @param distances  output distances (n * k)
+     * @param labels     output labels/indices (n * k)
+     * @param params     optional search parameters
+     */
     void search(
             idx_t n,
             const float* x,
@@ -127,6 +182,19 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /** Search with pre-assigned coarse quantization
+     *
+     * @param n             number of query vectors
+     * @param x             query vectors (n * d)
+     * @param k             number of nearest neighbors to find
+     * @param assign        coarse cluster assignments (n * nprobe)
+     * @param centroid_dis  distances to centroids (n * nprobe)
+     * @param distances     output distances (n * k)
+     * @param labels        output labels/indices (n * k)
+     * @param store_pairs   whether to store cluster-relative pairs
+     * @param params        optional IVF search parameters
+     * @param stats         optional search statistics
+     */
     void search_preassigned(
             idx_t n,
             const float* x,
@@ -139,6 +207,14 @@ struct IndexIVFFastScan : IndexIVF {
             const IVFSearchParameters* params = nullptr,
             IndexIVFStats* stats = nullptr) const override;
 
+    /** Range search for all neighbors within radius
+     *
+     * @param n       number of query vectors
+     * @param x       query vectors (n * d)
+     * @param radius  search radius
+     * @param result  output range search results
+     * @param params  optional search parameters
+     */
     void range_search(
             idx_t n,
             const float* x,
@@ -146,7 +222,31 @@ struct IndexIVFFastScan : IndexIVF {
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
-    // internal search funcs
+    /** Create a SIMD-dispatched scanner for knn search (IVF variant).
+     *
+     * Returns a FastScanCodeScanner that bundles handler + accumulation
+     * kernel behind the SIMD dispatch boundary. ntotal is not passed
+     * because IVF sets it per-list via handler->ntotal.
+     * Derived classes override this to provide custom handlers
+     * (e.g. RaBitQ).
+     *
+     * @param is_max       whether to use CMax comparator (true) or CMin
+     * @param n            number of queries
+     * @param k            number of neighbors to find
+     * @param distances    output distances array
+     * @param labels       output labels array
+     * @param sel          optional ID selector
+     * @return             scanner
+     */
+    virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            int impl = 0,
+            const FastScanDistancePostProcessing& context = {}) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
@@ -156,7 +256,7 @@ struct IndexIVFFastScan : IndexIVF {
             float* distances,
             idx_t* labels,
             const CoarseQuantized& cq,
-            const NormTableScaler* scaler,
+            const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params = nullptr) const;
 
     void range_search_dispatch_implem(
@@ -165,7 +265,7 @@ struct IndexIVFFastScan : IndexIVF {
             float radius,
             RangeSearchResult& rres,
             const CoarseQuantized& cq_in,
-            const NormTableScaler* scaler,
+            const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params = nullptr) const;
 
     // impl 1 and 2 are just for verification
@@ -177,7 +277,7 @@ struct IndexIVFFastScan : IndexIVF {
             float* distances,
             idx_t* labels,
             const CoarseQuantized& cq,
-            const NormTableScaler* scaler,
+            const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params = nullptr) const;
 
     template <class C>
@@ -188,7 +288,7 @@ struct IndexIVFFastScan : IndexIVF {
             float* distances,
             idx_t* labels,
             const CoarseQuantized& cq,
-            const NormTableScaler* scaler,
+            const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params = nullptr) const;
 
     // implem 10 and 12 are not multithreaded internally, so
@@ -200,8 +300,9 @@ struct IndexIVFFastScan : IndexIVF {
             const CoarseQuantized& cq,
             size_t* ndis_out,
             size_t* nlist_out,
-            const NormTableScaler* scaler,
-            const IVFSearchParameters* params = nullptr) const;
+            const FastScanDistancePostProcessing& context,
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     void search_implem_12(
             idx_t n,
@@ -210,8 +311,9 @@ struct IndexIVFFastScan : IndexIVF {
             const CoarseQuantized& cq,
             size_t* ndis_out,
             size_t* nlist_out,
-            const NormTableScaler* scaler,
-            const IVFSearchParameters* params = nullptr) const;
+            const FastScanDistancePostProcessing& context,
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(
@@ -222,7 +324,7 @@ struct IndexIVFFastScan : IndexIVF {
             idx_t* labels,
             const CoarseQuantized& cq,
             int impl,
-            const NormTableScaler* scaler,
+            const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params = nullptr) const;
 
     // reconstruct vectors from packed invlists
@@ -234,16 +336,61 @@ struct IndexIVFFastScan : IndexIVF {
     // reconstruct orig invlists (for debugging)
     void reconstruct_orig_invlists();
 
-    /** Decode a set of vectors.
+    /** Decode a set of vectors
      *
-     *  NOTE: The codes in the IndexFastScan object are non-contiguous.
-     *        But this method requires a contiguous representation.
+     * NOTE: The codes in the IndexFastScan object are non-contiguous.
+     *       But this method requires a contiguous representation.
      *
      * @param n       number of vectors
      * @param bytes   input encoded vectors, size n * code_size
      * @param x       output vectors, size n * d
      */
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+   protected:
+    /** Get stride for interpreting codes during SIMD packing.
+     *
+     * The stride determines how to read codes when packing them into
+     * SIMD-friendly block format. This is needed when codes contain
+     * embedded metadata that should be skipped during packing.
+     *
+     * Default implementation: returns 0 (use standard M-byte stride)
+     *
+     * Example use case:
+     * - IndexIVFRaBitQFastScan returns code_size because codes contain
+     *   embedded factor data after the quantized bits
+     *
+     * @return stride in bytes:
+     *         - 0: use default stride (M bytes, standard PQ/AQ codes)
+     *         - >0: use custom stride (e.g., code_size for embedded metadata)
+     */
+    virtual size_t code_packing_stride() const;
+
+   public:
+    /** Get stride in bytes between consecutive SIMD blocks.
+     *
+     * Derived from get_CodePacker()->block_size so that there is a
+     * single source of truth for the block layout.
+     *
+     * @return stride in bytes
+     */
+    size_t get_block_stride() const;
+
+    /** Post-process packed codes after pq4_pack_codes_range.
+     *
+     * Called during add_with_ids after codes have been packed into
+     * SIMD-friendly blocks.
+     *
+     * @param list_no       inverted list number
+     * @param list_offset   starting offset within the list (pre-existing size)
+     * @param n_added       number of vectors added in this batch
+     * @param flat_codes    encoded vectors for this batch (n_added * code_size)
+     */
+    virtual void postprocess_packed_codes(
+            idx_t list_no,
+            size_t list_offset,
+            size_t n_added,
+            const uint8_t* flat_codes);
 };
 
 struct IVFFastScanStats {

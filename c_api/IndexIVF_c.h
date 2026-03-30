@@ -174,7 +174,7 @@ inline void faiss_IndexIVFStats_init(FaissIndexIVFStats* stats) {
     faiss_IndexIVFStats_reset(stats);
 }
 
-/// global var that collects all statists
+/// global var that collects all statistics
 FaissIndexIVFStats* faiss_get_indexIVF_stats();
 
 #ifdef __cplusplus

@@ -24,12 +24,20 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
+void Index::train_with_queries(
+        idx_t /*n*/,
+        const float* /*x*/,
+        idx_t /*n_train_q*/,
+        const float* /*xq_train*/) {
+    // does nothing by default
+}
+
 void Index::range_search(
         idx_t,
         const float*,
         float,
         RangeSearchResult*,
-        const SearchParameters* params) const {
+        const SearchParameters* /*params*/) const {
     FAISS_THROW_MSG("range search not implemented");
 }
 
@@ -104,9 +112,24 @@ void Index::search_and_reconstruct(
     }
 }
 
+void Index::search_subset(
+        idx_t /*n*/,
+        const float* /*x*/,
+        idx_t /*k_base*/,
+        const idx_t* /*base_labels*/,
+        idx_t /*k*/,
+        float* /*distances*/,
+        idx_t* /*labels*/) const {
+    FAISS_THROW_MSG("search_subset not implemented for this type of index");
+}
+
+void Index::search1(const float*, ResultHandler&, SearchParameters*) const {
+    FAISS_THROW_MSG("search1 not implemented for this type of index");
+}
+
 void Index::compute_residual(const float* x, float* residual, idx_t key) const {
     reconstruct(key, residual);
-    for (size_t i = 0; i < d; i++) {
+    for (int i = 0; i < d; i++) {
         residual[i] = x[i] - residual[i];
     }
 }
@@ -147,7 +170,8 @@ struct GenericDistanceComputer : DistanceComputer {
     std::vector<float> buf;
     const float* q;
 
-    explicit GenericDistanceComputer(const Index& storage) : storage(storage) {
+    explicit GenericDistanceComputer(const Index& storage_in)
+            : storage(storage_in) {
         d = storage.d;
         buf.resize(d * 2);
     }

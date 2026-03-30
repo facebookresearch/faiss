@@ -28,10 +28,10 @@
 
 namespace faiss {
 
-Clustering::Clustering(int d, int k) : d(d), k(k) {}
+Clustering::Clustering(int d_, int k_) : d(d_), k(k_) {}
 
-Clustering::Clustering(int d, int k, const ClusteringParameters& cp)
-        : ClusteringParameters(cp), d(d), k(k) {}
+Clustering::Clustering(int d_, int k_, const ClusteringParameters& cp)
+        : ClusteringParameters(cp), d(d_), k(k_) {}
 
 void Clustering::post_process_centroids() {
     if (spherical) {
@@ -165,7 +165,8 @@ void compute_centroids(
             int64_t ci = assign[i];
             assert(ci >= 0 && ci < k + k_frozen);
             ci -= k_frozen;
-            if (ci >= c0 && ci < c1) {
+            if (ci >= static_cast<int64_t>(c0) &&
+                ci < static_cast<int64_t>(c1)) {
                 float* c = centroids + ci * d;
                 const float* xi;
                 if (!codec) {
@@ -192,7 +193,7 @@ void compute_centroids(
     }
 
 #pragma omp parallel for
-    for (idx_t ci = 0; ci < k; ci++) {
+    for (idx_t ci = 0; ci < static_cast<idx_t>(k); ci++) {
         if (hassign[ci] == 0) {
             continue;
         }
@@ -212,7 +213,7 @@ void compute_centroids(
  * It works by slightly changing the centroids to make 2 clusters from
  * a single one. Takes the same arguments as compute_centroids.
  *
- * @return           nb of spliting operations (larger is worse)
+ * @return           nb of splitting operations (larger is worse)
  */
 int split_clusters(
         size_t d,
@@ -242,7 +243,7 @@ int split_clusters(
                    centroids + cj * d,
                    sizeof(*centroids) * d);
 
-            /* small symmetric pertubation */
+            /* small symmetric perturbation */
             for (size_t j = 0; j < d; j++) {
                 if (j % 2 == 0) {
                     centroids[ci * d + j] *= 1 + EPS;
@@ -272,7 +273,7 @@ void Clustering::train_encoded(
         Index& index,
         const float* weights) {
     FAISS_THROW_IF_NOT_FMT(
-            nx >= k,
+            nx >= static_cast<idx_t>(k),
             "Number of training points (%" PRId64
             ") should be at least "
             "as large as number of clusters (%zd)",
@@ -280,13 +281,13 @@ void Clustering::train_encoded(
             k);
 
     FAISS_THROW_IF_NOT_FMT(
-            (!codec || codec->d == d),
+            (!codec || static_cast<size_t>(codec->d) == d),
             "Codec dimension %d not the same as data dimension %d",
             int(codec->d),
             int(d));
 
     FAISS_THROW_IF_NOT_FMT(
-            index.d == d,
+            static_cast<size_t>(index.d) == d,
             "Index dimension %d not the same as data dimension %d",
             int(index.d),
             int(d));
@@ -309,7 +310,7 @@ void Clustering::train_encoded(
     std::unique_ptr<float[]> del3;
     size_t line_size = codec ? codec->sa_code_size() : sizeof(float) * d;
 
-    if (nx > k * max_points_per_centroid) {
+    if (static_cast<size_t>(nx) > k * max_points_per_centroid) {
         uint8_t* x_new;
         float* weights_new;
         nx = subsample_training_set(
@@ -318,7 +319,7 @@ void Clustering::train_encoded(
         x = x_new;
         del3.reset(weights_new);
         weights = weights_new;
-    } else if (nx < k * min_points_per_centroid) {
+    } else if (static_cast<size_t>(nx) < k * min_points_per_centroid) {
         fprintf(stderr,
                 "WARNING clustering %" PRId64
                 " points to %zd centroids: "
@@ -328,7 +329,7 @@ void Clustering::train_encoded(
                 idx_t(k) * min_points_per_centroid);
     }
 
-    if (nx == k) {
+    if (static_cast<size_t>(nx) == k) {
         // this is a corner case, just copy training set to clusters
         if (verbose) {
             printf("Number of training points (%" PRId64
@@ -407,19 +408,52 @@ void Clustering::train_encoded(
             printf("Outer iteration %d / %d\n", redo, nredo);
         }
 
-        // initialize (remaining) centroids with random points from the dataset
+        // initialize centroids using the selected method
         centroids.resize(d * k);
-        std::vector<int> perm(nx);
 
-        rand_perm(perm.data(), nx, actual_seed + 1 + redo * 15486557L);
+        size_t k_to_init = k - n_input_centroids;
+        if (k_to_init > 0) {
+            // Fast path for RANDOM initialization - preserves exact original
+            // behavior
+            if (init_method == ClusteringInitMethod::RANDOM) {
+                std::vector<int> perm(nx);
+                rand_perm(perm.data(), nx, actual_seed + 1 + redo * 15486557L);
+                for (size_t i = 0; i < k_to_init; i++) {
+                    if (!codec) {
+                        memcpy(centroids.data() + (n_input_centroids + i) * d,
+                               x + perm[n_input_centroids + i] * line_size,
+                               line_size);
+                    } else {
+                        codec->sa_decode(
+                                1,
+                                x + perm[n_input_centroids + i] * line_size,
+                                centroids.data() + (n_input_centroids + i) * d);
+                    }
+                }
+            } else {
+                // For k-means++ and AFK-MC², we need all vectors decoded
+                const float* x_float = nullptr;
+                std::vector<float> x_decoded;
 
-        if (!codec) {
-            for (int i = n_input_centroids; i < k; i++) {
-                memcpy(&centroids[i * d], x + perm[i] * line_size, line_size);
-            }
-        } else {
-            for (int i = n_input_centroids; i < k; i++) {
-                codec->sa_decode(1, x + perm[i] * line_size, &centroids[i * d]);
+                if (!codec) {
+                    x_float = reinterpret_cast<const float*>(x);
+                } else {
+                    // Decode all vectors for initialization
+                    x_decoded.resize(nx * d);
+                    codec->sa_decode(nx, x, x_decoded.data());
+                    x_float = x_decoded.data();
+                }
+
+                ClusteringInitialization initializer(d, k_to_init);
+                initializer.method = init_method;
+                initializer.seed = actual_seed + 1 + redo * 15486557L;
+                initializer.afkmc2_chain_length = afkmc2_chain_length;
+                initializer.init_centroids(
+                        nx,
+                        x_float,
+                        centroids.data() + n_input_centroids * d,
+                        n_input_centroids,
+                        n_input_centroids > 0 ? centroids.data() : nullptr);
             }
         }
 
@@ -453,9 +487,10 @@ void Clustering::train_encoded(
             } else {
                 // search by blocks of decode_block_size vectors
                 size_t code_size = codec->sa_code_size();
-                for (size_t i0 = 0; i0 < nx; i0 += decode_block_size) {
+                for (size_t i0 = 0; i0 < static_cast<size_t>(nx);
+                     i0 += decode_block_size) {
                     size_t i1 = i0 + decode_block_size;
-                    if (i1 > nx) {
+                    if (i1 > static_cast<size_t>(nx)) {
                         i1 = nx;
                     }
                     codec->sa_decode(
@@ -529,6 +564,27 @@ void Clustering::train_encoded(
 
             index.add(k, centroids.data());
             InterruptCallback::check();
+
+            // Early stopping: if objective didn't change, we've converged.
+            // Safe to access iteration_stats[size - 2] because we push_back
+            // above, so size >= i + 1, and when i > 0 we have size >= 2.
+            if (i > 0) {
+                float prev_obj =
+                        iteration_stats[iteration_stats.size() - 2].obj;
+
+                double change = (prev_obj == 0)
+                        ? std::numeric_limits<double>::max()
+                        : std::abs(prev_obj - obj) / std::abs(prev_obj);
+
+                if (change >= 0 && change <= early_stop_threshold) {
+                    if (verbose) {
+                        printf("\n  Converged at iteration %d: "
+                               "objective did not change\n",
+                               i);
+                    }
+                    break;
+                }
+            }
         }
 
         if (verbose) {
@@ -555,16 +611,16 @@ void Clustering::train_encoded(
     }
 }
 
-Clustering1D::Clustering1D(int k) : Clustering(1, k) {}
+Clustering1D::Clustering1D(int k_) : Clustering(1, k_) {}
 
-Clustering1D::Clustering1D(int k, const ClusteringParameters& cp)
-        : Clustering(1, k, cp) {}
+Clustering1D::Clustering1D(int k_, const ClusteringParameters& cp)
+        : Clustering(1, k_, cp) {}
 
 void Clustering1D::train_exact(idx_t n, const float* x) {
     const float* xt = x;
 
     std::unique_ptr<uint8_t[]> del;
-    if (n > k * max_points_per_centroid) {
+    if (static_cast<size_t>(n) > k * max_points_per_centroid) {
         uint8_t* x_new;
         float* weights_new;
         n = subsample_training_set(
@@ -615,13 +671,14 @@ Index* ProgressiveDimIndexFactory::operator()(int dim) {
     return new IndexFlatL2(dim);
 }
 
-ProgressiveDimClustering::ProgressiveDimClustering(int d, int k) : d(d), k(k) {}
+ProgressiveDimClustering::ProgressiveDimClustering(int d_, int k_)
+        : d(d_), k(k_) {}
 
 ProgressiveDimClustering::ProgressiveDimClustering(
-        int d,
-        int k,
+        int d_,
+        int k_,
         const ProgressiveDimClusteringParameters& cp)
-        : ProgressiveDimClusteringParameters(cp), d(d), k(k) {}
+        : ProgressiveDimClusteringParameters(cp), d(d_), k(k_) {}
 
 namespace {
 

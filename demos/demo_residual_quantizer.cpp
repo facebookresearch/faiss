@@ -41,7 +41,7 @@ int main() {
     };
 
     tic();
-    printf("samping dataset of %zd dim vectors, Q %zd B %zd T %zd\n",
+    printf("sampling dataset of %zd dim vectors, Q %zd B %zd T %zd\n",
            d,
            nq,
            nb,
@@ -76,7 +76,7 @@ int main() {
 
     faiss::ResidualQuantizer rq(
             d, 7, 6, faiss::AdditiveQuantizer::ST_norm_qint8);
-    // do cheap an inaccurate training
+    // do cheap and inaccurate training
     rq.cp.niter = 5;
     rq.max_beam_size = 5;
     rq.train_type = 0;

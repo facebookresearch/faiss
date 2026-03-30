@@ -87,7 +87,7 @@ class IVFBase {
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices);
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     virtual void search(
             Index* coarseQuantizer,

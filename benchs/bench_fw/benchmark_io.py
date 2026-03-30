@@ -185,11 +185,12 @@ class BenchmarkIO:
         self,
         nparray: np.ndarray,
         filename: str,
+        overwrite: bool = False,
     ):
         fn = self.get_local_filepath(filename)
         logger.info(f"Saving nparray {nparray.shape} to {fn}")
         np.save(fn, nparray)
-        self.upload_file_to_blobstore(filename)
+        self.upload_file_to_blobstore(filename=filename, overwrite=overwrite)
 
     def read_json(
         self,
@@ -212,7 +213,7 @@ class BenchmarkIO:
         logger.info(f"Saving json {json_dict} to {fn}")
         with open(fn, "w") as fp:
             json.dump(json_dict, fp)
-        self.upload_file_to_blobstore(filename, overwrite=overwrite)
+        self.upload_file_to_blobstore(filename=filename, overwrite=overwrite)
 
     def read_index(
         self,

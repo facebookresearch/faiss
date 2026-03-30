@@ -6,9 +6,10 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
-{% set cuda_constraints=">=12.1,<12.5" %}
-{% set libcublas_constraints=">=12.1,<13" %}
-{% set cudart_constraints=">=12.4,<12.5" %}
+{% set cuda_major = (cudatoolkit | default("12.0")).split('.')[0] | int %}
+{% set cuda_constraints=">=13.2,<13.3" %}
+{% set libcublas_constraints=">=13.3,<13.4" %}  # libcublas 13.3 is actually for cuda 13.2
+{% set cudart_constraints=">=13.2,<13.3" %}
 
 package:
   name: faiss-pkg
@@ -47,8 +48,8 @@ outputs:
         - cmake >=3.30.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - mkl-devel =2023  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
+        - mkl-devel >=2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
         - cuda-cudart {{ cudart_constraints }}
         - cuda-cudart-dev {{ cudart_constraints }}
@@ -58,19 +59,21 @@ outputs:
         - cuda-cudart-static_linux-64 {{ cudart_constraints }}  # [linux64]
       host:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
-        - libcuvs =25.08
+        - mkl >=2024.2.2  # [x86_64]
+        - openblas =0.3.32 # [not x86_64]
+        - libcuvs =26.02
         - cuda-version {{ cuda_constraints }}
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
       run:
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
+        - mkl >=2024.2.2  # [x86_64]
+        - openblas =0.3.32 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libcuvs =25.08
+        - libcuvs =26.02
         - cuda-version {{ cuda_constraints }}
         - libnvjitlink
+        - libsvs-runtime =0.2.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
@@ -89,39 +92,46 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }} =12.4
-        - sysroot_linux-64 =2.17 # [linux64]
+        - {{ compiler('cxx') }} =14.2
+        - sysroot_linux-64 =2.34 # [linux64]
         - swig =4.0
-        - cmake >=3.26.4
+        - cmake >=3.30.4
         - make =4.2 # [not win]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - cuda-toolkit {{ cudatoolkit }}
       host:
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<2.3
+        - setuptools
         - {{ pin_subpackage('libfaiss', exact=True) }}
       run:
-        - mkl =2023.0  # [x86_64]
+        - mkl >=2024.2.2  # [x86_64]
         - _openmp_mutex =4.5=2_kmp_llvm  # [x86_64]
         - python {{ python }}
-        - numpy >=1.19,<2
+        - numpy >=2.0,<2.3
         - packaging
         - {{ pin_subpackage('libfaiss', exact=True) }}
     test:
       requires:
-        - numpy >=1.19,<2
+        - numpy >=2.0,<2.3
         - scipy
-        - pytorch <2.5
-        - pytorch-cuda {{ cuda_constraints }}
+# TODO: remove cuda_major guard when we move to PyPI (pytorch via PyPI works on CUDA 13)
+{% if cuda_major < 13 %}
+        - pytorch-gpu >=2.7
+{% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+{% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+{% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]

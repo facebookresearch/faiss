@@ -16,7 +16,7 @@ xq = np.random.random((nq, d)).astype('float32')
 xq[:, 0] += np.arange(nq) / 1000.
 
 m = 8   # 8 specifies that the number of sub-vector is 8
-k = 4   # number of dimension in etracted vector
+k = 4  # number of dimension in extracted vector
 n_bit = 4   # 4 specifies that each sub-vector is encoded as 4 bits
 bbs = 32    # build block size ( bbs % 32 == 0 ) for PQ
 index = faiss.IndexPQFastScan(d, m, n_bit, faiss.METRIC_L2, bbs)

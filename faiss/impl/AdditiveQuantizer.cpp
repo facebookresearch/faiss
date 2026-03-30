@@ -21,6 +21,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/LocalSearchQuantizer.h>
 #include <faiss/impl/ResidualQuantizer.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -47,13 +48,13 @@ int sgemm_(
 namespace faiss {
 
 AdditiveQuantizer::AdditiveQuantizer(
-        size_t d,
-        const std::vector<size_t>& nbits,
-        Search_type_t search_type)
-        : Quantizer(d),
-          M(nbits.size()),
-          nbits(nbits),
-          search_type(search_type) {
+        size_t d_in,
+        const std::vector<size_t>& nbits_in,
+        Search_type_t search_type_in)
+        : Quantizer(d_in),
+          M(nbits_in.size()),
+          nbits(nbits_in),
+          search_type(search_type_in) {
     set_derived_values();
 }
 
@@ -64,10 +65,12 @@ void AdditiveQuantizer::set_derived_values() {
     tot_bits = 0;
     only_8bit = true;
     codebook_offsets.resize(M + 1, 0);
-    for (int i = 0; i < M; i++) {
+    for (size_t i = 0; i < M; i++) {
         int nbit = nbits[i];
-        size_t k = 1 << nbit;
-        codebook_offsets[i + 1] = codebook_offsets[i] + k;
+        FAISS_CHECK_RANGE(nbit, 0, 31);
+        size_t k = (size_t)1 << nbit;
+        codebook_offsets[i + 1] =
+                add_no_overflow(codebook_offsets[i], k, "codebook_offsets");
         tot_bits += nbit;
         if (nbit != 0) {
             only_8bit = false;
@@ -104,7 +107,7 @@ void AdditiveQuantizer::set_derived_values() {
 void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
     norm_min = HUGE_VALF;
     norm_max = -HUGE_VALF;
-    for (idx_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         if (norms[i] < norm_min) {
             norm_min = norms[i];
         }
@@ -153,21 +156,42 @@ void AdditiveQuantizer::train_norm(size_t n, const float* norms) {
 
 void AdditiveQuantizer::compute_codebook_tables() {
     centroid_norms.resize(total_codebook_size);
+    FAISS_THROW_IF_NOT_FMT(
+            codebooks.size() >=
+                    mul_no_overflow(
+                            total_codebook_size, d, "codebooks validation"),
+            "codebooks size %zd too small for total_codebook_size=%zd * d=%zd",
+            codebooks.size(),
+            total_codebook_size,
+            d);
     fvec_norms_L2sqr(
             centroid_norms.data(), codebooks.data(), d, total_codebook_size);
     size_t cross_table_size = 0;
-    for (int m = 0; m < M; m++) {
+    for (size_t m = 0; m < M; m++) {
+        FAISS_CHECK_RANGE(nbits[m], 0, 31);
         size_t K = (size_t)1 << nbits[m];
-        cross_table_size += K * codebook_offsets[m];
+        size_t product =
+                mul_no_overflow(K, codebook_offsets[m], "cross_table_size");
+        cross_table_size = add_no_overflow(
+                cross_table_size, product, "cross_table_size accumulation");
     }
     codebook_cross_products.resize(cross_table_size);
     size_t ofs = 0;
-    for (int m = 1; m < M; m++) {
+    for (size_t m = 1; m < M; m++) {
         FINTEGER ki = (size_t)1 << nbits[m];
         FINTEGER kk = codebook_offsets[m];
         FINTEGER di = d;
         float zero = 0, one = 1;
-        assert(ofs + ki * kk <= cross_table_size);
+        size_t step_size = (size_t)ki * (size_t)kk;
+        FAISS_THROW_IF_NOT_FMT(
+                add_no_overflow(ofs, step_size, "cross product table offset") <=
+                        cross_table_size,
+                "cross product table overflow at step %zd: "
+                "%zd + %zd > %zd",
+                m,
+                ofs,
+                step_size,
+                cross_table_size);
         sgemm_("Transposed",
                "Not transposed",
                &ki,
@@ -181,7 +205,7 @@ void AdditiveQuantizer::compute_codebook_tables() {
                &zero,
                codebook_cross_products.data() + ofs,
                &ki);
-        ofs += ki * kk;
+        ofs += step_size;
     }
 }
 
@@ -276,11 +300,12 @@ void AdditiveQuantizer::pack_codes(
             norms = norm_buf.data();
         }
     }
+    int64_t n_signed = n;
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n_signed; i++) {
         const int32_t* codes1 = codes + i * ld_codes;
         BitstringWriter bsw(packed_codes + i * code_size, code_size);
-        for (int m = 0; m < M; m++) {
+        for (size_t m = 0; m < M; m++) {
             bsw.write(codes1[m], nbits[m]);
         }
         if (norm_bits != 0) {
@@ -293,12 +318,13 @@ void AdditiveQuantizer::decode(const uint8_t* code, float* x, size_t n) const {
     FAISS_THROW_IF_NOT_MSG(
             is_trained, "The additive quantizer is not trained yet.");
 
+    int64_t n_signed = n;
     // standard additive quantizer decoding
 #pragma omp parallel for if (n > 100)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n_signed; i++) {
         BitstringReader bsr(code + i * code_size, code_size);
         float* xi = x + i * d;
-        for (int m = 0; m < M; m++) {
+        for (size_t m = 0; m < M; m++) {
             int idx = bsr.read(nbits[m]);
             const float* c = codebooks.data() + d * (codebook_offsets[m] + idx);
             if (m == 0) {
@@ -322,12 +348,13 @@ void AdditiveQuantizer::decode_unpacked(
         ld_codes = M;
     }
 
+    int64_t n_signed = n;
     // standard additive quantizer decoding
 #pragma omp parallel for if (n > 1000)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n_signed; i++) {
         const int32_t* codesi = code + i * ld_codes;
         float* xi = x + i * d;
-        for (int m = 0; m < M; m++) {
+        for (size_t m = 0; m < M; m++) {
             int idx = codesi[m];
             const float* c = codebooks.data() + d * (codebook_offsets[m] + idx);
             if (m == 0) {
@@ -347,20 +374,23 @@ AdditiveQuantizer::~AdditiveQuantizer() {}
 
 void AdditiveQuantizer::compute_centroid_norms(float* norms) const {
     size_t ntotal = (size_t)1 << tot_bits;
+    int64_t ntotal_signed = ntotal;
     // TODO: make tree of partial sums
+    with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel
-    {
-        std::vector<float> tmp(d);
+        {
+            std::vector<float> tmp(d);
 #pragma omp for
-        for (int64_t i = 0; i < ntotal; i++) {
-            decode_64bit(i, tmp.data());
-            norms[i] = fvec_norm_L2sqr(tmp.data(), d);
+            for (int64_t i = 0; i < ntotal_signed; i++) {
+                decode_64bit(i, tmp.data());
+                norms[i] = fvec_norm_L2sqr<SL>(tmp.data(), d);
+            }
         }
-    }
+    });
 }
 
 void AdditiveQuantizer::decode_64bit(idx_t bits, float* xi) const {
-    for (int m = 0; m < M; m++) {
+    for (size_t m = 0; m < M; m++) {
         idx_t idx = bits & (((size_t)1 << nbits[m]) - 1);
         bits >>= nbits[m];
         const float* c = codebooks.data() + d * (codebook_offsets[m] + idx);
@@ -404,13 +434,13 @@ void AdditiveQuantizer::compute_LUT(
 namespace {
 
 /* compute inner products of one query with all centroids, given a look-up
- * table of all inner producst with codebook entries */
+ * table of all inner products with codebook entries */
 void compute_inner_prod_with_LUT(
         const AdditiveQuantizer& aq,
         const float* LUT,
         float* ips) {
     size_t prev_size = 1;
-    for (int m = 0; m < aq.M; m++) {
+    for (size_t m = 0; m < aq.M; m++) {
         const float* LUTm = LUT + aq.codebook_offsets[m];
         int nb = aq.nbits[m];
         size_t nc = (size_t)1 << nb;
@@ -483,7 +513,7 @@ void AdditiveQuantizer::knn_centroids_L2(
             // ||x - y||^2 = ||x||^2 + ||y||^2 - 2 * <x,y>
 
             maxheap_heapify(k, distances_i, labels_i);
-            for (idx_t j = 0; j < ntotal; j++) {
+            for (size_t j = 0; j < ntotal; j++) {
                 float disj = q_norms[i] + norms[j] - 2 * dis[j];
                 if (disj < distances_i[0]) {
                     heap_replace_top<CMax<float, int64_t>>(
@@ -506,7 +536,7 @@ float accumulate_IPs(
         BitstringReader& bs,
         const float* LUT) {
     float accu = 0;
-    for (int m = 0; m < aq.M; m++) {
+    for (size_t m = 0; m < aq.M; m++) {
         size_t nbit = aq.nbits[m];
         int idx = bs.read(nbit);
         accu += LUT[idx];
@@ -519,7 +549,7 @@ float compute_norm_from_LUT(const AdditiveQuantizer& aq, BitstringReader& bs) {
     float accu = 0;
     std::vector<int> idx(aq.M);
     const float* c = aq.codebook_cross_products.data();
-    for (int m = 0; m < aq.M; m++) {
+    for (size_t m = 0; m < aq.M; m++) {
         size_t nbit = aq.nbits[m];
         int i = bs.read(nbit);
         size_t K = 1 << nbit;
@@ -527,7 +557,7 @@ float compute_norm_from_LUT(const AdditiveQuantizer& aq, BitstringReader& bs) {
 
         accu += aq.centroid_norms[aq.codebook_offsets[m] + i];
 
-        for (int l = 0; l < m; l++) {
+        for (size_t l = 0; l < m; l++) {
             int j = idx[l];
             accu += 2 * c[j * K + i];
             c += (1 << aq.nbits[l]) * K;

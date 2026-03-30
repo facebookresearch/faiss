@@ -137,8 +137,9 @@ __launch_bounds__(TILE_SIZE* TILE_SIZE) __global__ void generalDistance(
             __syncthreads();
 
             // thread (y, x) does (query y, vec x)
-            acc.combine(reduce<T, 8, kDimMultiple, DistanceOp>(
-                    op, queryTile, vecTile));
+            acc.combine(
+                    reduce<T, 8, kDimMultiple, DistanceOp>(
+                            op, queryTile, vecTile));
 
             __syncthreads();
         }
@@ -283,7 +284,7 @@ void runGeneralDistance(
     FAISS_ASSERT(outDistances.getSize(1) == k);
     FAISS_ASSERT(outIndices.getSize(1) == k);
 
-    // If we're quering against a 0 sized set, just return empty results
+    // If we're querying against a 0 sized set, just return empty results
     if (centroids.numElements() == 0) {
         thrust::fill(
                 thrust::cuda::par.on(stream),

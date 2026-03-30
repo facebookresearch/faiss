@@ -32,7 +32,7 @@ struct IndexIVFSpectralHash : IndexIVF {
     /// transformation from d to nbit dim
     VectorTransform* vt = nullptr;
     /// own the vt
-    bool own_fields = true;
+    bool own_fields = false;
 
     /// nb of bits of the binary signature
     int nbit = 0;
@@ -79,7 +79,7 @@ struct IndexIVFSpectralHash : IndexIVF {
      */
     void replace_vt(VectorTransform* vt, bool own = false);
 
-    /** convenience function to get the VT from an index constucted by an
+    /** convenience function to get the VT from an index constructed by an
      * index_factory (should end in "LSH") */
     void replace_vt(IndexPreTransform* index, bool own = false);
 

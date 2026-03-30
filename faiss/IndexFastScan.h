@@ -7,13 +7,17 @@
 
 #pragma once
 
+#include <memory>
+
 #include <faiss/Index.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
 struct CodePacker;
-struct NormTableScaler;
+struct IDSelector;
 
 /** Fast scan version of IndexPQ and IndexAQ. Works for 4-bit PQ and AQ for now.
  *
@@ -54,6 +58,14 @@ struct IndexFastScan : Index {
     // (set when initialized by IndexPQ or IndexAQ)
     const uint8_t* orig_codes = nullptr;
 
+    /** Initialize the fast scan index
+     *
+     * @param d         dimensionality of vectors
+     * @param M         number of subquantizers
+     * @param nbits     number of bits per subquantizer
+     * @param metric    distance metric to use
+     * @param bbs       block size for SIMD processing
+     */
     void init_fastscan(
             int d,
             size_t M,
@@ -65,6 +77,15 @@ struct IndexFastScan : Index {
 
     void reset() override;
 
+    /** Search for k nearest neighbors
+     *
+     * @param n          number of query vectors
+     * @param x          query vectors (n * d)
+     * @param k          number of nearest neighbors to find
+     * @param distances  output distances (n * k)
+     * @param labels     output labels/indices (n * k)
+     * @param params     optional search parameters
+     */
     void search(
             idx_t n,
             const float* x,
@@ -73,20 +94,59 @@ struct IndexFastScan : Index {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /** Add vectors to the index
+     *
+     * @param n  number of vectors to add
+     * @param x  vectors to add (n * d)
+     */
     void add(idx_t n, const float* x) override;
 
+    /** Compute codes for vectors
+     *
+     * @param codes  output codes
+     * @param n      number of vectors to encode
+     * @param x      vectors to encode (n * d)
+     */
     virtual void compute_codes(uint8_t* codes, idx_t n, const float* x)
             const = 0;
 
-    virtual void compute_float_LUT(float* lut, idx_t n, const float* x)
-            const = 0;
+    /** Compute floating-point lookup table for distance computation
+     *
+     * @param lut          output lookup table
+     * @param n            number of query vectors
+     * @param x            query vectors (n * d)
+     * @param context      processing context containing all processors
+     */
+    virtual void compute_float_LUT(
+            float* lut,
+            idx_t n,
+            const float* x,
+            const FastScanDistancePostProcessing& context) const = 0;
+
+    /** Create a SIMD-dispatched scanner for knn search.
+     *
+     * Returns a FastScanCodeScanner that bundles handler + accumulation
+     * kernel behind the SIMD dispatch boundary.
+     * The scanner's accumulate methods dispatch to the optimal SIMD level.
+     */
+    virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
+            bool is_max,
+            idx_t n,
+            idx_t k,
+            size_t ntotal,
+            float* distances,
+            idx_t* labels,
+            const IDSelector* sel,
+            int impl = 0,
+            const FastScanDistancePostProcessing& context = {}) const;
 
     // called by search function
     void compute_quantized_LUT(
             idx_t n,
             const float* x,
             uint8_t* lut,
-            float* normalizers) const;
+            float* normalizers,
+            const FastScanDistancePostProcessing& context) const;
 
     template <bool is_max>
     void search_dispatch_implem(
@@ -95,7 +155,7 @@ struct IndexFastScan : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const NormTableScaler* scaler) const;
+            const FastScanDistancePostProcessing& context) const;
 
     template <class Cfloat>
     void search_implem_234(
@@ -104,7 +164,7 @@ struct IndexFastScan : Index {
             idx_t k,
             float* distances,
             idx_t* labels,
-            const NormTableScaler* scaler) const;
+            const FastScanDistancePostProcessing& context) const;
 
     template <class C>
     void search_implem_12(
@@ -114,7 +174,7 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const NormTableScaler* scaler) const;
+            const FastScanDistancePostProcessing& context) const;
 
     template <class C>
     void search_implem_14(
@@ -124,14 +184,48 @@ struct IndexFastScan : Index {
             float* distances,
             idx_t* labels,
             int impl,
-            const NormTableScaler* scaler) const;
+            const FastScanDistancePostProcessing& context) const;
 
+    /** Reconstruct a vector from its code
+     *
+     * @param key     index of vector to reconstruct
+     * @param recons  output reconstructed vector
+     */
     void reconstruct(idx_t key, float* recons) const override;
+
+    /** Remove vectors by ID selector
+     *
+     * @param sel  selector defining which vectors to remove
+     * @return     number of vectors removed
+     */
     size_t remove_ids(const IDSelector& sel) override;
 
-    CodePacker* get_CodePacker() const;
+    /** Get the code packer for this index
+     *
+     * @return  pointer to the code packer
+     */
+    virtual CodePacker* get_CodePacker() const;
 
+    /** Get stride in bytes between consecutive SIMD blocks.
+     *
+     * Derived from get_CodePacker()->block_size so that there is a
+     * single source of truth for the block layout.
+     *
+     * @return stride in bytes
+     */
+    size_t get_block_stride() const;
+
+    /** Merge another index into this one
+     *
+     * @param otherIndex  index to merge from
+     * @param add_id      ID offset to add to merged vectors
+     */
     void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
+    /** Check if another index is compatible for merging
+     *
+     * @param otherIndex  index to check compatibility with
+     */
     void check_compatible_for_merge(const Index& otherIndex) const override;
 
     /// standalone codes interface (but the codes are flattened)

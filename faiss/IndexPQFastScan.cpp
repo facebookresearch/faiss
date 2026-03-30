@@ -9,7 +9,8 @@
 
 #include <memory>
 
-#include <faiss/impl/pq4_fast_scan.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -19,25 +20,27 @@ inline size_t roundup(size_t a, size_t b) {
 }
 
 IndexPQFastScan::IndexPQFastScan(
-        int d,
-        size_t M,
-        size_t nbits,
+        int d_in,
+        size_t M_in,
+        size_t nbits_in,
         MetricType metric,
-        int bbs)
-        : pq(d, M, nbits) {
-    init_fastscan(d, M, nbits, metric, bbs);
+        int bbs_in)
+        : pq(d_in, M_in, nbits_in) {
+    init_fastscan(d_in, M_in, nbits_in, metric, bbs_in);
 }
 
-IndexPQFastScan::IndexPQFastScan(const IndexPQ& orig, int bbs) : pq(orig.pq) {
-    init_fastscan(orig.d, pq.M, pq.nbits, orig.metric_type, bbs);
+IndexPQFastScan::IndexPQFastScan(const IndexPQ& orig, int bbs_in)
+        : pq(orig.pq) {
+    init_fastscan(orig.d, pq.M, pq.nbits, orig.metric_type, bbs_in);
     ntotal = orig.ntotal;
-    ntotal2 = roundup(ntotal, bbs);
+    ntotal2 = roundup(ntotal, bbs_in);
     is_trained = orig.is_trained;
     orig_codes = orig.codes.data();
 
     // pack the codes
     codes.resize(ntotal2 * M2 / 2);
-    pq4_pack_codes(orig.codes.data(), ntotal, M, ntotal2, bbs, M2, codes.get());
+    pq4_pack_codes(
+            orig.codes.data(), ntotal, M, ntotal2, bbs_in, M2, codes.get());
 }
 
 void IndexPQFastScan::train(idx_t n, const float* x) {
@@ -48,13 +51,16 @@ void IndexPQFastScan::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
-void IndexPQFastScan::compute_codes(uint8_t* codes, idx_t n, const float* x)
+void IndexPQFastScan::compute_codes(uint8_t* out_codes, idx_t n, const float* x)
         const {
-    pq.compute_codes(x, codes, n);
+    pq.compute_codes(x, out_codes, n);
 }
 
-void IndexPQFastScan::compute_float_LUT(float* lut, idx_t n, const float* x)
-        const {
+void IndexPQFastScan::compute_float_LUT(
+        float* lut,
+        idx_t n,
+        const float* x,
+        const FastScanDistancePostProcessing&) const {
     if (metric_type == METRIC_L2) {
         pq.compute_distance_tables(n, x, lut);
     } else {

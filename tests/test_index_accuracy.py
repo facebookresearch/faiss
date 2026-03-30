@@ -374,8 +374,8 @@ class TestSQByte(unittest.TestCase):
         index.add(xb)
         D, I = index.search(xq, 10)
 
-        assert np.all(I == Iref)
-        assert np.all(D == Dref)
+        np.testing.assert_array_equal(D, Dref)
+        np.testing.assert_array_equal(I, Iref)
 
     def test_8bit_direct(self):
         for quantizer in faiss.ScalarQuantizer.QT_8bit_direct, faiss.ScalarQuantizer.QT_8bit_direct_signed:
@@ -646,7 +646,7 @@ class OPQRelativeAccuracy(unittest.TestCase):
         index_ivfpq = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
         index_ivfpq.nprobe = 20
         opq_matrix = faiss.OPQMatrix(d, M)
-        opq_matrix.niter = 10
+        opq_matrix.niter = 12
         index = faiss.IndexPreTransform(opq_matrix, index_ivfpq)
 
         res = ev.launch("O+IVFPQ", index)

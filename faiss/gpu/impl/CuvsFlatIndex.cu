@@ -31,7 +31,6 @@
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
-#include <raft/distance/distance_types.hpp>
 #include <raft/linalg/unary_op.cuh>
 
 namespace faiss {
@@ -92,7 +91,7 @@ void CuvsFlatIndex::query(
                 outDistances.getSize(0),
                 outDistances.getSize(1));
 
-        cuvsDistanceType distance = metricFaissToCuvs(metric, exactDistance);
+        auto distance = metricFaissToCuvs(metric, exactDistance);
 
         std::optional<raft::device_vector_view<const float, int64_t>>
                 norms_view = raft::make_device_vector_view(

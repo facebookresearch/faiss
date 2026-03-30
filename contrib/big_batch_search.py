@@ -270,7 +270,7 @@ def big_batch_search(
     compute_threads>1: the knn function will get an additional thread_no that
         tells which worker should handle this.
 
-    In threaded mode, the computation is tiled with the bucket perparation and
+    In threaded mode, the computation is tiled with the bucket preparation and
     the writeback of results (useful to maximize GPU utilization).
 
     use_float16: convert all matrices to float16 (faster for GPU gemm)
@@ -279,7 +279,7 @@ def big_batch_search(
 
     checkpointing (only for threaded > 1):
     checkpoint: file where the checkpoints are stored
-    checkpoint_freq: when to perform checkpoinging. Should be a multiple of threaded
+    checkpoint_freq: when to perform checkpointing. Should be a multiple of threaded
 
     start_list, end_list: process only a subset of invlists
     """

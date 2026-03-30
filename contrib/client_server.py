@@ -35,7 +35,7 @@ class SearchServer(rpc.Server):
 
 
 def run_index_server(index: faiss.Index, port: int, v6: bool = False):
-    """ serve requests for that index forerver """
+    """ serve requests for that index forever """
     rpc.run_server(
         lambda s: SearchServer(s, index),
         port, v6=v6)

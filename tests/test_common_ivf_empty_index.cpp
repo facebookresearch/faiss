@@ -36,12 +36,12 @@ std::vector<float> get_random_vectors(size_t n, int seed) {
     return x;
 }
 
-/** InvetedLists implementation that dispatches the search to an InvertedList
+/** InvertedLists implementation that dispatches the search to an InvertedList
  * object that is passed in at query time */
 
 struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
-    DispatchingInvertedLists(size_t nlist, size_t code_size)
-            : faiss::ReadOnlyInvertedLists(nlist, code_size) {
+    DispatchingInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::ReadOnlyInvertedLists(nlist_in, code_size_in) {
         use_iterator = true;
     }
 
@@ -56,13 +56,13 @@ struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
 
     using idx_t = faiss::idx_t;
 
-    size_t list_size(size_t list_no) const override {
+    size_t list_size(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
-    const uint8_t* get_codes(size_t list_no) const override {
+    const uint8_t* get_codes(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
-    const idx_t* get_ids(size_t list_no) const override {
+    const idx_t* get_ids(size_t /*list_no*/) const override {
         FAISS_THROW_MSG("use iterator interface");
     }
 };
@@ -76,8 +76,9 @@ TEST(COMMON, test_common_trained_index) {
 
     // construct and build an "empty index": a trained index that does not
     // itself hold any data
-    std::unique_ptr<faiss::IndexIVF> empty_index(dynamic_cast<faiss::IndexIVF*>(
-            faiss::index_factory(d, "IVF32,PQ8np")));
+    std::unique_ptr<faiss::IndexIVF> empty_index(
+            dynamic_cast<faiss::IndexIVF*>(
+                    faiss::index_factory(d, "IVF32,PQ8np")));
     auto xt = get_random_vectors(nt, 123);
     empty_index->train(nt, xt.data());
     empty_index->nprobe = 4;
@@ -141,7 +142,7 @@ TEST(COMMON, test_common_trained_index) {
         new_I[i] = I;
     }
 
-    // compare with reference reslt
+    // compare with reference result
     for (int i = 0; i < N; i++) {
         ASSERT_EQ(ref_I[i], new_I[i]);
     }

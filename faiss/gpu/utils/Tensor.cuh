@@ -28,8 +28,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 class Tensor;
 
 /// Type of a subspace of a tensor
@@ -37,8 +36,7 @@ namespace detail {
 template <
         typename TensorType,
         int SubDim,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 class SubTensor;
 }
 
@@ -412,12 +410,12 @@ class SubTensor<TensorType, 0, PtrTraits> {
     }
 
     // operator T&
-    __host__ __device__ operator typename TensorType::DataType &() {
+    __host__ __device__ operator typename TensorType::DataType&() {
         return *data_;
     }
 
     // const operator T& returning const T&
-    __host__ __device__ operator const typename TensorType::DataType &() const {
+    __host__ __device__ operator const typename TensorType::DataType&() const {
         return *data_;
     }
 
@@ -514,8 +512,7 @@ class SubTensor<TensorType, 0, PtrTraits> {
 template <
         typename TensorType,
         int SubDim,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 class SubTensor {
    public:
     /// Returns a view of the data located at our offset (the dimension
@@ -664,8 +661,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ inline detail::SubTensor<
         Tensor<T, Dim, InnerContig, IndexT, PtrTraits>,
         Dim - 1,
@@ -680,8 +676,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ __device__ inline const detail::SubTensor<
         Tensor<T, Dim, InnerContig, IndexT, PtrTraits>,
         Dim - 1,

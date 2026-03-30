@@ -47,13 +47,13 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 project(faiss
-  VERSION 1.12.0
+  VERSION 1.14.1
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -68,6 +68,9 @@ option(FAISS_ENABLE_PYTHON "Build Python extension." ON)
 option(FAISS_ENABLE_C_API "Build C API." OFF)
 option(FAISS_ENABLE_EXTRAS "Build extras like benchmarks and demos" ON)
 option(FAISS_USE_LTO "Enable Link-Time optimization" OFF)
+option(FAISS_ENABLE_SVS "Enable SVS (Intel(R) Scalable Vector Search) integration." OFF)
+set(FAISS_SVS_RUNTIME_VERSION "v0" CACHE STRING "Version of the SVS runtime API to use")
+set_property(CACHE FAISS_SVS_RUNTIME_VERSION PROPERTY STRINGS "v0")
 
 if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)

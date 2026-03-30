@@ -41,7 +41,7 @@ int main() {
     // a reasonable number of centroids to index nb vectors
     int ncentroids = int(4 * sqrt(nb));
 
-    // the coarse quantizer should not be dealloced before the index
+    // the coarse quantizer should not be deallocated before the index
     // 4 = nb of bytes per code (d must be a multiple of this)
     // 8 = nb of bits per sub-code (almost always 8)
     faiss::IndexIVFPQ index(&coarse_quantizer, d, ncentroids, 4, 8);

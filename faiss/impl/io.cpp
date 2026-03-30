@@ -74,7 +74,7 @@ FileIOReader::FileIOReader(const char* fname) {
 FileIOReader::~FileIOReader() {
     if (need_close) {
         int ret = fclose(f);
-        if (ret != 0) { // we cannot raise and exception in the destructor
+        if (ret != 0) { // we cannot raise an exception in the destructor
             fprintf(stderr,
                     "file %s close error: %s",
                     name.c_str(),
@@ -109,7 +109,7 @@ FileIOWriter::~FileIOWriter() {
     if (need_close) {
         int ret = fclose(f);
         if (ret != 0) {
-            // we cannot raise and exception in the destructor
+            // we cannot raise an exception in the destructor
             fprintf(stderr,
                     "file %s close error: %s",
                     name.c_str(),
@@ -134,14 +134,14 @@ int FileIOWriter::filedescriptor() {
  * IO buffer
  ***********************************************************************/
 
-BufferedIOReader::BufferedIOReader(IOReader* reader, size_t bsz)
-        : reader(reader),
-          bsz(bsz),
+BufferedIOReader::BufferedIOReader(IOReader* reader_in, size_t bsz_in)
+        : reader(reader_in),
+          bsz(bsz_in),
           ofs(0),
           ofs2(0),
           b0(0),
           b1(0),
-          buffer(bsz) {}
+          buffer(bsz_in) {}
 
 size_t BufferedIOReader::operator()(void* ptr, size_t unitsize, size_t nitems) {
     size_t size = unitsize * nitems;
@@ -184,8 +184,8 @@ size_t BufferedIOReader::operator()(void* ptr, size_t unitsize, size_t nitems) {
     return nb / unitsize;
 }
 
-BufferedIOWriter::BufferedIOWriter(IOWriter* writer, size_t bsz)
-        : writer(writer), bsz(bsz), ofs2(0), b0(0), buffer(bsz) {}
+BufferedIOWriter::BufferedIOWriter(IOWriter* writer_in, size_t bsz_in)
+        : writer(writer_in), bsz(bsz_in), ofs2(0), b0(0), buffer(bsz_in) {}
 
 size_t BufferedIOWriter::operator()(
         const void* ptr,

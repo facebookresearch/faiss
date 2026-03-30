@@ -10,7 +10,7 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 find_package(SWIG REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
@@ -31,6 +31,16 @@ macro(configure_swigfaiss source)
   if(WIN32)
     set_source_files_properties(${source} PROPERTIES
       SWIG_FLAGS -DSWIGWIN
+    )
+  endif()
+  if(FAISS_ENABLE_SVS)
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_ENABLE_SVS -DFAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION}
+    )
+  endif()
+  if(FAISS_OPT_LEVEL STREQUAL "dd")
+    set_property(SOURCE ${source} APPEND PROPERTY
+      SWIG_FLAGS -DFAISS_ENABLE_DD
     )
   endif()
   if(FAISS_ENABLE_GPU)
@@ -104,6 +114,13 @@ swig_add_library(swigfaiss
   LANGUAGE python
   SOURCES swigfaiss.swig
 )
+
+if(TARGET swigfaiss AND NOT CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  set_target_properties(swigfaiss PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+  )
+endif()
 
 set_property(TARGET swigfaiss PROPERTY SWIG_COMPILE_OPTIONS -doxygen)
 
@@ -185,6 +202,21 @@ else()
   target_compile_options(faiss_example_external_module PRIVATE /bigobj)
 endif()
 
+if(FAISS_ENABLE_SVS)
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx2 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(swigfaiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+  target_compile_definitions(faiss_example_external_module PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+# Enable DD support in Python bindings when building with Dynamic Dispatch
+if(FAISS_OPT_LEVEL STREQUAL "dd")
+  # Add compile definition for the generated C++ wrapper
+  target_compile_definitions(swigfaiss PRIVATE FAISS_ENABLE_DD)
+endif()
+
 if(FAISS_ENABLE_GPU)
   if(FAISS_ENABLE_ROCM)
     target_link_libraries(swigfaiss PRIVATE hip::host)
@@ -194,7 +226,7 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(faiss_example_external_module PRIVATE hip::host)
   else()
     find_package(CUDAToolkit REQUIRED)
-    if(FAISS_ENABLE_CUVS)
+    if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
       find_package(cuvs)
     endif()
     target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)

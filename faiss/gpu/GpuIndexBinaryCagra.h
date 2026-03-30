@@ -111,7 +111,7 @@ struct GpuIndexBinaryCagra : public IndexBinary {
             const SearchParameters* search_params) const;
 
    protected:
-    /// Manages streans, cuBLAS handles and scratch memory for devices
+    /// Manages streams, cuBLAS handles and scratch memory for devices
     std::shared_ptr<GpuResources> resources_;
 
     /// Configuration options

@@ -18,7 +18,7 @@ std::string print_data(
         std::shared_ptr<std::vector<T>> data,
         const size_t divider) {
     std::string ret;
-    for (int i = 0; i < data->size(); ++i) {
+    for (size_t i = 0; i < data->size(); ++i) {
         if (i % divider) {
             ret += " ";
         } else {
@@ -37,7 +37,7 @@ std::stringstream get_correct_hamming_example(
         const size_t code_size,
         std::shared_ptr<std::vector<uint8_t>> a,
         std::shared_ptr<std::vector<uint8_t>> b,
-        std::shared_ptr<std::vector<long>> true_ids,
+        std::shared_ptr<std::vector<faiss::idx_t>> true_ids,
         // regular Hamming (bit-level distances)
         std::shared_ptr<std::vector<int>> true_bit_distances,
         // generalized Hamming (byte-level distances)
@@ -62,7 +62,7 @@ std::stringstream get_correct_hamming_example(
     true_byte_distances->reserve(nresults);
 
     // define correct ids (must be unique)
-    std::set<long> correct_ids;
+    std::set<faiss::idx_t> correct_ids;
     do {
         correct_ids.insert(uniform(rng));
     } while (correct_ids.size() < k);
@@ -136,16 +136,16 @@ TEST(TestHamming, test_crosshamming_count_thres) {
         const size_t nwords = nbits / 64;
         // 8 to for later conversion to uint64_t, and 2 for buffer
         std::vector<uint8_t> dbs(nwords * n * 8 * 2);
-        for (int i = 0; i < dbs.size(); ++i) {
+        for (size_t i = 0; i < dbs.size(); ++i) {
             dbs[i] = uniform(rng);
         }
 
         // get true distance
         size_t true_count = 0;
         uint64_t* bs1 = (uint64_t*)dbs.data();
-        for (int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             uint64_t* bs2 = bs1 + 2;
-            for (int j = i + 1; j < n; ++j) {
+            for (size_t j = i + 1; j < n; ++j) {
                 if (faiss::hamming(bs1 + i * nwords, bs2 + j * nwords, nwords) <
                     hamming_threshold) {
                     ++true_count;
@@ -185,10 +185,10 @@ TEST(TestHamming, test_hamming_thres) {
         const size_t nwords = nbits / 64;
         std::vector<uint8_t> bs1(nwords * n1 * 8);
         std::vector<uint8_t> bs2(nwords * n2 * 8);
-        for (int i = 0; i < bs1.size(); ++i) {
+        for (size_t i = 0; i < bs1.size(); ++i) {
             bs1[i] = uniform(rng);
         }
-        for (int i = 0; i < bs2.size(); ++i) {
+        for (size_t i = 0; i < bs2.size(); ++i) {
             bs2[i] = uniform(rng);
         }
 
@@ -199,8 +199,8 @@ TEST(TestHamming, test_hamming_thres) {
 
         uint64_t* bs1_64 = (uint64_t*)bs1.data();
         uint64_t* bs2_64 = (uint64_t*)bs2.data();
-        for (int i = 0; i < n1; ++i) {
-            for (int j = 0; j < n2; ++j) {
+        for (size_t i = 0; i < n1; ++i) {
+            for (size_t j = 0; j < n2; ++j) {
                 hamdis_t ham_dist = faiss::hamming(
                         bs1_64 + i * nwords, bs2_64 + j * nwords, nwords);
                 if (ham_dist < hamming_threshold) {
@@ -278,7 +278,7 @@ TEST(TestHamming, test_hamming_knn) {
 
     auto a = std::make_shared<std::vector<uint8_t>>();
     auto b = std::make_shared<std::vector<uint8_t>>();
-    auto true_ids = std::make_shared<std::vector<long>>();
+    auto true_ids = std::make_shared<std::vector<faiss::idx_t>>();
     auto true_bit_distances = std::make_shared<std::vector<int>>();
     auto true_byte_distances = std::make_shared<std::vector<int>>();
 
@@ -298,7 +298,7 @@ TEST(TestHamming, test_hamming_knn) {
                 true_byte_distances);
 
         // run test on generalized_hammings_knn_hc
-        std::vector<long> ids_gen(na * k);
+        std::vector<faiss::idx_t> ids_gen(na * k);
         std::vector<int> dist_gen(na * k);
         faiss::int_maxheap_array_t res = {
                 na, k, ids_gen.data(), dist_gen.data()};
@@ -308,7 +308,7 @@ TEST(TestHamming, test_hamming_knn) {
         ASSERT_EQ(dist_gen, *true_byte_distances) << assert_str.str();
 
         // run test on hammings_knn
-        std::vector<long> ids_ham_knn(na * k, 0);
+        std::vector<faiss::idx_t> ids_ham_knn(na * k, 0);
         std::vector<int> dist_ham_knn(na * k, 0);
         res = {na, k, ids_ham_knn.data(), dist_ham_knn.data()};
         faiss::hammings_knn(&res, a->data(), b->data(), nb, code_size, true);

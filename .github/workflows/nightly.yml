@@ -20,8 +20,8 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-  linux-x86_64-GPU-CUDA-12-4-nightly:
-    name: Linux x86_64 GPU nightlies (CUDA 12.4.0)
+  linux-x86_64-GPU-CUDA-12-6-nightly:
+    name: Linux x86_64 GPU nightlies (CUDA 12.6)
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
@@ -36,25 +36,26 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
         with:
           label: nightly
-          cuda: "12.4.0"
-  linux-x86_64-GPU-CUVS-CUDA12-4-0-nightly:
-    name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 12.4.0)
-    runs-on: 4-core-ubuntu-gpu-t4
-    env:
-      CUDA_ARCHS: "70-real;72-real;75-real;80;86-real"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-      - uses: ./.github/actions/build_conda
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
-        with:
-          label: nightly
-          cuvs: "ON"
-          cuda: "12.4.0"
+          cuda: "12.6"
+  # TODO: re-enable when we have a newer machine in CI that can run CUDA 13.2
+  # linux-x86_64-GPU-CUVS-CUDA13-2-0-nightly:
+  #   name: Linux x86_64 GPU w/ cuVS nightlies (CUDA 13.2)
+  #   runs-on: 4-core-ubuntu-gpu-t4
+  #   env:
+  #     CUDA_ARCHS: "75-real;80;86-real;90;100"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #         fetch-tags: true
+  #     - uses: ./.github/actions/build_conda
+  #       env:
+  #         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+  #       with:
+  #         label: nightly
+  #         cuvs: "ON"
+  #         cuda: "13.2"
   windows-x86_64-nightly:
     name: Windows x86_64 nightlies
     runs-on: windows-2022

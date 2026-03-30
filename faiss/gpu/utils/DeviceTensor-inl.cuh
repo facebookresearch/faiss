@@ -15,8 +15,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor()
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>() {}
 
@@ -25,8 +24,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>&& t)
         : Tensor<T, Dim, InnerContig, IndexT, PtrTraits>() {
@@ -38,8 +36,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>& DeviceTensor<
         T,
         Dim,
@@ -59,8 +56,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::~DeviceTensor() {
 }
 
@@ -69,8 +65,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
@@ -88,8 +83,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
@@ -107,8 +101,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         const IndexT sizes[Dim])
@@ -119,8 +112,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         std::initializer_list<IndexT> sizes)
@@ -131,8 +123,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         DataPtrType data,
         const IndexT sizes[Dim],
@@ -145,8 +136,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>::DeviceTensor(
         GpuResources* res,
         const AllocInfo& info,
@@ -169,8 +159,7 @@ template <
         int Dim,
         bool InnerContig,
         typename IndexT,
-        template <typename U>
-        class PtrTraits>
+        template <typename U> class PtrTraits>
 __host__ DeviceTensor<T, Dim, InnerContig, IndexT, PtrTraits>& DeviceTensor<
         T,
         Dim,

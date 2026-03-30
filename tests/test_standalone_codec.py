@@ -9,6 +9,7 @@ from __future__ import print_function
 import numpy as np
 import unittest
 import faiss
+import platform
 
 from common_faiss_tests import get_dataset_2
 from faiss.contrib.datasets import SyntheticDataset
@@ -120,6 +121,12 @@ class TestIndexEquiv(unittest.TestCase):
         self.assertTrue(np.all(code_new == code_ref))
         self.assertTrue(np.all(x_recons_new == x_recons_ref))
 
+        # Verify deserialized index is serializable again
+        codec_new_3 = faiss.deserialize_index(
+            faiss.serialize_index(codec_new_2))
+        code_new_3 = codec_new_3.sa_encode(x)
+        self.assertTrue(np.all(code_new_3 == code_ref))
+
     def test_IVFPQ(self):
         self.do_test("IVF512,PQ6np", "Residual512,PQ6")
 
@@ -164,6 +171,13 @@ class TestAccuracy(unittest.TestCase):
             codes = codec2.sa_encode(x)
             x3 = codec2.sa_decode(codes)
             self.assertTrue(np.all(x2 == x3))
+
+            # Verify deserialized index is serializable again
+            codec3 = faiss.deserialize_index(
+                faiss.serialize_index(codec2))
+            codes3 = codec3.sa_encode(x)
+            x4 = codec3.sa_decode(codes3)
+            self.assertTrue(np.all(x2 == x4))
 
     def test_SQ(self):
         self.compare_accuracy('SQ4', 'SQ8')
@@ -428,6 +442,8 @@ class TestRefine(unittest.TestCase):
 
         np.testing.assert_array_equal(codes1, codes2)
 
+    @unittest.skipIf(platform.system() == 'Windows',
+                     'Does not work on Windows after numpy 2 upgrade.')
     def test_equiv_sh(self):
         """ make sure that the IVFSpectralHash sa_encode function gives the same
         result as the concatenated RQ + LSH index sa_encode """

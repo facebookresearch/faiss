@@ -19,7 +19,6 @@ namespace faiss {
 struct ProductQuantizer;
 struct ScalarQuantizer;
 
-void read_index_header(Index* idx, IOReader* f);
 void read_direct_map(DirectMap* dm, IOReader* f);
 void read_ivf_header(
         IndexIVF* ivf,

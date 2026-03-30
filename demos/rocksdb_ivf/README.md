@@ -19,5 +19,5 @@ make -C build -j$(nproc)
 
 ```
 cd ~/faiss/demos/rocksdb_ivf/build
-./rocksdb_ivf test_db
+./demo_rocksdb_ivf test_db
 ```

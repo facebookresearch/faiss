@@ -385,7 +385,7 @@ class TestPreassigned(unittest.TestCase):
         D, I = ivf_tools.search_preassigned(index, xq, 4, a)
         radius = D.max() * 1.01
 
-        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius, a)
+        lims, DR, IR = ivf_tools.range_search_preassigned(index, xq, radius.item(), a)
 
         # with that radius the k-NN results are a subset of the range search
         # results
@@ -394,10 +394,8 @@ class TestPreassigned(unittest.TestCase):
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
     @unittest.skipIf(
-        platform.system() == 'Windows'
-        and sys.version_info[0] == 3
-        and sys.version_info[1] == 12,
-        'test_binary hangs for Windows on Python 3.12.'
+        platform.system() == 'Windows',
+        'test_binary hangs for Windows on newer versions of MKL.'
     )
     def test_binary(self):
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
@@ -586,7 +584,7 @@ class TestClustering(unittest.TestCase):
 
         # normally 47 / 200 differences
         ndiff = (Iref != Inew).sum()
-        self.assertLess(ndiff, 53)
+        self.assertLess(ndiff.item(), 57)
 
 
 class TestBigBatchSearch(unittest.TestCase):

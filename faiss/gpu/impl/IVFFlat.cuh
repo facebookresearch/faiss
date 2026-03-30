@@ -29,7 +29,7 @@ class IVFFlat : public IVFBase {
 
     ~IVFFlat() override;
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,

@@ -332,21 +332,57 @@ def handle_Index(the_class):
         self.assign_c(n, swig_ptr(x), swig_ptr(labels), k)
         return labels
 
-    def replacement_train(self, x, numeric_type = faiss.Float32):
+    def replacement_train(
+        self, x, *, numeric_type=faiss.Float32, xq_train=None
+    ):
         """Trains the index on a representative set of vectors.
         The index must be trained before vectors can be added to it.
+        Optionally accepts numeric_type to specify the type of
+        input vectors.
+        Optionally accepts a set of training query vectors for
+        out-of-distribution training.
 
         Parameters
         ----------
         x : array_like
-            Query vectors, shape (n, d) where d is appropriate for the index.
+            Query vectors, shape (n, d) where d is appropriate
+            for the index. `dtype` must be float32.
+        numeric_type : type
+            Numeric type of the input vectors.
+        xq_train : array_like, optional
+            Training query vectors, shape (n_train_q, d) where
+            d is appropriate for the index.
             `dtype` must be float32.
         """
+        # Prepare training data
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype=_numeric_to_str(numeric_type))
+
+        # Prepare training queries if provided
+        n_train_q, train_q = 0, None
+        if xq_train is not None:
+            if numeric_type != faiss.Float32:
+                raise TypeError(
+                    "xq_train is only supported for numeric_type faiss.Float32"
+                )
+            n_train_q, d_train = xq_train.shape
+            assert d_train == self.d
+            train_q = swig_ptr(
+                np.ascontiguousarray(
+                    xq_train,
+                    dtype=_numeric_to_str(numeric_type),
+                )
+            )
+
+        # Dispatch to train_c / train_with_queries / train_ex
         if numeric_type == faiss.Float32:
-            self.train_c(n, swig_ptr(x))
+            if train_q is not None:
+                self.train_with_queries(
+                    n, swig_ptr(x), n_train_q, train_q
+                )
+            else:
+                self.train_c(n, swig_ptr(x))
         else:
             self.train_ex(n, swig_ptr(x), numeric_type)
 
@@ -1093,7 +1129,7 @@ def handle_VectorTransform(the_class):
         self.train_c(n, swig_ptr(x))
 
     replace_method(the_class, 'train', replacement_vt_train)
-    # apply is reserved in Pyton...
+    # apply is reserved in Python...
     the_class.apply_py = apply_method
     the_class.apply = apply_method
     replace_method(the_class, 'reverse_transform',
@@ -1164,7 +1200,7 @@ def handle_IndexRowwiseMinMax(the_class):
         The index must be trained before vectors can be added to it.
 
         This call WILL change the values in the input array, because
-        of two scaling proceduces being performed inplace.
+        of two scaling procedures being performed inplace.
 
         Parameters
         ----------
@@ -1262,7 +1298,7 @@ def handle_SearchParameters(the_class):
     """ this wrapper is to enable initializations of the form
     SearchParametersXX(a=3, b=SearchParamsYY)
     This also requires the enclosing class to keep a reference on the
-    sub-object, since the C++ code assumes the object ownwership is
+    sub-object, since the C++ code assumes the object ownership is
     handled externally.
     """
     the_class.original_init = the_class.__init__
@@ -1314,7 +1350,7 @@ def handle_CodeSet(the_class):
     replace_method(the_class, 'insert', replacement_insert)
 
 ######################################################
-# Syntatic sugar for NeuralNet classes
+# Syntactic sugar for NeuralNet classes
 ######################################################
 
 
@@ -1405,7 +1441,7 @@ def handle_Linear(the_class):
     the_class.from_torch = from_torch
 
 ######################################################
-# Syntatic sugar for QINCo and QINCoStep
+# Syntactic sugar for QINCo and QINCoStep
 ######################################################
 
 

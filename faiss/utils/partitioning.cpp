@@ -8,12 +8,13 @@
 #include <faiss/utils/partitioning.h>
 
 #include <cassert>
+#include <cinttypes>
 #include <cmath>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/ordered_key_value.h>
-#include <faiss/utils/simdlib.h>
 
 #include <faiss/impl/platform_macros.h>
 
@@ -50,8 +51,8 @@ typename C::T sample_threshold_median3(
     T val3[3];
     int vi = 0;
 
-    for (size_t i = 0; i < n; i++) {
-        T v = vals[(i * big_prime) % n];
+    for (size_t i = 0; i < static_cast<size_t>(n); i++) {
+        T v = vals[(i * big_prime) % static_cast<size_t>(n)];
         // thresh_inf < v < thresh_sup (for CMax)
         if (C::cmp(v, thresh_inf) && C::cmp(thresh_sup, v)) {
             val3[vi++] = v;
@@ -140,7 +141,7 @@ typename C::T partition_fuzzy_median3(
     using T = typename C::T;
 
     // here we use bissection with a median of 3 to find the threshold and
-    // compress the arrays afterwards. So it's a n*log(n) algoirithm rather than
+    // compress the arrays afterwards. So it's a n*log(n) algorithm rather than
     // qselect's O(n) but it avoids shuffling around the array.
 
     FAISS_THROW_IF_NOT(n >= 3);
@@ -291,7 +292,7 @@ void count_lt_and_eq(
         n_lt += 16 - i_ge;
     }
 
-    for (size_t i = n1 * 16; i < n; i++) {
+    for (int i = n1 * 16; i < n; i++) {
         uint16_t v = *vals++;
         if (C::cmp(thresh, v)) {
             n_lt++;
@@ -350,7 +351,7 @@ int simd_compress_array(
         }
     }
 
-    // handle remaining, only striclty lt ones.
+    // handle remaining, only strictly lt ones.
     for (; i0 + 15 < n; i0 += 16) {
         simd16uint16 v(vals + i0);
         simd16uint16 max2 = max_func<C>(v, thr16);
@@ -369,7 +370,7 @@ int simd_compress_array(
     }
 
     // end with scalar
-    for (int i = (n & ~15); i < n; i++) {
+    for (size_t i = (n & ~size_t(15)); i < n; i++) {
         if (C::cmp(thresh, vals[i])) {
             vals[wp] = vals[i];
             ids[wp] = ids[i];
@@ -432,7 +433,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
     // lower bound inclusive, upper exclusive
     size_t s0 = s0i, s1 = s1i + 1;
 
-    IFV printf("bounds: %ld %ld\n", s0, s1 - 1);
+    IFV printf("bounds: %zu %zu\n", s0, s1 - 1);
 
     int thresh;
     size_t n_eq = 0, n_lt = 0;
@@ -444,7 +445,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
         count_lt_and_eq<C>(vals, n, thresh, n_lt, n_eq);
 
         IFV printf(
-                "   [%ld %ld] thresh=%d n_lt=%ld n_eq=%ld, q=%ld:%ld/%ld\n",
+                "   [%zu %zu] thresh=%d n_lt=%zu n_eq=%zu, q=%zu:%zu/%zu\n",
                 s0,
                 s1,
                 thresh,
@@ -481,7 +482,8 @@ uint16_t simd_partition_fuzzy_with_bounds(
     // number of equal values to keep
     int64_t n_eq_1 = q - n_lt;
 
-    IFV printf("shrink: thresh=%d q=%ld n_eq_1=%ld\n", thresh, q, n_eq_1);
+    IFV printf(
+            "shrink: thresh=%d q=%zu n_eq_1=%" PRId64 "\n", thresh, q, n_eq_1);
     if (n_eq_1 < 0) { // happens when > q elements are at lower bound
         assert(s0 + 1 == s1);
         q = q_min;
@@ -491,14 +493,15 @@ uint16_t simd_partition_fuzzy_with_bounds(
             thresh++;
         }
         n_eq_1 = q;
-        IFV printf("  override: thresh=%d n_eq_1=%ld\n", thresh, n_eq_1);
+        IFV printf(
+                "  override: thresh=%d n_eq_1=%" PRId64 "\n", thresh, n_eq_1);
     } else {
         assert(n_eq_1 <= n_eq);
     }
 
     size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
-    IFV printf("wp=%ld\n", wp);
+    IFV printf("wp=%zu\n", wp);
     assert(wp == q);
     if (q_out) {
         *q_out = q;
@@ -506,7 +509,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
     uint64_t t2 = get_cy();
 
-    partition_stats.bissect_cycles += t1 - t0;
+    partition_stats.bisect_cycles += t1 - t0;
     partition_stats.compress_cycles += t2 - t1;
 
     return thresh;
@@ -627,7 +630,7 @@ uint16_t simd_partition_fuzzy_with_bounds_histogram(
             n_lt = sum_below - hist[i];
             n_gt = n - sum_below;
         } else {
-            assert(!"not implemented");
+            assert(false && "not implemented");
         }
 
         IFV printf(
@@ -662,7 +665,7 @@ uint16_t simd_partition_fuzzy_with_bounds_histogram(
         }
     }
 
-    IFV printf("end bissection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_eq);
+    IFV printf("end bisection: thresh=%d q=%ld n_eq=%ld\n", thresh, q, n_eq);
 
     if (!C::is_max) {
         if (n_eq == 0) {
@@ -762,7 +765,7 @@ typename C::T partition_fuzzy(
             vals, ids, n, q_min, q_max, q_out);
 }
 
-// explicit template instanciations
+// explicit template instantiations
 
 template float partition_fuzzy<CMin<float, int64_t>>(
         float* vals,
@@ -1271,14 +1274,14 @@ void simd_histogram_16(
         int* hist) {
     memset(hist, 0, sizeof(*hist) * 16);
     if (shift < 0) {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             hist[data[i]]++;
         }
     } else {
         int vmax0 = std::min((16 << shift) + min, 65536);
         uint16_t vmax = uint16_t(vmax0 - 1 - min);
 
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             uint16_t v = data[i];
             v -= min;
             if (!(v <= vmax))
@@ -1304,11 +1307,11 @@ void simd_histogram_8(
         int* hist) {
     memset(hist, 0, sizeof(*hist) * 8);
     if (shift < 0) {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             hist[data[i]]++;
         }
     } else {
-        for (size_t i = 0; i < n; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(n); i++) {
             if (data[i] < min)
                 continue;
             uint16_t v = data[i] - min;

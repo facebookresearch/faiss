@@ -67,7 +67,8 @@ void MatrixStats::do_comment(const char* fmt, ...) {
     buf += size;
 }
 
-MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
+MatrixStats::MatrixStats(size_t n_in, size_t d_in, const float* x)
+        : n(n_in), d(d_in) {
     std::vector<char> comment_buf(10000);
     buf = comment_buf.data();
     nbuf = comment_buf.size();
@@ -77,7 +78,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
     if (d > 1024) {
         do_comment(
                 "indexing this many dimensions is hard, "
-                "please consider dimensionality reducution (with PCAMatrix)\n");
+                "please consider dimensionality reduction (with PCAMatrix)\n");
     }
 
     hash_value = hash_bytes((const uint8_t*)x, n * d * sizeof(*x));
@@ -125,7 +126,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
         }
     }
 
-    // invalid vecor stats
+    // invalid vector stats
     if (n_valid == n) {
         do_comment("no NaN or Infs in data\n");
     } else {
@@ -229,7 +230,7 @@ MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
         } else {
             do_comment(
                     "%zd dimensions are too large "
-                    "wrt. their variance, may loose precision "
+                    "wrt. their variance, may lose precision "
                     "in IndexFlatL2 (use CenteringTransform)\n",
                     n_dangerous_range);
         }
