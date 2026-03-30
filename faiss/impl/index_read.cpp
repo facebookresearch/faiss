@@ -355,6 +355,23 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_in);
     READ1(vt->d_out);
     READ1(vt->is_trained);
+    FAISS_THROW_IF_NOT_FMT(
+            vt->d_in >= 0,
+            "invalid VectorTransform d_in=%d (must be >= 0)",
+            vt->d_in);
+    FAISS_THROW_IF_NOT_FMT(
+            vt->d_out >= 0,
+            "invalid VectorTransform d_out=%d (must be >= 0)",
+            vt->d_out);
+    {
+        size_t dim_product = mul_no_overflow(
+                vt->d_in, vt->d_out, "VectorTransform d_in * d_out");
+        FAISS_THROW_IF_NOT_MSG(
+                dim_product <=
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "VectorTransform d_in * d_out would exceed "
+                "deserialization vector byte limit");
+    }
     if (h == fourcc("HRot")) {
         FAISS_THROW_IF_NOT_FMT(
                 vt->d_out > 0 && (vt->d_out & (vt->d_out - 1)) == 0,
@@ -377,10 +394,6 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 vt->d_in > 0,
                 "invalid HadamardRotation d_in=%d (must be > 0)",
                 vt->d_in);
-        FAISS_THROW_IF_NOT_FMT(
-                vt->d_out > 0,
-                "invalid HadamardRotation d_out=%d (must be > 0)",
-                vt->d_out);
         size_t p = 1;
         while (p < static_cast<size_t>(vt->d_in)) {
             p <<= 1;
@@ -1595,6 +1608,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         indep->index_ivf = dynamic_cast<IndexIVF*>(ivf_idx.get());
         FAISS_THROW_IF_NOT(indep->index_ivf);
         ivf_idx.release();
+        if (indep->vt) {
+            FAISS_THROW_IF_NOT_FMT(
+                    indep->vt->d_in == indep->d,
+                    "IndexIVFIndependentQuantizer: vt->d_in (%d) != index d (%d)",
+                    indep->vt->d_in,
+                    indep->d);
+            FAISS_THROW_IF_NOT_FMT(
+                    indep->vt->d_out == indep->index_ivf->d,
+                    "IndexIVFIndependentQuantizer: vt->d_out (%d) != index_ivf->d (%d)",
+                    indep->vt->d_out,
+                    indep->index_ivf->d);
+        }
         if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
             READ1(index_ivfpq->use_precomputed_table);
         }
