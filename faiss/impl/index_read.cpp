@@ -617,6 +617,8 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READ1(aq.d);
     READ1(aq.M);
+    FAISS_THROW_IF_NOT_FMT(
+            aq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", aq.M);
     READVECTOR(aq.nbits);
     READ1(aq.is_trained);
     READVECTOR(aq.codebooks);
@@ -652,6 +654,26 @@ static void read_ResidualQuantizer(
     read_AdditiveQuantizer(rq, f);
     READ1(rq.train_type);
     READ1(rq.max_beam_size);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.max_beam_size > 0,
+            "invalid max_beam_size %d, must be > 0",
+            rq.max_beam_size);
+    {
+        // Validate that the key allocation driven by max_beam_size
+        // (beam_size * M * sizeof(int32_t)) fits within the byte limit.
+        size_t beam_alloc = mul_no_overflow(
+                static_cast<size_t>(rq.max_beam_size),
+                rq.M,
+                "max_beam_size * M");
+        beam_alloc = mul_no_overflow(
+                beam_alloc, sizeof(int32_t), "max_beam_size * M * elem");
+        FAISS_THROW_IF_NOT_FMT(
+                beam_alloc < get_deserialization_vector_byte_limit(),
+                "max_beam_size %d * M %zd would exceed "
+                "deserialization vector byte limit",
+                rq.max_beam_size,
+                rq.M);
+    }
     if ((rq.train_type & ResidualQuantizer::Skip_codebook_tables) ||
         (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE)) {
         // don't precompute the tables
@@ -1261,11 +1283,6 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
         read_index_header(*idxr, f);
         read_ResidualQuantizer(idxr->rq, f, io_flags);
-        FAISS_THROW_IF_NOT_MSG(
-                static_cast<size_t>(idxr->ntotal) <
-                        get_deserialization_vector_byte_limit() / sizeof(float),
-                "ResidualCoarseQuantizer centroid_norms allocation would exceed "
-                "deserialization byte limit");
         READ1(idxr->beam_factor);
         if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
             // then we force the beam factor to -1
@@ -1277,6 +1294,31 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                         get_deserialization_vector_byte_limit() / sizeof(float),
                 "ResidualCoarseQuantizer centroid norms allocation would "
                 "exceed deserialization byte limit");
+        // Validate beam_factor to prevent overflow in search() where
+        // beam_size = int(k * beam_factor) and allocations scale with it.
+        if (idxr->beam_factor > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    idxr->beam_factor <= 1000.0f,
+                    "beam_factor %.6g is too large (max 1000)",
+                    idxr->beam_factor);
+        }
+        // Validate ntotal against byte limit: search() allocates
+        // O(ntotal * M) when beam_size is capped to ntotal.
+        {
+            size_t ntotal_alloc = mul_no_overflow(
+                    static_cast<size_t>(idxr->ntotal),
+                    idxr->rq.M,
+                    "ntotal * M");
+            ntotal_alloc = mul_no_overflow(
+                    ntotal_alloc, sizeof(int32_t), "ntotal * M * elem");
+            FAISS_THROW_IF_NOT_FMT(
+                    ntotal_alloc < get_deserialization_vector_byte_limit(),
+                    "ResidualCoarseQuantizer ntotal %" PRId64
+                    " * M %zd would exceed "
+                    "deserialization vector byte limit",
+                    idxr->ntotal,
+                    idxr->rq.M);
+        }
         idxr->set_beam_factor(idxr->beam_factor);
         idx = std::move(idxr);
     } else if (

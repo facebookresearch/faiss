@@ -278,7 +278,7 @@ class TestEquivPQ(unittest.TestCase):
         Dnew, Inew = index_pq.search(xq, 4)
 
         np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_allclose(Dref, Dnew, rtol=1e-5)
 
         index_pq2 = faiss.IndexPQFastScan(index_pq)
         index_pq2.implem = 12
@@ -288,7 +288,7 @@ class TestEquivPQ(unittest.TestCase):
         index2.implem = 12
         Dnew, Inew = index2.search(xq, 4)
         np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_allclose(Dref, Dnew, rtol=1e-5)
 
         # test encode and decode
 

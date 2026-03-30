@@ -1962,6 +1962,132 @@ TEST(ReadIndexDeserialize, BinaryHNSWCagraZeroEntrypoints) {
             faiss::FaissException);
 }
 
+// -----------------------------------------------------------------------
+// Test: ResidualCoarseQuantizer with huge ntotal triggers centroid_norms
+// byte limit check (pre-existing guard on ntotal vs byte_limit/sizeof(float)).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerHugeNtotal) {
+    // "ImRQ": fourcc + index_header + ResidualQuantizer + beam_factor
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    // ntotal = 2^60: huge value that would cause OOM in search()
+    push_index_header(buf, /*d=*/4, /*ntotal=*/int64_t{1} << 60);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<float>(buf, -1.0f); // beam_factor = -1 (skip tables)
+
+    expect_read_throws_with(buf, "centroid norms allocation");
+}
+
+// -----------------------------------------------------------------------
+// Test: ResidualCoarseQuantizer ntotal * M exceeds byte limit even when
+// ntotal alone passes the centroid_norms check.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerNtotalTimesM) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    // ntotal=200000 passes centroid_norms check (200000 < 1MB/4 = 262144)
+    // but ntotal*M*sizeof(int32_t) = 200000*2*4 = 1600000 > 1MB
+    push_index_header(buf, /*d=*/4, /*ntotal=*/200000);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<float>(buf, -1.0f); // beam_factor = -1 (skip tables)
+
+    auto old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB
+    expect_read_throws_with(buf, "deserialization vector byte limit");
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: ResidualCoarseQuantizer with huge beam_factor throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerHugeBeamFactor) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/16);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<float>(buf, 1e10f); // beam_factor = 1e10 (way too large)
+
+    expect_read_throws_with(buf, "beam_factor");
+}
+
+// -----------------------------------------------------------------------
+// Test: ResidualQuantizer with max_beam_size=0 throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualQuantizerMaxBeamSizeZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/16);
+    // Build AdditiveQuantizer manually + bad max_beam_size
+    push_additive_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<int>(buf, 2048); // train_type = Skip_codebook_tables
+    push_val<int>(buf, 0);    // max_beam_size = 0 (invalid)
+
+    expect_read_throws_with(buf, "max_beam_size");
+}
+
+// -----------------------------------------------------------------------
+// Test: ResidualQuantizer with huge max_beam_size exceeds byte limit.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualQuantizerHugeMaxBeamSize) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/16);
+    push_additive_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<int>(buf, 2048);    // train_type = Skip_codebook_tables
+    push_val<int>(buf, 1 << 30); // max_beam_size = 2^30 (huge)
+
+    // With a tight byte limit, this should fail
+    auto old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB
+    expect_read_throws_with(buf, "deserialization vector byte limit");
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: Negative ntotal is rejected by read_index_header.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerNegativeNtotal) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/-1);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<float>(buf, -1.0f); // beam_factor
+
+    expect_read_throws_with(buf, "invalid ntotal");
+}
+
+// -----------------------------------------------------------------------
+// Test: AdditiveQuantizer with M=0 is rejected during deserialization.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AdditiveQuantizerMZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/16);
+    // Build AdditiveQuantizer manually with M=0
+    push_additive_quantizer(buf, /*d=*/4, /*M=*/0, /*nbits=*/{});
+    push_val<int>(buf, 2048); // train_type = Skip_codebook_tables
+    push_val<int>(buf, 1);    // max_beam_size
+
+    expect_read_throws_with(buf, "invalid AdditiveQuantizer M");
+}
+
+// -----------------------------------------------------------------------
+// Test: ResidualCoarseQuantizer with ntotal=0 deserializes successfully
+// (empty index is valid).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerNtotalZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/2, /*nbits=*/{4, 4});
+    push_val<float>(buf, -1.0f); // beam_factor = -1 (skip tables)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    EXPECT_EQ(idx->ntotal, 0);
+}
+
 // ---- IndexBinaryIVF runtime safety checks ----
 
 TEST(ReadIndexDeserialize, BinaryIVFNullInvlistsSearch) {

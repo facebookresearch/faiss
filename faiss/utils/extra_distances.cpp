@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 #include <omp.h>

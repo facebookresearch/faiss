@@ -152,7 +152,9 @@ FlatCodesDistanceComputer* get_FlatCodesDistanceComputer1(
 } // namespace
 
 FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
-    DISPATCH_SIMDLevel(get_FlatCodesDistanceComputer1, *this);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return get_FlatCodesDistanceComputer1<SL>(*this);
+    });
 }
 
 /*****************************************
