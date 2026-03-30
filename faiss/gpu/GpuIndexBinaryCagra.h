@@ -28,7 +28,6 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 
 #include <memory>
-#include <vector>
 
 namespace faiss {
 namespace gpu {
@@ -120,8 +119,6 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     /// Instance that we own; contains the cuVS index
     std::shared_ptr<BinaryCuvsCagra> index_;
-
-    std::vector<uint8_t> host_storage_;
 };
 
 } // namespace gpu

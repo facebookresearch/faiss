@@ -32,7 +32,6 @@
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
-#include <memory>
 #include <optional>
 #include <vector>
 
@@ -656,18 +655,16 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         }
 
         // train cpu index
-        auto cpuIndex = std::make_unique<faiss::IndexHNSWCagra>(
-                opt.dim, opt.graphDegree / 2, metric);
-        cpuIndex->hnsw.efConstruction = opt.k * 2;
-        cpuIndex->add(opt.numTrain, trainVecs.data());
+        faiss::IndexHNSWCagra cpuIndex(opt.dim, opt.graphDegree / 2, metric);
+        cpuIndex.hnsw.efConstruction = opt.k * 2;
+        cpuIndex.add(opt.numTrain, trainVecs.data());
 
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         // convert to gpu index
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom(cpuIndex.get());
-        cpuIndex.reset();
+        copiedGpuIndex.copyFrom(&cpuIndex);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -772,21 +769,20 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         }
 
         // train cpu index
-        auto cpuIndex = std::make_unique<faiss::IndexHNSWCagra>(
+        faiss::IndexHNSWCagra cpuIndex(
                 opt.dim,
                 opt.graphDegree / 2,
                 metric,
                 faiss::NumericType::Float16);
-        cpuIndex->hnsw.efConstruction = opt.k * 2;
-        cpuIndex->add(opt.numTrain, trainVecs.data());
+        cpuIndex.hnsw.efConstruction = opt.k * 2;
+        cpuIndex.add(opt.numTrain, trainVecs.data());
 
         faiss::gpu::StandardGpuResources res;
         res.noTempMemory();
 
         // convert to gpu index
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom_ex(cpuIndex.get(), faiss::NumericType::Float16);
-        cpuIndex.reset();
+        copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;

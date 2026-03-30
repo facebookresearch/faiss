@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/StaticUtils.h>
+#include <cstdio>
 #include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
@@ -281,9 +282,10 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
     IndexBinaryFlat* flat_storage =
             dynamic_cast<IndexBinaryFlat*>(index->storage);
     FAISS_ASSERT(flat_storage);
-    auto total = static_cast<size_t>(index->ntotal) * this->code_size;
-    host_storage_.assign(
-            flat_storage->xb.data(), flat_storage->xb.data() + total);
+    fprintf(stderr,
+            "WARNING: GpuIndexBinaryCagra::copyFrom uses non-owning CPU "
+            "storage. Keep the source IndexBinaryHNSWCagra alive for the "
+            "lifetime of the GpuIndexBinaryCagra.\n");
 
     auto hnsw = index->hnsw;
     // copy level 0 to a dense knn graph matrix
@@ -304,7 +306,7 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
             this->d,
             index->ntotal,
             hnsw.nb_neighbors(0),
-            host_storage_.data(),
+            flat_storage->xb.data(),
             knn_graph.data(),
             INDICES_64_BIT);
 
@@ -379,7 +381,6 @@ void GpuIndexBinaryCagra::reset() {
         index_->reset();
         this->ntotal = 0;
         this->is_trained = false;
-        host_storage_.clear();
     } else {
         FAISS_ASSERT(this->ntotal == 0);
     }

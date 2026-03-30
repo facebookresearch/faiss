@@ -24,8 +24,8 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
-#include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <optional>
 #include <type_traits>
@@ -313,9 +313,6 @@ void GpuIndexCagra::copyFrom_ex(
     GpuIndex::copyFrom(index);
 
     auto hnsw = index->hnsw;
-    host_storage_f32_.clear();
-    host_storage_f16_.clear();
-    host_storage_int8_.clear();
 
     // copy level 0 to a dense knn graph matrix
     std::vector<idx_t> knn_graph;
@@ -336,15 +333,17 @@ void GpuIndexCagra::copyFrom_ex(
         auto base_index = dynamic_cast<IndexFlat*>(index->storage);
         FAISS_ASSERT(base_index);
         auto dataset = base_index->get_xb();
-        auto total = static_cast<size_t>(index->ntotal) * index->d;
-        host_storage_f32_.assign(dataset, dataset + total);
+        fprintf(stderr,
+                "WARNING: GpuIndexCagra::copyFrom uses non-owning CPU storage. "
+                "Keep the source IndexHNSWCagra alive for the lifetime of the "
+                "GpuIndexCagra.\n");
 
         index_ = std::make_shared<CuvsCagra<float>>(
                 this->resources_.get(),
                 this->d,
                 index->ntotal,
                 hnsw.nb_neighbors(0),
-                host_storage_f32_.data(),
+                dataset,
                 knn_graph.data(),
                 this->metric_type,
                 this->metric_arg,
@@ -352,17 +351,18 @@ void GpuIndexCagra::copyFrom_ex(
     } else if (numeric_type == NumericType::Float16) {
         auto base_index = dynamic_cast<IndexScalarQuantizer*>(index->storage);
         FAISS_ASSERT(base_index);
-        auto dataset = reinterpret_cast<const half*>(base_index->codes.data());
-        auto total = static_cast<size_t>(index->ntotal) * index->d;
-        host_storage_f16_.resize(total);
-        std::copy(dataset, dataset + total, host_storage_f16_.data());
+        auto dataset = reinterpret_cast<half*>(base_index->codes.data());
+        fprintf(stderr,
+                "WARNING: GpuIndexCagra::copyFrom uses non-owning CPU storage. "
+                "Keep the source IndexHNSWCagra alive for the lifetime of the "
+                "GpuIndexCagra.\n");
 
         index_ = std::make_shared<CuvsCagra<half>>(
                 this->resources_.get(),
                 this->d,
                 index->ntotal,
                 hnsw.nb_neighbors(0),
-                host_storage_f16_.data(),
+                dataset,
                 knn_graph.data(),
                 this->metric_type,
                 this->metric_arg,
@@ -371,11 +371,14 @@ void GpuIndexCagra::copyFrom_ex(
         auto base_index = dynamic_cast<IndexScalarQuantizer*>(index->storage);
         FAISS_ASSERT(base_index);
         auto dataset = (uint8_t*)base_index->codes.data();
-        auto total = static_cast<size_t>(index->ntotal) * index->d;
-        host_storage_int8_.resize(total);
-        for (size_t i = 0; i < total; i++) {
-            host_storage_int8_[i] =
-                    static_cast<int8_t>(static_cast<int>(dataset[i]) - 128);
+        fprintf(stderr,
+                "WARNING: GpuIndexCagra::copyFrom uses non-owning CPU storage. "
+                "Keep the source IndexHNSWCagra alive for the lifetime of the "
+                "GpuIndexCagra.\n");
+
+        int8_t* decoded_train_dataset = new int8_t[index->ntotal * index->d];
+        for (int i = 0; i < index->ntotal * this->d; i++) {
+            decoded_train_dataset[i] = dataset[i] - 128;
         }
 
         index_ = std::make_shared<CuvsCagra<int8_t>>(
@@ -383,11 +386,12 @@ void GpuIndexCagra::copyFrom_ex(
                 this->d,
                 index->ntotal,
                 hnsw.nb_neighbors(0),
-                host_storage_int8_.data(),
+                decoded_train_dataset,
                 knn_graph.data(),
                 this->metric_type,
                 this->metric_arg,
                 INDICES_64_BIT);
+        delete[] decoded_train_dataset;
     } else {
         FAISS_THROW_MSG("GpuIndexCagra::copyFrom unsupported data type");
     }
@@ -604,9 +608,6 @@ void GpuIndexCagra::reset() {
                 index_);
         this->ntotal = 0;
         this->is_trained = false;
-        host_storage_f32_.clear();
-        host_storage_f16_.clear();
-        host_storage_int8_.clear();
     } else {
         FAISS_ASSERT(this->ntotal == 0);
     }
