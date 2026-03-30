@@ -9,7 +9,7 @@
 // 1. _impl specializations for NONE (and ARM_NEON), using scalar code.
 // 2. Non-templated PQ code distance dispatch wrappers
 //    (pq_code_distance_single, pq_code_distance_four) declared in
-//    pq_code_distance.h. These use DISPATCH_SIMDLevel to route to the
+//    pq_code_distance.h. These use with_simd_level to route to the
 //    best available SIMD implementation via pq_code_distance_*_impl
 //    function template specializations defined in the per-SIMD .cpp files.
 
@@ -107,7 +107,9 @@ float pq_code_distance_single(
         size_t nbits,
         const float* sim_table,
         const uint8_t* code) {
-    DISPATCH_SIMDLevel(pq_code_distance_single_impl, M, nbits, sim_table, code);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return pq_code_distance_single_impl<SL>(M, nbits, sim_table, code);
+    });
 }
 
 void pq_code_distance_four(
@@ -122,19 +124,20 @@ void pq_code_distance_four(
         float& result1,
         float& result2,
         float& result3) {
-    DISPATCH_SIMDLevel(
-            pq_code_distance_four_impl,
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
+    with_simd_level([&]<SIMDLevel SL>() {
+        pq_code_distance_four_impl<SL>(
+                M,
+                nbits,
+                sim_table,
+                code0,
+                code1,
+                code2,
+                code3,
+                result0,
+                result1,
+                result2,
+                result3);
+    });
 }
 
 } // namespace pq_code_distance
