@@ -410,12 +410,12 @@ class SubTensor<TensorType, 0, PtrTraits> {
     }
 
     // operator T&
-    __host__ __device__ operator typename TensorType::DataType&() {
+    __host__ __device__ operator typename TensorType::DataType &() {
         return *data_;
     }
 
     // const operator T& returning const T&
-    __host__ __device__ operator const typename TensorType::DataType&() const {
+    __host__ __device__ operator const typename TensorType::DataType &() const {
         return *data_;
     }
 
