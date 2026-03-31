@@ -1941,6 +1941,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->nbits = nbits_fastscan;
         idxqfs->ksub = (1 << nbits_fastscan);
 
+        const size_t expected_M2 = (M_fastscan + 1) / 2 * 2;
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->M2 == expected_M2,
+                "invalid M2=%zd for d=%zd (expected %zd)",
+                size_t(idxqfs->M2),
+                size_t(idxqfs->d),
+                expected_M2);
+
         READVECTOR(idxqfs->codes);
 
         if (is_legacy) {
