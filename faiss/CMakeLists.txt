@@ -14,18 +14,21 @@ set(FAISS_SIMD_AVX2_SRC
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/distances_fused/simdlib_based.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
+  utils/distances_fused/avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/distances_fused/simdlib_based_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -145,9 +148,7 @@ set(FAISS_SRC
   utils/sorting.cpp
   utils/utils.cpp
   utils/simd_levels.cpp
-  utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
-  utils/distances_fused/simdlib_based.cpp
   factory_tools.cpp
 )
 
@@ -314,9 +315,8 @@ set(FAISS_HEADERS
   impl/simdlib/simdlib_ppc64.h
   utils/utils.h
   utils/simd_levels.h
-  utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
-  utils/distances_fused/simdlib_based.h
+  utils/distances_fused/simdlib_kernel-inl.h
   impl/approx_topk/approx_topk.h
   impl/approx_topk/generic.h
   impl/approx_topk/rq_beam_search_tab.h
