@@ -19,6 +19,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -2116,4 +2117,184 @@ TEST(ReadIndexDeserialize, BinaryIVFNullInvlistsSearch) {
                 }
             },
             faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: VectorTransform deserialization rejects d_in * d_out that would
+// exceed the deserialization vector byte limit.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, VectorTransformDimExceedsByteLimit) {
+    // VNrm format: fourcc + float(norm) + d_in + d_out + is_trained
+    // d_in=1024, d_out=1024 => d_in*d_out = 1M floats = 4 MB.
+    // Set byte limit to 1 MB so the check fails.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f);
+    push_val<int>(buf, 1024);
+    push_val<int>(buf, 1024);
+    push_val<bool>(buf, true);
+
+    auto old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB < 4 MB
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_THROW(read_VectorTransform_up(&reader), FaissException);
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: VectorTransform deserialization accepts d_in * d_out within
+// the deserialization vector byte limit.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, VectorTransformDimWithinByteLimit) {
+    // d_in=16, d_out=16 => d_in*d_out = 256 floats = 1 KB.
+    // Set byte limit to 1 MB so the check passes.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f);
+    push_val<int>(buf, 16);
+    push_val<int>(buf, 16);
+    push_val<bool>(buf, true);
+
+    auto old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB >> 1 KB
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_VectorTransform_up(&reader));
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: VectorTransform deserialization rejects negative d_out.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, VectorTransformDOutNegative) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f);
+    push_val<int>(buf, 16);
+    push_val<int>(buf, -1);
+    push_val<bool>(buf, true);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_THROW(read_VectorTransform_up(&reader), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: VectorTransform deserialization rejects negative d_in.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, VectorTransformDInNegative) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f);
+    push_val<int>(buf, -1);
+    push_val<int>(buf, 16);
+    push_val<bool>(buf, true);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_THROW(read_VectorTransform_up(&reader), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVFIndependentQuantizer deserialization rejects a VT whose
+// d_in does not match the outer index dimension.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IwIQVtDinMismatch) {
+    // Create a valid IndexIVFIndependentQuantizer and serialize it.
+    const int d = 16;
+    const int nlist = 4;
+    auto quantizer = std::make_unique<IndexFlat>(d);
+    auto ivf = std::make_unique<IndexIVFFlat>(quantizer.get(), d, nlist);
+    ivf->own_fields = false;
+    auto vt = std::make_unique<NormalizationTransform>(d);
+
+    IndexIVFIndependentQuantizer indep(quantizer.get(), ivf.get(), vt.get());
+    indep.own_fields = false;
+
+    VectorIOWriter writer;
+    write_index(&indep, &writer);
+
+    // Locate the VNrm fourcc to find where VT dimensions are stored.
+    // VNrm layout: fourcc(4) + norm(4) + d_in(4) + d_out(4) + is_trained(1)
+    auto& data = writer.data;
+    uint32_t vnrm_h;
+    {
+        const unsigned char s[4] = {'V', 'N', 'r', 'm'};
+        vnrm_h = s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24);
+    }
+    size_t vnrm_pos = 0;
+    bool found = false;
+    for (size_t i = 0; i + 4 <= data.size(); ++i) {
+        uint32_t val;
+        memcpy(&val, &data[i], sizeof(val));
+        if (val == vnrm_h) {
+            vnrm_pos = i;
+            found = true;
+            break;
+        }
+    }
+    ASSERT_TRUE(found);
+
+    // Corrupt d_in to create mismatch with indep->d.
+    size_t d_in_offset = vnrm_pos + 4 + 4; // after fourcc + norm
+    auto corrupted = data;
+    int bad_d_in = d + 1;
+    memcpy(&corrupted[d_in_offset], &bad_d_in, sizeof(int));
+
+    VectorIOReader reader;
+    reader.data = corrupted;
+    EXPECT_THROW(read_index(&reader), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVFIndependentQuantizer deserialization rejects a VT whose
+// d_out does not match the inner IVF index dimension.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IwIQVtDoutMismatch) {
+    const int d = 16;
+    const int nlist = 4;
+    auto quantizer = std::make_unique<IndexFlat>(d);
+    auto ivf = std::make_unique<IndexIVFFlat>(quantizer.get(), d, nlist);
+    ivf->own_fields = false;
+    auto vt = std::make_unique<NormalizationTransform>(d);
+
+    IndexIVFIndependentQuantizer indep(quantizer.get(), ivf.get(), vt.get());
+    indep.own_fields = false;
+
+    VectorIOWriter writer;
+    write_index(&indep, &writer);
+
+    auto& data = writer.data;
+    uint32_t vnrm_h;
+    {
+        const unsigned char s[4] = {'V', 'N', 'r', 'm'};
+        vnrm_h = s[0] | (s[1] << 8) | (s[2] << 16) | (s[3] << 24);
+    }
+    size_t vnrm_pos = 0;
+    bool found = false;
+    for (size_t i = 0; i + 4 <= data.size(); ++i) {
+        uint32_t val;
+        memcpy(&val, &data[i], sizeof(val));
+        if (val == vnrm_h) {
+            vnrm_pos = i;
+            found = true;
+            break;
+        }
+    }
+    ASSERT_TRUE(found);
+
+    // Corrupt d_out to create mismatch with index_ivf->d.
+    size_t d_out_offset = vnrm_pos + 4 + 4 + 4; // after fourcc + norm + d_in
+    auto corrupted = data;
+    int bad_d_out = d + 1;
+    memcpy(&corrupted[d_out_offset], &bad_d_out, sizeof(int));
+
+    VectorIOReader reader;
+    reader.data = corrupted;
+    EXPECT_THROW(read_index(&reader), FaissException);
 }
