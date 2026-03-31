@@ -1129,6 +1129,11 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
                 ivpq->precompute_table();
             }
         }
+#ifdef COMPILE_SIMD_ARM_NEON
+        // Initialize NEON fp32 block-transposed centroids for fast PQ table lookup.
+        // precision=0 (fp32, default), blocksize=64.
+        ivpq->pq.initialize_neon_transposed_centroids(64, 0);
+#endif // COMPILE_SIMD_ARM_NEON
         if (ivfpqr) {
             read_ProductQuantizer(&ivfpqr->refine_pq, f);
             READVECTOR(ivfpqr->refine_codes);

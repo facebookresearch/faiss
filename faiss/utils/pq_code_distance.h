@@ -144,6 +144,16 @@ void pq_code_distance_four_impl(
         float& result2,
         float& result3);
 
+template <SIMDLevel SL>
+void pq_code_distance_batch_impl(
+        size_t M,
+        size_t nbits,
+        size_t ncode,
+        const uint8_t* codes,
+        const float* sim_table,
+        float* dis,
+        float dis0);
+
 /// Primary template — always complete.
 /// For PQDecoder8, delegates to _impl dispatch bridges (resolved at
 /// link time to per-SIMD implementations). For other decoders, uses
@@ -151,6 +161,7 @@ void pq_code_distance_four_impl(
 template <typename PQDecoderT, SIMDLevel SL>
 struct PQCodeDistance {
     using PQDecoder = PQDecoderT;
+    static constexpr SIMDLevel simd_level = SL;
 
     static float distance_single_code(
             size_t M,
@@ -240,9 +251,21 @@ FAISS_API void pq_code_distance_four(
         float& result2,
         float& result3);
 
+/// Compute PQ distances for a batch of codes, dispatching to the
+/// best available SIMD level.
+FAISS_API void pq_code_distance_batch(
+        size_t M,
+        size_t nbits,
+        size_t ncode,
+        const uint8_t* codes,
+        const float* sim_table,
+        float* dis,
+        float dis0);
+
 } // namespace pq_code_distance
 
 // Re-export public API into namespace faiss for convenience
+using pq_code_distance::pq_code_distance_batch;
 using pq_code_distance::pq_code_distance_four;
 using pq_code_distance::pq_code_distance_single;
 using pq_code_distance::PQCodeDistance;

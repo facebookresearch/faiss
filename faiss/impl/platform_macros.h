@@ -121,6 +121,14 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_API
 #define posix_memalign_free free
 
+// On aarch64, NEON is always available. Ensure COMPILE_SIMD_ARM_NEON is
+// defined so that NEON-specific struct members (e.g. NeonTransposedCentroids
+// in ProductQuantizer) are always visible, regardless of how the application
+// was compiled (CMake PUBLIC propagation is not reliable for non-CMake users).
+#if defined(__aarch64__) && !defined(COMPILE_SIMD_ARM_NEON)
+#define COMPILE_SIMD_ARM_NEON
+#endif
+
 // aligned should be *in front* of the declaration, for compatibility with
 // windows
 #ifdef SWIG

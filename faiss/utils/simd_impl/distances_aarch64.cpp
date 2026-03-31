@@ -55,25 +55,19 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::ARM_NEON>(
             dis, x, y, y_sqlen, d, d_offset, ny);
 }
 
-template <>
-void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
-        float* dis,
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t ny) {
-    fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
-}
-
-template <>
-void fvec_L2sqr_ny<SIMDLevel::ARM_NEON>(
-        float* dis,
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t ny) {
-    fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
-}
+// fvec_inner_products_ny and fvec_L2sqr_ny ARM_NEON implementations
+// are now in distances_neon.cpp
+// [DD-MIGRATION] Original code (scalar fallback, now superseded by NEON in distances_neon.cpp):
+// template <>
+// void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
+//         float* dis, const float* x, const float* y, size_t d, size_t ny) {
+//     fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+// }
+// template <>
+// void fvec_L2sqr_ny<SIMDLevel::ARM_NEON>(
+//         float* dis, const float* x, const float* y, size_t d, size_t ny) {
+//     fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+// }
 
 template <>
 size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_NEON>(
