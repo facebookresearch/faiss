@@ -1041,6 +1041,7 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
 static void read_RaBitQuantizer(
         RaBitQuantizer& rabitq,
         IOReader* f,
+        int expected_d,
         bool multi_bit = true) {
     READ1(rabitq.d);
     READ1(rabitq.code_size);
@@ -1053,6 +1054,12 @@ static void read_RaBitQuantizer(
     } else {
         rabitq.nb_bits = 1;
     }
+
+    FAISS_THROW_IF_NOT_FMT(
+            rabitq.d == static_cast<size_t>(expected_d),
+            "RaBitQuantizer dimension mismatch: rabitq.d=%zu vs index d=%d",
+            rabitq.d,
+            expected_d);
 }
 
 void read_direct_map(DirectMap* dm, IOReader* f) {
@@ -1944,7 +1951,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         auto idxqfs = std::make_unique<IndexRaBitQFastScan>();
         read_index_header(*idxqfs, f);
-        read_RaBitQuantizer(idxqfs->rabitq, f, true);
+        read_RaBitQuantizer(idxqfs->rabitq, f, idxqfs->d, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
         FAISS_THROW_IF_NOT_FMT(
@@ -1996,7 +2003,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Ixrq = original single-bit format
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
-        read_RaBitQuantizer(idxq->rabitq, f, false);
+        read_RaBitQuantizer(idxq->rabitq, f, idxq->d, false);
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -2014,7 +2021,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Ixrr = multi-bit format (new)
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
-        read_RaBitQuantizer(idxq->rabitq, f, true); // Reads nb_bits from file
+        read_RaBitQuantizer(
+                idxq->rabitq, f, idxq->d, true); // Reads nb_bits from file
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -2030,7 +2038,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("Iwrq")) {
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
         read_ivf_header(ivrq.get(), f);
-        read_RaBitQuantizer(ivrq->rabitq, f, false);
+        read_RaBitQuantizer(ivrq->rabitq, f, ivrq->d, false);
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
@@ -2052,7 +2060,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Iwrr = multi-bit format (new)
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
         read_ivf_header(ivrq.get(), f);
-        read_RaBitQuantizer(ivrq->rabitq, f, true); // Reads nb_bits from file
+        read_RaBitQuantizer(
+                ivrq->rabitq, f, ivrq->d, true); // Reads nb_bits from file
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
@@ -2141,7 +2150,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
         read_ivf_header(ivrqfs.get(), f);
-        read_RaBitQuantizer(ivrqfs->rabitq, f);
+        read_RaBitQuantizer(ivrqfs->rabitq, f, ivrqfs->d);
         READ1(ivrqfs->by_residual);
         READ1(ivrqfs->code_size);
         READ1(ivrqfs->bbs);
