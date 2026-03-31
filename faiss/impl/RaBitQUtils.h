@@ -10,6 +10,9 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/rabitq_simd.h>
+#include <faiss/utils/simd_levels.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -336,6 +339,33 @@ float compute_full_multibit_distance(
         size_t d,
         size_t ex_bits,
         MetricType metric_type);
+
+// SIMDLevel-templatized version — avoids per-call dynamic dispatch.
+// Inline so it can be used from templatized distance computers without
+// needing explicit instantiations in per-SIMD TUs.
+template <SIMDLevel SL>
+inline float compute_full_multibit_distance(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExtraBitsFactors& ex_fac,
+        const float* rotated_q,
+        float qr_base,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
+
+    float ex_ip = rabitq::multibit::compute_inner_product<SL>(
+            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+
+    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+
+    if (metric_type == MetricType::METRIC_L2) {
+        dist = std::max(0.0f, dist);
+    }
+
+    return dist;
+}
 
 /** Compute pointer to a vector's auxiliary data within block layout. */
 template <typename T>

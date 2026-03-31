@@ -15,6 +15,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
+  utils/simd_impl/rabitq_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
@@ -22,6 +23,7 @@ set(FAISS_SIMD_AVX512_SRC
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
   utils/distances_fused/avx512.cpp
+  utils/simd_impl/rabitq_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -29,6 +31,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/distances_fused/simdlib_based_neon.cpp
+  utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
