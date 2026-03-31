@@ -2,9 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_8024a5c5304a6089dbde2bf6560405dc" kind="dir">
     <compoundname>faiss/utils/distances_fused</compoundname>
-    <innerfile refid="avx512_8h">avx512.h</innerfile>
     <innerfile refid="distances__fused_8h">distances_fused.h</innerfile>
-    <innerfile refid="simdlib__based_8h">simdlib_based.h</innerfile>
+    <innerfile refid="simdlib__kernel-inl_8h">simdlib_kernel-inl.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

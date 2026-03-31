@@ -12354,6 +12354,7 @@
     <member refid="namespacefaiss_1ae01e35f00ff93103140e83f3d3f3713f" kind="function"><name>compute_PQ_dis_tables_dsub2_dispatch</name></member>
     <member refid="namespacefaiss_1a565a67d8452c4820c8d897361bf578b8" kind="function"><name>with_VectorDistance</name></member>
     <member refid="namespacefaiss_1a66df52907712fa6573cda2036d5a51ce" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
+    <member refid="namespacefaiss_1a67b79d119758e5c259dd571d6235df36" kind="function"><name>exhaustive_L2sqr_fused_cmax</name></member>
     <member refid="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" kind="function"><name>pairwise_extra_distances</name></member>
     <member refid="namespacefaiss_1a48139e7f38831a4333ca6bf1fb6be650" kind="function"><name>knn_extra_metrics</name></member>
     <member refid="namespacefaiss_1a8cfa8ec52353c0d6477e6db5fc703ff7" kind="function"><name>get_extra_distance_computer</name></member>
@@ -12515,9 +12516,11 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d182" kind="namespace"><name>faiss::@182</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
+  <compound refid="namespacefaiss_1_1_0d186" kind="namespace"><name>faiss::@186</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
+  <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d210" kind="namespace"><name>faiss::@210</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d56" kind="namespace"><name>faiss::@56</name>
   </compound>
@@ -12743,13 +12746,17 @@
     <member refid="namespacefaiss_1_1quantize__lut_1ab93e886d01cd9809d0c7ae3b7203f92a" kind="function"><name>aq_estimate_norm_scale</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq" kind="namespace"><name>faiss::rabitq</name>
-    <member refid="rabitq__simd_8h_1ad2e5c4c6149b0e481d68ef593b81ad8d" kind="function"><name>bitwise_and_dot_product</name></member>
-    <member refid="rabitq__simd_8h_1ac5ea8dd8e109c02092e213e74fd139b4" kind="function"><name>bitwise_xor_dot_product</name></member>
-    <member refid="rabitq__simd_8h_1ae550e84d71139760b85f38dcf3b10145" kind="function"><name>popcount</name></member>
+    <member refid="rabitq__simd_8h_1afeb79d98edbdd4b10dcbf414c6b33a06" kind="function"><name>bitwise_and_dot_product</name></member>
+    <member refid="rabitq__simd_8h_1aa369a4ff0088baa248147660f15980d6" kind="function"><name>bitwise_xor_dot_product</name></member>
+    <member refid="rabitq__simd_8h_1af659144f46f1e1972f1283b537778619" kind="function"><name>popcount</name></member>
+    <member refid="rabitq__simd_8h_1a5745fa8520d0e2fb3e6aba23d168c6cc" kind="function"><name>bitwise_and_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="rabitq__simd_8h_1a290007a2ca46073a49129d7d73f0768a" kind="function"><name>bitwise_xor_dot_product&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="rabitq__simd_8h_1ac0999cb30c3f92f1dda521134802811c" kind="function"><name>popcount&lt; SIMDLevel::NONE &gt;</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq_1_1multibit" kind="namespace"><name>faiss::rabitq::multibit</name>
     <member refid="rabitq__simd_8h_1a7fc63cb7b1c8ae1167d5c595adff0103" kind="function"><name>ip_scalar</name></member>
-    <member refid="rabitq__simd_8h_1ab575b316838927e704e878f02281f5fc" kind="function"><name>compute_inner_product</name></member>
+    <member refid="rabitq__simd_8h_1a61b6bf14620f5ba6dcd1a913419a1a0f" kind="function"><name>compute_inner_product</name></member>
+    <member refid="rabitq__simd_8h_1ad22df7716dfd83e0fe96a8809f2124d0" kind="function"><name>compute_inner_product&lt; SIMDLevel::NONE &gt;</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1rabitq__multibit" kind="namespace"><name>faiss::rabitq_multibit</name>
     <member refid="RaBitQuantizerMultiBit_8h_1a05089f9fecd23f4172b3e0d9ee972eca" kind="function"><name>compute_optimal_scaling_factor</name></member>
@@ -12771,6 +12778,7 @@
     <member refid="RaBitQUtils_8h_1ac2e015046ef42924a075b5f92513655e" kind="function"><name>should_refine_candidate</name></member>
     <member refid="RaBitQUtils_8h_1ac9075cf5f1fa83e90c93fdb6b81d621e" kind="function"><name>extract_code_inline</name></member>
     <member refid="RaBitQUtils_8h_1a08836886c8399e129c4bdc89d1f89c24" kind="function"><name>compute_full_multibit_distance</name></member>
+    <member refid="RaBitQUtils_8h_1aca0eed9578a82e530584e13be1c23ab9" kind="function"><name>compute_full_multibit_distance</name></member>
     <member refid="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" kind="function"><name>get_block_aux_ptr</name></member>
     <member refid="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" kind="function"><name>populate_block_aux_from_flat_storage</name></member>
@@ -13372,11 +13380,9 @@
   </compound>
   <compound refid="distances__dispatch_8h" kind="file"><name>distances_dispatch.h</name>
   </compound>
-  <compound refid="avx512_8h" kind="file"><name>avx512.h</name>
-  </compound>
   <compound refid="distances__fused_8h" kind="file"><name>distances_fused.h</name>
   </compound>
-  <compound refid="simdlib__based_8h" kind="file"><name>simdlib_based.h</name>
+  <compound refid="simdlib__kernel-inl_8h" kind="file"><name>simdlib_kernel-inl.h</name>
   </compound>
   <compound refid="extra__distances_8h" kind="file"><name>extra_distances.h</name>
   </compound>

@@ -44,9 +44,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="447" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="447" bodyend="470"/>
+        <location file="faiss/utils/rabitq_simd.h" line="148" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="148" bodyend="171"/>
       </memberdef>
-      <memberdef kind="function" id="rabitq__simd_8h_1ab575b316838927e704e878f02281f5fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="rabitq__simd_8h_1a61b6bf14620f5ba6dcd1a913419a1a0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+            <defval>SINGLE_SIMD_LEVEL</defval>
+          </param>
+        </templateparamlist>
         <type>float</type>
         <definition>float faiss::rabitq::multibit::compute_inner_product</definition>
         <argsstring>(const uint8_t *__restrict sign_bits, const uint8_t *__restrict ex_code, const float *__restrict rotated_q, size_t d, size_t ex_bits, float cb)</argsstring>
@@ -80,7 +88,6 @@
         </briefdescription>
         <detaileddescription>
 <para>Dispatch to the best available kernel for the given ex_bits.</para>
-<para>Routing (compile-time): ex_bits == 1: specialized 1-bit kernel (AVX-512 &gt; AVX2 &gt; scalar) ex_bits &gt;= 2: bit-plane decomposition (AVX2+BMI2 &gt; scalar)</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sign_bits</parametername>
@@ -136,13 +143,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/rabitq_simd.h" line="660" column="14" bodyfile="faiss/utils/rabitq_simd.h" bodystart="660" bodyend="683"/>
+        <location file="faiss/utils/rabitq_simd.h" line="185" column="7" declfile="faiss/utils/rabitq_simd.h" declline="185" declcolumn="7"/>
+      </memberdef>
+      <memberdef kind="function" id="rabitq__simd_8h_1ad22df7716dfd83e0fe96a8809f2124d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>float</type>
+        <definition>float faiss::rabitq::multibit::compute_inner_product&lt; SIMDLevel::NONE &gt;</definition>
+        <argsstring>(const uint8_t *__restrict sign_bits, const uint8_t *__restrict ex_code, const float *__restrict rotated_q, size_t d, size_t ex_bits, float cb)</argsstring>
+        <name>compute_inner_product&lt; SIMDLevel::NONE &gt;</name>
+        <qualifiedname>faiss::rabitq::multibit::compute_inner_product&lt; SIMDLevel::NONE &gt;</qualifiedname>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>sign_bits</declname>
+        </param>
+        <param>
+          <type>const uint8_t *__restrict</type>
+          <declname>ex_code</declname>
+        </param>
+        <param>
+          <type>const float *__restrict</type>
+          <declname>rotated_q</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ex_bits</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>cb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/rabitq_simd.h" line="195" column="8" bodyfile="faiss/utils/rabitq_simd.h" bodystart="195" bodyend="203"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/rabitq_simd.h" line="442" column="1"/>
+    <location file="faiss/utils/rabitq_simd.h" line="143" column="1"/>
   </compounddef>
 </doxygen>

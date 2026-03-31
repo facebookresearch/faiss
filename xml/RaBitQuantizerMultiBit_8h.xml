@@ -60,6 +60,12 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
@@ -74,7 +80,7 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -103,6 +109,28 @@
         <childnode refid="12" relation="include">
         </childnode>
       </node>
+      <node id="20">
+        <label>faiss/utils/rabitq_simd.h</label>
+        <link refid="rabitq__simd_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>faiss/utils/simd_levels.h</label>
+        <link refid="simd__levels_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
       <node id="19">
         <label>algorithm</label>
       </node>
@@ -112,7 +140,7 @@
       <node id="13">
         <label>cinttypes</label>
       </node>
-      <node id="20">
+      <node id="21">
         <label>cstddef</label>
       </node>
       <node id="3">

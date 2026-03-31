@@ -1,4 +1,0 @@
-File avx512.h
-=============
-
-.. doxygenfile:: avx512.h

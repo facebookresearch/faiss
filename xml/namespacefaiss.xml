@@ -11660,6 +11660,53 @@
         </inbodydescription>
         <location file="faiss/utils/distances_fused/distances_fused.h" line="31" column="6" declfile="faiss/utils/distances_fused/distances_fused.h" declline="31" declcolumn="6"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a67b79d119758e5c259dd571d6235df36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool faiss::exhaustive_L2sqr_fused_cmax</definition>
+        <argsstring>(const float *x, const float *y, size_t d, size_t nx, size_t ny, Top1BlockResultHandler&lt; CMax&lt; float, int64_t &gt; &gt; &amp;res, const float *y_norms)</argsstring>
+        <name>exhaustive_L2sqr_fused_cmax</name>
+        <qualifiedname>faiss::exhaustive_L2sqr_fused_cmax</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nx</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>ny</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1Top1BlockResultHandler" kindref="compound">Top1BlockResultHandler</ref>&lt; <ref refid="structfaiss_1_1CMax" kindref="compound">CMax</ref>&lt; float, int64_t &gt; &gt; &amp;</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>y_norms</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/distances_fused/distances_fused.h" line="42" column="6" declfile="faiss/utils/distances_fused/distances_fused.h" declline="42" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ada09f7cd8c85cfbc3caf5b943b10bcc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::pairwise_extra_distances</definition>
