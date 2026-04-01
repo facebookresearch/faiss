@@ -8,6 +8,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
@@ -306,6 +307,9 @@ size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
     }
 }
 
+// Non-template wrapper with dynamic dispatch (one dispatch per call).
+// The hot path in RaBitQuantizer dispatches once at distance computer
+// construction, so per-vector dispatch only affects this utility path.
 float compute_full_multibit_distance(
         const uint8_t* sign_bits,
         const uint8_t* ex_code,
@@ -315,18 +319,18 @@ float compute_full_multibit_distance(
         size_t d,
         size_t ex_bits,
         MetricType metric_type) {
-    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
-
-    float ex_ip = rabitq::multibit::compute_inner_product(
-            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
-
-    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
-
-    if (metric_type == MetricType::METRIC_L2) {
-        dist = std::max(0.0f, dist);
-    }
-
-    return dist;
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+            [&]<SIMDLevel SL>() {
+                return compute_full_multibit_distance<SL>(
+                        sign_bits,
+                        ex_code,
+                        ex_fac,
+                        rotated_q,
+                        qr_base,
+                        d,
+                        ex_bits,
+                        metric_type);
+            });
 }
 
 void populate_block_aux_from_flat_storage(

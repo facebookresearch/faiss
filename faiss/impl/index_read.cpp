@@ -355,6 +355,23 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
     READ1(vt->d_in);
     READ1(vt->d_out);
     READ1(vt->is_trained);
+    FAISS_THROW_IF_NOT_FMT(
+            vt->d_in >= 0,
+            "invalid VectorTransform d_in=%d (must be >= 0)",
+            vt->d_in);
+    FAISS_THROW_IF_NOT_FMT(
+            vt->d_out >= 0,
+            "invalid VectorTransform d_out=%d (must be >= 0)",
+            vt->d_out);
+    {
+        size_t dim_product = mul_no_overflow(
+                vt->d_in, vt->d_out, "VectorTransform d_in * d_out");
+        FAISS_THROW_IF_NOT_MSG(
+                dim_product <=
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "VectorTransform d_in * d_out would exceed "
+                "deserialization vector byte limit");
+    }
     if (h == fourcc("HRot")) {
         FAISS_THROW_IF_NOT_FMT(
                 vt->d_out > 0 && (vt->d_out & (vt->d_out - 1)) == 0,
@@ -377,10 +394,6 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 vt->d_in > 0,
                 "invalid HadamardRotation d_in=%d (must be > 0)",
                 vt->d_in);
-        FAISS_THROW_IF_NOT_FMT(
-                vt->d_out > 0,
-                "invalid HadamardRotation d_out=%d (must be > 0)",
-                vt->d_out);
         size_t p = 1;
         while (p < static_cast<size_t>(vt->d_in)) {
             p <<= 1;
@@ -597,6 +610,7 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
 
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
+    FAISS_CHECK_RANGE(rq.d, 0, (1 << 20) + 1);
     READ1(rq.M);
     READVECTOR(rq.nbits);
     FAISS_THROW_IF_NOT_FMT(
@@ -616,6 +630,7 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READ1(aq.d);
+    FAISS_CHECK_RANGE(aq.d, 0, (1 << 20) + 1);
     READ1(aq.M);
     FAISS_THROW_IF_NOT_FMT(
             aq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", aq.M);
@@ -1026,6 +1041,7 @@ ProductQuantizer* read_ProductQuantizer(IOReader* reader) {
 static void read_RaBitQuantizer(
         RaBitQuantizer& rabitq,
         IOReader* f,
+        int expected_d,
         bool multi_bit = true) {
     READ1(rabitq.d);
     READ1(rabitq.code_size);
@@ -1038,6 +1054,12 @@ static void read_RaBitQuantizer(
     } else {
         rabitq.nb_bits = 1;
     }
+
+    FAISS_THROW_IF_NOT_FMT(
+            rabitq.d == static_cast<size_t>(expected_d),
+            "RaBitQuantizer dimension mismatch: rabitq.d=%zu vs index d=%d",
+            rabitq.d,
+            expected_d);
 }
 
 void read_direct_map(DirectMap* dm, IOReader* f) {
@@ -1247,6 +1269,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             read_ResidualQuantizer(idxr->rq, f, io_flags);
         }
+        FAISS_THROW_IF_NOT_FMT(
+                idxr->rq.d == static_cast<size_t>(idxr->d),
+                "IndexResidualQuantizer d mismatch: rq.d=%zd vs idx.d=%d",
+                idxr->rq.d,
+                idxr->d);
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1256,6 +1283,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<IndexLocalSearchQuantizer>();
         read_index_header(*idxr, f);
         read_LocalSearchQuantizer(idxr->lsq, f);
+        FAISS_THROW_IF_NOT_FMT(
+                idxr->lsq.d == static_cast<size_t>(idxr->d),
+                "IndexLocalSearchQuantizer d mismatch: lsq.d=%zd vs idx.d=%d",
+                idxr->lsq.d,
+                idxr->d);
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1265,6 +1297,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxpr = std::make_unique<IndexProductResidualQuantizer>();
         read_index_header(*idxpr, f);
         read_ProductResidualQuantizer(idxpr->prq, f, io_flags);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpr->prq.d == static_cast<size_t>(idxpr->d),
+                "IndexProductResidualQuantizer d mismatch: prq.d=%zd vs idx.d=%d",
+                idxpr->prq.d,
+                idxpr->d);
         READ1(idxpr->code_size);
         read_vector(idxpr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1274,6 +1311,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxpl = std::make_unique<IndexProductLocalSearchQuantizer>();
         read_index_header(*idxpl, f);
         read_ProductLocalSearchQuantizer(idxpl->plsq, f);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpl->plsq.d == static_cast<size_t>(idxpl->d),
+                "IndexProductLocalSearchQuantizer d mismatch: plsq.d=%zd vs idx.d=%d",
+                idxpl->plsq.d,
+                idxpl->d);
         READ1(idxpl->code_size);
         read_vector(idxpl->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1283,6 +1325,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
         read_index_header(*idxr, f);
         read_ResidualQuantizer(idxr->rq, f, io_flags);
+        FAISS_THROW_IF_NOT_FMT(
+                idxr->rq.d == static_cast<size_t>(idxr->d),
+                "ResidualCoarseQuantizer d mismatch: rq.d=%zd vs idx.d=%d",
+                idxr->rq.d,
+                idxr->d);
         READ1(idxr->beam_factor);
         if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
             // then we force the beam factor to -1
@@ -1595,6 +1642,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         indep->index_ivf = dynamic_cast<IndexIVF*>(ivf_idx.get());
         FAISS_THROW_IF_NOT(indep->index_ivf);
         ivf_idx.release();
+        if (indep->vt) {
+            FAISS_THROW_IF_NOT_FMT(
+                    indep->vt->d_in == indep->d,
+                    "IndexIVFIndependentQuantizer: vt->d_in (%d) != index d (%d)",
+                    indep->vt->d_in,
+                    indep->d);
+            FAISS_THROW_IF_NOT_FMT(
+                    indep->vt->d_out == indep->index_ivf->d,
+                    "IndexIVFIndependentQuantizer: vt->d_out (%d) != index_ivf->d (%d)",
+                    indep->vt->d_out,
+                    indep->index_ivf->d);
+        }
         if (auto index_ivfpq = dynamic_cast<IndexIVFPQ*>(indep->index_ivf)) {
             READ1(index_ivfpq->use_precomputed_table);
         }
@@ -1892,7 +1951,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         auto idxqfs = std::make_unique<IndexRaBitQFastScan>();
         read_index_header(*idxqfs, f);
-        read_RaBitQuantizer(idxqfs->rabitq, f, true);
+        read_RaBitQuantizer(idxqfs->rabitq, f, idxqfs->d, true);
         READVECTOR(idxqfs->center);
         READ1(idxqfs->qb);
         FAISS_THROW_IF_NOT_FMT(
@@ -1944,7 +2003,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Ixrq = original single-bit format
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
-        read_RaBitQuantizer(idxq->rabitq, f, false);
+        read_RaBitQuantizer(idxq->rabitq, f, idxq->d, false);
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -1962,7 +2021,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Ixrr = multi-bit format (new)
         auto idxq = std::make_unique<IndexRaBitQ>();
         read_index_header(*idxq, f);
-        read_RaBitQuantizer(idxq->rabitq, f, true); // Reads nb_bits from file
+        read_RaBitQuantizer(
+                idxq->rabitq, f, idxq->d, true); // Reads nb_bits from file
         READVECTOR(idxq->codes);
         READVECTOR(idxq->center);
         READ1(idxq->qb);
@@ -1978,7 +2038,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("Iwrq")) {
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
         read_ivf_header(ivrq.get(), f);
-        read_RaBitQuantizer(ivrq->rabitq, f, false);
+        read_RaBitQuantizer(ivrq->rabitq, f, ivrq->d, false);
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
@@ -2000,7 +2060,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         // Iwrr = multi-bit format (new)
         auto ivrq = std::make_unique<IndexIVFRaBitQ>();
         read_ivf_header(ivrq.get(), f);
-        read_RaBitQuantizer(ivrq->rabitq, f, true); // Reads nb_bits from file
+        read_RaBitQuantizer(
+                ivrq->rabitq, f, ivrq->d, true); // Reads nb_bits from file
         READ1(ivrq->code_size);
         READ1(ivrq->by_residual);
         READ1(ivrq->qb);
@@ -2089,7 +2150,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
         read_ivf_header(ivrqfs.get(), f);
-        read_RaBitQuantizer(ivrqfs->rabitq, f);
+        read_RaBitQuantizer(ivrqfs->rabitq, f, ivrqfs->d);
         READ1(ivrqfs->by_residual);
         READ1(ivrqfs->code_size);
         READ1(ivrqfs->bbs);
