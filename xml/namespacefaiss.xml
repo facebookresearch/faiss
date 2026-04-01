@@ -4774,10 +4774,10 @@
         </inbodydescription>
         <location file="faiss/impl/index_read_utils.h" line="31" column="6" declfile="faiss/impl/index_read_utils.h" declline="31" declcolumn="6"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a39ebc7cee79b9534f7a5d6d622ed0250" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a682034cc1df82dec40aaac34434822ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::read_ScalarQuantizer</definition>
-        <argsstring>(ScalarQuantizer *ivsc, IOReader *f)</argsstring>
+        <argsstring>(ScalarQuantizer *ivsc, IOReader *f, const Index &amp;idx)</argsstring>
         <name>read_ScalarQuantizer</name>
         <qualifiedname>faiss::read_ScalarQuantizer</qualifiedname>
         <param>
@@ -4787,6 +4787,10 @@
         <param>
           <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
           <declname>f</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>idx</declname>
         </param>
         <briefdescription>
         </briefdescription>

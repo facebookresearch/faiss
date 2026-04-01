@@ -12155,7 +12155,7 @@
     <member refid="namespacefaiss_1acf993db387d508bb9e1d517d612138d0" kind="function"><name>read_InvertedLists</name></member>
     <member refid="namespacefaiss_1a13ad4a989f3e8f7e7e87f1ac34b87f3a" kind="function"><name>set_array_invlist</name></member>
     <member refid="namespacefaiss_1a4eae12c70887bff34241a726efb9ff02" kind="function"><name>read_ProductQuantizer</name></member>
-    <member refid="namespacefaiss_1a39ebc7cee79b9534f7a5d6d622ed0250" kind="function"><name>read_ScalarQuantizer</name></member>
+    <member refid="namespacefaiss_1a682034cc1df82dec40aaac34434822ac" kind="function"><name>read_ScalarQuantizer</name></member>
     <member refid="namespacefaiss_1abf86b394ccff3a1d3d5e4b848740059c" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa4aee5942eb92dbce17469f4bdd2e0a5" kind="function"><name>fourcc</name></member>
     <member refid="namespacefaiss_1aa2a1c19599e8fc0b8a3025d3386637b8" kind="function"><name>fourcc_inv</name></member>

@@ -346,7 +346,7 @@
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IndexIVF*<sp/>ivf,</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;std::vector&lt;idx_t&gt;&gt;&amp;<sp/>ids);</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>read_ProductQuantizer(ProductQuantizer*<sp/>pq,<sp/>IOReader*<sp/>f);</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>read_ScalarQuantizer(ScalarQuantizer*<sp/>ivsc,<sp/>IOReader*<sp/>f);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>read_ScalarQuantizer(ScalarQuantizer*<sp/>ivsc,<sp/>IOReader*<sp/>f,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Index&amp;<sp/>idx);</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight></codeline>
