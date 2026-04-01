@@ -2624,6 +2624,11 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 idxh->b > 0,
                 "invalid IndexBinaryHash b=%d (must be > 0)",
                 idxh->b);
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(idxh->b) <= idxh->code_size * 8,
+                "IndexBinaryHash b=%d exceeds code_size=%d bits",
+                idxh->b,
+                idxh->code_size);
         READ1(idxh->nflip);
         read_binary_hash_invlists(idxh->invlists, idxh->b, idxh->code_size, f);
         idx = std::move(idxh);

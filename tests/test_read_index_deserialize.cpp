@@ -705,6 +705,21 @@ TEST(ReadIndexDeserialize, BinaryHashIlNbitZeroWithEntries) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexBinaryHash with b exceeding code_size*8 triggers validation.
+// Without this check, BitstringReader::read() would access past the
+// allocated code buffer, causing a heap-buffer-overflow.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, BinaryHashBExceedsCodeSize) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHh");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/0);
+    // d=16 → code_size=2 → 16 bits available
+    push_val<int>(buf, 17); // b = 17 (exceeds 16 bits)
+
+    expect_binary_read_throws_with(buf, "IndexBinaryHash b=");
+}
+
+// -----------------------------------------------------------------------
 // Test: read_binary_multi_hash_map with crafted ilsz values that sum to
 // more than ntotal.  Without the check, the inner loop would read past
 // the end of the BitstringReader buffer.
