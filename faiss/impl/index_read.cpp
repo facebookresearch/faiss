@@ -812,7 +812,10 @@ static void read_ProductLocalSearchQuantizer(
     }
 }
 
-void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
+void read_ScalarQuantizer(
+        ScalarQuantizer* ivsc,
+        IOReader* f,
+        const Index& idx) {
     int qtype_int;
     READ1(qtype_int);
     FAISS_THROW_IF_NOT_FMT(
@@ -825,11 +828,18 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->rangestat_arg);
     READ1(ivsc->d);
     READ1(ivsc->code_size);
+    FAISS_THROW_IF_NOT_FMT(
+            static_cast<size_t>(idx.d) == ivsc->d,
+            "ScalarQuantizer d %zu != index header d %d",
+            ivsc->d,
+            idx.d);
     READVECTOR(ivsc->trained);
     // Validate trained vector size matches the quantizer type and dimension.
-    // An untrained ScalarQuantizer legitimately has trained.size() == 0,
-    // so only check when the vector is non-empty.
-    if (!ivsc->trained.empty()) {
+    // UNIFORM/NON_UNIFORM qtypes require training data; other qtypes
+    // (fp16, bf16, 8bit_direct*) need none.
+    // An untrained index (is_trained == false) legitimately has
+    // trained.size() == 0, so we allow that case.
+    {
         size_t expected = 0;
         switch (ivsc->qtype) {
             case ScalarQuantizer::QT_4bit_uniform:
@@ -849,14 +859,31 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
                 expected = 0;
                 break;
         }
-        FAISS_THROW_IF_NOT_FMT(
-                ivsc->trained.size() == expected,
-                "ScalarQuantizer trained size %zu != expected %zu "
-                "for qtype %d, d %zu",
-                ivsc->trained.size(),
-                expected,
-                (int)ivsc->qtype,
-                ivsc->d);
+        if (ivsc->trained.empty() && expected > 0) {
+            // Empty trained is only valid for untrained indices.
+            FAISS_THROW_IF_NOT_FMT(
+                    !idx.is_trained,
+                    "ScalarQuantizer trained size 0 != expected %zu "
+                    "for qtype %d, d %zu (index is marked as trained)",
+                    expected,
+                    (int)ivsc->qtype,
+                    ivsc->d);
+        } else {
+            FAISS_THROW_IF_NOT_FMT(
+                    ivsc->trained.size() == expected,
+                    "ScalarQuantizer trained size %zu != expected %zu "
+                    "for qtype %d, d %zu",
+                    ivsc->trained.size(),
+                    expected,
+                    (int)ivsc->qtype,
+                    ivsc->d);
+            if (expected > 0) {
+                FAISS_THROW_IF_NOT_MSG(
+                        idx.is_trained,
+                        "ScalarQuantizer has training data but "
+                        "index header is_trained is false");
+            }
+        }
     }
     ivsc->set_derived_sizes();
 }
@@ -1612,7 +1639,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IxSQ")) {
         auto idxs = std::make_unique<IndexScalarQuantizer>();
         read_index_header(*idxs, f);
-        read_ScalarQuantizer(&idxs->sq, f);
+        read_ScalarQuantizer(&idxs->sq, f, *idxs);
         read_vector(idxs->codes, f);
         idxs->code_size = idxs->sq.code_size;
         idx = std::move(idxs);
@@ -1646,7 +1673,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto ivsc = std::make_unique<IndexIVFScalarQuantizer>();
         std::vector<std::vector<idx_t>> ids;
         read_ivf_header(ivsc.get(), f, &ids);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
         ArrayInvertedLists* ail = set_array_invlist(ivsc.get(), ids);
         for (size_t i = 0; i < ivsc->nlist; i++)
@@ -1655,7 +1682,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IwSQ") || h == fourcc("IwSq")) {
         auto ivsc = std::make_unique<IndexIVFScalarQuantizer>();
         read_ivf_header(ivsc.get(), f);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
         if (h == fourcc("IwSQ")) {
             ivsc->by_residual = true;

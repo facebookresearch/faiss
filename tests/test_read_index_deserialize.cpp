@@ -2773,3 +2773,98 @@ TEST(ReadIndexDeserialize, IVFAQFastScanNegativeQbs) {
     auto buf = build_IVFAQFastScan_buf(/*qbs=*/-1);
     expect_read_throws_with(buf, "qbs must be non-negative");
 }
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer with empty trained vector for qtypes that require
+// training data must be rejected at deserialization time.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQEmptyTrainedNonUniform) {
+    // QT_8bit (NON_UNIFORM) expects trained.size() == 2*d == 8.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, ScalarQuantizer::QT_8bit);
+    push_val<int>(buf, 0);         // rangestat
+    push_val<float>(buf, 0.0f);    // rangestat_arg
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<float>(buf, {});   // empty trained
+    push_vector<uint8_t>(buf, {}); // codes (ntotal=0)
+
+    expect_read_throws_with(buf, "ScalarQuantizer trained size");
+}
+
+TEST(ReadIndexDeserialize, SQEmptyTrainedUniform) {
+    // QT_8bit_uniform (UNIFORM) expects trained.size() == 2.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, ScalarQuantizer::QT_8bit_uniform);
+    push_val<int>(buf, 0);         // rangestat
+    push_val<float>(buf, 0.0f);    // rangestat_arg
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<float>(buf, {});   // empty trained
+    push_vector<uint8_t>(buf, {}); // codes (ntotal=0)
+
+    expect_read_throws_with(buf, "ScalarQuantizer trained size");
+}
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer d must match the index header d.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, ScalarQuantizer::QT_8bit);
+    push_val<int>(buf, 0);      // rangestat
+    push_val<float>(buf, 0.0f); // rangestat_arg
+    push_val<size_t>(buf, 8);   // d = 8, mismatches header d = 4
+    push_val<size_t>(buf, 1);   // code_size
+    push_vector<float>(buf, std::vector<float>(16, 0.0f)); // trained
+    push_vector<uint8_t>(buf, {});                         // codes (ntotal=0)
+
+    expect_read_throws_with(buf, "ScalarQuantizer d");
+}
+
+// -----------------------------------------------------------------------
+// Test: ScalarQuantizer with training data but is_trained=false in header.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQIsTrainedMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/false);
+    push_val<int>(buf, ScalarQuantizer::QT_8bit);
+    push_val<int>(buf, 0);      // rangestat
+    push_val<float>(buf, 0.0f); // rangestat_arg
+    push_val<size_t>(buf, 4);   // d
+    push_val<size_t>(buf, 1);   // code_size
+    // Provide correctly-sized trained data (2*d=8 floats)
+    push_vector<float>(buf, std::vector<float>(8, 0.0f));
+    push_vector<uint8_t>(buf, {}); // codes (ntotal=0)
+
+    expect_read_throws_with(buf, "is_trained");
+}
+
+// -----------------------------------------------------------------------
+// Test: Untrained ScalarQuantizer (is_trained=false, empty trained) must
+// deserialize successfully — this is a legitimate untrained index.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, SQUntrainedEmptyTrainedAccepted) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxSQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/false);
+    push_val<int>(buf, ScalarQuantizer::QT_8bit);
+    push_val<int>(buf, 0);         // rangestat
+    push_val<float>(buf, 0.0f);    // rangestat_arg
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<float>(buf, {});   // empty trained (untrained)
+    push_vector<uint8_t>(buf, {}); // codes (ntotal=0)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    EXPECT_FALSE(idx->is_trained);
+}
