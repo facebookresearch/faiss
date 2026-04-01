@@ -610,8 +610,11 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
 
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
-    FAISS_CHECK_RANGE(rq.d, 0, (1 << 20) + 1);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.d > 0, "invalid AdditiveQuantizer d %zd, must be > 0", rq.d);
     READ1(rq.M);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", rq.M);
     READVECTOR(rq.nbits);
     FAISS_THROW_IF_NOT_FMT(
             rq.nbits.size() == rq.M,
@@ -630,7 +633,8 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READ1(aq.d);
-    FAISS_CHECK_RANGE(aq.d, 0, (1 << 20) + 1);
+    FAISS_THROW_IF_NOT_FMT(
+            aq.d > 0, "invalid AdditiveQuantizer d %zd, must be > 0", aq.d);
     READ1(aq.M);
     FAISS_THROW_IF_NOT_FMT(
             aq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", aq.M);
@@ -660,6 +664,37 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     }
 
     aq.set_derived_values();
+
+    // Sanity-check codebooks size without knowing the effective dimension.
+    // codebooks stores effective_d * total_codebook_size floats, so its
+    // size must be a positive multiple of total_codebook_size.
+    if (aq.total_codebook_size > 0) {
+        FAISS_THROW_IF_NOT_FMT(
+                aq.codebooks.size() >= aq.total_codebook_size &&
+                        aq.codebooks.size() % aq.total_codebook_size == 0,
+                "AdditiveQuantizer codebooks size %zd is not a positive "
+                "multiple of total_codebook_size %zd",
+                aq.codebooks.size(),
+                aq.total_codebook_size);
+    }
+}
+
+// Validate that the codebooks vector is large enough for the given
+// effective dimension.  For a standalone AdditiveQuantizer the effective
+// dimension equals aq.d.  For a ProductAdditiveQuantizer the codebooks
+// are sized for d_sub = d / nsplits, so callers pass that instead.
+static void validate_codebooks_size(
+        const AdditiveQuantizer& aq,
+        size_t effective_d) {
+    size_t required = mul_no_overflow(
+            effective_d, aq.total_codebook_size, "codebooks validation");
+    FAISS_THROW_IF_NOT_FMT(
+            aq.codebooks.size() >= required,
+            "AdditiveQuantizer codebooks size %zd too small for "
+            "d=%zd * total_codebook_size=%zd",
+            aq.codebooks.size(),
+            effective_d,
+            aq.total_codebook_size);
 }
 
 static void read_ResidualQuantizer(
@@ -667,6 +702,7 @@ static void read_ResidualQuantizer(
         IOReader* f,
         int io_flags) {
     read_AdditiveQuantizer(rq, f);
+    validate_codebooks_size(rq, rq.d);
     READ1(rq.train_type);
     READ1(rq.max_beam_size);
     FAISS_THROW_IF_NOT_FMT(
@@ -699,6 +735,7 @@ static void read_ResidualQuantizer(
 
 static void read_LocalSearchQuantizer(LocalSearchQuantizer& lsq, IOReader* f) {
     read_AdditiveQuantizer(lsq, f);
+    validate_codebooks_size(lsq, lsq.d);
     READ1(lsq.K);
     READ1(lsq.train_iters);
     READ1(lsq.encode_ils_iters);
@@ -722,6 +759,12 @@ static void read_ProductAdditiveQuantizer(
             "invalid ProductAdditiveQuantizer nsplits %zd (must be > 0)",
             paq.nsplits);
     FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(paq.nsplits, "nsplits");
+    FAISS_THROW_IF_NOT_FMT(
+            paq.d % paq.nsplits == 0,
+            "ProductAdditiveQuantizer d=%zd not divisible by nsplits=%zd",
+            paq.d,
+            paq.nsplits);
+    validate_codebooks_size(paq, paq.d / paq.nsplits);
 }
 
 static void read_ProductResidualQuantizer(
@@ -730,9 +773,19 @@ static void read_ProductResidualQuantizer(
         int io_flags) {
     read_ProductAdditiveQuantizer(prq, f);
 
+    size_t d_sub = prq.d / prq.nsplits;
     for (size_t i = 0; i < prq.nsplits; i++) {
         auto rq = std::make_unique<ResidualQuantizer>();
         read_ResidualQuantizer(*rq, f, io_flags);
+        FAISS_THROW_IF_NOT_FMT(
+                rq->d == d_sub,
+                "ProductResidualQuantizer sub-quantizer %zd has d=%zd, "
+                "expected d_sub=%zd (d=%zd / nsplits=%zd)",
+                i,
+                rq->d,
+                d_sub,
+                prq.d,
+                prq.nsplits);
         prq.quantizers.push_back(rq.release());
     }
 }
@@ -742,9 +795,19 @@ static void read_ProductLocalSearchQuantizer(
         IOReader* f) {
     read_ProductAdditiveQuantizer(plsq, f);
 
+    size_t d_sub = plsq.d / plsq.nsplits;
     for (size_t i = 0; i < plsq.nsplits; i++) {
         auto lsq = std::make_unique<LocalSearchQuantizer>();
         read_LocalSearchQuantizer(*lsq, f);
+        FAISS_THROW_IF_NOT_FMT(
+                lsq->d == d_sub,
+                "ProductLocalSearchQuantizer sub-quantizer %zd has d=%zd, "
+                "expected d_sub=%zd (d=%zd / nsplits=%zd)",
+                i,
+                lsq->d,
+                d_sub,
+                plsq.d,
+                plsq.nsplits);
         plsq.quantizers.push_back(lsq.release());
     }
 }
