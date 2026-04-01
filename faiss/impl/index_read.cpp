@@ -1467,6 +1467,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxaqfs->implem);
         READ1(idxaqfs->bbs);
         READ1(idxaqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxaqfs->qbs >= 0, "qbs must be non-negative");
 
         READ1(idxaqfs->M);
         READ1(idxaqfs->nbits);
@@ -1540,6 +1541,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivaqfs->implem);
         READ1(ivaqfs->bbs);
         READ1(ivaqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(ivaqfs->qbs >= 0, "qbs must be non-negative");
 
         READ1(ivaqfs->M);
         READ1(ivaqfs->nbits);
@@ -1979,6 +1981,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxpqfs->implem);
         READ1(idxpqfs->bbs);
         READ1(idxpqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxpqfs->qbs >= 0, "qbs must be non-negative");
         READ1(idxpqfs->ntotal2);
         READ1(idxpqfs->M2);
         READVECTOR(idxpqfs->codes);

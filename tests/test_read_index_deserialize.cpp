@@ -19,6 +19,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 
@@ -2340,7 +2341,8 @@ TEST(ReadIndexDeserialize, IwIQVtDoutMismatch) {
 /// Caller can override bbs and M2 to inject invalid values.
 static std::vector<uint8_t> build_IndexPQFastScan_buf(
         int bbs = 32,
-        size_t M2 = 2) {
+        size_t M2 = 2,
+        int qbs = 0) {
     // PQ: d=4, M=2, nbits=4 → ksub=16, centroids size = d*ksub = 64 floats
     std::vector<uint8_t> buf;
     push_fourcc(buf, "IPfs");
@@ -2348,7 +2350,7 @@ static std::vector<uint8_t> build_IndexPQFastScan_buf(
     push_pq(buf, /*d=*/4, /*M=*/2, /*nbits=*/4, std::vector<float>(64, 0.0f));
     push_val<int>(buf, 0);         // implem
     push_val<int>(buf, bbs);       // bbs
-    push_val<int>(buf, 0);         // qbs
+    push_val<int>(buf, qbs);       // qbs
     push_val<size_t>(buf, 0);      // ntotal2
     push_val<size_t>(buf, M2);     // M2
     push_vector<uint8_t>(buf, {}); // codes
@@ -2362,7 +2364,8 @@ static std::vector<uint8_t> build_IndexPQFastScan_buf(
 static std::vector<uint8_t> build_AQFastScan_buf(
         size_t fastscan_M = 3,
         size_t fastscan_ksub = 16,
-        int bbs = 32) {
+        int bbs = 32,
+        int qbs = 0) {
     std::vector<uint8_t> buf;
     push_fourcc(buf, "IRfs");
     push_index_header(buf, /*d=*/4, /*ntotal=*/0);
@@ -2384,7 +2387,7 @@ static std::vector<uint8_t> build_AQFastScan_buf(
     // FastScan fields (IndexAdditiveQuantizerFastScan):
     push_val<int>(buf, 0);                                // implem
     push_val<int>(buf, bbs);                              // bbs
-    push_val<int>(buf, 0);                                // qbs
+    push_val<int>(buf, qbs);                              // qbs
     push_val<size_t>(buf, fastscan_M);                    // M
     push_val<size_t>(buf, 4);                             // nbits
     push_val<size_t>(buf, fastscan_ksub);                 // ksub
@@ -2703,4 +2706,70 @@ TEST(ReadIndexDeserialize, ProductLocalSearchQuantizerMultiSplitValid) {
     auto idx = read_index_up(&reader);
     EXPECT_EQ(idx->ntotal, 0);
     EXPECT_EQ(idx->d, 8);
+}
+
+// -----------------------------------------------------------------------
+// Negative qbs must be rejected at deserialization time to prevent
+// infinite loops in pq4_qbs_to_nq (arithmetic right shift preserves
+// the sign bit, so the loop never terminates for negative values).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexPQFastScanNegativeQbs) {
+    auto buf = build_IndexPQFastScan_buf(/*bbs=*/32, /*M2=*/2, /*qbs=*/-1);
+    expect_read_throws_with(buf, "qbs must be non-negative");
+}
+
+TEST(ReadIndexDeserialize, AQFastScanNegativeQbs) {
+    auto buf = build_AQFastScan_buf(
+            /*fastscan_M=*/3,
+            /*fastscan_ksub=*/16,
+            /*bbs=*/32,
+            /*qbs=*/-1);
+    expect_read_throws_with(buf, "qbs must be non-negative");
+}
+
+/// Helper: serialize a valid IndexIVFResidualQuantizerFastScan, then patch
+/// the qbs field to a given value. The qbs field (int, default 0) immediately
+/// follows bbs (int, value 32) in the serialized IVRf format.
+static std::vector<uint8_t> build_IVFAQFastScan_buf(int qbs) {
+    IndexFlat coarse_quantizer(4, METRIC_L2);
+    IndexIVFResidualQuantizerFastScan idx(
+            &coarse_quantizer, /*d=*/4, /*nlist=*/1, /*M=*/1, /*nbits=*/4);
+
+    // Train the index so serialization produces valid codebooks.
+    std::vector<float> train_data(4 * 64);
+    for (size_t i = 0; i < train_data.size(); i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(64, train_data.data());
+
+    // Set a distinctive qbs value so the byte pattern is unique.
+    int sentinel_qbs = 0x1234;
+    idx.qbs = sentinel_qbs;
+
+    VectorIOWriter writer;
+    write_index(&idx, &writer);
+
+    auto buf = std::move(writer.data);
+
+    // Locate qbs (int, value sentinel_qbs) which follows bbs (int, value 32).
+    int target_bbs = 32;
+    int target_qbs = sentinel_qbs;
+    bool patched = false;
+    for (size_t i = 0; i + 2 * sizeof(int) <= buf.size(); i++) {
+        int val_bbs, val_qbs;
+        memcpy(&val_bbs, &buf[i], sizeof(int));
+        memcpy(&val_qbs, &buf[i + sizeof(int)], sizeof(int));
+        if (val_bbs == target_bbs && val_qbs == target_qbs) {
+            memcpy(&buf[i + sizeof(int)], &qbs, sizeof(int));
+            patched = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(patched) << "Could not find qbs field in serialized data";
+    return buf;
+}
+
+TEST(ReadIndexDeserialize, IVFAQFastScanNegativeQbs) {
+    auto buf = build_IVFAQFastScan_buf(/*qbs=*/-1);
+    expect_read_throws_with(buf, "qbs must be non-negative");
 }
