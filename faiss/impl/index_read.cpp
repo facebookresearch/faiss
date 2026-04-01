@@ -697,6 +697,22 @@ static void validate_codebooks_size(
             aq.total_codebook_size);
 }
 
+// Validate that the AdditiveQuantizer dimension matches the index header
+// dimension.  compute_LUT() treats codebooks as a (d, total_codebook_size)
+// matrix and query vectors are sized for idx_d, so a mismatch leads to
+// out-of-bounds reads.
+static void validate_aq_dimension_match(
+        const AdditiveQuantizer& aq,
+        int idx_d,
+        const char* index_type) {
+    FAISS_THROW_IF_NOT_FMT(
+            aq.d == static_cast<size_t>(idx_d),
+            "%s: AdditiveQuantizer d=%zd does not match index d=%d",
+            index_type,
+            aq.d,
+            idx_d);
+}
+
 static void read_ResidualQuantizer(
         ResidualQuantizer& rq,
         IOReader* f,
@@ -1359,11 +1375,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             read_ResidualQuantizer(idxr->rq, f, io_flags);
         }
-        FAISS_THROW_IF_NOT_FMT(
-                idxr->rq.d == static_cast<size_t>(idxr->d),
-                "IndexResidualQuantizer d mismatch: rq.d=%zd vs idx.d=%d",
-                idxr->rq.d,
-                idxr->d);
+        validate_aq_dimension_match(
+                idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1373,11 +1386,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<IndexLocalSearchQuantizer>();
         read_index_header(*idxr, f);
         read_LocalSearchQuantizer(idxr->lsq, f);
-        FAISS_THROW_IF_NOT_FMT(
-                idxr->lsq.d == static_cast<size_t>(idxr->d),
-                "IndexLocalSearchQuantizer d mismatch: lsq.d=%zd vs idx.d=%d",
-                idxr->lsq.d,
-                idxr->d);
+        validate_aq_dimension_match(
+                idxr->lsq, idxr->d, "IndexLocalSearchQuantizer");
         READ1(idxr->code_size);
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1387,11 +1397,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxpr = std::make_unique<IndexProductResidualQuantizer>();
         read_index_header(*idxpr, f);
         read_ProductResidualQuantizer(idxpr->prq, f, io_flags);
-        FAISS_THROW_IF_NOT_FMT(
-                idxpr->prq.d == static_cast<size_t>(idxpr->d),
-                "IndexProductResidualQuantizer d mismatch: prq.d=%zd vs idx.d=%d",
-                idxpr->prq.d,
-                idxpr->d);
+        validate_aq_dimension_match(
+                idxpr->prq, idxpr->d, "IndexProductResidualQuantizer");
         READ1(idxpr->code_size);
         read_vector(idxpr->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1401,11 +1408,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxpl = std::make_unique<IndexProductLocalSearchQuantizer>();
         read_index_header(*idxpl, f);
         read_ProductLocalSearchQuantizer(idxpl->plsq, f);
-        FAISS_THROW_IF_NOT_FMT(
-                idxpl->plsq.d == static_cast<size_t>(idxpl->d),
-                "IndexProductLocalSearchQuantizer d mismatch: plsq.d=%zd vs idx.d=%d",
-                idxpl->plsq.d,
-                idxpl->d);
+        validate_aq_dimension_match(
+                idxpl->plsq, idxpl->d, "IndexProductLocalSearchQuantizer");
         READ1(idxpl->code_size);
         read_vector(idxpl->codes, f);
         FAISS_THROW_IF_NOT(
@@ -1415,11 +1419,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxr = std::make_unique<ResidualCoarseQuantizer>();
         read_index_header(*idxr, f);
         read_ResidualQuantizer(idxr->rq, f, io_flags);
-        FAISS_THROW_IF_NOT_FMT(
-                idxr->rq.d == static_cast<size_t>(idxr->d),
-                "ResidualCoarseQuantizer d mismatch: rq.d=%zd vs idx.d=%d",
-                idxr->rq.d,
-                idxr->d);
+        validate_aq_dimension_match(
+                idxr->rq, idxr->d, "ResidualCoarseQuantizer");
         READ1(idxr->beam_factor);
         if (io_flags & IO_FLAG_SKIP_PRECOMPUTE_TABLE) {
             // then we force the beam factor to -1
@@ -1490,6 +1491,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             read_ProductResidualQuantizer(
                     *(ProductResidualQuantizer*)idxaqfs->aq, f, io_flags);
         }
+        validate_aq_dimension_match(
+                *idxaqfs->aq, idxaqfs->d, "IndexAdditiveQuantizerFastScan");
 
         READ1(idxaqfs->implem);
         READ1(idxaqfs->bbs);
@@ -1563,6 +1566,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             read_ProductResidualQuantizer(
                     *(ProductResidualQuantizer*)ivaqfs->aq, f, io_flags);
         }
+        validate_aq_dimension_match(
+                *ivaqfs->aq, ivaqfs->d, "IndexIVFAdditiveQuantizerFastScan");
 
         READ1(ivaqfs->by_residual);
         READ1(ivaqfs->implem);
@@ -1720,6 +1725,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             read_ProductResidualQuantizer(
                     *(ProductResidualQuantizer*)iva->aq, f, io_flags);
         }
+        validate_aq_dimension_match(
+                *iva->aq, iva->d, "IndexIVFAdditiveQuantizer");
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);
         read_InvertedLists(*iva, f, io_flags);
