@@ -611,10 +611,11 @@ TEST(ReadIndexDeserialize, ProductAdditiveQuantizerZeroNsplits) {
     push_val<size_t>(buf, 1);      // M
     push_vector<size_t>(buf, {8}); // nbits (1 element matching M=1)
     push_val<bool>(buf, true);     // is_trained
-    push_vector<float>(buf, {});   // codebooks (empty)
-    push_val<int>(buf, 0);         // search_type = ST_decompress
-    push_val<float>(buf, 0.0f);    // norm_min
-    push_val<float>(buf, 1.0f);    // norm_max
+    // codebooks: d * total_codebook_size = 4 * 256 = 1024 floats
+    push_vector<float>(buf, std::vector<float>(4 * 256, 0.0f));
+    push_val<int>(buf, 0);      // search_type = ST_decompress
+    push_val<float>(buf, 0.0f); // norm_min
+    push_val<float>(buf, 1.0f); // norm_max
     // ProductAdditiveQuantizer field:
     push_val<size_t>(buf, 0); // nsplits = 0 (invalid)
 
@@ -987,19 +988,37 @@ TEST(ReadIndexDeserialize, IndexPQCodesSizeMismatch) {
 
 /// Helper: append a minimal AdditiveQuantizer (d, M, nbits, is_trained,
 /// codebooks, search_type=ST_decompress, norm_min, norm_max).
+/// Writes zero-filled codebooks of size codebook_d * total_codebook_size so
+/// that the deserialization codebooks-size validation passes.
+/// For standalone quantizers codebook_d == d.  For ProductAdditiveQuantizer
+/// codebook_d == d / nsplits.  Pass codebook_d = 0 (default) to use d.
 static void push_additive_quantizer(
         std::vector<uint8_t>& buf,
         size_t d,
         size_t M,
-        const std::vector<size_t>& nbits) {
+        const std::vector<size_t>& nbits,
+        size_t codebook_d = 0) {
+    if (codebook_d == 0) {
+        codebook_d = d;
+    }
+
+    // Compute total_codebook_size = sum(2^nbits[i]).
+    size_t total_codebook_size = 0;
+    for (auto nb : nbits) {
+        total_codebook_size += size_t{1} << nb;
+    }
+
     push_val<size_t>(buf, d);
     push_val<size_t>(buf, M);
     push_vector<size_t>(buf, nbits);
-    push_val<bool>(buf, true);   // is_trained
-    push_vector<float>(buf, {}); // codebooks (empty)
-    push_val<int>(buf, 0);       // search_type = ST_decompress
-    push_val<float>(buf, 0.0f);  // norm_min
-    push_val<float>(buf, 1.0f);  // norm_max
+    push_val<bool>(buf, true); // is_trained
+    push_vector<float>(
+            buf,
+            std::vector<float>(
+                    codebook_d * total_codebook_size, 0.0f)); // codebooks
+    push_val<int>(buf, 0);      // search_type = ST_decompress
+    push_val<float>(buf, 0.0f); // norm_min
+    push_val<float>(buf, 1.0f); // norm_max
 }
 
 /// Helper: append a minimal ResidualQuantizer (AdditiveQuantizer +
@@ -2297,4 +2316,196 @@ TEST(ReadIndexDeserialize, IwIQVtDoutMismatch) {
     VectorIOReader reader;
     reader.data = corrupted;
     EXPECT_THROW(read_index(&reader), FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: read_AdditiveQuantizer rejects codebooks that are too small for
+// d * total_codebook_size.  Previously this was only caught at
+// compute_LUT() time; now deserialization itself must throw.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AdditiveQuantizerCodebooksTooSmall) {
+    // Build an IndexResidualQuantizer ("IxRq") with d=4, M=1, nbits={8}.
+    // Write AdditiveQuantizer fields manually with empty codebooks so that
+    // the deserialization check fires (codebooks.size()=0 < d*256=1024).
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxRq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // AdditiveQuantizer fields (inline, not via push_additive_quantizer
+    // which now writes correctly-sized codebooks):
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // M
+    push_vector<size_t>(buf, {8}); // nbits
+    push_val<bool>(buf, true);     // is_trained
+    push_vector<float>(buf, {});   // codebooks (empty — triggers check)
+    push_val<int>(buf, 0);         // search_type = ST_decompress
+    push_val<float>(buf, 0.0f);    // norm_min
+    push_val<float>(buf, 1.0f);    // norm_max
+    // ResidualQuantizer fields:
+    push_val<int>(buf, 2048); // train_type = Skip_codebook_tables
+    push_val<int>(buf, 1);    // max_beam_size
+    // IndexResidualQuantizer fields:
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<uint8_t>(buf, {}); // codes (empty, matches ntotal=0)
+
+    expect_read_throws_with(buf, "not a positive multiple");
+}
+
+// -----------------------------------------------------------------------
+// Test: AdditiveQuantizer with d=0 is rejected during deserialization.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AdditiveQuantizerDZero) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxRq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    // AdditiveQuantizer fields with d=0:
+    push_val<size_t>(buf, 0);      // d = 0 (invalid)
+    push_val<size_t>(buf, 1);      // M
+    push_vector<size_t>(buf, {8}); // nbits
+    push_val<bool>(buf, true);     // is_trained
+    push_vector<float>(buf, {});   // codebooks
+    push_val<int>(buf, 0);         // search_type = ST_decompress
+    push_val<float>(buf, 0.0f);    // norm_min
+    push_val<float>(buf, 1.0f);    // norm_max
+
+    expect_read_throws_with(buf, "invalid AdditiveQuantizer d");
+}
+
+// -----------------------------------------------------------------------
+// Test: AdditiveQuantizer with codebooks size not a multiple of
+// total_codebook_size is rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AdditiveQuantizerCodebooksNotMultiple) {
+    // d=4, M=1, nbits={8} → total_codebook_size=256.
+    // codebooks should be a multiple of 256 floats.  Provide 257 floats.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxRq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, 4);                               // d
+    push_val<size_t>(buf, 1);                               // M
+    push_vector<size_t>(buf, {8});                          // nbits
+    push_val<bool>(buf, true);                              // is_trained
+    push_vector<float>(buf, std::vector<float>(257, 0.0f)); // not a multiple
+    push_val<int>(buf, 0);      // search_type = ST_decompress
+    push_val<float>(buf, 0.0f); // norm_min
+    push_val<float>(buf, 1.0f); // norm_max
+
+    expect_read_throws_with(buf, "not a positive multiple");
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductAdditiveQuantizer with d not divisible by nsplits throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductAdditiveQuantizerDNotDivisible) {
+    // d=5, nsplits=2 → d % nsplits != 0
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPR");
+    push_index_header(buf, /*d=*/5, /*ntotal=*/0);
+    // AdditiveQuantizer fields: d=5, M=2, nbits={4,4}
+    // For a PAQ with nsplits=2, codebook_d should be d/nsplits, but since
+    // d is not divisible we can just write codebooks sized for d
+    // (the divisibility check fires before the codebooks size check).
+    push_val<size_t>(buf, 5);                                  // d
+    push_val<size_t>(buf, 2);                                  // M
+    push_vector<size_t>(buf, {4, 4});                          // nbits
+    push_val<bool>(buf, true);                                 // is_trained
+    push_vector<float>(buf, std::vector<float>(5 * 32, 0.0f)); // codebooks
+    push_val<int>(buf, 0);      // search_type = ST_decompress
+    push_val<float>(buf, 0.0f); // norm_min
+    push_val<float>(buf, 1.0f); // norm_max
+    // ProductAdditiveQuantizer:
+    push_val<size_t>(buf, 2); // nsplits = 2
+
+    expect_read_throws_with(buf, "not divisible by nsplits");
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductResidualQuantizer sub-quantizer d mismatch throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductResidualQuantizerSubDMismatch) {
+    // d=8, nsplits=2 → d_sub should be 4, but sub-quantizer has d=6
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPR");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // ProductAdditiveQuantizer: AQ(d=8) + nsplits=2 → codebook_d = 4
+    push_additive_quantizer(
+            buf, /*d=*/8, /*M=*/2, /*nbits=*/{4, 4}, /*codebook_d=*/4);
+    push_val<size_t>(buf, 2); // nsplits = 2
+    // First sub-quantizer: d=6 instead of expected d_sub=4
+    push_residual_quantizer(buf, /*d=*/6, /*M=*/1, /*nbits=*/{4});
+    // (second sub-quantizer not needed — should throw on first)
+
+    expect_read_throws_with(buf, "sub-quantizer");
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductLocalSearchQuantizer sub-quantizer d mismatch throws.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductLocalSearchQuantizerSubDMismatch) {
+    // d=8, nsplits=2 → d_sub should be 4, but sub-quantizer has d=6
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPL");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // ProductAdditiveQuantizer: AQ(d=8) + nsplits=2 → codebook_d = 4
+    push_additive_quantizer(
+            buf, /*d=*/8, /*M=*/2, /*nbits=*/{4, 4}, /*codebook_d=*/4);
+    push_val<size_t>(buf, 2); // nsplits = 2
+    // First sub-quantizer: d=6 instead of expected d_sub=4
+    push_local_search_quantizer(buf, /*d=*/6, /*M=*/1, /*nbits=*/{4});
+    // (second sub-quantizer not needed — should throw on first)
+
+    expect_read_throws_with(buf, "sub-quantizer");
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductResidualQuantizer with nsplits > 1 round-trips correctly
+// (codebooks sized for d_sub, not d).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductResidualQuantizerMultiSplitValid) {
+    // d=8, nsplits=2, each sub-RQ has d_sub=4, M=1, nbits={4}
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPR");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // ProductAdditiveQuantizer: codebook_d = d/nsplits = 4
+    push_additive_quantizer(
+            buf, /*d=*/8, /*M=*/2, /*nbits=*/{4, 4}, /*codebook_d=*/4);
+    push_val<size_t>(buf, 2); // nsplits = 2
+    // Two sub-RQs with d_sub=4
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{4});
+    push_residual_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{4});
+    // code_size = 1 (M=2, nbits={4,4} → 8 bits → 1 byte)
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<uint8_t>(buf, {}); // codes (empty, ntotal=0)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    EXPECT_EQ(idx->ntotal, 0);
+    EXPECT_EQ(idx->d, 8);
+}
+
+// -----------------------------------------------------------------------
+// Test: ProductLocalSearchQuantizer with nsplits > 1 round-trips correctly
+// (codebooks sized for d_sub, not d).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductLocalSearchQuantizerMultiSplitValid) {
+    // d=8, nsplits=2, each sub-LSQ has d_sub=4, M=1, nbits={4}
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPL");
+    push_index_header(buf, /*d=*/8, /*ntotal=*/0);
+    // ProductAdditiveQuantizer: codebook_d = d/nsplits = 4
+    push_additive_quantizer(
+            buf, /*d=*/8, /*M=*/2, /*nbits=*/{4, 4}, /*codebook_d=*/4);
+    push_val<size_t>(buf, 2); // nsplits = 2
+    // Two sub-LSQs with d_sub=4
+    push_local_search_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{4});
+    push_local_search_quantizer(buf, /*d=*/4, /*M=*/1, /*nbits=*/{4});
+    // code_size = 1
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<uint8_t>(buf, {}); // codes (empty, ntotal=0)
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    EXPECT_EQ(idx->ntotal, 0);
+    EXPECT_EQ(idx->d, 8);
 }
