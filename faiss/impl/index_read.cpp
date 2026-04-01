@@ -1480,6 +1480,27 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxaqfs->max_train_points);
 
         READVECTOR(idxaqfs->codes);
+
+        FAISS_THROW_IF_NOT_FMT(
+                idxaqfs->M > 0 && idxaqfs->ksub > 0,
+                "IndexAdditiveQuantizerFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxaqfs->M,
+                idxaqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxaqfs->bbs > 0 && idxaqfs->bbs % 32 == 0,
+                "IndexAdditiveQuantizerFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxaqfs->bbs);
+        mul_no_overflow(
+                idxaqfs->ksub,
+                idxaqfs->M,
+                "IndexAdditiveQuantizerFastScan ksub * M");
+        mul_no_overflow(
+                idxaqfs->ksub,
+                idxaqfs->M2,
+                "IndexAdditiveQuantizerFastScan ksub * M2");
+
         idx = std::move(idxaqfs);
     } else if (
             h == fourcc("IVLf") || h == fourcc("IVRf") || h == fourcc("NPLf") ||
@@ -1968,6 +1989,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxpqfs->ksub = (1 << pq.nbits);
         idxpqfs->code_size = pq.code_size;
 
+        FAISS_THROW_IF_NOT_FMT(
+                idxpqfs->M > 0 && idxpqfs->ksub > 0,
+                "IndexPQFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxpqfs->M,
+                idxpqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpqfs->bbs > 0 && idxpqfs->bbs % 32 == 0,
+                "IndexPQFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxpqfs->bbs);
+        mul_no_overflow(idxpqfs->ksub, idxpqfs->M, "IndexPQFastScan ksub * M");
+        mul_no_overflow(
+                idxpqfs->ksub, idxpqfs->M2, "IndexPQFastScan ksub * M2");
+
         idx = std::move(idxpqfs);
 
     } else if (h == fourcc("IwPf")) {
@@ -2037,6 +2073,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->M = M_fastscan;
         idxqfs->nbits = nbits_fastscan;
         idxqfs->ksub = (1 << nbits_fastscan);
+
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->M > 0 && idxqfs->ksub > 0,
+                "IndexRaBitQFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxqfs->M,
+                idxqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->bbs > 0 && idxqfs->bbs % 32 == 0,
+                "IndexRaBitQFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxqfs->bbs);
+        mul_no_overflow(
+                idxqfs->ksub, idxqfs->M, "IndexRaBitQFastScan ksub * M");
+        mul_no_overflow(
+                idxqfs->ksub, idxqfs->M2, "IndexRaBitQFastScan ksub * M2");
 
         READVECTOR(idxqfs->codes);
 

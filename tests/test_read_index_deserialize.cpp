@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <faiss/Index.h>
+#include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
@@ -20,6 +21,8 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
+
+#include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -2316,6 +2319,183 @@ TEST(ReadIndexDeserialize, IwIQVtDoutMismatch) {
     VectorIOReader reader;
     reader.data = corrupted;
     EXPECT_THROW(read_index(&reader), FaissException);
+}
+
+/// Helper: append a minimal valid serialized IndexPQFastScan ("IPfs").
+/// Caller can override bbs and M2 to inject invalid values.
+static std::vector<uint8_t> build_IndexPQFastScan_buf(
+        int bbs = 32,
+        size_t M2 = 2) {
+    // PQ: d=4, M=2, nbits=4 → ksub=16, centroids size = d*ksub = 64 floats
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IPfs");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_pq(buf, /*d=*/4, /*M=*/2, /*nbits=*/4, std::vector<float>(64, 0.0f));
+    push_val<int>(buf, 0);         // implem
+    push_val<int>(buf, bbs);       // bbs
+    push_val<int>(buf, 0);         // qbs
+    push_val<size_t>(buf, 0);      // ntotal2
+    push_val<size_t>(buf, M2);     // M2
+    push_vector<uint8_t>(buf, {}); // codes
+    return buf;
+}
+
+/// Helper: append a minimal valid serialized
+/// IndexResidualQuantizerFastScan ("IRfs").
+/// Writes AdditiveQuantizer + ResidualQuantizer fields, then FastScan fields.
+/// Caller can override FastScan M, ksub, bbs to inject invalid values.
+static std::vector<uint8_t> build_AQFastScan_buf(
+        size_t fastscan_M = 3,
+        size_t fastscan_ksub = 16,
+        int bbs = 32) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IRfs");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+
+    // AdditiveQuantizer fields:
+    push_val<size_t>(buf, 4);      // d
+    push_val<size_t>(buf, 1);      // M (AQ M, not FastScan M)
+    push_vector<size_t>(buf, {4}); // nbits = [4]
+    push_val<bool>(buf, false);    // is_trained
+    push_vector<float>(buf, std::vector<float>(64, 0.0f)); // codebooks (d*16)
+    push_val<int>(buf, 0);      // search_type = ST_decompress
+    push_val<float>(buf, 0.0f); // norm_min
+    push_val<float>(buf, 1.0f); // norm_max
+
+    // ResidualQuantizer extras:
+    push_val<int>(buf, 2048); // train_type = Skip_codebook_tables
+    push_val<int>(buf, 1);    // max_beam_size
+
+    // FastScan fields (IndexAdditiveQuantizerFastScan):
+    push_val<int>(buf, 0);                                // implem
+    push_val<int>(buf, bbs);                              // bbs
+    push_val<int>(buf, 0);                                // qbs
+    push_val<size_t>(buf, fastscan_M);                    // M
+    push_val<size_t>(buf, 4);                             // nbits
+    push_val<size_t>(buf, fastscan_ksub);                 // ksub
+    push_val<size_t>(buf, 2);                             // code_size
+    push_val<size_t>(buf, 0);                             // ntotal2
+    push_val<size_t>(buf, fastscan_M + (fastscan_M % 2)); // M2 (rounded up)
+    push_val<bool>(buf, true);                            // rescale_norm
+    push_val<int>(buf, 1);                                // norm_scale
+    push_val<size_t>(buf, 48);                            // max_train_points
+    push_vector<uint8_t>(buf, {});                        // codes
+
+    return buf;
+}
+
+/// Helper: serialize a valid IndexRaBitQFastScan and return the raw bytes.
+/// Then locate the bbs field and patch it to the given value.
+static std::vector<uint8_t> build_RaBitQFastScan_buf(int bbs) {
+    IndexRaBitQFastScan idx(4, METRIC_L2, 32, 1);
+
+    // Serialize the valid index
+    VectorIOWriter writer;
+    write_index(&idx, &writer);
+
+    auto buf = std::move(writer.data);
+
+    // Locate bbs (int, value 32) in the serialized data.
+    // Format: ... qb (uint8_t=8) then bbs (int=32).
+    // Search for qb=8 (1 byte) followed by bbs=32 (4 bytes).
+    uint8_t target_qb = 8;
+    int target_bbs = 32;
+    bool patched = false;
+    for (size_t i = 0; i + sizeof(uint8_t) + sizeof(int) <= buf.size(); i++) {
+        uint8_t val_qb;
+        int val_bbs;
+        memcpy(&val_qb, &buf[i], sizeof(uint8_t));
+        memcpy(&val_bbs, &buf[i + sizeof(uint8_t)], sizeof(int));
+        if (val_qb == target_qb && val_bbs == target_bbs) {
+            memcpy(&buf[i + sizeof(uint8_t)], &bbs, sizeof(int));
+            patched = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(patched) << "Could not find bbs field in serialized data";
+    return buf;
+}
+
+// -----------------------------------------------------------------------
+// IndexPQFastScan deserialization: bbs=0 must be rejected.
+// Without this check, search() would divide by zero in ntotal2/bbs.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexPQFastScanBbsZero) {
+    auto buf = build_IndexPQFastScan_buf(/*bbs=*/0);
+    expect_read_throws_with(buf, "invalid bbs");
+}
+
+// -----------------------------------------------------------------------
+// IndexPQFastScan deserialization: bbs not a multiple of 32.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexPQFastScanBbsNotAligned) {
+    auto buf = build_IndexPQFastScan_buf(/*bbs=*/33);
+    expect_read_throws_with(buf, "invalid bbs");
+}
+
+// -----------------------------------------------------------------------
+// IndexPQFastScan deserialization: ksub * M2 overflow.
+// M2 is read directly from the file and could be corrupted to a huge
+// value that causes ksub * M2 to overflow size_t.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexPQFastScanKsubM2Overflow) {
+    auto buf = build_IndexPQFastScan_buf(
+            /*bbs=*/32, /*M2=*/std::numeric_limits<size_t>::max());
+    expect_read_throws_with(buf, "overflow");
+}
+
+// -----------------------------------------------------------------------
+// IndexAdditiveQuantizerFastScan deserialization: M=0 must be rejected.
+// Without this check, search() would crash in compute_float_LUT.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AQFastScanMZero) {
+    auto buf = build_AQFastScan_buf(/*fastscan_M=*/0);
+    expect_read_throws_with(buf, "invalid quantizer state");
+}
+
+// -----------------------------------------------------------------------
+// IndexAdditiveQuantizerFastScan deserialization: ksub=0 must be rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AQFastScanKsubZero) {
+    auto buf = build_AQFastScan_buf(
+            /*fastscan_M=*/3, /*fastscan_ksub=*/0);
+    expect_read_throws_with(buf, "invalid quantizer state");
+}
+
+// -----------------------------------------------------------------------
+// IndexAdditiveQuantizerFastScan deserialization: bbs=0 must be rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AQFastScanBbsZero) {
+    auto buf = build_AQFastScan_buf(
+            /*fastscan_M=*/3, /*fastscan_ksub=*/16, /*bbs=*/0);
+    expect_read_throws_with(buf, "invalid bbs");
+}
+
+// -----------------------------------------------------------------------
+// IndexAdditiveQuantizerFastScan deserialization: ksub * M overflow.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, AQFastScanKsubMOverflow) {
+    auto buf = build_AQFastScan_buf(
+            /*fastscan_M=*/std::numeric_limits<size_t>::max(),
+            /*fastscan_ksub=*/16,
+            /*bbs=*/32);
+    expect_read_throws_with(buf, "overflow");
+}
+
+// -----------------------------------------------------------------------
+// IndexRaBitQFastScan deserialization: bbs=0 must be rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, RaBitQFastScanBbsZero) {
+    auto buf = build_RaBitQFastScan_buf(/*bbs=*/0);
+    expect_read_throws_with(buf, "invalid bbs");
+}
+
+// -----------------------------------------------------------------------
+// IndexRaBitQFastScan deserialization: bbs not a multiple of 32.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, RaBitQFastScanBbsNotAligned) {
+    auto buf = build_RaBitQFastScan_buf(/*bbs=*/17);
+    expect_read_throws_with(buf, "invalid bbs");
 }
 
 // -----------------------------------------------------------------------
