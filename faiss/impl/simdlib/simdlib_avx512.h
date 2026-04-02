@@ -394,4 +394,44 @@ inline float horizontal_add(const simd16float32_tpl<SIMDLevel::AVX512>& a) {
     return _mm512_reduce_add_ps(a.f);
 }
 
+template <>
+struct simd512bit_tpl<SIMDLevel::AVX512_SPR>
+        : simd512bit_tpl<SIMDLevel::AVX512> {
+    using Base = simd512bit_tpl<SIMDLevel::AVX512>;
+    using Base::Base;
+
+    simd512bit_tpl() = default;
+    simd512bit_tpl(Base x) : Base(x) {}
+};
+
+template <>
+struct simd32uint16_tpl<SIMDLevel::AVX512_SPR>
+        : simd32uint16_tpl<SIMDLevel::AVX512> {
+    using Base = simd32uint16_tpl<SIMDLevel::AVX512>;
+    using Base::Base;
+
+    simd32uint16_tpl() = default;
+    simd32uint16_tpl(Base x) : Base(x) {}
+};
+
+template <>
+struct simd64uint8_tpl<SIMDLevel::AVX512_SPR>
+        : simd64uint8_tpl<SIMDLevel::AVX512> {
+    using Base = simd64uint8_tpl<SIMDLevel::AVX512>;
+    using Base::Base;
+
+    simd64uint8_tpl() = default;
+    simd64uint8_tpl(Base x) : Base(x) {}
+};
+
+template <>
+struct simd16float32_tpl<SIMDLevel::AVX512_SPR>
+        : simd16float32_tpl<SIMDLevel::AVX512> {
+    using Base = simd16float32_tpl<SIMDLevel::AVX512>;
+    using Base::Base;
+
+    simd16float32_tpl() = default;
+    simd16float32_tpl(Base x) : Base(x) {}
+};
+
 } // namespace faiss
