@@ -39,6 +39,7 @@
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexIVFPQPanorama.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
@@ -54,6 +55,7 @@
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/impl/PanoramaPQ.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -493,18 +495,18 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
+        constexpr size_t bs = Panorama::kDefaultBatchSize;
         FAISS_THROW_IF_NOT_FMT(
-                n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
+            n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
+        auto* pano = new PanoramaFlat(code_size / sizeof(float), n_levels, bs);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
-                nlist, code_size, n_levels);
+                nlist, code_size, pano);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
-            size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                     ArrayInvertedListsPanorama::kBatchSize) *
-                    ArrayInvertedListsPanorama::kBatchSize;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
@@ -1737,6 +1739,60 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READVECTOR(ivsp->trained);
         read_InvertedLists(*ivsp, f, io_flags);
         idx = std::move(ivsp);
+    } else if (h == fourcc("IwPP")) {
+        auto ivpp = std::make_unique<IndexIVFPQPanorama>();
+        read_ivf_header(ivpp.get(), f);
+        READ1(ivpp->by_residual);
+        READ1(ivpp->code_size);
+        read_ProductQuantizer(&ivpp->pq, f);
+        READ1(ivpp->n_levels);
+        READ1(ivpp->batch_size);
+        ivpp->levels_size = ivpp->d / ivpp->n_levels;
+        read_InvertedLists(*ivpp, f, io_flags);
+        // The "ilpn" reader creates a PanoramaFlat placeholder; replace
+        // it with PanoramaPQ now that we have the ProductQuantizer.
+        auto* storage =
+                dynamic_cast<ArrayInvertedListsPanorama*>(ivpp->invlists);
+        if (storage) {
+            auto* pano_pq = new PanoramaPQ(
+                    ivpp->d,
+                    ivpp->code_size,
+                    ivpp->n_levels,
+                    ivpp->batch_size,
+                    &ivpp->pq,
+                    ivpp->quantizer);
+            storage->pano.reset(pano_pq);
+
+            // Recompute init_dists from stored codes + quantizer.
+            for (size_t list_no = 0; list_no < ivpp->nlist; list_no++) {
+                size_t list_size = storage->ids[list_no].size();
+                if (list_size == 0)
+                    continue;
+                size_t bs = pano_pq->batch_size;
+                size_t padded = ((list_size + bs - 1) / bs) * bs;
+                storage->init_dists[list_no].resize(padded);
+
+                // Reconstruct row-major codes, then compute init distances.
+                std::vector<uint8_t> row_code(ivpp->code_size);
+                for (size_t i = 0; i < list_size; i++) {
+                    pano_pq->reconstruct(
+                            i,
+                            reinterpret_cast<float*>(row_code.data()),
+                            storage->codes[list_no].data());
+                    pano_pq->compute_init_distances(
+                            storage->init_dists[list_no].data(),
+                            list_no,
+                            i,
+                            1,
+                            row_code.data());
+                }
+            }
+        }
+        if (ivpp->is_trained) {
+            ivpp->use_precomputed_table = 1;
+            ivpp->precompute_table();
+        }
+        idx = std::move(ivpp);
     } else if (
             h == fourcc("IvPQ") || h == fourcc("IvQR") || h == fourcc("IwPQ") ||
             h == fourcc("IwQR")) {
@@ -1880,8 +1936,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             size_t nlevels;
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
-            const_cast<Panorama&>(idx_panorama->pano) =
-                    Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
+            const_cast<PanoramaFlat&>(idx_panorama->pano) =
+                    PanoramaFlat(idx_panorama->d, nlevels, 1);
             READVECTOR(idx_panorama->cum_sums);
         }
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {

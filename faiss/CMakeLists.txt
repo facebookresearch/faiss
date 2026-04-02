@@ -10,6 +10,7 @@
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
+  impl/panorama_kernels/panorama_kernels-avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
@@ -19,6 +20,7 @@ set(FAISS_SIMD_AVX2_SRC
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
+  impl/panorama_kernels/panorama_kernels-avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
@@ -27,6 +29,7 @@ set(FAISS_SIMD_AVX512_SRC
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
+  impl/panorama_kernels/panorama_kernels-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
@@ -34,6 +37,7 @@ set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
+  impl/panorama_kernels/panorama_kernels-sve.cpp
   impl/pq_code_distance/pq_code_distance-sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
 )
@@ -69,6 +73,7 @@ set(FAISS_SRC
   IndexIVFFlat.cpp
   IndexIVFFlatPanorama.cpp
   IndexIVFPQ.cpp
+  IndexIVFPQPanorama.cpp
   IndexIVFFastScan.cpp
   IndexIVFAdditiveQuantizerFastScan.cpp
   IndexIVFPQFastScan.cpp
@@ -111,6 +116,7 @@ set(FAISS_SRC
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
+  impl/panorama_kernels/panorama_kernels-generic.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
@@ -133,6 +139,7 @@ set(FAISS_SRC
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
+  impl/PanoramaPQ.cpp
   impl/PanoramaStats.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
@@ -188,6 +195,7 @@ set(FAISS_HEADERS
   IndexIVFFlat.h
   IndexIVFFlatPanorama.h
   IndexIVFPQ.h
+  IndexIVFPQPanorama.h
   IndexIVFFastScan.h
   IndexIVFAdditiveQuantizerFastScan.h
   IndexIVFPQFastScan.h
@@ -240,6 +248,7 @@ set(FAISS_HEADERS
   impl/NNDescent.h
   impl/NSG.h
   impl/Panorama.h
+  impl/PanoramaPQ.h
   impl/PanoramaStats.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
@@ -282,6 +291,8 @@ set(FAISS_HEADERS
   impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
   utils/pq_code_distance.h
+  impl/panorama_kernels/panorama_kernels.h
+  impl/panorama_kernels/panorama_kernels-inl.h
   impl/pq_code_distance/pq_code_distance-inl.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
@@ -358,6 +369,15 @@ endif()
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
+# Detect BMI2 compiler support (PEXT/PDEP used in Panorama code compression).
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-mbmi2" COMPILER_SUPPORTS_BMI2)
+if(COMPILER_SUPPORTS_BMI2)
+  set(FAISS_BMI2_FLAGS "-mbmi2")
+else()
+  set(FAISS_BMI2_FLAGS "")
+endif()
+
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
@@ -365,7 +385,7 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512"
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
-  target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt>)
+  target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt ${FAISS_BMI2_FLAGS}>)
 else()
   # MSVC enables FMA with /arch:AVX2; no separate flags for F16C, POPCNT
   # Ref. FMA (under /arch:AVX2): https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64
@@ -385,7 +405,7 @@ endif()
 if(NOT WIN32)
   # All modern CPUs support F, CD, VL, DQ, BW extensions.
   # Ref: https://en.wikipedia.org/wiki/AVX512
-  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
+  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper

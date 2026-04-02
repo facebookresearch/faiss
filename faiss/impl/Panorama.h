@@ -40,35 +40,48 @@ namespace faiss {
  * Coupled with the appropriate orthogonal PreTransform (e.g. PCA, Cayley,
  * etc.), Panorama can prune the vast majority of dimensions, greatly
  * accelerating the refinement stage.
+ *
+ * This is the abstract base class. Concrete subclasses (PanoramaFlat,
+ * PanoramaPQ) implement compute_cumulative_sums and progressive_filter_batch
+ * for their respective code formats.
  */
 struct Panorama {
+    static constexpr size_t kDefaultBatchSize = 128;
+
     size_t d = 0;
     size_t code_size = 0;
     size_t n_levels = 0;
-    size_t level_width = 0;
-    size_t level_width_floats = 0;
+    size_t level_width_bytes = 0;
     size_t batch_size = 0;
 
-    explicit Panorama(size_t code_size, size_t n_levels, size_t batch_size);
+    Panorama() = default;
+    Panorama(size_t d, size_t code_size, size_t n_levels, size_t batch_size);
+
+    virtual ~Panorama() = default;
 
     void set_derived_values();
 
     /// Helper method to copy codes into level-oriented batch layout at a given
     /// offset in the list.
-    void copy_codes_to_level_layout(
+    /// PanoramaFlat uses row-major within each level (point bytes contiguous).
+    /// PanoramaPQ overrides to use column-major (subquantizer columns
+    /// contiguous).
+    virtual void copy_codes_to_level_layout(
             uint8_t* codes,
             size_t offset,
             size_t n_entry,
             const uint8_t* code);
 
-    /// Helper method to compute the cumulative sums of the codes.
-    /// The cumsums also follow the level-oriented batch layout to minimize the
+    /// Compute the cumulative sums (suffix norms) for database vectors.
+    /// The cumsums follow the level-oriented batch layout to minimize the
     /// number of random memory accesses.
-    void compute_cumulative_sums(
+    /// Subclasses interpret the raw code bytes according to their format:
+    /// PanoramaFlat reinterprets as float*, PanoramaPQ decodes via PQ.
+    virtual void compute_cumulative_sums(
             float* cumsum_base,
             size_t offset,
             size_t n_entry,
-            const float* vectors) const;
+            const uint8_t* code) const = 0;
 
     /// Compute the cumulative sums of the query vector.
     void compute_query_cum_sums(const float* query, float* query_cum_sums)
@@ -83,7 +96,32 @@ struct Panorama {
             size_t dest_idx,
             size_t src_idx) const;
 
-    /// Panorama's core progressive filtering algorithm:
+    virtual void reconstruct(
+            idx_t key,
+            float* recons,
+            const uint8_t* codes_base) const;
+};
+
+/**
+ * Panorama for flat (uncompressed) float vectors.
+ *
+ * Codes are raw float vectors (code_size = d * sizeof(float)).
+ * compute_cumulative_sums interprets codes as floats.
+ * progressive_filter_batch computes dot products on raw float storage.
+ */
+struct PanoramaFlat : Panorama {
+    size_t level_width_dims = 0;
+
+    PanoramaFlat() = default;
+    PanoramaFlat(size_t d, size_t n_levels, size_t batch_size);
+
+    void compute_cumulative_sums(
+            float* cumsum_base,
+            size_t offset,
+            size_t n_entry,
+            const uint8_t* code) const override;
+
+    /// Panorama's core progressive filtering algorithm for flat codes:
     /// Process vectors in batches for cache efficiency. For each batch:
     /// 1. Apply ID selection filter and initialize distances
     /// (||y||^2 + ||x||^2).
@@ -113,12 +151,10 @@ struct Panorama {
             std::vector<float>& exact_distances,
             float threshold,
             PanoramaStats& local_stats) const;
-
-    void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
 
 template <typename C, MetricType M>
-size_t Panorama::progressive_filter_batch(
+size_t PanoramaFlat::progressive_filter_batch(
         const uint8_t* codes_base,
         const float* cum_sums,
         const float* query,
@@ -173,18 +209,18 @@ size_t Panorama::progressive_filter_batch(
 
         float query_cum_norm = query_cum_sums[level + 1];
 
-        size_t level_offset = level * level_width * batch_size;
+        size_t level_offset = level * level_width_bytes * batch_size;
         const float* level_storage =
                 (const float*)(storage_base + level_offset);
 
         size_t next_active = 0;
         for (size_t i = 0; i < num_active; i++) {
             uint32_t idx = active_indices[i];
-            size_t actual_level_width = std::min(
-                    level_width_floats, d - level * level_width_floats);
+            size_t actual_level_width =
+                    std::min(level_width_dims, d - level * level_width_dims);
 
             const float* yj = level_storage + idx * actual_level_width;
-            const float* query_level = query + level * level_width_floats;
+            const float* query_level = query + level * level_width_dims;
 
             float dot_product =
                     fvec_inner_product(query_level, yj, actual_level_width);

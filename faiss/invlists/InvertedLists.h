@@ -15,6 +15,7 @@
  * the interface.
  */
 
+#include <memory>
 #include <vector>
 
 #include <faiss/MetricType.h>
@@ -277,21 +278,23 @@ struct ArrayInvertedLists : InvertedLists {
     ~ArrayInvertedLists() override;
 };
 
-/// Level-oriented storage as defined in the IVFFlat section of Panorama
+/// Level-oriented storage as defined in the Panorama paper
 /// (https://www.arxiv.org/pdf/2510.00566).
+/// Works with both flat codes (PanoramaFlat) and PQ codes (PanoramaPQ)
+/// via the virtual Panorama interface.
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
-    static constexpr size_t kBatchSize = 128;
     std::vector<MaybeOwnedVector<float>> cum_sums;
-    const size_t n_levels;
-    const size_t level_width; // in code units
-    Panorama pano;
+    std::vector<MaybeOwnedVector<float>> init_dists;
+    std::unique_ptr<Panorama> pano;
 
+    /// Takes ownership of the provided Panorama*.
     ArrayInvertedListsPanorama(
             size_t nlist_in,
             size_t code_size_in,
-            size_t n_levels_in);
+            Panorama* pano_in);
 
     const float* get_cum_sums(size_t list_no) const;
+    const float* get_init_dists(size_t list_no) const;
 
     size_t add_entries(
             size_t list_no,

@@ -680,7 +680,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         MetricType metric)
         : IndexHNSWFlat(d_in, M, metric),
           cum_sums(),
-          pano(d_in * sizeof(float), num_panorama_levels_in, 1),
+          pano(d_in, num_panorama_levels_in, 1),
           num_panorama_levels(num_panorama_levels_in) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
@@ -696,7 +696,8 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
     idx_t n0 = ntotal;
     cum_sums.resize((ntotal + n) * (pano.n_levels + 1));
-    pano.compute_cumulative_sums(cum_sums.data(), n0, n, x);
+    pano.compute_cumulative_sums(
+            cum_sums.data(), n0, n, reinterpret_cast<const uint8_t*>(x));
     IndexHNSWFlat::add(n, x);
 }
 

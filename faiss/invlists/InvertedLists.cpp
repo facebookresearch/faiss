@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/PanoramaPQ.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -354,27 +355,25 @@ ArrayInvertedLists::~ArrayInvertedLists() {}
 ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
         size_t nlist_in,
         size_t code_size_in,
-        size_t n_levels_in)
-        : ArrayInvertedLists(nlist_in, code_size_in),
-          n_levels(n_levels_in),
-          level_width(
-                  (((code_size_in / sizeof(float)) + n_levels_in - 1) /
-                   n_levels_in) *
-                  sizeof(float)),
-          pano(code_size_in, n_levels_in, kBatchSize) {
-    FAISS_THROW_IF_NOT(n_levels_in > 0);
-    FAISS_THROW_IF_NOT(code_size_in % sizeof(float) == 0);
+        Panorama* pano_in)
+        : ArrayInvertedLists(nlist_in, code_size_in), pano(pano_in) {
+    FAISS_THROW_IF_NOT(pano != nullptr);
+    FAISS_THROW_IF_NOT(pano_in->n_levels > 0);
     FAISS_THROW_IF_NOT_MSG(
-            !use_iterator,
-            "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
-    FAISS_ASSERT(level_width % sizeof(float) == 0);
+            !use_iterator, "Panorama does not support iterators");
 
     cum_sums.resize(nlist_in);
+    init_dists.resize(nlist_in);
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
     assert(list_no < nlist);
     return cum_sums[list_no].data();
+}
+
+const float* ArrayInvertedListsPanorama::get_init_dists(size_t list_no) const {
+    assert(list_no < nlist);
+    return init_dists[list_no].data();
 }
 
 size_t ArrayInvertedListsPanorama::add_entries(
@@ -389,15 +388,21 @@ size_t ArrayInvertedListsPanorama::add_entries(
     memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
 
     size_t new_size = o + n_entry;
-    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
-    codes[list_no].resize(num_batches * kBatchSize * code_size);
-    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
+    size_t bs = pano->batch_size;
+    size_t num_batches = (new_size + bs - 1) / bs;
+    size_t padded = num_batches * bs;
+    codes[list_no].resize(padded * code_size);
+    cum_sums[list_no].resize(padded * (pano->n_levels + 1));
 
-    // Cast to float* is safe here as we guarantee codes are always float
-    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
-    const float* vectors = reinterpret_cast<const float*>(code);
-    pano.copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
-    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, vectors);
+    pano->copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
+    pano->compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, code);
+
+    auto* pano_pq = dynamic_cast<PanoramaPQ*>(pano.get());
+    if (pano_pq) {
+        init_dists[list_no].resize(padded);
+        pano_pq->compute_init_distances(
+                init_dists[list_no].data(), list_no, o, n_entry, code);
+    }
 
     return o;
 }
@@ -413,21 +418,30 @@ void ArrayInvertedListsPanorama::update_entries(
 
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
 
-    // Cast to float* is safe here as we guarantee codes are always float
-    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
-    const float* vectors = reinterpret_cast<const float*>(code);
-    pano.copy_codes_to_level_layout(
+    pano->copy_codes_to_level_layout(
             codes[list_no].data(), offset, n_entry, code);
-    pano.compute_cumulative_sums(
-            cum_sums[list_no].data(), offset, n_entry, vectors);
+    pano->compute_cumulative_sums(
+            cum_sums[list_no].data(), offset, n_entry, code);
+
+    auto* pano_pq = dynamic_cast<PanoramaPQ*>(pano.get());
+    if (pano_pq) {
+        pano_pq->compute_init_distances(
+                init_dists[list_no].data(), list_no, offset, n_entry, code);
+    }
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
 
-    size_t num_batches = (new_size + kBatchSize - 1) / kBatchSize;
-    codes[list_no].resize(num_batches * kBatchSize * code_size);
-    cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
+    size_t bs = pano->batch_size;
+    size_t num_batches = (new_size + bs - 1) / bs;
+    size_t padded = num_batches * bs;
+    codes[list_no].resize(padded * code_size);
+    cum_sums[list_no].resize(padded * (pano->n_levels + 1));
+
+    if (dynamic_cast<PanoramaPQ*>(pano.get())) {
+        init_dists[list_no].resize(padded);
+    }
 }
 
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(
@@ -439,7 +453,7 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
     uint8_t* recons_buffer = new uint8_t[code_size];
 
     float* recons = reinterpret_cast<float*>(recons_buffer);
-    pano.reconstruct(offset, recons, codes[list_no].data());
+    pano->reconstruct(offset, recons, codes[list_no].data());
 
     return recons_buffer;
 }

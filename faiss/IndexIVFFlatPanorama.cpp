@@ -40,7 +40,8 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
-    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, n_levels);
+    auto* pano = new PanoramaFlat(d, n_levels, Panorama::kDefaultBatchSize);
+    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
     this->own_invlists = own_invlists_in;
 }
 
@@ -52,6 +53,7 @@ template <typename VectorDistance, bool use_sel>
 struct IVFFlatScannerPanorama : InvertedListScanner {
     VectorDistance vd;
     const ArrayInvertedListsPanorama* storage;
+    const PanoramaFlat* pano_flat;
     using C = typename VectorDistance::C;
     static constexpr MetricType metric = VectorDistance::metric;
 
@@ -62,10 +64,14 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             const IDSelector* sel_in)
             : InvertedListScanner(store_pairs_in, sel_in),
               vd(vd_in),
-              storage(storage_in) {
+              storage(storage_in),
+              pano_flat(
+                      dynamic_cast<const PanoramaFlat*>(
+                              storage_in->pano.get())) {
+        FAISS_THROW_IF_NOT(pano_flat);
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
-        cum_sums.resize(storage->n_levels + 1);
+        cum_sums.resize(pano_flat->n_levels + 1);
     }
 
     const float* xi = nullptr;
@@ -73,7 +79,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
-        this->storage->pano.compute_query_cum_sums(query, cum_sums.data());
+        pano_flat->compute_query_cum_sums(query, cum_sums.data());
         q_norm = cum_sums[0] * cum_sums[0];
     }
 
@@ -97,22 +103,22 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             ResultHandler& handler) const override {
         size_t nup = 0;
 
-        const size_t n_batches =
-                (list_size + storage->kBatchSize - 1) / storage->kBatchSize;
+        const size_t bs = pano_flat->batch_size;
+        const size_t n_batches = (list_size + bs - 1) / bs;
 
         const float* cum_sums_data = storage->get_cum_sums(list_no);
 
-        std::vector<float> exact_distances(storage->kBatchSize);
-        std::vector<uint32_t> active_indices(storage->kBatchSize);
+        std::vector<float> exact_distances(bs);
+        std::vector<uint32_t> active_indices(bs);
 
         PanoramaStats local_stats;
         local_stats.reset();
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
-            size_t batch_start = batch_no * storage->kBatchSize;
+            size_t batch_start = batch_no * bs;
 
             size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
-                return storage->pano.progressive_filter_batch<C, M>(
+                return pano_flat->progressive_filter_batch<C, M>(
                         codes,
                         cum_sums_data,
                         xi,

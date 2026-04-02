@@ -864,10 +864,10 @@ int search_from_candidates_panorama(
         while (curr_panorama_level < num_panorama_levels && batch_size > 0) {
             float query_cum_norm = query_cum_sums[curr_panorama_level + 1];
 
-            size_t start_dim = curr_panorama_level *
-                    panorama_index->pano.level_width_floats;
+            size_t start_dim =
+                    curr_panorama_level * panorama_index->pano.level_width_dims;
             size_t end_dim = (curr_panorama_level + 1) *
-                    panorama_index->pano.level_width_floats;
+                    panorama_index->pano.level_width_dims;
             end_dim = std::min(end_dim, static_cast<size_t>(panorama_index->d));
 
             size_t i = 0;
