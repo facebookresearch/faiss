@@ -610,8 +610,11 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
 
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
-    FAISS_CHECK_RANGE(rq.d, 0, (1 << 20) + 1);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.d > 0, "invalid AdditiveQuantizer d %zd, must be > 0", rq.d);
     READ1(rq.M);
+    FAISS_THROW_IF_NOT_FMT(
+            rq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", rq.M);
     READVECTOR(rq.nbits);
     FAISS_THROW_IF_NOT_FMT(
             rq.nbits.size() == rq.M,
@@ -630,7 +633,8 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     READ1(aq.d);
-    FAISS_CHECK_RANGE(aq.d, 0, (1 << 20) + 1);
+    FAISS_THROW_IF_NOT_FMT(
+            aq.d > 0, "invalid AdditiveQuantizer d %zd, must be > 0", aq.d);
     READ1(aq.M);
     FAISS_THROW_IF_NOT_FMT(
             aq.M > 0, "invalid AdditiveQuantizer M %zd, must be > 0", aq.M);
@@ -660,6 +664,37 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
     }
 
     aq.set_derived_values();
+
+    // Sanity-check codebooks size without knowing the effective dimension.
+    // codebooks stores effective_d * total_codebook_size floats, so its
+    // size must be a positive multiple of total_codebook_size.
+    if (aq.total_codebook_size > 0) {
+        FAISS_THROW_IF_NOT_FMT(
+                aq.codebooks.size() >= aq.total_codebook_size &&
+                        aq.codebooks.size() % aq.total_codebook_size == 0,
+                "AdditiveQuantizer codebooks size %zd is not a positive "
+                "multiple of total_codebook_size %zd",
+                aq.codebooks.size(),
+                aq.total_codebook_size);
+    }
+}
+
+// Validate that the codebooks vector is large enough for the given
+// effective dimension.  For a standalone AdditiveQuantizer the effective
+// dimension equals aq.d.  For a ProductAdditiveQuantizer the codebooks
+// are sized for d_sub = d / nsplits, so callers pass that instead.
+static void validate_codebooks_size(
+        const AdditiveQuantizer& aq,
+        size_t effective_d) {
+    size_t required = mul_no_overflow(
+            effective_d, aq.total_codebook_size, "codebooks validation");
+    FAISS_THROW_IF_NOT_FMT(
+            aq.codebooks.size() >= required,
+            "AdditiveQuantizer codebooks size %zd too small for "
+            "d=%zd * total_codebook_size=%zd",
+            aq.codebooks.size(),
+            effective_d,
+            aq.total_codebook_size);
 }
 
 static void read_ResidualQuantizer(
@@ -667,6 +702,7 @@ static void read_ResidualQuantizer(
         IOReader* f,
         int io_flags) {
     read_AdditiveQuantizer(rq, f);
+    validate_codebooks_size(rq, rq.d);
     READ1(rq.train_type);
     READ1(rq.max_beam_size);
     FAISS_THROW_IF_NOT_FMT(
@@ -699,6 +735,7 @@ static void read_ResidualQuantizer(
 
 static void read_LocalSearchQuantizer(LocalSearchQuantizer& lsq, IOReader* f) {
     read_AdditiveQuantizer(lsq, f);
+    validate_codebooks_size(lsq, lsq.d);
     READ1(lsq.K);
     READ1(lsq.train_iters);
     READ1(lsq.encode_ils_iters);
@@ -722,6 +759,12 @@ static void read_ProductAdditiveQuantizer(
             "invalid ProductAdditiveQuantizer nsplits %zd (must be > 0)",
             paq.nsplits);
     FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(paq.nsplits, "nsplits");
+    FAISS_THROW_IF_NOT_FMT(
+            paq.d % paq.nsplits == 0,
+            "ProductAdditiveQuantizer d=%zd not divisible by nsplits=%zd",
+            paq.d,
+            paq.nsplits);
+    validate_codebooks_size(paq, paq.d / paq.nsplits);
 }
 
 static void read_ProductResidualQuantizer(
@@ -730,9 +773,19 @@ static void read_ProductResidualQuantizer(
         int io_flags) {
     read_ProductAdditiveQuantizer(prq, f);
 
+    size_t d_sub = prq.d / prq.nsplits;
     for (size_t i = 0; i < prq.nsplits; i++) {
         auto rq = std::make_unique<ResidualQuantizer>();
         read_ResidualQuantizer(*rq, f, io_flags);
+        FAISS_THROW_IF_NOT_FMT(
+                rq->d == d_sub,
+                "ProductResidualQuantizer sub-quantizer %zd has d=%zd, "
+                "expected d_sub=%zd (d=%zd / nsplits=%zd)",
+                i,
+                rq->d,
+                d_sub,
+                prq.d,
+                prq.nsplits);
         prq.quantizers.push_back(rq.release());
     }
 }
@@ -742,14 +795,27 @@ static void read_ProductLocalSearchQuantizer(
         IOReader* f) {
     read_ProductAdditiveQuantizer(plsq, f);
 
+    size_t d_sub = plsq.d / plsq.nsplits;
     for (size_t i = 0; i < plsq.nsplits; i++) {
         auto lsq = std::make_unique<LocalSearchQuantizer>();
         read_LocalSearchQuantizer(*lsq, f);
+        FAISS_THROW_IF_NOT_FMT(
+                lsq->d == d_sub,
+                "ProductLocalSearchQuantizer sub-quantizer %zd has d=%zd, "
+                "expected d_sub=%zd (d=%zd / nsplits=%zd)",
+                i,
+                lsq->d,
+                d_sub,
+                plsq.d,
+                plsq.nsplits);
         plsq.quantizers.push_back(lsq.release());
     }
 }
 
-void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
+void read_ScalarQuantizer(
+        ScalarQuantizer* ivsc,
+        IOReader* f,
+        const Index& idx) {
     int qtype_int;
     READ1(qtype_int);
     FAISS_THROW_IF_NOT_FMT(
@@ -762,11 +828,18 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
     READ1(ivsc->rangestat_arg);
     READ1(ivsc->d);
     READ1(ivsc->code_size);
+    FAISS_THROW_IF_NOT_FMT(
+            static_cast<size_t>(idx.d) == ivsc->d,
+            "ScalarQuantizer d %zu != index header d %d",
+            ivsc->d,
+            idx.d);
     READVECTOR(ivsc->trained);
     // Validate trained vector size matches the quantizer type and dimension.
-    // An untrained ScalarQuantizer legitimately has trained.size() == 0,
-    // so only check when the vector is non-empty.
-    if (!ivsc->trained.empty()) {
+    // UNIFORM/NON_UNIFORM qtypes require training data; other qtypes
+    // (fp16, bf16, 8bit_direct*) need none.
+    // An untrained index (is_trained == false) legitimately has
+    // trained.size() == 0, so we allow that case.
+    {
         size_t expected = 0;
         switch (ivsc->qtype) {
             case ScalarQuantizer::QT_4bit_uniform:
@@ -786,14 +859,31 @@ void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f) {
                 expected = 0;
                 break;
         }
-        FAISS_THROW_IF_NOT_FMT(
-                ivsc->trained.size() == expected,
-                "ScalarQuantizer trained size %zu != expected %zu "
-                "for qtype %d, d %zu",
-                ivsc->trained.size(),
-                expected,
-                (int)ivsc->qtype,
-                ivsc->d);
+        if (ivsc->trained.empty() && expected > 0) {
+            // Empty trained is only valid for untrained indices.
+            FAISS_THROW_IF_NOT_FMT(
+                    !idx.is_trained,
+                    "ScalarQuantizer trained size 0 != expected %zu "
+                    "for qtype %d, d %zu (index is marked as trained)",
+                    expected,
+                    (int)ivsc->qtype,
+                    ivsc->d);
+        } else {
+            FAISS_THROW_IF_NOT_FMT(
+                    ivsc->trained.size() == expected,
+                    "ScalarQuantizer trained size %zu != expected %zu "
+                    "for qtype %d, d %zu",
+                    ivsc->trained.size(),
+                    expected,
+                    (int)ivsc->qtype,
+                    ivsc->d);
+            if (expected > 0) {
+                FAISS_THROW_IF_NOT_MSG(
+                        idx.is_trained,
+                        "ScalarQuantizer has training data but "
+                        "index header is_trained is false");
+            }
+        }
     }
     ivsc->set_derived_sizes();
 }
@@ -1404,6 +1494,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxaqfs->implem);
         READ1(idxaqfs->bbs);
         READ1(idxaqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxaqfs->qbs >= 0, "qbs must be non-negative");
 
         READ1(idxaqfs->M);
         READ1(idxaqfs->nbits);
@@ -1417,6 +1508,27 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxaqfs->max_train_points);
 
         READVECTOR(idxaqfs->codes);
+
+        FAISS_THROW_IF_NOT_FMT(
+                idxaqfs->M > 0 && idxaqfs->ksub > 0,
+                "IndexAdditiveQuantizerFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxaqfs->M,
+                idxaqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxaqfs->bbs > 0 && idxaqfs->bbs % 32 == 0,
+                "IndexAdditiveQuantizerFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxaqfs->bbs);
+        mul_no_overflow(
+                idxaqfs->ksub,
+                idxaqfs->M,
+                "IndexAdditiveQuantizerFastScan ksub * M");
+        mul_no_overflow(
+                idxaqfs->ksub,
+                idxaqfs->M2,
+                "IndexAdditiveQuantizerFastScan ksub * M2");
+
         idx = std::move(idxaqfs);
     } else if (
             h == fourcc("IVLf") || h == fourcc("IVRf") || h == fourcc("NPLf") ||
@@ -1456,6 +1568,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(ivaqfs->implem);
         READ1(ivaqfs->bbs);
         READ1(ivaqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(ivaqfs->qbs >= 0, "qbs must be non-negative");
 
         READ1(ivaqfs->M);
         READ1(ivaqfs->nbits);
@@ -1526,7 +1639,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IxSQ")) {
         auto idxs = std::make_unique<IndexScalarQuantizer>();
         read_index_header(*idxs, f);
-        read_ScalarQuantizer(&idxs->sq, f);
+        read_ScalarQuantizer(&idxs->sq, f, *idxs);
         read_vector(idxs->codes, f);
         idxs->code_size = idxs->sq.code_size;
         idx = std::move(idxs);
@@ -1560,7 +1673,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto ivsc = std::make_unique<IndexIVFScalarQuantizer>();
         std::vector<std::vector<idx_t>> ids;
         read_ivf_header(ivsc.get(), f, &ids);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
         ArrayInvertedLists* ail = set_array_invlist(ivsc.get(), ids);
         for (size_t i = 0; i < ivsc->nlist; i++)
@@ -1569,7 +1682,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     } else if (h == fourcc("IwSQ") || h == fourcc("IwSq")) {
         auto ivsc = std::make_unique<IndexIVFScalarQuantizer>();
         read_ivf_header(ivsc.get(), f);
-        read_ScalarQuantizer(&ivsc->sq, f);
+        read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
         if (h == fourcc("IwSQ")) {
             ivsc->by_residual = true;
@@ -1895,6 +2008,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxpqfs->implem);
         READ1(idxpqfs->bbs);
         READ1(idxpqfs->qbs);
+        FAISS_THROW_IF_NOT_MSG(idxpqfs->qbs >= 0, "qbs must be non-negative");
         READ1(idxpqfs->ntotal2);
         READ1(idxpqfs->M2);
         READVECTOR(idxpqfs->codes);
@@ -1904,6 +2018,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxpqfs->nbits = pq.nbits;
         idxpqfs->ksub = (1 << pq.nbits);
         idxpqfs->code_size = pq.code_size;
+
+        FAISS_THROW_IF_NOT_FMT(
+                idxpqfs->M > 0 && idxpqfs->ksub > 0,
+                "IndexPQFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxpqfs->M,
+                idxpqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpqfs->bbs > 0 && idxpqfs->bbs % 32 == 0,
+                "IndexPQFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxpqfs->bbs);
+        mul_no_overflow(idxpqfs->ksub, idxpqfs->M, "IndexPQFastScan ksub * M");
+        mul_no_overflow(
+                idxpqfs->ksub, idxpqfs->M2, "IndexPQFastScan ksub * M2");
 
         idx = std::move(idxpqfs);
 
@@ -1974,6 +2103,22 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->M = M_fastscan;
         idxqfs->nbits = nbits_fastscan;
         idxqfs->ksub = (1 << nbits_fastscan);
+
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->M > 0 && idxqfs->ksub > 0,
+                "IndexRaBitQFastScan: invalid quantizer state "
+                "(M=%zd, ksub=%zd, must be > 0)",
+                idxqfs->M,
+                idxqfs->ksub);
+        FAISS_THROW_IF_NOT_FMT(
+                idxqfs->bbs > 0 && idxqfs->bbs % 32 == 0,
+                "IndexRaBitQFastScan: invalid bbs=%d "
+                "(must be > 0 and a multiple of 32)",
+                idxqfs->bbs);
+        mul_no_overflow(
+                idxqfs->ksub, idxqfs->M, "IndexRaBitQFastScan ksub * M");
+        mul_no_overflow(
+                idxqfs->ksub, idxqfs->M2, "IndexRaBitQFastScan ksub * M2");
 
         READVECTOR(idxqfs->codes);
 
@@ -2509,6 +2654,11 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 idxh->b > 0,
                 "invalid IndexBinaryHash b=%d (must be > 0)",
                 idxh->b);
+        FAISS_THROW_IF_NOT_FMT(
+                static_cast<size_t>(idxh->b) <= idxh->code_size * 8,
+                "IndexBinaryHash b=%d exceeds code_size=%d bits",
+                idxh->b,
+                idxh->code_size);
         READ1(idxh->nflip);
         read_binary_hash_invlists(idxh->invlists, idxh->b, idxh->code_size, f);
         idx = std::move(idxh);
