@@ -312,6 +312,7 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl(
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit);
 
@@ -323,6 +324,7 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit);
 

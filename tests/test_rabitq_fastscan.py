@@ -488,6 +488,97 @@ class TestRaBitQFastScan(unittest.TestCase):
         self.assertGreater(recall, 0.4)
 
 
+class TestIVFRaBitQFastScanFiltering(unittest.TestCase):
+    NLIST = 32
+    NPROBE = 8
+
+    def _create_index(self, d, metric, nb_bits=1):
+        quantizer = faiss.IndexFlat(d, metric)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, self.NLIST, metric, 32, True, nb_bits
+        )
+        index.nprobe = self.NPROBE
+        return index
+
+    def _do_test_filter(
+        self,
+        selector_type="batch",
+        metric=faiss.METRIC_L2,
+        nb_bits=1,
+        k=10,
+        nb=1000,
+    ):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, nb, 20, metric=metric)
+        index = self._create_index(d, metric, nb_bits=nb_bits)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        rs = np.random.RandomState(123)
+        if selector_type == "batch":
+            subset = rs.choice(nb, max(nb // 3, 1), replace=False).astype(
+                "int64"
+            )
+            sel = faiss.IDSelectorBatch(subset)
+            allowed = set(subset.tolist())
+        elif selector_type == "whole_block_not":
+            excluded = np.concatenate([
+                np.arange(0, min(32, nb), dtype="int64"),
+                np.arange(64, min(96, nb), dtype="int64"),
+            ])
+            inner_sel = faiss.IDSelectorBatch(excluded)
+            sel = faiss.IDSelectorNot(inner_sel)
+            allowed = {i for i in range(nb) if i not in excluded}
+        elif selector_type == "partial_block_not":
+            excluded = np.array(
+                [i for i in [5, 10, 20, 31] if i < nb], dtype="int64"
+            )
+            inner_sel = faiss.IDSelectorBatch(excluded)
+            sel = faiss.IDSelectorNot(inner_sel)
+            allowed = {i for i in range(nb) if i not in excluded}
+        elif selector_type == "empty":
+            sel = faiss.IDSelectorBatch(np.array([], dtype="int64"))
+            allowed = set()
+        else:
+            raise ValueError(f"Unknown selector type: {selector_type}")
+
+        params = faiss.SearchParametersIVF(sel=sel, nprobe=self.NPROBE)
+        _, labels = index.search(ds.get_queries(), k, params=params)
+
+        for q in range(ds.nq):
+            for j in range(k):
+                idx = int(labels[q, j])
+                if idx >= 0:
+                    self.assertIn(
+                        idx,
+                        allowed,
+                        f"Query {q}, rank {j}: id {idx} not allowed",
+                    )
+
+        if selector_type == "empty":
+            np.testing.assert_array_equal(labels, -1)
+        elif len(allowed) > k:
+            self.assertGreater(np.sum(labels >= 0), 0)
+
+    def test_batch_filter_l2_1bit(self):
+        self._do_test_filter("batch", faiss.METRIC_L2, nb_bits=1)
+
+    def test_batch_filter_ip_1bit(self):
+        self._do_test_filter("batch", faiss.METRIC_INNER_PRODUCT, nb_bits=1)
+
+    def test_whole_block_exclusion_l2_1bit(self):
+        self._do_test_filter("whole_block_not", faiss.METRIC_L2, nb_bits=1)
+
+    def test_partial_block_exclusion_l2_1bit(self):
+        self._do_test_filter("partial_block_not", faiss.METRIC_L2, nb_bits=1)
+
+    def test_empty_selector_l2_1bit(self):
+        self._do_test_filter("empty", faiss.METRIC_L2, nb_bits=1)
+
+    def test_batch_filter_l2_multibit(self):
+        self._do_test_filter("batch", faiss.METRIC_L2, nb_bits=2)
+
+
 class TestMultiBitRaBitQFastScan(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ FastScan.
 
