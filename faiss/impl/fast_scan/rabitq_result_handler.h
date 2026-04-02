@@ -79,6 +79,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             size_t k_val,
             float* distances,
             int64_t* labels,
+            const IDSelector* sel,
             const FastScanDistancePostProcessing* ctx = nullptr,
             bool multibit = false);
 
