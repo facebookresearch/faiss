@@ -13,6 +13,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 namespace faiss {
@@ -575,8 +576,17 @@ void ResidualCoarseQuantizer::search(
         return;
     }
 
-    std::vector<int32_t> codes(beam_size * rq.M * n);
-    std::vector<float> beam_distances(n * beam_size);
+    size_t codes_size = mul_no_overflow(
+            mul_no_overflow(
+                    static_cast<size_t>(beam_size), rq.M, "beam_size * M"),
+            static_cast<size_t>(n),
+            "beam_size * M * n");
+    size_t beam_dist_size = mul_no_overflow(
+            static_cast<size_t>(n),
+            static_cast<size_t>(beam_size),
+            "n * beam_size");
+    std::vector<int32_t> codes(codes_size);
+    std::vector<float> beam_distances(beam_dist_size);
 
     rq.refine_beam(
             n, 1, x, beam_size, codes.data(), nullptr, beam_distances.data());

@@ -5,24 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// AVX512 might be not used, but this version provides ~2x speedup
-// over AVX2 kernel, say, for training PQx10 or PQx12, and speeds up
-// additional cases with larger dimensionalities.
-
 #pragma once
 
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/impl/platform_macros.h>
-
-#include <faiss/utils/Heap.h>
-
-#ifdef __AVX512F__
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
-// Returns true if the fused kernel is available and the data was processed.
-// Returns false if the fused kernel is not available.
-bool exhaustive_L2sqr_fused_cmax_AVX512(
+/// BLAS-accelerated exhaustive L2 search for the k=1 (top-1) case.
+/// Specializations live in the per-SIMD translation units under simd_impl/.
+template <SIMDLevel>
+void exhaustive_L2sqr_blas_cmax(
         const float* x,
         const float* y,
         size_t d,
@@ -32,5 +25,3 @@ bool exhaustive_L2sqr_fused_cmax_AVX512(
         const float* y_norms);
 
 } // namespace faiss
-
-#endif

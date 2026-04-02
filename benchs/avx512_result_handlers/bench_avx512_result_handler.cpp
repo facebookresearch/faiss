@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if defined(__x86_64__)
+
 #include "faiss_avx512_result_handler.h"
 
 #include <faiss/IndexIVF.h>
@@ -125,3 +127,5 @@ int main() {
 
     return 0;
 }
+
+#endif // defined(__x86_64__)

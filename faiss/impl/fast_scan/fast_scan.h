@@ -219,7 +219,7 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_scanner_impl(
         bool with_id_map);
 
 /// Runtime dispatch wrapper: selects the best available SIMD level
-/// (via DISPATCH_SIMDLevel) and delegates to the corresponding
+/// (via with_simd_level) and delegates to the corresponding
 /// make_fast_scan_scanner_impl<SL> specialization.
 std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
         bool is_max,
