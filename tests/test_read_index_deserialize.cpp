@@ -807,6 +807,34 @@ TEST(ReadIndexDeserialize, BinaryIDMapIdMapSizeMismatch) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexIDMap2 ("IxM2") with id_map size != ntotal.  Without the
+// check, construct_rev_map() reads past id_map bounds causing a crash.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexIDMap2IdMapSizeMismatch) {
+    // Outer IxM2 header has ntotal=2, but the id_map vector has 5
+    // entries.  The check on id_map.size() == ntotal must reject this.
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxM2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+
+    // Nested IndexFlatL2 ("IxF2") with ntotal=2.
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/2);
+    // WRITEXBVECTOR: ntotal * d floats
+    size_t num_floats = 2 * 4;
+    push_val<size_t>(buf, num_floats);
+    for (size_t i = 0; i < num_floats; ++i) {
+        push_val<float>(buf, 0.0f);
+    }
+
+    // id_map with 5 entries (mismatches ntotal=2).
+    std::vector<int64_t> id_map = {10, 20, 30, 40, 50};
+    push_vector<int64_t>(buf, id_map);
+
+    expect_read_throws_with(buf, "id_map");
+}
+
+// -----------------------------------------------------------------------
 // InvertedLists helpers
 // -----------------------------------------------------------------------
 
