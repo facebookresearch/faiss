@@ -22,7 +22,8 @@
 // Only per-SIMD TUs (compiled with -mavx2 etc.) see the platform
 // specializations. In static mode: only the compiled-in level is available.
 
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if (defined(COMPILE_SIMD_AVX512) || defined(COMPILE_SIMD_AVX512_SPR)) && \
+        defined(__AVX512F__)
 
 // AVX512 includes AVX2 (simdlib_avx512.h includes simdlib_avx2.h)
 #include <faiss/impl/simdlib/simdlib_avx512.h>
@@ -50,10 +51,10 @@ using simd32uint8 = simd32uint8_tpl<SINGLE_SIMD_LEVEL_256>;
 using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
 using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
 
-// 512-bit
-using simd512bit = simd512bit_tpl<SINGLE_SIMD_LEVEL>;
-using simd32uint16 = simd32uint16_tpl<SINGLE_SIMD_LEVEL>;
-using simd64uint8 = simd64uint8_tpl<SINGLE_SIMD_LEVEL>;
-using simd16float32 = simd16float32_tpl<SINGLE_SIMD_LEVEL>;
+// 512-bit (AVX512_SPR maps to AVX512 — same 512-bit integer ops)
+using simd512bit = simd512bit_tpl<SINGLE_SIMD_LEVEL_512>;
+using simd32uint16 = simd32uint16_tpl<SINGLE_SIMD_LEVEL_512>;
+using simd64uint8 = simd64uint8_tpl<SINGLE_SIMD_LEVEL_512>;
+using simd16float32 = simd16float32_tpl<SINGLE_SIMD_LEVEL_512>;
 
 } // namespace faiss

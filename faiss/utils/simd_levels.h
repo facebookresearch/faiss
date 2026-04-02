@@ -86,6 +86,26 @@ struct simd256_level_selector {
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
         simd256_level_selector<SINGLE_SIMD_LEVEL>::value;
 
+/***************************************************************
+ * Helper to select the appropriate 512-bit SIMD level.
+ *
+ * For 512-bit SIMD types (simd32uint16, simd64uint8, etc.), maps:
+ *   AVX512_SPR → AVX512 (512-bit ops share the same instructions)
+ *   AVX512 → AVX512
+ *   NONE → NONE
+ ***************************************************************/
+template <SIMDLevel SL>
+struct simd512_level_selector {
+    static constexpr SIMDLevel value =
+            (SL == SIMDLevel::AVX512_SPR) ? SIMDLevel::AVX512 : SL;
+};
+
+/// SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types
+/// (simd32uint16, simd64uint8, etc.) which don't have AVX512_SPR
+/// specializations (AVX512_SPR uses the same 512-bit integer ops as AVX512).
+inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_512 =
+        simd512_level_selector<SINGLE_SIMD_LEVEL>::value;
+
 /// Number of float32 lanes for a given SIMD level.
 /// ARM_SVE is variable-width (128–2048 bits); no single constant is correct.
 template <SIMDLevel SL>
