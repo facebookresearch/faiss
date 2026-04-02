@@ -797,6 +797,7 @@
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1simd256__level__selector" prot="public">faiss::simd256_level_selector</innerclass>
+    <innerclass refid="structfaiss_1_1simd512__level__selector" prot="public">faiss::simd512_level_selector</innerclass>
     <innerclass refid="structfaiss_1_1SIMDConfig" prot="public">faiss::SIMDConfig</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <sectiondef kind="define">
@@ -903,71 +904,91 @@
 <codeline lineno="85"><highlight class="comment">///<sp/>specializations.</highlight></codeline>
 <codeline lineno="86" refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref><sp/>=</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd256__level__selector" kindref="compound">simd256_level_selector&lt;SINGLE_SIMD_LEVEL&gt;::value</ref>;</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="89"><highlight class="comment">///<sp/>Number<sp/>of<sp/>float32<sp/>lanes<sp/>for<sp/>a<sp/>given<sp/>SIMD<sp/>level.</highlight></codeline>
-<codeline lineno="90"><highlight class="comment">///<sp/>ARM_SVE<sp/>is<sp/>variable-width<sp/>(128–2048<sp/>bits);<sp/>no<sp/>single<sp/>constant<sp/>is<sp/>correct.</highlight></codeline>
-<codeline lineno="91"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="92" refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" kindref="member">simd_width</ref>()<sp/>{</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SL<sp/>!=<sp/>SIMDLevel::ARM_SVE,</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;simd_width&lt;ARM_SVE&gt;<sp/>is<sp/>not<sp/>supported:<sp/>SVE<sp/>is<sp/>variable-width&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX512<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::AVX512_SPR)</highlight></codeline>
-<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>16;</highlight></codeline>
-<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX2<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::ARM_NEON)</highlight></codeline>
-<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>8;</highlight></codeline>
-<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
-<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="104"><highlight class="comment">///<sp/>Convert<sp/>SIMDLevel<sp/>to<sp/>string.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>level.</highlight></codeline>
-<codeline lineno="105" refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/><ref refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kindref="member">to_string</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="107"><highlight class="comment">///<sp/>Parse<sp/>string<sp/>to<sp/>SIMDLevel.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>strings.</highlight></codeline>
-<codeline lineno="108" refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" refkind="member"><highlight class="comment"></highlight><highlight class="normal">SIMDLevel<sp/><ref refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kindref="member">to_simd_level</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>level_str);</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="110"><highlight class="comment">/**</highlight></codeline>
-<codeline lineno="111"><highlight class="comment"><sp/>*<sp/>Current<sp/>SIMD<sp/>configuration.</highlight></codeline>
-<codeline lineno="112"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="113"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>provides<sp/>a<sp/>uniform<sp/>API<sp/>for<sp/>querying<sp/>and<sp/>setting<sp/>the<sp/>SIMD<sp/>level,</highlight></codeline>
-<codeline lineno="114"><highlight class="comment"><sp/>*<sp/>regardless<sp/>of<sp/>whether<sp/>faiss<sp/>was<sp/>built<sp/>with<sp/>Dynamic<sp/>Dispatch<sp/>(DD)<sp/>or<sp/>static</highlight></codeline>
-<codeline lineno="115"><highlight class="comment"><sp/>*<sp/>SIMD<sp/>selection.</highlight></codeline>
-<codeline lineno="116"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="117"><highlight class="comment"><sp/>*<sp/>In<sp/>DD<sp/>mode:</highlight></codeline>
-<codeline lineno="118"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>runtime-detected<sp/>or<sp/>user-set<sp/>level</highlight></codeline>
-<codeline lineno="119"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>changes<sp/>the<sp/>runtime<sp/>level<sp/>(if<sp/>level<sp/>is<sp/>supported)</highlight></codeline>
-<codeline lineno="120"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>of<sp/>all<sp/>compiled-in<sp/>levels</highlight></codeline>
-<codeline lineno="121"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="122"><highlight class="comment"><sp/>*<sp/>In<sp/>static<sp/>mode:</highlight></codeline>
-<codeline lineno="123"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>compiled-in<sp/>level</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>succeeds<sp/>only<sp/>if<sp/>level<sp/>matches<sp/>compiled-in<sp/>level</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>with<sp/>single<sp/>level</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="127" refid="structfaiss_1_1SIMDConfig" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref><sp/>{</highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>level;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment">/***************************************************************</highlight></codeline>
+<codeline lineno="90"><highlight class="comment"><sp/>*<sp/>Helper<sp/>to<sp/>select<sp/>the<sp/>appropriate<sp/>512-bit<sp/>SIMD<sp/>level.</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/>*<sp/>For<sp/>512-bit<sp/>SIMD<sp/>types<sp/>(simd32uint16,<sp/>simd64uint8,<sp/>etc.),<sp/>maps:</highlight></codeline>
+<codeline lineno="93"><highlight class="comment"><sp/>*<sp/><sp/><sp/>AVX512_SPR<sp/>→<sp/>AVX512<sp/>(512-bit<sp/>ops<sp/>share<sp/>the<sp/>same<sp/>instructions)</highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/>*<sp/><sp/><sp/>AVX512<sp/>→<sp/>AVX512</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/>*<sp/><sp/><sp/>NONE<sp/>→<sp/>NONE</highlight></codeline>
+<codeline lineno="96"><highlight class="comment"><sp/>***************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="98" refid="structfaiss_1_1simd512__level__selector" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1simd512__level__selector" kindref="compound">simd512_level_selector</ref><sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>value<sp/>=</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX512_SPR)<sp/>?<sp/>SIMDLevel::AVX512<sp/>:<sp/>SL;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="103"><highlight class="comment">///<sp/>SINGLE_SIMD_LEVEL<sp/>mapped<sp/>to<sp/>512-bit:<sp/>use<sp/>this<sp/>for<sp/>512-bit<sp/>simd<sp/>types</highlight></codeline>
+<codeline lineno="104"><highlight class="comment">///<sp/>(simd32uint16,<sp/>simd64uint8,<sp/>etc.)<sp/>which<sp/>don&apos;t<sp/>have<sp/>AVX512_SPR</highlight></codeline>
+<codeline lineno="105"><highlight class="comment">///<sp/>specializations<sp/>(AVX512_SPR<sp/>uses<sp/>the<sp/>same<sp/>512-bit<sp/>integer<sp/>ops<sp/>as<sp/>AVX512).</highlight></codeline>
+<codeline lineno="106" refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kindref="member">SINGLE_SIMD_LEVEL_512</ref><sp/>=</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1simd512__level__selector" kindref="compound">simd512_level_selector&lt;SINGLE_SIMD_LEVEL&gt;::value</ref>;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="109"><highlight class="comment">///<sp/>Number<sp/>of<sp/>float32<sp/>lanes<sp/>for<sp/>a<sp/>given<sp/>SIMD<sp/>level.</highlight></codeline>
+<codeline lineno="110"><highlight class="comment">///<sp/>ARM_SVE<sp/>is<sp/>variable-width<sp/>(128–2048<sp/>bits);<sp/>no<sp/>single<sp/>constant<sp/>is<sp/>correct.</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;SIMDLevel<sp/>SL&gt;</highlight></codeline>
+<codeline lineno="112" refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" kindref="member">simd_width</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static_assert</highlight><highlight class="normal">(</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SL<sp/>!=<sp/>SIMDLevel::ARM_SVE,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;simd_width&lt;ARM_SVE&gt;<sp/>is<sp/>not<sp/>supported:<sp/>SVE<sp/>is<sp/>variable-width&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX512<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::AVX512_SPR)</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>16;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(SL<sp/>==<sp/>SIMDLevel::AVX2<sp/>||<sp/>SL<sp/>==<sp/>SIMDLevel::ARM_NEON)</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>8;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="124"><highlight class="comment">///<sp/>Convert<sp/>SIMDLevel<sp/>to<sp/>string.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>level.</highlight></codeline>
+<codeline lineno="125" refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/><ref refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kindref="member">to_string</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="127"><highlight class="comment">///<sp/>Parse<sp/>string<sp/>to<sp/>SIMDLevel.<sp/>Throws<sp/>FaissException<sp/>for<sp/>invalid<sp/>strings.</highlight></codeline>
+<codeline lineno="128" refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" refkind="member"><highlight class="comment"></highlight><highlight class="normal">SIMDLevel<sp/><ref refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kindref="member">to_simd_level</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>level_str);</highlight></codeline>
 <codeline lineno="129"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>bitmask<sp/>of<sp/>supported<sp/>SIMD<sp/>levels<sp/>(1<sp/>&lt;&lt;<sp/>SIMDLevel).</highlight></codeline>
-<codeline lineno="131" refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels</ref>;</highlight></codeline>
-<codeline lineno="132"><highlight class="normal"></highlight></codeline>
-<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
-<codeline lineno="134"><highlight class="normal"></highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
-<codeline lineno="138" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
-<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
-<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="142"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
-<codeline lineno="143" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
-<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
-<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>with_simd_level<sp/>internally.</highlight></codeline>
-<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
-<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
-<codeline lineno="149" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
-<codeline lineno="150"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="151"><highlight class="normal"></highlight></codeline>
-<codeline lineno="152"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="comment">/**</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/>*<sp/>Current<sp/>SIMD<sp/>configuration.</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>*<sp/>This<sp/>class<sp/>provides<sp/>a<sp/>uniform<sp/>API<sp/>for<sp/>querying<sp/>and<sp/>setting<sp/>the<sp/>SIMD<sp/>level,</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/>*<sp/>regardless<sp/>of<sp/>whether<sp/>faiss<sp/>was<sp/>built<sp/>with<sp/>Dynamic<sp/>Dispatch<sp/>(DD)<sp/>or<sp/>static</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/>*<sp/>SIMD<sp/>selection.</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="137"><highlight class="comment"><sp/>*<sp/>In<sp/>DD<sp/>mode:</highlight></codeline>
+<codeline lineno="138"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>runtime-detected<sp/>or<sp/>user-set<sp/>level</highlight></codeline>
+<codeline lineno="139"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>changes<sp/>the<sp/>runtime<sp/>level<sp/>(if<sp/>level<sp/>is<sp/>supported)</highlight></codeline>
+<codeline lineno="140"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>of<sp/>all<sp/>compiled-in<sp/>levels</highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/>*<sp/>In<sp/>static<sp/>mode:</highlight></codeline>
+<codeline lineno="143"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>get_level()<sp/>returns<sp/>the<sp/>compiled-in<sp/>level</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>set_level()<sp/>succeeds<sp/>only<sp/>if<sp/>level<sp/>matches<sp/>compiled-in<sp/>level</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/>*<sp/><sp/><sp/>-<sp/>supported_simd_levels()<sp/>returns<sp/>bitmask<sp/>with<sp/>single<sp/>level</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147" refid="structfaiss_1_1SIMDConfig" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">FAISS_API<sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref><sp/>{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>level;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>bitmask<sp/>of<sp/>supported<sp/>SIMD<sp/>levels<sp/>(1<sp/>&lt;&lt;<sp/>SIMDLevel).</highlight></codeline>
+<codeline lineno="151" refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="structfaiss_1_1SIMDConfig_1a4f8f48e1019fe365f93073ad85ccd5d1" kindref="member">supported_simd_levels</ref>;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>auto_detect_simd_level();</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1SIMDConfig" kindref="compound">SIMDConfig</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>faiss_simd_level_env<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="157"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Set<sp/>the<sp/>SIMD<sp/>level.<sp/>Throws<sp/>FaissException<sp/>if<sp/>level<sp/>is<sp/>not<sp/>supported.</highlight></codeline>
+<codeline lineno="158" refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1ada43d1f1f09ce0d26f1862d74ace3b45" kindref="member">set_level</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/>get_level();</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::string<sp/>get_level_name();</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="162"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Check<sp/>if<sp/>a<sp/>SIMD<sp/>level<sp/>is<sp/>available<sp/>(compiled<sp/>in).</highlight></codeline>
+<codeline lineno="163" refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1SIMDConfig_1a4bb8ce7524ec223c1bd261a21bbbc5ba" kindref="member">is_simd_level_available</ref>(SIMDLevel<sp/>level);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="165"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Returns<sp/>the<sp/>SIMD<sp/>level<sp/>via<sp/>the<sp/>dispatch<sp/>mechanism.</highlight></codeline>
+<codeline lineno="166"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>DD<sp/>mode,<sp/>uses<sp/>with_simd_level<sp/>internally.</highlight></codeline>
+<codeline lineno="167"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>In<sp/>static<sp/>mode,<sp/>returns<sp/>the<sp/>compiled-in<sp/>level.</highlight></codeline>
+<codeline lineno="168"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Useful<sp/>for<sp/>verification:<sp/>get_level()<sp/>==<sp/>get_dispatched_level()</highlight></codeline>
+<codeline lineno="169" refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>SIMDLevel<sp/><ref refid="structfaiss_1_1SIMDConfig_1afa48eb3a0135156f8d10a0e82e3f77b4" kindref="member">get_dispatched_level</ref>();</highlight></codeline>
+<codeline lineno="170"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/utils/simd_levels.h"/>
   </compounddef>

@@ -829,10 +829,11 @@
   <compound refid="structfaiss_1_1DummyScaler" kind="struct"><name>faiss::DummyScaler</name>
     <member refid="structfaiss_1_1DummyScaler_1af35ad55832e0dd16a21ed94d38d210be" kind="typedef"><name>simd32uint8</name></member>
     <member refid="structfaiss_1_1DummyScaler_1a1f598078edc6f96f1a683759e926f074" kind="typedef"><name>simd16uint16</name></member>
-    <member refid="structfaiss_1_1DummyScaler_1a4079459500d3aa8246b3392fe3ea3c04" kind="typedef"><name>simd64uint8</name></member>
-    <member refid="structfaiss_1_1DummyScaler_1a69751c49a779885017beac9f8d007cc5" kind="typedef"><name>simd32uint16</name></member>
+    <member refid="structfaiss_1_1DummyScaler_1aeba71d7daa0cafbad86d2a9a5c7a3740" kind="typedef"><name>simd64uint8</name></member>
+    <member refid="structfaiss_1_1DummyScaler_1a126a58e3fc96ca1104b2c0a1e98e9a84" kind="typedef"><name>simd32uint16</name></member>
     <member refid="structfaiss_1_1DummyScaler_1a9739f2e17aad374588abc27456d55c59" kind="variable"><name>nscale</name></member>
     <member refid="structfaiss_1_1DummyScaler_1a657ecf29fff9c1927f51bf61b8a2dac7" kind="variable"><name>SL256</name></member>
+    <member refid="structfaiss_1_1DummyScaler_1adcb5c86bb4ec4e28a03462467865f5b6" kind="variable"><name>SL512</name></member>
     <member refid="structfaiss_1_1DummyScaler_1aaa718e034dc1582ea8f8c844d4f0c982" kind="function"><name>lookup</name></member>
     <member refid="structfaiss_1_1DummyScaler_1adf880c12ee91a26cd527213d6c3f92f6" kind="function"><name>scale_lo</name></member>
     <member refid="structfaiss_1_1DummyScaler_1a01f992a19d90c02e83dbfb384cd9a471" kind="function"><name>scale_hi</name></member>
@@ -8985,10 +8986,11 @@
   <compound refid="structfaiss_1_1NormTableScaler" kind="struct"><name>faiss::NormTableScaler</name>
     <member refid="structfaiss_1_1NormTableScaler_1a29c82d8d85d51787f738830df09d3484" kind="typedef"><name>simd32uint8</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1a87e27e77ce41d6d54392d48c1121ad8d" kind="typedef"><name>simd16uint16</name></member>
-    <member refid="structfaiss_1_1NormTableScaler_1a591ed9f8fd65ab8b09118869a1e52388" kind="typedef"><name>simd64uint8</name></member>
-    <member refid="structfaiss_1_1NormTableScaler_1aff3b16fbd05e33ddf33ad615beb05718" kind="typedef"><name>simd32uint16</name></member>
+    <member refid="structfaiss_1_1NormTableScaler_1a066b39220451dd037d5e721dd9ca4050" kind="typedef"><name>simd64uint8</name></member>
+    <member refid="structfaiss_1_1NormTableScaler_1a41d1845bb06b4fe3769aadbb94c3a918" kind="typedef"><name>simd32uint16</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1a4db0edefd2bf93d2d6cda2de9e91826d" kind="variable"><name>nscale</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1ad46e44830db2f6a61b83f4fa3b717b02" kind="variable"><name>SL256</name></member>
+    <member refid="structfaiss_1_1NormTableScaler_1a432e46c636ba28684c0bed69822c693a" kind="variable"><name>SL512</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1aac642a6b6d4f50d77e19d4ac594ec7b1" kind="variable"><name>scale_int</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1a6e43e9174454abc65cc233c60ce4fbb2" kind="variable"><name>scale_simd</name></member>
     <member refid="structfaiss_1_1NormTableScaler_1a14bf8e424d8ab32d048b3c1732d01e17" kind="function"><name>NormTableScaler</name></member>
@@ -10909,6 +10911,9 @@
     <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1ac4da2c8772b770d059de8d300ea2cdc1" kind="variable"><name></name></member>
     <member refid="structfaiss_1_1simd256bit__tpl_3_01SIMDLevel_1_1NONE_01_4_1a9e26613f0973e1dc13c0b805336b8270" kind="variable"><name></name></member>
   </compound>
+  <compound refid="structfaiss_1_1simd512__level__selector" kind="struct"><name>faiss::simd512_level_selector</name>
+    <member refid="structfaiss_1_1simd512__level__selector_1ad4e52a0bfa9a9b681a4d2a1f0b0f3ebd" kind="variable"><name>value</name></member>
+  </compound>
   <compound refid="structfaiss_1_1simd512bit__tpl" kind="struct"><name>faiss::simd512bit_tpl</name>
   </compound>
   <compound refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4" kind="struct"><name>faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</name>
@@ -12031,10 +12036,10 @@
     <member refid="namespacefaiss_1a3e73740176377dc0e675be2ee6b4b187" kind="typedef"><name>simd32uint8</name></member>
     <member refid="namespacefaiss_1ab5013a4e3523c9176d5222115f2c0736" kind="typedef"><name>simd8uint32</name></member>
     <member refid="namespacefaiss_1a40d472ac3e1094035eec6076763c4ff9" kind="typedef"><name>simd8float32</name></member>
-    <member refid="namespacefaiss_1a79c51e3eac4d6cc392092a44a7186ac4" kind="typedef"><name>simd512bit</name></member>
-    <member refid="namespacefaiss_1a6bf67fab1c1405c42c36496143df138b" kind="typedef"><name>simd32uint16</name></member>
-    <member refid="namespacefaiss_1aad1a9b879793b53db57a66c9aca61095" kind="typedef"><name>simd64uint8</name></member>
-    <member refid="namespacefaiss_1a934e17b5aa858de0cefa9c76a4e64817" kind="typedef"><name>simd16float32</name></member>
+    <member refid="namespacefaiss_1a2310ddfce0373b9a123f018c36ed3fe0" kind="typedef"><name>simd512bit</name></member>
+    <member refid="namespacefaiss_1af4163dbddfb42796d62bd11a199bcea6" kind="typedef"><name>simd32uint16</name></member>
+    <member refid="namespacefaiss_1ab4090313c914ed891908c4da06851144" kind="typedef"><name>simd64uint8</name></member>
+    <member refid="namespacefaiss_1aea0f67967d6f53429fa0adb9d87233d4" kind="typedef"><name>simd16float32</name></member>
     <member refid="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" kind="typedef"><name>IndexIDMap</name></member>
     <member refid="namespacefaiss_1a0fcd5b438dc8ed29fe802c9f86b5ed03" kind="typedef"><name>IndexBinaryIDMap</name></member>
     <member refid="namespacefaiss_1aa08ba3d567937ac89a8a7e96ede18bc2" kind="typedef"><name>IndexIDMap2</name></member>
@@ -12096,6 +12101,7 @@
     <member refid="namespacefaiss_1a83ba55d434462e9120b5ad24bc36f768" kind="variable"><name>THE_SL</name></member>
     <member refid="namespacefaiss_1a19143c25e59cfe3cc3cf12f370b17643" kind="variable"><name>SINGLE_SIMD_LEVEL</name></member>
     <member refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kind="variable"><name>SINGLE_SIMD_LEVEL_256</name></member>
+    <member refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kind="variable"><name>SINGLE_SIMD_LEVEL_512</name></member>
     <member refid="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" kind="variable"><name>bucket_sort_verbose</name></member>
     <member refid="namespacefaiss_1a46e8be8ec7d466eaa8994a8e20133815" kind="function"><name>clone_index</name></member>
     <member refid="namespacefaiss_1a1571ebcedcb10e42fb50c7a551aae653" kind="function"><name>clone_Quantizer</name></member>

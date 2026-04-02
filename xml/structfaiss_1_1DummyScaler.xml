@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="27" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="27" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="28" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="28" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1DummyScaler_1a1f598078edc6f96f1a683759e926f074" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; SL256 &gt;</type>
@@ -38,11 +38,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="28" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="28" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="29" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="29" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="structfaiss_1_1DummyScaler_1a4079459500d3aa8246b3392fe3ea3c04" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd64uint8__tpl" kindref="compound">simd64uint8_tpl</ref>&lt; SL &gt;</type>
-        <definition>using faiss::DummyScaler&lt; SL &gt;::simd64uint8 =  simd64uint8_tpl&lt;SL&gt;</definition>
+      <memberdef kind="typedef" id="structfaiss_1_1DummyScaler_1aeba71d7daa0cafbad86d2a9a5c7a3740" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd64uint8__tpl" kindref="compound">simd64uint8_tpl</ref>&lt; SL512 &gt;</type>
+        <definition>using faiss::DummyScaler&lt; SL &gt;::simd64uint8 =  simd64uint8_tpl&lt;SL512&gt;</definition>
         <argsstring></argsstring>
         <name>simd64uint8</name>
         <qualifiedname>faiss::DummyScaler::simd64uint8</qualifiedname>
@@ -52,11 +52,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="29" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="29" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="30" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="30" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="structfaiss_1_1DummyScaler_1a69751c49a779885017beac9f8d007cc5" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16_tpl</ref>&lt; SL &gt;</type>
-        <definition>using faiss::DummyScaler&lt; SL &gt;::simd32uint16 =  simd32uint16_tpl&lt;SL&gt;</definition>
+      <memberdef kind="typedef" id="structfaiss_1_1DummyScaler_1a126a58e3fc96ca1104b2c0a1e98e9a84" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16_tpl</ref>&lt; SL512 &gt;</type>
+        <definition>using faiss::DummyScaler&lt; SL &gt;::simd32uint16 =  simd32uint16_tpl&lt;SL512&gt;</definition>
         <argsstring></argsstring>
         <name>simd32uint16</name>
         <qualifiedname>faiss::DummyScaler::simd32uint16</qualifiedname>
@@ -66,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="30" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="30" bodyend="-1"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="31" column="5" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="31" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-attrib">
@@ -100,6 +100,21 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="26" column="32" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="26" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DummyScaler_1adcb5c86bb4ec4e28a03462467865f5b6" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::DummyScaler&lt; SL &gt;::SL512</definition>
+        <argsstring></argsstring>
+        <name>SL512</name>
+        <qualifiedname>faiss::DummyScaler::SL512</qualifiedname>
+        <initializer>= <ref refid="structfaiss_1_1simd512__level__selector" kindref="compound">simd512_level_selector</ref>&lt;SL&gt;::value</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="27" column="32" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1aaa718e034dc1582ea8f8c844d4f0c982" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
@@ -120,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="32" column="24" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="32" bodyend="35"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="33" column="24" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="33" bodyend="36"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1adf880c12ee91a26cd527213d6c3f92f6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref></type>
@@ -137,7 +152,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="37" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="37" bodyend="40"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="38" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="38" bodyend="41"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1a01f992a19d90c02e83dbfb384cd9a471" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16</ref></type>
@@ -154,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="42" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="42" bodyend="45"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="43" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="43" bodyend="46"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1ad47cc014a69f53ab86734644103f649e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd64uint8__tpl" kindref="compound">simd64uint8</ref></type>
@@ -174,7 +189,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="47" column="24" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="47" bodyend="50"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="48" column="24" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="48" bodyend="51"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1a69cf1b1103426151a6000caa5d3b4e6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16</ref></type>
@@ -191,7 +206,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="52" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="52" bodyend="55"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="53" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="53" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1aa8626acb98f18b1f6a9b89f12364c97c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16</ref></type>
@@ -208,7 +223,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="57" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="57" bodyend="60"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="58" column="25" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="58" bodyend="61"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1DummyScaler_1a3fe6bb1270f9193dfc45be960fa2c768" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -230,7 +245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="63" column="19" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="63" bodyend="66"/>
+        <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="64" column="19" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="64" bodyend="67"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -238,7 +253,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="24" column="1" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="24" bodyend="67"/>
+    <location file="faiss/impl/fast_scan/LookupTableScaler.h" line="24" column="1" bodyfile="faiss/impl/fast_scan/LookupTableScaler.h" bodystart="24" bodyend="68"/>
     <listofallmembers>
       <member refid="structfaiss_1_1DummyScaler_1aaa718e034dc1582ea8f8c844d4f0c982" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>lookup</name></member>
       <member refid="structfaiss_1_1DummyScaler_1ad47cc014a69f53ab86734644103f649e" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>lookup</name></member>
@@ -249,10 +264,11 @@
       <member refid="structfaiss_1_1DummyScaler_1a69cf1b1103426151a6000caa5d3b4e6a" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>scale_lo</name></member>
       <member refid="structfaiss_1_1DummyScaler_1a3fe6bb1270f9193dfc45be960fa2c768" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>scale_one</name></member>
       <member refid="structfaiss_1_1DummyScaler_1a1f598078edc6f96f1a683759e926f074" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd16uint16</name></member>
-      <member refid="structfaiss_1_1DummyScaler_1a69751c49a779885017beac9f8d007cc5" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd32uint16</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1a126a58e3fc96ca1104b2c0a1e98e9a84" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd32uint16</name></member>
       <member refid="structfaiss_1_1DummyScaler_1af35ad55832e0dd16a21ed94d38d210be" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd32uint8</name></member>
-      <member refid="structfaiss_1_1DummyScaler_1a4079459500d3aa8246b3392fe3ea3c04" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd64uint8</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1aeba71d7daa0cafbad86d2a9a5c7a3740" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>simd64uint8</name></member>
       <member refid="structfaiss_1_1DummyScaler_1a657ecf29fff9c1927f51bf61b8a2dac7" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>SL256</name></member>
+      <member refid="structfaiss_1_1DummyScaler_1adcb5c86bb4ec4e28a03462467865f5b6" prot="public" virt="non-virtual"><scope>faiss::DummyScaler</scope><name>SL512</name></member>
     </listofallmembers>
   </compounddef>
 </doxygen>

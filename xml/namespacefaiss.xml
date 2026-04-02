@@ -307,6 +307,7 @@
     <innerclass refid="structfaiss_1_1simd32uint8__tpl_3_01SIMDLevel_1_1ARM__NEON_01_4" prot="public">faiss::simd32uint8_tpl&lt; SIMDLevel::ARM_NEON &gt;</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint8__tpl_3_01SIMDLevel_1_1AVX2_01_4" prot="public">faiss::simd32uint8_tpl&lt; SIMDLevel::AVX2 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1simd32uint8__tpl_3_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::simd32uint8_tpl&lt; SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1simd512__level__selector" prot="public">faiss::simd512_level_selector</innerclass>
     <innerclass refid="structfaiss_1_1simd512bit__tpl" prot="public">faiss::simd512bit_tpl</innerclass>
     <innerclass refid="structfaiss_1_1simd512bit__tpl_3_01SIMDLevel_1_1AVX512_01_4" prot="public">faiss::simd512bit_tpl&lt; SIMDLevel::AVX512 &gt;</innerclass>
     <innerclass refid="structfaiss_1_1simd64uint8__tpl" prot="public">faiss::simd64uint8_tpl</innerclass>
@@ -706,7 +707,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="47" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="47" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="48" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a08d7ecc68fe8a907382e487c0c63f3f7" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; <ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref> &gt;</type>
@@ -720,7 +721,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="48" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="48" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="49" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a3e73740176377dc0e675be2ee6b4b187" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd32uint8__tpl" kindref="compound">simd32uint8_tpl</ref>&lt; <ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref> &gt;</type>
@@ -734,7 +735,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="49" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="49" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="50" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="50" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1ab5013a4e3523c9176d5222115f2c0736" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd8uint32__tpl" kindref="compound">simd8uint32_tpl</ref>&lt; <ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref> &gt;</type>
@@ -748,7 +749,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="50" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="50" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="51" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="51" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a40d472ac3e1094035eec6076763c4ff9" prot="public" static="no">
         <type><ref refid="structfaiss_1_1simd8float32__tpl" kindref="compound">simd8float32_tpl</ref>&lt; <ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref> &gt;</type>
@@ -762,11 +763,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="51" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="51" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="52" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="52" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1a79c51e3eac4d6cc392092a44a7186ac4" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd512bit__tpl" kindref="compound">simd512bit_tpl</ref>&lt; SINGLE_SIMD_LEVEL &gt;</type>
-        <definition>using faiss::simd512bit = typedef simd512bit_tpl&lt;SINGLE_SIMD_LEVEL&gt;</definition>
+      <memberdef kind="typedef" id="namespacefaiss_1a2310ddfce0373b9a123f018c36ed3fe0" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd512bit__tpl" kindref="compound">simd512bit_tpl</ref>&lt; <ref refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kindref="member">SINGLE_SIMD_LEVEL_512</ref> &gt;</type>
+        <definition>using faiss::simd512bit = typedef simd512bit_tpl&lt;SINGLE_SIMD_LEVEL_512&gt;</definition>
         <argsstring></argsstring>
         <name>simd512bit</name>
         <qualifiedname>faiss::simd512bit</qualifiedname>
@@ -776,11 +777,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="54" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="54" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="55" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="55" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1a6bf67fab1c1405c42c36496143df138b" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16_tpl</ref>&lt; SINGLE_SIMD_LEVEL &gt;</type>
-        <definition>using faiss::simd32uint16 = typedef simd32uint16_tpl&lt;SINGLE_SIMD_LEVEL&gt;</definition>
+      <memberdef kind="typedef" id="namespacefaiss_1af4163dbddfb42796d62bd11a199bcea6" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd32uint16__tpl" kindref="compound">simd32uint16_tpl</ref>&lt; <ref refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kindref="member">SINGLE_SIMD_LEVEL_512</ref> &gt;</type>
+        <definition>using faiss::simd32uint16 = typedef simd32uint16_tpl&lt;SINGLE_SIMD_LEVEL_512&gt;</definition>
         <argsstring></argsstring>
         <name>simd32uint16</name>
         <qualifiedname>faiss::simd32uint16</qualifiedname>
@@ -790,11 +791,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="55" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="55" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="56" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="56" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1aad1a9b879793b53db57a66c9aca61095" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd64uint8__tpl" kindref="compound">simd64uint8_tpl</ref>&lt; SINGLE_SIMD_LEVEL &gt;</type>
-        <definition>using faiss::simd64uint8 = typedef simd64uint8_tpl&lt;SINGLE_SIMD_LEVEL&gt;</definition>
+      <memberdef kind="typedef" id="namespacefaiss_1ab4090313c914ed891908c4da06851144" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd64uint8__tpl" kindref="compound">simd64uint8_tpl</ref>&lt; <ref refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kindref="member">SINGLE_SIMD_LEVEL_512</ref> &gt;</type>
+        <definition>using faiss::simd64uint8 = typedef simd64uint8_tpl&lt;SINGLE_SIMD_LEVEL_512&gt;</definition>
         <argsstring></argsstring>
         <name>simd64uint8</name>
         <qualifiedname>faiss::simd64uint8</qualifiedname>
@@ -804,11 +805,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="56" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="56" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="57" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="57" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="namespacefaiss_1a934e17b5aa858de0cefa9c76a4e64817" prot="public" static="no">
-        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref>&lt; SINGLE_SIMD_LEVEL &gt;</type>
-        <definition>using faiss::simd16float32 = typedef simd16float32_tpl&lt;SINGLE_SIMD_LEVEL&gt;</definition>
+      <memberdef kind="typedef" id="namespacefaiss_1aea0f67967d6f53429fa0adb9d87233d4" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd16float32__tpl" kindref="compound">simd16float32_tpl</ref>&lt; <ref refid="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" kindref="member">SINGLE_SIMD_LEVEL_512</ref> &gt;</type>
+        <definition>using faiss::simd16float32 = typedef simd16float32_tpl&lt;SINGLE_SIMD_LEVEL_512&gt;</definition>
         <argsstring></argsstring>
         <name>simd16float32</name>
         <qualifiedname>faiss::simd16float32</qualifiedname>
@@ -818,7 +819,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="57" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="57" bodyend="-1"/>
+        <location file="faiss/impl/simdlib/simdlib_dispatch.h" line="58" column="1" bodyfile="faiss/impl/simdlib/simdlib_dispatch.h" bodystart="58" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacefaiss_1a73b36a88d6db5db6a15d165150e54348" prot="public" static="no">
         <type><ref refid="structfaiss_1_1IndexIDMapTemplate" kindref="compound">IndexIDMapTemplate</ref>&lt; <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &gt;</type>
@@ -1717,6 +1718,23 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/simd_levels.h" line="86" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr SIMDLevel</type>
+        <definition>constexpr SIMDLevel faiss::SINGLE_SIMD_LEVEL_512</definition>
+        <argsstring></argsstring>
+        <name>SINGLE_SIMD_LEVEL_512</name>
+        <qualifiedname>faiss::SINGLE_SIMD_LEVEL_512</qualifiedname>
+        <initializer>=
+        <ref refid="structfaiss_1_1simd512__level__selector" kindref="compound">simd512_level_selector</ref>&lt;SINGLE_SIMD_LEVEL&gt;::value</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types (simd32uint16, simd64uint8, etc.) which don&apos;t have AVX512_SPR specializations (AVX512_SPR uses the same 512-bit integer ops as AVX512). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_levels.h" line="106" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="106" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
@@ -15938,7 +15956,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="92" column="15" bodyfile="faiss/utils/simd_levels.h" bodystart="92" bodyend="102"/>
+        <location file="faiss/utils/simd_levels.h" line="112" column="15" bodyfile="faiss/utils/simd_levels.h" bodystart="112" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a79e514996c26613456730d2427a8a842" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -15957,7 +15975,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="105" column="13" declfile="faiss/utils/simd_levels.h" declline="105" declcolumn="13"/>
+        <location file="faiss/utils/simd_levels.h" line="125" column="13" declfile="faiss/utils/simd_levels.h" declline="125" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -15976,7 +15994,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="108" column="11" declfile="faiss/utils/simd_levels.h" declline="108" declcolumn="11"/>
+        <location file="faiss/utils/simd_levels.h" line="128" column="11" declfile="faiss/utils/simd_levels.h" declline="128" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
