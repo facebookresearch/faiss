@@ -392,6 +392,24 @@ TEST(ReadIndexDeserialize, IndexLatticeDsqOne) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexLattice with r2 too large causes timeout in
+// ZnSphereCodecRec constructor (exponential codeword count in the
+// decode cache).  ZnSphereCodecRec caps the decode cache size to
+// prevent this.  Use dsq=16 (log2_dim=4, cache_level=3) with r2=73
+// which would take well over a minute of CPU time if not rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeR2TooLarge) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 16); // d
+    push_val<int>(buf, 1);  // nsq
+    push_val<int>(buf, 4);  // scale_nbit
+    push_val<int>(buf, 73); // r2 = 73 (decode cache too large for dsq=16)
+
+    expect_read_throws_with(buf, "decode cache");
+}
+
+// -----------------------------------------------------------------------
 // Binary index helpers
 // -----------------------------------------------------------------------
 
