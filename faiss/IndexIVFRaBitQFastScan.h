@@ -199,7 +199,8 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
           storage_size(idx->compute_per_vector_storage_size()),
           packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
           full_block_size(idx->get_block_stride()),
-          packer(idx->get_CodePacker()) {
+          packer(idx->get_CodePacker()),
+          unpack_buf(idx->code_size) {
     current_list_no = 0;
     probe_indices.clear();
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
@@ -352,7 +353,7 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
         size_t /*db_idx*/,
         size_t local_q,
         size_t global_q,
-        size_t local_offset) const {
+        size_t local_offset) {
     const size_t ex_bits = index->rabitq.nb_bits - 1;
     const size_t dim = index->d;
 
@@ -374,12 +375,13 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
     size_t storage_idx_val = global_q * nprobe_val + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx_val];
 
-    InvertedLists::ScopedCodes list_codes(index->invlists, current_list_no);
-    std::vector<uint8_t> unpacked_code(index->code_size);
-    packer->unpack_1(list_codes.get(), local_offset, unpacked_code.data());
+    // Use list_codes_ptr (already set by set_list_context) and the
+    // pre-allocated unpack_buf to avoid per-refinement ScopedCodes
+    // re-acquisition and heap allocation.
+    packer->unpack_1(list_codes_ptr, local_offset, unpack_buf.data());
 
     return rabitq_utils::compute_full_multibit_distance(
-            unpacked_code.data(),
+            unpack_buf.data(),
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),
