@@ -1,11 +1,9 @@
 {
-  "terminal.integrated.profiles.windows": {
-    "My Project Shell": {
-      "path": "wsl.exe"
-    }
-  },
-  "terminal.integrated.defaultProfile.windows": "My Project Shell",
-  "terminal.integrated.automationProfile.windows": {
-    "path": "wsl.exe"
+  "chat.tools.terminal.autoApprove": {
+    "mkdir": true,
+    "cmake": true,
+    "make": true,
+    "nproc": true,
+    "nvcc": true
   }
 }
