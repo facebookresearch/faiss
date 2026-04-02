@@ -578,7 +578,15 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
-  find_package(BLAS REQUIRED)
+  # Prefer threaded OpenBLAS (OpenMP or pthreads) over the serial default.
+  # On RHEL/Fedora, the default libopenblas.so is the serial variant;
+  # libopenblaso is OpenMP-threaded and libopenblasp is pthreads-threaded.
+  find_library(BLAS_PREFER_THREADED NAMES openblaso openblasp)
+  if(BLAS_PREFER_THREADED)
+    set(BLAS_LIBRARIES "${BLAS_PREFER_THREADED}")
+  else()
+    find_package(BLAS REQUIRED)
+  endif()
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
