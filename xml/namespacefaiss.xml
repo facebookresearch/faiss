@@ -4145,7 +4145,7 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/fast_scan.h" line="295" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="295" declcolumn="17"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aea93318a778529ad745e12672d338d0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a7dc5133076fcb0c9f14a4674d0be5bea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
             <type>SIMDLevel</type>
@@ -4155,7 +4155,7 @@
         </templateparamlist>
         <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
         <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner_impl</definition>
-        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
         <name>rabitq_ivf_make_knn_scanner_impl</name>
         <qualifiedname>faiss::rabitq_ivf_make_knn_scanner_impl</qualifiedname>
         <param>
@@ -4183,6 +4183,10 @@
           <declname>ids</declname>
         </param>
         <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
           <declname>context</declname>
         </param>
@@ -4199,10 +4203,10 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/fast_scan.h" line="308" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="308" declcolumn="17"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1a1735436937d7230c2fd79f9dfa4d6e65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1aa09bd8ecad2830d3fecddfcbe61e222b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
         <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner</definition>
-        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
         <name>rabitq_ivf_make_knn_scanner</name>
         <qualifiedname>faiss::rabitq_ivf_make_knn_scanner</qualifiedname>
         <param>
@@ -4230,6 +4234,10 @@
           <declname>ids</declname>
         </param>
         <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
           <declname>context</declname>
         </param>
@@ -4244,7 +4252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/fast_scan.h" line="319" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="319" declcolumn="17"/>
+        <location file="faiss/impl/fast_scan/fast_scan.h" line="320" column="17" declfile="faiss/impl/fast_scan/fast_scan.h" declline="320" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -4397,12 +4405,12 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="35" bodyend="54"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1aad98471b20584eb65131d7049e915a77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
         </templateparamlist>
         <type>std::unique_ptr&lt; <ref refid="structfaiss_1_1FastScanCodeScanner" kindref="compound">FastScanCodeScanner</ref> &gt;</type>
         <definition>std::unique_ptr&lt; FastScanCodeScanner &gt; faiss::rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</definition>
-        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
+        <argsstring>(bool is_max, const IndexIVFRaBitQFastScan *index, size_t nq, size_t k, float *distances, int64_t *ids, const IDSelector *sel, const FastScanDistancePostProcessing *context, bool multi_bit)</argsstring>
         <name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name>
         <qualifiedname>faiss::rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</qualifiedname>
         <param>
@@ -4430,6 +4438,10 @@
           <declname>ids</declname>
         </param>
         <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel</declname>
+        </param>
+        <param>
           <type>const <ref refid="structfaiss_1_1FastScanDistancePostProcessing" kindref="compound">FastScanDistancePostProcessing</ref> *</type>
           <declname>context</declname>
         </param>
@@ -4443,7 +4455,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="59" bodyend="79"/>
+        <location file="faiss/impl/fast_scan/rabitq_dispatching.h" line="1" column="0" bodyfile="faiss/impl/fast_scan/rabitq_dispatching.h" bodystart="59" bodyend="80"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>

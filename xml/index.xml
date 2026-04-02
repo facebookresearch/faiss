@@ -8427,7 +8427,7 @@
     <member refid="structfaiss_1_1SIMDResultHandler_1ad8fa22b898c9869f511fa274d503d478" kind="variable"><name>sizeof_ids</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ae8d4013cd119523c399eca166b77f5d2" kind="variable"><name>with_fields</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1ae405f42d913652fffede258a52b72ec5" kind="variable"><name>in_range_num</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a0fe701e9470f62f215a9348aa4c66618" kind="function"><name>IVFRaBitQHeapHandler</name></member>
+    <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1ac27065b5ea1b7a0b0f485775a7c2d08d" kind="function"><name>IVFRaBitQHeapHandler</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1adb450d9462012b3afa7d1cd5db87f329" kind="function"><name>handle</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1abe8ee62acdf91c083faef8c07642e11d" kind="function"><name>set_list_context</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a21468ced783eb7a62e79106b165f76cc" kind="function"><name>begin</name></member>
@@ -12147,12 +12147,12 @@
     <member refid="namespacefaiss_1a0d7e8cf0a84cec66a5aa4bc4e9167c77" kind="function"><name>make_partial_range_scanner</name></member>
     <member refid="namespacefaiss_1a1b4303e9351b4aad6d8f04e1553a081c" kind="function"><name>rabitq_make_knn_scanner_impl</name></member>
     <member refid="namespacefaiss_1a92c4821dba6629fe1816728262ea812c" kind="function"><name>rabitq_make_knn_scanner</name></member>
-    <member refid="namespacefaiss_1aea93318a778529ad745e12672d338d0a" kind="function"><name>rabitq_ivf_make_knn_scanner_impl</name></member>
-    <member refid="namespacefaiss_1a1735436937d7230c2fd79f9dfa4d6e65" kind="function"><name>rabitq_ivf_make_knn_scanner</name></member>
+    <member refid="namespacefaiss_1a7dc5133076fcb0c9f14a4674d0be5bea" kind="function"><name>rabitq_ivf_make_knn_scanner_impl</name></member>
+    <member refid="namespacefaiss_1aa09bd8ecad2830d3fecddfcbe61e222b" kind="function"><name>rabitq_ivf_make_knn_scanner</name></member>
     <member refid="namespacefaiss_1a9c768b846686f73773cd8c7370310ec2" kind="function"><name>kernel_accumulate_block</name></member>
     <member refid="namespacefaiss_1a25f76b72513ae946e5cd5ff8f3e24988" kind="function"><name>pq4_kernel_qbs_256</name></member>
     <member refid="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" kind="function"><name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
-    <member refid="namespacefaiss_1aad98471b20584eb65131d7049e915a77" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
+    <member refid="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" kind="function"><name>search_from_candidates</name></member>
     <member refid="namespacefaiss_1a5a6ff3b3d4b0a632c286a9967c420718" kind="function"><name>search_from_candidates_panorama</name></member>
     <member refid="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" kind="function"><name>greedy_update_nearest</name></member>
