@@ -1,0 +1,160 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+# Benchmark FAISS wheel quality across platforms.
+#
+# Compares three FAISS installations:
+#   1. Our wheel (built from this branch via build-pip)
+#   2. Conda faiss-cpu (pytorch channel)
+#   3. Current pip faiss-cpu (community PyPI package)
+#
+# Measures recall@10, QPS, and training time for IVF index types.
+
+name: Benchmark Wheels
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bench-wheels.yml'
+      - '.github/workflows/build-pip.yml'
+      - 'benchs/bench_wheels.py'
+      - 'faiss/**'
+      - 'python/**'
+      - 'CMakeLists.txt'
+      - 'pyproject.toml'
+
+jobs:
+  # Build wheels using the existing build-pip workflow
+  build:
+    uses: ./.github/workflows/build-pip.yml
+
+  # Benchmark the built wheels against conda and community pip
+  benchmark:
+    name: Benchmark ${{ matrix.platform }}
+    needs: [build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: linux-x86_64
+            artifact: wheels-ubuntu-latest
+            has_conda: true
+          - runner: 2-core-ubuntu-arm
+            platform: linux-aarch64
+            artifact: wheels-2-core-ubuntu-arm
+            has_conda: true
+          - runner: macos-14
+            platform: macos-arm64
+            artifact: wheels-macos-14
+            has_conda: true
+          - runner: macos-15-intel
+            platform: macos-x86_64
+            artifact: wheels-macos-15-intel
+            has_conda: true
+          - runner: windows-2022
+            platform: windows-x86_64
+            artifact: wheels-windows-2022
+            has_conda: true
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download our wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: wheels/
+
+      # 1. Benchmark: Our wheel
+      - name: 'Benchmark: our wheel'
+        shell: bash
+        run: |
+          python -m venv env_wheel
+          if [ -f env_wheel/bin/activate ]; then
+            source env_wheel/bin/activate
+          else
+            source env_wheel/Scripts/activate
+          fi
+          python -m pip install --upgrade pip
+          python -m pip install numpy
+          # On Windows, multiple per-version wheels exist; pick the matching one.
+          # On Linux/macOS, abi3 wheels work for any Python 3.10+.
+          PYVER=$(python -c "import sys; print(f'cp{sys.version_info.major}{sys.version_info.minor}')")
+          WHEEL=$(ls wheels/*"${PYVER}"*.whl 2>/dev/null || ls wheels/*.whl 2>/dev/null | head -1)
+          python -m pip install $WHEEL
+          python benchs/bench_wheels.py --label "our-wheel" -o results_wheel.json
+
+      # 2. Benchmark: conda faiss-cpu
+      - name: Install Miniconda
+        if: matrix.has_conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: false
+          python-version: '3.12'
+
+      - name: 'Benchmark: conda'
+        if: matrix.has_conda
+        shell: bash -l {0}
+        run: |
+          conda create -n bench-conda python=3.12 -y -q
+          conda install -n bench-conda -c pytorch -c conda-forge faiss-cpu numpy -y -q
+          conda run -n bench-conda python benchs/bench_wheels.py --label "conda" -o results_conda.json
+
+      # 3. Benchmark: current pip faiss-cpu (community)
+      - name: 'Benchmark: current pip'
+        shell: bash
+        continue-on-error: true
+        run: |
+          python -m venv env_pip
+          if [ -f env_pip/bin/activate ]; then
+            source env_pip/bin/activate
+          else
+            source env_pip/Scripts/activate
+          fi
+          python -m pip install --upgrade pip
+          python -m pip install faiss-cpu numpy
+          python benchs/bench_wheels.py --label "pip-community" -o results_pip.json
+
+      # Compare results
+      - name: Compare results
+        shell: bash
+        run: |
+          if [ -f env_wheel/bin/activate ]; then
+            source env_wheel/bin/activate
+          else
+            source env_wheel/Scripts/activate
+          fi
+
+          FILES=""
+          for f in results_wheel.json results_conda.json results_pip.json; do
+            [ -f "$f" ] && FILES="$FILES $f"
+          done
+
+          echo "## Benchmark Results: ${{ matrix.platform }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$FILES" ]; then
+            python benchs/bench_wheels.py --compare $FILES | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No result files found." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-results-${{ matrix.platform }}
+          path: results_*.json
