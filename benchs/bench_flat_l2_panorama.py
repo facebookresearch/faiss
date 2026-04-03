@@ -69,7 +69,7 @@ def build_index(name):
 
 
 nlevels = 8
-batch_size = 1024
+batch_size = 512
 
 plt.figure(figsize=(8, 6), dpi=80)
 
