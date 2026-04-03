@@ -43,7 +43,8 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
-    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, n_levels, batch_size);
+    this->invlists = new ArrayInvertedListsPanorama(
+            nlist, code_size, n_levels, batch_size);
     this->own_invlists = own_invlists_in;
 }
 

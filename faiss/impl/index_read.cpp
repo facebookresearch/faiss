@@ -503,8 +503,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         read_ArrayInvertedLists_sizes(f, sizes);
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
-            size_t num_elems =
-                    ((sizes[i] + bs - 1) / bs) * bs;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
@@ -534,8 +533,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         read_ArrayInvertedLists_sizes(f, sizes);
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
-            size_t num_elems =
-                    ((sizes[i] + bs - 1) / bs) * bs;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
