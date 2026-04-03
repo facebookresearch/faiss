@@ -1,3 +1,3 @@
-=== AFTER OPTIMIZATIONS (batch_size=1024) ===
+=== AFTER OPTIMIZATIONS ===
 
 --- bench_ivf_flat_panorama.py GIST1M ---
