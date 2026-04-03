@@ -2868,3 +2868,55 @@ TEST(ReadIndexDeserialize, SQUntrainedEmptyTrainedAccepted) {
     auto idx = read_index_up(&reader);
     EXPECT_FALSE(idx->is_trained);
 }
+
+// Test: IndexResidualQuantizer rejects AQ dimension != index dimension.
+TEST(ReadIndexDeserialize, IndexResidualQuantizerAQDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxRq");
+    // Index header says d=4, but AQ will have d=8 → mismatch.
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_residual_quantizer(buf, /*d=*/8, /*M=*/1, /*nbits=*/{4});
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<uint8_t>(buf, {}); // codes
+
+    expect_read_throws_with(buf, "does not match index d");
+}
+
+// Test: IndexLocalSearchQuantizer rejects AQ dimension != index dimension.
+TEST(ReadIndexDeserialize, IndexLocalSearchQuantizerAQDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLS");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_local_search_quantizer(buf, /*d=*/8, /*M=*/1, /*nbits=*/{4});
+    push_val<size_t>(buf, 1);      // code_size
+    push_vector<uint8_t>(buf, {}); // codes
+
+    expect_read_throws_with(buf, "does not match index d");
+}
+
+// Test: ResidualCoarseQuantizer rejects AQ dimension != index dimension.
+TEST(ReadIndexDeserialize, ResidualCoarseQuantizerAQDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ImRQ");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_residual_quantizer(buf, /*d=*/8, /*M=*/1, /*nbits=*/{4});
+    push_val<float>(buf, -1.0f); // beam_factor
+
+    expect_read_throws_with(buf, "does not match index d");
+}
+
+// Test: IndexResidualQuantizerFastScan rejects AQ dimension != index dimension.
+TEST(ReadIndexDeserialize, IndexRQFastScanAQDimensionMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IRfs");
+    // Index header says d=4, but AQ will have d=8 → mismatch.
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_residual_quantizer(buf, /*d=*/8, /*M=*/1, /*nbits=*/{4});
+    // FastScan fields won't be reached due to early validation.
+    // But include a few just in case:
+    push_val<int>(buf, 0);  // implem
+    push_val<int>(buf, 32); // bbs
+    push_val<int>(buf, 0);  // qbs
+
+    expect_read_throws_with(buf, "does not match index d");
+}
