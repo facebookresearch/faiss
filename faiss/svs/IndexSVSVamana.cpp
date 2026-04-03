@@ -236,10 +236,12 @@ void IndexSVSVamana::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);
-    auto status = impl->load(&impl, in, svs_metric, svs_storage_kind);
+    auto status = svs_runtime::DynamicVamanaIndex::load(
+            &impl, in, svs_metric, svs_storage_kind);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
+    FAISS_THROW_IF_NOT_MSG(impl, "Failed to load SVS Vamana index.");
 }
 
 } // namespace faiss
