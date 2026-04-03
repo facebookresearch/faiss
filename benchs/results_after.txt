@@ -1,3 +1,0 @@
-=== AFTER OPTIMIZATIONS ===
-
---- bench_ivf_flat_panorama.py GIST1M ---
