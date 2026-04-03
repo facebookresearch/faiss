@@ -289,7 +289,8 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     ArrayInvertedListsPanorama(
             size_t nlist_in,
             size_t code_size_in,
-            size_t n_levels_in);
+            size_t n_levels_in,
+            size_t batch_size = 128);
 
     const float* get_cum_sums(size_t list_no) const;
 

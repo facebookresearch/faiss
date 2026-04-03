@@ -269,11 +269,12 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
     } else if (
             const auto& ailp =
                     dynamic_cast<const ArrayInvertedListsPanorama*>(ils)) {
-        uint32_t h = fourcc("ilpn");
+        uint32_t h = fourcc("ilp2");
         WRITE1(h);
         WRITE1(ailp->nlist);
         WRITE1(ailp->code_size);
         WRITE1(ailp->n_levels);
+        WRITE1(ailp->pano.batch_size);
         uint32_t list_type = fourcc("full");
         WRITE1(list_type);
         std::vector<size_t> sizes;
@@ -707,10 +708,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexIVFFlatPanorama* ivfp =
                     dynamic_cast<const IndexIVFFlatPanorama*>(idx)) {
-        uint32_t h = fourcc("IwPn");
+        uint32_t h = fourcc("IwP2");
         WRITE1(h);
         write_ivf_header(ivfp, f);
         WRITE1(ivfp->n_levels);
+        WRITE1(ivfp->batch_size);
         write_InvertedLists(ivfp->invlists, f);
     } else if (
             const IndexIVFFlat* ivfl_2 =
