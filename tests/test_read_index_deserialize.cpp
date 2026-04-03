@@ -2966,3 +2966,80 @@ TEST(ReadIndexDeserialize, IndexRQFastScanAQDimensionMismatch) {
 
     expect_read_throws_with(buf, "does not match index d");
 }
+
+// ============================================================
+// SVS fourcc rejection / deserialization safety (Group F: T262015608)
+// ============================================================
+
+#ifdef FAISS_ENABLE_SVS
+
+// When SVS is enabled, deserializing an SVS Vamana index with invalid SVS
+// stream data should throw a FaissException (from the SVS runtime load
+// failure) rather than crashing with a null-pointer dereference.
+// Previously, deserialize_impl called impl->load() on a null impl pointer.
+TEST(ReadIndexDeserialize, SVSVamanaInvalidStreamThrows) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_index_header(buf, 8, 0);
+    // SVS Vamana deserialization fields:
+    push_val<size_t>(buf, 32);  // graph_max_degree
+    push_val<float>(buf, 1.2f); // alpha
+    push_val<size_t>(buf, 10);  // search_window_size
+    push_val<size_t>(buf, 10);  // search_buffer_capacity
+    push_val<size_t>(buf, 64);  // construction_window_size
+    push_val<size_t>(buf, 750); // max_candidate_pool_size
+    push_val<size_t>(buf, 28);  // prune_to
+    push_val<bool>(buf, false); // use_full_search_history
+    push_val<int>(buf, 0);      // storage_kind (SVS_Float16)
+    push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
+    // Provide garbage SVS stream data — load should fail gracefully.
+    for (int i = 0; i < 256; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    // Should throw from SVS runtime load failure, NOT crash with SIGSEGV.
+    EXPECT_THROW(
+            {
+                auto reader = faiss::VectorIOReader();
+                reader.data = buf;
+                faiss::read_index(&reader);
+            },
+            faiss::FaissException);
+}
+
+// Same test for SVS Flat index.
+TEST(ReadIndexDeserialize, SVSFlatInvalidStreamThrows) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVF");
+    push_index_header(buf, 8, 0);
+    push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
+    // Provide garbage SVS stream data.
+    for (int i = 0; i < 256; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    EXPECT_THROW(
+            {
+                auto reader = faiss::VectorIOReader();
+                reader.data = buf;
+                faiss::read_index(&reader);
+            },
+            faiss::FaissException);
+}
+
+#else // !FAISS_ENABLE_SVS
+
+// When SVS is not enabled, attempting to read an index with an SVS fourcc
+// should fail with an "unknown fourcc" error rather than crashing.
+TEST(ReadIndexDeserialize, SVSVamanaFourccRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_index_header(buf, 8, 0);
+    for (int i = 0; i < 128; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    expect_read_throws_with(buf, "fourcc");
+}
+
+#endif // FAISS_ENABLE_SVS
