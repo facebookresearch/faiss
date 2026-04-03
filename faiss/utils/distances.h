@@ -369,7 +369,7 @@ void pairwise_indexed_inner_product(
  * KNN functions
  ***************************************************************************/
 
-// threshold on nx above which we switch to BLAS to compute distances
+// threshold on nx * d above which we switch to BLAS to compute distances
 FAISS_API extern int distance_compute_blas_threshold;
 
 // block sizes for BLAS distance computations
