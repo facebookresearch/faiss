@@ -1,11 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
-  <compounddef id="namespacefaiss_1_1_0d210" kind="namespace" language="C++">
-    <compoundname>faiss</compoundname>
+  <compounddef id="dir_4e2b565c8f87998af389640213d7d37b" kind="dir">
+    <compoundname>faiss/impl/hnsw</compoundname>
+    <innerfile refid="MinimaxHeap_8h">MinimaxHeap.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simd_impl/distances_simdlib256.h" line="76" column="1"/>
+    <location file="faiss/impl/hnsw/"/>
   </compounddef>
 </doxygen>

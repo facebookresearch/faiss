@@ -8784,20 +8784,22 @@
   <compound refid="structfaiss_1_1MaybeOwnedVectorOwner" kind="struct"><name>faiss::MaybeOwnedVectorOwner</name>
     <member refid="structfaiss_1_1MaybeOwnedVectorOwner_1a7208697f151c77d5d838b243b1135e6f" kind="function"><name>~MaybeOwnedVectorOwner</name></member>
   </compound>
-  <compound refid="structfaiss_1_1HNSW_1_1MinimaxHeap" kind="struct"><name>faiss::HNSW::MinimaxHeap</name>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1aa84f4b0590b40f2db7cd414f03e09163" kind="typedef"><name>HC</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae3eac58ea390ae96a00f6fc6e8e04591" kind="variable"><name>n</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a41574372117595d8829816367d56ca02" kind="variable"><name>k</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a28f52e6beb031179d2fd3f7c7176db76" kind="variable"><name>nvalid</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a872c880f3f90af4e666dce2be4dab87c" kind="variable"><name>ids</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a38fa78ac21419dade4efdf69e4852450" kind="variable"><name>dis</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1ae864b3964c3e14925698a67258d66194" kind="function"><name>MinimaxHeap</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a5bb98fe6de052c6f966d25b4c7fff738" kind="function"><name>push</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a87b25c78cf810c5a7249d171e4d2d7fa" kind="function"><name>max</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adc87106d3cf52c898c5b1d6af78d0918" kind="function"><name>size</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1adad4c4a475a29ab0d02cce9dcb069f8a" kind="function"><name>clear</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1acd09edf2f36ccaf094b1df6acd51612b" kind="function"><name>pop_min</name></member>
-    <member refid="structfaiss_1_1HNSW_1_1MinimaxHeap_1a94d529d139fb46034abf26f1bd6a9f14" kind="function"><name>count_below</name></member>
+  <compound refid="structfaiss_1_1MinimaxHeap" kind="struct"><name>faiss::MinimaxHeap</name>
+    <member refid="structfaiss_1_1MinimaxHeap_1a6a71097d9dd122094ee73c79a24e46ae" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1abcecad87a16aaab351f3b46a74a86b4c" kind="typedef"><name>HC</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a00d5019e63b684cdcc65f41b32dc642c" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a05bb60438e0953542bd9e8737c7a7b85" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a84865dd794d86e9818d876cc81fa859e" kind="variable"><name>nvalid</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1aa8dd195680d294c86cea21c58edd9e81" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a2f7bce65d03230ca10fe43ab910c902d" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1ae8e3d9f8970096a65b48c9782c98d380" kind="function"><name>MinimaxHeap</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1aaefdf7927df4a0cb2e19015bd479c27d" kind="function"><name>push</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a0bc640722505bb3f290641ea4c7ef73f" kind="function"><name>max</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a13d189c5a1638e80827f67281c58c8e9" kind="function"><name>size</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a120cc4e9389863f6f88bf3fceadcf304" kind="function"><name>clear</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1aefb82e90f66f59544d3556dbb7df95b2" kind="function"><name>pop_min_tpl</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1a0f7d193f506330c5c34d5bc1fb6cea2f" kind="function"><name>pop_min</name></member>
+    <member refid="structfaiss_1_1MinimaxHeap_1af4bc7e4a6f5a118bf1f1f3213434d8ac" kind="function"><name>count_below</name></member>
   </compound>
   <compound refid="structfaiss_1_1MmappedFileMappingOwner" kind="struct"><name>faiss::MmappedFileMappingOwner</name>
     <member refid="structfaiss_1_1MmappedFileMappingOwner_1ab61273289ae971747418a7a328a1219b" kind="variable"><name>p_impl</name></member>
@@ -12153,8 +12155,8 @@
     <member refid="namespacefaiss_1a25f76b72513ae946e5cd5ff8f3e24988" kind="function"><name>pq4_kernel_qbs_256</name></member>
     <member refid="namespacefaiss_1aad0075c3f7200fc407c90099e187f3c2" kind="function"><name>rabitq_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="namespacefaiss_1a2296c34f3219451c88e96e7a951e64c0" kind="function"><name>rabitq_ivf_make_knn_scanner_impl&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
-    <member refid="namespacefaiss_1a72b1d0111cfe6137b5a67a5bc670e3f8" kind="function"><name>search_from_candidates</name></member>
-    <member refid="namespacefaiss_1a5a6ff3b3d4b0a632c286a9967c420718" kind="function"><name>search_from_candidates_panorama</name></member>
+    <member refid="namespacefaiss_1a5be80d29ca0583f942d3ccf479c30610" kind="function"><name>search_from_candidates</name></member>
+    <member refid="namespacefaiss_1a03dfdaba71e91b32059e59ccf4e722a7" kind="function"><name>search_from_candidates_panorama</name></member>
     <member refid="namespacefaiss_1ad5378e0f1958868c1170b8552b44fc31" kind="function"><name>greedy_update_nearest</name></member>
     <member refid="namespacefaiss_1a7fcc71c4eb814ea582ad9ffb0c909d7a" kind="function"><name>search_from_candidate_unbounded</name></member>
     <member refid="namespacefaiss_1ad97c6c4a248bc0ac4399e4f0eea2ff99" kind="function"><name>search_neighbors_to_add</name></member>
@@ -12514,21 +12516,21 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d108" kind="namespace"><name>faiss::@108</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d111" kind="namespace"><name>faiss::@111</name>
+  <compound refid="namespacefaiss_1_1_0d109" kind="namespace"><name>faiss::@109</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d112" kind="namespace"><name>faiss::@112</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d113" kind="namespace"><name>faiss::@113</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d182" kind="namespace"><name>faiss::@182</name>
+  <compound refid="namespacefaiss_1_1_0d114" kind="namespace"><name>faiss::@114</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d186" kind="namespace"><name>faiss::@186</name>
+  <compound refid="namespacefaiss_1_1_0d183" kind="namespace"><name>faiss::@183</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d190" kind="namespace"><name>faiss::@190</name>
+  <compound refid="namespacefaiss_1_1_0d187" kind="namespace"><name>faiss::@187</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d210" kind="namespace"><name>faiss::@210</name>
+  <compound refid="namespacefaiss_1_1_0d191" kind="namespace"><name>faiss::@191</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d56" kind="namespace"><name>faiss::@56</name>
   </compound>
@@ -13127,6 +13129,8 @@
   </compound>
   <compound refid="HNSW_8h" kind="file"><name>HNSW.h</name>
   </compound>
+  <compound refid="MinimaxHeap_8h" kind="file"><name>MinimaxHeap.h</name>
+  </compound>
   <compound refid="IDSelector_8h" kind="file"><name>IDSelector.h</name>
   </compound>
   <compound refid="index__read__utils_8h" kind="file"><name>index_read_utils.h</name>
@@ -13489,6 +13493,8 @@
   <compound refid="dir_8904d4d25cfd37481067280c4d4c9f97" kind="dir"><name>faiss/gpu</name>
   </compound>
   <compound refid="dir_a990053ab0ed2a0e35fd7924fe582c4e" kind="dir"><name>faiss/utils/hamming_distance</name>
+  </compound>
+  <compound refid="dir_4e2b565c8f87998af389640213d7d37b" kind="dir"><name>faiss/impl/hnsw</name>
   </compound>
   <compound refid="dir_c7562a8177f4c7fed0562155251b7d22" kind="dir"><name>faiss/gpu/impl</name>
   </compound>

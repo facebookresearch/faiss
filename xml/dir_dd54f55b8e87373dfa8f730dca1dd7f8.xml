@@ -4,6 +4,7 @@
     <compoundname>faiss/impl</compoundname>
     <innerdir refid="dir_b235d6f839d23d651b2e94c471d792e2">faiss/impl/approx_topk</innerdir>
     <innerdir refid="dir_f89009322cf84aa5fe47ed2291928d28">faiss/impl/fast_scan</innerdir>
+    <innerdir refid="dir_4e2b565c8f87998af389640213d7d37b">faiss/impl/hnsw</innerdir>
     <innerdir refid="dir_c049bba3e09b3fcad22939d16e82a552">faiss/impl/pq_code_distance</innerdir>
     <innerdir refid="dir_49d07059965bd48f84542aba965b16d6">faiss/impl/scalar_quantizer</innerdir>
     <innerdir refid="dir_29a6be9a01482d44f8ef5f6528f77000">faiss/impl/simdlib</innerdir>
