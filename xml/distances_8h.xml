@@ -872,7 +872,7 @@
 <codeline lineno="369"><highlight class="comment"><sp/>*<sp/>KNN<sp/>functions</highlight></codeline>
 <codeline lineno="370"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="371"><highlight class="normal"></highlight></codeline>
-<codeline lineno="372"><highlight class="normal"></highlight><highlight class="comment">//<sp/>threshold<sp/>on<sp/>nx<sp/>above<sp/>which<sp/>we<sp/>switch<sp/>to<sp/>BLAS<sp/>to<sp/>compute<sp/>distances</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="372"><highlight class="normal"></highlight><highlight class="comment">//<sp/>threshold<sp/>on<sp/>nx<sp/>*<sp/>d<sp/>above<sp/>which<sp/>we<sp/>switch<sp/>to<sp/>BLAS<sp/>to<sp/>compute<sp/>distances</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="373"><highlight class="normal">FAISS_API<sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>distance_compute_blas_threshold;</highlight></codeline>
 <codeline lineno="374"><highlight class="normal"></highlight></codeline>
 <codeline lineno="375"><highlight class="normal"></highlight><highlight class="comment">//<sp/>block<sp/>sizes<sp/>for<sp/>BLAS<sp/>distance<sp/>computations</highlight><highlight class="normal"></highlight></codeline>
