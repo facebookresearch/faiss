@@ -78,7 +78,7 @@ FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
 static inline size_t compact_active_pext(
         uint32_t* active_indices,
-        const uint8_t* active_byteset,
+        const uint8_t* FAISS_RESTRICT active_byteset,
         const size_t num_active) {
     size_t next_active = 0;
     size_t i = 0;
@@ -308,96 +308,79 @@ struct Panorama {
             std::vector<float>& exact_distances,
             std::vector<float>& dot_buffer,
             float threshold,
-            PanoramaStats& local_stats) const;
+            PanoramaStats& local_stats) const {
+        size_t batch_start = batch_no * batch_size;
+        size_t curr_batch_size = std::min(list_size - batch_start, batch_size);
+
+        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
+        const float* batch_cum_sums = cum_sums + cumsum_batch_offset;
+        const float* level_cum_sums = batch_cum_sums + batch_size;
+        float q_norm = query_cum_sums[0] * query_cum_sums[0];
+
+        size_t batch_offset = batch_no * batch_size * code_size;
+        const uint8_t* storage_base = codes_base + batch_offset;
+
+        // Initialize active set with ID-filtered vectors.
+        size_t num_active = 0;
+        for (size_t i = 0; i < curr_batch_size; i++) {
+            size_t global_idx = batch_start + i;
+            idx_t id = (ids == nullptr) ? global_idx : ids[global_idx];
+            bool include = !use_sel || sel->is_member(id);
+
+            active_indices[num_active] = i;
+            float cum_sum = batch_cum_sums[i];
+
+            if constexpr (M == METRIC_INNER_PRODUCT) {
+                exact_distances[i] = 0.0f;
+            } else {
+                exact_distances[i] = cum_sum * cum_sum + q_norm;
+            }
+
+            num_active += include;
+        }
+
+        size_t total_active = num_active;
+        const bool first_level_full = (num_active == curr_batch_size);
+
+        local_stats.total_dims += total_active * n_levels;
+
+        for (size_t level = 0; (level < n_levels) && (num_active > 0);
+             level++) {
+            local_stats.total_dims_scanned += num_active;
+
+            float query_cum_norm = query_cum_sums[level + 1];
+
+            size_t level_offset = level * level_width * batch_size;
+            const float* level_storage =
+                    (const float*)(storage_base + level_offset);
+            const float* query_level = query + level * level_width_floats;
+            size_t actual_level_width = std::min(
+                    level_width_floats, d - level * level_width_floats);
+
+            num_active = with_bool(
+                    level == 0 && first_level_full, [&]<bool AllActive>() {
+                        return panorama_flat_level_body<AllActive, C, M>(
+                                query_level,
+                                level_storage,
+                                active_indices.data(),
+                                num_active,
+                                active_byteset.data(),
+                                actual_level_width,
+                                exact_distances.data(),
+                                dot_buffer.data(),
+                                level_cum_sums,
+                                query_cum_norm,
+                                threshold);
+                    });
+
+            level_cum_sums += batch_size;
+        }
+
+        return num_active;
+    };
 
     void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
-
-template <typename C, MetricType M>
-size_t Panorama::progressive_filter_batch(
-        const uint8_t* codes_base,
-        const float* cum_sums,
-        const float* query,
-        const float* query_cum_sums,
-        size_t batch_no,
-        size_t list_size,
-        const IDSelector* sel,
-        const idx_t* ids,
-        bool use_sel,
-        std::vector<uint32_t>& active_indices,
-        std::vector<uint8_t>& active_byteset,
-        std::vector<float>& exact_distances,
-        std::vector<float>& dot_buffer,
-        float threshold,
-        PanoramaStats& local_stats) const {
-    size_t batch_start = batch_no * batch_size;
-    size_t curr_batch_size = std::min(list_size - batch_start, batch_size);
-
-    size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
-    const float* batch_cum_sums = cum_sums + cumsum_batch_offset;
-    const float* level_cum_sums = batch_cum_sums + batch_size;
-    float q_norm = query_cum_sums[0] * query_cum_sums[0];
-
-    size_t batch_offset = batch_no * batch_size * code_size;
-    const uint8_t* storage_base = codes_base + batch_offset;
-
-    // Initialize active set with ID-filtered vectors.
-    size_t num_active = 0;
-    for (size_t i = 0; i < curr_batch_size; i++) {
-        size_t global_idx = batch_start + i;
-        idx_t id = (ids == nullptr) ? global_idx : ids[global_idx];
-        bool include = !use_sel || sel->is_member(id);
-
-        active_indices[num_active] = i;
-        float cum_sum = batch_cum_sums[i];
-
-        if constexpr (M == METRIC_INNER_PRODUCT) {
-            exact_distances[i] = 0.0f;
-        } else {
-            exact_distances[i] = cum_sum * cum_sum + q_norm;
-        }
-
-        num_active += include;
-    }
-
-    size_t total_active = num_active;
-    const bool first_level_full = (num_active == curr_batch_size);
-
-    local_stats.total_dims += total_active * n_levels;
-
-    for (size_t level = 0; (level < n_levels) && (num_active > 0); level++) {
-        local_stats.total_dims_scanned += num_active;
-
-        float query_cum_norm = query_cum_sums[level + 1];
-
-        size_t level_offset = level * level_width * batch_size;
-        const float* level_storage =
-                (const float*)(storage_base + level_offset);
-        const float* query_level = query + level * level_width_floats;
-        size_t actual_level_width =
-                std::min(level_width_floats, d - level * level_width_floats);
-
-        num_active = with_bool(
-                level == 0 && first_level_full, [&]<bool AllActive>() {
-                    return panorama_flat_level_body<AllActive, C, M>(
-                            query_level,
-                            level_storage,
-                            active_indices.data(),
-                            num_active,
-                            active_byteset.data(),
-                            actual_level_width,
-                            exact_distances.data(),
-                            dot_buffer.data(),
-                            level_cum_sums,
-                            query_cum_norm,
-                            threshold);
-                });
-
-        level_cum_sums += batch_size;
-    }
-
-    return num_active;
-}
 } // namespace faiss
 
 #endif
