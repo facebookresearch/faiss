@@ -7,7 +7,6 @@
 
 // -*- c++ -*-
 
-#include <endian.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 
 #include <cstdio>
