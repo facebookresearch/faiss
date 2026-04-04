@@ -68,7 +68,7 @@ def build_index(name):
     return index
 
 
-nlevels = 8
+nlevels = 16 if args.dataset == "gist1m" else 8
 batch_size = 512
 
 plt.figure(figsize=(8, 6), dpi=80)
