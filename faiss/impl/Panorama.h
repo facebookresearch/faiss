@@ -256,6 +256,7 @@ struct Panorama {
     /// 4. After all levels, survivors are exact distances; update heap.
     /// This achieves early termination while maintaining SIMD-friendly
     /// sequential access patterns in the level-oriented storage layout.
+#ifndef SWIG
     template <typename C, MetricType M>
     size_t progressive_filter_batch(
             const uint8_t* codes_base,
@@ -357,6 +358,7 @@ struct Panorama {
 
         return num_active;
     };
+#endif // SWIG
 
     void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
