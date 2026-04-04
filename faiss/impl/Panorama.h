@@ -76,7 +76,7 @@ static inline void compute_level_dot_products_flat(
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
-static inline size_t compact_active_pext(
+static inline size_t compact_active(
         uint32_t* active_indices,
         const uint8_t* FAISS_RESTRICT active_byteset,
         const size_t num_active) {
@@ -87,18 +87,16 @@ static inline size_t compact_active_pext(
     for (; i + 8 <= num_active; i += 8) {
         uint64_t bytes;
         memcpy(&bytes, &active_byteset[i], 8);
-        int mask = (int)_pext_u64(bytes, 0x0101010101010101ULL);
 
-        uint64_t expanded = _pdep_u64(mask, 0x0101010101010101ULL) * 0xFFULL;
+        uint64_t expanded = bytes * 0xFFULL;
         uint64_t packed = _pext_u64(0x0706050403020100ULL, expanded);
 
-        __m256i perm =
-                _mm256_cvtepu8_epi32(_mm_cvtsi64_si128((long long)packed));
+        __m256i perm = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128((int64_t)packed));
         __m256i data = _mm256_loadu_si256((const __m256i*)&active_indices[i]);
         __m256i compacted = _mm256_permutevar8x32_epi32(data, perm);
         _mm256_storeu_si256((__m256i*)&active_indices[next_active], compacted);
 
-        next_active += __builtin_popcount(mask);
+        next_active += __builtin_popcountll(bytes);
     }
 #endif
 
@@ -348,7 +346,7 @@ struct Panorama {
                                 query_cum_norm,
                                 threshold);
 
-                        return compact_active_pext(
+                        return compact_active(
                                 active_indices.data(),
                                 active_byteset.data(),
                                 num_active);
