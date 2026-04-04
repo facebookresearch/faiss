@@ -57,6 +57,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
+# Include compiler warnings configuration
+include(StrictCompilerWarnings)
+faiss_print_warning_config()
+
 # Valid values are "generic", "avx2", "avx512", "avx512_spr", "sve".
 option(FAISS_OPT_LEVEL "" "generic")
 option(FAISS_ENABLE_GPU "Enable support for GPU indexes." ON)
@@ -115,7 +119,13 @@ endif()
 include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(tests)
-  add_subdirectory(perf_tests)
+  # perf_tests require gflags - make them optional
+  find_package(gflags QUIET)
+  if(gflags_FOUND)
+    add_subdirectory(perf_tests)
+  else()
+    message(STATUS "gflags not found, skipping perf_tests")
+  endif()
   if(FAISS_ENABLE_GPU)
     if(FAISS_ENABLE_ROCM)
       add_subdirectory(faiss/gpu/test)

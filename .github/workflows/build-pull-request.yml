@@ -41,6 +41,18 @@ jobs:
       - name: Build C++ demos
         run: |
           make -C build demo_diversity_result_handler
+  linux-x86_64-warnings-cmake:
+    name: Linux x86_64 warnings (cmake)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test with warnings (cmake)
+        uses: ./.github/actions/build_cmake
+        with:
+          warning_level: '1'
+          warnings_as_errors: 'true'
+          upload_artifacts: 'false'
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
     needs: linux-x86_64-cmake
