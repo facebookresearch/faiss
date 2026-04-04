@@ -375,8 +375,8 @@ size_t Panorama::progressive_filter_batch(
         size_t actual_level_width =
                 std::min(level_width_floats, d - level * level_width_floats);
 
-        num_active =
-                with_bool(level == 0 && first_level_full, [&]<bool AllActive>() {
+        num_active = with_bool(
+                level == 0 && first_level_full, [&]<bool AllActive>() {
                     return panorama_flat_level_body<AllActive, C, M>(
                             query_level,
                             level_storage,
