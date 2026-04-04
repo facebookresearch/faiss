@@ -148,6 +148,7 @@ static inline void prune_level_kernel(
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
+#ifndef SWIG
 namespace detail {
 template <size_t Lo, size_t Hi, size_t Step, typename Lambda>
 inline auto dispatch_width(size_t width, Lambda&& fn) {
@@ -177,6 +178,7 @@ inline auto with_bool(bool value, Lambda&& fn) {
         return fn.template operator()<false>();
     }
 }
+#endif // SWIG
 
 template <bool AllActive, typename C, MetricType M>
 static inline size_t panorama_flat_level_body(
