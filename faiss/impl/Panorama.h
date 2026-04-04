@@ -28,6 +28,14 @@
 namespace faiss {
 
 #ifndef SWIG
+
+/// Compute dot products between query_level and active vectors.
+///
+/// @tparam AllActive  If true, vectors are at sequential positions 0..N-1
+///                    (first level, full batch). If false, positions come
+///                    from active_indices (subsequent levels after pruning).
+/// @tparam LevelWidth Compile-time level width in floats (0 = use runtime
+///                    level_width_dims). Enables full loop unrolling.
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive = false, size_t LevelWidth = 0>
 static inline void compute_level_dot_products_flat(
@@ -77,38 +85,13 @@ static inline void compute_level_dot_products_flat(
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
-static inline size_t compact_active(
-        uint32_t* active_indices,
-        const uint8_t* FAISS_RESTRICT active_byteset,
-        const size_t num_active) {
-    size_t next_active = 0;
-    size_t i = 0;
-
-#if defined(__BMI2__) && defined(__AVX2__)
-    for (; i + 8 <= num_active; i += 8) {
-        uint64_t bytes;
-        memcpy(&bytes, &active_byteset[i], 8);
-
-        uint64_t expanded = bytes * 0xFFULL;
-        uint64_t packed = _pext_u64(0x0706050403020100ULL, expanded);
-
-        __m256i perm = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128((int64_t)packed));
-        __m256i data = _mm256_loadu_si256((const __m256i*)&active_indices[i]);
-        __m256i compacted = _mm256_permutevar8x32_epi32(data, perm);
-        _mm256_storeu_si256((__m256i*)&active_indices[next_active], compacted);
-
-        next_active += __builtin_popcountll(bytes);
-    }
-#endif
-
-    for (; i < num_active; i++) {
-        active_indices[next_active] = active_indices[i];
-        next_active += active_byteset[i] ? 1 : 0;
-    }
-
-    return next_active;
-}
-
+/// Update exact distances with the current level's dot products, then apply
+/// Panorama pruning: for each active vector, compute a lower bound on
+/// the final distance and mark it for removal if it cannot beat the current
+/// threshold. Writes 0/1 into active_byteset for subsequent compaction.
+///
+/// Uses `if constexpr` on C::is_max rather than C::cmp() to ensure the
+/// comparison autovectorizes (C::cmp generates scalar function calls).
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive, typename C, MetricType M>
 static inline void prune_level_kernel(
@@ -147,6 +130,47 @@ static inline void prune_level_kernel(
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
+/// Compact active_indices in-place, removing entries where active_byteset[i]
+/// is zero. Returns the new count of active elements. Uses a branchless BMI2 +
+/// AVX2 fast path (8 elements/iteration via _pext_u64 permutation) with a
+/// scalar fallback for the tail and non-x86 platforms.
+static inline size_t compact_active(
+        uint32_t* active_indices,
+        const uint8_t* FAISS_RESTRICT active_byteset,
+        const size_t num_active) {
+    size_t next_active = 0;
+    size_t i = 0;
+
+#if defined(__BMI2__) && defined(__AVX2__)
+    for (; i + 8 <= num_active; i += 8) {
+        uint64_t bytes;
+        memcpy(&bytes, &active_byteset[i], 8);
+
+        uint64_t expanded = bytes * 0xFFULL;
+        uint64_t packed = _pext_u64(0x0706050403020100ULL, expanded);
+
+        __m256i perm = _mm256_cvtepu8_epi32(_mm_cvtsi64_si128((int64_t)packed));
+        __m256i data = _mm256_loadu_si256((const __m256i*)&active_indices[i]);
+        __m256i compacted = _mm256_permutevar8x32_epi32(data, perm);
+        _mm256_storeu_si256((__m256i*)&active_indices[next_active], compacted);
+
+        next_active += __builtin_popcountll(bytes);
+    }
+#endif
+
+    for (; i < num_active; i++) {
+        active_indices[next_active] = active_indices[i];
+        next_active += active_byteset[i] ? 1 : 0;
+    }
+
+    return next_active;
+}
+
+
+/// Compile-time dispatch: converts a runtime `width` value into a template
+/// parameter by generating an if-else chain over [Lo, Hi] in steps of Step.
+/// Falls through to LevelWidth=0 (runtime path) if no specialization matches.
+/// Allows for specialization of common level widths.
 namespace detail {
 template <size_t Lo, size_t Hi, size_t Step, typename Lambda>
 inline auto dispatch_width(size_t width, Lambda&& fn) {
