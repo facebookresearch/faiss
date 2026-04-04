@@ -21,7 +21,7 @@
 #include <cstring>
 #include <vector>
 
-#ifdef __BMI2__
+#if defined(__BMI2__) && defined(__AVX2__)
 #include <immintrin.h>
 #endif
 
@@ -84,7 +84,7 @@ static inline size_t compact_active(
     size_t next_active = 0;
     size_t i = 0;
 
-#ifdef __BMI2__
+#if defined(__BMI2__) && defined(__AVX2__)
     for (; i + 8 <= num_active; i += 8) {
         uint64_t bytes;
         memcpy(&bytes, &active_byteset[i], 8);
