@@ -37,7 +37,7 @@ nt, d = xt.shape
 
 k = 10
 gt = gt[:, :k]
-nlevels = 8
+nlevels = 16 if args.dataset == "gist1m" else 8
 
 
 def get_ivf_index(index):
@@ -98,7 +98,7 @@ plt.figure(figsize=(8, 6), dpi=80)
 eval_and_plot(f"IVF{nlist},Flat")
 
 # IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
-eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}")
+eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}_{1024}")
 
 dataset_label = args.dataset.upper()
 plt.title(f"IVF Flat Indexes on {dataset_label}")
