@@ -392,6 +392,24 @@ TEST(ReadIndexDeserialize, IndexLatticeDsqOne) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexLattice with r2 too large causes timeout in
+// ZnSphereCodecRec constructor (exponential codeword count in the
+// decode cache).  ZnSphereCodecRec caps the decode cache size to
+// prevent this.  Use dsq=16 (log2_dim=4, cache_level=3) with r2=73
+// which would take well over a minute of CPU time if not rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IndexLatticeR2TooLarge) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 16); // d
+    push_val<int>(buf, 1);  // nsq
+    push_val<int>(buf, 4);  // scale_nbit
+    push_val<int>(buf, 73); // r2 = 73 (decode cache too large for dsq=16)
+
+    expect_read_throws_with(buf, "decode cache");
+}
+
+// -----------------------------------------------------------------------
 // Binary index helpers
 // -----------------------------------------------------------------------
 
@@ -1325,6 +1343,130 @@ TEST(ReadIndexDeserialize, HNSWStorageNtotalMismatch) {
 }
 
 // -----------------------------------------------------------------------
+// Helper: append an HNSW structure with explicit neighbor data.
+// All nodes at level 1.  cum_nneighbor_per_level = {0, neighbors_per_node}.
+// Callers supply the full neighbors vector (ntotal * neighbors_per_node
+// entries, using -1 for empty slots).
+// -----------------------------------------------------------------------
+static void push_hnsw_with_neighbors(
+        std::vector<uint8_t>& buf,
+        int ntotal,
+        int neighbors_per_node,
+        const std::vector<int32_t>& neighbors,
+        int32_t entry_point = 0) {
+    // assign_probas (empty)
+    push_vector<double>(buf, {});
+    // cum_nneighbor_per_level: {0, neighbors_per_node}
+    push_vector<int>(buf, {0, neighbors_per_node});
+    // levels: one entry per node, all at level 1
+    std::vector<int> levels(ntotal, 1);
+    push_vector<int>(buf, levels);
+    // offsets: ntotal + 1 entries, each node occupies neighbors_per_node slots
+    std::vector<size_t> offsets(ntotal + 1);
+    for (int i = 0; i <= ntotal; i++) {
+        offsets[i] = (size_t)i * neighbors_per_node;
+    }
+    push_vector<size_t>(buf, offsets);
+    // neighbors
+    push_vector<int32_t>(buf, neighbors);
+    // entry_point
+    push_val<int32_t>(buf, entry_point);
+    // max_level
+    push_val<int>(buf, 0);
+    // efConstruction
+    push_val<int>(buf, 40);
+    // efSearch
+    push_val<int>(buf, 16);
+    // upper_beam (deprecated)
+    push_val<int>(buf, 1);
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW neighbors contain a negative ID (not -1).
+// validate_HNSW must reject this at deserialization time.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWNeighborNegativeId) {
+    int ntotal = 3, npn = 2;
+    // Node 0 neighbors: {1, -5}  — -5 is invalid (only -1 is allowed)
+    // Node 1 neighbors: {0, -1}
+    // Node 2 neighbors: {0, -1}
+    std::vector<int32_t> neighbors = {1, -5, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    expect_read_throws_with(buf, "HNSW neighbors");
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW neighbors contain an ID >= ntotal (out of range).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWNeighborIdTooLarge) {
+    int ntotal = 3, npn = 2;
+    // Node 0 neighbors: {1, 99}  — 99 >= ntotal
+    std::vector<int32_t> neighbors = {1, 99, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    expect_read_throws_with(buf, "HNSW neighbors");
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW entry_point is out of range (>= ntotal).
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWEntryPointOutOfRange) {
+    int ntotal = 3, npn = 2;
+    std::vector<int32_t> neighbors = {1, -1, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors, /*entry_point=*/99);
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    expect_read_throws_with(buf, "HNSW entry_point");
+}
+
+// -----------------------------------------------------------------------
+// Test: HNSW with valid neighbor data deserializes and searches correctly.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSWValidNeighborsSearchWorks) {
+    int ntotal = 4, npn = 2;
+    // Simple valid graph: each node links to 2 others
+    std::vector<int32_t> neighbors = {1, 2, 0, 3, 0, 3, 1, 2};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHNf");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+
+    // Flat storage with 4 zero vectors (valid, just not useful for recall)
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/ntotal);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    std::unique_ptr<Index> idx;
+    ASSERT_NO_THROW(idx = read_index_up(&reader));
+    ASSERT_NE(idx, nullptr);
+
+    // Search should succeed without crashing
+    std::vector<float> xq(4, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_NO_THROW(
+            idx->search(1, xq.data(), 1, distances.data(), labels.data()));
+    EXPECT_GE(labels[0], 0);
+    EXPECT_LT(labels[0], ntotal);
+}
+
+// -----------------------------------------------------------------------
 // Test: NSG ntotal != index ntotal.
 // -----------------------------------------------------------------------
 TEST(ReadIndexDeserialize, NSGNtotalMismatch) {
@@ -1775,6 +1917,18 @@ TEST(ReadIndexDeserialize, BinaryHNSWLevelsSizeMismatch) {
     push_minimal_hnsw(buf, /*ntotal=*/3); // 3 != 5
 
     expect_binary_read_throws_with(buf, "HNSW levels size");
+}
+
+TEST(ReadIndexDeserialize, BinaryHNSWNeighborNegativeId) {
+    int ntotal = 3, npn = 2;
+    std::vector<int32_t> neighbors = {1, -5, 0, -1, 0, -1};
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IBHf");
+    push_binary_index_header(buf, /*d=*/16, /*ntotal=*/ntotal);
+    push_hnsw_with_neighbors(buf, ntotal, npn, neighbors);
+
+    expect_binary_read_throws_with(buf, "HNSW neighbors");
 }
 
 TEST(ReadIndexDeserialize, BinaryHNSWStorageNtotalMismatch) {
@@ -2948,3 +3102,80 @@ TEST(ReadIndexDeserialize, IndexRQFastScanAQDimensionMismatch) {
 
     expect_read_throws_with(buf, "does not match index d");
 }
+
+// ============================================================
+// SVS fourcc rejection / deserialization safety (Group F: T262015608)
+// ============================================================
+
+#ifdef FAISS_ENABLE_SVS
+
+// When SVS is enabled, deserializing an SVS Vamana index with invalid SVS
+// stream data should throw a FaissException (from the SVS runtime load
+// failure) rather than crashing with a null-pointer dereference.
+// Previously, deserialize_impl called impl->load() on a null impl pointer.
+TEST(ReadIndexDeserialize, SVSVamanaInvalidStreamThrows) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_index_header(buf, 8, 0);
+    // SVS Vamana deserialization fields:
+    push_val<size_t>(buf, 32);  // graph_max_degree
+    push_val<float>(buf, 1.2f); // alpha
+    push_val<size_t>(buf, 10);  // search_window_size
+    push_val<size_t>(buf, 10);  // search_buffer_capacity
+    push_val<size_t>(buf, 64);  // construction_window_size
+    push_val<size_t>(buf, 750); // max_candidate_pool_size
+    push_val<size_t>(buf, 28);  // prune_to
+    push_val<bool>(buf, false); // use_full_search_history
+    push_val<int>(buf, 0);      // storage_kind (SVS_Float16)
+    push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
+    // Provide garbage SVS stream data — load should fail gracefully.
+    for (int i = 0; i < 256; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    // Should throw from SVS runtime load failure, NOT crash with SIGSEGV.
+    EXPECT_THROW(
+            {
+                auto reader = faiss::VectorIOReader();
+                reader.data = buf;
+                faiss::read_index(&reader);
+            },
+            faiss::FaissException);
+}
+
+// Same test for SVS Flat index.
+TEST(ReadIndexDeserialize, SVSFlatInvalidStreamThrows) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVF");
+    push_index_header(buf, 8, 0);
+    push_val<bool>(buf, true); // initialized = true → triggers deserialize_impl
+    // Provide garbage SVS stream data.
+    for (int i = 0; i < 256; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    EXPECT_THROW(
+            {
+                auto reader = faiss::VectorIOReader();
+                reader.data = buf;
+                faiss::read_index(&reader);
+            },
+            faiss::FaissException);
+}
+
+#else // !FAISS_ENABLE_SVS
+
+// When SVS is not enabled, attempting to read an index with an SVS fourcc
+// should fail with an "unknown fourcc" error rather than crashing.
+TEST(ReadIndexDeserialize, SVSVamanaFourccRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_index_header(buf, 8, 0);
+    for (int i = 0; i < 128; i++) {
+        push_val<uint8_t>(buf, 0);
+    }
+
+    expect_read_throws_with(buf, "fourcc");
+}
+
+#endif // FAISS_ENABLE_SVS
