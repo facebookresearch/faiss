@@ -166,7 +166,7 @@ inline auto dispatch_width(size_t width, Lambda&& fn) {
 
 template <typename LambdaType>
 inline auto with_level_width(size_t width, LambdaType&& action) {
-    return detail::dispatch_width<16, 128, 16>(
+    return detail::dispatch_width<8, 128, 8>(
             width, std::forward<LambdaType>(action));
 }
 
