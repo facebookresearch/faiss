@@ -7,6 +7,8 @@
 
 #pragma once
 
+#if defined(__x86_64__)
+
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <immintrin.h>
@@ -145,3 +147,5 @@ struct ReservoirResultHandlerAVX512 : ResultHandler {
 };
 
 } // namespace faiss
+
+#endif // defined(__x86_64__)
