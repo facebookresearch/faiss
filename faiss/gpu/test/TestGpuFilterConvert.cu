@@ -53,6 +53,8 @@ struct Options {
 };
 
 void run_complex() {
+    using bitset_t = uint32_t;
+    using indexing_t = int64_t;
     Options spec;
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
@@ -77,7 +79,7 @@ void run_complex() {
     auto or_selector = faiss::IDSelectorOr(&range_selector, &array_selector);
 
     auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 8) / 8);
-    for (uint32_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
+    for (indexing_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
         bitmap_faiss_cpu[i] = (uint8_t)faiss::gpu::randVal(0, 255);
     }
     auto bitmap_selector =
@@ -88,19 +90,19 @@ void run_complex() {
             faiss::IDSelectorXOr(&or_selector, &not_bitmap_selector);
 
     // convert to cuVS bitset
-    auto bitset = cuvs::core::bitset<uint32_t, uint32_t>(
+    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), xor_selector, bitset.view());
 
     // verify
     auto bitset_converted_cpu =
-            raft::make_host_vector<uint32_t, uint32_t>(bitset.n_elements());
+            raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<uint32_t, uint32_t>(
+            cuvs::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
-    for (uint32_t i = 0; i < spec.bitset_len; i++) {
+    for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_converted_cpu_view.test(i) != xor_selector.is_member(i)) {
             ASSERT_TRUE(
                     testing::AssertionFailure()
@@ -120,23 +122,24 @@ void run_range() {
             gpuRes->getRaftHandleCurrentDevice();
     // take random imin and imax, check all ids
     using bitset_t = uint32_t;
+    using indexing_t = int64_t;
     auto imin = faiss::gpu::randVal(0, spec.bitset_len - 2);
     auto imax = faiss::gpu::randVal(1, spec.bitset_len - 1);
     if (imin > imax)
         std::swap(imin, imax);
     auto selector = faiss::IDSelectorRange(imin, imax);
-    auto bitset = cuvs::core::bitset<bitset_t, uint32_t>(
+    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     auto nbits = sizeof(bitset_t) * 8;
 
     faiss::gpu::convert_to_bitset(gpuRes.get(), selector, bitset.view());
     auto bitset_converted_cpu =
-            raft::make_host_vector<bitset_t, uint32_t>(bitset.n_elements());
+            raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
-    auto bitset_view_cpu = cuvs::core::bitset_view<bitset_t, uint32_t>(
+    auto bitset_view_cpu = cuvs::core::bitset_view<bitset_t, indexing_t>(
             bitset_converted_cpu.data_handle(), spec.bitset_len);
-    for (uint64_t i = 0; i < spec.bitset_len; i++) {
+    for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_view_cpu.test(i) != selector.is_member(i)) {
             ASSERT_TRUE(
                     testing::AssertionFailure()
@@ -154,28 +157,30 @@ void run_bitmap() {
 
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
+    using bitset_t = uint32_t;
+    using indexing_t = int64_t;
     auto gpuRes = res.getResources();
     const raft::device_resources& raft_handle =
             gpuRes->getRaftHandleCurrentDevice();
     // generate random bitmap selector
     auto bitmap_faiss_cpu = std::vector<uint8_t>((spec.bitset_len + 8) / 8);
-    for (uint32_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
+    for (indexing_t i = 0; i < bitmap_faiss_cpu.size(); i++) {
         bitmap_faiss_cpu[i] = (uint8_t)faiss::gpu::randVal(0, 255);
     }
     auto bitmap_selector =
             faiss::IDSelectorBitmap(spec.bitset_len, bitmap_faiss_cpu.data());
-    auto bitset = cuvs::core::bitset<uint32_t, uint32_t>(
+    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), bitmap_selector, bitset.view());
 
     auto bitset_converted_cpu =
-            raft::make_host_vector<uint32_t, uint32_t>(bitset.n_elements());
+            raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<uint32_t, uint32_t>(
+            cuvs::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
-    for (uint32_t i = 0; i < spec.bitset_len; i++) {
+    for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_converted_cpu_view.test(i) != bitmap_selector.is_member(i)) {
             ASSERT_TRUE(
                     testing::AssertionFailure()
@@ -189,6 +194,8 @@ void run_bitmap() {
 }
 
 void run_array() {
+    using bitset_t = uint32_t;
+    using indexing_t = int64_t;
     Options spec;
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
@@ -203,18 +210,18 @@ void run_array() {
     }
     auto array_selector =
             faiss::IDSelectorArray(n, array_selector_indices.data());
-    auto bitset = cuvs::core::bitset<uint32_t, uint32_t>(
+    auto bitset = cuvs::core::bitset<bitset_t, indexing_t>(
             raft_handle, spec.bitset_len, false);
     faiss::gpu::convert_to_bitset(gpuRes.get(), array_selector, bitset.view());
 
     auto bitset_converted_cpu =
-            raft::make_host_vector<uint32_t, uint32_t>(bitset.n_elements());
+            raft::make_host_vector<bitset_t, indexing_t>(bitset.n_elements());
     raft::copy(raft_handle, bitset_converted_cpu.view(), bitset.to_mdspan());
     raft::resource::sync_stream(raft_handle);
     auto bitset_converted_cpu_view =
-            cuvs::core::bitset_view<uint32_t, uint32_t>(
+            cuvs::core::bitset_view<bitset_t, indexing_t>(
                     bitset_converted_cpu.data_handle(), spec.bitset_len);
-    for (uint32_t i = 0; i < spec.bitset_len; i++) {
+    for (indexing_t i = 0; i < spec.bitset_len; i++) {
         if (bitset_converted_cpu_view.test(i) != array_selector.is_member(i)) {
             ASSERT_TRUE(
                     testing::AssertionFailure()

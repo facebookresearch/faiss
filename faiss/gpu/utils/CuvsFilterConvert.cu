@@ -36,13 +36,13 @@ namespace faiss::gpu {
 template <typename bitset_t>
 RAFT_KERNEL set_range_kernel(
         bitset_t* bitset_data,
-        uint32_t imin,
-        uint32_t imax,
-        uint32_t n_elements_to_set) {
-    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+        int64_t imin,
+        int64_t imax,
+        int64_t n_elements_to_set) {
+    int64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t nbits = sizeof(bitset_t) * 8;
 
-    uint32_t current_index = (imin / nbits) + idx;
+    int64_t current_index = (imin / nbits) + idx;
     bitset_t mask = 0;
     if (idx < n_elements_to_set) {
         if (n_elements_to_set == 1) {
@@ -70,7 +70,7 @@ RAFT_KERNEL set_range_kernel(
 void convert_to_bitset_range(
         raft::resources const& res,
         const faiss::IDSelectorRange& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset) {
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
     RAFT_EXPECTS(
             bitset.size() >= selector.imax,
             "IDSelectorRange is out of range for the given bitset");
@@ -79,10 +79,10 @@ void convert_to_bitset_range(
     if (original_nbits == 0) {
         original_nbits = nbits;
     }
-    uint32_t imin = selector.imin;
-    uint32_t imax = selector.imax;
+    int64_t imin = selector.imin;
+    int64_t imax = selector.imax;
 
-    uint32_t n_elements_to_set = 1 + (imax + original_nbits) / original_nbits;
+    int64_t n_elements_to_set = 1 + (imax + original_nbits) / original_nbits;
     n_elements_to_set -= (imin + original_nbits) / original_nbits;
     auto stream = raft::resource::get_cuda_stream(res);
 
@@ -107,14 +107,14 @@ void convert_to_bitset_range(
 void convert_to_bitset_array(
         raft::resources const& res,
         const faiss::IDSelectorArray& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset) {
-    uint32_t n = selector.n;
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
+    int64_t n = selector.n;
     auto d_indexes_to_set =
-            raft::make_device_vector<faiss::idx_t, uint32_t>(res, n);
+            raft::make_device_vector<faiss::idx_t, int64_t>(res, n);
     raft::copy(
             res,
             d_indexes_to_set.view(),
-            raft::make_host_vector_view<const faiss::idx_t, uint32_t>(
+            raft::make_host_vector_view<const faiss::idx_t, int64_t>(
                     selector.ids, n));
     thrust::for_each_n(
             raft::resource::get_thrust_policy(res),
@@ -128,13 +128,13 @@ void convert_to_bitset_array(
 RAFT_KERNEL set_bitmap_kernel(
         uint32_t* new_bitset_data,
         uint8_t* original_bitmap_data,
-        uint32_t n_elements,
-        uint32_t bitset_original_nbits) {
-    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-    uint32_t bit_index = 0;
-    uint32_t bit_offset = 0;
+        int64_t n_elements,
+        int64_t bitset_original_nbits) {
+    int64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int64_t bit_index = 0;
+    int64_t bit_offset = 0;
     raft::core::compute_original_nbits_position(
-            uint32_t{8}, bitset_original_nbits, idx * 8, bit_index, bit_offset);
+            int64_t{8}, bitset_original_nbits, idx * 8, bit_index, bit_offset);
     if (idx < n_elements) {
         uint32_t mask = original_bitmap_data[idx];
         atomicOr(&new_bitset_data[bit_index], mask << bit_offset);
@@ -144,24 +144,25 @@ RAFT_KERNEL set_bitmap_kernel(
 void convert_to_bitset_bitmap(
         raft::resources const& res,
         const faiss::IDSelectorBitmap& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset) {
-    uint32_t n = selector.n;
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset) {
+    auto n = selector.n;
     auto bitset_original_nbits = bitset.get_original_nbits();
     if (bitset_original_nbits == 0) {
         bitset_original_nbits = sizeof(uint32_t) * 8;
     }
     RAFT_EXPECTS(
             bitset.size() == n,
-            "IDSelectorBitmap is out of range for the given bitset");
+            "IDSelectorBitmap is out of range for the given bitset: %d != %d",
+            bitset.size(),
+            n);
     auto stream = raft::resource::get_cuda_stream(res);
     auto n_elements = (selector.n + 7) / 8;
-    auto d_bitmap =
-            raft::make_device_vector<uint8_t, uint32_t>(res, n_elements);
+    auto d_bitmap = raft::make_device_vector<uint8_t, int64_t>(res, n_elements);
     auto d_bitmap_ptr = d_bitmap.data_handle();
     raft::copy(
             res,
             d_bitmap.view(),
-            raft::make_host_vector_view<const uint8_t, uint32_t>(
+            raft::make_host_vector_view<const uint8_t, int64_t>(
                     selector.bitmap, n_elements));
 
     const int threads_per_block = 256;
@@ -174,15 +175,15 @@ void convert_to_bitset_bitmap(
 void convert_to_bitset_bruteforce(
         raft::resources const& res,
         const faiss::IDSelector& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset,
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset,
         int num_threads = 0) {
     auto bitset_cpu =
-            raft::make_host_vector<uint32_t, uint32_t>(bitset.n_elements());
+            raft::make_host_vector<uint32_t, int64_t>(bitset.n_elements());
     auto nbits = sizeof(uint32_t) * 8;
     if (num_threads == 0)
         num_threads = omp_get_max_threads();
 #pragma omp parallel for num_threads(num_threads)
-    for (uint32_t i = 0; i < bitset.n_elements(); i++) {
+    for (int64_t i = 0; i < bitset.n_elements(); i++) {
         uint32_t element = uint32_t{0};
         for (uint32_t j = 0; j < nbits; j++) {
             if (i * nbits + j < bitset.size() &&
@@ -199,7 +200,7 @@ void convert_to_bitset_bruteforce(
 void convert_to_bitset(
         faiss::gpu::GpuResources* res,
         const faiss::IDSelector& selector,
-        cuvs::core::bitset_view<uint32_t, uint32_t> bitset,
+        cuvs::core::bitset_view<uint32_t, int64_t> bitset,
         int num_threads) {
     raft::device_resources& raft_handle = res->getRaftHandleCurrentDevice();
     // If the selector is simple, we can use the specialized functions
