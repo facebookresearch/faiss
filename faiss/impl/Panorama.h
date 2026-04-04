@@ -27,6 +27,7 @@
 
 namespace faiss {
 
+#ifndef SWIG
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive = false, size_t LevelWidth = 0>
 static inline void compute_level_dot_products_flat(
@@ -146,7 +147,6 @@ static inline void prune_level_kernel(
 }
 FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 
-#ifndef SWIG
 namespace detail {
 template <size_t Lo, size_t Hi, size_t Step, typename Lambda>
 inline auto dispatch_width(size_t width, Lambda&& fn) {
