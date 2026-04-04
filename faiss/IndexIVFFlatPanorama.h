@@ -48,7 +48,7 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
             int n_levels,
             MetricType = METRIC_L2,
             bool own_invlists = true,
-            size_t batch_size = 128);
+            size_t batch_size = Panorama::kDefaultBatchSize);
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
