@@ -185,6 +185,7 @@ inline auto dispatch_width(size_t width, Lambda&& fn) {
 }
 } // namespace detail
 
+/// Specialize for common float level widths (multiples of 8 up to 128).
 template <typename LambdaType>
 inline auto with_level_width(size_t width, LambdaType&& action) {
     return detail::dispatch_width<8, 128, 8>(
