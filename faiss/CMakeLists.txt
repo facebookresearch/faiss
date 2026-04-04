@@ -362,7 +362,7 @@ endif()
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
-# Detect BMI2 compiler support (for PEXT/PDEP).
+# Detect BMI2 compiler support.
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-mbmi2" COMPILER_SUPPORTS_BMI2)
 if(COMPILER_SUPPORTS_BMI2)
