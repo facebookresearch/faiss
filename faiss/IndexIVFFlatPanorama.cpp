@@ -48,7 +48,8 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     this->own_invlists = own_invlists_in;
 }
 
-IndexIVFFlatPanorama::IndexIVFFlatPanorama() : n_levels(0), batch_size(128) {}
+IndexIVFFlatPanorama::IndexIVFFlatPanorama()
+        : n_levels(0), batch_size(Panorama::kDefaultBatchSize) {}
 
 namespace {
 

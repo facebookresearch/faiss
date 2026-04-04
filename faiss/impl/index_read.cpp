@@ -496,7 +496,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(
                 n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
-        constexpr size_t bs = 128;
+        constexpr size_t bs = Panorama::kDefaultBatchSize;
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
                 nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
@@ -1662,7 +1662,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivfp.get(), f);
         ivfp->code_size = ivfp->d * sizeof(float);
         READ1(ivfp->n_levels);
-        ivfp->batch_size = 128;
+        ivfp->batch_size = Panorama::kDefaultBatchSize;
         read_InvertedLists(*ivfp, f, io_flags);
         idx = std::move(ivfp);
     } else if (h == fourcc("IwP2")) {
