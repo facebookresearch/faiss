@@ -38,7 +38,7 @@ namespace faiss {
 ///                    level_width_dims). Enables full loop unrolling.
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive = false, size_t LevelWidth = 0>
-static inline void compute_level_dot_products_flat(
+static inline void compute_level_dot_kernel(
         const float* FAISS_RESTRICT query_level,
         const float* FAISS_RESTRICT level_storage,
         const uint32_t* active_indices,
@@ -94,7 +94,7 @@ FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 /// comparison autovectorizes (C::cmp generates scalar function calls).
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive, typename C, MetricType M>
-static inline void prune_level_kernel(
+static inline void prune_kernel(
         float* FAISS_RESTRICT exact_distances,
         const float* FAISS_RESTRICT dot_buffer,
         const float* FAISS_RESTRICT level_cum_sums,
@@ -134,7 +134,7 @@ FAISS_PRAGMA_IMPRECISE_FUNCTION_END
 /// is zero. Returns the new count of active elements. Uses a branchless BMI2 +
 /// AVX2 fast path (8 elements/iteration via _pext_u64 permutation) with a
 /// scalar fallback for the tail and non-x86 platforms.
-static inline size_t compact_active(
+static inline size_t compact_active_kernel(
         uint32_t* active_indices,
         const uint8_t* FAISS_RESTRICT active_byteset,
         const size_t num_active) {
@@ -165,7 +165,6 @@ static inline size_t compact_active(
 
     return next_active;
 }
-
 
 /// Compile-time dispatch: converts a runtime `width` value into a template
 /// parameter by generating an if-else chain over [Lo, Hi] in steps of Step.
@@ -350,7 +349,7 @@ struct Panorama {
                     level == 0 && first_level_full, [&]<bool AllActive>() {
                         with_level_width(
                                 actual_level_width, [&]<size_t LevelWidth>() {
-                                    compute_level_dot_products_flat<
+                                    compute_level_dot_kernel<
                                             AllActive,
                                             LevelWidth>(
                                             query_level,
@@ -361,7 +360,7 @@ struct Panorama {
                                             dot_buffer.data());
                                 });
 
-                        prune_level_kernel<AllActive, C, M>(
+                        prune_kernel<AllActive, C, M>(
                                 exact_distances.data(),
                                 dot_buffer.data(),
                                 level_cum_sums,
@@ -371,7 +370,7 @@ struct Panorama {
                                 query_cum_norm,
                                 threshold);
 
-                        return compact_active(
+                        return compact_active_kernel(
                                 active_indices.data(),
                                 active_byteset.data(),
                                 num_active);
