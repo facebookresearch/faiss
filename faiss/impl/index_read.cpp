@@ -488,7 +488,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         }
         return nullptr;
     } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
-        // Legacy format without batch_size (default to 128)
         size_t nlist, code_size, n_levels;
         READ1(nlist);
         FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
