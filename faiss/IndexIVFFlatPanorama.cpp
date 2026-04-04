@@ -7,6 +7,7 @@
 
 // -*- c++ -*-
 
+#include <endian.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 
 #include <cstdio>
@@ -20,7 +21,6 @@
 #include <faiss/impl/ResultHandler.h>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
@@ -108,9 +108,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            float* distances,
-            idx_t* labels,
-            size_t k) const override {
+            ResultHandler& handler) const override {
         size_t nup = 0;
 
         const size_t bs = storage->pano.batch_size;
@@ -123,7 +121,6 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * bs;
-            float threshold = distances[0];
             size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
                 return storage->pano.progressive_filter_batch<C, M>(
                         codes,
@@ -139,7 +136,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                         active_byteset_,
                         exact_distances_,
                         dot_buffer_,
-                        threshold,
+                        handler.threshold,
                         local_stats);
             });
 
@@ -148,10 +145,10 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 size_t global_idx = batch_start + idx;
                 float dis = exact_distances_[idx];
 
-                if (C::cmp(distances[0], dis)) {
+                if (C::cmp(handler.threshold, dis)) {
                     int64_t id = store_pairs ? lo_build(list_no, global_idx)
                                              : ids[global_idx];
-                    heap_replace_top<C>(k, distances, labels, dis, id);
+                    handler.add_result(dis, id);
                     nup++;
                 }
             }

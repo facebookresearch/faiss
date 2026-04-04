@@ -180,42 +180,6 @@ inline auto with_bool(bool value, Lambda&& fn) {
 }
 #endif // SWIG
 
-template <bool AllActive, typename C, MetricType M>
-static inline size_t panorama_flat_level_body(
-        const float* query_level,
-        const float* level_storage,
-        uint32_t* active_indices,
-        const size_t num_active,
-        uint8_t* active_byteset,
-        const size_t actual_level_width,
-        float* exact_distances,
-        float* dot_buffer,
-        const float* level_cum_sums,
-        float query_cum_norm,
-        float threshold) {
-    with_level_width(actual_level_width, [&]<size_t LevelWidth>() {
-        compute_level_dot_products_flat<AllActive, LevelWidth>(
-                query_level,
-                level_storage,
-                active_indices,
-                num_active,
-                actual_level_width,
-                dot_buffer);
-    });
-
-    prune_level_kernel<AllActive, C, M>(
-            exact_distances,
-            dot_buffer,
-            level_cum_sums,
-            active_byteset,
-            active_indices,
-            (uint32_t)num_active,
-            query_cum_norm,
-            threshold);
-
-    return compact_active_pext(active_indices, active_byteset, num_active);
-}
-
 /**
  * Implements the core logic of Panorama-based refinement.
  * arXiv: https://arxiv.org/abs/2510.00566
@@ -359,18 +323,33 @@ struct Panorama {
 
             num_active = with_bool(
                     level == 0 && first_level_full, [&]<bool AllActive>() {
-                        return panorama_flat_level_body<AllActive, C, M>(
-                                query_level,
-                                level_storage,
-                                active_indices.data(),
-                                num_active,
-                                active_byteset.data(),
-                                actual_level_width,
+                        with_level_width(
+                                actual_level_width, [&]<size_t LevelWidth>() {
+                                    compute_level_dot_products_flat<
+                                            AllActive,
+                                            LevelWidth>(
+                                            query_level,
+                                            level_storage,
+                                            active_indices.data(),
+                                            num_active,
+                                            actual_level_width,
+                                            dot_buffer.data());
+                                });
+
+                        prune_level_kernel<AllActive, C, M>(
                                 exact_distances.data(),
                                 dot_buffer.data(),
                                 level_cum_sums,
+                                active_byteset.data(),
+                                active_indices.data(),
+                                (uint32_t)num_active,
                                 query_cum_norm,
                                 threshold);
+
+                        return compact_active_pext(
+                                active_indices.data(),
+                                active_byteset.data(),
+                                num_active);
                     });
 
             level_cum_sums += batch_size;
