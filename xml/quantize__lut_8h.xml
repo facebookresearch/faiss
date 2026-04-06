@@ -79,7 +79,7 @@
 <codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="51"><highlight class="comment">/**<sp/>LUT<sp/>quantization<sp/>to<sp/>uint8<sp/>and<sp/>bias<sp/>to<sp/>uint16.</highlight></codeline>
 <codeline lineno="52"><highlight class="comment"><sp/>*</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>(nprobe,<sp/>M,<sp/>ksub,<sp/>lut_is_3d)<sp/>determine<sp/>the<sp/>size<sp/>of<sp/>the<sp/>the<sp/>LUT</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/>(nprobe,<sp/>M,<sp/>ksub,<sp/>lut_is_3d)<sp/>determine<sp/>the<sp/>size<sp/>of<sp/>the<sp/>LUT</highlight></codeline>
 <codeline lineno="54"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="55"><highlight class="comment"><sp/>*<sp/><sp/>LUT<sp/>input:</highlight></codeline>
 <codeline lineno="56"><highlight class="comment"><sp/>*<sp/><sp/>-<sp/>2D<sp/>size<sp/>(M,<sp/>ksub):<sp/>single<sp/>matrix<sp/>per<sp/>probe<sp/>(lut_is_3d=false)</highlight></codeline>

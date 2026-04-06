@@ -135,7 +135,7 @@
         </briefdescription>
         <detaileddescription>
 <para>LUT quantization to uint8 and bias to uint16.</para>
-<para>(nprobe, M, ksub, lut_is_3d) determine the size of the the LUT</para>
+<para>(nprobe, M, ksub, lut_is_3d) determine the size of the LUT</para>
 <para>LUT input:<itemizedlist>
 <listitem><para>2D size (M, ksub): single matrix per probe (lut_is_3d=false)</para>
 </listitem><listitem><para>3D size (nprobe, M, ksub): separate LUT per probe (lut_is_3d=true) bias input:</para>
