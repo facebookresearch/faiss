@@ -211,7 +211,7 @@ class TestResidualQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        # in practice RQ is often better than PQ but it does not the case here, so just check
+        # in practice RQ is often better than PQ but it is not the case here, so just check
         # that we are within some factor.
         self.assertLess(err_rq, err_pq * 1.2)
 
