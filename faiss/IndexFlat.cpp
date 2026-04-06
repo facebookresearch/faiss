@@ -65,6 +65,7 @@ void IndexFlat::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
+    FAISS_THROW_IF_NOT_MSG(result, "RangeSearchResult object must not be null");
     IDSelector* sel = params ? params->sel : nullptr;
 
     switch (metric_type) {
@@ -86,6 +87,7 @@ void IndexFlat::compute_distance_subset(
         idx_t k,
         float* distances,
         const idx_t* labels) const {
+    FAISS_THROW_IF_NOT(k > 0);
     switch (metric_type) {
         case METRIC_INNER_PRODUCT:
             fvec_inner_products_by_idx(distances, x, get_xb(), labels, d, n, k);

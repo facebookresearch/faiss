@@ -552,12 +552,12 @@ std::unique_ptr<FastScanCodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const IDSelector* /*sel*/,
+        const IDSelector* sel,
         int /*impl*/,
         const FastScanDistancePostProcessing& context) const {
     const bool is_multibit = (rabitq.nb_bits - 1) > 0;
     return rabitq_ivf_make_knn_scanner(
-            is_max, this, n, k, distances, labels, &context, is_multibit);
+            is_max, this, n, k, distances, labels, sel, &context, is_multibit);
 }
 
 /*********************************************************

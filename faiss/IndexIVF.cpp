@@ -468,245 +468,262 @@ void IndexIVF::search_preassigned(
 
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
-        std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs, sel, params));
+        // C++ exceptions that escape an OpenMP parallel region without being
+        // caught inside it call std::terminate — they cannot propagate across
+        // thread boundaries.  The outer try/catch covers per-thread setup
+        // (scanner creation, set_query); the inner try/catch in scan_one_list
+        // covers per-list operations.  Both set interrupt=true to stop further
+        // work and re-throw after the parallel region exits.
+        try {
+            std::unique_ptr<InvertedListScanner> scanner(
+                    get_InvertedListScanner(store_pairs, sel, params));
 
-        /*****************************************************
-         * Depending on parallel_mode, there are two possible ways
-         * to organize the search. Here we define local functions
-         * that are in common between the two
-         ******************************************************/
+            /*****************************************************
+             * Depending on parallel_mode, there are two possible ways
+             * to organize the search. Here we define local functions
+             * that are in common between the two
+             ******************************************************/
 
-        // initialize + reorder a result heap
+            // initialize + reorder a result heap
 
-        auto init_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init) {
-                return;
-            }
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_heapify<HeapForIP>(k, simi, idxi);
-            } else {
-                heap_heapify<HeapForL2>(k, simi, idxi);
-            }
-        };
-
-        auto add_local_results = [&](const float* local_dis,
-                                     const idx_t* local_idx,
-                                     float* simi,
-                                     idx_t* idxi) {
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_addn<HeapForIP>(k, simi, idxi, local_dis, local_idx, k);
-            } else {
-                heap_addn<HeapForL2>(k, simi, idxi, local_dis, local_idx, k);
-            }
-        };
-
-        auto reorder_result = [&](float* simi, idx_t* idxi) {
-            if (!do_heap_init) {
-                return;
-            }
-            if (metric_type == METRIC_INNER_PRODUCT) {
-                heap_reorder<HeapForIP>(k, simi, idxi);
-            } else {
-                heap_reorder<HeapForL2>(k, simi, idxi);
-            }
-        };
-
-        // single list scan using the current scanner (with query
-        // set properly) and storing results in simi and idxi
-        auto scan_one_list = [&](idx_t key,
-                                 float coarse_dis_i,
-                                 float* simi,
-                                 idx_t* idxi,
-                                 idx_t list_size_max) {
-            if (key < 0) {
-                // not enough centroids for multiprobe
-                return (size_t)0;
-            }
-            FAISS_THROW_IF_NOT_FMT(
-                    key < (idx_t)nlist,
-                    "Invalid key=%" PRId64 " nlist=%zd\n",
-                    key,
-                    nlist);
-
-            // don't waste time on empty lists
-            if (invlists->is_empty(key, inverted_list_context)) {
-                return (size_t)0;
-            }
-
-            scanner->set_list(key, coarse_dis_i);
-
-            nlistv++;
-
-            try {
-                if (invlists->use_iterator) {
-                    size_t list_size = 0;
-
-                    std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key, inverted_list_context));
-
-                    nheap += scanner->iterate_codes(
-                            it.get(), simi, idxi, k, list_size);
-
-                    return list_size;
+            auto init_result = [&](float* simi, idx_t* idxi) {
+                if (!do_heap_init) {
+                    return;
+                }
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_heapify<HeapForIP>(k, simi, idxi);
                 } else {
-                    size_t list_size = invlists->list_size(key);
-                    if (list_size > static_cast<size_t>(list_size_max)) {
-                        list_size = static_cast<size_t>(list_size_max);
+                    heap_heapify<HeapForL2>(k, simi, idxi);
+                }
+            };
+
+            auto add_local_results = [&](const float* local_dis,
+                                         const idx_t* local_idx,
+                                         float* simi,
+                                         idx_t* idxi) {
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_addn<HeapForIP>(
+                            k, simi, idxi, local_dis, local_idx, k);
+                } else {
+                    heap_addn<HeapForL2>(
+                            k, simi, idxi, local_dis, local_idx, k);
+                }
+            };
+
+            auto reorder_result = [&](float* simi, idx_t* idxi) {
+                if (!do_heap_init) {
+                    return;
+                }
+                if (metric_type == METRIC_INNER_PRODUCT) {
+                    heap_reorder<HeapForIP>(k, simi, idxi);
+                } else {
+                    heap_reorder<HeapForL2>(k, simi, idxi);
+                }
+            };
+
+            // single list scan using the current scanner (with query
+            // set properly) and storing results in simi and idxi
+            auto scan_one_list = [&](idx_t key,
+                                     float coarse_dis_i,
+                                     float* simi,
+                                     idx_t* idxi,
+                                     idx_t list_size_max) {
+                if (key < 0) {
+                    // not enough centroids for multiprobe
+                    return (size_t)0;
+                }
+                try {
+                    FAISS_THROW_IF_NOT_FMT(
+                            key < (idx_t)nlist,
+                            "Invalid key=%" PRId64 " nlist=%zd\n",
+                            key,
+                            nlist);
+
+                    // don't waste time on empty lists
+                    if (invlists->is_empty(key, inverted_list_context)) {
+                        return (size_t)0;
                     }
 
-                    InvertedLists::ScopedCodes scodes(invlists, key);
-                    const uint8_t* codes = scodes.get();
+                    scanner->set_list(key, coarse_dis_i);
 
-                    std::unique_ptr<InvertedLists::ScopedIds> sids;
-                    const idx_t* ids = nullptr;
+                    nlistv++;
+                    if (invlists->use_iterator) {
+                        size_t list_size = 0;
 
-                    if (!store_pairs) {
-                        sids = std::make_unique<InvertedLists::ScopedIds>(
-                                invlists, key);
-                        ids = sids->get();
-                    }
+                        std::unique_ptr<InvertedListsIterator> it(
+                                invlists->get_iterator(
+                                        key, inverted_list_context));
 
-                    if (selr) { // IDSelectorRange
-                        // restrict search to a section of the inverted list
-                        size_t jmin, jmax;
-                        selr->find_sorted_ids_bounds(
-                                list_size, ids, &jmin, &jmax);
-                        list_size = jmax - jmin;
-                        if (list_size == 0) {
-                            return (size_t)0;
+                        nheap += scanner->iterate_codes(
+                                it.get(), simi, idxi, k, list_size);
+
+                        return list_size;
+                    } else {
+                        size_t list_size = invlists->list_size(key);
+                        if (list_size > static_cast<size_t>(list_size_max)) {
+                            list_size = static_cast<size_t>(list_size_max);
                         }
-                        codes += jmin * code_size;
-                        ids += jmin;
+
+                        InvertedLists::ScopedCodes scodes(invlists, key);
+                        const uint8_t* codes = scodes.get();
+
+                        std::unique_ptr<InvertedLists::ScopedIds> sids;
+                        const idx_t* ids = nullptr;
+
+                        if (!store_pairs) {
+                            sids = std::make_unique<InvertedLists::ScopedIds>(
+                                    invlists, key);
+                            ids = sids->get();
+                        }
+
+                        if (selr) { // IDSelectorRange
+                            // restrict search to a section of the inverted list
+                            size_t jmin, jmax;
+                            selr->find_sorted_ids_bounds(
+                                    list_size, ids, &jmin, &jmax);
+                            list_size = jmax - jmin;
+                            if (list_size == 0) {
+                                return (size_t)0;
+                            }
+                            codes += jmin * code_size;
+                            ids += jmin;
+                        }
+
+                        nheap += scanner->scan_codes(
+                                list_size, codes, ids, simi, idxi, k);
+
+                        return list_size;
                     }
-
-                    nheap += scanner->scan_codes(
-                            list_size, codes, ids, simi, idxi, k);
-
-                    return list_size;
-                }
-            } catch (const std::exception& e) {
-                std::lock_guard<std::mutex> lock(exception_mutex);
-                exception_string =
-                        demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
-                interrupt = true;
-                return size_t(0);
-            }
-        };
-
-        /****************************************************
-         * Actual loops, depending on parallel_mode
-         ****************************************************/
-
-        if (pmode == 0 || pmode == 3) {
-#pragma omp for
-            for (idx_t i = 0; i < n; i++) {
-                if (interrupt) {
-                    continue;
-                }
-
-                // loop over queries
-                scanner->set_query(x + i * d);
-                float* simi = distances + i * k;
-                idx_t* idxi = labels + i * k;
-
-                init_result(simi, idxi);
-
-                idx_t nscan = 0;
-
-                // loop over probes
-                for (idx_t ik = 0; ik < cur_nprobe; ik++) {
-                    nscan += scan_one_list(
-                            keys[i * cur_nprobe + ik],
-                            coarse_dis[i * cur_nprobe + ik],
-                            simi,
-                            idxi,
-                            cur_max_codes - nscan);
-                    if (nscan >= cur_max_codes) {
-                        break;
-                    }
-                }
-
-                ndis += nscan;
-                reorder_result(simi, idxi);
-
-                if (InterruptCallback::is_interrupted()) {
+                } catch (const std::exception& e) {
+                    std::lock_guard<std::mutex> lock(exception_mutex);
+                    exception_string = demangle_cpp_symbol(typeid(e).name()) +
+                            "  " + e.what();
                     interrupt = true;
+                    return size_t(0);
                 }
+            };
 
-            } // parallel for
-        } else if (pmode == 1) {
-            std::vector<idx_t> local_idx(k);
-            std::vector<float> local_dis(k);
+            /****************************************************
+             * Actual loops, depending on parallel_mode
+             ****************************************************/
 
-            for (idx_t i = 0; i < n; i++) {
-                scanner->set_query(x + i * d);
-                init_result(local_dis.data(), local_idx.data());
+            if (pmode == 0 || pmode == 3) {
+#pragma omp for
+                for (idx_t i = 0; i < n; i++) {
+                    if (interrupt) {
+                        continue;
+                    }
+
+                    // loop over queries
+                    scanner->set_query(x + i * d);
+                    float* simi = distances + i * k;
+                    idx_t* idxi = labels + i * k;
+
+                    init_result(simi, idxi);
+
+                    idx_t nscan = 0;
+
+                    // loop over probes
+                    for (idx_t ik = 0; ik < cur_nprobe; ik++) {
+                        nscan += scan_one_list(
+                                keys[i * cur_nprobe + ik],
+                                coarse_dis[i * cur_nprobe + ik],
+                                simi,
+                                idxi,
+                                cur_max_codes - nscan);
+                        if (nscan >= cur_max_codes) {
+                            break;
+                        }
+                    }
+
+                    ndis += nscan;
+                    reorder_result(simi, idxi);
+
+                    if (InterruptCallback::is_interrupted()) {
+                        interrupt = true;
+                    }
+
+                } // parallel for
+            } else if (pmode == 1) {
+                std::vector<idx_t> local_idx(k);
+                std::vector<float> local_dis(k);
+
+                for (idx_t i = 0; i < n; i++) {
+                    scanner->set_query(x + i * d);
+                    init_result(local_dis.data(), local_idx.data());
 
 #pragma omp for schedule(dynamic)
-                for (idx_t ik = 0; ik < cur_nprobe; ik++) {
+                    for (idx_t ik = 0; ik < cur_nprobe; ik++) {
+                        ndis += scan_one_list(
+                                keys[i * cur_nprobe + ik],
+                                coarse_dis[i * cur_nprobe + ik],
+                                local_dis.data(),
+                                local_idx.data(),
+                                unlimited_list_size);
+
+                        // can't do the test on max_codes
+                    }
+                    // merge thread-local results
+
+                    float* simi = distances + i * k;
+                    idx_t* idxi = labels + i * k;
+#pragma omp single
+                    init_result(simi, idxi);
+
+#pragma omp barrier
+#pragma omp critical
+                    {
+                        add_local_results(
+                                local_dis.data(), local_idx.data(), simi, idxi);
+                    }
+#pragma omp barrier
+#pragma omp single
+                    reorder_result(simi, idxi);
+                }
+            } else if (pmode == 2) {
+                std::vector<idx_t> local_idx(k);
+                std::vector<float> local_dis(k);
+
+#pragma omp single
+                for (int64_t i = 0; i < n; i++) {
+                    init_result(distances + i * k, labels + i * k);
+                }
+
+#pragma omp for schedule(dynamic)
+                for (int64_t ij = 0; ij < n * cur_nprobe; ij++) {
+                    size_t i = ij / cur_nprobe;
+
+                    scanner->set_query(x + i * d);
+                    init_result(local_dis.data(), local_idx.data());
                     ndis += scan_one_list(
-                            keys[i * cur_nprobe + ik],
-                            coarse_dis[i * cur_nprobe + ik],
+                            keys[ij],
+                            coarse_dis[ij],
                             local_dis.data(),
                             local_idx.data(),
                             unlimited_list_size);
-
-                    // can't do the test on max_codes
-                }
-                // merge thread-local results
-
-                float* simi = distances + i * k;
-                idx_t* idxi = labels + i * k;
-#pragma omp single
-                init_result(simi, idxi);
-
-#pragma omp barrier
 #pragma omp critical
-                {
-                    add_local_results(
-                            local_dis.data(), local_idx.data(), simi, idxi);
+                    {
+                        add_local_results(
+                                local_dis.data(),
+                                local_idx.data(),
+                                distances + i * k,
+                                labels + i * k);
+                    }
                 }
-#pragma omp barrier
 #pragma omp single
-                reorder_result(simi, idxi);
-            }
-        } else if (pmode == 2) {
-            std::vector<idx_t> local_idx(k);
-            std::vector<float> local_dis(k);
-
-#pragma omp single
-            for (int64_t i = 0; i < n; i++) {
-                init_result(distances + i * k, labels + i * k);
-            }
-
-#pragma omp for schedule(dynamic)
-            for (int64_t ij = 0; ij < n * cur_nprobe; ij++) {
-                size_t i = ij / cur_nprobe;
-
-                scanner->set_query(x + i * d);
-                init_result(local_dis.data(), local_idx.data());
-                ndis += scan_one_list(
-                        keys[ij],
-                        coarse_dis[ij],
-                        local_dis.data(),
-                        local_idx.data(),
-                        unlimited_list_size);
-#pragma omp critical
-                {
-                    add_local_results(
-                            local_dis.data(),
-                            local_idx.data(),
-                            distances + i * k,
-                            labels + i * k);
+                for (int64_t i = 0; i < n; i++) {
+                    reorder_result(distances + i * k, labels + i * k);
                 }
+            } else {
+                FAISS_THROW_FMT("parallel_mode %d not supported\n", pmode);
             }
-#pragma omp single
-            for (int64_t i = 0; i < n; i++) {
-                reorder_result(distances + i * k, labels + i * k);
+        } catch (const std::exception& e) {
+            std::lock_guard<std::mutex> lock(exception_mutex);
+            if (exception_string.empty()) {
+                exception_string =
+                        demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
             }
-        } else {
-            FAISS_THROW_FMT("parallel_mode %d not supported\n", pmode);
+            interrupt = true;
         }
     } // parallel section
 
