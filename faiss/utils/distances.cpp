@@ -552,7 +552,7 @@ struct Run_search_inner_product {
            size_t nx,
            size_t ny) {
         if (res.sel ||
-            nx < static_cast<size_t>(distance_compute_blas_threshold)) {
+            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
@@ -571,7 +571,7 @@ struct Run_search_L2sqr {
            size_t ny,
            const float* y_norm2) {
         if (res.sel ||
-            nx < static_cast<size_t>(distance_compute_blas_threshold)) {
+            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
@@ -585,7 +585,7 @@ struct Run_search_L2sqr {
  * KNN driver functions
  *******************************************************/
 
-int distance_compute_blas_threshold = 20;
+int distance_compute_blas_threshold = 128000;
 int distance_compute_blas_query_bs = 4096;
 int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;

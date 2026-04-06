@@ -63,18 +63,19 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit) {
     if (is_max) {
         using C = CMax<uint16_t, int64_t>;
         using H = simd_result_handlers::IVFRaBitQHeapHandler<C>;
         return std::make_unique<ScannerMixIn<H>>(
-                index, nq, k, distances, ids, context, multi_bit);
+                index, nq, k, distances, ids, sel, context, multi_bit);
     } else {
         using C = CMin<uint16_t, int64_t>;
         using H = simd_result_handlers::IVFRaBitQHeapHandler<C>;
         return std::make_unique<ScannerMixIn<H>>(
-                index, nq, k, distances, ids, context, multi_bit);
+                index, nq, k, distances, ids, sel, context, multi_bit);
     }
 }
 

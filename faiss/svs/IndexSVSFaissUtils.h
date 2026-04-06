@@ -54,7 +54,7 @@ inline svs_runtime::MetricType to_svs_metric(faiss::MetricType metric) {
         case METRIC_L2:
             return svs_runtime::MetricType::L2;
         default:
-            FAISS_ASSERT(false && "not supported SVS distance");
+            FAISS_THROW_MSG("not supported SVS distance");
     }
 }
 

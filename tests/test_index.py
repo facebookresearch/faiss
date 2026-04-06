@@ -696,11 +696,11 @@ class TestDistancesPositive(unittest.TestCase):
         """
         roundoff errors occur only with the L2 decomposition used
         with BLAS, ie. in IndexFlatL2 and with
-        n > distance_compute_blas_threshold = 20
+        n * d > distance_compute_blas_threshold
         """
 
         d = 128
-        n = 100
+        n = 5000
 
         rs = np.random.RandomState(1234)
         x = rs.rand(n, d).astype('float32')
