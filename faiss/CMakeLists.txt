@@ -10,22 +10,30 @@
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
+  impl/hnsw/avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/distances_fused/simdlib_based.cpp
+  utils/simd_impl/rabitq_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
+  impl/hnsw/avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
+  utils/distances_fused/avx512.cpp
+  utils/simd_impl/rabitq_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/distances_fused/simdlib_based_neon.cpp
+  utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -102,6 +110,7 @@ set(FAISS_SRC
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
+  impl/hnsw/MinimaxHeap.cpp
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
@@ -145,9 +154,7 @@ set(FAISS_SRC
   utils/sorting.cpp
   utils/utils.cpp
   utils/simd_levels.cpp
-  utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
-  utils/distances_fused/simdlib_based.cpp
   factory_tools.cpp
 )
 
@@ -228,6 +235,7 @@ set(FAISS_HEADERS
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
+  impl/hnsw/MinimaxHeap.h
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
   impl/fast_scan/LookupTableScaler.h
@@ -314,9 +322,8 @@ set(FAISS_HEADERS
   impl/simdlib/simdlib_ppc64.h
   utils/utils.h
   utils/simd_levels.h
-  utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
-  utils/distances_fused/simdlib_based.h
+  utils/distances_fused/simdlib_kernel-inl.h
   impl/approx_topk/approx_topk.h
   impl/approx_topk/generic.h
   impl/approx_topk/rq_beam_search_tab.h
@@ -333,6 +340,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
   utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
@@ -404,7 +412,7 @@ else()
   add_compile_options(/bigobj)
 endif()
 target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
-target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR )
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -481,7 +489,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
 endif()
 
 if(FAISS_ENABLE_SVS)
-  find_package(svs_runtime 0.2.0 REQUIRED)
+  find_package(svs_runtime REQUIRED)
 
   target_link_libraries(faiss PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/index_io.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 
 #include <memory>
@@ -15,6 +16,7 @@
 
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
+#include <faiss/index_io.h>
 
 namespace faiss {
 
@@ -167,9 +169,32 @@ InvertedLists* BlockInvertedListsIOHook::read(IOReader* f, int /* io_flags */)
         const {
     auto il = std::make_unique<BlockInvertedLists>();
     READ1(il->nlist);
+    {
+        auto limit_ = get_deserialization_loop_limit();
+        if (limit_ > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    static_cast<size_t>(il->nlist) <= limit_,
+                    "BlockInvertedLists nlist=%zd exceeds "
+                    "deserialization_loop_limit of %zd",
+                    static_cast<size_t>(il->nlist),
+                    limit_);
+        }
+    }
     READ1(il->code_size);
     READ1(il->n_per_block);
     READ1(il->block_size);
+
+    {
+        auto limit = get_deserialization_loop_limit();
+        if (limit > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    il->nlist <= limit,
+                    "BlockInvertedLists nlist=%zd exceeds "
+                    "deserialization_loop_limit of %zd",
+                    il->nlist,
+                    limit);
+        }
+    }
 
     FAISS_THROW_IF_NOT_FMT(
             il->n_per_block > 0,

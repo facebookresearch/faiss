@@ -86,9 +86,33 @@ struct simd256_level_selector {
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
         simd256_level_selector<SINGLE_SIMD_LEVEL>::value;
 
+/***************************************************************
+ * Helper to select the appropriate 512-bit SIMD level.
+ *
+ * For 512-bit SIMD types (simd32uint16, simd64uint8, etc.), maps:
+ *   AVX512_SPR → AVX512 (512-bit ops share the same instructions)
+ *   AVX512 → AVX512
+ *   NONE → NONE
+ ***************************************************************/
+template <SIMDLevel SL>
+struct simd512_level_selector {
+    static constexpr SIMDLevel value =
+            (SL == SIMDLevel::AVX512_SPR) ? SIMDLevel::AVX512 : SL;
+};
+
+/// SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types
+/// (simd32uint16, simd64uint8, etc.) which don't have AVX512_SPR
+/// specializations (AVX512_SPR uses the same 512-bit integer ops as AVX512).
+inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_512 =
+        simd512_level_selector<SINGLE_SIMD_LEVEL>::value;
+
 /// Number of float32 lanes for a given SIMD level.
+/// ARM_SVE is variable-width (128–2048 bits); no single constant is correct.
 template <SIMDLevel SL>
 constexpr int simd_width() {
+    static_assert(
+            SL != SIMDLevel::ARM_SVE,
+            "simd_width<ARM_SVE> is not supported: SVE is variable-width");
     if constexpr (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
         return 16;
     else if constexpr (SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON)
@@ -139,7 +163,7 @@ struct FAISS_API SIMDConfig {
     static bool is_simd_level_available(SIMDLevel level);
 
     /// Returns the SIMD level via the dispatch mechanism.
-    /// In DD mode, uses DISPATCH_SIMDLevel internally.
+    /// In DD mode, uses with_simd_level internally.
     /// In static mode, returns the compiled-in level.
     /// Useful for verification: get_level() == get_dispatched_level()
     static SIMDLevel get_dispatched_level();

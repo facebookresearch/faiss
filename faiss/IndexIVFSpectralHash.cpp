@@ -38,7 +38,8 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
                   own_invlists_in),
           nbit(nbit_in),
           period(period_in) {
-    auto rr = std::make_unique<RandomRotationMatrix>(d_in, nbit_in);
+    auto rr = std::make_unique<RandomRotationMatrix>(
+            static_cast<int>(d_in), nbit_in);
     rr->init(1234);
     vt = rr.release();
     own_fields = true;
