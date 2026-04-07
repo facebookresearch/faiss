@@ -125,7 +125,7 @@ void search_centroid(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
     index_ivf->quantizer->assign(n, x, centroid_ids);
 }
 
@@ -146,7 +146,7 @@ void search_and_return_centroids(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
 
     size_t nprobe = index_ivf->nprobe;
     std::vector<idx_t> cent_nos(n * nprobe);

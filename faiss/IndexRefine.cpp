@@ -100,7 +100,7 @@ void IndexRefine::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // parallelize over queries
@@ -287,7 +287,7 @@ void IndexRefineFlat::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // compute refined distances
@@ -353,7 +353,7 @@ void IndexRefinePanorama::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     refine_index->search_subset(

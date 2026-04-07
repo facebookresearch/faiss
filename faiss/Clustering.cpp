@@ -163,7 +163,8 @@ void compute_centroids(
 
         for (size_t i = 0; i < n; i++) {
             int64_t ci = assign[i];
-            assert(ci >= 0 && ci < k + k_frozen);
+            FAISS_THROW_IF_NOT_MSG(
+                    ci >= 0 && ci < k + k_frozen, "invalid cluster assignment");
             ci -= k_frozen;
             if (ci >= static_cast<int64_t>(c0) &&
                 ci < static_cast<int64_t>(c1)) {
