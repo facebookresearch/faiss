@@ -676,8 +676,7 @@ static void knn_db_parallel_impl(
                 for (size_t i = 0; i < nx; i++) {
                     T* heap_dis = my_dis + i * k;
                     TI* heap_ids = my_ids + i * k;
-                    const float* ip_line =
-                            ip_block.get() + i * block_ny;
+                    const float* ip_line = ip_block.get() + i * block_ny;
                     T thresh = heap_dis[0];
 
                     for (size_t jj = 0; jj < block_ny; jj++) {
@@ -686,8 +685,7 @@ static void knn_db_parallel_impl(
                         T dis;
 
                         if constexpr (C::is_max) {
-                            dis = x_norms[i] + y_norms[global_j] -
-                                    2 * ip;
+                            dis = x_norms[i] + y_norms[global_j] - 2 * ip;
                             if (dis < 0)
                                 dis = 0;
                         } else {
@@ -696,11 +694,7 @@ static void knn_db_parallel_impl(
 
                         if (C::cmp(thresh, dis)) {
                             heap_replace_top<C>(
-                                    k,
-                                    heap_dis,
-                                    heap_ids,
-                                    dis,
-                                    global_j);
+                                    k, heap_dis, heap_ids, dis, global_j);
                             thresh = heap_dis[0];
                         }
                     }
@@ -777,18 +771,7 @@ void knn_inner_product(
     } else {
         Run_search_inner_product r;
         dispatch_knn_ResultHandler(
-                nx,
-                vals,
-                ids,
-                k,
-                METRIC_INNER_PRODUCT,
-                sel,
-                r,
-                x,
-                y,
-                d,
-                nx,
-                ny);
+                nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
     }
 
     if (imin != 0) {
@@ -842,19 +825,7 @@ void knn_L2sqr(
     } else {
         Run_search_L2sqr r;
         dispatch_knn_ResultHandler(
-                nx,
-                vals,
-                ids,
-                k,
-                METRIC_L2,
-                sel,
-                r,
-                x,
-                y,
-                d,
-                nx,
-                ny,
-                y_norm2);
+                nx, vals, ids, k, METRIC_L2, sel, r, x, y, d, nx, ny, y_norm2);
     }
 
     if (imin != 0) {
