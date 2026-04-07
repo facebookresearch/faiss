@@ -43,7 +43,7 @@ struct LockLevels {
     pthread_cond_t level3_cv;
 
     std::unordered_set<int> level1_holders; // which level1 locks are held
-    int n_level2;                           // nb threads that wait on level2
+    size_t n_level2;                        // nb threads that wait on level2
     bool level3_in_use;                     // a threads waits on level3
     bool level2_in_use;
 
@@ -126,7 +126,7 @@ struct LockLevels {
 
     void print() {
         pthread_mutex_lock(&mutex1);
-        printf("State: level3_in_use=%d n_level2=%d level1_holders: [",
+        printf("State: level3_in_use=%d n_level2=%zu level1_holders: [",
                int(level3_in_use),
                n_level2);
         for (int k : level1_holders) {
@@ -163,7 +163,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             const idx_t* codes8 = (const idx_t*)codes;
             idx_t n8 = n * od->code_size / 8;
 
-            for (size_t i = 0; i < n8; i++) {
+            for (idx_t i = 0; i < n8; i++) {
                 cs += codes8[i];
             }
             od->locks->unlock_1(list_no);
@@ -177,7 +177,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
 
     pthread_mutex_t list_ids_mutex;
     std::vector<idx_t> list_ids;
-    int cur_list;
+    size_t cur_list;
 
     // mutex for the list of tasks
     pthread_mutex_t mutex;
@@ -206,7 +206,7 @@ struct OnDiskInvertedLists::OngoingPrefetch {
     idx_t get_next_list() {
         idx_t list_no = -1;
         pthread_mutex_lock(&list_ids_mutex);
-        if (cur_list >= 0 && cur_list < list_ids.size()) {
+        if (cur_list < list_ids.size()) {
             list_no = list_ids[cur_list++];
         }
         pthread_mutex_unlock(&list_ids_mutex);
@@ -660,7 +660,7 @@ size_t OnDiskInvertedLists::merge_from_1(
 }
 
 void OnDiskInvertedLists::crop_invlists(size_t l0, size_t l1) {
-    FAISS_THROW_IF_NOT(0 <= l0 && l0 <= l1 && l1 <= nlist);
+    FAISS_THROW_IF_NOT(l0 <= l1 && l1 <= nlist);
 
     std::vector<List> new_lists(l1 - l0);
     memcpy(new_lists.data(), &lists[l0], (l1 - l0) * sizeof(List));

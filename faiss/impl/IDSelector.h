@@ -125,7 +125,7 @@ struct IDSelectorNot : IDSelector {
 
 /// selects all entries (useful for benchmarking)
 struct IDSelectorAll : IDSelector {
-    bool is_member(idx_t id) const final {
+    bool is_member(idx_t /* id */) const final {
         return true;
     }
     virtual ~IDSelectorAll() {}

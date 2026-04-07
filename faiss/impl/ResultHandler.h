@@ -436,7 +436,7 @@ struct ReservoirTopN : ResultHandlerT<C> {
     }
 
     void to_result(T* heap_dis, TI* heap_ids) const {
-        for (int j = 0; j < std::min(i, n); j++) {
+        for (size_t j = 0; j < std::min(i, n); j++) {
             heap_push<C>(j + 1, heap_dis, heap_ids, vals[j], ids[j]);
         }
 

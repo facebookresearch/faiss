@@ -48,7 +48,6 @@ size_t get_deserialization_vector_byte_limit();
         size_t size;                                                     \
         READANDCHECK(&size, 1);                                          \
         FAISS_THROW_IF_NOT(                                              \
-                size >= 0 &&                                             \
                 size < (faiss::get_deserialization_vector_byte_limit() / \
                         sizeof(*(vec).data())));                         \
         FAISS_THROW_IF_NOT_FMT(                                          \
@@ -97,7 +96,6 @@ size_t get_deserialization_vector_byte_limit();
         size_t size;                                                     \
         READANDCHECK(&size, 1);                                          \
         FAISS_THROW_IF_NOT(                                              \
-                size >= 0 &&                                             \
                 size < (faiss::get_deserialization_vector_byte_limit() / \
                         (4 * sizeof(*(vec).data()))));                   \
         size *= 4;                                                       \
