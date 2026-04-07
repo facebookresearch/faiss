@@ -828,103 +828,119 @@ void IndexIVF::range_search_preassigned(
 
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis)
     {
-        RangeSearchPartialResult pres(result);
-        std::unique_ptr<InvertedListScanner> scanner(
-                get_InvertedListScanner(store_pairs, sel, params));
-        FAISS_THROW_IF_NOT(scanner.get());
-        all_pres[omp_get_thread_num()] = &pres;
+        try {
+            RangeSearchPartialResult pres(result);
+            std::unique_ptr<InvertedListScanner> scanner(
+                    get_InvertedListScanner(store_pairs, sel, params));
+            FAISS_THROW_IF_NOT(scanner.get());
+            all_pres[omp_get_thread_num()] = &pres;
 
-        // prepare the list scanning function
+            // prepare the list scanning function
 
-        auto scan_list_func = [&](size_t i, size_t ik, RangeQueryResult& qres) {
-            idx_t key = keys[i * cur_nprobe + ik]; /* select the list  */
-            if (key < 0) {
-                return;
-            }
-            FAISS_THROW_IF_NOT_FMT(
-                    key < (idx_t)nlist,
-                    "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
-                    key,
-                    ik,
-                    nlist);
+            auto scan_list_func = [&](size_t i,
+                                      size_t ik,
+                                      RangeQueryResult& qres) {
+                try {
+                    idx_t key = keys[i * cur_nprobe + ik]; /* select the list */
+                    if (key < 0) {
+                        return;
+                    }
 
-            if (invlists->is_empty(key, inverted_list_context)) {
-                return;
-            }
+                    FAISS_THROW_IF_NOT_FMT(
+                            key < (idx_t)nlist,
+                            "Invalid key=%" PRId64 " at ik=%zd nlist=%zd\n",
+                            key,
+                            ik,
+                            nlist);
 
-            try {
-                size_t list_size = 0;
-                scanner->set_list(key, coarse_dis[i * cur_nprobe + ik]);
-                if (invlists->use_iterator) {
-                    std::unique_ptr<InvertedListsIterator> it(
-                            invlists->get_iterator(key, inverted_list_context));
+                    if (invlists->is_empty(key, inverted_list_context)) {
+                        return;
+                    }
 
-                    scanner->iterate_codes_range(
-                            it.get(), radius, qres, list_size);
-                } else {
-                    InvertedLists::ScopedCodes scodes(invlists, key);
-                    InvertedLists::ScopedIds ids(invlists, key);
-                    list_size = invlists->list_size(key);
+                    size_t list_size = 0;
+                    scanner->set_list(key, coarse_dis[i * cur_nprobe + ik]);
+                    if (invlists->use_iterator) {
+                        std::unique_ptr<InvertedListsIterator> it(
+                                invlists->get_iterator(
+                                        key, inverted_list_context));
 
-                    scanner->scan_codes_range(
-                            list_size, scodes.get(), ids.get(), radius, qres);
+                        scanner->iterate_codes_range(
+                                it.get(), radius, qres, list_size);
+                    } else {
+                        InvertedLists::ScopedCodes scodes(invlists, key);
+                        InvertedLists::ScopedIds ids(invlists, key);
+                        list_size = invlists->list_size(key);
+
+                        scanner->scan_codes_range(
+                                list_size,
+                                scodes.get(),
+                                ids.get(),
+                                radius,
+                                qres);
+                    }
+                    nlistv++;
+                    ndis += list_size;
+                } catch (const std::exception& e) {
+                    std::lock_guard<std::mutex> lock(exception_mutex);
+                    exception_string = demangle_cpp_symbol(typeid(e).name()) +
+                            "  " + e.what();
+                    interrupt = true;
                 }
-                nlistv++;
-                ndis += list_size;
-            } catch (const std::exception& e) {
-                std::lock_guard<std::mutex> lock(exception_mutex);
-                exception_string =
-                        demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
-                interrupt = true;
-            }
-        };
+            };
 
-        if (parallel_mode == 0) {
+            if (parallel_mode == 0) {
 #pragma omp for
-            for (idx_t i = 0; i < nx; i++) {
-                scanner->set_query(x + i * d);
-
-                RangeQueryResult& qres = pres.new_result(i);
-
-                for (idx_t ik = 0; ik < cur_nprobe; ik++) {
-                    scan_list_func(i, ik, qres);
-                }
-            }
-
-        } else if (parallel_mode == 1) {
-            for (idx_t i = 0; i < nx; i++) {
-                scanner->set_query(x + i * d);
-
-                RangeQueryResult& qres = pres.new_result(i);
-
-#pragma omp for schedule(dynamic)
-                for (int64_t ik = 0; ik < cur_nprobe; ik++) {
-                    scan_list_func(i, ik, qres);
-                }
-            }
-        } else if (parallel_mode == 2) {
-            RangeQueryResult* qres = nullptr;
-
-#pragma omp for schedule(dynamic)
-            for (idx_t iik = 0; iik < nx * (idx_t)cur_nprobe; iik++) {
-                idx_t i = iik / (idx_t)cur_nprobe;
-                idx_t ik = iik % (idx_t)cur_nprobe;
-                if (qres == nullptr || qres->qno != i) {
-                    qres = &pres.new_result(i);
+                for (idx_t i = 0; i < nx; i++) {
                     scanner->set_query(x + i * d);
+
+                    RangeQueryResult& qres = pres.new_result(i);
+
+                    for (idx_t ik = 0; ik < cur_nprobe; ik++) {
+                        scan_list_func(i, ik, qres);
+                    }
                 }
-                scan_list_func(i, ik, *qres);
+
+            } else if (parallel_mode == 1) {
+                for (idx_t i = 0; i < nx; i++) {
+                    scanner->set_query(x + i * d);
+
+                    RangeQueryResult& qres = pres.new_result(i);
+
+#pragma omp for schedule(dynamic)
+                    for (int64_t ik = 0; ik < cur_nprobe; ik++) {
+                        scan_list_func(i, ik, qres);
+                    }
+                }
+            } else if (parallel_mode == 2) {
+                RangeQueryResult* qres = nullptr;
+
+#pragma omp for schedule(dynamic)
+                for (idx_t iik = 0; iik < nx * (idx_t)cur_nprobe; iik++) {
+                    idx_t i = iik / (idx_t)cur_nprobe;
+                    idx_t ik = iik % (idx_t)cur_nprobe;
+                    if (qres == nullptr || qres->qno != i) {
+                        qres = &pres.new_result(i);
+                        scanner->set_query(x + i * d);
+                    }
+                    scan_list_func(i, ik, *qres);
+                }
+            } else {
+                FAISS_THROW_FMT(
+                        "parallel_mode %d not supported\n", parallel_mode);
             }
-        } else {
-            FAISS_THROW_FMT("parallel_mode %d not supported\n", parallel_mode);
-        }
-        if (parallel_mode == 0) {
-            pres.finalize();
-        } else {
+            if (parallel_mode == 0) {
+                pres.finalize();
+            } else {
 #pragma omp barrier
 #pragma omp single
-            RangeSearchPartialResult::merge(all_pres, false);
+                RangeSearchPartialResult::merge(all_pres, false);
 #pragma omp barrier
+            }
+        } catch (const std::exception& e) {
+            std::lock_guard<std::mutex> lock(exception_mutex);
+            exception_string =
+                    demangle_cpp_symbol(typeid(e).name()) + "  " + e.what();
+            interrupt = true;
         }
     }
 
