@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <algorithm>
 #include <cstddef>
+#include <limits>
 #include <map>
 #include <random>
 #include <set>
@@ -16,6 +17,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 
 namespace {
@@ -289,6 +291,41 @@ TEST(IVF, search_preassigned_out_of_range_key) {
                     &coarse_dis,
                     distances.data(),
                     labels.data(),
+                    false),
+            faiss::FaissException);
+}
+
+// Test: range_search_preassigned with out-of-range keys throws a catchable
+// FaissException instead of calling std::terminate from an uncaught
+// exception inside the OpenMP parallel region.
+TEST(IVF, range_search_preassigned_out_of_range_key) {
+    int d = 4;
+    int nlist = 2;
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    std::vector<float> train_data(nlist * d, 0.0f);
+    for (int i = 0; i < nlist * d; i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(nlist, train_data.data());
+    idx.add(nlist, train_data.data());
+
+    std::vector<float> xq(d, 1.0f);
+    faiss::RangeSearchResult result(1);
+
+    faiss::idx_t bad_key = nlist; // out of range
+    float coarse_dis = 0.0f;
+
+    EXPECT_THROW(
+            idx.range_search_preassigned(
+                    1,
+                    xq.data(),
+                    std::numeric_limits<float>::max(),
+                    &bad_key,
+                    &coarse_dis,
+                    &result,
                     false),
             faiss::FaissException);
 }
