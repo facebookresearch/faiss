@@ -16,7 +16,6 @@
 
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
-#include <faiss/index_io.h>
 
 namespace faiss {
 
