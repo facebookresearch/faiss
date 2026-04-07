@@ -771,7 +771,18 @@ void knn_inner_product(
     } else {
         Run_search_inner_product r;
         dispatch_knn_ResultHandler(
-                nx, vals, ids, k, METRIC_INNER_PRODUCT, sel, r, x, y, d, nx, ny);
+                nx,
+                vals,
+                ids,
+                k,
+                METRIC_INNER_PRODUCT,
+                sel,
+                r,
+                x,
+                y,
+                d,
+                nx,
+                ny);
     }
 
     if (imin != 0) {
