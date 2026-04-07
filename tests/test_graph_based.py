@@ -222,6 +222,32 @@ class TestHNSW(unittest.TestCase):
         self.assertEqual(index_hnsw.ntotal, 0)
 
 
+class TestHNSWNaN(unittest.TestCase):
+    """Adding a vector with NaN to an IVF+HNSW index used to crash because
+    NaN distances corrupt the MinimaxHeap ordering in HNSW search. The fix
+    converts NaN to +inf in MinimaxHeap::push so the heap stays well-ordered.
+    """
+
+    def test_add_nan_vector_to_ivf_hnsw(self):
+        d = 64
+        nt = 2000
+        nb = 1000
+        xt = np.random.default_rng(42).random((nt, d), dtype='float32')
+        xb = np.random.default_rng(43).random((nb, d), dtype='float32')
+
+        index = faiss.index_factory(d, "IVF256_HNSW32,SQ8")
+        index.train(xt)
+        index.add(xb)
+
+        # Create a vector with NaN in the first component
+        vec = np.zeros((1, d), dtype='float32')
+        vec[0, 0] = np.nan
+
+        # This should not crash
+        index.add(vec)
+        self.assertEqual(index.ntotal, nb + 1)
+
+
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
