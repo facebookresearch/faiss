@@ -86,7 +86,7 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
-    SVSStorageKind storage_kind;
+    SVSStorageKind storage_kind = SVS_FP32;
 
     IndexSVSVamana();
 
