@@ -581,7 +581,15 @@ class CenteringTransform(VectorTransform):
     def check_identical(self, other: VectorTransform) -> None: ...
 
 # Specific Index implementations
-class IndexFlat(Index):
+class IndexFlatCodes(Index):
+    code_size: int
+    codes: Any  # MaybeOwnedVector<uint8_t>
+
+    def __init__(self, code_size: int = 0, d: int = 0, metric: MetricType = METRIC_L2) -> None: ...
+    def sa_code_size(self) -> int: ...
+    def permute_entries(self, perm: npt.NDArray[np.int64]) -> None: ...
+
+class IndexFlat(IndexFlatCodes):
     def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
     @overload
     def search(
@@ -1335,7 +1343,7 @@ class ScalarQuantizer(Quantizer):
     RS_optim: int
 
 # LSH index
-class IndexLSH(Index):
+class IndexLSH(IndexFlatCodes):
     nbits: int
     bytes_per_vec: int
     rrot: RandomRotationMatrix
@@ -1352,7 +1360,7 @@ class IndexLSH(Index):
     ) -> None: ...
 
 # PQ index
-class IndexPQ(Index):
+class IndexPQ(IndexFlatCodes):
     pq: ProductQuantizer
     codes: UInt8Vector
 
@@ -1361,7 +1369,7 @@ class IndexPQ(Index):
     ) -> None: ...
 
 # Scalar Quantizer index
-class IndexScalarQuantizer(Index):
+class IndexScalarQuantizer(IndexFlatCodes):
     sq: ScalarQuantizer
     codes: UInt8Vector
 
@@ -2099,6 +2107,37 @@ class IndexPQFastScan(IndexFastScan):
         metric: MetricType = METRIC_L2,
         bbs: int = 32,
     ) -> None: ...
+
+# FastScan additive quantizer base classes
+class IndexAdditiveQuantizerFastScan(IndexFastScan):
+    aq: AdditiveQuantizer
+    rescale_norm: bool
+    norm_scale: int
+    max_train_points: int
+
+    def __init__(self) -> None: ...
+
+class IndexResidualQuantizerFastScan(IndexAdditiveQuantizerFastScan):
+    rq: ResidualQuantizer
+
+    @overload
+    def __init__(
+        self, d: int, M: int, nbits: int,
+        metric: MetricType = METRIC_L2, bbs: int = 32,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+
+class IndexLocalSearchQuantizerFastScan(IndexAdditiveQuantizerFastScan):
+    lsq: LocalSearchQuantizer
+
+    @overload
+    def __init__(
+        self, d: int, M: int, nbits: int,
+        metric: MetricType = METRIC_L2, bbs: int = 32,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
 
 # Index factory and related functions
 def downcast_index(index: Index) -> Index: ...
@@ -3139,11 +3178,26 @@ class IndexLattice(Index):
     def __init__(self, d: int, dsub: int = 0, dsuper: int = 0) -> None: ...
 
 # IndexRowwiseMinMax
-class IndexRowwiseMinMax(IndexFlat):
-    def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
+class IndexRowwiseMinMaxBase(Index):
+    index: Index
+    own_fields: bool
 
-class IndexRowwiseMinMaxFP16(Index):
-    def __init__(self, d: int, metric: MetricType = METRIC_L2) -> None: ...
+    @overload
+    def __init__(self, index: Index) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+
+class IndexRowwiseMinMax(IndexRowwiseMinMaxBase):
+    @overload
+    def __init__(self, index: Index) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+
+class IndexRowwiseMinMaxFP16(IndexRowwiseMinMaxBase):
+    @overload
+    def __init__(self, index: Index) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
 
 # IndexRandom for testing
 class IndexRandom(Index):
@@ -3169,7 +3223,38 @@ class IndexShardsIVF(Index):
     def add_shard(self, index: Index) -> None: ...
 
 # Missing IVF Fast Scan variants
-class IndexIVFResidualQuantizer(IndexIVF):
+
+# Additive quantizer base classes
+class IndexAdditiveQuantizer(IndexFlatCodes):
+    aq: AdditiveQuantizer
+
+class IndexResidualQuantizer(IndexAdditiveQuantizer):
+    rq: ResidualQuantizer
+
+    @overload
+    def __init__(
+        self, d: int, M: int, nbits: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+
+class IndexLocalSearchQuantizer(IndexAdditiveQuantizer):
+    lsq: LocalSearchQuantizer
+
+    @overload
+    def __init__(
+        self, d: int, M: int, nbits: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+
+class IndexIVFAdditiveQuantizer(IndexIVF):
+    aq: AdditiveQuantizer
+    use_precomputed_table: int
+
+class IndexIVFResidualQuantizer(IndexIVFAdditiveQuantizer):
     rq: ResidualQuantizer
     code_size: int
     by_residual: bool
@@ -3185,7 +3270,7 @@ class IndexIVFResidualQuantizer(IndexIVF):
         encode_residual: bool = True,
     ) -> None: ...
 
-class IndexIVFLocalSearchQuantizer(IndexIVF):
+class IndexIVFLocalSearchQuantizer(IndexIVFAdditiveQuantizer):
     lsq: LocalSearchQuantizer
     code_size: int
     by_residual: bool
@@ -3202,7 +3287,15 @@ class IndexIVFLocalSearchQuantizer(IndexIVF):
     ) -> None: ...
 
 # FastScan variants for IVF
-class IndexIVFResidualQuantizerFastScan(IndexIVFFastScan):
+class IndexIVFAdditiveQuantizerFastScan(IndexIVFFastScan):
+    aq: AdditiveQuantizer
+    rescale_norm: bool
+    norm_scale: int
+    max_train_points: int
+
+    def __init__(self) -> None: ...
+
+class IndexIVFResidualQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
     rq: ResidualQuantizer
 
     def __init__(
@@ -3216,7 +3309,7 @@ class IndexIVFResidualQuantizerFastScan(IndexIVFFastScan):
         bbs: int = 32,
     ) -> None: ...
 
-class IndexIVFLocalSearchQuantizerFastScan(IndexIVFFastScan):
+class IndexIVFLocalSearchQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
     lsq: LocalSearchQuantizer
 
     def __init__(
@@ -3231,26 +3324,23 @@ class IndexIVFLocalSearchQuantizerFastScan(IndexIVFFastScan):
     ) -> None: ...
 
 # Product variants
-class IndexProductResidualQuantizer(Index):
-    rq: ResidualQuantizer
-    codes: UInt8Vector
+class IndexProductResidualQuantizer(IndexAdditiveQuantizer):
+    prq: ProductResidualQuantizer
 
     def __init__(
         self, d: int, M: int, nbits: int, metric: MetricType = METRIC_L2
     ) -> None: ...
 
-class IndexProductLocalSearchQuantizer(Index):
-    lsq: LocalSearchQuantizer
-    codes: UInt8Vector
+class IndexProductLocalSearchQuantizer(IndexAdditiveQuantizer):
+    plsq: ProductLocalSearchQuantizer
 
     def __init__(
         self, d: int, M: int, nbits: int, metric: MetricType = METRIC_L2
     ) -> None: ...
 
 # IVF Product variants
-class IndexIVFProductResidualQuantizer(IndexIVF):
-    pq: ProductQuantizer
-    rq: ResidualQuantizer
+class IndexIVFProductResidualQuantizer(IndexIVFAdditiveQuantizer):
+    prq: ProductResidualQuantizer
     code_size: int
     by_residual: bool
 
@@ -3266,9 +3356,8 @@ class IndexIVFProductResidualQuantizer(IndexIVF):
         encode_residual: bool = True,
     ) -> None: ...
 
-class IndexIVFProductLocalSearchQuantizer(IndexIVF):
-    pq: ProductQuantizer
-    lsq: LocalSearchQuantizer
+class IndexIVFProductLocalSearchQuantizer(IndexIVFAdditiveQuantizer):
+    plsq: ProductLocalSearchQuantizer
     code_size: int
     by_residual: bool
 
@@ -3285,7 +3374,7 @@ class IndexIVFProductLocalSearchQuantizer(IndexIVF):
     ) -> None: ...
 
 # FastScan product variants
-class IndexProductResidualQuantizerFastScan(IndexFastScan):
+class IndexProductResidualQuantizerFastScan(IndexAdditiveQuantizerFastScan):
     prq: ProductResidualQuantizer
 
     def __init__(
@@ -3298,7 +3387,7 @@ class IndexProductResidualQuantizerFastScan(IndexFastScan):
         bbs: int = 32,
     ) -> None: ...
 
-class IndexProductLocalSearchQuantizerFastScan(IndexFastScan):
+class IndexProductLocalSearchQuantizerFastScan(IndexAdditiveQuantizerFastScan):
     plsq: ProductLocalSearchQuantizer
 
     def __init__(
@@ -3311,7 +3400,7 @@ class IndexProductLocalSearchQuantizerFastScan(IndexFastScan):
         bbs: int = 32,
     ) -> None: ...
 
-class IndexIVFProductResidualQuantizerFastScan(IndexIVFFastScan):
+class IndexIVFProductResidualQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
     prq: ProductResidualQuantizer
 
     def __init__(
@@ -3326,7 +3415,7 @@ class IndexIVFProductResidualQuantizerFastScan(IndexIVFFastScan):
         bbs: int = 32,
     ) -> None: ...
 
-class IndexIVFProductLocalSearchQuantizerFastScan(IndexIVFFastScan):
+class IndexIVFProductLocalSearchQuantizerFastScan(IndexIVFAdditiveQuantizerFastScan):
     plsq: ProductLocalSearchQuantizer
 
     def __init__(
@@ -3347,15 +3436,35 @@ class MultiIndexQuantizer(Index):
 
     def __init__(self, d: int, M: int, nbits: int) -> None: ...
 
-class ResidualCoarseQuantizer(Index):
+# Additive coarse quantizers
+class AdditiveCoarseQuantizer(Index):
+    aq: AdditiveQuantizer
+    centroid_norms: Float32Vector
+
+    def __init__(self, d: int = 0, aq: AdditiveQuantizer | None = None, metric: MetricType = METRIC_L2) -> None: ...
+
+class SearchParametersResidualCoarseQuantizer(SearchParameters):
+    beam_factor: float
+
+    def __init__(self) -> None: ...
+
+class ResidualCoarseQuantizer(AdditiveCoarseQuantizer):
     rq: ResidualQuantizer
+    beam_factor: float
 
+    @overload
     def __init__(self, d: int, M: int, nbits: int) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+    def set_beam_factor(self, new_beam_factor: float) -> None: ...
 
-class LocalSearchCoarseQuantizer(Index):
+class LocalSearchCoarseQuantizer(AdditiveCoarseQuantizer):
     lsq: LocalSearchQuantizer
 
+    @overload
     def __init__(self, d: int, M: int, nbits: int) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
 
 # NeuralNet index
 class IndexNeuralNetCodec(Index):

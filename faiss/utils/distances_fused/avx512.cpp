@@ -7,9 +7,9 @@
 
 // -*- c++ -*-
 
-#include <faiss/utils/distances_fused/avx512.h>
+#include <faiss/utils/distances_fused/distances_fused.h>
 
-#ifdef __AVX512F__
+#ifdef COMPILE_SIMD_AVX512
 
 #include <immintrin.h>
 
@@ -283,7 +283,8 @@ void exhaustive_L2sqr_fused_cmax(
 
 } // namespace
 
-bool exhaustive_L2sqr_fused_cmax_AVX512(
+template <>
+bool exhaustive_L2sqr_fused_cmax<SIMDLevel::AVX512>(
         const float* x,
         const float* y,
         size_t d,
@@ -343,4 +344,4 @@ bool exhaustive_L2sqr_fused_cmax_AVX512(
 
 } // namespace faiss
 
-#endif
+#endif // COMPILE_SIMD_AVX512
