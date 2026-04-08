@@ -1754,6 +1754,20 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
+      <memberdef kind="function" id="namespacefaiss_1a2b220193e2b839fcb80ba264f7334131" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::has_omp</definition>
+        <argsstring>()</argsstring>
+        <name>has_omp</name>
+        <qualifiedname>faiss::has_omp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/build.h" line="13" column="6" declfile="faiss/build.h" declline="13" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a46e8be8ec7d466eaa8994a8e20133815" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> *</type>
         <definition>Index * faiss::clone_index</definition>

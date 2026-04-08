@@ -10,6 +10,7 @@
     <innerdir refid="dir_51108e9799b33ddabac525d49cc3884e">faiss/svs</innerdir>
     <innerdir refid="dir_8ad259f5ae9600a74caf331497f5b251">faiss/utils</innerdir>
     <innerfile refid="AutoTune_8h">AutoTune.h</innerfile>
+    <innerfile refid="build_8h">build.h</innerfile>
     <innerfile refid="clone__index_8h">clone_index.h</innerfile>
     <innerfile refid="Clustering_8h">Clustering.h</innerfile>
     <innerfile refid="factory__tools_8h">factory_tools.h</innerfile>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefaiss_1_1cppcontrib_1_1_0d11" kind="namespace" language="C++">
+    <compoundname>faiss::cppcontrib</compoundname>
+    <briefdescription>
+<para><ref refid="structfaiss_1_1cppcontrib_1_1IndexPQDecoder" kindref="compound">IndexPQDecoder</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/cppcontrib/sa_decode/PQ-avx2-inl.h" line="25" column="1"/>
+  </compounddef>
+</doxygen>
