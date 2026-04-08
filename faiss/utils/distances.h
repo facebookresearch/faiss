@@ -600,4 +600,67 @@ int fvec_madd_and_argmin(
         const float* b,
         float* c);
 
+/* Explicit specialization declarations for all SIMD-templated distance
+   functions.  C++ [temp.expl.spec]/7 requires that these appear before any
+   translation unit that might implicitly instantiate them.  GCC/Clang are
+   lenient about this, but MSVC is not — without these declarations the
+   linker emits LNK2001 for the specializations defined in the _avx2
+   translation units. */
+
+// clang-format off
+#define FAISS_DECLARE_DISTANCES_SPECIALIZATIONS(SL)                            \
+    template <> float fvec_L2sqr<SL>(                                          \
+            const float* x, const float* y, size_t d);                         \
+    template <> float fvec_inner_product<SL>(                                  \
+            const float* x, const float* y, size_t d);                         \
+    template <> float fvec_L1<SL>(                                             \
+            const float* x, const float* y, size_t d);                         \
+    template <> float fvec_Linf<SL>(                                           \
+            const float* x, const float* y, size_t d);                         \
+    template <> void fvec_inner_product_batch_4<SL>(                           \
+            const float* x, const float* y0, const float* y1,                  \
+            const float* y2, const float* y3, const size_t d,                  \
+            float& dis0, float& dis1, float& dis2, float& dis3);              \
+    template <> void fvec_L2sqr_batch_4<SL>(                                   \
+            const float* x, const float* y0, const float* y1,                  \
+            const float* y2, const float* y3, const size_t d,                  \
+            float& dis0, float& dis1, float& dis2, float& dis3);              \
+    template <> void fvec_inner_products_ny<SL>(                               \
+            float* ip, const float* x, const float* y,                         \
+            size_t d, size_t ny);                                              \
+    template <> void fvec_L2sqr_ny<SL>(                                        \
+            float* dis, const float* x, const float* y,                        \
+            size_t d, size_t ny);                                              \
+    template <> void fvec_L2sqr_ny_transposed<SL>(                             \
+            float* dis, const float* x, const float* y,                        \
+            const float* y_sqlen, size_t d, size_t d_offset, size_t ny);       \
+    template <> size_t fvec_L2sqr_ny_nearest<SL>(                              \
+            float* distances_tmp_buffer, const float* x,                       \
+            const float* y, size_t d, size_t ny);                              \
+    template <> size_t fvec_L2sqr_ny_nearest_y_transposed<SL>(                 \
+            float* distances_tmp_buffer, const float* x,                       \
+            const float* y, const float* y_sqlen,                              \
+            size_t d, size_t d_offset, size_t ny);                             \
+    template <> float fvec_norm_L2sqr<SL>(const float* x, size_t d);           \
+    template <> void fvec_add<SL>(                                             \
+            size_t d, const float* a, const float* b, float* c);               \
+    template <> void fvec_add<SL>(                                             \
+            size_t d, const float* a, float b, float* c);                      \
+    template <> void fvec_sub<SL>(                                             \
+            size_t d, const float* a, const float* b, float* c);               \
+    template <> void compute_PQ_dis_tables_dsub2<SL>(                          \
+            size_t d, size_t ksub, const float* centroids,                     \
+            size_t nx, const float* x, bool is_inner_product,                  \
+            float* dis_tables);                                                \
+    template <> void fvec_madd<SL>(                                            \
+            size_t n, const float* a, float bf, const float* b, float* c);     \
+    template <> int fvec_madd_and_argmin<SL>(                                  \
+            size_t n, const float* a, float bf, const float* b, float* c);
+
+FAISS_DECLARE_DISTANCES_SPECIALIZATIONS(SIMDLevel::NONE)
+FAISS_DECLARE_DISTANCES_SPECIALIZATIONS(SIMDLevel::AVX2)
+
+#undef FAISS_DECLARE_DISTANCES_SPECIALIZATIONS
+// clang-format on
+
 } // namespace faiss
