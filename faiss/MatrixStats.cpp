@@ -67,7 +67,8 @@ void MatrixStats::do_comment(const char* fmt, ...) {
     buf += size;
 }
 
-MatrixStats::MatrixStats(size_t n, size_t d, const float* x) : n(n), d(d) {
+MatrixStats::MatrixStats(size_t n_in, size_t d_in, const float* x)
+        : n(n_in), d(d_in) {
     std::vector<char> comment_buf(10000);
     buf = comment_buf.data();
     nbuf = comment_buf.size();

@@ -9,18 +9,31 @@
 # Architecture-specific: only include files for the current build architecture
 # =============================================================================
 set(FAISS_SIMD_AVX2_SRC
+  impl/fast_scan/impl-avx2.cpp
+  impl/hnsw/avx2.cpp
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
+  impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/distances_fused/simdlib_based.cpp
+  utils/simd_impl/rabitq_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
+  impl/fast_scan/impl-avx512.cpp
+  impl/hnsw/avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
+  utils/distances_fused/avx512.cpp
+  utils/simd_impl/rabitq_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
+  impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
+  impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/distances_fused/simdlib_based_neon.cpp
+  utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -97,6 +110,7 @@ set(FAISS_SRC
   impl/IDSelector.cpp
   impl/FaissException.cpp
   impl/HNSW.cpp
+  impl/hnsw/MinimaxHeap.cpp
   impl/NSG.cpp
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
@@ -117,9 +131,7 @@ set(FAISS_SRC
   impl/kmeans1d.cpp
   impl/lattice_Zn.cpp
   impl/mapped_io.cpp
-  impl/pq4_fast_scan.cpp
-  impl/pq4_fast_scan_search_1.cpp
-  impl/pq4_fast_scan_search_qbs.cpp
+  impl/fast_scan/fast_scan.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
   impl/NNDescent.cpp
@@ -142,9 +154,7 @@ set(FAISS_SRC
   utils/sorting.cpp
   utils/utils.cpp
   utils/simd_levels.cpp
-  utils/distances_fused/avx512.cpp
   utils/distances_fused/distances_fused.cpp
-  utils/distances_fused/simdlib_based.cpp
   factory_tools.cpp
 )
 
@@ -225,10 +235,11 @@ set(FAISS_HEADERS
   impl/FaissAssert.h
   impl/FaissException.h
   impl/HNSW.h
+  impl/hnsw/MinimaxHeap.h
   impl/LocalSearchQuantizer.h
   impl/ProductAdditiveQuantizer.h
-  impl/LookupTableScaler.h
-  impl/FastScanDistancePostProcessing.h
+  impl/fast_scan/LookupTableScaler.h
+  impl/fast_scan/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
   impl/NNDescent.h
   impl/NSG.h
@@ -262,10 +273,17 @@ set(FAISS_HEADERS
   impl/kmeans1d.h
   impl/lattice_Zn.h
   impl/platform_macros.h
-  impl/pq4_fast_scan.h
+  impl/fast_scan/accumulate_loops.h
+  impl/fast_scan/dispatching.h
+  impl/fast_scan/fast_scan.h
+  impl/fast_scan/decompose_qbs.h
+  impl/fast_scan/kernels_simd256.h
+  impl/fast_scan/kernels_simd512.h
+  impl/fast_scan/rabitq_dispatching.h
+  impl/fast_scan/rabitq_result_handler.h
   impl/residual_quantizer_encode_steps.h
   impl/simd_dispatch.h
-  impl/simd_result_handlers.h
+  impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
   utils/pq_code_distance.h
   impl/pq_code_distance/pq_code_distance-inl.h
@@ -281,7 +299,6 @@ set(FAISS_HEADERS
   utils/WorkerThread.h
   utils/distances.h
   utils/distances_dispatch.h
-  utils/extra_distances-inl.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
@@ -296,21 +313,22 @@ set(FAISS_HEADERS
   utils/rabitq_simd.h
   utils/random.h
   utils/sorting.h
-  utils/simdlib.h
-  utils/simdlib_avx2.h
-  utils/simdlib_avx512.h
-  utils/simdlib_emulated.h
-  utils/simdlib_neon.h
-  utils/simdlib_ppc64.h
+  impl/simdlib/simdlib.h
+  impl/simdlib/simdlib_dispatch.h
+  impl/simdlib/simdlib_avx2.h
+  impl/simdlib/simdlib_avx512.h
+  impl/simdlib/simdlib_emulated.h
+  impl/simdlib/simdlib_neon.h
+  impl/simdlib/simdlib_ppc64.h
   utils/utils.h
   utils/simd_levels.h
-  utils/distances_fused/avx512.h
   utils/distances_fused/distances_fused.h
-  utils/distances_fused/simdlib_based.h
-  utils/approx_topk/approx_topk.h
-  utils/approx_topk/avx2-inl.h
-  utils/approx_topk/generic.h
-  utils/approx_topk/mode.h
+  utils/distances_fused/simdlib_kernel-inl.h
+  impl/approx_topk/approx_topk.h
+  impl/approx_topk/generic.h
+  impl/approx_topk/rq_beam_search_tab.h
+  impl/approx_topk/rq_beam_search_tab-inl.h
+  impl/approx_topk/simdlib256-inl.h
   utils/approx_topk_hamming/approx_topk_hamming.h
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
@@ -321,6 +339,9 @@ set(FAISS_HEADERS
   utils/hamming_distance/avx2-inl.h
   utils/hamming_distance/avx512-inl.h
   utils/simd_impl/distances_autovec-inl.h
+  utils/simd_impl/distances_simdlib256.h
+  utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )
 
@@ -384,14 +405,14 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
 target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
-target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR )
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -459,8 +480,16 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
   endif()
 endif()
 
+# NEON is mandatory on ARM64 — ensure COMPILE_SIMD_ARM_NEON is always defined
+# and NEON source files are always compiled into the main faiss target.
+# (On x86, AVX2/AVX512 are optional and only compiled per opt_level above.)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+  target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
+  target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+endif()
+
 if(FAISS_ENABLE_SVS)
-  find_package(svs_runtime 0.2.0 REQUIRED)
+  find_package(svs_runtime REQUIRED)
 
   target_link_libraries(faiss PUBLIC svs::svs_runtime)
   target_link_libraries(faiss_avx2 PUBLIC svs::svs_runtime)

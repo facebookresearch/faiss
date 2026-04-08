@@ -8,6 +8,12 @@
 #ifndef PQ_INL_H
 #define PQ_INL_H
 
+// GCC does not recognize #pragma unroll (Clang extension)
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
+
 #include <cstddef>
 #include <cstdint>
 
@@ -254,4 +260,9 @@ struct IndexPQDecoder {
 
 } // namespace cppcontrib
 } // namespace faiss
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
 #endif // PQ_INL_H

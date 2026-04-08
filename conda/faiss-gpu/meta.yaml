@@ -6,9 +6,16 @@
 {% set version = environ.get('GIT_DESCRIBE_TAG').lstrip('v') %}
 {% set suffix = "_nightly" if environ.get('PACKAGE_TYPE') == 'nightly' else "" %}
 {% set number = GIT_DESCRIBE_NUMBER %}
+{% set cuda_major = (cudatoolkit | default("12.0")).split('.')[0] | int %}
+{% if cuda_major >= 13 %}
+{% set cuda_constraints=">=13.2,<13.3" %}
+{% set libcublas_constraints=">=13.3,<13.4" %}  # libcublas 13.3 is actually for cuda 13.2
+{% set cudart_constraints=">=13.2,<13.3" %}
+{% else %}
 {% set cuda_constraints=">=12.6,<12.7" %}
 {% set libcublas_constraints=">=12.6,<12.7" %}
 {% set cudart_constraints=">=12.6,<12.7" %}
+{% endif %}
 
 package:
   name: faiss-pkg
@@ -52,14 +59,14 @@ outputs:
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl >=2024.2.2  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
-        - libsvs-runtime =0.2.0  # [x86_64 and linux]
+        - openblas =0.3.32 # [not x86_64]
+        - libsvs-runtime =0.3.0  # [x86_64 and linux]
       run:
         - mkl >=2024.2.2  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
+        - openblas =0.3.32 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libsvs-runtime =0.2.0  # [x86_64 and linux]
+        - libsvs-runtime =0.3.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
@@ -104,13 +111,20 @@ outputs:
       requires:
         - numpy >=2.0,<3.0
         - scipy
+# TODO: remove cuda_major guard when we move to PyPI (pytorch via PyPI works on CUDA 13)
+{% if cuda_major < 13 %}
         - pytorch-gpu >=2.7
+{% endif %}
       commands:
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"
+{% endif %}
         - cp tests/common_faiss_tests.py faiss/gpu/test
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "test_*"
+{% if cuda_major < 13 %}
         - python -X faulthandler -m unittest discover -v -s faiss/gpu/test/ -p "torch_*"
+{% endif %}
         - sh test_cpu_dispatch.sh  # [linux64]
       files:
         - test_cpu_dispatch.sh  # [linux64]

@@ -46,8 +46,8 @@ class TestContext {
 // the iterator that iterates over the codes stored in context object
 class TestInvertedListIterator : public faiss::InvertedListsIterator {
    public:
-    TestInvertedListIterator(size_t list_no, TestContext* context)
-            : list_no{list_no}, context{context} {
+    TestInvertedListIterator(size_t list_no_in, TestContext* context_in)
+            : list_no{list_no_in}, context{context_in} {
         it = context->codes.cbegin();
         seek_next();
     }
@@ -86,8 +86,8 @@ class TestInvertedListIterator : public faiss::InvertedListsIterator {
 
 class TestInvertedLists : public faiss::InvertedLists {
    public:
-    TestInvertedLists(size_t nlist, size_t code_size)
-            : faiss::InvertedLists(nlist, code_size) {
+    TestInvertedLists(size_t nlist_in, size_t code_size_in)
+            : faiss::InvertedLists(nlist_in, code_size_in) {
         use_iterator = true;
     }
 
@@ -251,4 +251,44 @@ TEST(IVF, list_context) {
                 labels.cend())
                 << "should return the query vector";
     }
+}
+
+// Test: search_preassigned with out-of-range keys throws a catchable
+// FaissException instead of calling std::terminate from an uncaught
+// exception inside the OpenMP parallel region.
+TEST(IVF, search_preassigned_out_of_range_key) {
+    int d = 4;
+    int nlist = 2;
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    // Train and add some vectors so the index is usable.
+    std::vector<float> train_data(nlist * d, 0.0f);
+    for (int i = 0; i < nlist * d; i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(nlist, train_data.data());
+    idx.add(nlist, train_data.data());
+
+    // Query vector.
+    std::vector<float> xq(d, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<faiss::idx_t> labels(1);
+
+    // Pass a key >= nlist to search_preassigned.
+    faiss::idx_t bad_key = nlist; // out of range
+    float coarse_dis = 0.0f;
+
+    EXPECT_THROW(
+            idx.search_preassigned(
+                    1,
+                    xq.data(),
+                    1,
+                    &bad_key,
+                    &coarse_dis,
+                    distances.data(),
+                    labels.data(),
+                    false),
+            faiss::FaissException);
 }

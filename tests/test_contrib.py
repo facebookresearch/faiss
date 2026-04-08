@@ -586,6 +586,43 @@ class TestClustering(unittest.TestCase):
         ndiff = (Iref != Inew).sum()
         self.assertLess(ndiff.item(), 57)
 
+    def test_balanced_clustering(self):
+        """Test balanced_assignment_with_penalties from notebook N10159950"""
+        ds = datasets.SyntheticDataset(32, 10000, 20000, 0)
+        nc = 100
+
+        # train centroids
+        km = faiss.Kmeans(ds.d, nc)
+        km.train(ds.get_train())
+        centroids = km.centroids
+
+        # create biased database (shifted by a constant vector)
+        biased_xb = ds.get_database().copy()
+        rs = np.random.RandomState(123)
+        biased_xb += rs.randn(ds.d).astype("float32") * 0.3
+
+        # unconstrained assignment on biased data
+        d2, assign_unc = faiss.knn(biased_xb, centroids, 1)
+        assign_unc = assign_unc.ravel()
+        imf_unc = clustering.imbalance_factor(nc, assign_unc)
+        mse_unc = float(d2.mean())
+
+        # balanced assignment
+        assign_bal, stats = clustering.balanced_assignment_with_penalties(
+            biased_xb, centroids, alpha=0.03, num_iter=20
+        )
+
+        # balanced assignment should reduce imbalance factor
+        self.assertLess(stats["imf"], imf_unc / 1.5)
+
+        # MSE may increase but should not be too much worse (< 2x)
+        self.assertLess(stats["mse"], mse_unc * 1.5)
+
+        # all points should be assigned
+        self.assertEqual(len(assign_bal), len(biased_xb))
+        self.assertTrue(np.all(assign_bal >= 0))
+        self.assertTrue(np.all(assign_bal < nc))
+
 
 class TestBigBatchSearch(unittest.TestCase):
 
