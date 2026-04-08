@@ -64,7 +64,7 @@ void IndexBinaryIVF::add_core(
         const idx_t* xids,
         const idx_t* precomputed_idx) {
     FAISS_THROW_IF_NOT(is_trained);
-    assert(invlists);
+    FAISS_THROW_IF_NOT_MSG(invlists, "invlists not initialized");
     direct_map.check_can_add(xids);
 
     const idx_t* idx;

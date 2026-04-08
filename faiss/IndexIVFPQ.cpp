@@ -9,7 +9,6 @@
 
 #include <faiss/IndexIVFPQ.h>
 
-#include <cassert>
 #include <cinttypes>
 #include <cmath>
 #include <cstdint>
@@ -17,7 +16,6 @@
 
 #include <algorithm>
 
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/utils.h>
 
@@ -812,7 +810,7 @@ struct IVFPQScannerT : QueryTables {
             const IndexIVFPQ& ivfpq_in,
             const IVFSearchParameters* params_in)
             : QueryTables(ivfpq_in, params_in) {
-        assert(METRIC_TYPE == metric_type);
+        FAISS_THROW_IF_NOT(METRIC_TYPE == metric_type);
     }
 
     float dis0;
@@ -1217,7 +1215,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
     }
 
     float distance_to_code(const uint8_t* code) const override {
-        assert(precompute_mode == 2);
+        FAISS_THROW_IF_NOT(precompute_mode == 2);
         float dis = this->dis0 +
                 PQCodeDist::distance_single_code(
                             this->pq.M, this->pq.nbits, this->sim_table, code);
@@ -1236,7 +1234,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
                 handler);
 
         if (this->polysemous_ht > 0) {
-            assert(precompute_mode == 2);
+            FAISS_THROW_IF_NOT(precompute_mode == 2);
             this->scan_list_polysemous(ncode, codes, res);
         } else if (precompute_mode == 2) {
             this->scan_list_with_table(ncode, codes, res);
