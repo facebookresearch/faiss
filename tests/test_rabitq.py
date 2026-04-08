@@ -9,6 +9,8 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
+from common_faiss_tests import for_all_simd_levels
+
 
 def random_rotation(d, seed=123):
     rs = np.random.RandomState(seed)
@@ -177,6 +179,7 @@ class ReferenceIVFRabitQ:
         return D, I
 
 
+@for_all_simd_levels
 class TestRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
         ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 100)
@@ -321,6 +324,7 @@ class TestRaBitQ(unittest.TestCase):
         do_test_serde("RaBitQ")
 
 
+@for_all_simd_levels
 class TestIVFRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
         nlist = 64
@@ -506,6 +510,7 @@ class TestIVFRaBitQ(unittest.TestCase):
         do_test_serde("IVF16,RaBitQ")
 
 
+@for_all_simd_levels
 class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
     def do_test_encode_decode(self, d, metric):
         # rabitq must precisely reconstruct a vector,
@@ -603,6 +608,7 @@ def do_test_serde(description):
     np.testing.assert_equal(Iref, Inew3)
 
 
+@for_all_simd_levels
 class TestMultiBitRaBitQ(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ.
 
@@ -1008,6 +1014,7 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         err_msg=f"nb_bits={nb_bits}")
 
 
+@for_all_simd_levels
 class TestRaBitQStats(unittest.TestCase):
     """Test RaBitQStats tracking for multi-bit two-stage search."""
 
