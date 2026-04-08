@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 import unittest
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 
 class TestPCA(unittest.TestCase):
@@ -297,6 +297,7 @@ class TestMatrixStats(unittest.TestCase):
         self.assertTrue(cc[0] == cc[1])
 
 
+@for_all_simd_levels
 class TestScalarQuantizer(unittest.TestCase):
 
     def test_8bit_equiv(self):
@@ -419,6 +420,7 @@ class TestRandom(unittest.TestCase):
         self.assertLess(ninter, 460)
 
 
+@for_all_simd_levels
 class TestPairwiseDis(unittest.TestCase):
 
     def test_L2(self):
