@@ -1570,6 +1570,62 @@ TEST(ReadIndexDeserialize, IndexIVFNullInvlistsAdd) {
 }
 
 // -----------------------------------------------------------------------
+// IVF quantizer ntotal / nlist deserialization acceptance tests.
+// The quantizer may legitimately have ntotal != nlist (e.g., sharded
+// indexes, custom inverted list management, untrained quantizers).
+// -----------------------------------------------------------------------
+
+// Sharded quantizer: ntotal > nlist (subset of centroids from a larger
+// index). This is produced by shard_ivf_index_centroids().
+TEST(ReadIndexDeserialize, IVFQuantizerSharded) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, 2); // nlist = 2
+    push_val<size_t>(buf, 1); // nprobe
+    // Quantizer with ntotal=5 (more centroids than nlist, as in sharding)
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/5);
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// Trained quantizer: ntotal == nlist (normal trained IVF).
+TEST(ReadIndexDeserialize, IVFQuantizerTrained) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, 2); // nlist = 2
+    push_val<size_t>(buf, 1); // nprobe
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/2);
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// Untrained quantizer: ntotal == 0 (custom inverted list management).
+TEST(ReadIndexDeserialize, IVFQuantizerUntrained) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<size_t>(buf, 10); // nlist = 10
+    push_val<size_t>(buf, 1);  // nprobe
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/0);
+    push_empty_direct_map(buf);
+    push_null_invlists(buf);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -----------------------------------------------------------------------
 // VectorTransform deserialization validation tests
 // -----------------------------------------------------------------------
 
