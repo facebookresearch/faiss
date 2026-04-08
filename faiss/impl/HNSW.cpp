@@ -1000,6 +1000,18 @@ int search_from_candidates_panorama(
     return nres;
 }
 
+template <typename T, typename Container, typename Compare>
+void reservePriorityQueue(
+        std::priority_queue<T, Container, Compare>& q,
+        std::size_t size) {
+    struct Access : std::priority_queue<T, Container, Compare> {
+        using std::priority_queue<T, Container, Compare>::c;
+    };
+    Access access(std::move(q));
+    access.c.reserve(size);
+    q = std::move(access);
+}
+
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         const HNSW& hnsw,
         const Node& node,
@@ -1009,7 +1021,10 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         HNSWStats& stats) {
     int ndis = 0;
     std::priority_queue<Node> top_candidates;
+    reservePriorityQueue(top_candidates, ef);
+
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
+    reservePriorityQueue(candidates, ef);
 
     top_candidates.push(node);
     candidates.push(node);
@@ -1048,11 +1063,11 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (top_candidates.top().first > dis ||
-                top_candidates.size() < static_cast<size_t>(ef)) {
+                top_candidates.size() < ef) {
                 candidates.emplace(dis, idx);
                 top_candidates.emplace(dis, idx);
 
-                if (top_candidates.size() > static_cast<size_t>(ef)) {
+                if (top_candidates.size() > ef) {
                     top_candidates.pop();
                 }
             }
