@@ -486,7 +486,7 @@ void ProductQuantizer::compute_distance_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
     if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, false, dis_tables);
@@ -521,7 +521,7 @@ void ProductQuantizer::compute_inner_prod_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(__AVX2__) || defined(__aarch64__)
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
     if (dsub == 2 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);
