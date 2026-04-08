@@ -9,9 +9,10 @@ import numpy as np
 import unittest
 import faiss
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 
+@for_all_simd_levels
 class TestHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
