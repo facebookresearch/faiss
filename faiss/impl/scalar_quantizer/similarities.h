@@ -59,6 +59,7 @@ struct SimilarityL2<SIMDLevel::NONE> {
 };
 
 template <SIMDLevel SL>
+
 struct SimilarityIP {};
 
 template <>
