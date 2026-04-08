@@ -2258,7 +2258,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->max_candidate_pool_size);
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
-        READ1(svs->storage_kind);
+        {
+            int sk;
+            READ1(sk);
+            FAISS_THROW_IF_NOT_FMT(
+                    sk >= 0 && sk < static_cast<int>(SVS_count),
+                    "invalid SVS storage_kind=%d (must be in [0, %d))",
+                    sk,
+                    static_cast<int>(SVS_count));
+            svs->storage_kind = static_cast<SVSStorageKind>(sk);
+        }
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
             FAISS_THROW_IF_NOT_MSG(
