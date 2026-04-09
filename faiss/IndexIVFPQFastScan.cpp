@@ -117,6 +117,10 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs_in)
     orig_invlists = orig.invlists;
 }
 
+size_t IndexIVFPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/

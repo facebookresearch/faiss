@@ -107,6 +107,10 @@ size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
     return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
 }
 
+size_t IndexIVFRaBitQFastScan::fast_scan_code_size() const {
+    return (d + 7) / 8;
+}
+
 size_t IndexIVFRaBitQFastScan::code_packing_stride() const {
     // Use code_size as stride to skip embedded factor data during packing
     return code_size;
