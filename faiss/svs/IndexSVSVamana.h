@@ -49,6 +49,7 @@ enum SVSStorageKind {
     SVS_LeanVec4x4,
     SVS_LeanVec4x8,
     SVS_LeanVec8x8,
+    SVS_count,
 };
 
 inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
