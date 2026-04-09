@@ -12107,7 +12107,7 @@
     <member refid="namespacefaiss_1a1c1a7ffff3e34768b027b77d0d9f96df" kind="variable"><name>hamming_batch_size</name></member>
     <member refid="namespacefaiss_1a807d8fdc887adb34ff028c3ccaeb1fe1" kind="variable"><name>hamdis_tab_ham_bytes</name></member>
     <member refid="namespacefaiss_1ae2bb09d8026f83d03936dcddee878a04" kind="variable"><name>partition_stats</name></member>
-    <member refid="namespacefaiss_1a96faf9c9761559a611b0b3098750506f" kind="variable"><name>SL</name></member>
+    <member refid="namespacefaiss_1a88687176f5191ba540e254e749b3cfed" kind="variable"><name>SL</name></member>
     <member refid="namespacefaiss_1a83ba55d434462e9120b5ad24bc36f768" kind="variable"><name>THE_SL</name></member>
     <member refid="namespacefaiss_1a19143c25e59cfe3cc3cf12f370b17643" kind="variable"><name>SINGLE_SIMD_LEVEL</name></member>
     <member refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kind="variable"><name>SINGLE_SIMD_LEVEL_256</name></member>
@@ -12455,6 +12455,9 @@
     <member refid="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" kind="function"><name>partition</name></member>
     <member refid="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" kind="function"><name>simd_histogram_8</name></member>
     <member refid="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" kind="function"><name>simd_histogram_16</name></member>
+    <member refid="namespacefaiss_1a2a091c2516e3380f5ad9c57dd1376a07" kind="function"><name>partition_fuzzy_simd</name></member>
+    <member refid="namespacefaiss_1ac4ef79296cd0b922f7eaabc4dd7fc081" kind="function"><name>simd_histogram_8</name></member>
+    <member refid="namespacefaiss_1a9f7722a6e7f33d96931585e70b339dcf" kind="function"><name>simd_histogram_16</name></member>
     <member refid="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" kind="function"><name>float_rand</name></member>
     <member refid="namespacefaiss_1aa149aec8f65085773f664bb7b5884743" kind="function"><name>float_randn</name></member>
     <member refid="namespacefaiss_1aba416d6990d202bfc7eac244a7d874c8" kind="function"><name>int64_rand</name></member>
@@ -12491,6 +12494,12 @@
     <member refid="namespacefaiss_1a6d2ac818c8d058b1cc926a28fbd9e4ba" kind="function"><name>fvec_madd_and_argmin_sse</name></member>
     <member refid="namespacefaiss_1ad1b6ea1858c274ec9aed96539f5c0259" kind="function"><name>masked_read</name></member>
     <member refid="namespacefaiss_1aa0dbe6e1a44f8bf5ee8ecb7ef94161c2" kind="function"><name>exhaustive_L2sqr_blas_cmax</name></member>
+    <member refid="namespacefaiss_1a3a09e6b692b03d53b4fc07d9b6c8c5f2" kind="function"><name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int64_t &gt; &gt;</name></member>
+    <member refid="namespacefaiss_1a365c7b264fd4da7aa79578276f96813d" kind="function"><name>partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int64_t &gt; &gt;</name></member>
+    <member refid="namespacefaiss_1affbb8aa8afdebbd4b862b4bb17bc3abe" kind="function"><name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int &gt; &gt;</name></member>
+    <member refid="namespacefaiss_1a01cfcf4776dc6fd86604fd28bbebc228" kind="function"><name>partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int &gt; &gt;</name></member>
+    <member refid="namespacefaiss_1ae1e48fd083ff81b655dcb416f2b15d2e" kind="function"><name>simd_histogram_8&lt; SL &gt;</name></member>
+    <member refid="namespacefaiss_1a46042faedc4f69e954b48f7970576f43" kind="function"><name>simd_histogram_16&lt; SL &gt;</name></member>
     <member refid="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" kind="function"><name>simd_width</name></member>
     <member refid="namespacefaiss_1a79e514996c26613456730d2427a8a842" kind="function"><name>to_string</name></member>
     <member refid="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" kind="function"><name>to_simd_level</name></member>
@@ -12540,6 +12549,8 @@
   <compound refid="namespacefaiss_1_1_0d192" kind="namespace"><name>faiss::@192</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d212" kind="namespace"><name>faiss::@212</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d216" kind="namespace"><name>faiss::@216</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d57" kind="namespace"><name>faiss::@57</name>
   </compound>
@@ -12826,6 +12837,8 @@
     <member refid="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" kind="function"><name>sq_select_InvertedListScanner&lt; THE_LEVEL_TO_DISPATCH &gt;</name></member>
     <member refid="training_8h_1a7832c78df26bd9df1561e07d4da31891" kind="function"><name>train_Uniform</name></member>
     <member refid="training_8h_1a034e56b144961f4bf96372b957fb0885" kind="function"><name>train_NonUniform</name></member>
+  </compound>
+  <compound refid="namespacefaiss_1_1simd__partitioning" kind="namespace"><name>faiss::simd_partitioning</name>
   </compound>
   <compound refid="namespacefaiss_1_1simd__result__handlers" kind="namespace"><name>faiss::simd_result_handlers</name>
     <member refid="simd__result__handlers_8h_1acb6c5a4f49c7e731d418a15fbe5f9bc9" kind="function"><name>with_SIMDResultHandler</name></member>
@@ -13469,6 +13482,13 @@
   </compound>
   <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
     <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>
+  </compound>
+  <compound refid="partitioning__simdlib256_8h" kind="file"><name>partitioning_simdlib256.h</name>
+    <member refid="partitioning__simdlib256_8h_1a3601954068ff2d3b5d249ab6b5ae8082" kind="define"><name>IFV</name></member>
+    <member refid="partitioning__simdlib256_8h_1a62387f87dae351b0f051f3a632838870" kind="define"><name>DISPATCH</name></member>
+    <member refid="partitioning__simdlib256_8h_1a62387f87dae351b0f051f3a632838870" kind="define"><name>DISPATCH</name></member>
+    <member refid="partitioning__simdlib256_8h_1a14a60133503bc69e06b3d7a00ee8be94" kind="variable"><name>min16</name></member>
+    <member refid="partitioning__simdlib256_8h_1a66e946a64000e761e027ad2bc10f8329" kind="variable"><name>max16</name></member>
   </compound>
   <compound refid="simd__levels_8h" kind="file"><name>simd_levels.h</name>
     <member refid="simd__levels_8h_1a8945b533221b1c3f6d70b4ef8c95d4f2" kind="define"><name>COMPILE_SIMD_NONE</name></member>

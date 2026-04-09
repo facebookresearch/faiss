@@ -279,6 +279,10 @@
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
       </node>
       <node id="34">
         <label>faiss/utils/simd_levels.h</label>

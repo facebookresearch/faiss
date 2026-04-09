@@ -286,6 +286,10 @@
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
       </node>
       <node id="1">
         <label>faiss/utils/simd_impl/IVFFlatScanner-inl.h</label>

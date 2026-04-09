@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="62" column="14" bodyfile="faiss/utils/partitioning.h" bodystart="62" bodyend="-1"/>
+        <location file="faiss/utils/partitioning.h" line="93" column="14" bodyfile="faiss/utils/partitioning.h" bodystart="93" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52" prot="public" static="no" mutable="no">
         <type>uint64_t</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="63" column="14" bodyfile="faiss/utils/partitioning.h" bodystart="63" bodyend="-1"/>
+        <location file="faiss/utils/partitioning.h" line="94" column="14" bodyfile="faiss/utils/partitioning.h" bodystart="94" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -45,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="65" column="5" bodyfile="faiss/utils/partitioning.h" bodystart="65" bodyend="67"/>
+        <location file="faiss/utils/partitioning.h" line="96" column="5" bodyfile="faiss/utils/partitioning.h" bodystart="96" bodyend="98"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1PartitionStats_1a2d09e115d4435fecc6af519e5fc10802" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -59,14 +59,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="68" column="10"/>
+        <location file="faiss/utils/partitioning.h" line="99" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/partitioning.h" line="61" column="1" bodyfile="faiss/utils/partitioning.h" bodystart="61" bodyend="69"/>
+    <location file="faiss/utils/partitioning.h" line="92" column="1" bodyfile="faiss/utils/partitioning.h" bodystart="92" bodyend="100"/>
     <listofallmembers>
       <member refid="structfaiss_1_1PartitionStats_1afd4b2492bce97a2d1b6c65967125ad26" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>bisect_cycles</name></member>
       <member refid="structfaiss_1_1PartitionStats_1aa6a83efd703c803b59684910ba3bac52" prot="public" virt="non-virtual"><scope>faiss::PartitionStats</scope><name>compress_cycles</name></member>

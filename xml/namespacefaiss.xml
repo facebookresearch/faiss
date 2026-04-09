@@ -362,6 +362,7 @@
     <innernamespace refid="namespacefaiss_1_1rabitq__utils">faiss::rabitq_utils</innernamespace>
     <innernamespace refid="namespacefaiss_1_1rq__encode__steps">faiss::rq_encode_steps</innernamespace>
     <innernamespace refid="namespacefaiss_1_1scalar__quantizer">faiss::scalar_quantizer</innernamespace>
+    <innernamespace refid="namespacefaiss_1_1simd__partitioning">faiss::simd_partitioning</innernamespace>
     <innernamespace refid="namespacefaiss_1_1simd__result__handlers">faiss::simd_result_handlers</innernamespace>
     <innernamespace refid="namespacefaiss_1_1svs__io">faiss::svs_io</innernamespace>
     <sectiondef kind="enum">
@@ -1656,11 +1657,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="72" column="33" declfile="faiss/utils/partitioning.h" declline="72" declcolumn="33"/>
+        <location file="faiss/utils/partitioning.h" line="103" column="33" declfile="faiss/utils/partitioning.h" declline="103" declcolumn="33"/>
       </memberdef>
-      <memberdef kind="variable" id="namespacefaiss_1a96faf9c9761559a611b0b3098750506f" prot="public" static="no" constexpr="yes" mutable="no">
+      <memberdef kind="variable" id="namespacefaiss_1a88687176f5191ba540e254e749b3cfed" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr faiss::SIMDLevel</type>
-        <definition>constexpr faiss::SIMDLevel faiss::SL</definition>
+        <definition>constexpr SIMDLevel faiss::SL</definition>
         <argsstring></argsstring>
         <name>SL</name>
         <qualifiedname>faiss::SL</qualifiedname>
@@ -14646,7 +14647,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="23" column="15" declfile="faiss/utils/partitioning.h" declline="23" declcolumn="15"/>
+        <location file="faiss/utils/partitioning.h" line="25" column="15" declfile="faiss/utils/partitioning.h" declline="25" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1afad6c999c4af7456ef9954f2f3021592" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
@@ -14682,7 +14683,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="33" column="22" bodyfile="faiss/utils/partitioning.h" bodystart="33" bodyend="39"/>
+        <location file="faiss/utils/partitioning.h" line="35" column="22" bodyfile="faiss/utils/partitioning.h" bodystart="35" bodyend="41"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a607e40148f9d63cc082cb0ed7cbdc1c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -14717,7 +14718,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="46" column="6" declfile="faiss/utils/partitioning.h" declline="46" declcolumn="6"/>
+        <location file="faiss/utils/partitioning.h" line="48" column="6" declfile="faiss/utils/partitioning.h" declline="48" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aff3bc91a0aef8d8aca171a67611b65a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -14752,7 +14753,139 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/partitioning.h" line="54" column="6" declfile="faiss/utils/partitioning.h" declline="54" declcolumn="6"/>
+        <location file="faiss/utils/partitioning.h" line="56" column="6" declfile="faiss/utils/partitioning.h" declline="56" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a2a091c2516e3380f5ad9c57dd1376a07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+          <param>
+            <type>class C</type>
+          </param>
+        </templateparamlist>
+        <type>C::T</type>
+        <definition>C::T faiss::partition_fuzzy_simd</definition>
+        <argsstring>(uint16_t *vals, typename C::TI *ids, size_t n, size_t q_min, size_t q_max, size_t *q_out)</argsstring>
+        <name>partition_fuzzy_simd</name>
+        <qualifiedname>faiss::partition_fuzzy_simd</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>typename C::TI *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_min</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_max</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>q_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>SIMD-dispatched partition for aligned uint16_t arrays. Specializations live in per-ISA TUs (partitioning_avx2.cpp, etc.). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/partitioning.h" line="66" column="15" declfile="faiss/utils/partitioning.h" declline="66" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ac4ef79296cd0b922f7eaabc4dd7fc081" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::simd_histogram_8</definition>
+        <argsstring>(const uint16_t *data, int n, uint16_t min, int shift, int *hist)</argsstring>
+        <name>simd_histogram_8</name>
+        <qualifiedname>faiss::simd_histogram_8</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>min</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>shift</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>hist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>SIMD-dispatched histogram functions. Specializations live in per-ISA TUs. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/partitioning.h" line="77" column="6" declfile="faiss/utils/partitioning.h" declline="77" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a9f7722a6e7f33d96931585e70b339dcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::simd_histogram_16</definition>
+        <argsstring>(const uint16_t *data, int n, uint16_t min, int shift, int *hist)</argsstring>
+        <name>simd_histogram_16</name>
+        <qualifiedname>faiss::simd_histogram_16</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>min</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>shift</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>hist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/partitioning.h" line="85" column="6" declfile="faiss/utils/partitioning.h" declline="85" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5044a6332355bfa866dda113f81e9602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -15962,6 +16095,238 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" line="18" column="6" declfile="faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h" declline="18" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a3a09e6b692b03d53b4fc07d9b6c8c5f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int64_t &gt; &gt;</definition>
+        <argsstring>(uint16_t *vals, int64_t *ids, size_t n, size_t q_min, size_t q_max, size_t *q_out)</argsstring>
+        <name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int64_t &gt; &gt;</name>
+        <qualifiedname>faiss::partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int64_t &gt; &gt;</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_min</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_max</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>q_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1017" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1017" bodyend="1026"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a365c7b264fd4da7aa79578276f96813d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int64_t &gt; &gt;</definition>
+        <argsstring>(uint16_t *vals, int64_t *ids, size_t n, size_t q_min, size_t q_max, size_t *q_out)</argsstring>
+        <name>partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int64_t &gt; &gt;</name>
+        <qualifiedname>faiss::partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int64_t &gt; &gt;</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int64_t *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_min</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_max</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>q_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1029" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1029" bodyend="1038"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1affbb8aa8afdebbd4b862b4bb17bc3abe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int &gt; &gt;</definition>
+        <argsstring>(uint16_t *vals, int *ids, size_t n, size_t q_min, size_t q_max, size_t *q_out)</argsstring>
+        <name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int &gt; &gt;</name>
+        <qualifiedname>faiss::partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int &gt; &gt;</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_min</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_max</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>q_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1041" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1041" bodyend="1050"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a01cfcf4776dc6fd86604fd28bbebc228" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>uint16_t</type>
+        <definition>uint16_t faiss::partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int &gt; &gt;</definition>
+        <argsstring>(uint16_t *vals, int *ids, size_t n, size_t q_min, size_t q_max, size_t *q_out)</argsstring>
+        <name>partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int &gt; &gt;</name>
+        <qualifiedname>faiss::partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int &gt; &gt;</qualifiedname>
+        <param>
+          <type>uint16_t *</type>
+          <declname>vals</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>ids</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_min</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>q_max</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>q_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1053" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1053" bodyend="1062"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ae1e48fd083ff81b655dcb416f2b15d2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::simd_histogram_8&lt; SL &gt;</definition>
+        <argsstring>(const uint16_t *data, int n, uint16_t min, int shift, int *hist)</argsstring>
+        <name>simd_histogram_8&lt; SL &gt;</name>
+        <qualifiedname>faiss::simd_histogram_8&lt; SL &gt;</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>min</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>shift</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>hist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1065" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1065" bodyend="1072"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a46042faedc4f69e954b48f7970576f43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::simd_histogram_16&lt; SL &gt;</definition>
+        <argsstring>(const uint16_t *data, int n, uint16_t min, int shift, int *hist)</argsstring>
+        <name>simd_histogram_16&lt; SL &gt;</name>
+        <qualifiedname>faiss::simd_histogram_16&lt; SL &gt;</qualifiedname>
+        <param>
+          <type>const uint16_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>min</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>shift</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>hist</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/simd_impl/partitioning_simdlib256.h" line="1075" column="1" bodyfile="faiss/utils/simd_impl/partitioning_simdlib256.h" bodystart="1075" bodyend="1082"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a5fdac0aa4da8e5008a9fb67ea5d091e5" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>

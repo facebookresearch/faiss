@@ -15,6 +15,7 @@
     <includedby refid="similarities_8h" local="no">faiss/impl/scalar_quantizer/similarities.h</includedby>
     <includedby refid="approx__topk__hamming_8h" local="no">faiss/utils/approx_topk_hamming/approx_topk_hamming.h</includedby>
     <includedby refid="distances__simdlib256_8h" local="no">faiss/utils/simd_impl/distances_simdlib256.h</includedby>
+    <includedby refid="partitioning__simdlib256_8h" local="no">faiss/utils/simd_impl/partitioning_simdlib256.h</includedby>
     <incdepgraph>
       <node id="6">
         <label>faiss/impl/platform_macros.h</label>
@@ -218,6 +219,8 @@
         </childnode>
         <childnode refid="20" relation="include">
         </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
       </node>
       <node id="19">
         <label>faiss/utils/approx_topk_hamming/approx_topk_hamming.h</label>
@@ -226,6 +229,10 @@
       <node id="20">
         <label>faiss/utils/simd_impl/distances_simdlib256.h</label>
         <link refid="distances__simdlib256_8h_source"/>
+      </node>
+      <node id="21">
+        <label>faiss/utils/simd_impl/partitioning_simdlib256.h</label>
+        <link refid="partitioning__simdlib256_8h"/>
       </node>
     </invincdepgraph>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>

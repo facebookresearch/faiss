@@ -7,6 +7,7 @@
     <innerfile refid="distances__sse-inl_8h">distances_sse-inl.h</innerfile>
     <innerfile refid="exhaustive__L2sqr__blas__cmax_8h">exhaustive_L2sqr_blas_cmax.h</innerfile>
     <innerfile refid="IVFFlatScanner-inl_8h">IVFFlatScanner-inl.h</innerfile>
+    <innerfile refid="partitioning__simdlib256_8h">partitioning_simdlib256.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
