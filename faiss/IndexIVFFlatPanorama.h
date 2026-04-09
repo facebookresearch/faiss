@@ -37,6 +37,7 @@ namespace faiss {
 /// `ArrayInvertedListsPanorama`, which is a struct member of `IndexIVF`.
 struct IndexIVFFlatPanorama : IndexIVFFlat {
     size_t n_levels;
+    size_t batch_size;
 
     std::vector<MaybeOwnedVector<float>> cum_sums;
 
@@ -46,7 +47,8 @@ struct IndexIVFFlatPanorama : IndexIVFFlat {
             size_t nlist_,
             int n_levels,
             MetricType = METRIC_L2,
-            bool own_invlists = true);
+            bool own_invlists = true,
+            size_t batch_size = Panorama::kDefaultBatchSize);
 
     InvertedListScanner* get_InvertedListScanner(
             bool store_pairs,
