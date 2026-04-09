@@ -13,6 +13,22 @@
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleQueryResultCollectHandler" prot="public">faiss::simd_result_handlers::SingleQueryResultCollectHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1SingleResultHandler" prot="public">faiss::simd_result_handlers::SingleResultHandler</innerclass>
     <innerclass refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler" prot="public">faiss::simd_result_handlers::StoreResultHandler</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="IndexIVFRaBitQFastScan_8h_1ab288c760de024aacc7649f2e951aa9bb" prot="public" static="no">
+        <type><ref refid="structfaiss_1_1simd16uint16__tpl" kindref="compound">simd16uint16_tpl</ref>&lt; <ref refid="namespacefaiss_1aca360ba1cc6270b79a9228cdf3e63df5" kindref="member">SINGLE_SIMD_LEVEL_256</ref> &gt;</type>
+        <definition>using faiss::simd_result_handlers::simd16uint16 = typedef simd16uint16_tpl&lt;SINGLE_SIMD_LEVEL_256&gt;</definition>
+        <argsstring></argsstring>
+        <name>simd16uint16</name>
+        <qualifiedname>faiss::simd_result_handlers::simd16uint16</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="217" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="217" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="func">
       <memberdef kind="function" id="simd__result__handlers_8h_1acb6c5a4f49c7e731d418a15fbe5f9bc9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -39,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="986" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="986" bodyend="1043"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="989" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="989" bodyend="1046"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
