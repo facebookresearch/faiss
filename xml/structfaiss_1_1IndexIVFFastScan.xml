@@ -1822,6 +1822,26 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFastScan.h" line="348" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1af4de48c7756175cc634e6de997e6e6c2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>size_t</type>
+        <definition>virtual size_t faiss::IndexIVFFastScan::fast_scan_code_size</definition>
+        <argsstring>() const =0</argsstring>
+        <name>fast_scan_code_size</name>
+        <qualifiedname>faiss::IndexIVFFastScan::fast_scan_code_size</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1af6e60ad43cdcb4e058e404c441946d99">fast_scan_code_size</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFPQFastScan_1ad9135f721737cf6ee60586bfd6ccac63">fast_scan_code_size</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a31114342427ce415bd6a7dca6bffb102">fast_scan_code_size</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Get the size of the code portion packed by pq4_pack_codes.</para>
+<para>Returns the number of bytes per vector that are interleaved into SIMD blocks by pq4_pack_codes, excluding any embedded metadata (e.g., RaBitQ factors). The meaning of these bytes depends on the quantizer: for PQ/AQ they are 4-bit sub-quantizer nibbles, for RaBitQ they are 1-bit-per-dimension sign bits packed into nibbles.</para>
+<para>Must be implemented by all derived classes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexIVFFastScan.h" line="360" column="20"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::IndexIVFFastScan::get_block_stride</definition>
@@ -1839,7 +1859,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="377" column="12"/>
+        <location file="faiss/IndexIVFFastScan.h" line="389" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1abc04b8b26a8bd6e1e0bc156dcb52f34e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1906,7 +1926,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="389" column="18"/>
+        <location file="faiss/IndexIVFFastScan.h" line="401" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVF_1a47a3b7665e9d2be41c6d3b2e9144b73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3664,7 +3684,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="367" column="20"/>
+        <location file="faiss/IndexIVFFastScan.h" line="379" column="20"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
@@ -3842,7 +3862,7 @@
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexIVFFastScan.h" line="42" column="1" bodyfile="faiss/IndexIVFFastScan.h" bodystart="42" bodyend="394"/>
+    <location file="faiss/IndexIVFFastScan.h" line="42" column="1" bodyfile="faiss/IndexIVFFastScan.h" bodystart="42" bodyend="406"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexIVF_1a821002a9d3a1a74dc8d6f6072eca4075" prot="public" virt="virtual"><scope>faiss::IndexIVFFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a25fc31d9aa3fd064011b74250ac0aaaf" prot="public" virt="virtual"><scope>faiss::IndexIVFFastScan</scope><name>add_core</name></member>
@@ -3873,6 +3893,7 @@
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan</scope><name>encode_listno</name></member>
       <member refid="structfaiss_1_1IndexIVF_1aee623ce0ac64adf360c9447197747e55" prot="public" virt="pure-virtual"><scope>faiss::IndexIVFFastScan</scope><name>encode_vectors</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1af4de48c7756175cc634e6de997e6e6c2" prot="public" virt="pure-virtual"><scope>faiss::IndexIVFFastScan</scope><name>fast_scan_code_size</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a25b808d7ac2bc8a5aac5cfdffe24226f" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan</scope><name>fine_quantizer</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1ac2cb20a1886204e87453b2816dc99d07" prot="public" virt="non-virtual"><scope>faiss::IndexIVFFastScan</scope><name>get_block_stride</name></member>
       <member refid="structfaiss_1_1IndexIVFFastScan_1a4e603b2bfcb0831c0f065b3e22f8a23a" prot="public" virt="virtual"><scope>faiss::IndexIVFFastScan</scope><name>get_CodePacker</name></member>

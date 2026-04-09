@@ -1461,7 +1461,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="419" column="35" declfile="faiss/IndexIVFFastScan.h" declline="419" declcolumn="35"/>
+        <location file="faiss/IndexIVFFastScan.h" line="431" column="35" declfile="faiss/IndexIVFFastScan.h" declline="431" declcolumn="35"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a4597bfef2dd25b76afe4a11f63aaf168" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API size_t</type>
