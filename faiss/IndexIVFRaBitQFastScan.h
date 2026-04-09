@@ -213,6 +213,9 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
     }
 }
 
+// Explicit alias — must match SIMDResultHandler::handle() signature.
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+
 template <class C, SIMDLevel SL>
 void IVFRaBitQHeapHandler<C, SL>::handle(
         size_t q,

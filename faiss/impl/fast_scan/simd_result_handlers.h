@@ -83,6 +83,9 @@ inline void for_each_block(
 
 } // namespace
 
+// Explicit SIMD-level alias for the virtual interface below.
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+
 struct SIMDResultHandler {
     // used to dispatch templates
     bool is_CMax = false;

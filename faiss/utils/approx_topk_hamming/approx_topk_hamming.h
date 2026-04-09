@@ -16,6 +16,10 @@
 
 namespace faiss {
 
+// Explicit SIMD-level aliases for this file (no global bare aliases).
+using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+
 // HeapWithBucketsForHamming32 uses simd8uint32 under the
 // hood.
 

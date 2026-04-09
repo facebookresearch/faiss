@@ -15,6 +15,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
   utils/simd_impl/rabitq_avx2.cpp
 )
@@ -32,6 +33,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
 )
