@@ -38,23 +38,7 @@
 
 #endif
 
-// Convenience aliases: bare names resolve to the current TU's SIMD level.
-// Generic code uses SINGLE_SIMD_LEVEL (= NONE in DD, compiled-in in static).
-// Per-SIMD TUs should define their own aliases with the concrete level.
-
-namespace faiss {
-
-// 256-bit
-using simd256bit = simd256bit_tpl<SINGLE_SIMD_LEVEL_256>;
-using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
-using simd32uint8 = simd32uint8_tpl<SINGLE_SIMD_LEVEL_256>;
-using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
-using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
-
-// 512-bit (AVX512_SPR maps to AVX512 — same 512-bit integer ops)
-using simd512bit = simd512bit_tpl<SINGLE_SIMD_LEVEL_512>;
-using simd32uint16 = simd32uint16_tpl<SINGLE_SIMD_LEVEL_512>;
-using simd64uint8 = simd64uint8_tpl<SINGLE_SIMD_LEVEL_512>;
-using simd16float32 = simd16float32_tpl<SINGLE_SIMD_LEVEL_512>;
-
-} // namespace faiss
+// No global bare-name aliases (simd16uint16, simd32uint8, etc.) — each file
+// that needs them must declare its own `using` with an explicit SIMD level.
+// This prevents per-ISA TUs from accidentally picking up SINGLE_SIMD_LEVEL
+// (= NONE in DD mode) when they should use THE_SIMD_LEVEL.

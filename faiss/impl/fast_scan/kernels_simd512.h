@@ -14,6 +14,10 @@
 
 namespace faiss {
 
+// Explicit SIMD-level aliases for this file (no global bare aliases).
+using simd32uint16 = simd32uint16_tpl<SINGLE_SIMD_LEVEL_512>;
+using simd64uint8 = simd64uint8_tpl<SINGLE_SIMD_LEVEL_512>;
+
 // NQ=1 specialization: processes 512-bit chunks aggressively.
 // a special version for NQ=1.
 // Despite the function being large in the text form, it compiles to a very
