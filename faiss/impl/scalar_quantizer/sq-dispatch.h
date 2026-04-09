@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -155,6 +157,15 @@ SQDistanceComputer* select_distance_computer_body(
             return new DCTemplate<QuantizerFP16<SL2>, Sim, SL2>(d, trained);
 
         case ScalarQuantizer::QT_bf16:
+#if defined(__AVX512BF16__)
+            if constexpr (
+                    SL2 == SIMDLevel::AVX512 &&
+                    std::is_same_v<Sim, SimilarityIP<SIMDLevel::AVX512>>) {
+                if (d % 32 == 0) {
+                    return new DCBF16IPDpbf16<SL2>(d, trained);
+                }
+            }
+#endif
             return new DCTemplate<QuantizerBF16<SL2>, Sim, SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit_direct:
@@ -286,6 +297,18 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                 return scan.template
                 operator()<DCTemplate<QuantizerFP16<SL2>, Similarity, SL2>>();
             case ScalarQuantizer::QT_bf16:
+#if defined(__AVX512BF16__)
+                if constexpr (
+                        SL2 == SIMDLevel::AVX512 &&
+                        std::is_same_v<
+                                Similarity,
+                                SimilarityIP<SIMDLevel::AVX512>>) {
+                    if (d % 32 == 0) {
+                        return scan.template
+                        operator()<DCBF16IPDpbf16<SL2>>();
+                    }
+                }
+#endif
                 return scan.template
                 operator()<DCTemplate<QuantizerBF16<SL2>, Similarity, SL2>>();
             case ScalarQuantizer::QT_8bit_direct:

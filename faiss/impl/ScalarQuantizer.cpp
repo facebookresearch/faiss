@@ -10,6 +10,8 @@
 #include <cstring>
 #include <memory>
 
+#include <type_traits>
+
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/simd_levels.h>
 
