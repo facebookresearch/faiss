@@ -1007,7 +1007,7 @@ void reservePriorityQueue(
     struct Access : std::priority_queue<T, Container, Compare> {
         using std::priority_queue<T, Container, Compare>::c;
     };
-    Access access(std::move(q));
+    Access access{std::move(q)};
     access.c.reserve(size);
     q = std::move(access);
 }
