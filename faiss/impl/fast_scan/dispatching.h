@@ -21,9 +21,8 @@
  *   #include <faiss/impl/fast_scan/dispatching.h>
  *
  * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path
- * and QBS 256-bit path). The QBS helpers use pq4_kernel_qbs_256 only
- * because decompose_qbs.h pulls in 512-bit types that fail with
- * SINGLE_SIMD_LEVEL=NONE in DD mode.
+ * and QBS 256-bit path) and accumulate_loops_512.h (QBS 512-bit path,
+ * AVX512 TU only).
  */
 
 #ifndef THE_LEVEL_TO_DISPATCH
@@ -34,6 +33,10 @@
 
 #include <faiss/impl/fast_scan/accumulate_loops.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+
+#ifdef __AVX512F__
+#include <faiss/impl/fast_scan/accumulate_loops_512.h>
+#endif
 
 namespace faiss {
 
@@ -101,6 +104,18 @@ struct ScannerMixIn : FastScanCodeScanner {
             const uint8_t* LUT,
             int pq2x4_scale,
             size_t block_stride) override {
+#ifdef __AVX512F__
+        // Use 512-bit QBS kernels with properly-leveled scalers.
+        if (pq2x4_scale) {
+            NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+            pq4_accumulate_loop_qbs_fixed_scaler_512(
+                    qbs, nb, nsq, codes, LUT, handler_, scaler, block_stride);
+        } else {
+            DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+            pq4_accumulate_loop_qbs_fixed_scaler_512(
+                    qbs, nb, nsq, codes, LUT, handler_, dummy, block_stride);
+        }
+#else
         if (pq2x4_scale) {
             NormTableScaler<> scaler(pq2x4_scale);
             pq4_accumulate_loop_qbs_fixed_scaler_256(
@@ -110,6 +125,7 @@ struct ScannerMixIn : FastScanCodeScanner {
             pq4_accumulate_loop_qbs_fixed_scaler_256(
                     qbs, nb, nsq, codes, LUT, handler_, dummy, block_stride);
         }
+#endif
     }
 };
 

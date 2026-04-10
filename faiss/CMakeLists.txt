@@ -277,6 +277,7 @@ set(FAISS_HEADERS
   impl/lattice_Zn.h
   impl/platform_macros.h
   impl/fast_scan/accumulate_loops.h
+  impl/fast_scan/accumulate_loops_512.h
   impl/fast_scan/dispatching.h
   impl/fast_scan/fast_scan.h
   impl/fast_scan/decompose_qbs.h
