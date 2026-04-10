@@ -30,6 +30,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/simd_levels.h>
 
 // Low-level Hamming distance computations and hamdis_t.
 #include <faiss/utils/hamming_distance/hamdis-inl.h>
@@ -283,6 +284,90 @@ void unpack_bitstrings(
         const uint8_t* packed,
         size_t code_size,
         int32_t* unpacked);
+
+/** SIMD-dispatched Hamming function implementations.
+ *  Specializations live in per-ISA TUs (hamming_avx2.cpp, etc.). */
+
+template <SIMDLevel SL>
+void hammings_knn_hc_dispatch(
+        int_maxheap_array_t* ha,
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t nb,
+        size_t ncodes,
+        int ordered,
+        ApproxTopK_mode_t approx_topk_mode,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hammings_knn_mc_dispatch(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t k,
+        size_t ncodes,
+        int32_t* distances,
+        int64_t* labels,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hamming_range_search_dispatch(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        int radius,
+        size_t code_size,
+        RangeSearchResult* result,
+        const IDSelector* sel);
+
+template <SIMDLevel SL>
+void hammings_dispatch(
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t na,
+        size_t nb,
+        size_t ncodes,
+        hamdis_t* dis);
+
+template <SIMDLevel SL>
+void generalized_hammings_knn_hc_dispatch(
+        int_maxheap_array_t* ha,
+        const uint8_t* a,
+        const uint8_t* b,
+        size_t nb,
+        size_t code_size,
+        int ordered);
+
+template <SIMDLevel SL>
+void hamming_count_thres_dispatch(
+        const uint8_t* bs1,
+        const uint8_t* bs2,
+        size_t n1,
+        size_t n2,
+        hamdis_t ht,
+        size_t ncodes,
+        size_t* nptr);
+
+template <SIMDLevel SL>
+void crosshamming_count_thres_dispatch(
+        const uint8_t* dbs,
+        size_t n,
+        hamdis_t ht,
+        size_t ncodes,
+        size_t* nptr);
+
+template <SIMDLevel SL>
+size_t match_hamming_thres_dispatch(
+        const uint8_t* bs1,
+        const uint8_t* bs2,
+        size_t n1,
+        size_t n2,
+        hamdis_t ht,
+        size_t ncodes,
+        int64_t* idx,
+        hamdis_t* dis);
 
 } // namespace faiss
 
