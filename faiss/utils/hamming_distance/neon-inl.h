@@ -8,8 +8,11 @@
 #ifndef HAMMING_NEON_INL_H
 #define HAMMING_NEON_INL_H
 
-// a specialized version of hamming is needed here, because both
+// A specialized version of hamming is needed here, because both
 // gcc, clang and msvc seem to generate suboptimal code sometimes.
+//
+// Universal code (HammingComputer4, HammingComputer8, generalized_hamming_64,
+// byte-level hamming template, hamming_popcount_tail) comes from common.h.
 
 #ifdef __aarch64__
 
@@ -24,18 +27,6 @@
 #include <faiss/utils/hamming_distance/common.h>
 
 namespace faiss {
-
-/* Elementary Hamming distance computation: unoptimized  */
-template <size_t nbits, typename T>
-inline T hamming(const uint8_t* bs1, const uint8_t* bs2) {
-    const size_t nbytes = nbits / 8;
-    size_t i;
-    T h = 0;
-    for (i = 0; i < nbytes; i++) {
-        h += (T)hamdis_tab_ham_bytes[bs1[i] ^ bs2[i]];
-    }
-    return h;
-}
 
 /* Hamming distances for multiples of 64 bits */
 template <size_t nbits>
@@ -125,58 +116,9 @@ inline hamdis_t hamming(const uint64_t* pa, const uint64_t* pb, size_t nwords) {
 }
 
 /******************************************************************
- * The HammingComputer series of classes compares a single code of
- * size 4 to 32 to incoming codes. They are intended for use as a
- * template class where it would be inefficient to switch on the code
- * size in the inner loop. Hopefully the compiler will inline the
- * hamming() functions and put the a0, a1, ... in registers.
+ * NEON-optimized HammingComputer classes for sizes 16-64.
+ * Sizes 4 and 8 use the scalar versions from common.h.
  ******************************************************************/
-
-struct HammingComputer4 {
-    uint32_t a0;
-
-    HammingComputer4() {}
-
-    HammingComputer4(const uint8_t* a, int code_size) {
-        set(a, code_size);
-    }
-
-    void set(const uint8_t* a, int code_size) {
-        assert(code_size == 4);
-        a0 = *(uint32_t*)a;
-    }
-
-    inline int hamming(const uint8_t* b) const {
-        return popcount64(*(uint32_t*)b ^ a0);
-    }
-
-    inline static constexpr int get_code_size() {
-        return 4;
-    }
-};
-
-struct HammingComputer8 {
-    uint64_t a0;
-
-    HammingComputer8() {}
-
-    HammingComputer8(const uint8_t* a, int code_size) {
-        set(a, code_size);
-    }
-
-    void set(const uint8_t* a, int code_size) {
-        assert(code_size == 8);
-        a0 = *(uint64_t*)a;
-    }
-
-    inline int hamming(const uint8_t* b) const {
-        return popcount64(*(uint64_t*)b ^ a0);
-    }
-
-    inline static constexpr int get_code_size() {
-        return 8;
-    }
-};
 
 struct HammingComputer16 {
     uint8x16_t a0;
@@ -187,7 +129,7 @@ struct HammingComputer16 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 16);
         a0 = vld1q_u8(a8);
     }
@@ -218,7 +160,7 @@ struct HammingComputer20 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 20);
 
         a0 = vld1q_u8(a8);
@@ -253,7 +195,7 @@ struct HammingComputer32 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 32);
         a0 = vld1q_u8(a8);
         a1 = vld1q_u8(a8 + 16);
@@ -286,7 +228,7 @@ struct HammingComputer64 {
         set(a8, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
+    void set(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 64);
         hc0.set(a8, 32);
         hc1.set(a8 + 32, 32);
@@ -308,12 +250,12 @@ struct HammingComputerDefault {
 
     HammingComputerDefault() {}
 
-    HammingComputerDefault(const uint8_t* a8, int code_size) {
-        set(a8, code_size);
+    HammingComputerDefault(const uint8_t* a8_in, int code_size) {
+        set(a8_in, code_size);
     }
 
-    void set(const uint8_t* a8, int code_size) {
-        this->a8 = a8;
+    void set(const uint8_t* a8_in, int code_size) {
+        this->a8 = a8_in;
         quotient8 = code_size / 8;
         remainder8 = code_size % 8;
     }
@@ -323,80 +265,15 @@ struct HammingComputerDefault {
 
         const uint64_t* a64 = reinterpret_cast<const uint64_t*>(a8);
         const uint64_t* b64 = reinterpret_cast<const uint64_t*>(b8);
-        int i = 0, len = quotient8;
+        int i = 0;
 
         int len256 = (quotient8 / 4) * 4;
         for (; i < len256; i += 4) {
             accu += ::faiss::hamming<256>(a64 + i, b64 + i);
-            len -= 4;
         }
 
-        switch (len & 7) {
-            default:
-                while (len > 7) {
-                    len -= 8;
-                    accu += popcount64(a64[i] ^ b64[i]);
-                    i++;
-                    [[fallthrough]];
-                    case 7:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 6:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 5:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 4:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 3:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 2:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                        [[fallthrough]];
-                    case 1:
-                        accu += popcount64(a64[i] ^ b64[i]);
-                        i++;
-                }
-        }
-        if (remainder8) {
-            const uint8_t* a = a8 + 8 * quotient8;
-            const uint8_t* b = b8 + 8 * quotient8;
-            switch (remainder8) {
-                case 7:
-                    accu += hamdis_tab_ham_bytes[a[6] ^ b[6]];
-                    [[fallthrough]];
-                case 6:
-                    accu += hamdis_tab_ham_bytes[a[5] ^ b[5]];
-                    [[fallthrough]];
-                case 5:
-                    accu += hamdis_tab_ham_bytes[a[4] ^ b[4]];
-                    [[fallthrough]];
-                case 4:
-                    accu += hamdis_tab_ham_bytes[a[3] ^ b[3]];
-                    [[fallthrough]];
-                case 3:
-                    accu += hamdis_tab_ham_bytes[a[2] ^ b[2]];
-                    [[fallthrough]];
-                case 2:
-                    accu += hamdis_tab_ham_bytes[a[1] ^ b[1]];
-                    [[fallthrough]];
-                case 1:
-                    accu += hamdis_tab_ham_bytes[a[0] ^ b[0]];
-                    [[fallthrough]];
-                default:
-                    break;
-            }
-        }
-
+        accu += hamming_popcount_tail(
+                a64, b64, i, quotient8, a8, b8, remainder8);
         return accu;
     }
 
@@ -406,22 +283,13 @@ struct HammingComputerDefault {
 };
 
 /***************************************************************************
- * generalized Hamming = number of bytes that are different between
- * two codes.
+ * NEON-optimized generalized Hamming computers.
  ***************************************************************************/
-
-inline int generalized_hamming_64(uint64_t a) {
-    a |= a >> 1;
-    a |= a >> 2;
-    a |= a >> 4;
-    a &= 0x0101010101010101UL;
-    return popcount64(a);
-}
 
 struct GenHammingComputer8 {
     uint8x8_t a0;
 
-    GenHammingComputer8(const uint8_t* a8, int code_size) {
+    GenHammingComputer8(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 8);
         a0 = vld1_u8(a8);
     }
@@ -441,7 +309,7 @@ struct GenHammingComputer8 {
 struct GenHammingComputer16 {
     uint8x16_t a0;
 
-    GenHammingComputer16(const uint8_t* a8, int code_size) {
+    GenHammingComputer16(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size) {
         assert(code_size == 16);
         a0 = vld1q_u8(a8);
     }
@@ -461,7 +329,7 @@ struct GenHammingComputer16 {
 struct GenHammingComputer32 {
     GenHammingComputer16 a0, a1;
 
-    GenHammingComputer32(const uint8_t* a8, int code_size)
+    GenHammingComputer32(const uint8_t* a8, FAISS_MAYBE_UNUSED int code_size)
             : a0(a8, 16), a1(a8 + 16, 16) {
         assert(code_size == 32);
     }
