@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <algorithm>
 #include <cstddef>
+#include <limits>
 #include <map>
 #include <random>
 #include <set>
@@ -16,7 +17,9 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 
 namespace {
 
@@ -251,4 +254,117 @@ TEST(IVF, list_context) {
                 labels.cend())
                 << "should return the query vector";
     }
+}
+
+// Test: search_preassigned with out-of-range keys throws a catchable
+// FaissException instead of calling std::terminate from an uncaught
+// exception inside the OpenMP parallel region.
+TEST(IVF, search_preassigned_out_of_range_key) {
+    int d = 4;
+    int nlist = 2;
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    // Train and add some vectors so the index is usable.
+    std::vector<float> train_data(nlist * d, 0.0f);
+    for (int i = 0; i < nlist * d; i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(nlist, train_data.data());
+    idx.add(nlist, train_data.data());
+
+    // Query vector.
+    std::vector<float> xq(d, 1.0f);
+    std::vector<float> distances(1);
+    std::vector<faiss::idx_t> labels(1);
+
+    // Pass a key >= nlist to search_preassigned.
+    faiss::idx_t bad_key = nlist; // out of range
+    float coarse_dis = 0.0f;
+
+    EXPECT_THROW(
+            idx.search_preassigned(
+                    1,
+                    xq.data(),
+                    1,
+                    &bad_key,
+                    &coarse_dis,
+                    distances.data(),
+                    labels.data(),
+                    false),
+            faiss::FaissException);
+}
+
+// Test: range_search_preassigned with out-of-range keys throws a catchable
+// FaissException instead of calling std::terminate from an uncaught
+// exception inside the OpenMP parallel region.
+TEST(IVF, range_search_preassigned_out_of_range_key) {
+    int d = 4;
+    int nlist = 2;
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    std::vector<float> train_data(nlist * d, 0.0f);
+    for (int i = 0; i < nlist * d; i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(nlist, train_data.data());
+    idx.add(nlist, train_data.data());
+
+    std::vector<float> xq(d, 1.0f);
+    faiss::RangeSearchResult result(1);
+
+    faiss::idx_t bad_key = nlist; // out of range
+    float coarse_dis = 0.0f;
+
+    EXPECT_THROW(
+            idx.range_search_preassigned(
+                    1,
+                    xq.data(),
+                    std::numeric_limits<float>::max(),
+                    &bad_key,
+                    &coarse_dis,
+                    &result,
+                    false),
+            faiss::FaissException);
+}
+
+// Minimal ResultHandler that just collects results presented to it.
+struct CollectResultHandler : faiss::ResultHandler {
+    bool add_result(float, faiss::idx_t) override {
+        return false;
+    }
+};
+
+// Test: search1 with a quantizer that returns out-of-range keys throws
+// FaissException.
+TEST(IVF, search1_out_of_range_key) {
+    int d = 4;
+    int nlist = 2;
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat idx(&quantizer, d, nlist);
+    idx.own_fields = false;
+
+    // Train and add vectors so the index is usable.
+    std::vector<float> train_data(nlist * d, 0.0f);
+    for (int i = 0; i < nlist * d; i++) {
+        train_data[i] = static_cast<float>(i);
+    }
+    idx.train(nlist, train_data.data());
+    idx.add(nlist, train_data.data());
+
+    // Corrupt the quantizer by adding an extra centroid far away, so it
+    // can return key == nlist (out of range) for a query near that point.
+    std::vector<float> extra_centroid(d, 1e6f);
+    quantizer.add(1, extra_centroid.data());
+    // Now quantizer has nlist+1 centroids, but idx.nlist is still nlist.
+
+    // Query near the extra centroid so quantizer returns the bad key.
+    std::vector<float> xq(d, 1e6f);
+    CollectResultHandler handler;
+    handler.threshold = std::numeric_limits<float>::max();
+
+    EXPECT_THROW(idx.search1(xq.data(), handler), faiss::FaissException);
 }

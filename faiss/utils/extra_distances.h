@@ -13,9 +13,10 @@
 #include <cstdint>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -124,39 +125,6 @@ struct VectorDistance {
 
     float operator()(const float* x, const float* y) const;
 };
-
-/***************************************************************************
- * Dispatching function that takes a lambda directly.
- * The lambda should be templated on VectorDistance, eg.:
- *
- *   auto result = with_VectorDistance(
- *       metric, metric_arg, [&]<class VD>(VD vd) {
- *           return vd(x, y);
- *       });
- **************************************************************************/
-
-template <typename LambdaType>
-auto with_VectorDistance(
-        size_t d,
-        MetricType metric,
-        float metric_arg,
-        LambdaType&& action) {
-    auto dispatch_metric = [&]<MetricType mt>() {
-        auto call = [&]<SIMDLevel level>() {
-            VectorDistance<mt, level> vd = {d, metric_arg};
-            return action(vd);
-        };
-
-        constexpr bool has_simd = mt == METRIC_INNER_PRODUCT ||
-                mt == METRIC_L2 || mt == METRIC_L1 || mt == METRIC_Linf;
-        if constexpr (!has_simd) {
-            return call.template operator()<SIMDLevel::NONE>();
-        } else {
-            DISPATCH_SIMDLevel(call.template operator());
-        }
-    };
-    return with_metric_type(metric, dispatch_metric);
-}
 
 #endif // SWIG
 

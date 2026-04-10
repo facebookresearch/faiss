@@ -70,6 +70,9 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             const IndexIVFAdditiveQuantizer& orig,
             int bbs = 32);
 
+    /// Packed code size: M2 / 2 bytes (4-bit AQ sub-quantizer nibbles)
+    size_t fast_scan_code_size() const override;
+
     void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
     idx_t train_encoder_num_vectors() const override;

@@ -49,7 +49,11 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
         // also applies bias if exists
         xt = rrot.apply(n, x);
     } else if (d != nbits) {
-        assert(nbits < d);
+        FAISS_THROW_IF_NOT_FMT(
+                nbits < d,
+                "nbits (%d) must be less than d (%d)",
+                nbits,
+                (int)d);
         xt = new float[nbits * n];
         float* xp = xt;
         for (idx_t i = 0; i < n; i++) {

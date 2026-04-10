@@ -11,6 +11,10 @@
 
 namespace faiss {
 
+// Explicit SIMD-level aliases for this file (no global bare aliases).
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+using simd32uint8 = simd32uint8_tpl<SINGLE_SIMD_LEVEL_256>;
+
 /*
  * Multi-BB variant: accumulates NQ queries x BB*32 database elements.
  * Used by the search_1 path (bbs > 32).

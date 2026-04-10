@@ -31,25 +31,46 @@ Nhood::Nhood(int /* l */, int s, std::mt19937& rng, int N) {
 
 /// Copy operator
 Nhood& Nhood::operator=(const Nhood& other) {
-    M = other.M;
-    std::copy(
-            other.nn_new.begin(),
-            other.nn_new.end(),
-            std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
+    if (this != &other) {
+        M = other.M;
+        nn_new = other.nn_new;
+        nn_old = other.nn_old;
+        rnn_new = other.rnn_new;
+        rnn_old = other.rnn_old;
+        pool = other.pool;
+    }
     return *this;
 }
 
 /// Copy constructor
-Nhood::Nhood(const Nhood& other) {
-    M = other.M;
-    std::copy(
-            other.nn_new.begin(),
-            other.nn_new.end(),
-            std::back_inserter(nn_new));
-    nn_new.reserve(other.nn_new.capacity());
-    pool.reserve(other.pool.capacity());
+Nhood::Nhood(const Nhood& other)
+        : pool(other.pool),
+          M(other.M),
+          nn_old(other.nn_old),
+          nn_new(other.nn_new),
+          rnn_old(other.rnn_old),
+          rnn_new(other.rnn_new) {}
+
+/// Move constructor
+Nhood::Nhood(Nhood&& other) noexcept
+        : pool(std::move(other.pool)),
+          M(other.M),
+          nn_old(std::move(other.nn_old)),
+          nn_new(std::move(other.nn_new)),
+          rnn_old(std::move(other.rnn_old)),
+          rnn_new(std::move(other.rnn_new)) {}
+
+/// Move assignment operator
+Nhood& Nhood::operator=(Nhood&& other) noexcept {
+    if (this != &other) {
+        M = other.M;
+        nn_new = std::move(other.nn_new);
+        nn_old = std::move(other.nn_old);
+        rnn_new = std::move(other.rnn_new);
+        rnn_old = std::move(other.rnn_old);
+        pool = std::move(other.pool);
+    }
+    return *this;
 }
 
 /// Insert a point into the candidate pool
@@ -90,6 +111,22 @@ void Nhood::join(C callback) const {
 }
 
 void gen_random(std::mt19937& rng, int* addr, const int size, const int N) {
+    FAISS_THROW_IF_NOT_FMT(
+            size > 0 && size <= N,
+            "gen_random: size (%d) must be > 0 and <= N (%d)",
+            size,
+            N);
+    if (size == N) {
+        // Special case: return all indices in random order
+        for (int i = 0; i < size; ++i) {
+            addr[i] = i;
+        }
+        for (int i = size - 1; i > 0; --i) {
+            int j = rng() % (i + 1);
+            std::swap(addr[i], addr[j]);
+        }
+        return;
+    }
     for (int i = 0; i < size; ++i) {
         addr[i] = rng() % (N - size);
     }
@@ -294,7 +331,7 @@ void NNDescent::nndescent(DistanceComputer& qdis, bool verbose) {
     int num_eval_points = std::min(NUM_EVAL_POINTS, ntotal);
     std::vector<int> eval_points(num_eval_points);
     std::vector<std::vector<int>> acc_eval_set(num_eval_points);
-    std::mt19937 rng(random_seed * 6577 + omp_get_thread_num());
+    std::mt19937 rng(random_seed * 6577);
     gen_random(rng, eval_points.data(), eval_points.size(), ntotal);
     generate_eval_set(qdis, eval_points, acc_eval_set, ntotal);
     for (int it = 0; it < iter; it++) {

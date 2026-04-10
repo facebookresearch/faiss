@@ -129,6 +129,10 @@ IndexIVFAdditiveQuantizerFastScan::IndexIVFAdditiveQuantizerFastScan() {
 IndexIVFAdditiveQuantizerFastScan::~IndexIVFAdditiveQuantizerFastScan() =
         default;
 
+size_t IndexIVFAdditiveQuantizerFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/

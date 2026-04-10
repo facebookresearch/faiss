@@ -26,7 +26,7 @@
 
 // this is needed for prefetching
 
-#ifdef __AVX2__
+#ifdef COMPILE_SIMD_AVX2
 #include <xmmintrin.h>
 #endif
 
@@ -620,7 +620,7 @@ void LocalSearchQuantizer::icm_encode_step(
                         continue;
                     }
 
-#ifdef __AVX2__
+#ifdef COMPILE_SIMD_AVX2
                     // TODO: add platform-independent compiler-independent
                     // prefetch utilities.
                     if (other_m + 1 < M) {

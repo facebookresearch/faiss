@@ -22,7 +22,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 
-int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
+int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
     // returns min. This is an O(n) operation
     int i = heap.k - 1;
@@ -57,7 +57,7 @@ int reference_pop_min(faiss::HNSW::MinimaxHeap& heap, float* vmin_out) {
 
 void test_popmin(int heap_size, int amount_to_put) {
     // create a heap
-    faiss::HNSW::MinimaxHeap mm_heap(heap_size);
+    faiss::MinimaxHeap mm_heap(heap_size);
 
     using storage_idx_t = faiss::HNSW::storage_idx_t;
 
@@ -83,7 +83,7 @@ void test_popmin(int heap_size, int amount_to_put) {
     }
 
     // clone the heap
-    faiss::HNSW::MinimaxHeap cloned_mm_heap = mm_heap;
+    faiss::MinimaxHeap cloned_mm_heap = mm_heap;
 
     // takes ones out one by one
     while (mm_heap.size() > 0) {
@@ -120,7 +120,7 @@ void test_popmin_identical_distances(
         int amount_to_put,
         const float distance) {
     // create a heap
-    faiss::HNSW::MinimaxHeap mm_heap(heap_size);
+    faiss::MinimaxHeap mm_heap(heap_size);
 
     using storage_idx_t = faiss::HNSW::storage_idx_t;
 
@@ -140,7 +140,7 @@ void test_popmin_identical_distances(
     }
 
     // clone the heap
-    faiss::HNSW::MinimaxHeap cloned_mm_heap = mm_heap;
+    faiss::MinimaxHeap cloned_mm_heap = mm_heap;
 
     // takes ones out one by one
     while (mm_heap.size() > 0) {
@@ -330,7 +330,7 @@ int reference_search_from_candidates(
         const faiss::HNSW& hnsw,
         faiss::DistanceComputer& qdis,
         faiss::ResultHandler& res,
-        faiss::HNSW::MinimaxHeap& candidates,
+        faiss::MinimaxHeap& candidates,
         faiss::VisitedTable& vt,
         faiss::HNSWStats& stats,
         int level,
@@ -601,8 +601,8 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
     faiss::VisitedTable vt(index->ntotal);
     faiss::VisitedTable reference_vt(index->ntotal);
     int num_candidates = 10;
-    faiss::HNSW::MinimaxHeap candidates(num_candidates);
-    faiss::HNSW::MinimaxHeap reference_candidates(num_candidates);
+    faiss::MinimaxHeap candidates(num_candidates);
+    faiss::MinimaxHeap reference_candidates(num_candidates);
 
     for (int i = 0; i < num_candidates; i++) {
         vt.set(i);

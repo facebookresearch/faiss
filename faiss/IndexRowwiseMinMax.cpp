@@ -166,11 +166,6 @@ void sa_decode_impl(
                      ? chunk_size
                      : static_cast<size_t>(n_input)) *
             old_code_size);
-    std::vector<StorageMinMaxFP16> minmax(
-            (chunk_size < static_cast<size_t>(n_input)
-                     ? chunk_size
-                     : static_cast<size_t>(n_input)));
-
     // all the elements to process
     size_t n_left = n_input;
 

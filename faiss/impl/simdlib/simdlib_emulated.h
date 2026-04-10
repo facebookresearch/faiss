@@ -129,12 +129,17 @@ struct simd16uint16_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int i = 0; i < 16; i++) {
-            ptr += sprintf(ptr, fmt, u16[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, u16[i]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -507,12 +512,16 @@ struct simd32uint8_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int i = 0; i < 32; i++) {
-            ptr += sprintf(ptr, fmt, u8[i]);
+            ptr += snprintf(ptr, (size_t)(res + sizeof(res) - ptr), fmt, u8[i]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -707,12 +716,17 @@ struct simd8uint32_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
 
     std::string elements_to_string(const char* fmt) const {
         char res[1000], *ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int i = 0; i < 8; i++) {
-            ptr += sprintf(ptr, fmt, u32[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, u32[i]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -863,7 +877,8 @@ struct simd8float32_tpl<SIMDLevel::NONE> : simd256bit_tpl<SIMDLevel::NONE> {
     std::string tostring() const {
         char res[1000], *ptr = res;
         for (int i = 0; i < 8; i++) {
-            ptr += sprintf(ptr, "%g,", f32[i]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), "%g,", f32[i]);
         }
         // strip last ,
         ptr[-1] = 0;

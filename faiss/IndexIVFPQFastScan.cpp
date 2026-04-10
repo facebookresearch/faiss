@@ -8,7 +8,6 @@
 #include <faiss/IndexIVFPQFastScan.h>
 
 #include <array>
-#include <cassert>
 #include <cstdio>
 
 #include <memory>
@@ -18,6 +17,7 @@
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -117,6 +117,10 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs_in)
     orig_invlists = orig.invlists;
 }
 
+size_t IndexIVFPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/
@@ -186,16 +190,19 @@ void IndexIVFPQFastScan::encode_vectors(
  * Look-Up Table functions
  *********************************************************/
 
+// Explicit SIMD-level alias (no global bare aliases).
+using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
+
 void fvec_madd_simd(
         size_t n,
         const float* a,
         float bf,
         const float* b,
         float* c) {
-    assert(is_aligned_pointer(a));
-    assert(is_aligned_pointer(b));
-    assert(is_aligned_pointer(c));
-    assert(n % 8 == 0);
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(a), "pointer a is not aligned");
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(b), "pointer b is not aligned");
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(c), "pointer c is not aligned");
+    FAISS_THROW_IF_NOT_MSG(n % 8 == 0, "n must be a multiple of 8");
     simd8float32 bf8(bf);
     n /= 8;
     for (size_t i = 0; i < n; i++) {

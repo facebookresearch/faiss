@@ -159,50 +159,6 @@ void pq_code_distance_four_impl<SIMDLevel::AVX512>(
     }
 }
 
-#ifdef COMPILE_SIMD_AVX512_SPR
-// AVX512_SPR: Sapphire Rapids is a superset of AVX512. Reuse the
-// AVX512 implementation until a dedicated SPR specialization is written.
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-float pq_code_distance_single_impl<SIMDLevel::AVX512_SPR>(
-        size_t M,
-        size_t nbits,
-        const float* sim_table,
-        const uint8_t* code) {
-    return pq_code_distance_single_impl<SIMDLevel::AVX512>(
-            M, nbits, sim_table, code);
-}
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-void pq_code_distance_four_impl<SIMDLevel::AVX512_SPR>(
-        size_t M,
-        size_t nbits,
-        const float* sim_table,
-        const uint8_t* __restrict code0,
-        const uint8_t* __restrict code1,
-        const uint8_t* __restrict code2,
-        const uint8_t* __restrict code3,
-        float& result0,
-        float& result1,
-        float& result2,
-        float& result3) {
-    pq_code_distance_four_impl<SIMDLevel::AVX512>(
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
-}
-#endif // COMPILE_SIMD_AVX512_SPR
-
 } // namespace pq_code_distance
 } // namespace faiss
 

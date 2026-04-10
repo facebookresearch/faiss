@@ -60,6 +60,9 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     const size_t packed_block_size;
     const size_t full_block_size;
     std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
+    // Handler-local scratch reused across refinements. This assumes a handler
+    // instance is confined to one search slice and not entered concurrently.
+    std::vector<uint8_t> unpack_buf; // reusable buffer for unpack_1
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
@@ -76,6 +79,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             size_t k_val,
             float* distances,
             int64_t* labels,
+            const IDSelector* sel,
             const FastScanDistancePostProcessing* ctx = nullptr,
             bool multibit = false);
 
@@ -97,7 +101,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             size_t db_idx,
             size_t local_q,
             size_t global_q,
-            size_t local_offset) const;
+            size_t local_offset);
 };
 
 } // namespace simd_result_handlers

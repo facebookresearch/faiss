@@ -83,6 +83,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    /// Packed code size: (d + 7) / 8 bytes (1-bit-per-dimension sign bits,
+    /// excluding factors)
+    size_t fast_scan_code_size() const override;
+
    protected:
     /// Return code_size as stride to skip embedded factor data during packing
     size_t code_packing_stride() const override;
@@ -186,9 +190,10 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
         size_t k_val,
         float* distances,
         int64_t* labels,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* ctx,
         bool multibit)
-        : ResultHandlerCompare<C, true, SL>(nq_val, 0, nullptr),
+        : ResultHandlerCompare<C, true, SL>(nq_val, 0, sel),
           index(idx),
           heap_distances(distances),
           heap_labels(labels),
@@ -199,13 +204,17 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
           storage_size(idx->compute_per_vector_storage_size()),
           packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
           full_block_size(idx->get_block_stride()),
-          packer(idx->get_CodePacker()) {
+          packer(idx->get_CodePacker()),
+          unpack_buf(idx->code_size) {
     current_list_no = 0;
     probe_indices.clear();
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
         heap_heapify<Cfloat>(k, heap_distances + q * k, heap_labels + q * k);
     }
 }
+
+// Explicit alias — must match SIMDResultHandler::handle() signature.
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
 
 template <class C, SIMDLevel SL>
 void IVFRaBitQHeapHandler<C, SL>::handle(
@@ -258,6 +267,11 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
         if (result_id < 0) {
             continue;
         }
+        if (this->sel != nullptr && !this->sel->is_member(result_id)) {
+            continue;
+        }
+
+        this->scan_cnt++;
 
         const float normalized_distance = d32tab[j] * one_a + bias;
         const uint8_t* base_ptr = rabitq_utils::get_block_aux_ptr(
@@ -352,7 +366,7 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
         size_t /*db_idx*/,
         size_t local_q,
         size_t global_q,
-        size_t local_offset) const {
+        size_t local_offset) {
     const size_t ex_bits = index->rabitq.nb_bits - 1;
     const size_t dim = index->d;
 
@@ -374,12 +388,13 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
     size_t storage_idx_val = global_q * nprobe_val + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx_val];
 
-    InvertedLists::ScopedCodes list_codes(index->invlists, current_list_no);
-    std::vector<uint8_t> unpacked_code(index->code_size);
-    packer->unpack_1(list_codes.get(), local_offset, unpacked_code.data());
+    // Use list_codes_ptr (already set by set_list_context) and the
+    // pre-allocated unpack_buf to avoid per-refinement ScopedCodes
+    // re-acquisition and heap allocation.
+    packer->unpack_1(list_codes_ptr, local_offset, unpack_buf.data());
 
     return rabitq_utils::compute_full_multibit_distance(
-            unpacked_code.data(),
+            unpack_buf.data(),
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),

@@ -248,7 +248,7 @@ $ make -C build demo_ivfpq_indexing_gpu
 $ ./build/demos/demo_ivfpq_indexing_gpu
 ```
 
-This produce the GPU code equivalent to the CPU `demo_ivfpq_indexing`. It also
+This produces the GPU code equivalent to the CPU `demo_ivfpq_indexing`. It also
 shows how to translate indexes from/to a GPU.
 
 ### A real-life benchmark
