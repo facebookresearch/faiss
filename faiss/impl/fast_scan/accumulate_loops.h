@@ -17,10 +17,10 @@
  *   - accumulate_q_4step_256 / pq4_accumulate_loop_qbs_fixed_scaler_256
  *     (QBS path, bbs == 32, 256-bit kernel only)
  *
- * The QBS helpers use pq4_kernel_qbs_256 exclusively (not decompose_qbs.h)
- * because decompose_qbs.h includes kernels_simd512.h which uses 512-bit
- * types that are empty primary templates when SINGLE_SIMD_LEVEL=NONE
- * (DD mode). SL-parameterizing the 512-bit kernels is future work.
+ * The QBS helpers here use pq4_kernel_qbs_256 exclusively (not
+ * decompose_qbs.h) because decompose_qbs.h includes kernels_simd512.h
+ * whose 512-bit types need explicit SIMD levels.  The 512-bit QBS path
+ * lives in accumulate_loops_512.h, used by the AVX512 per-ISA TU.
  *
  * All functions live in `namespace faiss` (not anonymous) so they can be
  * shared by both the per-SIMD TU dispatcher (dispatching.h) and the old
