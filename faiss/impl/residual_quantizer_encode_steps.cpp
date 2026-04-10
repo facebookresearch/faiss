@@ -380,20 +380,20 @@ void beam_search_encode_step_tab(
 {
     FAISS_THROW_IF_NOT(ldc >= K);
 
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
 #pragma omp parallel for if (n > 100) schedule(dynamic)
-    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
-        std::vector<float> cent_distances(beam_size * K);
-        std::vector<float> cd_common(K);
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            std::vector<float> cent_distances(beam_size * K);
+            std::vector<float> cd_common(K);
 
-        const int32_t* codes_i = codes + i * m * beam_size;
-        const float* query_cp_i = query_cp + i * ldqc;
-        const float* distances_i = distances + i * beam_size;
+            const int32_t* codes_i = codes + i * m * beam_size;
+            const float* query_cp_i = query_cp + i * ldqc;
+            const float* distances_i = distances + i * beam_size;
 
-        for (size_t k = 0; k < K; k++) {
-            cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
-        }
+            for (size_t k = 0; k < K; k++) {
+                cd_common[k] = cent_norms_i[k] - 2 * query_cp_i[k];
+            }
 
-        with_simd_level_256bit([&]<SIMDLevel SL>() {
             if constexpr (SL == SIMDLevel::NONE) {
                 compute_cent_distances_baseline(
                         K,
@@ -419,64 +419,64 @@ void beam_search_encode_step_tab(
                         cd_common.data(),
                         cent_distances.data());
             }
-        });
-        using C = CMax<float, int>;
-        int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
-        float* new_distances_i = new_distances + i * new_beam_size;
+            using C = CMax<float, int>;
+            int32_t* new_codes_i = new_codes + i * (m + 1) * new_beam_size;
+            float* new_distances_i = new_distances + i * new_beam_size;
 
-        const float* cent_distances_i = cent_distances.data();
+            const float* cent_distances_i = cent_distances.data();
 
-        // then we have to select the best results
-        for (size_t j = 0; j < new_beam_size; j++) {
-            new_distances_i[j] = C::neutral();
-        }
-        std::vector<int> perm(new_beam_size, -1);
+            // then we have to select the best results
+            for (size_t j = 0; j < new_beam_size; j++) {
+                new_distances_i[j] = C::neutral();
+            }
+            std::vector<int> perm(new_beam_size, -1);
 
-        auto approx = [&]<uint32_t NB, uint32_t ND>() {
-            HeapWithBuckets<C, NB, ND>::bs_addn(
-                    beam_size,
-                    K,
-                    cent_distances_i,
-                    new_beam_size,
-                    new_distances_i,
-                    perm.data());
-        };
-        switch (approx_topk_mode) {
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
-                approx.template operator()<8, 3>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
-                approx.template operator()<8, 2>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
-                approx.template operator()<16, 2>();
-                break;
-            case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
-                approx.template operator()<32, 2>();
-                break;
-            default:
-                heap_addn<C>(
+            auto approx = [&]<uint32_t NB, uint32_t ND>() {
+                HeapWithBuckets<C, NB, ND>::bs_addn(
+                        beam_size,
+                        K,
+                        cent_distances_i,
                         new_beam_size,
                         new_distances_i,
-                        perm.data(),
-                        cent_distances_i,
-                        nullptr,
-                        beam_size * K);
-                break;
-        }
-
-        heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
-
-        for (size_t j = 0; j < new_beam_size; j++) {
-            int js = perm[j] / K;
-            int ls = perm[j] % K;
-            if (m > 0) {
-                memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+                        perm.data());
+            };
+            switch (approx_topk_mode) {
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
+                    approx.template operator()<8, 3>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D2:
+                    approx.template operator()<8, 2>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B16_D2:
+                    approx.template operator()<16, 2>();
+                    break;
+                case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B32_D2:
+                    approx.template operator()<32, 2>();
+                    break;
+                default:
+                    heap_addn<C>(
+                            new_beam_size,
+                            new_distances_i,
+                            perm.data(),
+                            cent_distances_i,
+                            nullptr,
+                            beam_size * K);
+                    break;
             }
-            new_codes_i[m] = ls;
-            new_codes_i += m + 1;
+
+            heap_reorder<C>(new_beam_size, new_distances_i, perm.data());
+
+            for (size_t j = 0; j < new_beam_size; j++) {
+                int js = perm[j] / K;
+                int ls = perm[j] % K;
+                if (m > 0) {
+                    memcpy(new_codes_i, codes_i + js * m, sizeof(*codes) * m);
+                }
+                new_codes_i[m] = ls;
+                new_codes_i += m + 1;
+            }
         }
-    }
+    }); // with_simd_level_256bit
 }
 
 /********************************************************************
