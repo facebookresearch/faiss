@@ -3187,6 +3187,30 @@ TEST(ReadIndexDeserialize, IndexRQFastScanAQDimensionMismatch) {
 
 #ifdef FAISS_ENABLE_SVS
 
+#include <faiss/svs/IndexSVSVamana.h>
+
+// An invalid storage_kind value should be rejected at deserialization time
+// with a FaissException, not abort via FAISS_ASSERT in to_svs_storage_kind().
+TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_index_header(buf, 8, 0);
+    push_val<size_t>(buf, 32);  // graph_max_degree
+    push_val<float>(buf, 1.2f); // alpha
+    push_val<size_t>(buf, 10);  // search_window_size
+    push_val<size_t>(buf, 10);  // search_buffer_capacity
+    push_val<size_t>(buf, 64);  // construction_window_size
+    push_val<size_t>(buf, 750); // max_candidate_pool_size
+    push_val<size_t>(buf, 28);  // prune_to
+    push_val<bool>(buf, false); // use_full_search_history
+    push_val<int>(
+            buf,
+            static_cast<int>(SVS_count)); // storage_kind — first invalid value
+    push_val<bool>(buf, true);            // initialized
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
 // When SVS is enabled, deserializing an SVS Vamana index with invalid SVS
 // stream data should throw a FaissException (from the SVS runtime load
 // failure) rather than crashing with a null-pointer dereference.
