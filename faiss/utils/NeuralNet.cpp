@@ -268,12 +268,12 @@ nn::Int32Tensor2D QINCoStep::encode(
         res = residuals->data();
     }
 
-    for (size_t i = 0; i < n; i++) {
-        const float* q = x.data() + i * d;
-        const float* db = zqs_r.data() + i * K * d;
-        float dis_min = HUGE_VALF;
-        int64_t idx = -1;
-        with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t i = 0; i < n; i++) {
+            const float* q = x.data() + i * d;
+            const float* db = zqs_r.data() + i * K * d;
+            float dis_min = HUGE_VALF;
+            int64_t idx = -1;
             for (size_t j = 0; j < static_cast<size_t>(K); j++) {
                 float dis = fvec_L2sqr<SL>(q, db, d);
                 if (dis < dis_min) {
@@ -282,17 +282,17 @@ nn::Int32Tensor2D QINCoStep::encode(
                 }
                 db += d;
             }
-        });
-        codes.v[i] = idx;
-        if (res) {
-            const float* xhat_row = xhat.data() + i * d;
-            const float* xhat_next_row = zqs_r.data() + (i * K + idx) * d;
-            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
-                res[j] = xhat_next_row[j] - xhat_row[j];
+            codes.v[i] = idx;
+            if (res) {
+                const float* xhat_row = xhat.data() + i * d;
+                const float* xhat_next_row = zqs_r.data() + (i * K + idx) * d;
+                for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+                    res[j] = xhat_next_row[j] - xhat_row[j];
+                }
+                res += d;
             }
-            res += d;
         }
-    }
+    });
     return codes;
 }
 
