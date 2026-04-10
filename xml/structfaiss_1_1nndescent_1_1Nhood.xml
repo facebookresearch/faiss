@@ -183,6 +183,42 @@
         </inbodydescription>
         <location file="faiss/impl/NNDescent.h" line="81" column="5"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1ae13c327a240aa87a7752d736842f57f4" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::nndescent::Nhood::Nhood</definition>
+        <argsstring>(Nhood &amp;&amp;other) noexcept</argsstring>
+        <name>Nhood</name>
+        <qualifiedname>faiss::nndescent::Nhood::Nhood</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="83" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1a13684d602060619aca586ea821157adc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;</type>
+        <definition>Nhood &amp; faiss::nndescent::Nhood::operator=</definition>
+        <argsstring>(Nhood &amp;&amp;other) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>faiss::nndescent::Nhood::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">Nhood</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/NNDescent.h" line="85" column="11"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::nndescent::Nhood::insert</definition>
@@ -203,7 +239,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="83" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="87" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -226,14 +262,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="86" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="90" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/NNDescent.h" line="65" column="1" bodyfile="faiss/impl/NNDescent.h" bodystart="65" bodyend="87"/>
+    <location file="faiss/impl/NNDescent.h" line="65" column="1" bodyfile="faiss/impl/NNDescent.h" bodystart="65" bodyend="91"/>
     <listofallmembers>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>insert</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>join</name></member>
@@ -242,9 +278,11 @@
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a6bd44d45baf06138e690c85e43897a22" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae19d8b75f09c614f43d4647b29098529" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a2ad158e93c93eb3b887c05a3cccaabe4" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae13c327a240aa87a7752d736842f57f4" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>Nhood</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1ad23cfc33113aedfd69c907c1b8ff2b3d" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>nn_new</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a7a5e4ddebc3bc2eba4fcaf7f1727ce94" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>nn_old</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a31b7aab8dedc96d09abca4b328cf9014" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>operator=</name></member>
+      <member refid="structfaiss_1_1nndescent_1_1Nhood_1a13684d602060619aca586ea821157adc" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>operator=</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a7e221908bd84f4f9b80bbba0384386d4" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>pool</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1a6bf28c2bc165a3fa57220d3ebc08e0c9" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>rnn_new</name></member>
       <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae9919f8927036ecff233b51f0c798a3f" prot="public" virt="non-virtual"><scope>faiss::nndescent::Nhood</scope><name>rnn_old</name></member>

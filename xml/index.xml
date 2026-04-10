@@ -8938,6 +8938,8 @@
     <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae19d8b75f09c614f43d4647b29098529" kind="function"><name>Nhood</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Nhood_1a31b7aab8dedc96d09abca4b328cf9014" kind="function"><name>operator=</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Nhood_1a2ad158e93c93eb3b887c05a3cccaabe4" kind="function"><name>Nhood</name></member>
+    <member refid="structfaiss_1_1nndescent_1_1Nhood_1ae13c327a240aa87a7752d736842f57f4" kind="function"><name>Nhood</name></member>
+    <member refid="structfaiss_1_1nndescent_1_1Nhood_1a13684d602060619aca586ea821157adc" kind="function"><name>operator=</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Nhood_1a225069b8cbf5677e2dd439b141f834ff" kind="function"><name>insert</name></member>
     <member refid="structfaiss_1_1nndescent_1_1Nhood_1af01c8d8471e41ffbd2ed286dbc2961cf" kind="function"><name>join</name></member>
   </compound>

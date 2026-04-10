@@ -15,7 +15,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="92" column="5" bodyfile="faiss/impl/NNDescent.h" bodystart="92" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="96" column="5" bodyfile="faiss/impl/NNDescent.h" bodystart="96" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1NNDescent_1ae905c02eb2a20773693af1cab04de433" prot="public" static="no">
         <type>std::vector&lt; <ref refid="structfaiss_1_1nndescent_1_1Nhood" kindref="compound">nndescent::Nhood</ref> &gt;</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="94" column="5" bodyfile="faiss/impl/NNDescent.h" bodystart="94" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="98" column="5" bodyfile="faiss/impl/NNDescent.h" bodystart="98" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-attrib">
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="135" column="10" bodyfile="faiss/impl/NNDescent.h" bodystart="135" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="139" column="10" bodyfile="faiss/impl/NNDescent.h" bodystart="139" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a3c1092b2faf2b81485da9876039e4129" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -61,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="137" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="137" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="141" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="141" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a47adc608d9efd75be7d26529505720a6" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -76,7 +76,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="138" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="138" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="142" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="142" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a4f5be7de09561a89235ea872ee097ff9" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -91,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="140" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="140" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="144" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="144" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1ad1d307904a4057d29a9bb3186456cd7a" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -106,7 +106,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="141" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="141" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="145" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="145" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a03c8556423dd98a9bdcaf1d4c5b94435" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -121,7 +121,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="142" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="142" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="146" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="146" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a8c4d8a13b7c5c80224c9fbcf0c3d09c1" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="144" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="144" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="148" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="148" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a371ff399bc88f102521e8feb82162b58" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -149,7 +149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="145" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="145" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="149" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="149" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1ade8bb7b8af1460230d5e819b5810232f" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="146" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="146" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="150" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1aecbe2c19c69d4ebc9a639e30e97a0cac" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -178,7 +178,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="148" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="148" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="152" column="9" bodyfile="faiss/impl/NNDescent.h" bodystart="152" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1aeec712e2a2d4ccf437b2d424079a234c" prot="public" static="no" mutable="no">
         <type>KNNGraph</type>
@@ -192,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="150" column="14" bodyfile="faiss/impl/NNDescent.h" bodystart="150" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="154" column="14" bodyfile="faiss/impl/NNDescent.h" bodystart="154" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1NNDescent_1a94ffe1f35ee9dbcbe41524053f6ae2b3" prot="public" static="no" mutable="no">
         <type>std::vector&lt; int &gt;</type>
@@ -206,7 +206,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="151" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="151" bodyend="-1"/>
+        <location file="faiss/impl/NNDescent.h" line="155" column="17" bodyfile="faiss/impl/NNDescent.h" bodystart="155" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -230,7 +230,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="96" column="14"/>
+        <location file="faiss/impl/NNDescent.h" line="100" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1ac0c4c9beeff3d6d5f46e558570d634cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -244,7 +244,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="98" column="5"/>
+        <location file="faiss/impl/NNDescent.h" line="102" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1abb92ad084a9c1a8cd6667aa131783dfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -270,7 +270,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="100" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="104" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a66cbd9d7342e10a0134e255d5ea0ebdd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -304,7 +304,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="102" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="106" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a51d7cb5e3a2702a30f8033f43e5b329c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -318,7 +318,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="109" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="113" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1afeec7588482fd3fbae0d8dfd0b649ffa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -337,7 +337,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="112" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="116" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a27db2b4a4867cdb47fab54b5b45a1835" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -360,7 +360,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="115" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="119" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1ae958560520bcdff92c0795fce142e488" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -379,7 +379,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="118" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="122" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a01e3a14cdcf0fba4bca0b94646e796e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -394,7 +394,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="121" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="125" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -425,7 +425,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="124" column="10"/>
+        <location file="faiss/impl/NNDescent.h" line="128" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -448,14 +448,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/NNDescent.h" line="131" column="11"/>
+        <location file="faiss/impl/NNDescent.h" line="135" column="11"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/impl/NNDescent.h" line="91" column="1" bodyfile="faiss/impl/NNDescent.h" bodystart="91" bodyend="152"/>
+    <location file="faiss/impl/NNDescent.h" line="95" column="1" bodyfile="faiss/impl/NNDescent.h" bodystart="95" bodyend="156"/>
     <listofallmembers>
       <member refid="structfaiss_1_1NNDescent_1abb92ad084a9c1a8cd6667aa131783dfe" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>build</name></member>
       <member refid="structfaiss_1_1NNDescent_1a371ff399bc88f102521e8feb82162b58" prot="public" virt="non-virtual"><scope>faiss::NNDescent</scope><name>d</name></member>
