@@ -106,11 +106,32 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
     }
 #else // static dispatch
     // In static mode, SINGLE_SIMD_LEVEL is a constexpr resolved at compile
-    // time. If the compiled level is not in the available set, fall through
-    // to NONE (mirroring the DD fallthrough behavior). Only SINGLE_SIMD_LEVEL
-    // and NONE have compiled specializations.
+    // time. We mirror the DD fallthrough behavior at compile time:
+    //   x86:  AVX512_SPR -> AVX512 -> AVX2 -> NONE
+    //   ARM:  ARM_SVE -> ARM_NEON -> NONE
+    // This ensures that e.g. an AVX512_SPR build can use AVX512
+    // specializations when no AVX512_SPR-specific implementation exists,
+    // and an AVX512 build can use AVX2 for 256-bit operations.
+
     if constexpr (available_levels & (1 << int(SINGLE_SIMD_LEVEL))) {
+        // Exact match — use the compiled-in level directly.
         return action.template operator()<SINGLE_SIMD_LEVEL>();
+    } else if constexpr (
+            SINGLE_SIMD_LEVEL == SIMDLevel::AVX512_SPR &&
+            (available_levels & (1 << int(SIMDLevel::AVX512)))) {
+        // AVX512_SPR -> AVX512 fallthrough.
+        return action.template operator()<SIMDLevel::AVX512>();
+    } else if constexpr (
+            (SINGLE_SIMD_LEVEL == SIMDLevel::AVX512_SPR ||
+             SINGLE_SIMD_LEVEL == SIMDLevel::AVX512) &&
+            (available_levels & (1 << int(SIMDLevel::AVX2)))) {
+        // AVX512_SPR/AVX512 -> AVX2 fallthrough
+        return action.template operator()<SIMDLevel::AVX2>();
+    } else if constexpr (
+            SINGLE_SIMD_LEVEL == SIMDLevel::ARM_SVE &&
+            (available_levels & (1 << int(SIMDLevel::ARM_NEON)))) {
+        // ARM_SVE -> ARM_NEON fallthrough.
+        return action.template operator()<SIMDLevel::ARM_NEON>();
     } else {
         return action.template operator()<SIMDLevel::NONE>();
     }
