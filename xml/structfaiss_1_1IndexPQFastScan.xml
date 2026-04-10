@@ -573,6 +573,22 @@
         </inbodydescription>
         <location file="faiss/IndexPQFastScan.h" line="54" column="10"/>
       </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexPQFastScan_1aca7a1b46b77e4c5a5f81978117618a8d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexPQFastScan::fast_scan_code_size</definition>
+        <argsstring>() const override</argsstring>
+        <name>fast_scan_code_size</name>
+        <qualifiedname>faiss::IndexPQFastScan::fast_scan_code_size</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexFastScan_1a1702ac622163f30b5e3757b9718cd5cb">fast_scan_code_size</reimplements>
+        <briefdescription>
+<para>Packed code size: M2 / 2 bytes (4-bit PQ sub-quantizer nibbles) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexPQFastScan.h" line="57" column="12"/>
+      </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::IndexFastScan::init_fastscan</definition>
@@ -2383,7 +2399,7 @@
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPQFastScan.h" line="29" column="1" bodyfile="faiss/IndexPQFastScan.h" bodystart="29" bodyend="55"/>
+    <location file="faiss/IndexPQFastScan.h" line="29" column="1" bodyfile="faiss/IndexPQFastScan.h" bodystart="29" bodyend="58"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>add_ex</name></member>
@@ -2403,6 +2419,7 @@
       <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>compute_residual_n</name></member>
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexPQFastScan</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexPQFastScan</scope><name>distance_t</name></member>
+      <member refid="structfaiss_1_1IndexPQFastScan_1aca7a1b46b77e4c5a5f81978117618a8d" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>fast_scan_code_size</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" prot="public" virt="non-virtual"><scope>faiss::IndexPQFastScan</scope><name>get_block_stride</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexPQFastScan</scope><name>get_distance_computer</name></member>

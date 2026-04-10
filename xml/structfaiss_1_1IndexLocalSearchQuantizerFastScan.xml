@@ -17,7 +17,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="123" column="26" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="123" bodyend="-1"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="126" column="26" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="126" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1abeeeef6901d2f760befeb6ac483f11d3" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1AdditiveQuantizer" kindref="compound">AdditiveQuantizer</ref> *</type>
@@ -430,7 +430,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="133" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="136" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexLocalSearchQuantizerFastScan_1a44b40819d477322e68b3e7b7754c379a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -444,7 +444,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="141" column="5"/>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="144" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1a762aea7ad05d5661a5c7d1653909eafd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -796,6 +796,22 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="88" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ad58c492626f7a2547a7dc1d20d291a2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t faiss::IndexAdditiveQuantizerFastScan::fast_scan_code_size</definition>
+        <argsstring>() const override</argsstring>
+        <name>fast_scan_code_size</name>
+        <qualifiedname>faiss::IndexAdditiveQuantizerFastScan::fast_scan_code_size</qualifiedname>
+        <reimplements refid="structfaiss_1_1IndexFastScan_1a1702ac622163f30b5e3757b9718cd5cb">fast_scan_code_size</reimplements>
+        <briefdescription>
+<para>Packed code size: M2 / 2 bytes (4-bit AQ sub-quantizer nibbles) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="91" column="12"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexFastScan_1a37e3e10f67851096715f19ecbd011b52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -2579,7 +2595,7 @@
         <link refid="structfaiss_1_1lsq_1_1IcmEncoderFactory"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="122" column="1" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="122" bodyend="142"/>
+    <location file="faiss/IndexAdditiveQuantizerFastScan.h" line="125" column="1" bodyfile="faiss/IndexAdditiveQuantizerFastScan.h" bodystart="125" bodyend="145"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexFastScan_1aaa9e2214ac167eb6136d37b51a3c1e2c" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>add_ex</name></member>
@@ -2601,6 +2617,7 @@
       <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>d</name></member>
       <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>distance_t</name></member>
       <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1af641f659c9e6a755225bfe709550251b" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>estimate_norm_scale</name></member>
+      <member refid="structfaiss_1_1IndexAdditiveQuantizerFastScan_1ad58c492626f7a2547a7dc1d20d291a2b" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>fast_scan_code_size</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1a112ad1e6dcad5e0bb0512ee2ad20e098" prot="public" virt="non-virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>get_block_stride</name></member>
       <member refid="structfaiss_1_1IndexFastScan_1ad237a21e0d85e24ee32e2c0e4652c081" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>get_CodePacker</name></member>
       <member refid="structfaiss_1_1Index_1a5d7e4b432ee751157d470256a7fe8afc" prot="public" virt="virtual"><scope>faiss::IndexLocalSearchQuantizerFastScan</scope><name>get_distance_computer</name></member>

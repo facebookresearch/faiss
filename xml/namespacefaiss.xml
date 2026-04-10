@@ -1343,7 +1343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexFastScan.h" line="251" column="32" declfile="faiss/IndexFastScan.h" declline="251" declcolumn="32"/>
+        <location file="faiss/IndexFastScan.h" line="263" column="32" declfile="faiss/IndexFastScan.h" declline="263" declcolumn="32"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a747e07366b2a3240cfe2135396b44614" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API bool</type>
