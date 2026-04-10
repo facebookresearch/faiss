@@ -110,8 +110,10 @@ struct Run_search_with_dc_res {
                 // n_1bit_evaluations: candidates evaluated using 1-bit lower
                 // bound n_multibit_evaluations: candidates requiring full
                 // multi-bit distance
+#ifndef NDEBUG
                 size_t local_1bit_evaluations = 0;
                 size_t local_multibit_evaluations = 0;
+#endif
 
                 if (ex_bits == 0) {
                     // 1-bit: Standard single-stage search (no stats tracking)
@@ -142,7 +144,9 @@ struct Run_search_with_dc_res {
                             const uint8_t* code =
                                     index->codes.data() + i * index->code_size;
 
+#ifndef NDEBUG
                             local_1bit_evaluations++;
+#endif
 
                             // Stage 1: Compute distance bound using 1-bit codes
                             // For L2 (min-heap): use lower_bound (est -
@@ -168,7 +172,9 @@ struct Run_search_with_dc_res {
                                             resi.threshold,
                                             is_similarity);
                             if (should_refine) {
+#ifndef NDEBUG
                                 local_multibit_evaluations++;
+#endif
                                 // Compute full multi-bit distance
                                 float dist_full =
                                         dc->distance_to_code_full(code);
@@ -178,12 +184,14 @@ struct Run_search_with_dc_res {
                     }
                 }
 
+#ifndef NDEBUG
                 // Update global stats atomically
 #pragma omp atomic
                 rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
 #pragma omp atomic
                 rabitq_stats.n_multibit_evaluations +=
                         local_multibit_evaluations;
+#endif
 
                 resi.end();
             }

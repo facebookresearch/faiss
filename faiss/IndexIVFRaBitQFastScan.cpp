@@ -668,9 +668,14 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         handler->ntotal = ntotal;
         handler->id_map = ids;
 
-        // RaBitQ needs list context for factor lookup
+        // RaBitQ needs list context for factor lookup.
+        // If invlists is unavailable (e.g., own_invlists=false), fall back
+        // to the codes pointer which already contains the block data.
         std::vector<int> probe_map = {0};
         handler->set_list_context(list_no, probe_map);
+        if (!handler->list_codes_ptr) {
+            handler->list_codes_ptr = codes;
+        }
 
         scanner->accumulate_loop(
                 1,
@@ -701,7 +706,6 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                     curr_labels.data(),
                     k);
         }
-
         return handler->num_updates();
     }
 };
