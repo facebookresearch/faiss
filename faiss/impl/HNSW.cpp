@@ -9,6 +9,7 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <cstdlib>
 
 #include <faiss/IndexHNSW.h>
 
@@ -16,6 +17,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 
 namespace faiss {
 
@@ -497,7 +499,7 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
@@ -519,13 +521,13 @@ void HNSW::add_links_starting_from(
         link_targets.pop();
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
     for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
+        locks.lock(other_id);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
+        locks.unlock(other_id);
     }
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 }
 
 /**************************************************************
@@ -536,7 +538,7 @@ void HNSW::add_with_locks(
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     storage_idx_t nearest = entry_point;
@@ -556,7 +558,7 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
@@ -573,12 +575,12 @@ void HNSW::add_with_locks(
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
+                locks,
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
 
     if (pt_level > max_level) {
         max_level = pt_level;
