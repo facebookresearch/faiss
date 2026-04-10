@@ -992,6 +992,11 @@ void IndexIVF::search1(
 
     for (size_t i = 0; i < cur_nprobe; i++) {
         idx_t key = keys[i];
+        FAISS_THROW_IF_NOT_FMT(
+                key < (idx_t)nlist,
+                "Invalid key=%" PRId64 " nlist=%zd\n",
+                key,
+                nlist);
         if (key < 0 || invlists->is_empty(key)) {
             continue;
         }
