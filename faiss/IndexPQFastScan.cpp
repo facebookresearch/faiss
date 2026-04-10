@@ -72,4 +72,8 @@ void IndexPQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     pq.decode(bytes, x, n);
 }
 
+size_t IndexPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 } // namespace faiss

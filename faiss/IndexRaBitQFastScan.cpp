@@ -467,6 +467,10 @@ void IndexRaBitQFastScan::compute_float_LUT(
     }
 }
 
+size_t IndexRaBitQFastScan::fast_scan_code_size() const {
+    return (d + 7) / 8;
+}
+
 void IndexRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     const float* centroid_in =

@@ -217,6 +217,10 @@ void IndexAdditiveQuantizerFastScan::sa_decode(
     aq->decode(bytes, x, n);
 }
 
+size_t IndexAdditiveQuantizerFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /**************************************************************************************
  * IndexResidualQuantizerFastScan
  **************************************************************************************/
