@@ -12034,6 +12034,7 @@
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbade7d538232505b7e0bf7dc1f14e93384" kind="enumvalue"><name>SVS_LeanVec4x4</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbaa4c96e5d67b47b154cfab5d98782e8a6" kind="enumvalue"><name>SVS_LeanVec4x8</name></member>
     <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdbaa3595eff7c3a8fa754683b55991834f3" kind="enumvalue"><name>SVS_LeanVec8x8</name></member>
+    <member refid="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba5bf19b6dc96a18433bbdf2ea08715ffc" kind="enumvalue"><name>SVS_count</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9e" kind="enum"><name>SIMDLevel</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9eab50339a10e1de285ac99d4c3990b8693" kind="enumvalue"><name>NONE</name></member>
     <member refid="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9eaee6ecd3e091cdefd02e783f9b9869388" kind="enumvalue"><name>AVX2</name></member>

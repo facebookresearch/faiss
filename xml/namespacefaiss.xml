@@ -612,13 +612,20 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="namespacefaiss_1a03c5c5d5d37b280d51fc27de91696bdba5bf19b6dc96a18433bbdf2ea08715ffc" prot="public">
+          <name>SVS_count</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="42" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="42" bodyend="52"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="42" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="42" bodyend="53"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9e" prot="public" static="no" strong="yes">
         <type></type>
@@ -8146,7 +8153,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="54" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="54" bodyend="77"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="55" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="55" bodyend="78"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
