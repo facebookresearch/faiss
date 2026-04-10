@@ -591,11 +591,19 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
     std::unique_ptr<FlatCodesDistanceComputer> dc;
     std::vector<float> centroid;
 
+    uint8_t qb;
+    bool centered;
+
     IVFRaBitQFastScanScanner(
             const IndexIVFRaBitQFastScan& index_in,
             bool store_pairs_in,
-            const IDSelector* sel_in)
-            : InvertedListScanner(store_pairs_in, sel_in), index(index_in) {
+            const IDSelector* sel_in,
+            uint8_t qb_in,
+            bool centered_in)
+            : InvertedListScanner(store_pairs_in, sel_in),
+              index(index_in),
+              qb(qb_in),
+              centered(centered_in) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
     }
 
@@ -624,7 +632,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         centroid.resize(index.d);
         index.quantizer->reconstruct(list_no, centroid.data());
         dc.reset(index.rabitq.get_distance_computer(
-                index.qb, centroid.data(), index.centered));
+                qb, centroid.data(), centered));
         dc->set_query(xi);
     }
 
@@ -715,8 +723,16 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
 InvertedListScanner* IndexIVFRaBitQFastScan::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
-        const IVFSearchParameters*) const {
-    return new IVFRaBitQFastScanScanner(*this, store_pairs, sel);
+        const IVFSearchParameters* search_params_in) const {
+    uint8_t used_qb = qb;
+    bool used_centered = centered;
+    if (auto params = dynamic_cast<const IVFRaBitQSearchParameters*>(
+                search_params_in)) {
+        used_qb = params->qb;
+        used_centered = params->centered;
+    }
+    return new IVFRaBitQFastScanScanner(
+            *this, store_pairs, sel, used_qb, used_centered);
 }
 
 } // namespace faiss
