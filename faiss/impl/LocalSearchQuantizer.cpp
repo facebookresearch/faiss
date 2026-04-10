@@ -600,73 +600,75 @@ void LocalSearchQuantizer::icm_encode_step(
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
+    // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
 #pragma omp parallel for schedule(dynamic)
-    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
-        std::vector<float> objs(K);
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            std::vector<float> objs(K);
 
-        for (size_t iter = 0; iter < n_iters; iter++) {
-            // condition on the m-th subcode
-            for (size_t m = 0; m < M; m++) {
-                // copy
-                auto u = unaries + m * n * K + i * K;
-                for (size_t code = 0; code < K; code++) {
-                    objs[code] = u[code];
-                }
-
-                // compute objective function by adding unary
-                // and binary terms together
-                for (size_t other_m = 0; other_m < M; other_m++) {
-                    if (other_m == m) {
-                        continue;
+            for (size_t iter = 0; iter < n_iters; iter++) {
+                // condition on the m-th subcode
+                for (size_t m = 0; m < M; m++) {
+                    // copy
+                    auto u = unaries + m * n * K + i * K;
+                    for (size_t code = 0; code < K; code++) {
+                        objs[code] = u[code];
                     }
+
+                    // compute objective function by adding unary
+                    // and binary terms together
+                    for (size_t other_m = 0; other_m < M; other_m++) {
+                        if (other_m == m) {
+                            continue;
+                        }
 
 #ifdef COMPILE_SIMD_AVX2
-                    // TODO: add platform-independent compiler-independent
-                    // prefetch utilities.
-                    if (other_m + 1 < M) {
-                        // do a single prefetch
-                        int32_t code2 = codes[i * M + other_m + 1];
-                        // for (int32_t code = 0; code < K; code += 64) {
-                        int32_t code = 0;
-                        {
-                            size_t binary_idx = (other_m + 1) * M * K * K +
-                                    m * K * K + code2 * K + code;
-                            _mm_prefetch(
-                                    (const char*)(binaries + binary_idx),
-                                    _MM_HINT_T0);
+                        // TODO: add platform-independent compiler-independent
+                        // prefetch utilities.
+                        if (other_m + 1 < M) {
+                            // do a single prefetch
+                            int32_t code2 = codes[i * M + other_m + 1];
+                            // for (int32_t code = 0; code < K; code += 64) {
+                            int32_t code = 0;
+                            {
+                                size_t binary_idx = (other_m + 1) * M * K * K +
+                                        m * K * K + code2 * K + code;
+                                _mm_prefetch(
+                                        (const char*)(binaries + binary_idx),
+                                        _MM_HINT_T0);
+                            }
                         }
-                    }
 #endif
 
-                    for (size_t code = 0; code < K; code++) {
-                        int32_t code2 = codes[i * M + other_m];
-                        size_t binary_idx = other_m * M * K * K + m * K * K +
-                                code2 * K + code;
-                        // binaries[m, other_m, code, code2].
-                        // It is symmetric over (m <-> other_m)
-                        //   and (code <-> code2).
-                        // So, replace the op with
-                        //   binaries[other_m, m, code2, code].
-                        objs[code] += binaries[binary_idx];
+                        for (size_t code = 0; code < K; code++) {
+                            int32_t code2 = codes[i * M + other_m];
+                            size_t binary_idx = other_m * M * K * K +
+                                    m * K * K + code2 * K + code;
+                            // binaries[m, other_m, code, code2].
+                            // It is symmetric over (m <-> other_m)
+                            //   and (code <-> code2).
+                            // So, replace the op with
+                            //   binaries[other_m, m, code2, code].
+                            objs[code] += binaries[binary_idx];
+                        }
                     }
-                }
 
-                // find the optimal value of the m-th subcode
-                float best_obj = HUGE_VALF;
-                int32_t best_code = 0;
+                    // find the optimal value of the m-th subcode
+                    float best_obj = HUGE_VALF;
+                    int32_t best_code = 0;
 
-                // find one using SIMD. The following operation is similar
-                // to the search of the smallest element in objs
-                using C = CMax<float, int>;
-                HeapWithBuckets<C, 16, 1>::addn(
-                        K, objs.data(), 1, &best_obj, &best_code);
+                    // find one using SIMD. The following operation is similar
+                    // to the search of the smallest element in objs
+                    HeapWithBucketsCMaxFloat<16, 1, SL>::addn(
+                            K, objs.data(), 1, &best_obj, &best_code);
 
-                // done
-                codes[i * M + m] = best_code;
+                    // done
+                    codes[i * M + m] = best_code;
 
-            } // loop M
+                } // loop M
+            }
         }
-    }
+    });
 }
 void LocalSearchQuantizer::perturb_codes(
         int32_t* codes,
