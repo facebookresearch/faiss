@@ -215,6 +215,9 @@ typedef uint64_t size_t;
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 
 %}
@@ -702,6 +705,9 @@ void gpu_sync_all_devices()
 %include  <faiss/svs/IndexSVSFlat.h>
 %include  <faiss/svs/IndexSVSVamanaLVQ.h>
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+%include  <faiss/svs/IndexSVSIVF.h>
+%include  <faiss/svs/IndexSVSIVFLVQ.h>
+%include  <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
@@ -842,6 +848,9 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexSVSVamanaLeanVec )
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
+    DOWNCAST ( IndexSVSIVFLeanVec )
+    DOWNCAST ( IndexSVSIVFLVQ )
+    DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

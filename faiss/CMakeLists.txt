@@ -167,6 +167,9 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSVamana.cpp
     svs/IndexSVSVamanaLVQ.cpp
     svs/IndexSVSVamanaLeanVec.cpp
+    svs/IndexSVSIVF.cpp
+    svs/IndexSVSIVFLVQ.cpp
+    svs/IndexSVSIVFLeanVec.cpp
     impl/svs_io.cpp
   )
 endif()
@@ -353,6 +356,9 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSVamana.h
     svs/IndexSVSVamanaLVQ.h
     svs/IndexSVSVamanaLeanVec.h
+    svs/IndexSVSIVF.h
+    svs/IndexSVSIVFLVQ.h
+    svs/IndexSVSIVFLeanVec.h
   )
 endif()
 

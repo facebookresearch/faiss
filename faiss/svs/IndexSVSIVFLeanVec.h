@@ -6,7 +6,7 @@
  */
 
 /*
- * Portions Copyright 2025 Intel Corporation
+ * Portions Copyright 2026 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,22 @@
 
 #pragma once
 
-#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSIVF.h>
 
 namespace faiss {
 
-struct IndexSVSVamanaLeanVec : IndexSVSVamana {
-    IndexSVSVamanaLeanVec();
+struct IndexSVSIVFLeanVec : IndexSVSIVF {
+    IndexSVSIVFLeanVec();
 
-    IndexSVSVamanaLeanVec(
+    IndexSVSIVFLeanVec(
             idx_t d,
-            size_t degree,
+            size_t nlist,
             MetricType metric = METRIC_L2,
             size_t leanvec_dims = 0,
-            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4);
+            SVSStorageKind storage = SVSStorageKind::SVS_LeanVec4x4,
+            bool is_static = false);
 
-    ~IndexSVSVamanaLeanVec() override;
-
-    void add(idx_t n, const float* x) override;
+    ~IndexSVSIVFLeanVec() override;
 
     /* Default train assumes in-distribution data */
     void train(idx_t n, const float* x) override;
@@ -66,7 +65,7 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
     svs_runtime::LeanVecTrainingData* training_data{nullptr};
 
    protected:
-    void create_impl() override;
+    void create_impl(idx_t n, const float* x) override;
 };
 
 } // namespace faiss
