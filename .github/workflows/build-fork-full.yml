@@ -1,0 +1,7 @@
+name: Build Fork Full
+on:
+  workflow_dispatch:
+jobs:
+  build-pull-request:
+    if: github.repository == 'Mistobaan/faiss'
+    uses: ./.github/workflows/build-pull-request.yml

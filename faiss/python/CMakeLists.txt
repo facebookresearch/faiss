@@ -295,7 +295,7 @@ find_package(Python REQUIRED
   COMPONENTS Development.Module NumPy
 )
 
-add_library(faiss_python_callbacks EXCLUDE_FROM_ALL
+add_library(faiss_python_callbacks STATIC EXCLUDE_FROM_ALL
   python_callbacks.cpp
 )
 set_property(TARGET faiss_python_callbacks
