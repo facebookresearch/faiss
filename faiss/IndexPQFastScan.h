@@ -52,6 +52,9 @@ struct IndexPQFastScan : IndexFastScan {
             const FastScanDistancePostProcessing& context) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /// Packed code size: M2 / 2 bytes (4-bit PQ sub-quantizer nibbles)
+    size_t fast_scan_code_size() const override;
 };
 
 } // namespace faiss
