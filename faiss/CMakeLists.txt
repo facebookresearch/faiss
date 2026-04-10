@@ -14,6 +14,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/pq_code_distance/pq_code_distance-avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
+  impl/binary_hamming/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
   utils/simd_impl/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
@@ -33,6 +34,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
+  impl/binary_hamming/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/simd_impl/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
