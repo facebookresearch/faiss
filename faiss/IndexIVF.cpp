@@ -1432,11 +1432,19 @@ size_t InvertedListScanner::iterate_codes(
     size_t nup = 0;
     list_size = 0;
 
+    const bool has_cb = it->has_search_callbacks_;
+
     if (!keep_max) {
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
             float dis = distance_to_code(id_and_codes.second);
+            if (has_cb) {
+                it->on_distance_computed(id_and_codes.first, dis);
+            }
             if (dis < simi[0]) {
+                if (has_cb) {
+                    it->on_heap_changed(id_and_codes.first, idxi[0]);
+                }
                 maxheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
                 nup++;
             }
@@ -1446,7 +1454,13 @@ size_t InvertedListScanner::iterate_codes(
         for (; it->is_available(); it->next()) {
             auto id_and_codes = it->get_id_and_codes();
             float dis = distance_to_code(id_and_codes.second);
+            if (has_cb) {
+                it->on_distance_computed(id_and_codes.first, dis);
+            }
             if (dis > simi[0]) {
+                if (has_cb) {
+                    it->on_heap_changed(id_and_codes.first, idxi[0]);
+                }
                 minheap_replace_top(k, simi, idxi, dis, id_and_codes.first);
                 nup++;
             }
