@@ -8285,10 +8285,13 @@
     <member refid="structfaiss_1_1InvertedListsIOHook_1a2f737877c32b09bbef87f6a37a1c0f52" kind="function"><name>lookup_classname</name></member>
   </compound>
   <compound refid="structfaiss_1_1InvertedListsIterator" kind="struct"><name>faiss::InvertedListsIterator</name>
+    <member refid="structfaiss_1_1InvertedListsIterator_1abc29c0065a424461e609844746087430" kind="variable"><name>has_search_callbacks_</name></member>
     <member refid="structfaiss_1_1InvertedListsIterator_1af470660ccc378a83a4306648330033e4" kind="function"><name>~InvertedListsIterator</name></member>
     <member refid="structfaiss_1_1InvertedListsIterator_1afd70a0c999749b2192ab8b4cbdf3e829" kind="function"><name>is_available</name></member>
     <member refid="structfaiss_1_1InvertedListsIterator_1a9173654909e52fb7336f13820dab045e" kind="function"><name>next</name></member>
     <member refid="structfaiss_1_1InvertedListsIterator_1a13ffcc2ddd20eaf8ae0fc4bca4e6dc5d" kind="function"><name>get_id_and_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListsIterator_1a6b2266aa705566b234a26fa9a6019fb3" kind="function"><name>on_distance_computed</name></member>
+    <member refid="structfaiss_1_1InvertedListsIterator_1ab0d9f6b16cd02b54554690e040ecf5b5" kind="function"><name>on_heap_changed</name></member>
   </compound>
   <compound refid="structfaiss_1_1IOReader" kind="struct"><name>faiss::IOReader</name>
     <member refid="structfaiss_1_1IOReader_1a5b3322fb17e1d9c770b1904600500d65" kind="variable"><name>name</name></member>
