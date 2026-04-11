@@ -134,9 +134,9 @@ void fvec_argsort(size_t n, const float* vals, size_t* perm) {
 }
 
 void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
-    size_t* perm2 = new size_t[n];
+    std::vector<size_t> perm2(n);
     // 2 result tables, during merging, flip between them
-    size_t *permB = perm2, *permA = perm;
+    size_t *permB = perm2.data(), *permA = perm;
 
     int nt = omp_get_max_threads();
     { // prepare correct permutation so that the result ends in perm
@@ -148,8 +148,8 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
         }
     }
 
-#pragma omp parallel
-    for (size_t i = 0; i < n; i++) {
+#pragma omp parallel for
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         permA[i] = i;
     }
 
@@ -184,7 +184,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
             } else {
                 int t0 = s * sub_nt / sub_nseg1;
                 int t1 = (s + 1) * sub_nt / sub_nseg1;
-                printf("merge %d %d, %d threads\n", s, s + 1, t1 - t0);
                 parallel_merge(
                         permA, permB, segs[s], segs[s + 1], t1 - t0, comp);
             }
@@ -197,7 +196,6 @@ void fvec_argsort_parallel(size_t n, const float* vals, size_t* perm) {
     }
     assert(permA == perm);
     omp_set_nested(prev_nested);
-    delete[] perm2;
 }
 
 /*****************************************************************************
@@ -816,6 +814,10 @@ void hashtable_int64_to_int64_lookup(
             size_t k0 = bucket << (log2_capacity - log2_nbucket);
             size_t k1 = (bucket + 1) << (log2_capacity - log2_nbucket);
             for (;;) {
+                if (tab[slot * 2] == -1) { // empty slot, key not in table
+                    vals[i] = -1;
+                    break;
+                }
                 if (tab[slot * 2] == k) { // found!
                     vals[i] = tab[2 * slot + 1];
                     break;
