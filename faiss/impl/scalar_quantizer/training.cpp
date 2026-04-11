@@ -126,8 +126,7 @@ void build_TurboQuantMSECodebook(
         const double right = -1.0 + 2.0 * (i + 1) / k;
         // First estimate of each centroid: the conditional mean of its initial
         // equal-mass cell, with a uniform-cell midpoint as a fallback.
-        centroids_d[i] =
-                range_mean(cuts[i], cuts[i + 1], 0.5 * (left + right));
+        centroids_d[i] = range_mean(cuts[i], cuts[i + 1], 0.5 * (left + right));
     }
 
     std::vector<double> boundaries_d(k > 0 ? k - 1 : 0);
@@ -190,14 +189,9 @@ void build_TurboQuantMSECodebook(
     }
 }
 
-void train_TurboQuantMSE(
-        size_t d,
-        size_t nbits,
-        std::vector<float>& trained) {
+void train_TurboQuantMSE(size_t d, size_t nbits, std::vector<float>& trained) {
     FAISS_THROW_IF_NOT_FMT(
-            nbits > 0,
-            "invalid TurboQuant SQ nbits %zu (must be > 0)",
-            nbits);
+            nbits > 0, "invalid TurboQuant SQ nbits %zu (must be > 0)", nbits);
     std::vector<float> centroids;
     std::vector<float> boundaries;
     build_TurboQuantMSECodebook(d, nbits, centroids, boundaries);

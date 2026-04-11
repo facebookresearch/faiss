@@ -247,23 +247,23 @@ struct QuantizerTemplate<
  * TurboQuant MSE quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)              \
-    template <>                                                            \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {             \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;       \
-                                                                          \
+#define DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)               \
+    template <>                                                             \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                 \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
+                                                                            \
         QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                      \
-            assert(d % 16 == 0);                                          \
-        }                                                                 \
-                                                                          \
-        FAISS_ALWAYS_INLINE simd16float32                                 \
-        reconstruct_16_components(const uint8_t* code, int i) const {     \
-            const __m512i indices = (INDEX_EXPR);                         \
-            return simd16float32(_mm512_i32gather_ps(                     \
-                    indices, this->centroids, sizeof(float)));            \
-        }                                                                 \
+                : Base(d, trained) {                                        \
+            assert(d % 16 == 0);                                            \
+        }                                                                   \
+                                                                            \
+        FAISS_ALWAYS_INLINE simd16float32                                   \
+        reconstruct_16_components(const uint8_t* code, int i) const {       \
+            const __m512i indices = (INDEX_EXPR);                           \
+            return simd16float32(_mm512_i32gather_ps(                       \
+                    indices, this->centroids, sizeof(float)));              \
+        }                                                                   \
     }
 
 DEFINE_TQMSE_AVX512_SPECIALIZATION(1, unpack_16x1bit_to_u32(code, i));
@@ -285,8 +285,8 @@ struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
 
     FAISS_ALWAYS_INLINE simd16float32
     reconstruct_16_components(const uint8_t* code, int i) const {
-        const __m128i packed =
-                _mm_loadu_si128((const __m128i*)(code + static_cast<size_t>(i)));
+        const __m128i packed = _mm_loadu_si128(
+                (const __m128i*)(code + static_cast<size_t>(i)));
         const __m512i indices = _mm512_cvtepu8_epi32(packed);
         return simd16float32(
                 _mm512_i32gather_ps(indices, this->centroids, sizeof(float)));

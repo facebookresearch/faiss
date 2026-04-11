@@ -910,7 +910,7 @@ void read_ScalarQuantizer(
                 expected = 2 + 1; // 2^bits centroids + (2^bits - 1) boundaries
                 break;
             case ScalarQuantizer::QT_2bit_tqmse:
-                expected = 4 + 3; 
+                expected = 4 + 3;
                 break;
             case ScalarQuantizer::QT_3bit_tqmse:
                 expected = 8 + 7;

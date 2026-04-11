@@ -39,17 +39,14 @@ float mean_squared_error(
 }
 
 template <int NBits>
-using ScalarTurboQuantQuantizer =
-        faiss::scalar_quantizer::QuantizerTurboQuantMSE<
-                NBits,
-                faiss::SIMDLevel::NONE>;
+using ScalarTurboQuantQuantizer = faiss::scalar_quantizer::
+        QuantizerTurboQuantMSE<NBits, faiss::SIMDLevel::NONE>;
 
 template <int NBits>
-using ScalarTurboQuantL2DistanceComputer =
-        faiss::scalar_quantizer::DCTemplate<
-                ScalarTurboQuantQuantizer<NBits>,
-                faiss::scalar_quantizer::SimilarityL2<faiss::SIMDLevel::NONE>,
-                faiss::SIMDLevel::NONE>;
+using ScalarTurboQuantL2DistanceComputer = faiss::scalar_quantizer::DCTemplate<
+        ScalarTurboQuantQuantizer<NBits>,
+        faiss::scalar_quantizer::SimilarityL2<faiss::SIMDLevel::NONE>,
+        faiss::SIMDLevel::NONE>;
 
 template <int NBits>
 using ScalarTurboQuantL2Scanner = faiss::scalar_quantizer::IVFSQScannerL2<
@@ -80,10 +77,10 @@ struct ScopedSIMDLevel {
 
 std::vector<faiss::SIMDLevel> available_tqmse_simd_levels() {
     std::vector<faiss::SIMDLevel> levels;
-    for (faiss::SIMDLevel level : {
-                 faiss::SIMDLevel::AVX512,
-                 faiss::SIMDLevel::AVX2,
-                 faiss::SIMDLevel::ARM_NEON}) {
+    for (faiss::SIMDLevel level :
+         {faiss::SIMDLevel::AVX512,
+          faiss::SIMDLevel::AVX2,
+          faiss::SIMDLevel::ARM_NEON}) {
         if (faiss::SIMDConfig::is_simd_level_available(level)) {
             levels.push_back(level);
         }
@@ -117,7 +114,8 @@ void expect_tqmse_simd_dispatch_for_compatible_dim(
     auto* scanner_raw = scanner.get();
 
     EXPECT_NE(typeid(*quantizer_raw), typeid(ScalarTurboQuantQuantizer<NBits>));
-    EXPECT_NE(typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
+    EXPECT_NE(
+            typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
     EXPECT_NE(typeid(*scanner_raw), typeid(ScalarTurboQuantL2Scanner<NBits>));
 }
 
@@ -147,7 +145,8 @@ void expect_tqmse_simd_dispatch_fallback_for_incompatible_dim(
     auto* scanner_raw = scanner.get();
 
     EXPECT_EQ(typeid(*quantizer_raw), typeid(ScalarTurboQuantQuantizer<NBits>));
-    EXPECT_EQ(typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
+    EXPECT_EQ(
+            typeid(*dc_raw), typeid(ScalarTurboQuantL2DistanceComputer<NBits>));
     EXPECT_EQ(typeid(*scanner_raw), typeid(ScalarTurboQuantL2Scanner<NBits>));
 }
 
@@ -254,7 +253,9 @@ void check_tqmse_distance_path_parity(
     }
 }
 
-void check_tqmse_roundtrip(size_t d, faiss::ScalarQuantizer::QuantizerType qtype) {
+void check_tqmse_roundtrip(
+        size_t d,
+        faiss::ScalarQuantizer::QuantizerType qtype) {
     const size_t n = 128;
     std::vector<float> x = make_normalized_vectors(n, d);
     faiss::ScalarQuantizer sq(d, qtype);

@@ -67,7 +67,8 @@ FAISS_ALWAYS_INLINE void unpack_8x3bit_to_u8(
         const uint8_t* code,
         int i,
         uint8_t out[8]) {
-    const uint32_t packed = load_u24(code + ((static_cast<size_t>(i) >> 3) * 3));
+    const uint32_t packed =
+            load_u24(code + ((static_cast<size_t>(i) >> 3) * 3));
     for (size_t j = 0; j < 8; ++j) {
         out[j] = (packed >> (3 * j)) & 0x7;
     }
@@ -83,9 +84,8 @@ FAISS_ALWAYS_INLINE void unpack_8x4bit_to_u8(
     }
 }
 
-FAISS_ALWAYS_INLINE simd8float32 gather_8_components(
-        const float* codebook,
-        const uint8_t indices[8]) {
+FAISS_ALWAYS_INLINE simd8float32
+gather_8_components(const float* codebook, const uint8_t indices[8]) {
     float result[8];
     for (size_t j = 0; j < 8; ++j) {
         result[j] = codebook[indices[j]];
@@ -219,23 +219,23 @@ struct QuantizerTemplate<
  * TurboQuant MSE quantizer
  **********************************************************/
 
-#define DEFINE_TQMSE_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                \
-    template <>                                                           \
-    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::ARM_NEON>             \
-            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {            \
-        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;      \
-                                                                          \
+#define DEFINE_TQMSE_NEON_SPECIALIZATION(NBITS, UNPACK_FN)                  \
+    template <>                                                             \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::ARM_NEON>               \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
+                                                                            \
         QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
-                : Base(d, trained) {                                      \
-            assert(d % 8 == 0);                                           \
-        }                                                                 \
-                                                                          \
-        FAISS_ALWAYS_INLINE simd8float32                                  \
-        reconstruct_8_components(const uint8_t* code, int i) const {      \
-            uint8_t indices[8];                                           \
-            UNPACK_FN(code, i, indices);                                  \
-            return gather_8_components(this->centroids, indices);         \
-        }                                                                 \
+                : Base(d, trained) {                                        \
+            assert(d % 8 == 0);                                             \
+        }                                                                   \
+                                                                            \
+        FAISS_ALWAYS_INLINE simd8float32                                    \
+        reconstruct_8_components(const uint8_t* code, int i) const {        \
+            uint8_t indices[8];                                             \
+            UNPACK_FN(code, i, indices);                                    \
+            return gather_8_components(this->centroids, indices);           \
+        }                                                                   \
     }
 
 DEFINE_TQMSE_NEON_SPECIALIZATION(1, unpack_8x1bit_to_u8);

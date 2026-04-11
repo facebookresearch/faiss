@@ -47,10 +47,7 @@ void train_NonUniform(
  *  @param trained   output: [centroids (k floats), boundaries (k-1 floats)]
  *                   where k = 2^nbits
  */
-void train_TurboQuantMSE(
-        size_t d,
-        size_t nbits,
-        std::vector<float>& trained);
+void train_TurboQuantMSE(size_t d, size_t nbits, std::vector<float>& trained);
 
 } // namespace scalar_quantizer
 

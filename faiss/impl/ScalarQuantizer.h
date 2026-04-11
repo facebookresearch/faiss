@@ -34,10 +34,10 @@ struct ScalarQuantizer : Quantizer {
         QT_8bit_direct_signed, ///< fast indexing of signed int8s ranging from
                                ///< [-128 to 127]
         QT_1bit_tqmse, ///< TurboQuant MSE-optimized, x bits per component
-        QT_2bit_tqmse, 
-        QT_3bit_tqmse, 
-        QT_4bit_tqmse, 
-        QT_8bit_tqmse, 
+        QT_2bit_tqmse,
+        QT_3bit_tqmse,
+        QT_4bit_tqmse,
+        QT_8bit_tqmse,
         QT_count
     };
 

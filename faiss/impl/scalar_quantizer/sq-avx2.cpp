@@ -60,7 +60,8 @@ FAISS_ALWAYS_INLINE __m256i unpack_8x2bit_to_u32(const uint8_t* code, int i) {
 }
 
 FAISS_ALWAYS_INLINE __m256i unpack_8x3bit_to_u32(const uint8_t* code, int i) {
-    const uint32_t packed = load_u24(code + ((static_cast<size_t>(i) >> 3) * 3));
+    const uint32_t packed =
+            load_u24(code + ((static_cast<size_t>(i) >> 3) * 3));
     const __m256i shifts = _mm256_setr_epi32(0, 3, 6, 9, 12, 15, 18, 21);
     const __m256i indices =
             _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
@@ -266,8 +267,8 @@ struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX2>
 
     FAISS_ALWAYS_INLINE simd8float32
     reconstruct_8_components(const uint8_t* code, int i) const {
-        const __m128i packed =
-                _mm_loadl_epi64((const __m128i*)(code + static_cast<size_t>(i)));
+        const __m128i packed = _mm_loadl_epi64(
+                (const __m128i*)(code + static_cast<size_t>(i)));
         const __m256i indices = _mm256_cvtepu8_epi32(packed);
         return simd8float32(
                 _mm256_i32gather_ps(this->centroids, indices, sizeof(float)));

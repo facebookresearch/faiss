@@ -143,32 +143,27 @@ struct QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>
     }
 
     FAISS_ALWAYS_INLINE uint8_t select_index(float x) const {
-        return static_cast<uint8_t>(std::upper_bound(
-                                            boundaries,
-                                            boundaries +
-                                                    (kCentroidsCount - 1),
-                                            x) -
-                                    boundaries);
+        return static_cast<uint8_t>(
+                std::upper_bound(
+                        boundaries, boundaries + (kCentroidsCount - 1), x) -
+                boundaries);
     }
 
-    FAISS_ALWAYS_INLINE void encode_index(
-            uint8_t idx,
-            uint8_t* code,
-            size_t i) const {
+    FAISS_ALWAYS_INLINE void encode_index(uint8_t idx, uint8_t* code, size_t i)
+            const {
         const size_t bit_offset = i * NBits;
         const size_t byte_offset = bit_offset >> 3;
         const size_t bit_shift = bit_offset & 7;
-        const uint16_t packed =
-                static_cast<uint16_t>(idx & kIndexMask) << bit_shift;
+        const uint16_t packed = static_cast<uint16_t>(idx & kIndexMask)
+                << bit_shift;
         code[byte_offset] |= packed & 0xff;
         if (bit_shift + NBits > 8) {
             code[byte_offset + 1] |= packed >> 8;
         }
     }
 
-    FAISS_ALWAYS_INLINE uint8_t decode_index(
-            const uint8_t* code,
-            size_t i) const {
+    FAISS_ALWAYS_INLINE uint8_t
+    decode_index(const uint8_t* code, size_t i) const {
         const size_t bit_offset = i * NBits;
         const size_t byte_offset = bit_offset >> 3;
         const size_t bit_shift = bit_offset & 7;
@@ -200,9 +195,9 @@ struct QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>
 };
 
 template <int NBits, SIMDLevel SL>
-struct QuantizerTurboQuantMSE
-        : QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE> {
-    using QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>::QuantizerTurboQuantMSE;
+struct QuantizerTurboQuantMSE : QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE> {
+    using QuantizerTurboQuantMSE<NBits, SIMDLevel::NONE>::
+            QuantizerTurboQuantMSE;
 };
 
 /*******************************************************************
