@@ -368,3 +368,124 @@ TEST(IVF, search1_out_of_range_key) {
 
     EXPECT_THROW(idx.search1(xq.data(), handler), faiss::FaissException);
 }
+
+// Iterator that enables search callbacks and tracks invocations.
+class CallbackTrackingIterator : public TestInvertedListIterator {
+   public:
+    CallbackTrackingIterator(
+            size_t list_no,
+            TestContext* context,
+            size_t& distance_count,
+            size_t& heap_count)
+            : TestInvertedListIterator(list_no, context),
+              distance_count_{distance_count},
+              heap_count_{heap_count} {
+        has_search_callbacks_ = true;
+    }
+
+    void on_distance_computed(faiss::idx_t id, float distance) override {
+        EXPECT_GE(id, 0) << "vector ID should be non-negative";
+        EXPECT_GE(distance, 0.0f) << "L2 distance should be non-negative";
+        distance_count_++;
+    }
+
+    void on_heap_changed(faiss::idx_t new_id, faiss::idx_t evicted_id)
+            override {
+        EXPECT_GE(new_id, 0) << "new heap entry ID should be non-negative";
+        (void)evicted_id; // may be -1 when heap not yet full
+        heap_count_++;
+    }
+
+   private:
+    size_t& distance_count_;
+    size_t& heap_count_;
+};
+
+// InvertedLists that uses CallbackTrackingIterator.
+class CallbackTrackingInvertedLists : public TestInvertedLists {
+   public:
+    CallbackTrackingInvertedLists(
+            size_t nlist_in,
+            size_t code_size_in,
+            size_t& distance_count,
+            size_t& heap_count)
+            : TestInvertedLists(nlist_in, code_size_in),
+              distance_count_{distance_count},
+              heap_count_{heap_count} {}
+
+    faiss::InvertedListsIterator* get_iterator(size_t list_no, void* context)
+            const override {
+        auto testContext = (TestContext*)context;
+        testContext->lists_probed.insert(list_no);
+        return new CallbackTrackingIterator(
+                list_no, testContext, distance_count_, heap_count_);
+    }
+
+   private:
+    size_t& distance_count_;
+    size_t& heap_count_;
+};
+
+// Test: on_distance_computed and on_heap_changed fire during search
+// when has_search_callbacks_ is true.
+TEST(IVF, search_callbacks) {
+    constexpr int d = 8;
+    constexpr int nb = 200;
+    constexpr int nlist = 4;
+
+    std::mt19937 rng(42);
+    std::uniform_real_distribution<> distrib;
+
+    omp_set_num_threads(1);
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, nlist);
+
+    size_t distance_count = 0;
+    size_t heap_count = 0;
+    CallbackTrackingInvertedLists invlists(
+            nlist, index.code_size, distance_count, heap_count);
+    index.replace_invlists(&invlists);
+
+    // Train
+    constexpr size_t nt = 100;
+    std::vector<float> trainvecs(nt * d);
+    for (size_t i = 0; i < nt * d; i++) {
+        trainvecs[i] = distrib(rng);
+    }
+    index.train(nt, trainvecs.data());
+
+    // Populate via context
+    TestContext context;
+    std::vector<float> database(nb * d);
+    for (size_t i = 0; i < nb * d; i++) {
+        database[i] = distrib(rng);
+    }
+    std::vector<faiss::idx_t> coarse_idx(nb);
+    index.quantizer->assign(nb, database.data(), coarse_idx.data());
+    std::vector<faiss::idx_t> xids(nb, 42);
+    index.add_core(
+            nb, database.data(), xids.data(), coarse_idx.data(), &context);
+
+    // Search
+    constexpr faiss::idx_t k = 5;
+    constexpr size_t nprobe = 2;
+    std::vector<float> query(d);
+    for (int i = 0; i < d; i++) {
+        query[i] = distrib(rng);
+    }
+    std::vector<float> distances(k);
+    std::vector<faiss::idx_t> labels(k);
+    faiss::SearchParametersIVF params;
+    params.inverted_list_context = &context;
+    params.nprobe = nprobe;
+
+    index.search(1, query.data(), k, distances.data(), labels.data(), &params);
+
+    EXPECT_GT(distance_count, 0)
+            << "on_distance_computed should fire for scored vectors";
+    EXPECT_GT(heap_count, 0)
+            << "on_heap_changed should fire when vectors enter the heap";
+    EXPECT_GE(distance_count, heap_count)
+            << "not every distance computation leads to a heap change";
+}
