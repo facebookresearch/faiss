@@ -7,13 +7,16 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <random>
 #include <unordered_set>
 #include <vector>
 
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
@@ -169,6 +172,52 @@ void test_popmin_identical_distances(
     ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
 }
 
+void copy_base_level_only(
+        const faiss::IndexHNSWCagra& src,
+        faiss::IndexHNSWCagra& dst) {
+    auto n = src.ntotal;
+    auto d = src.d;
+    auto M = src.hnsw.nb_neighbors(0) / 2;
+    auto graph_degree = src.hnsw.nb_neighbors(0);
+
+    if (dst.storage && dst.own_fields) {
+        delete dst.storage;
+    }
+    dst.storage = new faiss::IndexFlatL2(d);
+    dst.own_fields = true;
+    dst.d = d;
+    dst.metric_type = src.metric_type;
+    dst.is_trained = true;
+    dst.keep_max_size_level0 = true;
+
+    dst.hnsw.reset();
+    dst.hnsw.assign_probas.clear();
+    dst.hnsw.cum_nneighbor_per_level.clear();
+    dst.hnsw.set_default_probas(M, 1.0 / std::log(M));
+
+    dst.hnsw.prepare_level_tab(n, false);
+
+    auto src_flat = dynamic_cast<faiss::IndexFlat*>(src.storage);
+    FAISS_THROW_IF_NOT(src_flat);
+    dst.storage->add(n, src_flat->get_xb());
+    dst.ntotal = n;
+
+    for (faiss::idx_t i = 0; i < n; i++) {
+        size_t src_begin, src_end;
+        src.hnsw.neighbor_range(i, 0, &src_begin, &src_end);
+
+        size_t dst_begin, dst_end;
+        dst.hnsw.neighbor_range(i, 0, &dst_begin, &dst_end);
+
+        for (size_t j = 0; j < graph_degree && j < (dst_end - dst_begin); j++) {
+            dst.hnsw.neighbors[dst_begin + j] =
+                    src.hnsw.neighbors[src_begin + j];
+        }
+    }
+
+    dst.base_level_only = true;
+}
+
 TEST(HNSW, Test_popmin) {
     std::vector<size_t> sizes = {1, 2, 3, 4, 5, 7, 9, 11, 16, 27, 32, 64, 128};
     for (const size_t size : sizes) {
@@ -216,6 +265,36 @@ TEST(HNSW, Test_IndexHNSW_METRIC_Lp) {
 
     EXPECT_NEAR(distance, 8.0, 1e-5); // Distance should be 8.0 (2^3)
     EXPECT_EQ(label, 0);              // Label should be 0
+}
+
+TEST(HNSW, Test_IndexHNSWCagra_BaseLevelOnly_RangeSearch) {
+    int d = 8;
+    int nb = 100;
+    int nq = 5;
+    int M = 4;
+
+    std::vector<float> xb(nb * d);
+    std::vector<float> xq(nq * d);
+    faiss::float_rand(xb.data(), xb.size(), 1234);
+    faiss::float_rand(xq.data(), xq.size(), 4321);
+
+    faiss::IndexHNSWCagra index(d, M, faiss::METRIC_L2);
+    index.add(nb, xb.data());
+    index.base_level_only = true;
+    index.num_base_level_search_entrypoints = 8;
+
+    faiss::IndexHNSWCagra dst_index;
+    copy_base_level_only(index, dst_index);
+    dst_index.num_base_level_search_entrypoints = 8;
+
+    faiss::RangeSearchResult res(nq);
+    float radius = 1e9f;
+    dst_index.range_search(nq, xq.data(), radius, &res);
+
+    for (int i = 0; i < nq; i++) {
+        auto count = res.lims[i + 1] - res.lims[i];
+        EXPECT_GT(count, 0);
+    }
 }
 
 class HNSWTest : public testing::Test {
