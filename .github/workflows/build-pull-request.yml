@@ -55,6 +55,7 @@ jobs:
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -66,6 +67,7 @@ jobs:
   linux-x86_64-AVX512_SPR-cmake:
     name: Linux x86_64 AVX512_SPR (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -77,6 +79,7 @@ jobs:
   linux-x86_64-DD-cmake:
     name: Linux x86_64 Dynamic Dispatch (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -88,6 +91,7 @@ jobs:
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -99,6 +103,7 @@ jobs:
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
       image: ubuntu:24.04
@@ -122,6 +127,7 @@ jobs:
   linux-x86_64-GPU-w-CUVS-cmake:
     name: Linux x86_64 GPU w/ cuVS (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -134,6 +140,7 @@ jobs:
   linux-arm64-SVE-cmake:
     name: Linux arm64 SVE (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
@@ -148,6 +155,7 @@ jobs:
   linux-arm64-DD-cmake:
     name: Linux arm64 Dynamic Dispatch (cmake)
     needs: linux-x86_64-cmake
+    if: github.repository == 'facebookresearch/faiss'
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
