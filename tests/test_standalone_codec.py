@@ -58,6 +58,21 @@ class TestEncodeDecode(unittest.TestCase):
     def test_SQ8(self):
         self.do_encode_twice('SQ8')
 
+    def test_SQtqmse1(self):
+        self.do_encode_twice('SQtqmse1')
+
+    def test_SQtqmse2(self):
+        self.do_encode_twice('SQtqmse2')
+
+    def test_SQtqmse3(self):
+        self.do_encode_twice('SQtqmse3')
+
+    def test_SQtqmse4(self):
+        self.do_encode_twice('SQtqmse4')
+
+    def test_SQtqmse8(self):
+        self.do_encode_twice('SQtqmse8')
+
     def test_IVFSQ8(self):
         self.do_encode_twice('IVF256,SQ8')
 
@@ -181,7 +196,6 @@ class TestAccuracy(unittest.TestCase):
 
     def test_SQ(self):
         self.compare_accuracy('SQ4', 'SQ8')
-
     def test_SQ2(self):
         self.compare_accuracy('SQ6', 'SQ8')
 
@@ -190,6 +204,18 @@ class TestAccuracy(unittest.TestCase):
 
     def test_SQ4(self):
         self.compare_accuracy('SQ8', 'SQbf16')
+
+    def test_SQtqmse1_vs_2(self):
+        self.compare_accuracy('SQtqmse1', 'SQtqmse2')
+
+    def test_SQtqmse2_vs_3(self):
+        self.compare_accuracy('SQtqmse2', 'SQtqmse3')
+
+    def test_SQtqmse3_vs_4(self):
+        self.compare_accuracy('SQtqmse3', 'SQtqmse4')
+
+    def test_SQtqmse4_vs_8(self):
+        self.compare_accuracy('SQtqmse4', 'SQtqmse8')
 
     def test_PQ(self):
         self.compare_accuracy('PQ6x8np', 'PQ8x8np')

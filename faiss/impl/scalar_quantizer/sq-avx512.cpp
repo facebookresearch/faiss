@@ -9,6 +9,8 @@
 
 #include <faiss/impl/simdlib/simdlib_avx512.h>
 
+#include <cstring>
+
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -20,6 +22,81 @@ namespace faiss {
 namespace scalar_quantizer {
 
 using simd16float32 = faiss::simd16float32_tpl<SIMDLevel::AVX512>;
+
+namespace {
+
+FAISS_ALWAYS_INLINE uint16_t load_u16(const uint8_t* ptr) {
+    uint16_t value;
+    std::memcpy(&value, ptr, sizeof(value));
+    return value;
+}
+
+FAISS_ALWAYS_INLINE uint32_t load_u32(const uint8_t* ptr) {
+    uint32_t value;
+    std::memcpy(&value, ptr, sizeof(value));
+    return value;
+}
+
+FAISS_ALWAYS_INLINE uint64_t load_u64(const uint8_t* ptr) {
+    uint64_t value;
+    std::memcpy(&value, ptr, sizeof(value));
+    return value;
+}
+
+FAISS_ALWAYS_INLINE uint32_t load_u24(const uint8_t* ptr) {
+    return static_cast<uint32_t>(ptr[0]) |
+            (static_cast<uint32_t>(ptr[1]) << 8) |
+            (static_cast<uint32_t>(ptr[2]) << 16);
+}
+
+FAISS_ALWAYS_INLINE __m256i unpack_8x3bit_to_u32(uint32_t packed) {
+    const __m256i shifts = _mm256_setr_epi32(0, 3, 6, 9, 12, 15, 18, 21);
+    const __m256i indices =
+            _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
+    return _mm256_and_si256(indices, _mm256_set1_epi32(0x7));
+}
+
+FAISS_ALWAYS_INLINE __m512i unpack_16x1bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed = load_u16(code + (static_cast<size_t>(i) >> 3));
+    const __m512i shifts = _mm512_setr_epi32(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+    const __m512i indices =
+            _mm512_srlv_epi32(_mm512_set1_epi32(packed), shifts);
+    return _mm512_and_si512(indices, _mm512_set1_epi32(0x1));
+}
+
+FAISS_ALWAYS_INLINE __m512i unpack_16x2bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed = load_u32(code + (static_cast<size_t>(i) >> 2));
+    const __m512i shifts = _mm512_setr_epi32(
+            0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30);
+    const __m512i indices =
+            _mm512_srlv_epi32(_mm512_set1_epi32(packed), shifts);
+    return _mm512_and_si512(indices, _mm512_set1_epi32(0x3));
+}
+
+FAISS_ALWAYS_INLINE __m512i unpack_16x3bit_to_u32(const uint8_t* code, int i) {
+    const size_t byte_offset = (static_cast<size_t>(i) >> 4) * 6;
+    const __m256i low = unpack_8x3bit_to_u32(load_u24(code + byte_offset));
+    const __m256i high = unpack_8x3bit_to_u32(load_u24(code + byte_offset + 3));
+    __m512i indices = _mm512_castsi256_si512(low);
+    return _mm512_inserti32x8(indices, high, 1);
+}
+
+FAISS_ALWAYS_INLINE __m512i unpack_16x4bit_to_u32(const uint8_t* code, int i) {
+    const uint64_t packed = load_u64(code + (static_cast<size_t>(i) >> 1));
+    const __m256i shifts = _mm256_setr_epi32(0, 4, 8, 12, 16, 20, 24, 28);
+    const __m256i low = _mm256_and_si256(
+            _mm256_srlv_epi32(_mm256_set1_epi32((uint32_t)packed), shifts),
+            _mm256_set1_epi32(0xf));
+    const __m256i high = _mm256_and_si256(
+            _mm256_srlv_epi32(
+                    _mm256_set1_epi32((uint32_t)(packed >> 32)), shifts),
+            _mm256_set1_epi32(0xf));
+    __m512i indices = _mm512_castsi256_si512(low);
+    return _mm512_inserti32x8(indices, high, 1);
+}
+
+} // namespace
 
 /**********************************************************
  * Codecs
@@ -163,6 +240,56 @@ struct QuantizerTemplate<
                 xi,
                 _mm512_loadu_ps(this->vdiff + i),
                 _mm512_loadu_ps(this->vmin + i)));
+    }
+};
+
+/**********************************************************
+ * TurboQuant MSE quantizer
+ **********************************************************/
+
+#define DEFINE_TQMSE_AVX512_SPECIALIZATION(NBITS, INDEX_EXPR)               \
+    template <>                                                             \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX512>                 \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
+                                                                            \
+        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
+                : Base(d, trained) {                                        \
+            assert(d % 16 == 0);                                            \
+        }                                                                   \
+                                                                            \
+        FAISS_ALWAYS_INLINE simd16float32                                   \
+        reconstruct_16_components(const uint8_t* code, int i) const {       \
+            const __m512i indices = (INDEX_EXPR);                           \
+            return simd16float32(_mm512_i32gather_ps(                       \
+                    indices, this->centroids, sizeof(float)));              \
+        }                                                                   \
+    }
+
+DEFINE_TQMSE_AVX512_SPECIALIZATION(1, unpack_16x1bit_to_u32(code, i));
+DEFINE_TQMSE_AVX512_SPECIALIZATION(2, unpack_16x2bit_to_u32(code, i));
+DEFINE_TQMSE_AVX512_SPECIALIZATION(3, unpack_16x3bit_to_u32(code, i));
+DEFINE_TQMSE_AVX512_SPECIALIZATION(4, unpack_16x4bit_to_u32(code, i));
+
+#undef DEFINE_TQMSE_AVX512_SPECIALIZATION
+
+template <>
+struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX512>
+        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
+    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+
+    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+            : Base(d, trained) {
+        assert(d % 16 == 0);
+    }
+
+    FAISS_ALWAYS_INLINE simd16float32
+    reconstruct_16_components(const uint8_t* code, int i) const {
+        const __m128i packed = _mm_loadu_si128(
+                (const __m128i*)(code + static_cast<size_t>(i)));
+        const __m512i indices = _mm512_cvtepu8_epi32(packed);
+        return simd16float32(
+                _mm512_i32gather_ps(indices, this->centroids, sizeof(float)));
     }
 };
 

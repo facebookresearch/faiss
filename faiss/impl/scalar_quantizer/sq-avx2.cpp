@@ -9,6 +9,8 @@
 
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
+#include <cstring>
+
 #include <faiss/impl/scalar_quantizer/codecs.h>
 #include <faiss/impl/scalar_quantizer/distance_computers.h>
 #include <faiss/impl/scalar_quantizer/quantizers.h>
@@ -20,6 +22,61 @@ namespace faiss {
 namespace scalar_quantizer {
 
 using simd8float32 = faiss::simd8float32_tpl<SIMDLevel::AVX2>;
+
+namespace {
+
+FAISS_ALWAYS_INLINE uint16_t load_u16(const uint8_t* ptr) {
+    uint16_t value;
+    std::memcpy(&value, ptr, sizeof(value));
+    return value;
+}
+
+FAISS_ALWAYS_INLINE uint32_t load_u32(const uint8_t* ptr) {
+    uint32_t value;
+    std::memcpy(&value, ptr, sizeof(value));
+    return value;
+}
+
+FAISS_ALWAYS_INLINE uint32_t load_u24(const uint8_t* ptr) {
+    return static_cast<uint32_t>(ptr[0]) |
+            (static_cast<uint32_t>(ptr[1]) << 8) |
+            (static_cast<uint32_t>(ptr[2]) << 16);
+}
+
+FAISS_ALWAYS_INLINE __m256i unpack_8x1bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed = code[static_cast<size_t>(i) >> 3];
+    const __m256i shifts = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+    const __m256i indices =
+            _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
+    return _mm256_and_si256(indices, _mm256_set1_epi32(0x1));
+}
+
+FAISS_ALWAYS_INLINE __m256i unpack_8x2bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed = load_u16(code + (static_cast<size_t>(i) >> 2));
+    const __m256i shifts = _mm256_setr_epi32(0, 2, 4, 6, 8, 10, 12, 14);
+    const __m256i indices =
+            _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
+    return _mm256_and_si256(indices, _mm256_set1_epi32(0x3));
+}
+
+FAISS_ALWAYS_INLINE __m256i unpack_8x3bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed =
+            load_u24(code + ((static_cast<size_t>(i) >> 3) * 3));
+    const __m256i shifts = _mm256_setr_epi32(0, 3, 6, 9, 12, 15, 18, 21);
+    const __m256i indices =
+            _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
+    return _mm256_and_si256(indices, _mm256_set1_epi32(0x7));
+}
+
+FAISS_ALWAYS_INLINE __m256i unpack_8x4bit_to_u32(const uint8_t* code, int i) {
+    const uint32_t packed = load_u32(code + (static_cast<size_t>(i) >> 1));
+    const __m256i shifts = _mm256_setr_epi32(0, 4, 8, 12, 16, 20, 24, 28);
+    const __m256i indices =
+            _mm256_srlv_epi32(_mm256_set1_epi32(packed), shifts);
+    return _mm256_and_si256(indices, _mm256_set1_epi32(0xf));
+}
+
+} // namespace
 
 /**********************************************************
  * Codecs
@@ -165,6 +222,56 @@ struct QuantizerTemplate<
                 xi,
                 _mm256_loadu_ps(this->vdiff + i),
                 _mm256_loadu_ps(this->vmin + i)));
+    }
+};
+
+/**********************************************************
+ * TurboQuant MSE quantizer
+ **********************************************************/
+
+#define DEFINE_TQMSE_AVX2_SPECIALIZATION(NBITS, INDEX_EXPR)                 \
+    template <>                                                             \
+    struct QuantizerTurboQuantMSE<NBITS, SIMDLevel::AVX2>                   \
+            : QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE> {              \
+        using Base = QuantizerTurboQuantMSE<NBITS, SIMDLevel::NONE>;        \
+                                                                            \
+        QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained) \
+                : Base(d, trained) {                                        \
+            assert(d % 8 == 0);                                             \
+        }                                                                   \
+                                                                            \
+        FAISS_ALWAYS_INLINE simd8float32                                    \
+        reconstruct_8_components(const uint8_t* code, int i) const {        \
+            const __m256i indices = (INDEX_EXPR);                           \
+            return simd8float32(_mm256_i32gather_ps(                        \
+                    this->centroids, indices, sizeof(float)));              \
+        }                                                                   \
+    }
+
+DEFINE_TQMSE_AVX2_SPECIALIZATION(1, unpack_8x1bit_to_u32(code, i));
+DEFINE_TQMSE_AVX2_SPECIALIZATION(2, unpack_8x2bit_to_u32(code, i));
+DEFINE_TQMSE_AVX2_SPECIALIZATION(3, unpack_8x3bit_to_u32(code, i));
+DEFINE_TQMSE_AVX2_SPECIALIZATION(4, unpack_8x4bit_to_u32(code, i));
+
+#undef DEFINE_TQMSE_AVX2_SPECIALIZATION
+
+template <>
+struct QuantizerTurboQuantMSE<8, SIMDLevel::AVX2>
+        : QuantizerTurboQuantMSE<8, SIMDLevel::NONE> {
+    using Base = QuantizerTurboQuantMSE<8, SIMDLevel::NONE>;
+
+    QuantizerTurboQuantMSE(size_t d, const std::vector<float>& trained)
+            : Base(d, trained) {
+        assert(d % 8 == 0);
+    }
+
+    FAISS_ALWAYS_INLINE simd8float32
+    reconstruct_8_components(const uint8_t* code, int i) const {
+        const __m128i packed = _mm_loadl_epi64(
+                (const __m128i*)(code + static_cast<size_t>(i)));
+        const __m256i indices = _mm256_cvtepu8_epi32(packed);
+        return simd8float32(
+                _mm256_i32gather_ps(this->centroids, indices, sizeof(float)));
     }
 };
 
