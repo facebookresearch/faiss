@@ -121,6 +121,17 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             float* lut_out,
             const float* original_query = nullptr) const;
 
+    /// Overload that accepts caller-owned scratch buffers to avoid
+    /// per-call heap allocation. rotated_q and rotated_qq must each
+    /// have at least d elements. Their contents are overwritten.
+    void compute_residual_LUT(
+            const float* residual,
+            QueryFactorsData& query_factors,
+            float* lut_out,
+            const float* original_query,
+            std::vector<float>& rotated_q,
+            std::vector<uint8_t>& rotated_qq) const;
+
     /// Decode FastScan code to RaBitQ residual vector with explicit
     /// dp_multiplier
     void decode_fastscan_to_residual(
