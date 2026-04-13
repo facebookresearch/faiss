@@ -28,7 +28,7 @@ struct IndexHNSW;
  * link structure built on top */
 
 struct IndexHNSW : Index {
-    typedef HNSW::storage_idx_t storage_idx_t;
+    using storage_idx_t = HNSW::storage_idx_t;
 
     // the link structure
     HNSW hnsw;
