@@ -188,7 +188,7 @@ void HNSW::fill_with_random_links(size_t n) {
         for (size_t ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
             size_t begin, end;
-            neighbor_range(i, 0, &begin, &end);
+            neighbor_range(i, level, &begin, &end);
             for (size_t j = begin; j < end; j++) {
                 int other = 0;
                 do {
