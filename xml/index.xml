@@ -2899,7 +2899,7 @@
     <member refid="structfaiss_1_1IndexBinaryHashStats_1a6caf8ea01443aba3e451a8d6b7353c82" kind="function"><name>reset</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexBinaryHNSW" kind="struct"><name>faiss::IndexBinaryHNSW</name>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1ada0e7cf3dc9f5cdc96b24919b8ea7d1e" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexBinaryHNSW_1a85919341ea47e6dec7968e29d09cbb1e" kind="variable"><name>hnsw</name></member>
@@ -2976,7 +2976,7 @@
     <member refid="structfaiss_1_1IndexBinary_1a75b9b404f77c107b192e25d6406337bb" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aa65f1178997d72127f1ebca5cd7656a2" kind="function"><name>sa_code_size</name></member>
     <member refid="structfaiss_1_1IndexBinary_1a144d5d72fceb98fe9daea9cb393bbfd9" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexBinaryHNSW_1ada0e7cf3dc9f5cdc96b24919b8ea7d1e" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1IndexBinary_1af958aa9b51dac1fcc433014959cad20c" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -3537,7 +3537,7 @@
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexHNSW" kind="struct"><name>faiss::IndexHNSW</name>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" kind="variable"><name>hnsw</name></member>
@@ -3630,7 +3630,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" kind="variable"><name>hnsw</name></member>
@@ -3701,7 +3701,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -3743,7 +3743,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" kind="variable"><name>hnsw</name></member>
@@ -3813,7 +3813,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
   </compound>
@@ -3855,7 +3855,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" kind="variable"><name>hnsw</name></member>
@@ -3909,7 +3909,7 @@
     <member refid="structfaiss_1_1Index_1a989b8815705e95d61adcb87380660415" kind="function"><name>merge_from</name></member>
     <member refid="structfaiss_1_1Index_1a87b6300674be1e0a48210da998fb796e" kind="function"><name>check_compatible_for_merge</name></member>
     <member refid="structfaiss_1_1Index_1aaaec1fac2c4ef7bf6e2b180fe4efbe6b" kind="function"><name>add_sa_codes</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" kind="typedef"><name>storage_idx_t</name></member>
+    <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" kind="typedef"><name>storage_idx_t</name></member>
     <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" kind="typedef"><name>component_t</name></member>
     <member refid="structfaiss_1_1Index_1a1c60d7a12bf3ad27054963df8cccd93f" kind="typedef"><name>distance_t</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a954090e224ed05cdec6f3ccab394c091" kind="variable"><name>hnsw</name></member>

@@ -1840,9 +1840,9 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
-      <memberdef kind="typedef" id="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" prot="public" static="no">
+      <memberdef kind="typedef" id="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref></type>
-        <definition>typedef HNSW::storage_idx_t faiss::IndexHNSW::storage_idx_t</definition>
+        <definition>using faiss::IndexHNSW::storage_idx_t =  HNSW::storage_idx_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
         <qualifiedname>faiss::IndexHNSW::storage_idx_t</qualifiedname>
@@ -1852,7 +1852,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexHNSW.h" line="31" column="33" bodyfile="faiss/IndexHNSW.h" bodystart="31" bodyend="-1"/>
+        <location file="faiss/IndexHNSW.h" line="31" column="5" bodyfile="faiss/IndexHNSW.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" static="no">
         <type>float</type>
@@ -2003,7 +2003,7 @@
       <member refid="structfaiss_1_1IndexHNSWCagra_1a1307f73cdf2a304d44362810e366700f" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>set_numeric_type</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a37f79ff64b8aa13977c1b4dbccf3eec6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>shrink_level_0_neighbors</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a2122830e5b8b02057bde264b74da6f00" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>storage</name></member>
-      <member refid="structfaiss_1_1IndexHNSW_1ad2da92276e4caf988c696f9a32981021" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>storage_idx_t</name></member>
+      <member refid="structfaiss_1_1IndexHNSW_1aa228f4dd6b5613072b1852f87b4745f6" prot="public" virt="non-virtual"><scope>faiss::IndexHNSWCagra</scope><name>storage_idx_t</name></member>
       <member refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train</name></member>
       <member refid="structfaiss_1_1Index_1af8f340497140cc8b091f4732c3460537" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" virt="virtual"><scope>faiss::IndexHNSWCagra</scope><name>train_with_queries</name></member>

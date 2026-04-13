@@ -916,9 +916,9 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-type">
-      <memberdef kind="typedef" id="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" prot="public" static="no">
+      <memberdef kind="typedef" id="structfaiss_1_1IndexBinaryHNSW_1ada0e7cf3dc9f5cdc96b24919b8ea7d1e" prot="public" static="no">
         <type><ref refid="structfaiss_1_1HNSW_1a382cd6d2641ad241e804c1fa4d2b03c6" kindref="member">HNSW::storage_idx_t</ref></type>
-        <definition>typedef HNSW::storage_idx_t faiss::IndexBinaryHNSW::storage_idx_t</definition>
+        <definition>using faiss::IndexBinaryHNSW::storage_idx_t =  HNSW::storage_idx_t</definition>
         <argsstring></argsstring>
         <name>storage_idx_t</name>
         <qualifiedname>faiss::IndexBinaryHNSW::storage_idx_t</qualifiedname>
@@ -928,7 +928,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHNSW.h" line="22" column="33" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="22" bodyend="-1"/>
+        <location file="faiss/IndexBinaryHNSW.h" line="22" column="5" bodyfile="faiss/IndexBinaryHNSW.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="structfaiss_1_1IndexBinary_1aaa0f338d22575d508cd6141972addaa6" prot="public" static="no">
         <type>uint8_t</type>
@@ -1064,7 +1064,7 @@
       <member refid="structfaiss_1_1IndexBinary_1a82b07fe855fba3208ae05391328b9ec3" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>search_and_reconstruct</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a697b79b91e14d76f00ae343d08609662" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>search_ex</name></member>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1a1f17d1e2fddd93dfedeef219d4388fdc" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>storage</name></member>
-      <member refid="structfaiss_1_1IndexBinaryHNSW_1af031247c5c51de88a6a459fdf628359b" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>storage_idx_t</name></member>
+      <member refid="structfaiss_1_1IndexBinaryHNSW_1ada0e7cf3dc9f5cdc96b24919b8ea7d1e" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>storage_idx_t</name></member>
       <member refid="structfaiss_1_1IndexBinaryHNSW_1afc2793b3b3c53e5acd8315dfea500e68" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>train</name></member>
       <member refid="structfaiss_1_1IndexBinary_1ae9f0fc632373aec59f5c836caa33ed10" prot="public" virt="virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>train_ex</name></member>
       <member refid="structfaiss_1_1IndexBinary_1a1656c00d77d55999becd71e3d8ea6dd7" prot="public" virt="non-virtual"><scope>faiss::IndexBinaryHNSWCagra</scope><name>verbose</name></member>
