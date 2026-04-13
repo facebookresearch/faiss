@@ -319,7 +319,8 @@ namespace {
 
 struct IVFPQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    static constexpr int impl = 10; // based on search_implem_10
+    [[maybe_unused]] static constexpr int impl =
+            10;                     // based on search_implem_10
     static constexpr size_t nq = 1; // 1 query at a time.
     const IndexIVFPQFastScan& index;
     AlignedTable<uint8_t> dis_tables;
