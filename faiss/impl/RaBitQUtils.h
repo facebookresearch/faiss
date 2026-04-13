@@ -388,6 +388,36 @@ inline T* get_block_aux_ptr(
  */
 size_t compute_per_vector_storage_size(size_t nb_bits, size_t d);
 
+/** Per-vector storage size for byte-packed ex_code layout.
+ * ex_code uses d bytes (one byte per dimension) instead of (d*ex_bits+7)/8.
+ */
+size_t compute_per_vector_storage_size_bytepacked(size_t nb_bits, size_t d);
+
+/** Full multibit distance using byte-packed ex_code layout. */
+template <SIMDLevel SL>
+inline float compute_full_multibit_distance_bytepacked(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExtraBitsFactors& ex_fac,
+        const float* rotated_q,
+        float qr_base,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
+
+    float ex_ip = rabitq::multibit::compute_inner_product_bytepacked<SL>(
+            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+
+    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+
+    if (metric_type == MetricType::METRIC_L2) {
+        dist = std::max(0.0f, dist);
+    }
+
+    return dist;
+}
+
 /** [LEGACY FORMAT SUPPORT] Migrate block data from old I/O format to new
  * format.
  *

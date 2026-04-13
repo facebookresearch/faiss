@@ -145,6 +145,18 @@ float compute_optimal_scaling_factor(
  * @param d Dimensionality
  * @param nb_bits Number of bits per dimension (2-9)
  */
+void pack_multibit_codes_bytepacked(
+        const int* tmp_code,
+        uint8_t* ex_code,
+        size_t d,
+        size_t /* nb_bits */) {
+    // Byte-packed layout: one byte per dimension, value in [0, 2^ex_bits-1].
+    // Enables cvtepu8→float FMA kernel instead of PEXT bit-plane extraction.
+    for (size_t i = 0; i < d; i++) {
+        ex_code[i] = static_cast<uint8_t>(tmp_code[i]);
+    }
+}
+
 void pack_multibit_codes(
         const int* tmp_code,
         uint8_t* ex_code,

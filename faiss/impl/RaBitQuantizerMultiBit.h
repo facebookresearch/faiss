@@ -55,6 +55,13 @@ void pack_multibit_codes(
         size_t d,
         size_t nb_bits);
 
+/** Byte-packed variant: one byte per dimension. */
+void pack_multibit_codes_bytepacked(
+        const int* tmp_code,
+        uint8_t* ex_code,
+        size_t d,
+        size_t nb_bits);
+
 /**
  * Compute ex-bits factors for distance computation.
  *

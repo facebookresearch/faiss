@@ -2301,9 +2301,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idx = std::move(svs);
     }
 #endif // FAISS_ENABLE_SVS
-    else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {
-        // Iwrn = new format (aux data embedded in SIMD blocks)
+    else if (
+            h == fourcc("Iwrn") || h == fourcc("Iwrf") || h == fourcc("Iwrp")) {
+        // Iwrn = bit-packed ex_codes (aux data embedded in SIMD blocks)
         // Iwrf = legacy format (flat_storage separate, needs migration)
+        // Iwrp = byte-packed ex_codes (FMA-friendly layout)
         const bool is_legacy = (h == fourcc("Iwrf"));
 
         auto ivrqfs = std::make_unique<IndexIVFRaBitQFastScan>();
@@ -2321,6 +2323,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 "invalid RaBitQ qb=%d (must be in [1, 8])",
                 ivrqfs->qb);
         READ1(ivrqfs->centered);
+
+        // Set layout flag from fourcc — no extra field in stream.
+        ivrqfs->byte_packed_excodes = (h == fourcc("Iwrp"));
 
         std::vector<uint8_t> legacy_flat_storage;
         if (is_legacy) {

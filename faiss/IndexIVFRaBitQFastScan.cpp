@@ -47,7 +47,8 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
         MetricType metric,
         int bbs_in,
         bool own_invlists_in,
-        uint8_t nb_bits)
+        uint8_t nb_bits,
+        bool byte_packed_excodes_in)
         : IndexIVFFastScan(
                   quantizer_in,
                   d_in,
@@ -55,7 +56,11 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
                   0,
                   metric,
                   own_invlists_in),
-          rabitq(d_in, metric, nb_bits) {
+          rabitq(d_in, metric, nb_bits),
+          byte_packed_excodes(byte_packed_excodes_in) {
+    if (byte_packed_excodes && nb_bits < 4) {
+        FAISS_THROW_MSG("byte_packed_excodes requires nb_bits >= 4");
+    }
     FAISS_THROW_IF_NOT_MSG(d_in > 0, "Dimension must be positive");
     FAISS_THROW_IF_NOT_MSG(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
@@ -104,6 +109,10 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
           rabitq(orig.rabitq) {}
 
 size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
+    if (byte_packed_excodes) {
+        return rabitq_utils::compute_per_vector_storage_size_bytepacked(
+                rabitq.nb_bits, d);
+    }
     return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
 }
 
@@ -239,7 +248,9 @@ void IndexIVFRaBitQFastScan::encode_vectors(
                     }
 
                     // Quantize ex-bits
-                    const size_t ex_code_size = (d * ex_bits + 7) / 8;
+                    const size_t ex_code_bytes = byte_packed_excodes
+                            ? static_cast<size_t>(d)
+                            : (d * ex_bits + 7) / 8;
                     uint8_t* ex_code = fastscan_code + bit_pattern_size +
                             sizeof(SignBitFactorsWithError);
                     ExtraBitsFactors ex_factors_temp;
@@ -253,7 +264,19 @@ void IndexIVFRaBitQFastScan::encode_vectors(
                             rabitq.metric_type,
                             centroid.data());
 
-                    memcpy(ex_code + ex_code_size,
+                    if (byte_packed_excodes) {
+                        // quantize_ex_bits wrote bit-packed; repack to
+                        // byte-packed in-place via a temp buffer.
+                        std::vector<int> tmp(d);
+                        for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+                            tmp[j] = rabitq_utils::extract_code_inline(
+                                    ex_code, j, ex_bits);
+                        }
+                        rabitq_multibit::pack_multibit_codes_bytepacked(
+                                tmp.data(), ex_code, d, rabitq.nb_bits);
+                    }
+
+                    memcpy(ex_code + ex_code_bytes,
                            &ex_factors_temp,
                            sizeof(ExtraBitsFactors));
                 }
@@ -632,6 +655,10 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         FAISS_THROW_IF_NOT_MSG(
                 dc,
                 "set_query and set_list must be called before distance_to_code");
+        FAISS_THROW_IF_NOT_MSG(
+                !index.byte_packed_excodes,
+                "distance_to_code not supported for byte-packed ex_code layout. "
+                "Use the FastScan batch search path instead.");
         return dc->distance_to_code(code);
     }
 

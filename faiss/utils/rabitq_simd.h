@@ -202,4 +202,54 @@ inline float compute_inner_product<SIMDLevel::NONE>(
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
 
+/*********************************************************
+ * Byte-packed ex_code kernels.
+ *
+ * Same semantics as above, but ex_code uses byte-packed layout:
+ * one byte per dimension (value in [0, 2^ex_bits - 1]).
+ * Enables cvtepu8→float FMA instead of PEXT bit-plane extraction.
+ * Only used for ex_bits >= 3 where the FMA path is faster.
+ *********************************************************/
+
+/// Scalar byte-packed inner product. Also serves as tail handler.
+inline float ip_scalar_bytepacked(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t start,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    float result = 0.0f;
+    const int sign_shift = static_cast<int>(ex_bits);
+    for (size_t i = start; i < d; i++) {
+        int sb = (sign_bits[i / 8] >> (i % 8)) & 1;
+        int ex_val = static_cast<int>(ex_code[i]);
+        result += rotated_q[i] *
+                (static_cast<float>((sb << sign_shift) + ex_val) + cb);
+    }
+    return result;
+}
+
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float compute_inner_product_bytepacked(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb);
+
+template <>
+inline float compute_inner_product_bytepacked<SIMDLevel::NONE>(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    return ip_scalar_bytepacked(
+            sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
 } // namespace faiss::rabitq::multibit

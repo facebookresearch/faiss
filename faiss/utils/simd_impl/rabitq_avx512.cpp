@@ -472,6 +472,44 @@ float compute_inner_product<SIMDLevel::AVX512>(
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
 
+template <>
+float compute_inner_product_bytepacked<SIMDLevel::AVX512>(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    // AVX512 byte-packed kernel: use 512-bit cvtepu8 + FMA.
+    __m512 acc = _mm512_setzero_ps();
+    const __m512 v_cb = _mm512_set1_ps(cb);
+    const __m512 v_sign_weight =
+            _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+    const __m512 v_one = _mm512_set1_ps(1.0f);
+
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        uint16_t sb16;
+        memcpy(&sb16, sign_bits + i / 8, sizeof(uint16_t));
+        __m512 sb_f = _mm512_maskz_mov_ps(_cvtu32_mask16(sb16), v_one);
+
+        __m128i ex_bytes =
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(ex_code + i));
+        __m512 ex_f = _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(ex_bytes));
+
+        __m512 recon = _mm512_fmadd_ps(sb_f, v_sign_weight, ex_f);
+        recon = _mm512_add_ps(recon, v_cb);
+
+        __m512 rq = _mm512_loadu_ps(rotated_q + i);
+        acc = _mm512_fmadd_ps(rq, recon, acc);
+    }
+
+    float result = _mm512_reduce_add_ps(acc);
+    result += ip_scalar_bytepacked(
+            sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
+    return result;
+}
+
 } // namespace faiss::rabitq::multibit
 
 #endif // COMPILE_SIMD_AVX512

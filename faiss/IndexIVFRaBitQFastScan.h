@@ -56,6 +56,12 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Use zero-centered scalar quantizer for queries
     bool centered = false;
 
+    /// When true, multibit ex_codes use byte-packed layout (1 byte/dim)
+    /// instead of bit-packed (ex_bits bits/dim). Enables FMA kernel for
+    /// faster search at the cost of higher storage. Only valid for nb_bits
+    /// >= 4.
+    bool byte_packed_excodes = false;
+
     // Constructors
 
     IndexIVFRaBitQFastScan();
@@ -67,7 +73,8 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             MetricType metric = METRIC_L2,
             int bbs = 32,
             bool own_invlists = true,
-            uint8_t nb_bits = 1);
+            uint8_t nb_bits = 1,
+            bool byte_packed_excodes = false);
 
     /// Build from an existing IndexIVFRaBitQ
     explicit IndexIVFRaBitQFastScan(const IndexIVFRaBitQ& orig, int bbs = 32);
@@ -378,29 +385,42 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
             full_block_size,
             storage_size);
 
-    const size_t ex_code_size = (dim * ex_bits + 7) / 8;
+    const size_t ex_code_bytes =
+            index->byte_packed_excodes ? dim : (dim * ex_bits + 7) / 8;
     const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
     const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
-            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
+            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_bytes);
 
     size_t probe_rank = probe_indices[local_q];
     size_t nprobe_val = context->nprobe > 0 ? context->nprobe : index->nprobe;
     size_t storage_idx_val = global_q * nprobe_val + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx_val];
 
-    // Use list_codes_ptr (already set by set_list_context) and the
-    // pre-allocated unpack_buf to avoid per-refinement ScopedCodes
-    // re-acquisition and heap allocation.
     packer->unpack_1(list_codes_ptr, local_offset, unpack_buf.data());
 
-    return rabitq_utils::compute_full_multibit_distance(
+    const float qr_base =
+            (index->metric_type == MetricType::METRIC_INNER_PRODUCT)
+            ? query_factors.q_dot_c
+            : query_factors.qr_to_c_L2sqr;
+
+    if (index->byte_packed_excodes) {
+        return rabitq_utils::compute_full_multibit_distance_bytepacked<SL>(
+                unpack_buf.data(),
+                ex_code,
+                ex_fac,
+                query_factors.rotated_q.data(),
+                qr_base,
+                dim,
+                ex_bits,
+                index->metric_type);
+    }
+
+    return rabitq_utils::compute_full_multibit_distance<SL>(
             unpack_buf.data(),
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),
-            (index->metric_type == MetricType::METRIC_INNER_PRODUCT)
-                    ? query_factors.q_dot_c
-                    : query_factors.qr_to_c_L2sqr,
+            qr_base,
             dim,
             ex_bits,
             index->metric_type);

@@ -50,6 +50,18 @@ float compute_inner_product<SIMDLevel::ARM_NEON>(
             sign_bits, ex_code, rotated_q, d, ex_bits, cb);
 }
 
+template <>
+float compute_inner_product_bytepacked<SIMDLevel::ARM_NEON>(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    return compute_inner_product_bytepacked<SIMDLevel::NONE>(
+            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+}
+
 } // namespace faiss::rabitq::multibit
 
 #endif // COMPILE_SIMD_ARM_NEON

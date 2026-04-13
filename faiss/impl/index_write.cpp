@@ -1070,7 +1070,9 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     else if (
             const IndexIVFRaBitQFastScan* ivrqfs =
                     dynamic_cast<const IndexIVFRaBitQFastScan*>(idx)) {
-        uint32_t h = fourcc("Iwrn");
+        // Iwrp = byte-packed ex_codes, Iwrn = bit-packed (original)
+        uint32_t h =
+                ivrqfs->byte_packed_excodes ? fourcc("Iwrp") : fourcc("Iwrn");
         WRITE1(h);
         write_ivf_header(ivrqfs, f);
         write_RaBitQuantizer(&ivrqfs->rabitq, f);

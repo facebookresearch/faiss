@@ -350,6 +350,60 @@ float compute_inner_product<SIMDLevel::AVX2>(
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
 
+// Byte-packed FMA kernel: ex_code[i] is one byte per dimension.
+// ~5 AVX instructions per 8 dims, no PEXT, no inner loop.
+namespace {
+inline float ip_bytepacked_avx2(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    __m256 acc = _mm256_setzero_ps();
+    const __m256 v_cb = _mm256_set1_ps(cb);
+    const __m256 v_sign_weight =
+            _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    const __m256 v_one = _mm256_set1_ps(1.0f);
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        __m256i sb_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
+                zero);
+        __m256 sb_f = _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one);
+
+        __m128i ex_bytes =
+                _mm_loadl_epi64(reinterpret_cast<const __m128i*>(ex_code + i));
+        __m256 ex_f = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(ex_bytes));
+
+        __m256 recon = _mm256_fmadd_ps(sb_f, v_sign_weight, ex_f);
+        recon = _mm256_add_ps(recon, v_cb);
+
+        __m256 rq = _mm256_loadu_ps(rotated_q + i);
+        acc = _mm256_fmadd_ps(rq, recon, acc);
+    }
+
+    float result = hsum_avx2(acc);
+    result += ip_scalar_bytepacked(
+            sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
+    return result;
+}
+} // namespace
+
+template <>
+float compute_inner_product_bytepacked<SIMDLevel::AVX2>(
+        const uint8_t* __restrict sign_bits,
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb) {
+    return ip_bytepacked_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+}
+
 } // namespace faiss::rabitq::multibit
 
 #endif // COMPILE_SIMD_AVX2

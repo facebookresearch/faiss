@@ -307,6 +307,11 @@ size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
     }
 }
 
+size_t compute_per_vector_storage_size_bytepacked(size_t nb_bits, size_t d) {
+    FAISS_THROW_IF_NOT(nb_bits >= 4);
+    return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) + d;
+}
+
 // Non-template wrapper with dynamic dispatch (one dispatch per call).
 // The hot path in RaBitQuantizer dispatches once at distance computer
 // construction, so per-vector dispatch only affects this utility path.
