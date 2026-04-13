@@ -279,7 +279,7 @@ void LinearTransform::set_is_orthonormal() {
                 float v = ATA[i + j * d_out];
                 if (i == j)
                     v -= 1;
-                if (fabs(v) > eps) {
+                if (std::fabs(v) > eps) {
                     is_orthonormal = false;
                 }
             }
@@ -773,7 +773,7 @@ void PCAMatrix::prepare_Ab() {
         if (eigen_power != 0) {
             float* ai = A.data();
             for (int i = 0; i < d_out; i++) {
-                float factor = pow(eigenvalues[i] + epsilon, eigen_power);
+                float factor = std::pow(eigenvalues[i] + epsilon, eigen_power);
                 for (int j = 0; j < d_in; j++)
                     *ai++ *= factor;
             }
