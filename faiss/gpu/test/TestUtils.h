@@ -161,7 +161,7 @@ struct TestIDSelectorStruct {
     std::vector<uint8_t> bitmap;
     std::map<std::string, std::unique_ptr<faiss::IDSelector>> selector_map;
 
-    TestIDSelectorStruct(int numAdd);
+    explicit TestIDSelectorStruct(int numAdd);
 };
 
 } // namespace gpu

@@ -152,7 +152,7 @@ void convert_to_bitset_bitmap(
     }
     RAFT_EXPECTS(
             bitset.size() == n,
-            "IDSelectorBitmap is out of range for the given bitset: %d != %d",
+            "IDSelectorBitmap is out of range for the given bitset: %ld != %zu",
             bitset.size(),
             n);
     auto stream = raft::resource::get_cuda_stream(res);

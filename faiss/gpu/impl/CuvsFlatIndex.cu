@@ -30,6 +30,7 @@
 #include <vector>
 
 #include <cuvs/core/bitset.hpp>
+#include <cuvs/distance/distance.h>
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>
@@ -166,7 +167,7 @@ void CuvsFlatIndex::query(
             outDistances.getSize(0),
             outDistances.getSize(1));
 
-    cuvsDistanceType distance = metricFaissToCuvs(metric, exactDistance);
+    auto distance = metricFaissToCuvs(metric, exactDistance);
 
     std::optional<raft::device_vector_view<const float, int64_t>> norms_view =
             raft::make_device_vector_view(norms_.data(), norms_.getSize(0));

@@ -916,12 +916,6 @@ void testIDSelectorIVFFlat(faiss::MetricType metricType) {
     std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
     std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
 
-    faiss::IndexFlatL2 quantizerL2(opt.dim);
-    faiss::IndexFlatIP quantizerIP(opt.dim);
-    faiss::Index* quantizer = metricType == faiss::METRIC_L2
-            ? (faiss::Index*)&quantizerL2
-            : (faiss::Index*)&quantizerIP;
-
     faiss::gpu::StandardGpuResources res;
     res.noTempMemory();
 
