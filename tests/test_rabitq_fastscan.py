@@ -1070,6 +1070,59 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
         self.assertEqual(D.shape, (ds.nq, 5))
 
 
+class TestRaBitQFastScanSearchParams(unittest.TestCase):
+    """Test that IVFRaBitQSearchParameters qb/centered are respected."""
+
+    def test_higher_qb_improves_recall(self):
+        """Search with qb=4 should give better recall than qb=1."""
+        d = 64
+        nlist = 16
+        nprobe = 4
+        k = 10
+        ds = datasets.SyntheticDataset(d, 5000, 5000, 50)
+
+        # Ground truth with flat index
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.add(ds.get_database())
+        _, I_gt = index_flat.search(ds.get_queries(), k)
+
+        # Build IVF RaBitQ FastScan index with default qb=8
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, faiss.METRIC_L2, 32, True
+        )
+        index.nprobe = nprobe
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        # Search with qb=1 (coarse quantization)
+        params_qb1 = faiss.IVFRaBitQSearchParameters()
+        params_qb1.nprobe = nprobe
+        params_qb1.qb = 1
+        _, I_qb1 = index.search(ds.get_queries(), k, params=params_qb1)
+
+        # Search with qb=4 (finer quantization)
+        params_qb4 = faiss.IVFRaBitQSearchParameters()
+        params_qb4.nprobe = nprobe
+        params_qb4.qb = 4
+        _, I_qb4 = index.search(ds.get_queries(), k, params=params_qb4)
+
+        # Compute recall@k
+        recall_qb1 = np.mean([
+            len(np.intersect1d(I_qb1[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
+        recall_qb4 = np.mean([
+            len(np.intersect1d(I_qb4[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
+
+        self.assertGreater(
+            recall_qb4, recall_qb1,
+            f"qb=4 recall ({recall_qb4:.3f}) should be higher "
+            f"than qb=1 recall ({recall_qb1:.3f})"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

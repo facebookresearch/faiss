@@ -119,6 +119,8 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             const float* residual,
             QueryFactorsData& query_factors,
             float* lut_out,
+            uint8_t qb_param,
+            bool centered_param,
             const float* original_query = nullptr) const;
 
     /// Decode FastScan code to RaBitQ residual vector with explicit
@@ -265,8 +267,9 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
             (idx_base / index->bbs) * full_block_size + packed_block_size;
 
     // Cache index fields used in the inner loop.
-    const bool centered = index->centered;
-    const size_t qb = index->qb;
+    // Use overridden qb/centered from context if provided, else index defaults.
+    const bool centered = context->qb > 0 ? context->centered : index->centered;
+    const size_t qb = context->qb > 0 ? context->qb : index->qb;
     const size_t d = index->d;
 
 #ifndef NDEBUG
