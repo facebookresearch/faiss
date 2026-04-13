@@ -83,6 +83,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    /// Packed code size: (d + 7) / 8 bytes (1-bit-per-dimension sign bits,
+    /// excluding factors)
+    size_t fast_scan_code_size() const override;
+
    protected:
     /// Return code_size as stride to skip embedded factor data during packing
     size_t code_packing_stride() const override;
@@ -208,6 +212,9 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
         heap_heapify<Cfloat>(k, heap_distances + q * k, heap_labels + q * k);
     }
 }
+
+// Explicit alias — must match SIMDResultHandler::handle() signature.
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
 
 template <class C, SIMDLevel SL>
 void IVFRaBitQHeapHandler<C, SL>::handle(

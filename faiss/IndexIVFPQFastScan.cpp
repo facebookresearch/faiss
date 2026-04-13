@@ -117,6 +117,10 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs_in)
     orig_invlists = orig.invlists;
 }
 
+size_t IndexIVFPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/
@@ -185,6 +189,9 @@ void IndexIVFPQFastScan::encode_vectors(
 /*********************************************************
  * Look-Up Table functions
  *********************************************************/
+
+// Explicit SIMD-level alias (no global bare aliases).
+using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
 
 void fvec_madd_simd(
         size_t n,

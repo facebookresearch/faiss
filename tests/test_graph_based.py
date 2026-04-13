@@ -9,9 +9,10 @@ import numpy as np
 import unittest
 import faiss
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 
+@for_all_simd_levels
 class TestHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -605,6 +606,29 @@ class TestNNDescent(unittest.TestCase):
         gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
         np.testing.assert_array_equal(indices, gt)
+
+
+class TestNNDescentGenRandom(unittest.TestCase):
+    """Regression tests for gen_random edge cases in NNDescent."""
+
+    def test_search_L_equals_ntotal(self):
+        """gen_random(size, N) crashed with division by zero when size == N.
+
+        In search(), L_2 = max(search_L, topk). When search_L >= ntotal,
+        gen_random is called with size == N, causing rng() % 0.
+        """
+        d = 32
+        nb = 200  # just above NUM_EVAL_POINTS=100
+        xb = np.random.default_rng(42).random((nb, d)).astype('float32')
+        xq = np.random.default_rng(43).random((10, d)).astype('float32')
+
+        index = faiss.IndexNNDescentFlat(d, 32)
+        index.nndescent.search_L = nb  # triggers gen_random(size=nb, N=nb)
+        index.train(xb)
+        index.add(xb)
+
+        # This crashed with division by zero before the fix
+        D, I = index.search(xq, k=1)
 
 
 class TestNNDescentKNNG(unittest.TestCase):

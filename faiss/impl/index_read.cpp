@@ -697,6 +697,38 @@ static void validate_codebooks_size(
             aq.total_codebook_size);
 }
 
+// Validate FastScan fields shared by all FastScan index types.
+// M, ksub, bbs must be positive; bbs must be 32-aligned; M2 must be
+// roundup(M, 2); and ksub * M / ksub * M2 must not overflow.
+static void validate_fastscan_fields(
+        size_t M,
+        size_t M2,
+        size_t ksub,
+        int bbs,
+        const char* index_type) {
+    FAISS_THROW_IF_NOT_FMT(
+            M > 0 && ksub > 0,
+            "%s: invalid quantizer state (M=%zd, ksub=%zd, must be > 0)",
+            index_type,
+            M,
+            ksub);
+    FAISS_THROW_IF_NOT_FMT(
+            bbs > 0 && bbs % 32 == 0,
+            "%s: invalid bbs=%d (must be > 0 and a multiple of 32)",
+            index_type,
+            bbs);
+    size_t expected_M2 = (M + 1) & ~static_cast<size_t>(1); // roundup(M, 2)
+    FAISS_THROW_IF_NOT_FMT(
+            M2 == expected_M2,
+            "%s: invalid M2=%zd (expected roundup(M=%zd, 2) = %zd)",
+            index_type,
+            M2,
+            M,
+            expected_M2);
+    mul_no_overflow(ksub, M, index_type);
+    mul_no_overflow(ksub, M2, index_type);
+}
+
 // Validate that the AdditiveQuantizer dimension matches the index header
 // dimension.  compute_LUT() treats codebooks as a (d, total_codebook_size)
 // matrix and query vectors are sized for idx_d, so a mismatch leads to
@@ -1512,25 +1544,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         READVECTOR(idxaqfs->codes);
 
-        FAISS_THROW_IF_NOT_FMT(
-                idxaqfs->M > 0 && idxaqfs->ksub > 0,
-                "IndexAdditiveQuantizerFastScan: invalid quantizer state "
-                "(M=%zd, ksub=%zd, must be > 0)",
+        validate_fastscan_fields(
                 idxaqfs->M,
-                idxaqfs->ksub);
-        FAISS_THROW_IF_NOT_FMT(
-                idxaqfs->bbs > 0 && idxaqfs->bbs % 32 == 0,
-                "IndexAdditiveQuantizerFastScan: invalid bbs=%d "
-                "(must be > 0 and a multiple of 32)",
-                idxaqfs->bbs);
-        mul_no_overflow(
-                idxaqfs->ksub,
-                idxaqfs->M,
-                "IndexAdditiveQuantizerFastScan ksub * M");
-        mul_no_overflow(
-                idxaqfs->ksub,
                 idxaqfs->M2,
-                "IndexAdditiveQuantizerFastScan ksub * M2");
+                idxaqfs->ksub,
+                idxaqfs->bbs,
+                "IndexAdditiveQuantizerFastScan");
 
         idx = std::move(idxaqfs);
     } else if (
@@ -1588,6 +1607,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
 
         read_InvertedLists(*ivaqfs, f, io_flags);
         ivaqfs->init_code_packer();
+
+        validate_fastscan_fields(
+                ivaqfs->M,
+                ivaqfs->M2,
+                ivaqfs->ksub,
+                ivaqfs->bbs,
+                "IndexIVFAdditiveQuantizerFastScan");
+
         idx = std::move(ivaqfs);
     } else if (h == fourcc("IvFl") || h == fourcc("IvFL")) { // legacy
         auto ivfl = std::make_unique<IndexIVFFlat>();
@@ -2032,20 +2059,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxpqfs->ksub = (1 << pq.nbits);
         idxpqfs->code_size = pq.code_size;
 
-        FAISS_THROW_IF_NOT_FMT(
-                idxpqfs->M > 0 && idxpqfs->ksub > 0,
-                "IndexPQFastScan: invalid quantizer state "
-                "(M=%zd, ksub=%zd, must be > 0)",
+        validate_fastscan_fields(
                 idxpqfs->M,
-                idxpqfs->ksub);
-        FAISS_THROW_IF_NOT_FMT(
-                idxpqfs->bbs > 0 && idxpqfs->bbs % 32 == 0,
-                "IndexPQFastScan: invalid bbs=%d "
-                "(must be > 0 and a multiple of 32)",
-                idxpqfs->bbs);
-        mul_no_overflow(idxpqfs->ksub, idxpqfs->M, "IndexPQFastScan ksub * M");
-        mul_no_overflow(
-                idxpqfs->ksub, idxpqfs->M2, "IndexPQFastScan ksub * M2");
+                idxpqfs->M2,
+                idxpqfs->ksub,
+                idxpqfs->bbs,
+                "IndexPQFastScan");
 
         idx = std::move(idxpqfs);
 
@@ -2068,6 +2087,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivpq->ksub = (1 << pq.nbits);
         ivpq->code_size = pq.code_size;
         ivpq->init_code_packer();
+
+        validate_fastscan_fields(
+                ivpq->M, ivpq->M2, ivpq->ksub, ivpq->bbs, "IndexIVFPQFastScan");
 
         idx = std::move(ivpq);
     } else if (h == fourcc("IRMf")) {
@@ -2117,21 +2139,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxqfs->nbits = nbits_fastscan;
         idxqfs->ksub = (1 << nbits_fastscan);
 
-        FAISS_THROW_IF_NOT_FMT(
-                idxqfs->M > 0 && idxqfs->ksub > 0,
-                "IndexRaBitQFastScan: invalid quantizer state "
-                "(M=%zd, ksub=%zd, must be > 0)",
+        validate_fastscan_fields(
                 idxqfs->M,
-                idxqfs->ksub);
-        FAISS_THROW_IF_NOT_FMT(
-                idxqfs->bbs > 0 && idxqfs->bbs % 32 == 0,
-                "IndexRaBitQFastScan: invalid bbs=%d "
-                "(must be > 0 and a multiple of 32)",
-                idxqfs->bbs);
-        mul_no_overflow(
-                idxqfs->ksub, idxqfs->M, "IndexRaBitQFastScan ksub * M");
-        mul_no_overflow(
-                idxqfs->ksub, idxqfs->M2, "IndexRaBitQFastScan ksub * M2");
+                idxqfs->M2,
+                idxqfs->ksub,
+                idxqfs->bbs,
+                "IndexRaBitQFastScan");
 
         READVECTOR(idxqfs->codes);
 
@@ -2258,7 +2271,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->max_candidate_pool_size);
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
-        READ1(svs->storage_kind);
+
+        int sk;
+        READ1(sk);
+        FAISS_THROW_IF_NOT_FMT(
+                sk >= 0 && sk < static_cast<int>(SVS_count),
+                "invalid SVS storage_kind=%d (must be in [0, %d))",
+                sk,
+                static_cast<int>(SVS_count));
+        svs->storage_kind = static_cast<SVSStorageKind>(sk);
+
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
             FAISS_THROW_IF_NOT_MSG(
@@ -2333,6 +2355,13 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         ivrqfs->M = M_fastscan;
         ivrqfs->nbits = nbits_fastscan;
         ivrqfs->ksub = (1 << nbits_fastscan);
+
+        validate_fastscan_fields(
+                ivrqfs->M,
+                ivrqfs->M2,
+                ivrqfs->ksub,
+                ivrqfs->bbs,
+                "IndexIVFRaBitQFastScan");
 
         read_InvertedLists(*ivrqfs, f, io_flags);
         ivrqfs->init_code_packer();

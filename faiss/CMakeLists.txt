@@ -15,6 +15,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
   utils/simd_impl/rabitq_avx2.cpp
 )
@@ -32,6 +33,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
 )
@@ -156,6 +158,7 @@ set(FAISS_SRC
   utils/simd_levels.cpp
   utils/distances_fused/distances_fused.cpp
   factory_tools.cpp
+  # build.cpp excluded due to build errors on Windows
 )
 
 if(FAISS_ENABLE_SVS)
@@ -298,7 +301,6 @@ set(FAISS_HEADERS
   utils/NeuralNet.h
   utils/WorkerThread.h
   utils/distances.h
-  utils/distances_dispatch.h
   utils/extra_distances.h
   utils/fp16-fp16c.h
   utils/fp16-inl.h
@@ -454,7 +456,8 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DD)
     # Architecture-specific SIMD definitions for Dynamic Dispatch
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
-      target_compile_definitions(faiss PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+      target_compile_definitions(faiss PRIVATE
+        COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
       # Baseline flags for common files (prevents auto-vectorization)
       target_compile_options(faiss PRIVATE
         $<$<COMPILE_LANGUAGE:CXX>:-mpopcnt -msse4 -mno-avx -mno-avx2>)

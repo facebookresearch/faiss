@@ -78,6 +78,10 @@ struct IndexRaBitQFastScan : IndexFastScan {
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
+    /// Packed code size: (d + 7) / 8 bytes (1-bit-per-dimension sign bits,
+    /// excluding factors)
+    size_t fast_scan_code_size() const override;
+
     /// Return CodePackerRaBitQ with enlarged block size
     CodePacker* get_CodePacker() const override;
 
