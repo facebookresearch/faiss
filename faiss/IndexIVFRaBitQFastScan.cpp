@@ -573,7 +573,7 @@ namespace {
 /// Provides IVF scanner interface using FastScan's SIMD batch processing.
 struct IVFRaBitQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    static constexpr int impl = 10;
+    [[maybe_unused]] static constexpr int impl = 10;
     static constexpr size_t nq = 1;
 
     const IndexIVFRaBitQFastScan& index;
