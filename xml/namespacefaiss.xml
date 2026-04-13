@@ -971,7 +971,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="173" column="23" declfile="faiss/impl/fast_scan/simd_result_handlers.h" declline="173" declcolumn="23"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="174" column="23" declfile="faiss/impl/fast_scan/simd_result_handlers.h" declline="174" declcolumn="23"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a2dcf7a9c4c343f31bc63a5db0c2bff2d" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API <ref refid="structfaiss_1_1HNSWStats" kindref="compound">HNSWStats</ref></type>

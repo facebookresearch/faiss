@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="989" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="989" bodyend="1046"/>
+        <location file="faiss/impl/fast_scan/simd_result_handlers.h" line="990" column="6" bodyfile="faiss/impl/fast_scan/simd_result_handlers.h" bodystart="990" bodyend="1047"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
