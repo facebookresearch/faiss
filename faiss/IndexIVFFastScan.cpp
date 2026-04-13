@@ -88,7 +88,11 @@ void IndexIVFFastScan::init_fastscan(
 
 void IndexIVFFastScan::init_code_packer() {
     auto bil = dynamic_cast<BlockInvertedLists*>(invlists);
-    FAISS_THROW_IF_NOT(bil);
+    if (!bil) {
+        // invlists is not block-packed (e.g., when own_invlists=false).
+        // Nothing to do — the caller manages inverted lists externally.
+        return;
+    }
     delete bil->packer; // in case there was one before
     bil->packer = get_CodePacker();
 }
