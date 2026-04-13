@@ -125,12 +125,12 @@ void IndexRefine::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
@@ -298,12 +298,12 @@ void IndexRefineFlat::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
