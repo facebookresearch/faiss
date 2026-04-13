@@ -10,6 +10,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 
@@ -159,7 +160,7 @@ void binarize_with_freq(
     memset(codes, 0, (nbit + 7) / 8);
     for (size_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
-        int64_t xi = int64_t(floor(xf * freq));
+        int64_t xi = int64_t(std::floor(xf * freq));
         int64_t bit = xi & 1;
         codes[i >> 3] |= bit << (i & 7);
     }
