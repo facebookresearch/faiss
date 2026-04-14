@@ -33,9 +33,11 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #endif
 #include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/GpuIndexIMIPQ.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/GpuMultiIndex2.h>
 #include <faiss/index_io.h>
 
 namespace faiss {
@@ -143,6 +145,11 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         config.useFloat16 = useFloat16;
         config.use_cuvs = use_cuvs;
         return new GpuIndexFlat(provider, ifl, config);
+    }
+    if (auto imi = dynamic_cast<const MultiIndexQuantizer*>(index)) {
+        GpuMultiIndex2Config config;
+        config.device = device;
+        return new GpuMultiIndex2(provider, imi, config);
     } else if (
             dynamic_cast<const IndexScalarQuantizer*>(index) &&
             static_cast<const IndexScalarQuantizer*>(index)->sq.qtype ==
@@ -205,6 +212,22 @@ Index* ToGpuCloner::clone_Index(const Index* index) {
         res->copyFrom(ifl);
         return res;
     } else if (auto ipq = dynamic_cast<const faiss::IndexIVFPQ*>(index)) {
+        if (auto imi =
+                    dynamic_cast<const MultiIndexQuantizer*>(ipq->quantizer)) {
+            GpuIndexIMIPQConfig config;
+            config.device = device;
+            config.memorySpace = memorySpace;
+            config.indicesOptions = indicesOptions;
+            config.useFloat16LookupTables = useFloat16;
+            config.usePrecomputedTables = usePrecomputed;
+            config.precomputeCodesOnCpu = precomputeCodesOnCpu;
+            config.forcePinnedMemory = forcePinnedMemory;
+            config.multiIndexConfig.device = device;
+            config.multiIndexConfig.memorySpace = coarseQuantizerMemorySpace;
+
+            GpuIndexIMIPQ* res = new GpuIndexIMIPQ(provider, ipq, config);
+            return res;
+        }
         if (verbose) {
             printf("  IndexIVFPQ size %ld -> GpuIndexIVFPQ "
                    "indicesOptions=%d "
