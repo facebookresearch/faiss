@@ -172,7 +172,7 @@ void CuvsFlatIndex::query(
     std::optional<raft::device_vector_view<const float, int64_t>> norms_view =
             raft::make_device_vector_view(norms_.data(), norms_.getSize(0));
 
-    cuvs::neighbors::brute_force::index idx(
+    cuvs::neighbors::brute_force::index<half, float> idx(
             handle, index, norms_view, distance, metricArg);
 
     std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_cuvs;
