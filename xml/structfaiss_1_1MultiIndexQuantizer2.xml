@@ -18,7 +18,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="171" column="17" bodyfile="faiss/IndexPQ.h" bodystart="171" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="172" column="17" bodyfile="faiss/IndexPQ.h" bodystart="172" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MultiIndexQuantizer2_1a21b6a78845f3423b556676bf970af24f" prot="public" static="no" mutable="no">
         <type>bool</type>
@@ -33,7 +33,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="172" column="10" bodyfile="faiss/IndexPQ.h" bodystart="172" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="173" column="10" bodyfile="faiss/IndexPQ.h" bodystart="173" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1MultiIndexQuantizer_1a8ddb6030d00d326268b3a8ded2f83dac" prot="public" static="no" mutable="no">
         <type><ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref></type>
@@ -47,7 +47,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="137" column="22" bodyfile="faiss/IndexPQ.h" bodystart="137" bodyend="-1"/>
+        <location file="faiss/IndexPQ.h" line="138" column="22" bodyfile="faiss/IndexPQ.h" bodystart="138" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" prot="public" static="no" mutable="no">
         <type>int</type>
@@ -169,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="174" column="5"/>
+        <location file="faiss/IndexPQ.h" line="175" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer2_1a0d4ce8d3c0658643e60b9e468a65ddcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -199,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="176" column="5"/>
+        <location file="faiss/IndexPQ.h" line="177" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer2_1a553b9a33e9be7f231ffdc0ac53c59e7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -241,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="182" column="10"/>
+        <location file="faiss/IndexPQ.h" line="183" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer2_1a041895d9dbabf577e924f1a61681d3a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -325,7 +325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="184" column="10"/>
+        <location file="faiss/IndexPQ.h" line="185" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer_1aa72640bcbe2e5d9029954c2fa6633453" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -349,7 +349,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="155" column="10"/>
+        <location file="faiss/IndexPQ.h" line="156" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer_1a4808ce22fcc95c7af902b97969f2a90d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -365,7 +365,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="157" column="10"/>
+        <location file="faiss/IndexPQ.h" line="158" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1MultiIndexQuantizer_1aa5bd578560419955a4bf7035cf09a392" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -407,7 +407,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="161" column="10"/>
+        <location file="faiss/IndexPQ.h" line="162" column="10"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1Index_1ab1b5c141c872f5b37298322b1daefde5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -1696,7 +1696,7 @@
         <link refid="structfaiss_1_1Quantizer"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/IndexPQ.h" line="169" column="1" bodyfile="faiss/IndexPQ.h" bodystart="169" bodyend="191"/>
+    <location file="faiss/IndexPQ.h" line="170" column="1" bodyfile="faiss/IndexPQ.h" bodystart="170" bodyend="192"/>
     <listofallmembers>
       <member refid="structfaiss_1_1MultiIndexQuantizer_1aa72640bcbe2e5d9029954c2fa6633453" prot="public" virt="virtual"><scope>faiss::MultiIndexQuantizer2</scope><name>add</name></member>
       <member refid="structfaiss_1_1Index_1aa432f349b82d0909c33aa353b7a01fe1" prot="public" virt="virtual"><scope>faiss::MultiIndexQuantizer2</scope><name>add_ex</name></member>

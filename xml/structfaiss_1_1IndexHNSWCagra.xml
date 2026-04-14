@@ -42,6 +42,7 @@
         <argsstring></argsstring>
         <name>numeric_type_</name>
         <qualifiedname>faiss::IndexHNSWCagra::numeric_type_</qualifiedname>
+        <initializer>= Float32</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

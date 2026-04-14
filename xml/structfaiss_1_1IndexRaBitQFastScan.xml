@@ -145,6 +145,7 @@
         <argsstring></argsstring>
         <name>nbits</name>
         <qualifiedname>faiss::IndexFastScan::nbits</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -159,6 +160,7 @@
         <argsstring></argsstring>
         <name>ksub</name>
         <qualifiedname>faiss::IndexFastScan::ksub</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

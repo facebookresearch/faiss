@@ -38,6 +38,7 @@
         <argsstring></argsstring>
         <name>n_hamming_pass</name>
         <qualifiedname>faiss::IndexPQStats::n_hamming_pass</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -60,7 +61,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="126" column="5" bodyfile="faiss/IndexPQ.h" bodystart="126" bodyend="128"/>
+        <location file="faiss/IndexPQ.h" line="127" column="5" bodyfile="faiss/IndexPQ.h" bodystart="127" bodyend="129"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexPQStats_1a06a463f2381c1f7edf526e916b679fe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -74,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexPQ.h" line="129" column="10"/>
+        <location file="faiss/IndexPQ.h" line="130" column="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -82,7 +83,7 @@
     <detaileddescription>
 <para>statistics are robust to internal threading, but not if <ref refid="structfaiss_1_1IndexPQ_1a838c9186a476abd7321afc95d5412ab8" kindref="member">IndexPQ::search</ref> is called by multiple threads </para>
     </detaileddescription>
-    <location file="faiss/IndexPQ.h" line="120" column="1" bodyfile="faiss/IndexPQ.h" bodystart="120" bodyend="130"/>
+    <location file="faiss/IndexPQ.h" line="120" column="1" bodyfile="faiss/IndexPQ.h" bodystart="120" bodyend="131"/>
     <listofallmembers>
       <member refid="structfaiss_1_1IndexPQStats_1af0e230009735f3edf2f47ddc23fef643" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>IndexPQStats</name></member>
       <member refid="structfaiss_1_1IndexPQStats_1aa73b0ed2ddb178432ca5219262683aab" prot="public" virt="non-virtual"><scope>faiss::IndexPQStats</scope><name>n_hamming_pass</name></member>

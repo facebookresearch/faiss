@@ -9,6 +9,7 @@
         <argsstring></argsstring>
         <name>nq</name>
         <qualifiedname>faiss::IndexBinaryHashStats::nq</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -23,6 +24,7 @@
         <argsstring></argsstring>
         <name>n0</name>
         <qualifiedname>faiss::IndexBinaryHashStats::n0</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -37,6 +39,7 @@
         <argsstring></argsstring>
         <name>nlist</name>
         <qualifiedname>faiss::IndexBinaryHashStats::nlist</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -51,14 +54,14 @@
         <argsstring></argsstring>
         <name>ndis</name>
         <qualifiedname>faiss::IndexBinaryHashStats::ndis</qualifiedname>
-        <initializer>{}</initializer>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexBinaryHash.h" line="72" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="72" bodyend="72"/>
+        <location file="faiss/IndexBinaryHash.h" line="72" column="12" bodyfile="faiss/IndexBinaryHash.h" bodystart="72" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">

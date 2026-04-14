@@ -107,6 +107,7 @@
         <argsstring></argsstring>
         <name>bbs</name>
         <qualifiedname>faiss::IndexIVFFastScan::bbs</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -121,6 +122,7 @@
         <argsstring></argsstring>
         <name>M</name>
         <qualifiedname>faiss::IndexIVFFastScan::M</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -135,6 +137,7 @@
         <argsstring></argsstring>
         <name>nbits</name>
         <qualifiedname>faiss::IndexIVFFastScan::nbits</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -149,6 +152,7 @@
         <argsstring></argsstring>
         <name>ksub</name>
         <qualifiedname>faiss::IndexIVFFastScan::ksub</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -163,6 +167,7 @@
         <argsstring></argsstring>
         <name>M2</name>
         <qualifiedname>faiss::IndexIVFFastScan::M2</qualifiedname>
+        <initializer>= 0</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>

@@ -45,6 +45,7 @@
         <argsstring></argsstring>
         <name>xi</name>
         <qualifiedname>faiss::IVFFlatScanner::xi</qualifiedname>
+        <initializer>= nullptr</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
