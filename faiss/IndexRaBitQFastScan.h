@@ -151,10 +151,7 @@ struct RaBitQHeapHandler
     const size_t storage_size;
     const size_t packed_block_size;
     const size_t full_block_size;
-    std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
-    // Handler-local scratch reused across refinements. This assumes a handler
-    // instance is confined to one search slice and not entered concurrently.
-    std::vector<uint8_t> unpack_buf; // reusable buffer for unpack_1
+    std::vector<uint8_t> unpack_buf; // sign bits scratch buffer
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
@@ -182,8 +179,7 @@ struct RaBitQHeapHandler
               storage_size(index->compute_per_vector_storage_size()),
               packed_block_size(((index->M2 + 1) / 2) * index->bbs),
               full_block_size(index->get_block_stride()),
-              packer(index->get_CodePacker()),
-              unpack_buf(index->code_size) {
+              unpack_buf((index->d + 7) / 8) {
 #pragma omp parallel for if (nq > 100)
         for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
             float* heap_dis = heap_distances + q * k;
@@ -331,9 +327,13 @@ struct RaBitQHeapHandler
         const rabitq_utils::QueryFactorsData& query_factors =
                 context->query_factors[q];
 
-        // Reuse pre-allocated unpack_buf to avoid per-refinement heap
-        // allocation.
-        packer->unpack_1(rabitq_index->codes.get(), db_idx, unpack_buf.data());
+        rabitq_utils::unpack_sign_bits_from_packed(
+                rabitq_index->codes.get(),
+                rabitq_index->bbs,
+                rabitq_index->M2,
+                db_idx,
+                full_block_size,
+                unpack_buf.data());
         const uint8_t* sign_bits = unpack_buf.data();
 
         return rabitq_utils::compute_full_multibit_distance(

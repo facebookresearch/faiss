@@ -206,8 +206,7 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
           storage_size(idx->compute_per_vector_storage_size()),
           packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
           full_block_size(idx->get_block_stride()),
-          packer(idx->get_CodePacker()),
-          unpack_buf(idx->code_size) {
+          unpack_buf((idx->d + 7) / 8) {
     current_list_no = 0;
     probe_indices.clear();
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
@@ -397,8 +396,13 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
     const size_t storage_idx_val = global_q * cached_nprobe + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx_val];
 
-    // Unpack PQ4-interleaved sign bits for this vector into a linear buffer.
-    packer->unpack_1(this->list_codes_ptr, local_offset, unpack_buf.data());
+    rabitq_utils::unpack_sign_bits_from_packed(
+            this->list_codes_ptr,
+            index->bbs,
+            index->M2,
+            local_offset,
+            full_block_size,
+            unpack_buf.data());
 
     return rabitq_utils::compute_full_multibit_distance(
             unpack_buf.data(),
