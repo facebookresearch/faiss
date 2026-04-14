@@ -28,7 +28,7 @@ namespace faiss {
  */
 
 struct IndexAdditiveQuantizerFastScan : IndexFastScan {
-    AdditiveQuantizer* aq;
+    AdditiveQuantizer* aq = nullptr;
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
     bool rescale_norm = true;

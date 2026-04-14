@@ -138,9 +138,10 @@ struct Distance2Level : DistanceComputer {
     size_t d;
     const Index2Layer& storage;
     std::vector<float> buf;
-    const float* q;
+    const float* q = nullptr;
 
-    const float *pq_l1_tab, *pq_l2_tab;
+    const float* pq_l1_tab = nullptr;
+    const float* pq_l2_tab = nullptr;
 
     explicit Distance2Level(const Index2Layer& storage_) : storage(storage_) {
         d = storage_.d;
@@ -162,7 +163,8 @@ struct Distance2Level : DistanceComputer {
 
 // well optimized for xNN+PQNN
 struct DistanceXPQ4 : Distance2Level {
-    int M, k;
+    int M = 0;
+    int k = 0;
 
     explicit DistanceXPQ4(const Index2Layer& storage_)
             : Distance2Level(storage_) {

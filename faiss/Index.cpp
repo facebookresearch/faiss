@@ -168,7 +168,7 @@ struct GenericDistanceComputer : DistanceComputer {
     size_t d;
     const Index& storage;
     std::vector<float> buf;
-    const float* q;
+    const float* q = nullptr;
 
     explicit GenericDistanceComputer(const Index& storage_in)
             : storage(storage_in) {

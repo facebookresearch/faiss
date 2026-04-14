@@ -44,8 +44,8 @@ struct IndexFastScan : Index {
 
     // vector quantizer
     size_t M;
-    size_t nbits;
-    size_t ksub;
+    size_t nbits = 0;
+    size_t ksub = 0;
     size_t code_size;
 
     // packed version of the codes

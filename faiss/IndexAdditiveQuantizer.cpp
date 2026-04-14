@@ -52,7 +52,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
               vd(vd_),
               d(iaq.d) {}
 
-    const float* q;
+    const float* q = nullptr;
     void set_query(const float* x) final {
         q = x;
     }
@@ -83,7 +83,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
               aq(*iaq.aq),
               d(iaq.d) {}
 
-    float bias;
+    float bias = 0.0f;
     void set_query(const float* x) final {
         q = x;
         // this is quite sub-optimal for multiple queries

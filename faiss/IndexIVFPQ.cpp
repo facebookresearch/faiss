@@ -554,7 +554,7 @@ struct QueryTables {
      *****************************************************/
 
     // field specific to query
-    const float* qi;
+    const float* qi = nullptr;
 
     // query-specific initialization
     void init_query(const float* qi_in) {
@@ -585,8 +585,8 @@ struct QueryTables {
      *****************************************************/
 
     // fields specific to list
-    idx_t key;
-    float coarse_dis;
+    idx_t key = 0;
+    float coarse_dis = 0.0f;
     std::vector<uint8_t> q_code;
 
     uint64_t init_list_cycles;
@@ -802,9 +802,9 @@ struct WrappedSearchResult {
 template <typename IDType, MetricType METRIC_TYPE, class PQCodeDist>
 struct IVFPQScannerT : QueryTables {
     using PQDecoder = typename PQCodeDist::PQDecoder;
-    const uint8_t* list_codes;
+    const uint8_t* list_codes = nullptr;
     const IDType* list_ids;
-    size_t list_size;
+    size_t list_size = 0;
 
     IVFPQScannerT(
             const IndexIVFPQ& ivfpq_in,
@@ -813,7 +813,7 @@ struct IVFPQScannerT : QueryTables {
         FAISS_THROW_IF_NOT(METRIC_TYPE == metric_type);
     }
 
-    float dis0;
+    float dis0 = 0.0f;
 
     void init_list(idx_t list_no, float coarse_dis_in, int mode) {
         this->key = list_no;

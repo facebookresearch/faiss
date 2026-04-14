@@ -41,14 +41,14 @@ struct Quantizer;
 
 struct IndexIVFFastScan : IndexIVF {
     // size of the kernel
-    int bbs; // set at build time
+    int bbs = 0; // set at build time
 
-    size_t M;
-    size_t nbits;
-    size_t ksub;
+    size_t M = 0;
+    size_t nbits = 0;
+    size_t ksub = 0;
 
     // M rounded up to a multiple of 2
-    size_t M2;
+    size_t M2 = 0;
 
     // search-time implementation
     int implem = 0;

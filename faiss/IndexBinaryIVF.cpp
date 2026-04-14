@@ -354,7 +354,7 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
         hc.set(query_vector, code_size);
     }
 
-    idx_t list_no;
+    idx_t list_no = 0;
     void set_list(idx_t list_no_2, uint8_t /* coarse_dis */) override {
         this->list_no = list_no_2;
     }
@@ -611,10 +611,10 @@ template <class HammingComputer, int NQ, int K>
 struct BlockSearch {
     HammingComputer hcs[NQ];
     // heaps to update for each query
-    int32_t* distances[NQ];
-    idx_t* labels[NQ];
+    int32_t* distances[NQ] = {};
+    idx_t* labels[NQ] = {};
     // curent top of heap
-    int32_t heap_tops[NQ];
+    int32_t heap_tops[NQ] = {};
 
     BlockSearch(
             size_t code_size,
@@ -648,10 +648,10 @@ struct BlockSearchVariableK {
     int k;
     HammingComputer hcs[NQ];
     // heaps to update for each query
-    int32_t* distances[NQ];
-    idx_t* labels[NQ];
+    int32_t* distances[NQ] = {};
+    idx_t* labels[NQ] = {};
     // curent top of heap
-    int32_t heap_tops[NQ];
+    int32_t heap_tops[NQ] = {};
 
     BlockSearchVariableK(
             size_t code_size,
