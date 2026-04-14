@@ -276,8 +276,10 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         const float* residual,
         QueryFactorsData& query_factors,
         float* lut_out,
+        uint8_t qb_param,
+        bool centered_param,
         const float* original_query) const {
-    FAISS_THROW_IF_NOT(qb > 0 && qb <= 8);
+    FAISS_THROW_IF_NOT(qb_param > 0 && qb_param <= 8);
 
     std::vector<float> rotated_q(d);
     std::vector<uint8_t> rotated_qq(d);
@@ -287,8 +289,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
             residual,
             d,
             nullptr,
-            qb,
-            centered,
+            qb_param,
+            centered_param,
             metric_type,
             rotated_q,
             rotated_qq);
@@ -305,8 +307,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         query_factors.rotated_q = rotated_q;
     }
 
-    if (centered) {
-        const float max_code_value = (1 << qb) - 1;
+    if (centered_param) {
+        const float max_code_value = (1 << qb_param) - 1;
 
         for (size_t m = 0; m < M; m++) {
             const size_t dim_start = m * 4;
@@ -372,15 +374,24 @@ void IndexIVFRaBitQFastScan::search_preassigned(
     FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
 
     size_t cur_nprobe = this->nprobe;
+    uint8_t used_qb = qb;
+    bool used_centered = centered;
     if (params) {
         FAISS_THROW_IF_NOT(params->max_codes == 0);
         cur_nprobe = params->nprobe;
+        if (auto rparams =
+                    dynamic_cast<const IVFRaBitQSearchParameters*>(params)) {
+            used_qb = rparams->qb;
+            used_centered = rparams->centered;
+        }
     }
 
     std::vector<QueryFactorsData> query_factors_storage(n * cur_nprobe);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
     context.nprobe = cur_nprobe;
+    context.qb = used_qb;
+    context.centered = used_centered;
 
     const CoarseQuantized cq = {cur_nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
@@ -395,6 +406,10 @@ void IndexIVFRaBitQFastScan::compute_LUT(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+
+    // Use overridden qb/centered from context if provided, else index defaults
+    const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
+    const bool used_centered = context.qb > 0 ? context.centered : centered;
 
     size_t cq_nprobe = cq.nprobe;
 
@@ -424,6 +439,8 @@ void IndexIVFRaBitQFastScan::compute_LUT(
                     xij,
                     query_factors_data,
                     dis_tables.get() + ij * dim12,
+                    used_qb,
+                    used_centered,
                     x + i * d);
 
             // Store query factors using compact indexing (ij directly)
@@ -624,6 +641,8 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         context = FastScanDistancePostProcessing{};
         context.query_factors = &query_factors;
         context.nprobe = 1;
+        context.qb = qb;
+        context.centered = centered;
 
         index.compute_LUT_uint8(
                 1, xi, cq, dis_tables, biases, &normalizers[0], context);
