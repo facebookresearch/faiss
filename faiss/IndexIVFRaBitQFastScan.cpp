@@ -622,6 +622,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
               qb(qb_in),
               centered(centered_in) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
+        this->code_size = index_in.code_size;
     }
 
     void set_query(const float* query) override {
