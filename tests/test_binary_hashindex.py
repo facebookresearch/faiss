@@ -166,6 +166,13 @@ class TestKnn(unittest.TestCase):
             np.testing.assert_array_equal(Inew, I2)
             np.testing.assert_array_equal(Dnew, D2)
 
+            # Verify deserialized index is serializable again
+            index3 = faiss.deserialize_index_binary(
+                faiss.serialize_index_binary(index2))
+            D3, I3 = index3.search(xq, k)
+            np.testing.assert_array_equal(Inew, I3)
+            np.testing.assert_array_equal(Dnew, D3)
+
         self.assertGreater(3, abs(nfound[(0, 7)] - nfound[(1, 7)]))
         self.assertGreater(nfound[(3, 7)], nfound[(1, 7)])
         self.assertGreater(nfound[(5, 7)], nfound[(3, 7)])
@@ -194,7 +201,7 @@ class TestKnn(unittest.TestCase):
     def test_result_order_binhash(self):
         self.subtest_result_order(0)
 
-    def test_result_order_miltihash(self):
+    def test_result_order_multihash(self):
         self.subtest_result_order(3)
 
 

@@ -79,7 +79,12 @@ void CuvsIVFFlat::reserveMemory(idx_t numVecs) {
 }
 
 void CuvsIVFFlat::reset() {
-    cuvs_index.reset();
+    if (cuvs_index != nullptr) {
+        const raft::device_resources& raft_handle =
+                resources_->getRaftHandleCurrentDevice();
+        cuvs::neighbors::ivf_flat::helpers::reset_index(
+                raft_handle, cuvs_index.get());
+    }
 }
 
 void CuvsIVFFlat::setCuvsIndex(
@@ -547,6 +552,10 @@ void CuvsIVFFlatCodePackerInterleaved::unpack_1(
             dim,
             chunk_size,
             static_cast<uint32_t>(offset));
+}
+
+CodePacker* CuvsIVFFlatCodePackerInterleaved::clone() const {
+    return new CuvsIVFFlatCodePackerInterleaved(*this);
 }
 
 } // namespace gpu

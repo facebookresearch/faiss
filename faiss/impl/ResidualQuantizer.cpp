@@ -18,6 +18,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/residual_quantizer_encode_steps.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -69,23 +70,26 @@ ResidualQuantizer::ResidualQuantizer() {
 }
 
 ResidualQuantizer::ResidualQuantizer(
-        size_t d,
-        const std::vector<size_t>& nbits,
-        Search_type_t search_type)
+        size_t d_in,
+        const std::vector<size_t>& nbits_in,
+        Search_type_t search_type_in)
         : ResidualQuantizer() {
-    this->search_type = search_type;
-    this->d = d;
-    M = nbits.size();
-    this->nbits = nbits;
+    this->search_type = search_type_in;
+    this->d = d_in;
+    M = nbits_in.size();
+    this->nbits = nbits_in;
     set_derived_values();
 }
 
 ResidualQuantizer::ResidualQuantizer(
-        size_t d,
-        size_t M,
-        size_t nbits,
-        Search_type_t search_type)
-        : ResidualQuantizer(d, std::vector<size_t>(M, nbits), search_type) {}
+        size_t d_in,
+        size_t M_in,
+        size_t nbits_in,
+        Search_type_t search_type_in)
+        : ResidualQuantizer(
+                  d_in,
+                  std::vector<size_t>(M_in, nbits_in),
+                  search_type_in) {}
 
 void ResidualQuantizer::initialize_from(
         const ResidualQuantizer& other,
@@ -141,7 +145,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
     double t0 = getmillisecs();
     double clustering_time = 0;
 
-    for (int m = 0; m < M; m++) {
+    for (size_t m = 0; m < M; m++) {
         int K = 1 << nbits[m];
 
         // on which residuals to train
@@ -156,7 +160,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
             }
             train_residuals = residuals1;
         }
-        std::vector<float> codebooks;
+        std::vector<float> cur_codebooks;
         float obj = 0;
 
         std::unique_ptr<Index> assign_index;
@@ -174,7 +178,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                     train_residuals.size() / d,
                     train_residuals.data(),
                     *assign_index.get());
-            codebooks.swap(clus.centroids);
+            cur_codebooks.swap(clus.centroids);
             assign_index->reset();
             obj = clus.iteration_stats.back().obj;
         } else { // progressive dim clustering
@@ -184,14 +188,14 @@ void ResidualQuantizer::train(size_t n, const float* x) {
                     train_residuals.size() / d,
                     train_residuals.data(),
                     assign_index_factory ? *assign_index_factory : default_fac);
-            codebooks.swap(clus.centroids);
+            cur_codebooks.swap(clus.centroids);
             obj = clus.iteration_stats.back().obj;
         }
         clustering_time += (getmillisecs() - t1) / 1000;
 
         memcpy(this->codebooks.data() + codebook_offsets[m] * d,
-               codebooks.data(),
-               codebooks.size() * sizeof(codebooks[0]));
+               cur_codebooks.data(),
+               cur_codebooks.size() * sizeof(cur_codebooks[0]));
 
         // quantize using the new codebooks
 
@@ -220,7 +224,7 @@ void ResidualQuantizer::train(size_t n, const float* x) {
             beam_search_encode_step(
                     d,
                     K,
-                    codebooks.data(),
+                    cur_codebooks.data(),
                     i1 - i0,
                     cur_beam_size,
                     residuals.data() + i0 * cur_beam_size * d,
@@ -238,16 +242,16 @@ void ResidualQuantizer::train(size_t n, const float* x) {
         distances.swap(new_distances);
 
         float sum_distances = 0;
-        for (int j = 0; j < distances.size(); j++) {
+        for (size_t j = 0; j < distances.size(); j++) {
             sum_distances += distances[j];
         }
 
         if (verbose) {
-            printf("[%.3f s, %.3f s clustering] train stage %d, %d bits, kmeans objective %g, "
+            printf("[%.3f s, %.3f s clustering] train stage %zd, %d bits, kmeans objective %g, "
                    "total distance %g, beam_size %d->%d (batch size %zd)\n",
                    (getmillisecs() - t0) / 1000,
                    clustering_time,
-                   m,
+                   size_t(m),
                    int(nbits[m]),
                    obj,
                    sum_distances,
@@ -274,10 +278,12 @@ void ResidualQuantizer::train(size_t n, const float* x) {
     // find min and max norms
     std::vector<float> norms(n);
 
-    for (size_t i = 0; i < n; i++) {
-        norms[i] = fvec_L2sqr(
-                x + i * d, residuals.data() + i * cur_beam_size * d, d);
-    }
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t i = 0; i < n; i++) {
+            norms[i] = fvec_L2sqr<SL>(
+                    x + i * d, residuals.data() + i * cur_beam_size * d, d);
+        }
+    });
 
     // fvec_norms_L2sqr(norms.data(), x, d, n);
     train_norm(n, norms.data());
@@ -311,7 +317,7 @@ float ResidualQuantizer::retrain_AQ_codebook(size_t n, const float* x) {
     std::vector<float> C(n * total_codebook_size);
     for (size_t i = 0; i < n; i++) {
         BitstringReader bsr(codes.data() + i * code_size, code_size);
-        for (int m = 0; m < M; m++) {
+        for (size_t m = 0; m < M; m++) {
             int idx = bsr.read(nbits[m]);
             C[i + (codebook_offsets[m] + idx) * n] = 1;
         }
@@ -393,11 +399,13 @@ float ResidualQuantizer::retrain_AQ_codebook(size_t n, const float* x) {
     }
 
     float output_recons_error = 0;
-    for (size_t j = 0; j < d; j++) {
-        output_recons_error += fvec_norm_L2sqr(
-                xt.data() + total_codebook_size + n * j,
-                n - total_codebook_size);
-    }
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t j = 0; j < d; j++) {
+            output_recons_error += fvec_norm_L2sqr<SL>(
+                    xt.data() + total_codebook_size + n * j,
+                    n - total_codebook_size);
+        }
+    });
     if (verbose) {
         printf("  output quantization error %g\n", output_recons_error);
     }

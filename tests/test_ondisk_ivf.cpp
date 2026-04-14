@@ -156,7 +156,7 @@ TEST(ONDISK, test_add) {
     }
 }
 
-// WARN this thest will run multithreaded only in opt mode
+// WARN this test will run multithreaded only in opt mode
 TEST(ONDISK, make_invlists_threaded) {
     int nlist = 100;
     int code_size = 32;

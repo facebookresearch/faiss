@@ -28,7 +28,7 @@ namespace faiss {
  */
 
 struct IndexAdditiveQuantizerFastScan : IndexFastScan {
-    AdditiveQuantizer* aq;
+    AdditiveQuantizer* aq = nullptr;
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
     bool rescale_norm = true;
@@ -86,6 +86,9 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
      * @param x       output vectors, size n * d
      */
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /// Packed code size: M2 / 2 bytes (4-bit AQ sub-quantizer nibbles)
+    size_t fast_scan_code_size() const override;
 };
 
 /** Index based on a residual quantizer. Stored vectors are

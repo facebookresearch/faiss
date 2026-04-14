@@ -11,9 +11,6 @@
 #define FAISS_INDEX_IVF_H
 
 #include <stdint.h>
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>
@@ -61,7 +58,7 @@ struct Level1Quantizer {
     void encode_listno(idx_t list_no, uint8_t* code) const;
     idx_t decode_listno(const uint8_t* code) const;
 
-    Level1Quantizer(Index* quantizer, size_t nlist);
+    Level1Quantizer(Index* quantizer_in, size_t nlist_in);
 
     Level1Quantizer();
 
@@ -89,8 +86,10 @@ struct IndexIVFInterface : Level1Quantizer {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
 
-    explicit IndexIVFInterface(Index* quantizer = nullptr, size_t nlist = 0)
-            : Level1Quantizer(quantizer, nlist) {}
+    explicit IndexIVFInterface(
+            Index* quantizer_in = nullptr,
+            size_t nlist_in = 0)
+            : Level1Quantizer(quantizer_in, nlist_in) {}
 
     /** search a set of vectors, that are pre-quantized by the IVF
      *  quantizer. Fill in the corresponding heaps with the query
@@ -160,7 +159,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * index maps to a list (aka inverted list or posting list), where the
  * id of the vector is stored.
  *
- * The inverted list object is required only after trainng. If none is
+ * The inverted list object is required only after training. If none is
  * set externally, an ArrayInvertedLists is used automatically.
  *
  * At search time, the vector to be searched is also quantized, and
@@ -171,7 +170,7 @@ struct IndexIVFInterface : Level1Quantizer {
  * lists are visited.
  *
  * Sub-classes implement a post-filtering of the index that refines
- * the distance estimation from the query to databse vectors.
+ * the distance estimation from the query to database vectors.
  */
 struct IndexIVF : Index, IndexIVFInterface {
     /// Access to the actual data
@@ -206,12 +205,12 @@ struct IndexIVF : Index, IndexIVFInterface {
      * identifier.
      */
     IndexIVF(
-            Index* quantizer,
-            size_t d,
-            size_t nlist,
-            size_t code_size,
+            Index* quantizer_in,
+            size_t d_in,
+            size_t nlist_in,
+            size_t code_size_in,
             MetricType metric = METRIC_L2,
-            bool own_invlists = true);
+            bool own_invlists_in = true);
 
     void reset() override;
 
@@ -324,6 +323,12 @@ struct IndexIVF : Index, IndexIVFInterface {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
+
+    /** search one vector with a custom result handler */
+    void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
 
     /** Get a scanner for this index (store_pairs means ignore labels)
      *
@@ -481,9 +486,9 @@ struct InvertedListScanner {
     const IDSelector* sel;
 
     InvertedListScanner(
-            bool store_pairs = false,
-            const IDSelector* sel = nullptr)
-            : store_pairs(store_pairs), sel(sel) {}
+            bool store_pairs_in = false,
+            const IDSelector* sel_in = nullptr)
+            : store_pairs(store_pairs_in), sel(sel_in) {}
 
     /// used in default implementation of scan_codes
     size_t code_size = 0;
@@ -492,7 +497,7 @@ struct InvertedListScanner {
     virtual void set_query(const float* query_vector) = 0;
 
     /// following codes come from this inverted list
-    virtual void set_list(idx_t list_no, float coarse_dis) = 0;
+    virtual void set_list(idx_t list_no, float coarse_dis);
 
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
@@ -542,6 +547,13 @@ struct InvertedListScanner {
             float radius,
             RangeQueryResult& result,
             size_t& list_size) const;
+
+    // accumulate results with a ResultHandler
+    virtual size_t scan_codes(
+            size_t n,
+            const uint8_t* codes,
+            const idx_t* ids,
+            ResultHandler& handler) const;
 
     virtual ~InvertedListScanner() {}
 };

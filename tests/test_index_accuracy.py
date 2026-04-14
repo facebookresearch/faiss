@@ -374,8 +374,8 @@ class TestSQByte(unittest.TestCase):
         index.add(xb)
         D, I = index.search(xq, 10)
 
-        assert np.all(I == Iref)
-        assert np.all(D == Dref)
+        np.testing.assert_array_equal(D, Dref)
+        np.testing.assert_array_equal(I, Iref)
 
     def test_8bit_direct(self):
         for quantizer in faiss.ScalarQuantizer.QT_8bit_direct, faiss.ScalarQuantizer.QT_8bit_direct_signed:
@@ -660,32 +660,37 @@ class OPQRelativeAccuracy(unittest.TestCase):
 class TestRoundoff(unittest.TestCase):
     def test_roundoff(self):
         # params that force use of BLAS implementation
-        nb = 100
-        nq = 25
-        d = 4
-        xb = np.zeros((nb, d), dtype="float32")
+        saved_threshold = faiss.cvar.distance_compute_blas_threshold
+        faiss.cvar.distance_compute_blas_threshold = 1
+        try:
+            nb = 100
+            nq = 25
+            d = 4
+            xb = np.zeros((nb, d), dtype="float32")
 
-        xb[:, 0] = np.arange(nb) + 12345
-        xq = xb[:nq] + 0.3
+            xb[:, 0] = np.arange(nb) + 12345
+            xq = xb[:nq] + 0.3
 
-        index = faiss.IndexFlat(d)
-        index.add(xb)
+            index = faiss.IndexFlat(d)
+            index.add(xb)
 
-        D, I = index.search(xq, 1)
+            D, I = index.search(xq, 1)
 
-        # this does not work
-        assert not np.all(I.ravel() == np.arange(nq))
+            # this does not work
+            assert not np.all(I.ravel() == np.arange(nq))
 
-        index = faiss.IndexPreTransform(faiss.CenteringTransform(d),
-                                        faiss.IndexFlat(d))
+            index = faiss.IndexPreTransform(faiss.CenteringTransform(d),
+                                            faiss.IndexFlat(d))
 
-        index.train(xb)
-        index.add(xb)
+            index.train(xb)
+            index.add(xb)
 
-        D, I = index.search(xq, 1)
+            D, I = index.search(xq, 1)
 
-        # this works
-        assert np.all(I.ravel() == np.arange(nq))
+            # this works
+            assert np.all(I.ravel() == np.arange(nq))
+        finally:
+            faiss.cvar.distance_compute_blas_threshold = saved_threshold
 
 
 class TestSpectralHash(unittest.TestCase):

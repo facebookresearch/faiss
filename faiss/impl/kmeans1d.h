@@ -41,7 +41,7 @@ void smawk(
  * @param n          input array length
  * @param nclusters  number of clusters
  * @param centroids  output centroids, size nclusters
- * @return  imbalancce factor
+ * @return  imbalance factor
  */
 double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids);
 

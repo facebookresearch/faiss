@@ -48,5 +48,4 @@ b. A new dataset needs to be prepared (step 1) before passing it to the query ve
 
 6. We can always run the consistency-check for sanity checks!
 
-`python run.py  --command consistency_check--config config_ssnpp.yaml --xb ssnpp_1B`
-
+`python run.py  --command consistency_check --config config_ssnpp.yaml --xb ssnpp_1B`

@@ -116,7 +116,7 @@ struct IDSelectorBitmap : IDSelector {
 /** reverts the membership test of another selector */
 struct IDSelectorNot : IDSelector {
     const IDSelector* sel;
-    explicit IDSelectorNot(const IDSelector* sel) : sel(sel) {}
+    explicit IDSelectorNot(const IDSelector* sel_) : sel(sel_) {}
     bool is_member(idx_t id) const final {
         return !sel->is_member(id);
     }
@@ -125,45 +125,45 @@ struct IDSelectorNot : IDSelector {
 
 /// selects all entries (useful for benchmarking)
 struct IDSelectorAll : IDSelector {
-    bool is_member(idx_t id) const final {
+    bool is_member(idx_t /* id */) const final {
         return true;
     }
     virtual ~IDSelectorAll() {}
 };
 
-/// does an AND operation on the the two given IDSelector's is_membership
+/// does an AND operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorAnd : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorAnd(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorAnd(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) && rhs->is_member(id);
     }
     virtual ~IDSelectorAnd() {}
 };
 
-/// does an OR operation on the the two given IDSelector's is_membership
+/// does an OR operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorOr : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorOr(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorOr(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) || rhs->is_member(id);
     }
     virtual ~IDSelectorOr() {}
 };
 
-/// does an XOR operation on the the two given IDSelector's is_membership
+/// does an XOR operation on the two given IDSelector's is_membership
 /// results.
 struct IDSelectorXOr : IDSelector {
     const IDSelector* lhs;
     const IDSelector* rhs;
-    IDSelectorXOr(const IDSelector* lhs, const IDSelector* rhs)
-            : lhs(lhs), rhs(rhs) {}
+    IDSelectorXOr(const IDSelector* lhs_, const IDSelector* rhs_)
+            : lhs(lhs_), rhs(rhs_) {}
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) ^ rhs->is_member(id);
     }

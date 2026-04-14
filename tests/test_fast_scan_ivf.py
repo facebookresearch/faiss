@@ -4,9 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import os
 import unittest
-import tempfile
 
 import numpy as np
 import faiss
@@ -14,10 +12,13 @@ import faiss
 from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_invlist
 
+from common_faiss_tests import for_all_simd_levels
+
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestLUTQuantization(unittest.TestCase):
 
     def compute_dis_float(self, codes, LUT, bias):
@@ -168,6 +169,7 @@ def three_metrics(Dref, Iref, Dnew, Inew):
 ##########################################################
 
 
+@for_all_simd_levels
 class TestIVFImplem1(unittest.TestCase):
     """ Verify implem 1 (search from original invlists)
     against IndexIVFPQ """
@@ -208,6 +210,7 @@ class TestIVFImplem1(unittest.TestCase):
         self.do_test(True, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestIVFImplem2(unittest.TestCase):
     """ Verify implem 2 (search with original invlists with uint8 LUTs)
     against IndexIVFPQ. Entails some loss in accuracy. """
@@ -256,6 +259,7 @@ class TestIVFImplem2(unittest.TestCase):
         self.eval_quant_loss(True, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestEquivPQ(unittest.TestCase):
 
     def test_equiv_pq(self):
@@ -280,7 +284,7 @@ class TestEquivPQ(unittest.TestCase):
         Dnew, Inew = index_pq.search(xq, 4)
 
         np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_allclose(Dref, Dnew, rtol=1e-5)
 
         index_pq2 = faiss.IndexPQFastScan(index_pq)
         index_pq2.implem = 12
@@ -290,7 +294,7 @@ class TestEquivPQ(unittest.TestCase):
         index2.implem = 12
         Dnew, Inew = index2.search(xq, 4)
         np.testing.assert_array_equal(Iref, Inew)
-        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_allclose(Dref, Dnew, rtol=1e-5)
 
         # test encode and decode
 
@@ -393,7 +397,7 @@ class TestIVFImplem12(unittest.TestCase):
     def test_by_residual_odd_dim(self):
         self.do_test(True, d=30)
 
-    # testin single query
+    # testing single query
     def test_no_residual_single_query(self):
         self.do_test(False, nq=1)
 
@@ -413,26 +417,32 @@ class TestIVFImplem12(unittest.TestCase):
         self.do_test(True, d=30, nq=1)
 
 
+@for_all_simd_levels
 class TestIVFImplem10(TestIVFImplem12):
     IMPLEM = 10
 
 
+@for_all_simd_levels
 class TestIVFImplem11(TestIVFImplem12):
     IMPLEM = 11
 
 
+@for_all_simd_levels
 class TestIVFImplem13(TestIVFImplem12):
     IMPLEM = 13
 
 
+@for_all_simd_levels
 class TestIVFImplem14(TestIVFImplem12):
     IMPLEM = 14
 
 
+@for_all_simd_levels
 class TestIVFImplem15(TestIVFImplem12):
     IMPLEM = 15
 
 
+@for_all_simd_levels
 class TestAdd(unittest.TestCase):
 
     def do_test(self, by_residual=False, metric=faiss.METRIC_L2, d=32, bbs=32):
@@ -484,6 +494,7 @@ class TestAdd(unittest.TestCase):
         self.do_test(bbs=64)
 
 
+@for_all_simd_levels
 class TestTraining(unittest.TestCase):
 
     def do_test(self, by_residual=False, metric=faiss.METRIC_L2, d=32, bbs=32):
@@ -547,6 +558,7 @@ class TestTraining(unittest.TestCase):
         self.do_test(by_residual=True, d=30)
 
 
+@for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
     """ test reconstruct and sa_encode / sa_decode
     (also for a few additive quantizer variants) """
@@ -594,11 +606,11 @@ class TestReconstruct(unittest.TestCase):
     def test_by_residual(self):
         self.do_test(by_residual=True)
 
-    def do_test_generic(self, factory_string, 
-                        by_residual=False, metric=faiss.METRIC_L2): 
+    def do_test_generic(self, factory_string,
+                        by_residual=False, metric=faiss.METRIC_L2):
         d = 32
         ds = datasets.SyntheticDataset(d, 250, 200, 10)
-        index = faiss.index_factory(ds.d, factory_string, metric) 
+        index = faiss.index_factory(ds.d, factory_string, metric)
         if "IVF" in factory_string:
             index.by_residual = by_residual
             index.make_direct_map(True)
@@ -618,7 +630,7 @@ class TestReconstruct(unittest.TestCase):
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
         codes2 = index2.sa_encode(ds.get_database()[120:130])
         np.testing.assert_array_equal(codes, codes2)
-        
+
 
     def test_ivfpq_residual(self):
         self.do_test_generic("IVF20,PQ16x4fs", by_residual=True)
@@ -642,6 +654,7 @@ class TestReconstruct(unittest.TestCase):
         self.do_test_generic("PRQ8x2x4fs", metric=faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestIsTrained(unittest.TestCase):
 
     def test_issue_2019(self):
@@ -821,18 +834,11 @@ class TestIVFAQFastScan(unittest.TestCase):
         index = faiss.index_factory(d, factory_str)
         index.train(ds.get_train())
         index.add(ds.get_database())
-        D1, I1 = index.search(ds.get_queries(), 1)
+        _, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        _, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,LSQ4x4fs_Nlsq2x4')
@@ -870,7 +876,11 @@ for byr in True, False:
         add_TestIVFAQFastScan_subtest_rescale_accuracy('LSQ', 'lsq', byr, implem)
         add_TestIVFAQFastScan_subtest_rescale_accuracy('RQ', 'rq', byr, implem)
 
+# Apply decorator after dynamic method generation.
+TestIVFAQFastScan = for_all_simd_levels(TestIVFAQFastScan)
 
+
+@for_all_simd_levels
 class TestIVFPAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, paq):
@@ -929,22 +939,16 @@ class TestIVFPAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('IVF16,PLSQ2x3x4fsr_Nlsq2x4')
         self.subtest_io('IVF16,PRQ2x3x4fs_Nrq2x4')
 
 
+@for_all_simd_levels
 class TestSearchParams(unittest.TestCase):
 
     def test_search_params(self):
@@ -1007,9 +1011,11 @@ class TestRangeSearchImplem12(unittest.TestCase):
         self.do_test(metric=faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestRangeSearchImplem10(TestRangeSearchImplem12):
     IMPLEM = 10
 
 
+@for_all_simd_levels
 class TestRangeSearchImplem110(TestRangeSearchImplem12):
     IMPLEM = 110

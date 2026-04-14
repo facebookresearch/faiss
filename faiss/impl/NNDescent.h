@@ -34,7 +34,7 @@ namespace faiss {
  *
  *  Dong, Wei, Charikar Moses, and Kai Li, WWW 2011
  *
- * This implmentation is heavily influenced by the efanna
+ * This implementation is heavily influenced by the efanna
  * implementation by Cong Fu and the KGraph library by Wei Dong
  * (https://github.com/ZJULearning/efanna_graph)
  * (https://github.com/aaalgo/kgraph)
@@ -54,8 +54,8 @@ struct Neighbor {
     bool flag;
 
     Neighbor() = default;
-    Neighbor(int id, float distance, bool f)
-            : id(id), distance(distance), flag(f) {}
+    Neighbor(int id_in, float distance_in, bool f)
+            : id(id_in), distance(distance_in), flag(f) {}
 
     inline bool operator<(const Neighbor& other) const {
         return distance < other.distance;
@@ -79,6 +79,10 @@ struct Nhood {
     Nhood& operator=(const Nhood& other);
 
     Nhood(const Nhood& other);
+
+    Nhood(Nhood&& other) noexcept;
+
+    Nhood& operator=(Nhood&& other) noexcept;
 
     void insert(int id, float dist);
 
@@ -117,7 +121,7 @@ struct NNDescent {
     /// Perform local join on each node
     void join(DistanceComputer& qdis);
 
-    /// Sample new neighbors for each node to peform local join later
+    /// Sample new neighbors for each node to perform local join later
     void update();
 
     /// Sample a small number of points to evaluate the quality of KNNG built

@@ -6,17 +6,25 @@ Faiss provides a pure C interface, which can subsequently be used either in pure
 Compilation instructions
 ------------------------
 
-The full contents of the pure C API are in the ["c_api"](c_api/) folder.
-Please be sure to follow the instructions on [building the main C++ library](../INSTALL.md#step-1-compiling-the-c-faiss) first.
-Include `-DFAISS_ENABLE_C_API=ON` to the cmake command.
+The C API is built as part of the main Faiss build using CMake. From the root of the Faiss repository:
 
-`make -C build`
+``` shell
+# Configure with C API enabled
+$ cmake -B build -DFAISS_ENABLE_C_API=ON .
 
+# Build
+$ make -C build -j faiss_c
+```
 
-This builds the dynamic library "faiss_c", containing the full implementation of Faiss and the necessary wrappers for the C interface. It does not depend on libfaiss.a or the C++ standard library. 
+This builds the dynamic library `libfaiss_c.so` (or `.dylib` on macOS), containing the full implementation of Faiss and the necessary wrappers for the C interface.
 
-To build the example program, you should run `make -C build example_c` at the top level of
-the faiss repo. The example program will be in `build/c_api/example_c` .
+To build the example program:
+
+``` shell
+$ make -C build -j example_c
+```
+
+The example program will be located at `build/c_api/example_c`.
 
 Using the API
 -------------
@@ -61,20 +69,19 @@ if (c) {
 }
 ```
 
-An example is included, which is built automatically for the target `all`. It can also be built separately:
-
-  `make bin/example_c`
+An example is included and can be built as shown in the compilation instructions above.
 
 Building with GPU support
 -------------------------
 
-For GPU support, a separate dynamic library in the "c_api/gpu" directory needs to be built.
+For GPU support, configure CMake with both GPU and C API enabled:
 
-  `make`
+``` shell
+$ cmake -B build -DFAISS_ENABLE_GPU=ON -DFAISS_ENABLE_C_API=ON .
+$ make -C build -j gpufaiss_c
+```
 
-The "gpufaiss_c" dynamic library contains the GPU and CPU implementations of Faiss, which means that
-it can be used in place of "faiss_c". The same library will dynamically link with the CUDA runtime
-and cuBLAS.
+The `libgpufaiss_c.so` dynamic library contains both GPU and CPU implementations of Faiss, which means it can be used in place of `libfaiss_c.so`. This library dynamically links with the CUDA runtime and cuBLAS.
 
 Using the GPU with the C API
 ----------------------------
@@ -101,4 +108,10 @@ c = faiss_index_cpu_to_gpu(gpu_res, 0, cpu_index, &gpu_index);
 if (c) { /* ... */ }
 ```
 
-A more complete example is available by the name `bin/example_gpu_c`.
+To build the GPU example:
+
+``` shell
+$ make -C build -j example_gpu_c
+```
+
+The example program will be located at `build/c_api/gpu/example_gpu_c`.

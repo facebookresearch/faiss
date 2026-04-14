@@ -101,7 +101,7 @@ use_gpu = False
 
 
 if use_gpu:
-    # if this fails, it means that the GPU version was not comp
+    # if this fails, it means that the GPU version was not compiled
     assert faiss.StandardGpuResources, \
         "Faiss was not compiled with GPU support, or loading _swigfaiss_gpu.so failed"
     res = faiss.StandardGpuResources()

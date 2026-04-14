@@ -8,13 +8,28 @@
 #include <faiss/impl/RaBitQUtils.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <limits>
 
 namespace faiss {
 namespace rabitq_utils {
+
+// Verify no unexpected padding in structures used for per-vector storage.
+// These checks ensure compute_per_vector_storage_size() remains accurate.
+static_assert(
+        sizeof(SignBitFactors) == 8,
+        "SignBitFactors has unexpected padding");
+static_assert(
+        sizeof(SignBitFactorsWithError) == 12,
+        "SignBitFactorsWithError has unexpected padding");
+static_assert(
+        sizeof(ExtraBitsFactors) == 8,
+        "ExtraBitsFactors has unexpected padding");
 
 // Ideal quantizer radii for quantizers of 1..8 bits, optimized to minimize
 // L2 reconstruction error.
@@ -54,13 +69,16 @@ void compute_vector_intermediate_values(
     }
 }
 
-FactorsData compute_factors_from_intermediates(
+SignBitFactorsWithError compute_factors_from_intermediates(
         float norm_L2sqr,
         float or_L2sqr,
         float dp_oO,
         size_t d,
-        MetricType metric_type) {
+        MetricType metric_type,
+        bool compute_error) {
     constexpr float epsilon = std::numeric_limits<float>::epsilon();
+    constexpr float kConstEpsilon =
+            1.9f; // Error bound constant from RaBitQ paper
     const float inv_d_sqrt =
             (d == 0) ? 1.0f : (1.0f / std::sqrt(static_cast<float>(d)));
 
@@ -72,25 +90,57 @@ FactorsData compute_factors_from_intermediates(
     const float inv_dp_oO =
             (std::abs(normalized_dp) < epsilon) ? 1.0f : (1.0f / normalized_dp);
 
-    FactorsData factors;
+    SignBitFactorsWithError factors;
     factors.or_minus_c_l2sqr = (metric_type == MetricType::METRIC_INNER_PRODUCT)
             ? (norm_L2sqr - or_L2sqr)
             : norm_L2sqr;
     factors.dp_multiplier = inv_dp_oO * sqrt_norm_L2;
 
+    // Compute error bound only if needed (skip for 1-bit mode)
+    if (compute_error) {
+        const float xu_cb_norm_sqr = static_cast<float>(d) * 0.25f;
+        const float ip_resi_xucb = 0.5f * dp_oO;
+
+        float tmp_error = 0.0f;
+        if (std::abs(ip_resi_xucb) > epsilon) {
+            const float ratio_sq = (norm_L2sqr * xu_cb_norm_sqr) /
+                    (ip_resi_xucb * ip_resi_xucb);
+            if (ratio_sq > 1.0f) {
+                if (d == 1) {
+                    tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                            std::sqrt(ratio_sq - 1.0f);
+                } else {
+                    tmp_error = sqrt_norm_L2 * kConstEpsilon *
+                            std::sqrt((ratio_sq - 1.0f) /
+                                      static_cast<float>(d - 1));
+                }
+            }
+        }
+
+        // Apply metric-specific multiplier
+        if (metric_type == MetricType::METRIC_L2) {
+            factors.f_error = 2.0f * tmp_error;
+        } else if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+            factors.f_error = 1.0f * tmp_error;
+        } else {
+            factors.f_error = 0.0f;
+        }
+    }
+
     return factors;
 }
 
-FactorsData compute_vector_factors(
+SignBitFactorsWithError compute_vector_factors(
         const float* x,
         size_t d,
         const float* centroid,
-        MetricType metric_type) {
+        MetricType metric_type,
+        bool compute_error) {
     float norm_L2sqr, or_L2sqr, dp_oO;
     compute_vector_intermediate_values(
             x, d, centroid, norm_L2sqr, or_L2sqr, dp_oO);
     return compute_factors_from_intermediates(
-            norm_L2sqr, or_L2sqr, dp_oO, d, metric_type);
+            norm_L2sqr, or_L2sqr, dp_oO, d, metric_type, compute_error);
 }
 
 QueryFactorsData compute_query_factors(
@@ -113,6 +163,7 @@ QueryFactorsData compute_query_factors(
     } else {
         query_factors.qr_to_c_L2sqr = fvec_norm_L2sqr(query, d);
     }
+    query_factors.g_error = std::sqrt(query_factors.qr_to_c_L2sqr);
 
     // Rotate the query (subtract centroid)
     rotated_q.resize(d);
@@ -194,8 +245,12 @@ QueryFactorsData compute_query_factors(
 
     // Compute query norm for inner product metric
     query_factors.qr_norm_L2sqr = 0.0f;
+    query_factors.q_dot_c = 0.0f;
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
         query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(query, d);
+        if (centroid != nullptr) {
+            query_factors.q_dot_c = fvec_inner_product(query, centroid, d);
+        }
     }
 
     return query_factors;
@@ -239,6 +294,95 @@ void set_bit_fastscan(uint8_t* code, size_t bit_index) {
         code[byte_idx] |= bit_mask;
     } else {
         code[byte_idx] |= (bit_mask << 4);
+    }
+}
+
+size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
+    const size_t ex_bits = nb_bits - 1;
+    if (ex_bits == 0) {
+        return sizeof(SignBitFactors);
+    } else {
+        return sizeof(SignBitFactorsWithError) + sizeof(ExtraBitsFactors) +
+                (d * ex_bits + 7) / 8;
+    }
+}
+
+// Non-template wrapper with dynamic dispatch (one dispatch per call).
+// The hot path in RaBitQuantizer dispatches once at distance computer
+// construction, so per-vector dispatch only affects this utility path.
+float compute_full_multibit_distance(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExtraBitsFactors& ex_fac,
+        const float* rotated_q,
+        float qr_base,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+            [&]<SIMDLevel SL>() {
+                return compute_full_multibit_distance<SL>(
+                        sign_bits,
+                        ex_code,
+                        ex_fac,
+                        rotated_q,
+                        qr_base,
+                        d,
+                        ex_bits,
+                        metric_type);
+            });
+}
+
+void populate_block_aux_from_flat_storage(
+        const std::vector<uint8_t>& flat_storage,
+        AlignedTable<uint8_t>& codes,
+        size_t num_vectors,
+        size_t bbs,
+        size_t M2,
+        size_t old_block_stride,
+        size_t new_block_stride,
+        size_t storage_size,
+        const int64_t* id_map) {
+    if (flat_storage.empty() || num_vectors == 0) {
+        return;
+    }
+
+    const size_t packed_block_size = ((M2 + 1) / 2) * bbs;
+    const size_t n_blocks = (num_vectors + bbs - 1) / bbs;
+
+    if (old_block_stride < new_block_stride) {
+        AlignedTable<uint8_t> old_data;
+        old_data.resize(codes.size());
+        memcpy(old_data.data(), codes.data(), codes.size());
+
+        codes.resize(n_blocks * new_block_stride);
+        memset(codes.data(), 0, n_blocks * new_block_stride);
+        for (size_t b = 0; b < n_blocks; b++) {
+            memcpy(codes.data() + b * new_block_stride,
+                   old_data.data() + b * old_block_stride,
+                   packed_block_size);
+        }
+    }
+
+    for (size_t offset = 0; offset < num_vectors; offset++) {
+        const int64_t global_id =
+                id_map ? id_map[offset] : static_cast<int64_t>(offset);
+        FAISS_THROW_IF_NOT_MSG(
+                global_id >= 0 &&
+                        static_cast<size_t>(global_id) * storage_size +
+                                        storage_size <=
+                                flat_storage.size(),
+                "global_id out of bounds for flat_storage during migration");
+
+        const uint8_t* src = flat_storage.data() + global_id * storage_size;
+        uint8_t* dst = get_block_aux_ptr(
+                codes.data(),
+                offset,
+                bbs,
+                packed_block_size,
+                new_block_stride,
+                storage_size);
+        memcpy(dst, src, storage_size);
     }
 }
 

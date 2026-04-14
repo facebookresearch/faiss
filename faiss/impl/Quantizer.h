@@ -16,8 +16,8 @@ struct Quantizer {
     size_t d;         ///< size of the input vectors
     size_t code_size; ///< bytes per indexed vector
 
-    explicit Quantizer(size_t d = 0, size_t code_size = 0)
-            : d(d), code_size(code_size) {}
+    explicit Quantizer(size_t d_in = 0, size_t code_size_in = 0)
+            : d(d_in), code_size(code_size_in) {}
 
     /** Train the quantizer
      *

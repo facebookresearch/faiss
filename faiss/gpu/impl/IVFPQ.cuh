@@ -77,7 +77,7 @@ class IVFPQ : public IVFBase {
     /// (centroid id)(sub q)(code id)
     Tensor<float, 3, true> getPrecomputedCodesVecFloat32();
 
-    /// Find the approximate k nearest neigbors for `queries` against
+    /// Find the approximate k nearest neighbors for `queries` against
     /// our database
     void search(
             Index* coarseQuantizer,

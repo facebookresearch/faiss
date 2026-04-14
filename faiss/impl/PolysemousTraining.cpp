@@ -18,6 +18,7 @@
 #include <cstring>
 #include <memory>
 
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
@@ -53,11 +54,11 @@ double PermutationObjective::cost_update(const int* perm, int iw, int jw)
 }
 
 SimulatedAnnealingOptimizer::SimulatedAnnealingOptimizer(
-        PermutationObjective* obj,
+        PermutationObjective* obj_in,
         const SimulatedAnnealingParameters& p)
         : SimulatedAnnealingParameters(p),
-          obj(obj),
-          n(obj->n),
+          obj(obj_in),
+          n(obj_in->n),
           logfile(nullptr) {
     rnd = new RandomGenerator(p.seed);
     FAISS_THROW_IF_NOT(n < 100000 && n >= 0);
@@ -178,7 +179,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
         return x * x;
     }
 
-    // weihgting of distances: it is more important to reproduce small
+    // weighting of distances: it is more important to reproduce small
     // distances well
     double dis_weight(double x) const {
         return exp(-dis_weight_factor * x);
@@ -259,10 +260,10 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     }
 
     ReproduceWithHammingObjective(
-            int nbits,
+            int nbits_in,
             const std::vector<double>& dis_table,
-            double dis_weight_factor)
-            : nbits(nbits), dis_weight_factor(dis_weight_factor) {
+            double dis_weight_factor_in)
+            : nbits(nbits_in), dis_weight_factor(dis_weight_factor_in) {
         n = 1 << nbits;
         FAISS_THROW_IF_NOT(dis_table.size() == n * n);
         set_affine_target_dis(dis_table);
@@ -295,7 +296,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
 } // anonymous namespace
 
-// weihgting of distances: it is more important to reproduce small
+// weighting of distances: it is more important to reproduce small
 // distances well
 double ReproduceDistancesObjective::dis_weight(double x) const {
     return exp(-dis_weight_factor * x);
@@ -372,12 +373,12 @@ double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
 }
 
 ReproduceDistancesObjective::ReproduceDistancesObjective(
-        int n,
+        int n_in,
         const double* source_dis_in,
         const double* target_dis_in,
-        double dis_weight_factor)
-        : dis_weight_factor(dis_weight_factor), target_dis(target_dis_in) {
-    this->n = n;
+        double dis_weight_factor_in)
+        : dis_weight_factor(dis_weight_factor_in), target_dis(target_dis_in) {
+    this->n = n_in;
     set_affine_target_dis(source_dis_in);
 }
 
@@ -387,7 +388,7 @@ void ReproduceDistancesObjective::compute_mean_stdev(
         double* mean_out,
         double* stddev_out) {
     double sum = 0, sum2 = 0;
-    for (int i = 0; i < n2; i++) {
+    for (size_t i = 0; i < n2; i++) {
         sum += tab[i];
         sum2 += tab[i] * tab[i];
     }
@@ -430,6 +431,8 @@ void ReproduceDistancesObjective::set_affine_target_dis(
 /****************************************************
  * Cost functions: RankingScore
  ****************************************************/
+
+namespace {
 
 /// Maintains a 3D table of elementary costs.
 /// Accumulates elements based on Hamming distance comparisons
@@ -636,7 +639,7 @@ struct Score3Computer : PermutationObjective {
         return accu;
     }
 
-    /// PermutationObjective implementeation (just negates the scores
+    /// PermutationObjective implementation (just negates the scores
     /// for minimization)
 
     double compute_cost(const int* perm) const override {
@@ -665,18 +668,18 @@ struct RankingScore2 : Score3Computer<float, double> {
     const float* gt_distances;
 
     RankingScore2(
-            int nbits,
-            int nq,
-            int nb,
-            const uint32_t* qcodes,
-            const uint32_t* bcodes,
-            const float* gt_distances)
-            : nbits(nbits),
-              nq(nq),
-              nb(nb),
-              qcodes(qcodes),
-              bcodes(bcodes),
-              gt_distances(gt_distances) {
+            int nbits_in,
+            int nq_in,
+            int nb_in,
+            const uint32_t* qcodes_in,
+            const uint32_t* bcodes_in,
+            const float* gt_distances_in)
+            : nbits(nbits_in),
+              nq(nq_in),
+              nb(nb_in),
+              qcodes(qcodes_in),
+              bcodes(bcodes_in),
+              gt_distances(gt_distances_in) {
         n = nc = 1 << nbits;
         n_gt.resize(nc * nc * nc);
         init_n_gt();
@@ -689,7 +692,7 @@ struct RankingScore2 : Score3Computer<float, double> {
     /// count nb of i, j in a x b st. i < j
     /// a and b should be sorted on input
     /// they are the ranks of j and k respectively.
-    /// specific version for diff-of-rank weighting, cannot optimized
+    /// specific version for diff-of-rank weighting, cannot optimize
     /// with a cumulative table
     double accum_gt_weight_diff(
             const std::vector<int>& a,
@@ -756,6 +759,8 @@ struct RankingScore2 : Score3Computer<float, double> {
     }
 };
 
+} // namespace
+
 /*****************************************
  * PolysemousTraining
  ******************************************/
@@ -791,19 +796,25 @@ void PolysemousTraining::optimize_reproduce_distances(
     }
 
 #pragma omp parallel for num_threads(nt)
-    for (int m = 0; m < pq.M; m++) {
+    for (int m = 0; m < static_cast<int>(pq.M); m++) {
         std::vector<double> dis_table;
 
         // printf ("Optimizing quantizer %d\n", m);
 
         float* centroids = pq.get_centroids(m, 0);
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                dis_table.push_back(fvec_L2sqr(
-                        centroids + i * dsub, centroids + j * dsub, dsub));
+        auto compute_dis_table = [&]<SIMDLevel SL>() {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dis_table.push_back(
+                            fvec_L2sqr<SL>(
+                                    centroids + i * dsub,
+                                    centroids + j * dsub,
+                                    dsub));
+                }
             }
-        }
+        };
+        with_simd_level(compute_dis_table);
 
         std::vector<int> perm(n);
         ReproduceWithHammingObjective obj(nbits, dis_table, dis_weight_factor);
@@ -812,7 +823,14 @@ void PolysemousTraining::optimize_reproduce_distances(
 
         if (log_pattern.size()) {
             char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
             snprintf(fname, 256, log_pattern.c_str(), m);
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
             printf("opening log file %s\n", fname);
             optim.logfile = fopen(fname, "w");
             FAISS_THROW_IF_NOT_MSG(optim.logfile, "could not open logfile");
@@ -861,21 +879,21 @@ void PolysemousTraining::optimize_ranking(
     }
 
 #pragma omp parallel for
-    for (int m = 0; m < pq.M; m++) {
+    for (int m = 0; m < static_cast<int>(pq.M); m++) {
         size_t nq, nb;
         std::vector<uint32_t> codes;     // query codes, then db codes
         std::vector<float> gt_distances; // nq * nb matrix of distances
 
         if (n > 0) {
             std::vector<float> xtrain(n * dsub);
-            for (int i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 memcpy(xtrain.data() + i * dsub,
                        x + i * pq.d + m * dsub,
                        sizeof(float) * dsub);
             }
 
             codes.resize(n);
-            for (int i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 codes[i] = all_codes[i * pq.code_size + m];
             }
 
@@ -890,8 +908,8 @@ void PolysemousTraining::optimize_ranking(
         } else {
             nq = nb = pq.ksub;
             codes.resize(2 * nq);
-            for (int i = 0; i < nq; i++) {
-                codes[i] = codes[i + nq] = i;
+            for (size_t i = 0; i < nq; i++) {
+                codes[i] = codes[i + nq] = static_cast<uint32_t>(i);
             }
 
             gt_distances.resize(nq * nb);
@@ -924,7 +942,14 @@ void PolysemousTraining::optimize_ranking(
 
         if (log_pattern.size()) {
             char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
             snprintf(fname, 256, log_pattern.c_str(), m);
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
             printf("opening log file %s\n", fname);
             optim.logfile = fopen(fname, "w");
             FAISS_THROW_IF_NOT_FMT(
@@ -946,11 +971,11 @@ void PolysemousTraining::optimize_ranking(
         float* centroids = pq.get_centroids(m, 0);
 
         std::vector<float> centroids_copy;
-        for (int i = 0; i < dsub * pq.ksub; i++) {
+        for (size_t i = 0; i < dsub * pq.ksub; i++) {
             centroids_copy.push_back(centroids[i]);
         }
 
-        for (int i = 0; i < pq.ksub; i++) {
+        for (size_t i = 0; i < pq.ksub; i++) {
             memcpy(centroids + perm[i] * dsub,
                    centroids_copy.data() + i * dsub,
                    dsub * sizeof(centroids[0]));
@@ -985,7 +1010,7 @@ size_t PolysemousTraining::memory_usage_per_thread(
             return n * n * n * sizeof(float);
     }
 
-    FAISS_THROW_MSG("Invalid optmization type");
+    FAISS_THROW_MSG("Invalid optimization type");
     return 0;
 }
 

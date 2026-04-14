@@ -10,7 +10,7 @@ import numpy as np
 import faiss
 import unittest
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.evaluation import check_ref_knn_with_draws
@@ -18,6 +18,7 @@ from faiss.contrib.evaluation import check_ref_knn_with_draws
 import scipy.spatial.distance
 
 
+@for_all_simd_levels
 class TestExtraDistances(unittest.TestCase):
     """ check wrt. the scipy implementation """
 
@@ -244,6 +245,7 @@ class TestExtraDistances(unittest.TestCase):
         self.assertTrue(np.all(np.isnan(dis_out_of_range)))
 
 
+@for_all_simd_levels
 class TestKNN(unittest.TestCase):
     """ test that the knn search gives the same as distance matrix + argmin """
 
@@ -279,6 +281,7 @@ class TestKNN(unittest.TestCase):
         self.do_test_knn(faiss.METRIC_Linf)
 
 
+@for_all_simd_levels
 class TestHNSW(unittest.TestCase):
     """ since it has a distance computer, HNSW should work """
 
@@ -303,6 +306,7 @@ class TestHNSW(unittest.TestCase):
             assert np.all(D[q] == dis[q, I[q]])
 
 
+@for_all_simd_levels
 class TestIVF(unittest.TestCase):
     """ since it has a distance computer, IVF should work """
 

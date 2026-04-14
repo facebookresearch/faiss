@@ -8,8 +8,6 @@ The contrib directory contains helper modules for Faiss for various tasks.
 The contrib directory gets compiled in the module faiss.contrib.
 Note that although some of the modules may depend on additional modules (eg. GPU Faiss, pytorch, hdf5), they are not necessarily compiled in to avoid adding dependencies. It is the user's responsibility to provide them.
 
-In contrib, we are progressively dropping python2 support.
-
 ## List of contrib modules
 
 ### rpc.py

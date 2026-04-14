@@ -12,8 +12,8 @@
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/impl/AdditiveQuantizer.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
 #include <faiss/impl/ProductAdditiveQuantizer.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
@@ -37,13 +37,13 @@ namespace faiss {
 struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
     using Search_type_t = AdditiveQuantizer::Search_type_t;
 
-    AdditiveQuantizer* aq;
+    AdditiveQuantizer* aq{};
 
     bool rescale_norm = false;
     int norm_scale = 1;
 
     // max number of training vectors
-    size_t max_train_points;
+    size_t max_train_points{};
 
     IndexIVFAdditiveQuantizerFastScan(
             Index* quantizer,
@@ -69,6 +69,9 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
     explicit IndexIVFAdditiveQuantizerFastScan(
             const IndexIVFAdditiveQuantizer& orig,
             int bbs = 32);
+
+    /// Packed code size: M2 / 2 bytes (4-bit AQ sub-quantizer nibbles)
+    size_t fast_scan_code_size() const override;
 
     void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 

@@ -28,6 +28,7 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/utils/distances.h>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <sstream>
@@ -354,6 +355,11 @@ TEST(TestGpuIndexIVFFlat, Float32_Query_IP) {
 }
 
 TEST(TestGpuIndexIVFFlat, LargeBatch) {
+    // With low-dim vectors, CPU will use non-BLAS. Force the CPU to use
+    // the BLAS for consistent comparison.
+    int saved_threshold = faiss::distance_compute_blas_threshold;
+    faiss::distance_compute_blas_threshold = 1;
+
     Options opt;
     opt.dim = 3;
     opt.numQuery = 100000;
@@ -364,6 +370,8 @@ TEST(TestGpuIndexIVFFlat, LargeBatch) {
     opt.indicesOpt = faiss::gpu::INDICES_64_BIT;
     queryTest(opt, faiss::METRIC_L2, false);
 #endif
+
+    faiss::distance_compute_blas_threshold = saved_threshold;
 }
 
 // float16 coarse quantizer
@@ -493,7 +501,7 @@ TEST(TestGpuIndexIVFFlat, Float32_negative) {
     // Construct a positive test set
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
 
-    // Put all vecs on positive size
+    // Put all vecs on positive side
     for (auto& f : queryVecs) {
         f = std::abs(f);
     }

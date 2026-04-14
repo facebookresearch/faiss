@@ -25,7 +25,7 @@ inline bool is_aligned_pointer(const void* x) {
 }
 
 // class that manages suitably aligned arrays for SIMD
-// T should be a POV type. The default alignment is 32 for AVX
+// T should be a POD type. The default alignment is 32 for AVX
 template <class T, int A = 32>
 struct AlignedTableTightAlloc {
     T* ptr;

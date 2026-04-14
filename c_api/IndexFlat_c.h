@@ -35,7 +35,7 @@ int faiss_IndexFlat_new_with(
  *
  * @param index   opaque pointer to index object
  * @param p_xb    output, the pointer to the beginning of `xb`.
- * @param p_size  output, the current size of `sb` in number of float values.
+ * @param p_size  output, the current size of `xb` in number of float values.
  */
 void faiss_IndexFlat_xb(FaissIndexFlat* index, float** p_xb, size_t* p_size);
 

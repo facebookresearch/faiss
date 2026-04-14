@@ -318,7 +318,7 @@ class TestComponents(unittest.TestCase):
             n,
             1)
 
-        # do icm encoding without pre-computed unary and bianry terms in Python
+        # do icm encoding without pre-computed unary and binary terms in Python
         codebooks = faiss.vector_float_to_array(lsq.codebooks)
         codebooks = codebooks.reshape(M, K, d).copy()
         ref_codes = icm_encode_ref(x, codebooks, codes)

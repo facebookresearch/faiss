@@ -136,7 +136,7 @@ def collect_results_for(db='deep1M', prefix="autotune."):
             print("FAIL %s" % e)
             res = np.zeros((2, 0))
         except Exception as e:
-            print("PARSE ERROR " + e)
+            print("PARSE ERROR " + str(e))
             res = np.zeros((2, 0))
         else:
             print(len(res), "results")

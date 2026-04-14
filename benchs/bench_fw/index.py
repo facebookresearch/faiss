@@ -558,7 +558,7 @@ class IndexBase:
             "construction_params": self.get_construction_params(),
             "search_params": search_parameters,
         }
-        logger.info("range_seach: end")
+        logger.info("range_search: end")
         return lims, D, I, R, P, None
 
 

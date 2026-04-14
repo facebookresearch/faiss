@@ -28,3 +28,5 @@ add_executable(demo_vecs_write EXCLUDE_FROM_ALL demo_vecs_write.cpp)
 target_link_libraries(demo_vecs_write PRIVATE faiss)
 add_executable(demo_residual_quantizer EXCLUDE_FROM_ALL demo_residual_quantizer.cpp)
 target_link_libraries(demo_residual_quantizer PRIVATE faiss)
+
+add_subdirectory(diversity_filter)

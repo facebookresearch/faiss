@@ -1,0 +1,250 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+/**
+ * @file distances_dispatch.h
+ * @brief Inlineable dispatch wrappers for distance functions.
+ *
+ * This is a PRIVATE header. Do not include in public APIs or user code.
+ *
+ * These wrappers call with_simd_level to route to the correct SIMD
+ * implementation. They are plain inline functions with a _dispatch suffix
+ * (e.g. fvec_L2sqr_dispatch). Internal callers that want inlining include
+ * this header and call the _dispatch variants directly.
+ *
+ * The public API functions (fvec_L2sqr, etc.) are defined as regular extern
+ * functions in distances.cpp and simply delegate to these _dispatch variants.
+ */
+
+#include <faiss/impl/simd_dispatch.h>
+#include <faiss/utils/distances.h>
+#include <faiss/utils/extra_distances.h>
+
+namespace faiss {
+
+inline float fvec_L1_dispatch(const float* x, const float* y, size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { return fvec_L1<SL>(x, y, d); });
+}
+
+inline float fvec_Linf_dispatch(const float* x, const float* y, size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { return fvec_Linf<SL>(x, y, d); });
+}
+
+inline float fvec_norm_L2sqr_dispatch(const float* x, size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { return fvec_norm_L2sqr<SL>(x, d); });
+}
+
+inline float fvec_L2sqr_dispatch(const float* x, const float* y, size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { return fvec_L2sqr<SL>(x, y, d); });
+}
+
+inline float fvec_inner_product_dispatch(
+        const float* x,
+        const float* y,
+        size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { return fvec_inner_product<SL>(x, y, d); });
+}
+
+inline void fvec_inner_product_batch_4_dispatch(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
+        fvec_inner_product_batch_4<SL>(
+                x, y0, y1, y2, y3, d, dis0, dis1, dis2, dis3);
+    });
+}
+
+inline void fvec_L2sqr_batch_4_dispatch(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
+        fvec_L2sqr_batch_4<SL>(x, y0, y1, y2, y3, d, dis0, dis1, dis2, dis3);
+    });
+}
+
+inline void fvec_L2sqr_ny_transposed_dispatch(
+        float* dis,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
+        fvec_L2sqr_ny_transposed<SL>(dis, x, y, y_sqlen, d, d_offset, ny);
+    });
+}
+
+inline void fvec_inner_products_ny_dispatch(
+        float* ip,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>([&]<SIMDLevel SL>() {
+        fvec_inner_products_ny<SL>(ip, x, y, d, ny);
+    });
+}
+
+inline void fvec_L2sqr_ny_dispatch(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { fvec_L2sqr_ny<SL>(dis, x, y, d, ny); });
+}
+
+inline size_t fvec_L2sqr_ny_nearest_dispatch(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t ny) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() {
+                return fvec_L2sqr_ny_nearest<SL>(
+                        distances_tmp_buffer, x, y, d, ny);
+            });
+}
+
+inline size_t fvec_L2sqr_ny_nearest_y_transposed_dispatch(
+        float* distances_tmp_buffer,
+        const float* x,
+        const float* y,
+        const float* y_sqlen,
+        size_t d,
+        size_t d_offset,
+        size_t ny) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() {
+                return fvec_L2sqr_ny_nearest_y_transposed<SL>(
+                        distances_tmp_buffer, x, y, y_sqlen, d, d_offset, ny);
+            });
+}
+
+inline void fvec_madd_dispatch(
+        size_t n,
+        const float* a,
+        float bf,
+        const float* b,
+        float* c) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() { fvec_madd<SL>(n, a, bf, b, c); });
+}
+
+inline int fvec_madd_and_argmin_dispatch(
+        size_t n,
+        const float* a,
+        float bf,
+        const float* b,
+        float* c) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A1>(
+            [&]<SIMDLevel SL>() {
+                return fvec_madd_and_argmin<SL>(n, a, bf, b, c);
+            });
+}
+
+inline void fvec_sub_dispatch(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    with_simd_level_256bit(
+            [&]<SIMDLevel level>() { fvec_sub<level>(d, a, b, c); });
+}
+
+inline void fvec_add_dispatch(
+        size_t d,
+        const float* a,
+        const float* b,
+        float* c) {
+    with_simd_level_256bit(
+            [&]<SIMDLevel level>() { fvec_add<level>(d, a, b, c); });
+}
+
+inline void fvec_add_scalar_dispatch(
+        size_t d,
+        const float* a,
+        float b,
+        float* c) {
+    with_simd_level_256bit(
+            [&]<SIMDLevel level>() { fvec_add<level>(d, a, b, c); });
+}
+
+inline void compute_PQ_dis_tables_dsub2_dispatch(
+        size_t d,
+        size_t ksub,
+        const float* centroids,
+        size_t nx,
+        const float* x,
+        bool is_inner_product,
+        float* dis_tables) {
+    with_simd_level_256bit([&]<SIMDLevel level>() {
+        compute_PQ_dis_tables_dsub2<level>(
+                d, ksub, centroids, nx, x, is_inner_product, dis_tables);
+    });
+}
+
+/***************************************************************************
+ * Dispatching function that takes a lambda directly.
+ * The lambda should be templated on VectorDistance, eg.:
+ *
+ *   auto result = with_VectorDistance(
+ *       metric, metric_arg, [&]<class VD>(VD vd) {
+ *           return vd(x, y);
+ *       });
+ **************************************************************************/
+
+template <typename LambdaType>
+auto with_VectorDistance(
+        size_t d,
+        MetricType metric,
+        float metric_arg,
+        LambdaType&& action) {
+    auto dispatch_metric = [&]<MetricType mt>() {
+        auto call = [&]<SIMDLevel level>() {
+            VectorDistance<mt, level> vd = {d, metric_arg};
+            return action(vd);
+        };
+
+        constexpr bool has_simd = mt == METRIC_INNER_PRODUCT ||
+                mt == METRIC_L2 || mt == METRIC_L1 || mt == METRIC_Linf;
+        if constexpr (!has_simd) {
+            return call.template operator()<SIMDLevel::NONE>();
+        } else {
+            return with_simd_level(call);
+        }
+    };
+    return with_metric_type(metric, dispatch_metric);
+}
+
+} // namespace faiss

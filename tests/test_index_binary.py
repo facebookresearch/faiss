@@ -10,7 +10,9 @@ import numpy as np
 import unittest
 import faiss
 
-from common_faiss_tests import compare_binary_result_lists, make_binary_dataset
+from common_faiss_tests import (
+    compare_binary_result_lists, for_all_simd_levels, make_binary_dataset
+)
 
 
 
@@ -25,6 +27,7 @@ def binary_dis(x, y):
     return sum(faiss.popcount64(int(xi ^ yi)) for xi, yi in zip(x, y))
 
 
+@for_all_simd_levels
 class TestBinaryPQ(unittest.TestCase):
     """ Use a PQ that mimicks a binary encoder """
 
@@ -81,6 +84,7 @@ class TestBinaryPQ(unittest.TestCase):
                 assert 4 * ref_dis == dj
 
 
+@for_all_simd_levels
 class TestBinaryFlat(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -155,6 +159,7 @@ class TestBinaryFlat(unittest.TestCase):
         assert np.all(input_vector[:4] == reconstructed_vector)
 
 
+@for_all_simd_levels
 class TestBinaryIVF(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -313,6 +318,7 @@ class TestBinaryIVF(unittest.TestCase):
         compare_binary_result_lists(Dref, Iref, D2, I2)
 
 
+@for_all_simd_levels
 class TestHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -360,6 +366,7 @@ class TestHNSW(unittest.TestCase):
         self.assertTrue((Dref == Dbin).all())
 
 
+@for_all_simd_levels
 class TestReplicasAndShards(unittest.TestCase):
 
     @unittest.skipIf(os.name == "posix" and os.uname().sysname == "Darwin",

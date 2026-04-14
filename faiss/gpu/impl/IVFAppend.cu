@@ -22,7 +22,7 @@ namespace faiss {
 namespace gpu {
 
 //
-// IVF list metadata aupdate
+// IVF list metadata update
 //
 
 // Updates the device-size array of list start pointers for codes and indices

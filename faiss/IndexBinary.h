@@ -49,7 +49,7 @@ struct IndexBinary {
     /** Perform training on a representative set of vectors.
      *
      * @param n      nb of training vectors
-     * @param x      training vecors, size n * d / 8
+     * @param x      training vectors, size n * d / 8
      */
     virtual void train(idx_t n, const uint8_t* x);
     virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
@@ -58,7 +58,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::train: unsupported numeric type");
         }
-    };
+    }
 
     /** Add n vectors of dimension d to the index.
      *
@@ -72,7 +72,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::add: unsupported numeric type");
         }
-    };
+    }
 
     /** Same as add, but stores xids instead of sequential ids.
      *
@@ -93,7 +93,7 @@ struct IndexBinary {
             FAISS_THROW_MSG(
                     "IndexBinary::add_with_ids: unsupported numeric type");
         }
-    };
+    }
 
     /** Query n vectors of dimension d to the index.
      *
@@ -129,7 +129,7 @@ struct IndexBinary {
         } else {
             FAISS_THROW_MSG("IndexBinary::search: unsupported numeric type");
         }
-    };
+    }
 
     /** Query n vectors of dimension d to the index.
      *
@@ -172,14 +172,14 @@ struct IndexBinary {
      *
      * This function may not be defined for some indexes.
      * @param key         id of the vector to reconstruct
-     * @param recons      reconstucted vector (size d / 8)
+     * @param recons      reconstructed vector (size d / 8)
      */
     virtual void reconstruct(idx_t key, uint8_t* recons) const;
 
     /** Reconstruct vectors i0 to i0 + ni - 1.
      *
      * This function may not be defined for some indexes.
-     * @param recons      reconstucted vectors (size ni * d / 8)
+     * @param recons      reconstructed vectors (size ni * d / 8)
      */
     virtual void reconstruct_n(idx_t i0, idx_t ni, uint8_t* recons) const;
 

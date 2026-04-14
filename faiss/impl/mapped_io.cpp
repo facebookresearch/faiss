@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -27,15 +27,22 @@
 
 namespace faiss {
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 
 struct MmappedFileMappingOwner::PImpl {
     void* ptr = nullptr;
     size_t ptr_size = 0;
 
     explicit PImpl(const std::string& filename) {
-        auto f = std::unique_ptr<FILE, decltype(&fclose)>(
-                fopen(filename.c_str(), "r"), &fclose);
+        struct FileDeleter {
+            void operator()(FILE* f) const {
+                if (f)
+                    fclose(f);
+            }
+        };
+
+        auto f = std::unique_ptr<FILE, FileDeleter>(
+                fopen(filename.c_str(), "r"), FileDeleter{});
         FAISS_THROW_IF_NOT_FMT(
                 f.get(),
                 "could not open %s for reading: %s",
@@ -53,11 +60,11 @@ struct MmappedFileMappingOwner::PImpl {
         void* address = mmap(
                 nullptr, filesize, PROT_READ, MAP_SHARED, fileno(f.get()), 0);
         FAISS_THROW_IF_NOT_FMT(
-                address != nullptr, "could not mmap(): %s", strerror(errno));
+                address != MAP_FAILED, "could not mmap(): %s", strerror(errno));
 
         // btw, fd can be closed here
 
-        madvise(address, filesize, MADV_RANDOM);
+        (void)madvise(address, filesize, MADV_RANDOM);
 
         // save it
         ptr = address;
@@ -76,11 +83,11 @@ struct MmappedFileMappingOwner::PImpl {
         void* address =
                 mmap(nullptr, filesize, PROT_READ, MAP_SHARED, fileno(f), 0);
         FAISS_THROW_IF_NOT_FMT(
-                address != nullptr, "could not mmap(): %s", strerror(errno));
+                address != MAP_FAILED, "could not mmap(): %s", strerror(errno));
 
         // btw, fd can be closed here
 
-        madvise(address, filesize, MADV_RANDOM);
+        (void)madvise(address, filesize, MADV_RANDOM);
 
         // save it
         ptr = address;

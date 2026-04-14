@@ -21,8 +21,8 @@ InvertedListsIterator::~InvertedListsIterator() {}
  * InvertedLists implementation
  ******************************************/
 
-InvertedLists::InvertedLists(size_t nlist, size_t code_size)
-        : nlist(nlist), code_size(code_size) {}
+InvertedLists::InvertedLists(size_t nlist_, size_t code_size_)
+        : nlist(nlist_), code_size(code_size_) {}
 
 InvertedLists::~InvertedLists() {}
 
@@ -70,7 +70,7 @@ void InvertedLists::reset() {
 
 void InvertedLists::merge_from(InvertedLists* oivf, size_t add_id) {
 #pragma omp parallel for
-    for (idx_t i = 0; i < nlist; i++) {
+    for (idx_t i = 0; i < static_cast<idx_t>(nlist); i++) {
         size_t list_size = oivf->list_size(i);
         ScopedIds ids(oivf, i);
         if (add_id == 0) {
@@ -109,12 +109,12 @@ size_t InvertedLists::copy_subset_to(
         ntotal = compute_ntotal();
     }
 
-    for (idx_t list_no = 0; list_no < nlist; list_no++) {
+    for (size_t list_no = 0; list_no < nlist; list_no++) {
         size_t n = list_size(list_no);
         ScopedIds ids_in(this, list_no);
 
         if (subset_type == SUBSET_TYPE_ID_RANGE) {
-            for (idx_t i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 idx_t id = ids_in[i];
                 if (a1 <= id && id < a2) {
                     oivf.add_entry(
@@ -125,7 +125,7 @@ size_t InvertedLists::copy_subset_to(
                 }
             }
         } else if (subset_type == SUBSET_TYPE_ID_MOD) {
-            for (idx_t i = 0; i < n; i++) {
+            for (size_t i = 0; i < n; i++) {
                 idx_t id = ids_in[i];
                 if (id % a1 == a2) {
                     oivf.add_entry(
@@ -143,7 +143,7 @@ size_t InvertedLists::copy_subset_to(
             size_t next_accu_a2 = next_accu_n * a2 / ntotal;
             size_t i2 = next_accu_a2 - accu_a2;
 
-            for (idx_t i = i1; i < i2; i++) {
+            for (size_t i = i1; i < i2; i++) {
                 oivf.add_entry(
                         list_no,
                         get_single_id(list_no, i),
@@ -157,7 +157,7 @@ size_t InvertedLists::copy_subset_to(
             size_t i1 = n * a2 / a1;
             size_t i2 = n * (a2 + 1) / a1;
 
-            for (idx_t i = i1; i < i2; i++) {
+            for (size_t i = i1; i < i2; i++) {
                 oivf.add_entry(
                         list_no,
                         get_single_id(list_no, i),
@@ -166,7 +166,8 @@ size_t InvertedLists::copy_subset_to(
 
             n_added += i2 - i1;
         } else if (subset_type == SUBSET_TYPE_INVLIST) {
-            if (list_no >= a1 && list_no < a2) {
+            if (static_cast<idx_t>(list_no) >= a1 &&
+                static_cast<idx_t>(list_no) < a2) {
                 oivf.add_entries(
                         list_no,
                         n,
@@ -229,7 +230,7 @@ bool InvertedLists::is_empty(size_t list_no, void* inverted_list_context)
     }
 }
 
-// implemnent iterator on top of get_codes / get_ids
+// implement iterator on top of get_codes / get_ids
 namespace {
 
 struct CodeArrayIterator : InvertedListsIterator {
@@ -269,10 +270,10 @@ InvertedListsIterator* InvertedLists::get_iterator(
  * ArrayInvertedLists implementation
  ******************************************/
 
-ArrayInvertedLists::ArrayInvertedLists(size_t nlist, size_t code_size)
-        : InvertedLists(nlist, code_size) {
-    ids.resize(nlist);
-    codes.resize(nlist);
+ArrayInvertedLists::ArrayInvertedLists(size_t nlist_in, size_t code_size_in)
+        : InvertedLists(nlist_in, code_size_in) {
+    ids.resize(nlist_in);
+    codes.resize(nlist_in);
 }
 
 size_t ArrayInvertedLists::add_entries(
@@ -351,22 +352,24 @@ ArrayInvertedLists::~ArrayInvertedLists() {}
  **********************************************/
 
 ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
-        size_t nlist,
-        size_t code_size,
-        size_t n_levels)
-        : ArrayInvertedLists(nlist, code_size),
-          n_levels(n_levels),
+        size_t nlist_in,
+        size_t code_size_in,
+        size_t n_levels_in)
+        : ArrayInvertedLists(nlist_in, code_size_in),
+          n_levels(n_levels_in),
           level_width(
-                  (((code_size / sizeof(float)) + n_levels - 1) / n_levels) *
-                  sizeof(float)) {
-    FAISS_THROW_IF_NOT(n_levels > 0);
-    FAISS_THROW_IF_NOT(code_size % sizeof(float) == 0);
+                  (((code_size_in / sizeof(float)) + n_levels_in - 1) /
+                   n_levels_in) *
+                  sizeof(float)),
+          pano(code_size_in, n_levels_in, kBatchSize) {
+    FAISS_THROW_IF_NOT(n_levels_in > 0);
+    FAISS_THROW_IF_NOT(code_size_in % sizeof(float) == 0);
     FAISS_THROW_IF_NOT_MSG(
             !use_iterator,
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     FAISS_ASSERT(level_width % sizeof(float) == 0);
 
-    cum_sums.resize(nlist);
+    cum_sums.resize(nlist_in);
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
@@ -390,8 +393,11 @@ size_t ArrayInvertedListsPanorama::add_entries(
     codes[list_no].resize(num_batches * kBatchSize * code_size);
     cum_sums[list_no].resize(num_batches * kBatchSize * (n_levels + 1));
 
-    copy_codes_to_level_layout(list_no, o, n_entry, code);
-    compute_cumulative_sums(list_no, o, n_entry, code);
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
+    pano.copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
+    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, vectors);
 
     return o;
 }
@@ -406,8 +412,14 @@ void ArrayInvertedListsPanorama::update_entries(
     assert(n_entry + offset <= ids[list_no].size());
 
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
-    copy_codes_to_level_layout(list_no, offset, n_entry, code);
-    compute_cumulative_sums(list_no, offset, n_entry, code);
+
+    // Cast to float* is safe here as we guarantee codes are always float
+    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
+    const float* vectors = reinterpret_cast<const float*>(code);
+    pano.copy_codes_to_level_layout(
+            codes[list_no].data(), offset, n_entry, code);
+    pano.compute_cumulative_sums(
+            cum_sums[list_no].data(), offset, n_entry, vectors);
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
@@ -426,32 +438,19 @@ const uint8_t* ArrayInvertedListsPanorama::get_single_code(
 
     uint8_t* recons_buffer = new uint8_t[code_size];
 
-    const uint8_t* codes_base = codes[list_no].data();
-
-    size_t batch_no = offset / kBatchSize;
-    size_t pos_in_batch = offset % kBatchSize;
-    size_t batch_offset = batch_no * kBatchSize * code_size;
-
-    for (size_t level = 0; level < n_levels; level++) {
-        size_t level_offset = level * level_width * kBatchSize;
-        const uint8_t* src = codes_base + batch_offset + level_offset +
-                pos_in_batch * level_width;
-        uint8_t* dest = recons_buffer + level * level_width;
-        size_t copy_size =
-                std::min(level_width, code_size - level * level_width);
-        memcpy(dest, src, copy_size);
-    }
+    float* recons = reinterpret_cast<float*>(recons_buffer);
+    pano.reconstruct(offset, recons, codes[list_no].data());
 
     return recons_buffer;
 }
 
 void ArrayInvertedListsPanorama::release_codes(
         size_t list_no,
-        const uint8_t* codes) const {
+        const uint8_t* codes_in) const {
     // Only delete if it's heap-allocated (from get_single_code).
     // If it's from get_codes (raw storage), it will be codes[list_no].data()
-    if (codes != this->codes[list_no].data()) {
-        delete[] codes;
+    if (codes_in != this->codes[list_no].data()) {
+        delete[] codes_in;
     }
 }
 
@@ -461,94 +460,6 @@ InvertedListsIterator* ArrayInvertedListsPanorama::get_iterator(
     FAISS_THROW_MSG(
             "IndexIVFFlatPanorama does not support iterators, use vanilla IndexIVFFlat instead");
     return nullptr;
-}
-
-void ArrayInvertedListsPanorama::compute_cumulative_sums(
-        size_t list_no,
-        size_t offset,
-        size_t n_entry,
-        const uint8_t* code) {
-    // Cast to float* is safe here as we guarantee codes are always float
-    // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
-    const float* vectors = reinterpret_cast<const float*>(code);
-    const size_t d = code_size / sizeof(float);
-
-    std::vector<float> suffix_sums(d + 1);
-
-    for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
-        size_t current_pos = offset + entry_idx;
-        size_t batch_no = current_pos / kBatchSize;
-        size_t pos_in_batch = current_pos % kBatchSize;
-
-        const float* vector = vectors + entry_idx * d;
-
-        // Compute suffix sums of squared values.
-        suffix_sums[d] = 0.0f;
-        for (int j = d - 1; j >= 0; j--) {
-            float squared_val = vector[j] * vector[j];
-            suffix_sums[j] = suffix_sums[j + 1] + squared_val;
-        }
-
-        // Store cumulative sums in batch-oriented layout.
-        size_t cumsum_batch_offset = batch_no * kBatchSize * (n_levels + 1);
-        float* cumsum_base = cum_sums[list_no].data();
-
-        const size_t level_width_floats = level_width / sizeof(float);
-        for (size_t level = 0; level < n_levels; level++) {
-            size_t start_idx = level * level_width_floats;
-            size_t cumsum_offset =
-                    cumsum_batch_offset + level * kBatchSize + pos_in_batch;
-            if (start_idx < d) {
-                cumsum_base[cumsum_offset] = sqrt(suffix_sums[start_idx]);
-            } else {
-                cumsum_base[cumsum_offset] = 0.0f;
-            }
-        }
-
-        // Last level sum is always 0.
-        size_t cumsum_offset =
-                cumsum_batch_offset + n_levels * kBatchSize + pos_in_batch;
-        cumsum_base[cumsum_offset] = 0.0f;
-    }
-}
-
-// Helper method to copy codes into level-oriented batch layout at a given
-// offset in the list.
-void ArrayInvertedListsPanorama::copy_codes_to_level_layout(
-        size_t list_no,
-        size_t offset,
-        size_t n_entry,
-        const uint8_t* code) {
-    uint8_t* codes_base = codes[list_no].data();
-    size_t current_pos = offset;
-    for (size_t entry_idx = 0; entry_idx < n_entry;) {
-        // Determine which batch we're in and position within that batch.
-        size_t batch_no = current_pos / kBatchSize;
-        size_t pos_in_batch = current_pos % kBatchSize;
-        size_t entries_in_this_batch =
-                std::min(n_entry - entry_idx, kBatchSize - pos_in_batch);
-
-        // Copy entries into level-oriented layout for this batch.
-        size_t batch_offset = batch_no * kBatchSize * code_size;
-        for (size_t level = 0; level < n_levels; level++) {
-            size_t level_offset = level * level_width * kBatchSize;
-            size_t start_byte = level * level_width;
-            size_t copy_size =
-                    std::min(level_width, code_size - level * level_width);
-
-            for (size_t i = 0; i < entries_in_this_batch; i++) {
-                const uint8_t* src =
-                        code + (entry_idx + i) * code_size + start_byte;
-                uint8_t* dest = codes_base + batch_offset + level_offset +
-                        (pos_in_batch + i) * level_width;
-
-                memcpy(dest, src, copy_size);
-            }
-        }
-
-        entry_idx += entries_in_this_batch;
-        current_pos += entries_in_this_batch;
-    }
 }
 
 /*****************************************************************
@@ -594,7 +505,7 @@ HStackInvertedLists::HStackInvertedLists(int nil, const InvertedLists** ils_in)
 
 size_t HStackInvertedLists::list_size(size_t list_no) const {
     size_t sz = 0;
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
         sz += il->list_size(list_no);
     }
@@ -604,7 +515,7 @@ size_t HStackInvertedLists::list_size(size_t list_no) const {
 const uint8_t* HStackInvertedLists::get_codes(size_t list_no) const {
     uint8_t *codes = new uint8_t[code_size * list_size(list_no)], *c = codes;
 
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
         size_t sz = il->list_size(list_no) * code_size;
         if (sz > 0) {
@@ -618,7 +529,7 @@ const uint8_t* HStackInvertedLists::get_codes(size_t list_no) const {
 const uint8_t* HStackInvertedLists::get_single_code(
         size_t list_no,
         size_t offset) const {
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
         size_t sz = il->list_size(list_no);
         if (offset < sz) {
@@ -639,7 +550,7 @@ void HStackInvertedLists::release_codes(size_t, const uint8_t* codes) const {
 const idx_t* HStackInvertedLists::get_ids(size_t list_no) const {
     idx_t *ids = new idx_t[list_size(list_no)], *c = ids;
 
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
         size_t sz = il->list_size(list_no);
         if (sz > 0) {
@@ -651,7 +562,7 @@ const idx_t* HStackInvertedLists::get_ids(size_t list_no) const {
 }
 
 idx_t HStackInvertedLists::get_single_id(size_t list_no, size_t offset) const {
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
         size_t sz = il->list_size(list_no);
         if (offset < sz) {
@@ -666,11 +577,11 @@ void HStackInvertedLists::release_ids(size_t, const idx_t* ids) const {
     delete[] ids;
 }
 
-void HStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void HStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
-    for (int i = 0; i < ils.size(); i++) {
+    for (size_t i = 0; i < ils.size(); i++) {
         const InvertedLists* il = ils[i];
-        il->prefetch_lists(list_nos, nlist);
+        il->prefetch_lists(list_nos, nlist_in);
     }
 }
 
@@ -681,20 +592,21 @@ void HStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
 namespace {
 
 idx_t translate_list_no(const SliceInvertedLists* sil, idx_t list_no) {
-    FAISS_THROW_IF_NOT(list_no >= 0 && list_no < sil->nlist);
+    FAISS_THROW_IF_NOT(
+            list_no >= 0 && static_cast<size_t>(list_no) < sil->nlist);
     return list_no + sil->i0;
 }
 
 } // namespace
 
 SliceInvertedLists::SliceInvertedLists(
-        const InvertedLists* il,
-        idx_t i0,
-        idx_t i1)
-        : ReadOnlyInvertedLists(i1 - i0, il->code_size),
-          il(il),
-          i0(i0),
-          i1(i1) {}
+        const InvertedLists* il_,
+        idx_t i0_,
+        idx_t i1_)
+        : ReadOnlyInvertedLists(i1_ - i0_, il_->code_size),
+          il(il_),
+          i0(i0_),
+          i1(i1_) {}
 
 size_t SliceInvertedLists::list_size(size_t list_no) const {
     return il->list_size(translate_list_no(this, list_no));
@@ -727,10 +639,10 @@ void SliceInvertedLists::release_ids(size_t list_no, const idx_t* ids) const {
     return il->release_ids(translate_list_no(this, list_no), ids);
 }
 
-void SliceInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void SliceInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
     std::vector<idx_t> translated_list_nos;
-    for (int j = 0; j < nlist; j++) {
+    for (size_t j = 0; j < static_cast<size_t>(nlist_in); j++) {
         idx_t list_no = list_nos[j];
         if (list_no < 0) {
             continue;
@@ -748,7 +660,8 @@ namespace {
 
 // find the invlist this number belongs to
 int translate_list_no(const VStackInvertedLists* vil, idx_t list_no) {
-    FAISS_THROW_IF_NOT(list_no >= 0 && list_no < vil->nlist);
+    FAISS_THROW_IF_NOT(
+            list_no >= 0 && static_cast<size_t>(list_no) < vil->nlist);
     int i0 = 0, i1 = vil->ils.size();
     const idx_t* cumsz = vil->cumsz.data();
     while (i0 + 1 < i1) {
@@ -831,11 +744,11 @@ void VStackInvertedLists::release_ids(size_t list_no, const idx_t* ids) const {
     return ils[i]->release_ids(list_no, ids);
 }
 
-void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
-    std::vector<int> ilno(nlist, -1);
+    std::vector<int> ilno(nlist_in, -1);
     std::vector<int> n_per_il(ils.size(), 0);
-    for (int j = 0; j < nlist; j++) {
+    for (int j = 0; j < nlist_in; j++) {
         idx_t list_no = list_nos[j];
         if (list_no < 0) {
             continue;
@@ -844,11 +757,11 @@ void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
         n_per_il[i]++;
     }
     std::vector<int> cum_n_per_il(ils.size() + 1, 0);
-    for (int j = 0; j < ils.size(); j++) {
+    for (size_t j = 0; j < ils.size(); j++) {
         cum_n_per_il[j + 1] = cum_n_per_il[j] + n_per_il[j];
     }
     std::vector<idx_t> sorted_list_nos(cum_n_per_il.back());
-    for (int j = 0; j < nlist; j++) {
+    for (int j = 0; j < nlist_in; j++) {
         idx_t list_no = list_nos[j];
         if (list_no < 0) {
             continue;
@@ -859,7 +772,7 @@ void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
     }
 
     int i0 = 0;
-    for (int j = 0; j < ils.size(); j++) {
+    for (size_t j = 0; j < ils.size(); j++) {
         int i1 = i0 + n_per_il[j];
         if (i1 > i0) {
             ils[j]->prefetch_lists(sorted_list_nos.data() + i0, i1 - i0);
@@ -873,11 +786,11 @@ void VStackInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
  ******************************************/
 
 MaskedInvertedLists::MaskedInvertedLists(
-        const InvertedLists* il0,
-        const InvertedLists* il1)
-        : ReadOnlyInvertedLists(il0->nlist, il0->code_size),
-          il0(il0),
-          il1(il1) {
+        const InvertedLists* il0_in,
+        const InvertedLists* il1_in)
+        : ReadOnlyInvertedLists(il0_in->nlist, il0_in->code_size),
+          il0(il0_in),
+          il1(il1_in) {
     FAISS_THROW_IF_NOT(il1->nlist == nlist);
     FAISS_THROW_IF_NOT(il1->code_size == code_size);
 }
@@ -920,10 +833,10 @@ const uint8_t* MaskedInvertedLists::get_single_code(
     return (sz ? il0 : il1)->get_single_code(list_no, offset);
 }
 
-void MaskedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void MaskedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
     std::vector<idx_t> list0, list1;
-    for (int i = 0; i < nlist; i++) {
+    for (int i = 0; i < nlist_in; i++) {
         idx_t list_no = list_nos[i];
         if (list_no < 0) {
             continue;
@@ -940,11 +853,11 @@ void MaskedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
  ******************************************/
 
 StopWordsInvertedLists::StopWordsInvertedLists(
-        const InvertedLists* il0,
-        size_t maxsize)
-        : ReadOnlyInvertedLists(il0->nlist, il0->code_size),
-          il0(il0),
-          maxsize(maxsize) {}
+        const InvertedLists* il0_in,
+        size_t maxsize_in)
+        : ReadOnlyInvertedLists(il0_in->nlist, il0_in->code_size),
+          il0(il0_in),
+          maxsize(maxsize_in) {}
 
 size_t StopWordsInvertedLists::list_size(size_t list_no) const {
     size_t sz = il0->list_size(list_no);
@@ -987,10 +900,10 @@ const uint8_t* StopWordsInvertedLists::get_single_code(
     return il0->get_single_code(list_no, offset);
 }
 
-void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
     std::vector<idx_t> list0;
-    for (int i = 0; i < nlist; i++) {
+    for (int i = 0; i < nlist_in; i++) {
         idx_t list_no = list_nos[i];
         if (list_no < 0) {
             continue;
@@ -1000,6 +913,79 @@ void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
         }
     }
     il0->prefetch_lists(list0.data(), list0.size());
+}
+
+/*****************************************
+ * CappedInvertedLists implementation
+ ******************************************/
+
+CappedInvertedLists::CappedInvertedLists(InvertedLists* il0, size_t maxsize)
+        : InvertedLists(il0->nlist, il0->code_size),
+          il0(il0),
+          maxsize(maxsize) {}
+
+size_t CappedInvertedLists::list_size(size_t list_no) const {
+    size_t sz = il0->list_size(list_no);
+    return sz < maxsize ? sz : maxsize;
+}
+
+size_t CappedInvertedLists::real_list_size(size_t list_no) const {
+    return il0->list_size(list_no);
+}
+
+const uint8_t* CappedInvertedLists::get_codes(size_t list_no) const {
+    return il0->get_codes(list_no);
+}
+
+const idx_t* CappedInvertedLists::get_ids(size_t list_no) const {
+    return il0->get_ids(list_no);
+}
+
+void CappedInvertedLists::release_codes(size_t list_no, const uint8_t* codes)
+        const {
+    il0->release_codes(list_no, codes);
+}
+
+void CappedInvertedLists::release_ids(size_t list_no, const idx_t* ids) const {
+    il0->release_ids(list_no, ids);
+}
+
+idx_t CappedInvertedLists::get_single_id(size_t list_no, size_t offset) const {
+    FAISS_THROW_IF_NOT(offset < list_size(list_no));
+    return il0->get_single_id(list_no, offset);
+}
+
+const uint8_t* CappedInvertedLists::get_single_code(
+        size_t list_no,
+        size_t offset) const {
+    FAISS_THROW_IF_NOT(offset < list_size(list_no));
+    return il0->get_single_code(list_no, offset);
+}
+
+void CappedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+        const {
+    il0->prefetch_lists(list_nos, nlist);
+}
+
+size_t CappedInvertedLists::add_entries(
+        size_t list_no,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code) {
+    return il0->add_entries(list_no, n_entry, ids, code);
+}
+
+void CappedInvertedLists::update_entries(
+        size_t list_no,
+        size_t offset,
+        size_t n_entry,
+        const idx_t* ids,
+        const uint8_t* code) {
+    il0->update_entries(list_no, offset, n_entry, ids, code);
+}
+
+void CappedInvertedLists::resize(size_t list_no, size_t new_size) {
+    il0->resize(list_no, new_size);
 }
 
 } // namespace faiss

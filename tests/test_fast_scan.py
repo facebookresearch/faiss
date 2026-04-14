@@ -6,18 +6,19 @@
 
 import unittest
 import time
-import os
-import tempfile
 
 import numpy as np
 import faiss
 
 from faiss.contrib import datasets
 
+from common_faiss_tests import for_all_simd_levels
+
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestSearch(unittest.TestCase):
 
     def test_PQ4_accuracy(self):
@@ -43,12 +44,15 @@ class TestSearch(unittest.TestCase):
     # hopefully the jitter in executtion time will not produce
     # too many spurious test failures. Unoptimized timings are
     # not exploitable, hence the flag test on that as well.
+    # DD mode uses virtual dispatch which, combined with ASAN overhead,
+    # makes the 4x speed threshold unreliable on dev machines.
     @unittest.skipUnless(
         ('AVX2' in faiss.get_compile_options() or
         'AVX512' in faiss.get_compile_options() or
         'NEON' in faiss.get_compile_options()) and
-        "OPTIMIZE" in faiss.get_compile_options(),
-        "only test while building with avx2 or neon")
+        "OPTIMIZE" in faiss.get_compile_options() and
+        "DD" not in faiss.get_compile_options(),
+        "only test in static optimized mode with avx2/avx512/neon")
     def test_PQ4_speed(self):
         ds  = datasets.SyntheticDataset(32, 2000, 5000, 1000)
         xt = ds.get_train()
@@ -77,6 +81,7 @@ class TestSearch(unittest.TestCase):
         self.assertLess(pqfs_t * 4, pq_t)
 
 
+@for_all_simd_levels
 class TestRounding(unittest.TestCase):
 
     def do_test_rounding(self, implem=4, metric=faiss.METRIC_L2):
@@ -132,6 +137,7 @@ class TestRounding(unittest.TestCase):
         self.do_test_rounding(12, faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestReconstruct(unittest.TestCase):
 
     def test_pqfastscan(self):
@@ -311,6 +317,7 @@ class TestImplems(unittest.TestCase):
         return index2
 
 
+@for_all_simd_levels
 class TestImplem12(TestImplems):
 
     def build_fast_scan_index(self, index, qbs):
@@ -339,6 +346,7 @@ class TestImplem12(TestImplems):
         self.do_with_params(30, 0x33)
 
 
+@for_all_simd_levels
 class TestImplem13(TestImplems):
 
     def build_fast_scan_index(self, index, qbs):
@@ -355,6 +363,7 @@ class TestImplem13(TestImplems):
         self.do_with_params(32, 0x223)
 
 
+@for_all_simd_levels
 class TestImplem14(TestImplems):
 
     def build_fast_scan_index(self, index, params):
@@ -391,6 +400,7 @@ class TestImplem14(TestImplems):
         self.do_with_params(30, (1, 64))
 
 
+@for_all_simd_levels
 class TestImplem15(TestImplems):
 
     def build_fast_scan_index(self, index, params):
@@ -407,6 +417,7 @@ class TestImplem15(TestImplems):
         self.do_with_params(32, (2, 64))
 
 
+@for_all_simd_levels
 class TestAdd(unittest.TestCase):
 
     def do_test_add(self, d, bbs):
@@ -587,16 +598,9 @@ class TestAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('LSQ4x4fs_Nlsq2x4')
@@ -633,7 +637,11 @@ for implem in 2, 3, 4:
     add_TestAQFastScan_subtest_from_idxaq(implem, 'L2')
     add_TestAQFastScan_subtest_from_idxaq(implem, 'IP')
 
+# Apply decorator after dynamic method generation.
+TestAQFastScan = for_all_simd_levels(TestAQFastScan)
 
+
+@for_all_simd_levels
 class TestPAQFastScan(unittest.TestCase):
 
     def subtest_accuracy(self, paq):
@@ -685,22 +693,16 @@ class TestPAQFastScan(unittest.TestCase):
         index.add(ds.get_database())
         D1, I1 = index.search(ds.get_queries(), 1)
 
-        fd, fname = tempfile.mkstemp()
-        os.close(fd)
-        try:
-            faiss.write_index(index, fname)
-            index2 = faiss.read_index(fname)
-            D2, I2 = index2.search(ds.get_queries(), 1)
-            np.testing.assert_array_equal(I1, I2)
-        finally:
-            if os.path.exists(fname):
-                os.unlink(fname)
+        index2 = faiss.deserialize_index(faiss.serialize_index(index))
+        D2, I2 = index2.search(ds.get_queries(), 1)
+        np.testing.assert_array_equal(I1, I2)
 
     def test_io(self):
         self.subtest_io('PLSQ2x3x4fs_Nlsq2x4')
         self.subtest_io('PRQ2x3x4fs_Nrq2x4')
 
 
+@for_all_simd_levels
 class TestBlockDecode(unittest.TestCase):
 
     def test_issue_2739(self):

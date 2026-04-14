@@ -55,7 +55,8 @@ struct IndexFlatCodes : Index {
         return get_FlatCodesDistanceComputer();
     }
 
-    /** Search implemented by decoding */
+    /** Search implemented by decoding (most index types will have a faster
+     * implementation) */
     void search(
             idx_t n,
             const float* x,
@@ -70,6 +71,11 @@ struct IndexFlatCodes : Index {
             float radius,
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
+
+    virtual void search1(
+            const float* x,
+            ResultHandler& handler,
+            SearchParameters* params = nullptr) const override;
 
     // returns a new instance of a CodePacker
     CodePacker* get_CodePacker() const;

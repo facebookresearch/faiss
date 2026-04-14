@@ -37,11 +37,28 @@ struct RaBitQuantizer : Quantizer {
     //   possible. Thus, a quantizer has to introduce a metric.
     MetricType metric_type = MetricType::METRIC_L2;
 
-    RaBitQuantizer(size_t d = 0, MetricType metric = MetricType::METRIC_L2);
+    // Number of bits per dimension (1-9). Default is 1 for backward
+    // compatibility.
+    // - nb_bits = 1: standard 1-bit RaBitQ (sign bits only)
+    // - nb_bits = 2-9: multi-bit RaBitQ (1 sign bit + ex_bits extra bits)
+    size_t nb_bits = 1;
+
+    RaBitQuantizer(
+            size_t d = 0,
+            MetricType metric = MetricType::METRIC_L2,
+            size_t nb_bits = 1);
+
+    // Compute code size based on dimensionality and number of bits
+    // Returns: size in bytes for one encoded vector
+    // - nb_bits=1: (d+7)/8 + 8 bytes (1-bit codes + base factors)
+    // - nb_bits>1: (d+7)/8 + 8 + d*ex_bits/8 + 8 bytes
+    //              (1-bit codes + base factors + ex-bit codes + ex factors)
+    size_t compute_code_size(size_t d, size_t num_bits) const;
 
     void train(size_t n, const float* x) override;
 
-    // every vector is expected to take (d + 7) / 8 + sizeof(FactorsData) bytes,
+    // every vector is expected to take (d + 7) / 8 + sizeof(SignBitFactors)
+    // bytes,
     void compute_codes(const float* x, uint8_t* codes, size_t n) const override;
 
     void compute_codes_core(
@@ -71,9 +88,52 @@ struct RaBitQuantizer : Quantizer {
     // specify qb = 0 to get an DC that does not quantize a query
     // specify qb > 0 to have SQ qb-bits query
     FlatCodesDistanceComputer* get_distance_computer(
-            uint8_t qb,
-            const float* centroid_in = nullptr,
+            uint8_t qb = 0,
+            const float* centroid = nullptr,
             bool centered = false) const;
+};
+
+// RaBitQDistanceComputer: Base class for RaBitQ distance computers
+//
+// This intermediate class exists to provide a unified interface for
+// two-stage multi-bit search. While most Faiss quantizers extend
+// FlatCodesDistanceComputer directly, RaBitQ requires this additional
+// abstraction layer due to its unique split encoding strategy
+// (1 sign bit + magnitude bits) which enables:
+//
+// 1. distance_to_code_1bit() - Fast 1-bit filtering using only sign bits
+// 2. distance_to_code_full() - Accurate multi-bit refinement using all bits
+//
+// These methods implement RaBitQ's two-stage search pattern and are
+// shared between the quantized (Q) and non-quantized (NotQ) query variants.
+// The intermediate class allows two-stage search code to work with both
+// variants via a single dynamic_cast.
+struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
+    size_t d = 0;
+    const float* centroid = nullptr;
+    MetricType metric_type = MetricType::METRIC_L2;
+    size_t nb_bits = 1;
+
+    // Query error factor for bound computation (g_error in rabitq-library)
+    // Used with f_error to compute error bounds for two-stage filtering
+    float g_error = 0.0f;
+
+    float symmetric_dis(idx_t /*i*/, idx_t /*j*/) override {
+        // Not used for RaBitQ
+        FAISS_THROW_MSG("Not implemented");
+    }
+
+    // Compute 1-bit distance estimate (fast)
+    virtual float distance_to_code_1bit(const uint8_t* code) = 0;
+
+    // Compute full multi-bit distance (accurate)
+    virtual float distance_to_code_full(const uint8_t* code) = 0;
+
+    // Override from FlatCodesDistanceComputer
+    // Delegates to distance_to_code_full() for multi-bit distance computation
+    float distance_to_code(const uint8_t* code) final {
+        return distance_to_code_full(code);
+    }
 };
 
 } // namespace faiss

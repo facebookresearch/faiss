@@ -27,12 +27,12 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
 namespace faiss {
 
-using MinimaxHeap = HNSW::MinimaxHeap;
 using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
@@ -82,7 +82,7 @@ void hnsw_add_vertices(
     }
 
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
     }
 
@@ -93,10 +93,10 @@ void hnsw_add_vertices(
     { // make buckets with vectors of the same level
 
         // build histogram
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
-            while (pt_level >= hist.size()) {
+            while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
             }
             hist[pt_level]++;
@@ -104,12 +104,12 @@ void hnsw_add_vertices(
 
         // accumulate
         std::vector<int> offsets(hist.size() + 1, 0);
-        for (int i = 0; i < hist.size() - 1; i++) {
+        for (size_t i = 0; i < hist.size() - 1; i++) {
             offsets[i + 1] = offsets[i] + hist[i];
         }
 
         // bucket sort
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             storage_idx_t pt_id = i + n0;
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
@@ -124,7 +124,7 @@ void hnsw_add_vertices(
 
         int i1 = n;
 
-        for (int pt_level = hist.size() - 1;
+        for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
             int i0 = i1 - hist[pt_level];
@@ -142,7 +142,7 @@ void hnsw_add_vertices(
 
 #pragma omp parallel if (i1 > i0 + 100)
             {
-                VisitedTable vt(ntotal);
+                VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
                 std::unique_ptr<DistanceComputer> dis(
                         storage_distance_computer(index_hnsw.storage));
@@ -199,7 +199,7 @@ void hnsw_add_vertices(
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
 
-    for (int i = 0; i < ntotal; i++) {
+    for (size_t i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
     }
 }
@@ -210,11 +210,13 @@ void hnsw_add_vertices(
  * IndexHNSW implementation
  **************************************************************/
 
-IndexHNSW::IndexHNSW(int d, int M, MetricType metric)
-        : Index(d, metric), hnsw(M) {}
+IndexHNSW::IndexHNSW(int d_in, int M, MetricType metric)
+        : Index(d_in, metric), hnsw(M) {}
 
-IndexHNSW::IndexHNSW(Index* storage, int M)
-        : Index(storage->d, storage->metric_type), hnsw(M), storage(storage) {
+IndexHNSW::IndexHNSW(Index* storage_in, int M)
+        : Index(storage_in->d, storage_in->metric_type),
+          hnsw(M),
+          storage(storage_in) {
     metric_arg = storage->metric_arg;
 }
 
@@ -265,7 +267,7 @@ void hnsw_search(
 
 #pragma omp parallel if (i1 - i0 > 1)
         {
-            VisitedTable vt(index->ntotal);
+            VisitedTable vt(index->ntotal, hnsw.use_visited_hashset);
             typename BlockResultHandler::SingleResultHandler res(bres);
 
             std::unique_ptr<DistanceComputer> dis(
@@ -276,7 +278,7 @@ void hnsw_search(
                 res.begin(i);
                 dis->set_query(x + i * index->d);
 
-                HNSWStats stats = hnsw.search(*dis, res, vt, params);
+                HNSWStats stats = hnsw.search(*dis, index, res, vt, params);
                 n1 += stats.n1;
                 n2 += stats.n2;
                 ndis += stats.ndis;
@@ -308,7 +310,7 @@ void IndexHNSW::search(
 
     if (is_similarity_metric(this->metric_type)) {
         // we need to revert the negated distances
-        for (size_t i = 0; i < k * n; i++) {
+        for (idx_t i = 0; i < k * n; i++) {
             distances[i] = -distances[i];
         }
     }
@@ -333,6 +335,14 @@ void IndexHNSW::range_search(
     }
 }
 
+void IndexHNSW::search1(
+        const float* x,
+        ResultHandler& handler,
+        SearchParameters* params) const {
+    SingleQueryBlockResultHandler<HNSW::C, false> bres(handler);
+    hnsw_search(this, 1, x, bres, params);
+}
+
 void IndexHNSW::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(
             storage,
@@ -342,7 +352,13 @@ void IndexHNSW::add(idx_t n, const float* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(*this, n0, n, x, verbose, hnsw.levels.size() == ntotal);
+    hnsw_add_vertices(
+            *this,
+            n0,
+            n,
+            x,
+            verbose,
+            hnsw.levels.size() == static_cast<size_t>(ntotal));
 }
 
 void IndexHNSW::reset() {
@@ -418,7 +434,7 @@ void IndexHNSW::search_level_0(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
-    storage_idx_t ntotal = hnsw.levels.size();
+    storage_idx_t hnsw_ntotal = hnsw.levels.size();
 
     using RH = HeapBlockResultHandler<HNSW::C>;
     RH bres(n, distances, labels, k);
@@ -428,7 +444,7 @@ void IndexHNSW::search_level_0(
         std::unique_ptr<DistanceComputer> qdis(
                 storage_distance_computer(storage));
         HNSWStats search_stats;
-        VisitedTable vt(ntotal);
+        VisitedTable vt(hnsw_ntotal, hnsw.use_visited_hashset);
         RH::SingleResultHandler res(bres);
 
 #pragma omp for
@@ -478,7 +494,7 @@ void IndexHNSW::init_level_0_from_knngraph(
 
         std::priority_queue<NodeDistFarther> initial_list;
 
-        for (size_t j = 0; j < k; j++) {
+        for (int j = 0; j < k; j++) {
             int v1 = I[i * k + j];
             if (v1 == i) {
                 continue;
@@ -510,13 +526,13 @@ void IndexHNSW::init_level_0_from_entry_points(
         const storage_idx_t* points,
         const storage_idx_t* nearests) {
     std::vector<omp_lock_t> locks(ntotal);
-    for (int i = 0; i < ntotal; i++) {
+    for (idx_t i = 0; i < ntotal; i++) {
         omp_init_lock(&locks[i]);
     }
 
 #pragma omp parallel
     {
-        VisitedTable vt(ntotal);
+        VisitedTable vt(ntotal, hnsw.use_visited_hashset);
 
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
@@ -542,7 +558,7 @@ void IndexHNSW::init_level_0_from_entry_points(
         printf("\n");
     }
 
-    for (int i = 0; i < ntotal; i++) {
+    for (idx_t i = 0; i < ntotal; i++) {
         omp_destroy_lock(&locks[i]);
     }
 }
@@ -586,7 +602,7 @@ void IndexHNSW::link_singletons() {
 
     std::vector<bool> seen(ntotal);
 
-    for (size_t i = 0; i < ntotal; i++) {
+    for (idx_t i = 0; i < ntotal; i++) {
         size_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
@@ -615,8 +631,8 @@ void IndexHNSW::link_singletons() {
            n_sing_l1);
 
     std::vector<float> recons(singletons.size() * d);
-    for (int i = 0; i < singletons.size(); i++) {
-        FAISS_ASSERT(!"not implemented");
+    for (size_t i = 0; i < singletons.size(); i++) {
+        FAISS_ASSERT(false); // not implemented
     }
 }
 
@@ -640,13 +656,66 @@ IndexHNSWFlat::IndexHNSWFlat() {
     is_trained = true;
 }
 
-IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
+IndexHNSWFlat::IndexHNSWFlat(int d_in, int M, MetricType metric)
         : IndexHNSW(
-                  (metric == METRIC_L2) ? new IndexFlatL2(d)
-                                        : new IndexFlat(d, metric),
+                  (metric == METRIC_L2) ? new IndexFlatL2(d_in)
+                                        : new IndexFlat(d_in, metric),
                   M) {
     own_fields = true;
     is_trained = true;
+}
+
+/**************************************************************
+ * IndexHNSWFlatPanorama implementation
+ **************************************************************/
+
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
+        : IndexHNSWFlat(), cum_sums(), pano(0, 1, 1), num_panorama_levels(0) {}
+
+IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
+        int d_in,
+        int M,
+        int num_panorama_levels_in,
+        MetricType metric)
+        : IndexHNSWFlat(d_in, M, metric),
+          cum_sums(),
+          pano(d_in * sizeof(float), num_panorama_levels_in, 1),
+          num_panorama_levels(num_panorama_levels_in) {
+    // For now, we only support L2 distance.
+    // Supporting dot product and cosine distance is a trivial addition
+    // left for future work.
+    FAISS_THROW_IF_NOT(metric == METRIC_L2);
+
+    // Enable Panorama search mode.
+    // This is not ideal, but is still more simple than making a subclass of
+    // HNSW and overriding the search logic.
+    hnsw.is_panorama = true;
+}
+
+void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
+    idx_t n0 = ntotal;
+    cum_sums.resize((ntotal + n) * (pano.n_levels + 1));
+    pano.compute_cumulative_sums(cum_sums.data(), n0, n, x);
+    IndexHNSWFlat::add(n, x);
+}
+
+void IndexHNSWFlatPanorama::reset() {
+    cum_sums.clear();
+    IndexHNSWFlat::reset();
+}
+
+void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
+    std::vector<float> new_cum_sums(ntotal * (pano.n_levels + 1));
+
+    for (idx_t i = 0; i < ntotal; i++) {
+        idx_t src = perm[i];
+        memcpy(&new_cum_sums[i * (pano.n_levels + 1)],
+               &cum_sums[src * (pano.n_levels + 1)],
+               (pano.n_levels + 1) * sizeof(float));
+    }
+
+    std::swap(cum_sums, new_cum_sums);
+    IndexHNSWFlat::permute_entries(perm);
 }
 
 /**************************************************************
@@ -656,12 +725,12 @@ IndexHNSWFlat::IndexHNSWFlat(int d, int M, MetricType metric)
 IndexHNSWPQ::IndexHNSWPQ() = default;
 
 IndexHNSWPQ::IndexHNSWPQ(
-        int d,
+        int d_in,
         int pq_m,
         int M,
         int pq_nbits,
         MetricType metric)
-        : IndexHNSW(new IndexPQ(d, pq_m, pq_nbits, metric), M) {
+        : IndexHNSW(new IndexPQ(d_in, pq_m, pq_nbits, metric), M) {
     own_fields = true;
     is_trained = false;
 }
@@ -676,11 +745,11 @@ void IndexHNSWPQ::train(idx_t n, const float* x) {
  **************************************************************/
 
 IndexHNSWSQ::IndexHNSWSQ(
-        int d,
+        int d_in,
         ScalarQuantizer::QuantizerType qtype,
         int M,
         MetricType metric)
-        : IndexHNSW(new IndexScalarQuantizer(d, qtype, metric), M) {
+        : IndexHNSW(new IndexScalarQuantizer(d_in, qtype, metric), M) {
     is_trained = this->storage->is_trained;
     own_fields = true;
 }
@@ -814,7 +883,8 @@ void IndexHNSW2Level::search(
 
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
+            // visited table (not hash set) for tri-state flags.
+            VisitedTable vt(ntotal, /*use_hashset=*/false);
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(storage));
 
@@ -837,7 +907,7 @@ void IndexHNSW2Level::search(
                     size_t list_length = index_ivfpq->get_list_size(key);
                     const idx_t* ids = index_ivfpq->invlists->get_ids(key);
 
-                    for (int jj = 0; jj < list_length; jj++) {
+                    for (size_t jj = 0; jj < list_length; jj++) {
                         vt.set(ids[jj]);
                     }
                 }
@@ -913,11 +983,11 @@ IndexHNSWCagra::IndexHNSWCagra() {
 }
 
 IndexHNSWCagra::IndexHNSWCagra(
-        int d,
+        int d_in,
         int M,
         MetricType metric,
         NumericType numeric_type)
-        : IndexHNSW(d, M, metric) {
+        : IndexHNSW(d_in, M, metric) {
     FAISS_THROW_IF_NOT_MSG(
             ((metric == METRIC_L2) || (metric == METRIC_INNER_PRODUCT)),
             "unsupported metric type for IndexHNSWCagra");
@@ -961,10 +1031,18 @@ void IndexHNSWCagra::search(
     if (!base_level_only) {
         IndexHNSW::search(n, x, k, distances, labels, params);
     } else {
+        if (ntotal == 0) {
+            std::fill(
+                    distances,
+                    distances + n * k,
+                    std::numeric_limits<float>::max());
+            std::fill(labels, labels + n * k, -1);
+            return;
+        }
         std::vector<storage_idx_t> nearest(n);
         std::vector<float> nearest_d(n);
 
-#pragma omp for
+#pragma omp parallel for
         for (idx_t i = 0; i < n; i++) {
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(this->storage));

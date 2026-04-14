@@ -28,8 +28,8 @@ struct IndexRefine : Index {
     /// refinement index
     Index* refine_index;
 
-    bool own_fields;       ///< should the base index be deallocated?
-    bool own_refine_index; ///< same with the refinement index
+    bool own_fields = false;       ///< should the base index be deallocated?
+    bool own_refine_index = false; ///< same with the refinement index
 
     /// factor between k requested in search and the k requested from
     /// the base_index (should be >= 1)
@@ -85,6 +85,23 @@ struct IndexRefineFlat : IndexRefine {
     IndexRefineFlat(Index* base_index, const float* xb);
 
     IndexRefineFlat();
+
+    void search(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+};
+
+/** Version where the search calls search_subset, allowing for Panorama
+ * refinement. */
+struct IndexRefinePanorama : IndexRefine {
+    explicit IndexRefinePanorama(Index* base_index_in, Index* refine_index_in)
+            : IndexRefine(base_index_in, refine_index_in) {}
+
+    IndexRefinePanorama() : IndexRefine() {}
 
     void search(
             idx_t n,

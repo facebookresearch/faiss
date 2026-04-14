@@ -8,12 +8,12 @@
 #pragma once
 
 #include <faiss/IndexIVF.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/AlignedTable.h>
 
 namespace faiss {
 
-struct NormTableScaler;
 struct SIMDResultHandlerToFloat;
 struct Quantizer;
 
@@ -41,14 +41,14 @@ struct Quantizer;
 
 struct IndexIVFFastScan : IndexIVF {
     // size of the kernel
-    int bbs; // set at build time
+    int bbs = 0; // set at build time
 
-    size_t M;
-    size_t nbits;
-    size_t ksub;
+    size_t M = 0;
+    size_t nbits = 0;
+    size_t ksub = 0;
 
     // M rounded up to a multiple of 2
-    size_t M2;
+    size_t M2 = 0;
 
     // search-time implementation
     int implem = 0;
@@ -222,45 +222,31 @@ struct IndexIVFFastScan : IndexIVF {
             RangeSearchResult* result,
             const SearchParameters* params = nullptr) const override;
 
-    /** Create a KNN handler for this index type
+    /** Create a SIMD-dispatched scanner for knn search (IVF variant).
      *
-     * This method can be overridden by derived classes to provide
-     * specialized handlers (e.g., IVFRaBitQHeapHandler for RaBitQ indexes).
-     * Base implementation creates standard handlers based on k and impl.
+     * Returns a FastScanCodeScanner that bundles handler + accumulation
+     * kernel behind the SIMD dispatch boundary. ntotal is not passed
+     * because IVF sets it per-list via handler->ntotal.
+     * Derived classes override this to provide custom handlers
+     * (e.g. RaBitQ).
      *
-     * @param is_max        true for max-heap (inner product), false for
-     *                      min-heap (L2 distance)
-     * @param impl          implementation number:
-     *                      - even (10, 12, 14): use heap for top-k
-     *                      - odd (11, 13, 15): use reservoir sampling
-     * @param n             number of queries
-     * @param k             number of neighbors to find per query
-     * @param distances     output array for distances (n * k), will be
-     *                      populated by handler
-     * @param labels        output array for result IDs (n * k), will be
-     *                      populated by handler
-     * @param sel           optional ID selector to filter results (nullptr =
-     *                      no filtering)
-     * @param context       processing context containing additional data
-     * @param normalizers   optional array of size 2*n for converting quantized
-     *                      uint16 distances to float.
-     *
-     * @return Allocated result handler (caller owns and must delete).
-     *         Handler processes SIMD batches and populates distances/labels.
-     *
-     * @note The returned handler must be deleted by caller after use.
-     *       Typical usage: handler->begin() → process batches → handler->end()
+     * @param is_max       whether to use CMax comparator (true) or CMin
+     * @param n            number of queries
+     * @param k            number of neighbors to find
+     * @param distances    output distances array
+     * @param labels       output labels array
+     * @param sel          optional ID selector
+     * @return             scanner
      */
-    virtual SIMDResultHandlerToFloat* make_knn_handler(
+    virtual std::unique_ptr<FastScanCodeScanner> make_knn_scanner(
             bool is_max,
-            int impl,
             idx_t n,
             idx_t k,
             float* distances,
             idx_t* labels,
             const IDSelector* sel,
-            const FastScanDistancePostProcessing& context,
-            const float* normalizers = nullptr) const;
+            int impl = 0,
+            const FastScanDistancePostProcessing& context = {}) const;
 
     // dispatch to implementations and parallelize
     void search_dispatch_implem(
@@ -315,7 +301,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     void search_implem_12(
             idx_t n,
@@ -325,7 +312,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* ndis_out,
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
-            const IVFSearchParameters* params = nullptr) const;
+            const IVFSearchParameters* params,
+            FastScanCodeScanner& scanner) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(
@@ -359,29 +347,19 @@ struct IndexIVFFastScan : IndexIVF {
      */
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
-   protected:
-    /** Preprocess metadata from encoded vectors before packing.
+    /** Get the size of the code portion packed by pq4_pack_codes.
      *
-     * Called during add_with_ids after encode_vectors but before codes
-     * are packed into SIMD-friendly blocks. Subclasses can override to
-     * extract and store metadata embedded in codes or perform other
-     * pre-packing operations.
+     * Returns the number of bytes per vector that are interleaved into
+     * SIMD blocks by pq4_pack_codes, excluding any embedded metadata
+     * (e.g., RaBitQ factors). The meaning of these bytes depends on the
+     * quantizer: for PQ/AQ they are 4-bit sub-quantizer nibbles, for
+     * RaBitQ they are 1-bit-per-dimension sign bits packed into nibbles.
      *
-     * Default implementation: no-op
-     *
-     * Example use case:
-     * - IndexIVFRaBitQFastScan extracts factor data from codes for use
-     *   during search-time distance corrections
-     *
-     * @param n                  number of vectors encoded
-     * @param flat_codes         encoded vectors (n * code_size bytes)
-     * @param start_global_idx   starting global index (ntotal before add)
+     * Must be implemented by all derived classes.
      */
-    virtual void preprocess_code_metadata(
-            idx_t n,
-            const uint8_t* flat_codes,
-            idx_t start_global_idx);
+    virtual size_t fast_scan_code_size() const = 0;
 
+   protected:
     /** Get stride for interpreting codes during SIMD packing.
      *
      * The stride determines how to read codes when packing them into
@@ -399,6 +377,32 @@ struct IndexIVFFastScan : IndexIVF {
      *         - >0: use custom stride (e.g., code_size for embedded metadata)
      */
     virtual size_t code_packing_stride() const;
+
+   public:
+    /** Get stride in bytes between consecutive SIMD blocks.
+     *
+     * Derived from get_CodePacker()->block_size so that there is a
+     * single source of truth for the block layout.
+     *
+     * @return stride in bytes
+     */
+    size_t get_block_stride() const;
+
+    /** Post-process packed codes after pq4_pack_codes_range.
+     *
+     * Called during add_with_ids after codes have been packed into
+     * SIMD-friendly blocks.
+     *
+     * @param list_no       inverted list number
+     * @param list_offset   starting offset within the list (pre-existing size)
+     * @param n_added       number of vectors added in this batch
+     * @param flat_codes    encoded vectors for this batch (n_added * code_size)
+     */
+    virtual void postprocess_packed_codes(
+            idx_t list_no,
+            size_t list_offset,
+            size_t n_added,
+            const uint8_t* flat_codes);
 };
 
 struct IVFFastScanStats {

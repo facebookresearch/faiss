@@ -11,6 +11,7 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/utils/distances.h>
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <cmath>
@@ -102,7 +103,11 @@ struct Options {
     }
 
     float getCompareEpsilon() const {
-        return 0.035f;
+        // With very low dimensionality (e.g., dim=4, codes=2 giving
+        // dimPerSubQuantizer=2), L2 distances can be very small
+        // (near-zero), causing relative error comparisons to be
+        // unstable despite tiny absolute differences.
+        return (dim <= 8) ? 0.15f : 0.035f;
     }
 
     float getPctMaxDiff1() const {
@@ -191,6 +196,11 @@ TEST(TestGpuIndexIVFPQ, Query_IP) {
 
 // Large batch sizes (>= 65536) should also work
 TEST(TestGpuIndexIVFPQ, LargeBatch) {
+    // With low-dim vectors, CPU will use non-BLAS. Force the CPU to use
+    // the BLAS for consistent comparison.
+    int saved_threshold = faiss::distance_compute_blas_threshold;
+    faiss::distance_compute_blas_threshold = 1;
+
     for (bool usePrecomputed : {false, true}) {
         Options opt;
 
@@ -203,6 +213,8 @@ TEST(TestGpuIndexIVFPQ, LargeBatch) {
 
         queryTest(opt, faiss::MetricType::METRIC_L2);
     }
+
+    faiss::distance_compute_blas_threshold = saved_threshold;
 }
 
 void testMMCodeDistance(faiss::MetricType mt) {
@@ -698,6 +710,11 @@ TEST(TestGpuIndexIVFPQ, Query_IP_Cuvs) {
 
 // Large batch sizes (>= 65536) should also work
 TEST(TestGpuIndexIVFPQ, LargeBatch_Cuvs) {
+    // See LargeBatch comment: force CPU BLAS path to match GPU GEMM
+    // decomposition for consistent L2 distance computation.
+    int saved_threshold = faiss::distance_compute_blas_threshold;
+    faiss::distance_compute_blas_threshold = 1;
+
     Options opt;
 
     // override for large sizes
@@ -712,6 +729,8 @@ TEST(TestGpuIndexIVFPQ, LargeBatch_Cuvs) {
     opt.bitsPerCode = 8;
 
     queryTest(opt, faiss::MetricType::METRIC_L2);
+
+    faiss::distance_compute_blas_threshold = saved_threshold;
 }
 
 TEST(TestGpuIndexIVFPQ, CopyFrom_Cuvs) {

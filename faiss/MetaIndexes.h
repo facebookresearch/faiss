@@ -22,7 +22,7 @@ namespace faiss {
  * used to distribute a MultiIndexQuantizer
  */
 struct IndexSplitVectors : Index {
-    bool own_fields;
+    bool own_fields = false;
     bool threaded;
     std::vector<Index*> sub_indexes;
     idx_t sum_d; /// sum of dimensions seen so far

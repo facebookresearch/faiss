@@ -18,19 +18,20 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/utils/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 // this is needed for prefetching
 
-#ifdef __AVX2__
+#ifdef COMPILE_SIMD_AVX2
 #include <xmmintrin.h>
 #endif
 
 extern "C" {
-// LU decomoposition of a general matrix
+// LU decomposition of a general matrix
 void sgetrf_(
         FINTEGER* m,
         FINTEGER* n,
@@ -65,7 +66,7 @@ int sgemm_(
         float* c,
         FINTEGER* ldc);
 
-// LU decomoposition of a general matrix
+// LU decomposition of a general matrix
 void dgetrf_(
         FINTEGER* m,
         FINTEGER* n,
@@ -153,12 +154,15 @@ lsq::LSQTimer lsq_timer;
 using lsq::LSQTimerScope;
 
 LocalSearchQuantizer::LocalSearchQuantizer(
-        size_t d,
-        size_t M,
-        size_t nbits,
-        Search_type_t search_type)
-        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
-    K = (1 << nbits);
+        size_t d_in,
+        size_t M_in,
+        size_t nbits_in,
+        Search_type_t search_type_in)
+        : AdditiveQuantizer(
+                  d_in,
+                  std::vector<size_t>(M_in, nbits_in),
+                  search_type_in) {
+    K = (1 << nbits_in);
     std::srand(random_seed);
 }
 
@@ -169,7 +173,7 @@ LocalSearchQuantizer::~LocalSearchQuantizer() {
 LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
-    FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
+    FAISS_THROW_IF_NOT(K == static_cast<size_t>(1 << nbits[0]));
     nperts = std::min(nperts, M);
 
     lsq_timer.reset();
@@ -189,11 +193,11 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     std::vector<int32_t> codes(n * M); // [n, M]
     random_int32(codes, 0, K - 1, gen);
 
-    // compute standard derivations of each dimension
+    // compute standard deviations of each dimension
     std::vector<float> stddev(d, 0);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < d; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(d); i++) {
         float mean = 0;
         for (size_t j = 0; j < n; j++) {
             mean += x[j * d + i];
@@ -361,7 +365,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -426,7 +430,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -487,7 +491,7 @@ void LocalSearchQuantizer::update_codebooks(
  *     L = (X - \sum cj)^2, j = 1, ..., M
  *     L = X^2 - 2X * \sum cj + (\sum cj)^2
  *
- * X^2 is negligable since it is the same for all possible value
+ * X^2 is negligible since it is the same for all possible value
  * k of the m-th subcode.
  *
  * 2X * \sum cj is the unary term
@@ -539,7 +543,7 @@ void LocalSearchQuantizer::icm_encode_impl(
         std::mt19937& gen,
         size_t n,
         size_t ils_iters,
-        bool verbose) const {
+        bool verbose_in) const {
     std::vector<float> unaries(n * M * K); // [M, n, K]
     compute_unary_terms(x, unaries.data(), n);
 
@@ -563,7 +567,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         // select the best code for every vector xi
 #pragma omp parallel for reduction(+ : n_betters, mean_obj)
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             if (icm_objs[i] < best_objs[i]) {
                 best_objs[i] = icm_objs[i];
                 memcpy(best_codes.data() + i * M,
@@ -577,7 +581,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
 
-        if (verbose) {
+        if (verbose_in) {
             printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
                    iter1,
                    mean_obj,
@@ -597,7 +601,7 @@ void LocalSearchQuantizer::icm_encode_step(
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
 #pragma omp parallel for schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         std::vector<float> objs(K);
 
         for (size_t iter = 0; iter < n_iters; iter++) {
@@ -616,7 +620,7 @@ void LocalSearchQuantizer::icm_encode_step(
                         continue;
                     }
 
-#ifdef __AVX2__
+#ifdef COMPILE_SIMD_AVX2
                     // TODO: add platform-independent compiler-independent
                     // prefetch utilities.
                     if (other_m + 1 < M) {
@@ -634,7 +638,7 @@ void LocalSearchQuantizer::icm_encode_step(
                     }
 #endif
 
-                    for (int32_t code = 0; code < K; code++) {
+                    for (size_t code = 0; code < K; code++) {
                         int32_t code2 = codes[i * M + other_m];
                         size_t binary_idx = other_m * M * K * K + m * K * K +
                                 code2 * K + code;
@@ -684,22 +688,24 @@ void LocalSearchQuantizer::perturb_codes(
 void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
     LSQTimerScope scope(&lsq_timer, "compute_binary_terms");
 
+    with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-    for (int64_t m12 = 0; m12 < M * M; m12++) {
-        size_t m1 = m12 / M;
-        size_t m2 = m12 % M;
+        for (int64_t m12 = 0; m12 < static_cast<int64_t>(M * M); m12++) {
+            size_t m1 = m12 / M;
+            size_t m2 = m12 % M;
 
-        for (size_t code1 = 0; code1 < K; code1++) {
-            for (size_t code2 = 0; code2 < K; code2++) {
-                const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
-                const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
-                float ip = fvec_inner_product(c1, c2, d);
-                // binaries[m1, m2, code1, code2] = ip * 2
-                binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
-                        ip * 2;
+            for (size_t code1 = 0; code1 < K; code1++) {
+                for (size_t code2 = 0; code2 < K; code2++) {
+                    const float* c1 = codebooks.data() + m1 * K * d + code1 * d;
+                    const float* c2 = codebooks.data() + m2 * K * d + code2 * d;
+                    float ip = fvec_inner_product<SL>(c1, c2, d);
+                    // binaries[m1, m2, code1, code2] = ip * 2
+                    binaries[m1 * M * K * K + m2 * K * K + code1 * K + code2] =
+                            ip * 2;
+                }
             }
         }
-    }
+    });
 }
 
 void LocalSearchQuantizer::compute_unary_terms(
@@ -741,7 +747,7 @@ void LocalSearchQuantizer::compute_unary_terms(
     fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         for (size_t m = 0; m < M; m++) {
             float* u = unaries + m * n * K + i * K;
             fvec_add(K, u, norms.data() + m * K, u);
@@ -760,23 +766,27 @@ float LocalSearchQuantizer::evaluate(
     std::vector<float> decoded_x(n * d, 0.0f);
     float obj = 0.0f;
 
-#pragma omp parallel for reduction(+ : obj)
-    for (int64_t i = 0; i < n; i++) {
-        const auto code = codes + i * M;
-        const auto decoded_i = decoded_x.data() + i * d;
-        for (size_t m = 0; m < M; m++) {
-            // c = codebooks[m, code[m]]
-            const auto c = codebooks.data() + m * K * d + code[m] * d;
-            fvec_add(d, decoded_i, c, decoded_i);
-        }
+    with_simd_level([&]<SIMDLevel SL>() {
+        float local_obj = 0.0f;
+#pragma omp parallel for reduction(+ : local_obj)
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            const auto code = codes + i * M;
+            const auto decoded_i = decoded_x.data() + i * d;
+            for (size_t m = 0; m < M; m++) {
+                // c = codebooks[m, code[m]]
+                const auto c = codebooks.data() + m * K * d + code[m] * d;
+                fvec_add(d, decoded_i, c, decoded_i);
+            }
 
-        float err = faiss::fvec_L2sqr(x + i * d, decoded_i, d);
-        obj += err;
+            float err = fvec_L2sqr<SL>(x + i * d, decoded_i, d);
+            local_obj += err;
 
-        if (objs) {
-            objs[i] = err;
+            if (objs) {
+                objs[i] = err;
+            }
         }
-    }
+        obj = local_obj;
+    });
 
     obj = obj / n;
     return obj;
@@ -784,8 +794,8 @@ float LocalSearchQuantizer::evaluate(
 
 namespace lsq {
 
-IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq)
-        : verbose(false), lsq(lsq) {}
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq_in)
+        : verbose(false), lsq(lsq_in) {}
 
 void IcmEncoder::set_binary_term() {
     auto M = lsq->M;
@@ -823,8 +833,8 @@ void LSQTimer::reset() {
     t.clear();
 }
 
-LSQTimerScope::LSQTimerScope(LSQTimer* timer, std::string name)
-        : timer(timer), name(std::move(name)), finished(false) {
+LSQTimerScope::LSQTimerScope(LSQTimer* timer_in, std::string name_in)
+        : timer(timer_in), name(std::move(name_in)), finished(false) {
     t0 = getmillisecs();
 }
 

@@ -80,7 +80,7 @@ struct BufferList {
     /// add one result, possibly appending a new buffer if needed
     void add(idx_t id, float dis);
 
-    /// copy elemnts ofs:ofs+n-1 seen as linear data in the buffers to
+    /// copy elements ofs:ofs+n-1 seen as linear data in the buffers to
     /// tables dest_ids, dest_dis
     void copy_range(size_t ofs, size_t n, idx_t* dest_ids, float* dest_dis);
 };
@@ -167,34 +167,6 @@ struct TimeoutCallback : InterruptCallback {
     bool want_interrupt() override;
     void set_timeout(double timeout_in_seconds);
     static void reset(double timeout_in_seconds);
-};
-
-/// set implementation optimized for fast access.
-struct VisitedTable {
-    std::vector<uint8_t> visited;
-    uint8_t visno;
-
-    explicit VisitedTable(int size) : visited(size), visno(1) {}
-
-    /// set flag #no to true
-    void set(int no) {
-        visited[no] = visno;
-    }
-
-    /// get flag #no
-    bool get(int no) const {
-        return visited[no] == visno;
-    }
-
-    /// reset all flags to false
-    void advance() {
-        visno++;
-        if (visno == 250) {
-            // 250 rather than 255 because sometimes we use visno and visno+1
-            memset(visited.data(), 0, sizeof(visited[0]) * visited.size());
-            visno = 1;
-        }
-    }
 };
 
 } // namespace faiss

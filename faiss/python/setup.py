@@ -22,6 +22,11 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
+if os.path.exists("__init__.pyi"):
+    shutil.copyfile("__init__.pyi", "faiss/__init__.pyi")
+if os.path.exists("py.typed"):
+    shutil.copyfile("py.typed", "faiss/py.typed")
+
 if platform.system() != "AIX":
     ext = ".pyd" if platform.system() == "Windows" else ".so"
 else:
@@ -109,7 +114,7 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name="faiss",
-    version="1.12.0",
+    version="1.14.1",
     description="A library for efficient similarity search and clustering of dense vectors",
     long_description=long_description,
     long_description_content_type="text/plain",
@@ -121,7 +126,7 @@ setup(
     install_requires=["numpy", "packaging"],
     packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
     package_data={
-        "faiss": ["*.so", "*.pyd", "*.a"],
+        "faiss": ["*.so", "*.pyd", "*.a", "*.pyi", "py.typed"],
     },
     zip_safe=False,
 )

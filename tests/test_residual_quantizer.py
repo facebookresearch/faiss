@@ -211,7 +211,7 @@ class TestResidualQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        # in practice RQ is often better than PQ but it does not the case here, so just check
+        # in practice RQ is often better than PQ but it is not the case here, so just check
         # that we are within some factor.
         self.assertLess(err_rq, err_pq * 1.2)
 
@@ -974,7 +974,7 @@ def precomp_codebooks(codebooks):
 
 
 ############################################################
-# Reference imelementation of table-based beam search (use_beam_LUT=1)
+# Reference implementation of table-based beam search (use_beam_LUT=1)
 ############################################################
 
 def beam_search_encode_step_tab(codes, L, distances, codebook_cross_prods_i,

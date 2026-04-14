@@ -3,6 +3,265 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.14.1] - 2026-03-04
+
+Added
+- 5cf2c4203f0e52f67504f154ae4dbea84906bc1f Expose IndexBinaryFlat to the C API. (#4834)
+- db9ba35118d5230f92d466e17e19f5019ff8601d add hadamard transformation as an index for IVF (#4856)
+
+Changed
+- d2f8d3514003986ec9ed37c9b29d70818ccf686a removed conda-forge install documentation (#4843)
+- c90c9dc544a8a82108d6499d7fafb3c3dc6fda2f Update python to include 3.13 and 3.14 (#4859)
+- 8af77fe730f141d58fa7b0de8d3a33663e8c4b23 SIMD-optimize multi-bit RaBitQ inner product (#4850)
+- ccc934f58660f42da677d5c253b550e61b153d5f ScalarQuantizer: split SIMD specializations into per-SIMD TUs + DD dispatch (#4839)
+
+Fixed
+- 28f79bd98efcb00c2bbf50a7eb30abc507ae49b6 Fix SWIG 4.4 multi-phase init: replace import_array() with import_array1(-1) (#4846)
+
+
+## [1.14.0] - 2026-03-02
+
+Added
+- Add PEP 561 Python type stubs for the faiss package (#4840)
+- Add conda-forge channel to INSTALL.md install commands (#4819)
+- Add post_init_hook call to Python init (#4795)
+- Add ARM SVE support for distance functions (#4798)
+- Add Dynamic Dispatch OSS CI workflow (#4779)
+- Add IndexFlatIPPanorama (#4787)
+- Add benchmark to measure the ResultHandler overhead (#4778)
+- Demo for a diversity filter (#4765)
+- Add SVS binary size comparison demo and documentation (#4777)
+- Add InvertedListScanner support for IndexIVFRaBitQFastScan (#4760)
+- Add comprehensive ScalarQuantizer correctness tests (#4766)
+- add IDSelector for knn_extra_metrics() (#4753)
+- Add early stopping to k-means clustering (#4741)
+- Add k-means++ and AFK-MC² centroid initialization methods (#4740)
+
+Changed
+- ScalarQuantizer: refactor SIMDWIDTH int → SIMDLevel enum (#4838)
+- Fold IndexIVFPQ scanner helpers into templatized lambdas (#4836)
+- Temporarily disable RaBitQ FastScan from backward compatibility test (#4841)
+- Eliminate flat_storage by embedding auxiliary data in SIMD blocks (#4816)
+- Rework PQ code distance for Dynamic Dispatch (#4808)
+- fbcode/faiss/impl (#4832)
+- fbcode/faiss/utils/simd_impl (#4833)
+- fbcode/faiss/IndexFlat.cpp (#4831)
+- fbcode/faiss (#4829)
+- Implement distance_to_code for IVFRaBitQFastScanScanner (#4822)
+- distance_to_code for IVFPQFastScan invertedlistscanner (#4821)
+- Make dispatch_VectorDistance more compact (#4820)
+- Update callers to use read_index_up API (#4818)
+- fbcode/faiss/utils/simd_impl/distances_avx2.cpp (#4813)
+- fbcode/faiss/impl/PolysemousTraining.cpp (#4814)
+- fbcode/faiss/utils/sorting.cpp (#4815)
+- VisitedTable -> unordered_set if ntotal is large (#4735)
+- resulthandlers with AVX512 (#4806)
+- put dispatch one level above (#4802)
+- dynamic dispatch distances_simd (#4781)
+- Introduce Dynamic Dispatch infrastructure with SIMDConfig (#4780)
+- make runtime template selection more compact (#4793)
+- support SearchParameters for IndexBinary (#4761)
+- Support sharding of RaBitQ indices (#4790)
+- Refactor ScalarQuantizer headers to use SIMD wrapper types (#4772)
+- Split ScalarQuantizer.cpp into modular headers (NOOP) (#4786)
+- Move factory_tools to main library and fix unaligned SIMD store (#4782)
+- inline scanning code for fast distance computations (#4785)
+- Enable Faiss for internal use (#4737)
+- Address review comments on SQ correctness tests (#4771)
+- Enable use of svs runtime conda package instead of tarball (#4747)
+- generic result handlers for most indexes (#4762)
+- Use nth_element for median computation in IndexLSH (#4653)
+- Change default qb from 0 to 4 in RaBitQ indexes (#4757)
+- Move reorder_2_heaps() into Heap.h (#4752)
+- Improve naming due to codemod. simd_result_handlers (#4351)
+- Dot Product Support Similarity Metric for IndexIVFFlatPanorama (#4732)
+- Panorama Refactor and Code Cleanup (#4728)
+- Update serialization backwards compatibility test with panorama and rabitq (#4736)
+
+Fixed
+- Additional index deserialization validation (#4844)
+- Validate HNSW levels array entries during deserialization (#4827)
+- Additional memory exception handling fixes for index_read.cpp (#4837)
+- Catch attempts to deserialize undefined MetricTypes (#4823)
+- BlockInvertedListsIOHook::read(): Don't leak on exception. (#4824)
+- Harden ZnSphere lattice codec against invalid parameters (#4826)
+- Validate n_levels > 0 in Panorama (#4825)
+- Additional hardening of index load path (#4817)
+- Deploy std::unique_ptr<> in index_read.cpp for exception safety (#4809)
+- Fix to graph deserialization (#4812)
+- Harden deserialization against integer overflow and buffer overflows (#4811)
+- Fix CMake/Buck build discrepancies (#4807)
+- Fix NSG off-by-one neighbor ID check (#4804)
+- Fix CMake static targets missing SIMD sources and definitions (#4800)
+- Enable -Wstring-conversion in faiss/PACKAGE +1
+- Fix backward compat CI: use isolated conda environments (#4799)
+- Fix string-conversion issue in faiss/impl/lattice_Zn.cpp +1 (#4794)
+- Fix build pr 4761 (#4792)
+- Fix: Remove -Wignored-attributes warning in mapped_io.cpp (#4775)
+- Fix string-conversion issue in faiss/IndexHNSW.cpp
+- Fix: Remove -Wswitch-unreachable warning in generic-inl.h (#4776)
+- Fix string-conversion issue in faiss/invlists/OnDiskInvertedLists.cpp +5 (#4791)
+- Fix OSX arm64 nightly by disabling hidden visibility on macOS (#4789)
+- Fix FindMKL.cmake to detect Intel oneAPI MKL (2021+) (#4769)
+- Fix lint errors in SVS integration code (#4774)
+- Fix typos in demos, benchs, and other directories (#4743)
+- Fix weak external symbol leakage (#4758)
+- Fix compilation on macOS ARM64: Use faiss::idx_t instead of long test_hamming (#4755)
+- Fix multi-bit RaBitQ IP metric filtering and f_add_ex computation (#4754)
+- Fix IP metric distance computation in multi-bit RaBitQ (#4751)
+- Reduce memory usage in timeout callback tests (#4745)
+- Fix c++20 compilation in OSS Faiss for OSX ARM64 (#4733)
+
+Deprecated
+- Remove deprecated RAFT headers (#4731)
+
+
+## [1.13.2] - 2025-12-19
+
+Added
+- 033e6acc6995d1adb9ea5317fadff152df3116bc Add RaBitQStats for tracking two-stage search filtering effectiveness (#4723)
+- 64a236744b9ec4ca18d6b5d4e21c898f861a242a Add multi-bit support for IndexIVFRaBitQFastScan (#4722)
+- cd2af8bc37628ac63dad736067200ac1291a77e7 Implement `IndexRefinePanorama` (#4683)
+- 18d20febb579788be74724cd5a0bbc71632f978b Add multi-bit support for IndexRaBitQFastScan (#4721)
+- 7372bc7982e6d15cd2048744094d510ddeb7495b Reapply `IndexHNSWFlatPanorama` with backward compatible serialization (#4692)
+- 1721ebff6de6ed5a8481302123479be9d85059a2 Also add backwards compatible check for binary (#4714)
+- 98bf8b3808ba325660006623afe177951579f3d9 Implement remaining `IndexFlatPanorama` functions (#4694)
+- a695814f4c108a2ba7a82da9ac2b526b1fff118c Enable Intel ScalableVectorSearch support (#4548)
+- d81a08e2409bb0ec2d2d6a2442d4beb7b2a8cbc9 Index serialization backward compatibility test (#4706)
+
+Changed
+- 9a6c02b061c4142a8e566d9d3360326140c95ad8 Rename RaBitQ factor structs for clarity and reorganize tests (#4730)
+- 281a999abab90aed5b145b193aaff043b52045c2 Enable cuVS in Faiss (#4729)
+- 6452d192cfaf67faf21808c285dfad1ec13b3d39 Update SVS binary to v0.1.0 (#4726)
+- 1ea99d8073bfd5d20bfee4d63c4bb049b7d63154 clean up serialization tests (#4700)
+- 89dd5a7b4ec9eb1f8c540828fc93c540f74c6699 Enable `-Wunused-exception-parameter` in faiss/PACKAGE +1
+
+Fixed
+- 5b19fca3f057b837ac898af52a8eb801c4744892 Allow over-writing centroid files to mitigate [S603653] (#4725)
+- 337dfe8043a9bd9b8f4e2f3ec3c23fffb7b02654 Fix typos in demos, benchs, and other directories" (#4719)
+- aea2b6bc8543f8a9b1b38e537cd55bcd9f6eb059 fix(docs): broken link to SVS in INSTALL.md (#4724)
+- 4627695179e304adba1addd342355f366500149c Fix SVS Python tutorial (#4720)
+- ac2e3abe3890fc7eaff06888878915bbda9c25b0 Update c_api install docs for CMake build system (#4702)
+- abc294419ae2d235aea4a15813e168e742e34995 fix broken test due to renaming to avoid lint (#4712)
+- 3d4d59fc3bd1986b31334c1a8bc6192a773b5666 Fix typos in demos, benchs, and other directories (#4709)
+
+
+## [1.13.1] - 2025-12-02
+
+
+Added
+- add dataset DINO10B (#4686)
+- Implement multi-bit RaBitQ quantization (nb_bits 2-9) (#4679)
+- Add copyright header to test_flat_l2_panorama.py (#4688)
+- Integrate Panorama into `IndexHNSWFlatPanorama` (#4621)
+- Implement `IndexFlatL2Panorama` (#4645)
+
+
+Changed
+- clamping variable used for computing percentile (#4687)
+- Remove unused variable
+- Revert D85902427 (#4690)
+- Optimize ScalarQuantizer (#4652)
+- Update comment to clarify useFloat16 in GpuClonerOptions.h (#4682)
+- facebook-hte-SharedPtrFromNew in StandardGpuResources.cpp (#4680)
+
+
+Fixed
+- Fix deprecated this capture in faiss/gpu/GpuIcmEncoder.cu +1
+- Refactor sharding to not oom (#4678)
+- Fix significant GOMP barrier overhead in exhaustive_L2sqr_blas. (#4663)
+- Fix typos in tests and contrib directories (#4672)
+
+
+
+## [1.13.0] - 2025-11-11
+
+
+Added
+- 2cf82cabf2b2150ca76b9949377b484f109a94d1 Implement PanoramaStats (#4628)
+- 859127cd0b5e9f2ee52e095211202b0f5dbb6414 Implement serialization for `IndexIVFFlatPanorama` (#4636)
+- 7744239dc59c0cc9c665949f0d533daac40e567a Add getter/setter for balanced_bins in PCAMatrix C API issue #4617 (#4630)
+- e6510bd00478d563e380604374f41a27e8697ce6 Add immediate notification when autoclose label is applied (#4624)
+- f983e3ab69c46ecb7728395613ace22729bbd4a8 Integrate Panorama into `IndexIVFFlatPanorama` (#4606)
+- 3af3e00103079554b1071d2dcea7ccedc9693a44 Implementation of IndexIVFRaBitQFastScan (#4596)
+- f58fd4c8ca0fdf6c230c062ed70b93586ae9ec28 Add InvertedListScanner for IVFPQFastScan (#4537)
+- 01d394e5837f10c6270c7284c9f5e306c5cd87c4 RaBitQ Fast Scan (#4595)
+- 752832cac9c4038f52916a0ed2a839401671ce00 Add missing Thrust includes (#4597)
+- 6470b8d9d0f9c0adc71df6d5a1ce64199be85305 Simplify RaBitQ slightly, improving speed and recall (#4550)
+- bc3e3a1ef1464f1b90c6aa4ba4f075582e4f539a RaBitQ: SIMD helper simplification, use faster popcount for doc-side sum (#4573)
+- b7c88eaff82766c69cd3ab7a3a57fa4d4efb603f Microbenchmarks for rabitq_simd.h (#4572)
+- 786e4051fc7940825e8f6f5247bc269f4bc8bd11 RabitQ test coverage for SIMD codepaths (#4571)
+- fa5532734e40dbf66b571634ff597fe314ace054 Adding Idx tags in extended APIs (#4532)
+- fbbb290a5762e265a501324b3bfeb04c1cb5b006 Set NN Descent Metric From CAGRA Params (#4540)
+- 514b44fca8542bafe8640adcbf1cccce1900f74c OSS changes: Enable ROCm to work with Faiss on BUCK (#4485)
+
+
+Changed
+- a9cc039aed084bfb824a84eb7fc749ff0e84370c Upgrade cuVS to 25.10 and build pkg with CUDA=12.6 (#4639)
+- 6ca45d23a7c10761d380daa6b4029c347f30e4ef Optimize IVFRaBitQFastScan query factors: n*nlist to n*nprobe (#4643)
+- 49df7737f868eeb75df450718fc1155d93c43d35 Update GitHub workflow to use clang-format-21 (#4644)
+- a0bd7aac694cd43e3ba0a371cbd7bacf31ded564 clang-format | Format fbsource with clang-format 21.
+- 595c8aa8a23815abd3682a2c08b0b359b37eb621 Allow unaligned fast-scan (#4623)
+- 4fab13c9c67b5402343ca722c83ff7a65a9a48ba Upgrade Faiss OSS side to numpy2 (#4523)
+- 2505168e1870318126aee2ac2cb416b1fe55376f Expose Remaining IVF-PQ params for CAGRA (#4593)
+- 1ed2611c032fe2c509b0f781ee8eee3760142e52 Remove unused imports from faiss directory files (#4565)
+- e5de66e2c24c319e73df22858b520fcfa269d300 Use Development.Module component in CMake FindPython (#4549)
+- 3c7235c6c7040c1c09e39095cc60d794f73b4a35 Update Install Docs with Correct cuVS Version (#4547)
+- f361df8385ccbf9c47b85a6f8e45c71f8f656283 Use c++11 only in headers (#4421)
+- dd637c98d60f51b96c9d2457ebfa319e3f881a47 Change extended API suffix from `Ex` to `_ex` (#4530)
+
+
+Fixed
+- ff1a2d4f6eaf4216c74e6006bf55791cf135b767 Fix typos in core library (root + impl/) (#4670)
+- d94c33065a240e460603352770ec6aa2dc70b8cf chore: fix typos in some files (#4669)
+- 5d9f8d484cffd0961c374c1c7253c8c406b889df Fix additional typos found in second review (#4667)
+- 451ca8429d39f82ed6a933ac874068fa5f13252c Fix typos in documentation, tutorials, and C API (#4666)
+- d0d066e430ec0711121926cadaaeb85fd3cbad1f Fix typos in comments and documentation (#4664)
+- 3ffec120fe411495939dc070e8588afb1db1b7b1 Fix typos in comments and documentation (#4662)
+- 2af54a46bb0dd3a5ba84388c0830f44067bf6e53 Fix typos in comments and documentation (#4661)
+- ec877e794e26cc0778e3665349060e3c224dcb8c Fix typos in comments and documentation (#4660)
+- 3de200f5afb0452b934458c1b235860b4f2089ee try to fix nightly (#4657)
+- 18f5574a50416ab9b61d4806cc802166663912b7 typo: SIFT -> GIST (#4642)
+- 675661b4d363b0eba314d38624324b16b548883f Fix IndexIVFRaBitQFastScan nprobe handling in search_with_parameters (#4629)
+- 64b1f3a04cf730c78f43bb071fcc6afa1b48a992 Fix autoclose workflow - add GH_REPO for immediate notification
+- e5fee1015a90dd3667c0d1f7d866bbc2c023c475 Fix IVFFlatPanorama bench (#4622)
+- 70df32b2e989e0c47c04cfd78be3221c79c8d408 Fix IndexIVFRaBitQFastScan by overriding search_preassigned (#4618)
+- 61c1c76929809914240b9407162f54513cd2b7db Fix nightly build on windows due to c++20 initializer (#4612)
+- 513eabc91d52a9ebc11545ba0b21f3fd1ca99b32 Replace static constexpr with inline constexpr in header (#4613)
+- 97dc014472480ff23dd0bf77c5aa46c073d59687 fix: initializing order of gpu compile options (#4581)
+- dbc75506150e923abdaf4d09baf4fac56a20740e Fix ARM64 compilation error in IndexRaBitQFastScan (#4611)
+- 484dd97ce07ed56129660cccba1d634f765e73ea Add IndexBinaryIDMap2 support to index binary factory (#4603)
+- 041ac84318dac299739e568fafee318317ede6ef Fix memory bloat in IndexBinaryHash search due to argument copying in dispatch_HammingComputer (#4600)
+- 2964a374dbe5d9359cb0f794f73cc334d95c3ac4 Fix nightly by updating mkl version (#4604)
+- 7f7b518df5f1a21fd4591ed68222c26532580467 Unable to import faiss in python in AIX (#4602)
+- 266b71285aabfe3ca66715b7878b1d8fd1e472f7 Added code to catch 'ModuleNotFoundError' exception (#4577)
+- 3b14dad6d9ac48a0764e5ba01a45bca1d7d738ee Fix AIX compilation issue while building python extension (#4587)
+- 1deba7b90f21d952c86affe79721a06ec5800907 Add attribute validation to prevent silent failures in SWIG wrappers (#4583)
+- 3671c61af1455d50c169e5ddd5d6a18d81174c3a more formatting (#4568)
+- d98ff432b98a4d7bea770c0cc221d8a0dab2e4a9 Fix FAISS build with ROCm7 (#4567)
+- 50b3eb48d26b32a2beedb570d1fcf7757830bfcb add "override" to overriden destructors (#4566)
+- 2135e5a28d0f2a932dd02b64b566ac1a52266540 add missing explicit specifier (#4564)
+- 0031d61da81dab33579f7481f6773549ca816fa8 Revert D80734790 (#4563)
+- ee6b7ddd9df954492b597b49b63e8760923317b7 add #pragma once to some header files (#4562)
+- 8b83ebbf6271b713264671fcd128c33def70e8d3 fix python blank space lints (#4560)
+- f46ac530b534f98b8cd5b78373e9ccabad0fdee4 Fix missing object reference in Faiss python wrapper for IndexIVFRaBitQ (#4554)
+- 69f1ac0f0fa635812fdba5180074981f5d7ba2de resolve Open Source requirement violations (#4551)
+- dca887a656e943352bcf1cae6dbaaf6771ac272e Remove unused include from IVFlib.cpp (#4534)
+- 3b3bf5e4e53eb0846fd1109432773a25a879b01b bugfix: add a macro guard for avx512 operation (#4539)
+- fe5e77f1cb0bd26a5a86d9fc1e99f0b2ecacab93 Remove unnecessary std::move on temporaries to fix `-Wpessimizing-move` warnings in DeviceTensor-inl.cuh (#4545)
+- 2fca92f477063a1188a1cf52d3414b3eba05936b fix test_binary_cagra tests failure (#4546)
+- 8d9d3bea7c2d9879e6ce4919d1a25954ef533c8f Remove unused includes from AutoTune.cpp (#4533)
+- 75be84d086190cfda8a516a5f276b5ba0e8cc706 Remove unused imports from fbcode/faiss (#4543)
+- 5c61ed8c94296d0ca97cecd53cbcef91f63e2de4 Fix E302 lint errors: Add required blank lines before class definitions (#4541)
+- daceaac99aeb9dfc8577a0dc6f47c3f6f9b39055 replace type(x) == y with isinstance(x, y) (#4542)
+
+
+Deprecated
+- 2705d7a5d30f121ffc7553d2d7087fce1a448d6b Delete rocm runner for now until it is fixed (#4658)
+- f9ccd582f9a9b8400428625d1ff3217ae83422b9 Remove invalid assertion checking #neighbors == graph degree (#4528)
+
+
+
 ## [1.12.0] - 2025-08-11
 
 
@@ -270,12 +529,12 @@ Changed
 - Improve naming due to codemod (#4063)
 - Improve naming due to codemod (#4064)
 - Improve naming due to codemod (#4065)
-- separare the github build into two conditions (#4066)
+- separate the github build into two conditions (#4066)
 - Improve naming due to codemod (#4070)
 - improve naming due to codemod (#4067)
 - improve naming due to codemod (#4071)
 - improve naming due to codemod (#4072)
-- fix nightily build (#4080)
+- fix nightly build (#4080)
 - Change github action workflows name (#4083)
 - Resolve Packaging Issues (#4044)
 - Update __init__.py (#4086)
@@ -358,7 +617,7 @@ Deprecated
 - faster hnsw CPU index training (#3822)
 - Some small improvements. (#3692)
 - First attempt at LSH matching with nbits (#3679)
-- Set verbosoe before train (#3619)
+- Set verbose before train (#3619)
 - Remove duplicate NegativeDistanceComputer instances (#3450)
 - interrupt for NNDescent (#3432)
 - Get rid of redundant instructions in ScalarQuantizer (#3430)
@@ -370,11 +629,11 @@ Deprecated
 - Skip HNSWPQ sdc init with new io flag (#3250)
 
 ### Fixed
-- FIx a bug for a non-simdlib code of ResidualQuantizer (#3868)
+- Fix a bug for a non-simdlib code of ResidualQuantizer (#3868)
 - assign_index should default to null (#3855)
-- Fix an incorrectly counted the number of computed distances for HNSW (#3840)
+- Fix incorrectly counted the number of computed distances for HNSW (#3840)
 - Add error for overflowing nbits during PQ construction (#3833)
-- Fix radius search with HSNW and IP (#3698)
+- Fix radius search with HNSW and IP (#3698)
 - fix algorithm of spreading vectors over shards (#3374)
 - Fix IndexBinary.assign Python method (#3384)
 - Few fixes in bench_fw to enable IndexFromCodec (#3383)
@@ -442,7 +701,7 @@ Deprecated
 - Improved ResidualQuantizer vector encoding (pooling memory allocations, avoid r/w to a temporary buffer)
 
 ### Fixed
-- HSNW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
+- HNSW bug fixed which improves the recall rate! Special thanks to zh Wang @hhy3 for this.
 - Faiss GPU IVF large query batch fix
 - Faiss + Torch fixes, re-enable k = 2048
 - Fix the number of distance computations to match max_codes parameter
@@ -483,7 +742,7 @@ Deprecated
 - Implementation of Local Search Quantization (by @KinglittleQ)
 
 ### Changed
-- The order of xb an xq was different between `faiss.knn` and `faiss.knn_gpu`.
+- The order of xb and xq was different between `faiss.knn` and `faiss.knn_gpu`.
 Also the metric argument was called distance_type.
 - The typed vectors (LongVector, LongLongVector, etc.) of the SWIG interface have
 been deprecated. They have been replaced with Int32Vector, Int64Vector, etc. (by h-vetinari)
@@ -614,7 +873,7 @@ propagated.
 - Support for IMI2x16 (4B virtual centroids).
 - Support for k = 2048 search on GPU (instead of 1024).
 - Support for renaming an ondisk invertedlists.
-- Support for nterrupting computations with interrupt signal (ctrl-C) in python.
+- Support for interrupting computations with interrupt signal (ctrl-C) in python.
 - Simplified build system (with --with-cuda/--with-cuda-arch options).
 
 ### Changed
@@ -663,7 +922,13 @@ by conda install -c pytorch faiss-gpu cudatoolkit=10.0.
 - C bindings.
 - Extended tutorial to GPU indices.
 
-[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/facebookresearch/faiss/compare/v1.14.1...HEAD
+[1.14.1]: https://github.com/facebookresearch/faiss/compare/v1.14.0...v1.14.1
+[1.14.0]: https://github.com/facebookresearch/faiss/compare/v1.13.2...v1.14.0
+[1.13.2]: https://github.com/facebookresearch/faiss/compare/v1.13.1...v1.13.2
+[1.13.1]: https://github.com/facebookresearch/faiss/compare/v1.13.0...v1.13.1
+[1.13.0]: https://github.com/facebookresearch/faiss/compare/v1.12.0...v1.13.0
+[1.12.0]: https://github.com/facebookresearch/faiss/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/facebookresearch/faiss/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/facebookresearch/faiss/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/facebookresearch/faiss/compare/v1.8.0...v1.9.0

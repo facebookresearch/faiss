@@ -13,6 +13,7 @@ set(FAISS_C_SRC
   AutoTune_c.cpp
   Clustering_c.cpp
   IndexFlat_c.cpp
+  IndexHNSW_c.cpp
   IndexIVFFlat_c.cpp
   IndexIVF_c.cpp
   IndexLSH_c.cpp
@@ -23,6 +24,7 @@ set(FAISS_C_SRC
   Index_c.cpp
   IndexBinary_c.cpp
   IndexBinaryIVF_c.cpp
+  IndexBinaryFlat_c.cpp
   IndexScalarQuantizer_c.cpp
   MetaIndexes_c.cpp
   clone_index_c.cpp
@@ -74,7 +76,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-march=sapphirerapids -mtune=sapphirerapids>)
+  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16>)
 else()
   target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
 endif()

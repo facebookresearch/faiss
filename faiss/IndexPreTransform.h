@@ -26,7 +26,7 @@ struct IndexPreTransform : Index {
     std::vector<VectorTransform*> chain; ///! chain of transforms
     Index* index;                        ///! the sub-index
 
-    bool own_fields; ///! whether pointers are deleted in destructor
+    bool own_fields = false; ///! whether pointers are deleted in destructor
 
     explicit IndexPreTransform(Index* index);
 
@@ -56,6 +56,15 @@ struct IndexPreTransform : Index {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+
+    void search_subset(
+            idx_t n,
+            const float* x,
+            idx_t k_base,
+            const idx_t* base_labels,
+            idx_t k,
+            float* distances,
+            idx_t* labels) const override;
 
     /* range search, no attempt is done to change the radius */
     void range_search(

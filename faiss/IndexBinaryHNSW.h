@@ -19,14 +19,14 @@ namespace faiss {
  * link structure built on top */
 
 struct IndexBinaryHNSW : IndexBinary {
-    typedef HNSW::storage_idx_t storage_idx_t;
+    using storage_idx_t = HNSW::storage_idx_t;
 
     // the link structure
     HNSW hnsw;
 
     // the sequential storage
-    bool own_fields;
-    IndexBinary* storage;
+    bool own_fields = false;
+    IndexBinary* storage = nullptr;
 
     // When set to false, level 0 in the knn graph is not initialized.
     // This option is used by GpuIndexBinaryCagra::copyTo(IndexBinaryHNSW*)
@@ -36,7 +36,7 @@ struct IndexBinaryHNSW : IndexBinary {
 
     // When set to true, all neighbors in level 0 are filled up
     // to the maximum size allowed (2 * M). This option is used by
-    // IndexBinaryHHNSW to create a full base layer graph that is
+    // IndexBinaryHNSW to create a full base layer graph that is
     // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryHNSW*) is called.
     bool keep_max_size_level0 = false;
 

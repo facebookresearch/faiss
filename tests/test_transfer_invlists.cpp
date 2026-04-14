@@ -34,9 +34,9 @@ using namespace faiss;
 
 using idx_t = faiss::idx_t;
 
-std::vector<float> get_data(size_t nb, int seed) {
-    std::vector<float> x(nb * d);
-    float_randn(x.data(), nb * d, seed);
+std::vector<float> get_data(size_t nb_in, int seed) {
+    std::vector<float> x(nb_in * d);
+    float_randn(x.data(), nb_in * d, seed);
     return x;
 }
 

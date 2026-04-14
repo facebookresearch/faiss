@@ -105,9 +105,9 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
-#include <faiss/impl/FastScanDistancePostProcessing.h>
-#include <faiss/utils/simdlib.h>
-#include <faiss/impl/simd_result_handlers.h>
+#include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
+#include <faiss/impl/fast_scan/simd_result_handlers.h>
 
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
@@ -121,6 +121,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexShards.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/IndexReplicas.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
 
@@ -153,6 +154,11 @@ typedef uint64_t size_t;
 #include <faiss/IVFlib.h>
 #include <faiss/utils/utils.h>
 
+// For DD builds, we need the function declaration.
+// Note: We always declare it here for the C++ compiler since faiss_dd exports it.
+// The SWIG interface section below controls whether Python can call it.
+#include <faiss/utils/simd_levels.h>
+
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/extra_distances.h>
@@ -161,6 +167,7 @@ typedef uint64_t size_t;
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/partitioning.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/AdditiveQuantizer.h>
@@ -171,6 +178,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/ProductAdditiveQuantizer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/utils/NeuralNet.h>
+#include <faiss/impl/Panorama.h>
 #include <faiss/impl/PanoramaStats.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -180,6 +188,7 @@ typedef uint64_t size_t;
 #endif // !_MSC_VER
 
 #include <faiss/Clustering.h>
+#include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/hamming_distance/common.h>
@@ -194,11 +203,19 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+
+#ifdef FAISS_ENABLE_SVS
+#include <faiss/svs/IndexSVSVamana.h>
+#include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSVamanaLVQ.h>
+#include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif
 
 %}
 
@@ -224,7 +241,7 @@ typedef uint64_t size_t;
             PyErr_SetString(PyExc_RuntimeError, e.what());
         }
         SWIG_fail;
-    } catch(std::bad_alloc & ba) {
+    } catch(std::bad_alloc&) {
         PyEval_RestoreThread(_save);
         PyErr_SetString(PyExc_MemoryError, "std::bad_alloc");
         SWIG_fail;
@@ -411,6 +428,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
@@ -420,6 +438,7 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 
 %}
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -467,6 +486,8 @@ void gpu_sync_all_devices()
 %template(CombinerRangeKNNfloat) faiss::CombinerRangeKNN<float>;
 %template(CombinerRangeKNNint16) faiss::CombinerRangeKNN<int16_t>;
 
+%include  <faiss/utils/simd_levels.h>
+
 %include  <faiss/utils/distances.h>
 %include  <faiss/utils/random.h>
 %include  <faiss/utils/sorting.h>
@@ -490,7 +511,11 @@ void gpu_sync_all_devices()
 
 %newobject *::get_FlatCodesDistanceComputer() const;
 %include  <faiss/IndexFlatCodes.h>
+
+%ignore faiss::IndexFlatPanorama::pano;
+
 %include  <faiss/IndexFlat.h>
+%include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
 
 %include  <faiss/utils/extra_distances.h>
@@ -505,6 +530,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/LocalSearchQuantizer.h>
 %include  <faiss/impl/ProductAdditiveQuantizer.h>
 %include  <faiss/impl/CodePacker.h>
+%include  <faiss/impl/Panorama.h>
 %include  <faiss/impl/PanoramaStats.h>
 
 %include  <faiss/VectorTransform.h>
@@ -531,6 +557,7 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
+%include  <faiss/impl/hnsw/MinimaxHeap.h>
 %include  <faiss/impl/HNSW.h>
 %include  <faiss/IndexHNSW.h>
 
@@ -572,15 +599,37 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFPQR.h>
 %include  <faiss/Index2Layer.h>
 
-%include  <faiss/impl/FastScanDistancePostProcessing.h>
+%include  <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
+
+// Ignore FastScanCodeScanner and related factory functions — internal SIMD types.
+%ignore faiss::FastScanCodeScanner;
+%ignore faiss::make_fast_scan_scanner_impl;
+%ignore faiss::make_fast_scan_knn_scanner;
+%ignore faiss::make_range_scanner_impl;
+%ignore faiss::make_range_scanner;
+%ignore faiss::make_partial_range_scanner_impl;
+%ignore faiss::make_partial_range_scanner;
+%ignore faiss::rabitq_make_knn_scanner_impl;
+%ignore faiss::rabitq_make_knn_scanner;
+%ignore faiss::rabitq_ivf_make_knn_scanner_impl;
+%ignore faiss::rabitq_ivf_make_knn_scanner;
+
+// Ignore make_knn_scanner — they return internal SIMD types.
+%ignore faiss::IndexFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFFastScan::search_implem_10;
+%ignore faiss::IndexIVFFastScan::search_implem_12;
+%ignore faiss::IndexRaBitQFastScan::make_knn_scanner;
+%ignore faiss::IndexIVFRaBitQFastScan::make_knn_scanner;
+
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
 
-// NOTE(matthijs) let's not go into wrapping simdlib
-struct faiss::simd16uint16 {};
-
-%include  <faiss/impl/simd_result_handlers.h>
+// NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
+// class template. SWIG cannot handle this, and the Python API doesn't need
+// the internal SIMD handler types.
+// %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
@@ -619,6 +668,7 @@ struct faiss::simd16uint16 {};
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
+%include <faiss/impl/RaBitQStats.h>
 %include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
@@ -633,6 +683,7 @@ struct faiss::simd16uint16 {};
 %ignore faiss::InterruptCallback::lock;
 
 %include <faiss/impl/AuxIndexStructures.h>
+%include <faiss/impl/VisitedTable.h>
 %include <faiss/impl/IDSelector.h>
 
 %include  <faiss/IndexIDMap.h>
@@ -642,7 +693,16 @@ struct faiss::simd16uint16 {};
 %template(IndexBinaryIDMap2) faiss::IndexIDMap2Template<faiss::IndexBinary>;
 
 
-%include <faiss/utils/approx_topk/mode.h>
+%include <faiss/impl/approx_topk/approx_topk.h>
+
+#ifdef FAISS_ENABLE_SVS
+%ignore faiss::to_svs_storage_kind;
+
+%include  <faiss/svs/IndexSVSVamana.h>
+%include  <faiss/svs/IndexSVSFlat.h>
+%include  <faiss/svs/IndexSVSVamanaLVQ.h>
+%include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+#endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
 
@@ -739,8 +799,11 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexIVFFlat )
     DOWNCAST ( IndexIVF )
     DOWNCAST ( IndexFlatIP )
+    DOWNCAST ( IndexFlatIPPanorama )
     DOWNCAST ( IndexFlatL2 )
+    DOWNCAST ( IndexFlatL2Panorama )
     DOWNCAST ( IndexFlat )
+    DOWNCAST ( IndexRefinePanorama )
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
@@ -760,6 +823,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexLattice )
     DOWNCAST ( IndexPreTransform )
     DOWNCAST ( MultiIndexQuantizer )
+    DOWNCAST ( IndexHNSWFlatPanorama )
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
@@ -773,6 +837,12 @@ struct faiss::simd16uint16 {};
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
     DOWNCAST ( IndexRowwiseMinMaxFP16 )
+#ifdef FAISS_ENABLE_SVS
+    DOWNCAST ( IndexSVSFlat )
+    DOWNCAST ( IndexSVSVamanaLeanVec )
+    DOWNCAST ( IndexSVSVamanaLVQ )
+    DOWNCAST ( IndexSVSVamana )
+#endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
@@ -827,6 +897,7 @@ struct faiss::simd16uint16 {};
     DOWNCAST (OPQMatrix)
     DOWNCAST (PCAMatrix)
     DOWNCAST (ITQMatrix)
+    DOWNCAST (HadamardRotation)
     DOWNCAST (RandomRotationMatrix)
     DOWNCAST (LinearTransform)
     DOWNCAST (NormalizationTransform)
@@ -847,6 +918,8 @@ struct faiss::simd16uint16 {};
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
     DOWNCAST (MaskedInvertedLists)
+    DOWNCAST (StopWordsInvertedLists)
+    DOWNCAST (CappedInvertedLists)
     DOWNCAST (InvertedLists)
     {
         assert(false);
@@ -894,6 +967,14 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
     return aq;
 }
 %}
+
+// SWIG cannot handle std::unique_ptr return types; the raw-pointer
+// versions (already annotated with %newobject) are sufficient.
+%ignore faiss::read_index_up;
+%ignore faiss::read_index_binary_up;
+%ignore faiss::read_VectorTransform_up;
+%ignore faiss::read_ProductQuantizer_up;
+%ignore faiss::read_InvertedLists_up;
 
 %include  <faiss/index_io.h>
 %include  <faiss/clone_index.h>
@@ -1182,9 +1263,23 @@ struct PythonInterruptCallback: faiss::InterruptCallback {
 
 %}
 
+%{
+/* See https://github.com/facebookresearch/faiss/issues/4845 */
+static int _faiss_init_numpy() {
+    import_array1(-1);
+    return 0;
+}
+%}
+
 %init %{
     /* needed, else crash at runtime */
-    import_array();
+    if (_faiss_init_numpy() < 0) {
+#if SWIG_VERSION >= 0x040400
+        return -1;
+#else
+        return NULL;
+#endif
+    }
 
     PythonInterruptCallback::reset();
 %}

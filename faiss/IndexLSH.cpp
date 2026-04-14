@@ -22,18 +22,22 @@ namespace faiss {
  * IndexLSH
  ***************************************************************/
 
-IndexLSH::IndexLSH(idx_t d, int nbits, bool rotate_data, bool train_thresholds)
-        : IndexFlatCodes((nbits + 7) / 8, d),
-          nbits(nbits),
-          rotate_data(rotate_data),
-          train_thresholds(train_thresholds),
-          rrot(d, nbits) {
-    is_trained = !train_thresholds;
+IndexLSH::IndexLSH(
+        idx_t d_in,
+        int nbits_in,
+        bool rotate_data_in,
+        bool train_thresholds_in)
+        : IndexFlatCodes((nbits_in + 7) / 8, d_in),
+          nbits(nbits_in),
+          rotate_data(rotate_data_in),
+          train_thresholds(train_thresholds_in),
+          rrot(static_cast<int>(d_in), nbits_in) {
+    is_trained = !train_thresholds_in;
 
-    if (rotate_data) {
+    if (rotate_data_in) {
         rrot.init(5);
     } else {
-        FAISS_THROW_IF_NOT(d >= nbits);
+        FAISS_THROW_IF_NOT(d_in >= nbits_in);
     }
 }
 
@@ -45,7 +49,11 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
         // also applies bias if exists
         xt = rrot.apply(n, x);
     } else if (d != nbits) {
-        assert(nbits < d);
+        FAISS_THROW_IF_NOT_FMT(
+                nbits < d,
+                "nbits (%d) must be less than d (%d)",
+                nbits,
+                (int)d);
         xt = new float[nbits * n];
         float* xp = xt;
         for (idx_t i = 0; i < n; i++) {
@@ -86,12 +94,14 @@ void IndexLSH::train(idx_t n, const float* x) {
 
         for (idx_t i = 0; i < nbits; i++) {
             float* xi = transposed_x.get() + i * n;
-            // std::nth_element
-            std::sort(xi, xi + n);
-            if (n % 2 == 1)
-                thresholds[i] = xi[n / 2];
-            else
-                thresholds[i] = (xi[n / 2 - 1] + xi[n / 2]) / 2;
+            // Use nth_element (O(n)) instead of sort (O(n log n))
+            std::nth_element(xi, xi + n / 2, xi + n);
+            float median = xi[n / 2];
+            if (n % 2 == 0) {
+                std::nth_element(xi, xi + n / 2 - 1, xi + n);
+                median = (median + xi[n / 2 - 1]) / 2;
+            }
+            thresholds[i] = median;
         }
     }
     is_trained = true;
