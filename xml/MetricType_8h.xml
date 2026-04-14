@@ -709,8 +709,6 @@
         </childnode>
         <childnode refid="117" relation="include">
         </childnode>
-        <childnode refid="111" relation="include">
-        </childnode>
       </node>
       <node id="116">
         <label>faiss/impl/CodePackerRaBitQ.h</label>

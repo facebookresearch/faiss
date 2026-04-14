@@ -8432,7 +8432,6 @@
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1adad3a479c688d640cf770e69b40c1d09" kind="variable"><name>storage_size</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1ad46d806eb272cbcb8bda6ae297aacfa9" kind="variable"><name>packed_block_size</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a328606f36a8f4662e3d218110417c573" kind="variable"><name>full_block_size</name></member>
-    <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a994d050603781677b914d2aed0d2e6da" kind="variable"><name>packer</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a1ca4a4beacb1ba55087e470a7f75613b" kind="variable"><name>unpack_buf</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a30d04a68a57a88e095813897dce9169c" kind="variable"><name>cached_nprobe</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a766db679f6da6cf2bd424bc9ae6c0782" kind="variable"><name>is_similarity</name></member>
@@ -9877,7 +9876,6 @@
     <member refid="structfaiss_1_1RaBitQHeapHandler_1a3f0e4294c642446e708697edb606c3f7" kind="variable"><name>storage_size</name></member>
     <member refid="structfaiss_1_1RaBitQHeapHandler_1a9fa7c81d781e84cf23f85f7e57a01515" kind="variable"><name>packed_block_size</name></member>
     <member refid="structfaiss_1_1RaBitQHeapHandler_1a69b2571df50357e12f58544518a12e87" kind="variable"><name>full_block_size</name></member>
-    <member refid="structfaiss_1_1RaBitQHeapHandler_1a8cf7a86f7ce1a542ab9d15006c959c0e" kind="variable"><name>packer</name></member>
     <member refid="structfaiss_1_1RaBitQHeapHandler_1aea81499eaef5232fe7bcaa6c58c38e0c" kind="variable"><name>unpack_buf</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1add21d14cc5acbea717996ff6da3208f6" kind="variable"><name>disable</name></member>
     <member refid="structfaiss_1_1simd__result__handlers_1_1ResultHandlerCompare_1a3667a6f5b1fb6a0095327cca3a92af2a" kind="variable"><name>i0</name></member>
@@ -12831,6 +12829,7 @@
     <member refid="RaBitQUtils_8h_1a08836886c8399e129c4bdc89d1f89c24" kind="function"><name>compute_full_multibit_distance</name></member>
     <member refid="RaBitQUtils_8h_1aca0eed9578a82e530584e13be1c23ab9" kind="function"><name>compute_full_multibit_distance</name></member>
     <member refid="RaBitQUtils_8h_1abb345afcacf968c07414ce5e51e1b155" kind="function"><name>get_block_aux_ptr</name></member>
+    <member refid="RaBitQUtils_8h_1aac7ffa608e786225ccd40a2f524bcb8c" kind="function"><name>unpack_sign_bits_from_packed</name></member>
     <member refid="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" kind="function"><name>compute_per_vector_storage_size</name></member>
     <member refid="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" kind="function"><name>populate_block_aux_from_flat_storage</name></member>
   </compound>

@@ -1008,6 +1008,45 @@
         </inbodydescription>
         <location file="faiss/impl/RaBitQUtils.h" line="372" column="10" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="372" bodyend="381"/>
       </memberdef>
+      <memberdef kind="function" id="RaBitQUtils_8h_1aac7ffa608e786225ccd40a2f524bcb8c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::rabitq_utils::unpack_sign_bits_from_packed</definition>
+        <argsstring>(const uint8_t *block, size_t bbs, size_t nsq, size_t offset, size_t block_stride, uint8_t *sign_bits_out)</argsstring>
+        <name>unpack_sign_bits_from_packed</name>
+        <qualifiedname>faiss::rabitq_utils::unpack_sign_bits_from_packed</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>block</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>bbs</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>nsq</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>block_stride</declname>
+        </param>
+        <param>
+          <type>uint8_t *</type>
+          <declname>sign_bits_out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Extract sign bits from PQ4-interleaved block into flat byte packing. Like CodePackerRaBitQ::unpack_1 but sign-bits-only and with the vector&apos;s in-block address hoisted out of the per-SQ loop. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/RaBitQUtils.h" line="386" column="13" bodyfile="faiss/impl/RaBitQUtils.h" bodystart="386" bodyend="416"/>
+      </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1adf1a98f7d5059d95696f04fad628302f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>size_t</type>
         <definition>size_t faiss::rabitq_utils::compute_per_vector_storage_size</definition>
@@ -1049,7 +1088,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="389" column="8" declfile="faiss/impl/RaBitQUtils.h" declline="389" declcolumn="8"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="424" column="8" declfile="faiss/impl/RaBitQUtils.h" declline="424" declcolumn="8"/>
       </memberdef>
       <memberdef kind="function" id="RaBitQUtils_8h_1af41db7692083aee5460614a8e34923ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1177,7 +1216,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/RaBitQUtils.h" line="410" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="410" declcolumn="6"/>
+        <location file="faiss/impl/RaBitQUtils.h" line="445" column="6" declfile="faiss/impl/RaBitQUtils.h" declline="445" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
