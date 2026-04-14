@@ -324,12 +324,8 @@ set(FAISS_HEADERS
   impl/simdlib/simdlib_neon.h
   impl/simdlib/simdlib_ppc64.h
   utils/utils.h
-<<<<<<< HEAD
   utils/vecs_storage.h
-  utils/distances_fused/avx512.h
-=======
   utils/simd_levels.h
->>>>>>> faiss/main
   utils/distances_fused/distances_fused.h
   utils/distances_fused/simdlib_kernel-inl.h
   impl/approx_topk/approx_topk.h
