@@ -80,6 +80,10 @@ struct Nhood {
 
     Nhood(const Nhood& other);
 
+    Nhood(Nhood&& other) noexcept;
+
+    Nhood& operator=(Nhood&& other) noexcept;
+
     void insert(int id, float dist);
 
     template <typename C>

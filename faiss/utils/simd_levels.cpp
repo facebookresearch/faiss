@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
 
@@ -192,9 +193,6 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     return detected_level;
 }
 
-// Include private header for DISPATCH_SIMDLevel macro
-#include <faiss/impl/simd_dispatch.h>
-
 namespace {
 
 template <SIMDLevel Level>
@@ -205,7 +203,8 @@ SIMDLevel get_dispatched_level_impl() {
 } // namespace
 
 SIMDLevel SIMDConfig::get_dispatched_level() {
-    DISPATCH_SIMDLevel(get_dispatched_level_impl);
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_ALL>(
+            [&]<SIMDLevel SL>() { return get_dispatched_level_impl<SL>(); });
 }
 
 #else // Static mode

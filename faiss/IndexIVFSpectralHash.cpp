@@ -10,6 +10,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 
@@ -38,7 +39,8 @@ IndexIVFSpectralHash::IndexIVFSpectralHash(
                   own_invlists_in),
           nbit(nbit_in),
           period(period_in) {
-    auto rr = std::make_unique<RandomRotationMatrix>(d_in, nbit_in);
+    auto rr = std::make_unique<RandomRotationMatrix>(
+            static_cast<int>(d_in), nbit_in);
     rr->init(1234);
     vt = rr.release();
     own_fields = true;
@@ -158,7 +160,7 @@ void binarize_with_freq(
     memset(codes, 0, (nbit + 7) / 8);
     for (size_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
-        int64_t xi = int64_t(floor(xf * freq));
+        int64_t xi = int64_t(std::floor(xf * freq));
         int64_t bit = xi & 1;
         codes[i >> 3] |= bit << (i & 7);
     }

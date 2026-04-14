@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -27,7 +27,7 @@
 
 namespace faiss {
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 
 struct MmappedFileMappingOwner::PImpl {
     void* ptr = nullptr;
@@ -60,11 +60,11 @@ struct MmappedFileMappingOwner::PImpl {
         void* address = mmap(
                 nullptr, filesize, PROT_READ, MAP_SHARED, fileno(f.get()), 0);
         FAISS_THROW_IF_NOT_FMT(
-                address != nullptr, "could not mmap(): %s", strerror(errno));
+                address != MAP_FAILED, "could not mmap(): %s", strerror(errno));
 
         // btw, fd can be closed here
 
-        madvise(address, filesize, MADV_RANDOM);
+        (void)madvise(address, filesize, MADV_RANDOM);
 
         // save it
         ptr = address;
@@ -83,11 +83,11 @@ struct MmappedFileMappingOwner::PImpl {
         void* address =
                 mmap(nullptr, filesize, PROT_READ, MAP_SHARED, fileno(f), 0);
         FAISS_THROW_IF_NOT_FMT(
-                address != nullptr, "could not mmap(): %s", strerror(errno));
+                address != MAP_FAILED, "could not mmap(): %s", strerror(errno));
 
         // btw, fd can be closed here
 
-        madvise(address, filesize, MADV_RANDOM);
+        (void)madvise(address, filesize, MADV_RANDOM);
 
         // save it
         ptr = address;

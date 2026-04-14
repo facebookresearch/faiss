@@ -19,7 +19,7 @@ namespace faiss {
  * link structure built on top */
 
 struct IndexBinaryHNSW : IndexBinary {
-    typedef HNSW::storage_idx_t storage_idx_t;
+    using storage_idx_t = HNSW::storage_idx_t;
 
     // the link structure
     HNSW hnsw;

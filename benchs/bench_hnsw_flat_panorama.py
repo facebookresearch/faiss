@@ -26,17 +26,22 @@ except ImportError:
 
 def eval_recall(index, efSearch_val, xq, gt, k):
     """Evaluate recall and QPS for a given efSearch value."""
+    nq = len(xq)
+    faiss.cvar.indexPanorama_stats.reset()
     t0 = time.time()
     _, I = index.search(xq, k=k)
     t = time.time() - t0
-    speed = t * 1000 / len(xq)
+    speed = t * 1000 / nq
     qps = 1000 / speed
 
-    corrects = (gt == I).sum()
-    recall = corrects / (len(xq) * k)
+    recall = np.mean(
+        [len(set(gt[i]) & set(I[i])) / k for i in range(nq)],
+    )
+    ratio_dims_scanned = faiss.cvar.indexPanorama_stats.ratio_dims_scanned
     print(
         f"\tefSearch {efSearch_val:3d}, Recall@{k}: "
-        f"{recall:.6f}, speed: {speed:.6f} ms/query, QPS: {qps:.2f}"
+        f"{recall:.6f}, speed: {speed:.6f} ms/query, QPS: {qps:.2f}, "
+        f"dims scanned: {ratio_dims_scanned * 100:.1f}%"
     )
 
     return recall, qps

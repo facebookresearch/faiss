@@ -528,7 +528,14 @@ void IndexFastScan::search_implem_14(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
-    int qbs2 = qbs == 0 ? 4 : qbs;
+    // The accumulate loop dispatch table only instantiates certain
+    // (nq, BB) pairs where BB = bbs/32.  Cap the query batch size to
+    // the maximum nq instantiated for the current BB so the caller
+    // doesn't have to know about internal template constraints.
+    //   BB=1 → nq up to 4,  BB=2 → nq up to 2,  BB>=3 → nq=1
+    int BB = bbs / 32;
+    int max_qbs = BB <= 1 ? 4 : BB == 2 ? 2 : 1;
+    int qbs2 = std::min(qbs == 0 ? 4 : qbs, max_qbs);
 
     // handle qbs2 blocking by recursive call
     if (n > qbs2) {

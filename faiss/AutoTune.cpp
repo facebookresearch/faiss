@@ -135,7 +135,7 @@ bool OperatingPoints::add(
                 break;
             }
         }
-        assert(i < a.size());
+        FAISS_THROW_IF_NOT(i < a.size());
         if (t < a[i].t) {
             if (a[i].perf == perf) {
                 a[i] = op;

@@ -107,6 +107,10 @@ size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
     return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
 }
 
+size_t IndexIVFRaBitQFastScan::fast_scan_code_size() const {
+    return (d + 7) / 8;
+}
+
 size_t IndexIVFRaBitQFastScan::code_packing_stride() const {
     // Use code_size as stride to skip embedded factor data during packing
     return code_size;
@@ -272,8 +276,10 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         const float* residual,
         QueryFactorsData& query_factors,
         float* lut_out,
+        uint8_t qb_param,
+        bool centered_param,
         const float* original_query) const {
-    FAISS_THROW_IF_NOT(qb > 0 && qb <= 8);
+    FAISS_THROW_IF_NOT(qb_param > 0 && qb_param <= 8);
 
     std::vector<float> rotated_q(d);
     std::vector<uint8_t> rotated_qq(d);
@@ -283,8 +289,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
             residual,
             d,
             nullptr,
-            qb,
-            centered,
+            qb_param,
+            centered_param,
             metric_type,
             rotated_q,
             rotated_qq);
@@ -301,8 +307,8 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         query_factors.rotated_q = rotated_q;
     }
 
-    if (centered) {
-        const float max_code_value = (1 << qb) - 1;
+    if (centered_param) {
+        const float max_code_value = (1 << qb_param) - 1;
 
         for (size_t m = 0; m < M; m++) {
             const size_t dim_start = m * 4;
@@ -368,15 +374,24 @@ void IndexIVFRaBitQFastScan::search_preassigned(
     FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
 
     size_t cur_nprobe = this->nprobe;
+    uint8_t used_qb = qb;
+    bool used_centered = centered;
     if (params) {
         FAISS_THROW_IF_NOT(params->max_codes == 0);
         cur_nprobe = params->nprobe;
+        if (auto rparams =
+                    dynamic_cast<const IVFRaBitQSearchParameters*>(params)) {
+            used_qb = rparams->qb;
+            used_centered = rparams->centered;
+        }
     }
 
     std::vector<QueryFactorsData> query_factors_storage(n * cur_nprobe);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
     context.nprobe = cur_nprobe;
+    context.qb = used_qb;
+    context.centered = used_centered;
 
     const CoarseQuantized cq = {cur_nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
@@ -391,6 +406,10 @@ void IndexIVFRaBitQFastScan::compute_LUT(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+
+    // Use overridden qb/centered from context if provided, else index defaults
+    const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
+    const bool used_centered = context.qb > 0 ? context.centered : centered;
 
     size_t cq_nprobe = cq.nprobe;
 
@@ -420,6 +439,8 @@ void IndexIVFRaBitQFastScan::compute_LUT(
                     xij,
                     query_factors_data,
                     dis_tables.get() + ij * dim12,
+                    used_qb,
+                    used_centered,
                     x + i * d);
 
             // Store query factors using compact indexing (ij directly)
@@ -552,12 +573,12 @@ std::unique_ptr<FastScanCodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const IDSelector* /*sel*/,
+        const IDSelector* sel,
         int /*impl*/,
         const FastScanDistancePostProcessing& context) const {
     const bool is_multibit = (rabitq.nb_bits - 1) > 0;
     return rabitq_ivf_make_knn_scanner(
-            is_max, this, n, k, distances, labels, &context, is_multibit);
+            is_max, this, n, k, distances, labels, sel, &context, is_multibit);
 }
 
 /*********************************************************
@@ -569,7 +590,7 @@ namespace {
 /// Provides IVF scanner interface using FastScan's SIMD batch processing.
 struct IVFRaBitQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    static constexpr int impl = 10;
+    [[maybe_unused]] static constexpr int impl = 10;
     static constexpr size_t nq = 1;
 
     const IndexIVFRaBitQFastScan& index;
@@ -587,11 +608,19 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
     std::unique_ptr<FlatCodesDistanceComputer> dc;
     std::vector<float> centroid;
 
+    uint8_t qb;
+    bool centered;
+
     IVFRaBitQFastScanScanner(
             const IndexIVFRaBitQFastScan& index_in,
             bool store_pairs_in,
-            const IDSelector* sel_in)
-            : InvertedListScanner(store_pairs_in, sel_in), index(index_in) {
+            const IDSelector* sel_in,
+            uint8_t qb_in,
+            bool centered_in)
+            : InvertedListScanner(store_pairs_in, sel_in),
+              index(index_in),
+              qb(qb_in),
+              centered(centered_in) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
     }
 
@@ -612,6 +641,8 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         context = FastScanDistancePostProcessing{};
         context.query_factors = &query_factors;
         context.nprobe = 1;
+        context.qb = qb;
+        context.centered = centered;
 
         index.compute_LUT_uint8(
                 1, xi, cq, dis_tables, biases, &normalizers[0], context);
@@ -620,7 +651,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         centroid.resize(index.d);
         index.quantizer->reconstruct(list_no, centroid.data());
         dc.reset(index.rabitq.get_distance_computer(
-                index.qb, centroid.data(), index.centered));
+                qb, centroid.data(), centered));
         dc->set_query(xi);
     }
 
@@ -664,9 +695,14 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         handler->ntotal = ntotal;
         handler->id_map = ids;
 
-        // RaBitQ needs list context for factor lookup
+        // RaBitQ needs list context for factor lookup.
+        // If invlists is unavailable (e.g., own_invlists=false), fall back
+        // to the codes pointer which already contains the block data.
         std::vector<int> probe_map = {0};
         handler->set_list_context(list_no, probe_map);
+        if (!handler->list_codes_ptr) {
+            handler->list_codes_ptr = codes;
+        }
 
         scanner->accumulate_loop(
                 1,
@@ -697,7 +733,6 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                     curr_labels.data(),
                     k);
         }
-
         return handler->num_updates();
     }
 };
@@ -707,8 +742,16 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
 InvertedListScanner* IndexIVFRaBitQFastScan::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
-        const IVFSearchParameters*) const {
-    return new IVFRaBitQFastScanScanner(*this, store_pairs, sel);
+        const IVFSearchParameters* search_params_in) const {
+    uint8_t used_qb = qb;
+    bool used_centered = centered;
+    if (auto params = dynamic_cast<const IVFRaBitQSearchParameters*>(
+                search_params_in)) {
+        used_qb = params->qb;
+        used_centered = params->centered;
+    }
+    return new IVFRaBitQFastScanScanner(
+            *this, store_pairs, sel, used_qb, used_centered);
 }
 
 } // namespace faiss

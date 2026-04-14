@@ -33,7 +33,6 @@
 
 namespace faiss {
 
-using MinimaxHeap = HNSW::MinimaxHeap;
 using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
@@ -1032,10 +1031,18 @@ void IndexHNSWCagra::search(
     if (!base_level_only) {
         IndexHNSW::search(n, x, k, distances, labels, params);
     } else {
+        if (ntotal == 0) {
+            std::fill(
+                    distances,
+                    distances + n * k,
+                    std::numeric_limits<float>::max());
+            std::fill(labels, labels + n * k, -1);
+            return;
+        }
         std::vector<storage_idx_t> nearest(n);
         std::vector<float> nearest_d(n);
 
-#pragma omp for
+#pragma omp parallel for
         for (idx_t i = 0; i < n; i++) {
             std::unique_ptr<DistanceComputer> dis(
                     storage_distance_computer(this->storage));

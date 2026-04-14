@@ -100,7 +100,7 @@ void IndexRefine::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // parallelize over queries
@@ -125,12 +125,12 @@ void IndexRefine::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
@@ -287,7 +287,7 @@ void IndexRefineFlat::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // compute refined distances
@@ -298,12 +298,12 @@ void IndexRefineFlat::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
@@ -353,7 +353,7 @@ void IndexRefinePanorama::search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
     for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     refine_index->search_subset(

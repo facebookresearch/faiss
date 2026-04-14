@@ -22,6 +22,13 @@
 
 namespace {
 
+#if defined(_WIN32) || defined(__linux__) || defined(__FreeBSD__) || \
+        defined(__APPLE__)
+constexpr bool kMmapIFCSupported = true;
+#else
+constexpr bool kMmapIFCSupported = false;
+#endif
+
 std::vector<float> make_data(const size_t n, const size_t d, size_t seed) {
     std::vector<float> database(n * d);
     std::mt19937 rng(seed);
@@ -60,9 +67,9 @@ std::vector<uint8_t> make_binary_data(
 //      on top of the existing File1 again
 
 TEST(TestMmap, mmap_flatcodes) {
-#ifdef _AIX
-    GTEST_SKIP() << "Skipping test on AIX.";
-#endif
+    if (!kMmapIFCSupported) {
+        GTEST_SKIP() << "Skipping test on unsupported platform.";
+    }
     // generate data
     const size_t nt = 1000;
     const size_t nq = 10;
@@ -164,9 +171,9 @@ TEST(TestMmap, mmap_flatcodes) {
 }
 
 TEST(TestMmap, mmap_binary_flatcodes) {
-#ifdef _AIX
-    GTEST_SKIP() << "Skipping test on AIX.";
-#endif
+    if (!kMmapIFCSupported) {
+        GTEST_SKIP() << "Skipping test on unsupported platform.";
+    }
     // generate data
     const size_t nt = 1000;
     const size_t nq = 10;

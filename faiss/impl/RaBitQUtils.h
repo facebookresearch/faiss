@@ -10,6 +10,9 @@
 #include <faiss/MetricType.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/AlignedTable.h>
+#include <faiss/utils/rabitq_simd.h>
+#include <faiss/utils/simd_levels.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -337,6 +340,33 @@ float compute_full_multibit_distance(
         size_t ex_bits,
         MetricType metric_type);
 
+// SIMDLevel-templatized version — avoids per-call dynamic dispatch.
+// Inline so it can be used from templatized distance computers without
+// needing explicit instantiations in per-SIMD TUs.
+template <SIMDLevel SL>
+inline float compute_full_multibit_distance(
+        const uint8_t* sign_bits,
+        const uint8_t* ex_code,
+        const ExtraBitsFactors& ex_fac,
+        const float* rotated_q,
+        float qr_base,
+        size_t d,
+        size_t ex_bits,
+        MetricType metric_type) {
+    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
+
+    float ex_ip = rabitq::multibit::compute_inner_product<SL>(
+            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
+
+    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
+
+    if (metric_type == MetricType::METRIC_L2) {
+        dist = std::max(0.0f, dist);
+    }
+
+    return dist;
+}
+
 /** Compute pointer to a vector's auxiliary data within block layout. */
 template <typename T>
 inline T* get_block_aux_ptr(
@@ -348,6 +378,41 @@ inline T* get_block_aux_ptr(
         size_t storage_size) {
     return block_data + (vec_pos / bbs) * full_block_size + packed_block_size +
             (vec_pos % bbs) * storage_size;
+}
+
+/// Extract sign bits from PQ4-interleaved block into flat byte packing.
+/// Like CodePackerRaBitQ::unpack_1 but sign-bits-only and with the
+/// vector's in-block address hoisted out of the per-SQ loop.
+inline void unpack_sign_bits_from_packed(
+        const uint8_t* block,
+        size_t bbs,
+        size_t nsq,
+        size_t offset,
+        size_t block_stride,
+        uint8_t* sign_bits_out) {
+    block += (offset / bbs) * block_stride;
+    offset = offset % bbs;
+
+    const bool nibble_high = offset > 15;
+    const size_t vid = offset & 15;
+    const size_t in_group_addr =
+            (vid < 8) ? (vid << 1) : (((vid - 8) << 1) + 1);
+
+    const size_t num_pairs = nsq / 2;
+    for (size_t k = 0; k < num_pairs; k++) {
+        const size_t base = k * bbs;
+        const uint8_t raw_even = block[base + in_group_addr];
+        const uint8_t raw_odd = block[base + in_group_addr + 16];
+
+        const uint8_t nib0 = nibble_high ? (raw_even >> 4) : (raw_even & 0xF);
+        const uint8_t nib1 = nibble_high ? (raw_odd >> 4) : (raw_odd & 0xF);
+        sign_bits_out[k] = nib0 | (nib1 << 4);
+    }
+
+    if (nsq & 1) {
+        const uint8_t raw = block[num_pairs * bbs + in_group_addr];
+        sign_bits_out[num_pairs] = nibble_high ? (raw >> 4) : (raw & 0xF);
+    }
 }
 
 /** Compute per-vector auxiliary storage size.

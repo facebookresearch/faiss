@@ -125,7 +125,7 @@ void search_centroid(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
     index_ivf->quantizer->assign(n, x, centroid_ids);
 }
 
@@ -146,7 +146,7 @@ void search_and_return_centroids(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
 
     size_t nprobe = index_ivf->nprobe;
     std::vector<idx_t> cent_nos(n * nprobe);
@@ -601,10 +601,14 @@ void handle_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index(sharded_index, fname);
         delete sharded_index;
     }
@@ -655,10 +659,14 @@ void handle_binary_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index_binary(sharded_index, fname);
         delete sharded_index;
     }

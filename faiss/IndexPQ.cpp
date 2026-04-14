@@ -152,7 +152,9 @@ FlatCodesDistanceComputer* get_FlatCodesDistanceComputer1(
 } // namespace
 
 FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
-    DISPATCH_SIMDLevel(get_FlatCodesDistanceComputer1, *this);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return get_FlatCodesDistanceComputer1<SL>(*this);
+    });
 }
 
 /*****************************************
@@ -687,7 +689,7 @@ struct SemiSortedArray {
 
     // remap orders counted from smallest to indices in array
     int get_ord(int n) {
-        assert(n < k);
+        FAISS_THROW_IF_NOT(n < k);
         return perm[n];
     }
 };
@@ -745,7 +747,7 @@ struct MinSumK {
     MinSumK(int K_in, int M_in, int nbit_in, int N_in)
             : K(K_in), M(M_in), nbit(nbit_in), N(N_in) {
         heap_capacity = K_in * M_in;
-        assert(N_in <= (1 << nbit_in));
+        FAISS_THROW_IF_NOT(N_in <= (1 << nbit_in));
 
         // we'll do k steps, each step pushes at most M vals
         bh_val = new T[heap_capacity];
@@ -803,11 +805,11 @@ struct MinSumK {
             // pop smallest value from heap
             if (use_seen) { // skip already seen elements
                 while (is_seen(bh_ids[0])) {
-                    assert(heap_size > 0);
+                    FAISS_THROW_IF_NOT(heap_size > 0);
                     heap_pop<HC>(heap_size--, bh_val, bh_ids);
                 }
             }
-            assert(heap_size > 0);
+            FAISS_THROW_IF_NOT(heap_size > 0);
 
             T sum = sums[k] = bh_val[0];
             int64_t ti = terms[k] = bh_ids[0];
@@ -1074,7 +1076,7 @@ void MultiIndexQuantizer2::search(
 
     if (K == 1) {
         // simple version that just finds the min in each table
-        assert(k2 == 1);
+        FAISS_THROW_IF_NOT(k2 == 1);
 
         for (idx_t i = 0; i < n; i++) {
             float dis = 0;

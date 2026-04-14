@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include <faiss/impl/CodePacker.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
@@ -47,7 +46,6 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     int64_t* heap_labels;  // [nq * k]
     const size_t nq, k;
     size_t current_list_no = 0;
-    const uint8_t* list_codes_ptr = nullptr; // raw block data for list
     std::vector<int>
             probe_indices; // probe index for each query in current batch
     const FastScanDistancePostProcessing*
@@ -59,7 +57,12 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     const size_t storage_size;
     const size_t packed_block_size;
     const size_t full_block_size;
-    std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
+    std::vector<uint8_t> unpack_buf; // sign bits scratch buffer
+
+    // Cached per-list values (set in set_list_context, avoid recomputing in
+    // handle)
+    size_t cached_nprobe = 0;
+    bool is_similarity = false; // metric == INNER_PRODUCT
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
@@ -76,6 +79,7 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
             size_t k_val,
             float* distances,
             int64_t* labels,
+            const IDSelector* sel,
             const FastScanDistancePostProcessing* ctx = nullptr,
             bool multibit = false);
 
@@ -94,10 +98,10 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
 
    private:
     float compute_full_multibit_distance(
-            size_t db_idx,
             size_t local_q,
             size_t global_q,
-            size_t local_offset) const;
+            size_t local_offset,
+            const uint8_t* aux_ptr);
 };
 
 } // namespace simd_result_handlers
