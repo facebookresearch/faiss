@@ -52,6 +52,38 @@
         </inbodydescription>
         <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="36" column="12" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="36" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1a8a05afa90338169122572393396ee934" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t faiss::FastScanDistancePostProcessing::qb</definition>
+        <argsstring></argsstring>
+        <name>qb</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::qb</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>RaBitQ query quantization bits override. Set to 0 to use the index default (index-&gt;qb). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="40" column="13" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FastScanDistancePostProcessing_1aa1e66d42367fa07caed36a32f8f8491d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::FastScanDistancePostProcessing::centered</definition>
+        <argsstring></argsstring>
+        <name>centered</name>
+        <qualifiedname>faiss::FastScanDistancePostProcessing::centered</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>RaBitQ centered scalar quantizer override. Only used when qb &gt; 0 (i.e., when params are overridden). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="44" column="10" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
       <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -67,7 +99,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="39" column="5"/>
+        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="47" column="5"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -82,7 +114,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="42" column="10" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="42" bodyend="44"/>
+        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="50" column="10" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="50" bodyend="52"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -97,7 +129,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="47" column="10" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="47" bodyend="49"/>
+        <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="55" column="10" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="55" bodyend="57"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -118,13 +150,15 @@
         <link refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData"/>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="21" column="1" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="21" bodyend="50"/>
+    <location file="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" line="21" column="1" bodyfile="faiss/impl/fast_scan/FastScanDistancePostProcessing.h" bodystart="21" bodyend="58"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1aa1e66d42367fa07caed36a32f8f8491d" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>centered</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>FastScanDistancePostProcessing</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_norm_scaling</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>has_query_processing</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>nprobe</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1adbed751c1ad95d945653ee81180e6076" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>pq2x4_scale</name></member>
+      <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a8a05afa90338169122572393396ee934" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>qb</name></member>
       <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" prot="public" virt="non-virtual"><scope>faiss::FastScanDistancePostProcessing</scope><name>query_factors</name></member>
     </listofallmembers>
   </compounddef>

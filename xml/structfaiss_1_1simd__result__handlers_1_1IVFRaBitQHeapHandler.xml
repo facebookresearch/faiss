@@ -589,7 +589,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="80" column="5" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="187" bodyend="214"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="80" column="5" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="189" bodyend="216"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1adb450d9462012b3afa7d1cd5db87f329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -619,7 +619,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="90" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="220" bodyend="350"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="90" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="222" bodyend="353"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1abe8ee62acdf91c083faef8c07642e11d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -660,7 +660,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="92" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="353" bodyend="364"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="92" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="356" bodyend="367"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a21468ced783eb7a62e79106b165f76cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -679,7 +679,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="95" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="367" bodyend="369"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="95" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="370" bodyend="372"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a3f3e58a641ad88a557e793ba9add591f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -694,7 +694,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="97" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="372" bodyend="377"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="97" column="10" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="375" bodyend="380"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1simd__result__handlers_1_1IVFRaBitQHeapHandler_1a14b042dad87fd5ad316436c5b6e5ac1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>size_t</type>
@@ -889,7 +889,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="104" column="11" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="380" bodyend="409"/>
+        <location file="faiss/impl/fast_scan/rabitq_result_handler.h" line="104" column="11" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="383" bodyend="412"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-attrib">

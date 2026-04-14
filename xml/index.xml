@@ -902,6 +902,8 @@
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1adbed751c1ad95d945653ee81180e6076" kind="variable"><name>pq2x4_scale</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1abbe5c36d461dfcb98ed6af8df855551a" kind="variable"><name>query_factors</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a7fa9dc73bbfcb22e2a4e6da006743f65" kind="variable"><name>nprobe</name></member>
+    <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a8a05afa90338169122572393396ee934" kind="variable"><name>qb</name></member>
+    <member refid="structfaiss_1_1FastScanDistancePostProcessing_1aa1e66d42367fa07caed36a32f8f8491d" kind="variable"><name>centered</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1afd1f893efc77920aa3596f149a9f0d43" kind="function"><name>FastScanDistancePostProcessing</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1ae936313e4db281e7a327dbb1bca9878e" kind="function"><name>has_norm_scaling</name></member>
     <member refid="structfaiss_1_1FastScanDistancePostProcessing_1a3683b4c8127403efd5fb7a018979e18d" kind="function"><name>has_query_processing</name></member>
@@ -5738,7 +5740,7 @@
     <member refid="structfaiss_1_1Level1Quantizer_1a91df00b85de103bce33993ce659c832c" kind="function"><name>encode_listno</name></member>
     <member refid="structfaiss_1_1Level1Quantizer_1a19831255dc8861b785b9782a32f65a2a" kind="function"><name>decode_listno</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a7d8298179ea35a8e23af9b3690feb4c7" kind="function"><name>code_packing_stride</name></member>
-    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a92a8a5e99c29f22cba4a66d672055201" kind="function"><name>compute_residual_LUT</name></member>
+    <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1a546ccfe7ad81d0056740073ec44b1f17" kind="function"><name>compute_residual_LUT</name></member>
     <member refid="structfaiss_1_1IndexIVFRaBitQFastScan_1aed68df958bbb5dbceee34b04529a0707" kind="function"><name>decode_fastscan_to_residual</name></member>
   </compound>
   <compound refid="structfaiss_1_1IndexIVFResidualQuantizer" kind="struct"><name>faiss::IndexIVFResidualQuantizer</name>
