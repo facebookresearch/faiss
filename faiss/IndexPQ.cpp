@@ -640,7 +640,7 @@ struct SemiSortedArray {
     using HC = CMax<T, int>;
     std::vector<int> perm;
 
-    int k; // k elements are sorted
+    int k = 0; // k elements are sorted
 
     int initial_k, k_factor;
 
@@ -732,7 +732,8 @@ struct MinSumK {
      * terms involved in the sum.
      */
     using HC = CMin<T, int64_t>;
-    size_t heap_capacity, heap_size;
+    size_t heap_capacity = 0;
+    size_t heap_size = 0;
     T* bh_val;
     int64_t* bh_ids;
 

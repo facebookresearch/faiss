@@ -305,7 +305,7 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
         const float scaler = maxv - minv;
 
         // save the coefficients
-        StorageMinMaxT storage;
+        StorageMinMaxT storage = {};
         storage.from_floats(scaler, minv);
 
         // and load them back, because the coefficients might

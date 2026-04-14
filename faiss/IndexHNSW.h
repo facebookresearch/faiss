@@ -261,7 +261,7 @@ struct IndexHNSWCagra : IndexHNSW {
 
     faiss::NumericType get_numeric_type() const;
     void set_numeric_type(faiss::NumericType numeric_type);
-    NumericType numeric_type_;
+    NumericType numeric_type_ = Float32;
 };
 
 } // namespace faiss
