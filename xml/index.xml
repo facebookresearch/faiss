@@ -11691,6 +11691,13 @@
     <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1abbe4f2aed09543e72737bad326ae6d0d" kind="function"><name>data</name></member>
     <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a63997c371343a4517c788d1da821d113" kind="function"><name>data</name></member>
   </compound>
+  <compound refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct" kind="struct"><name>faiss::gpu::TestIDSelectorStruct</name>
+    <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a8dc7cf10e108b48f73e47f1b7ccb99bc" kind="variable"><name>array_ids</name></member>
+    <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a9e068a980614742cea29577274e6a16b" kind="variable"><name>batch_ids</name></member>
+    <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae3d7d17c4ba73a0b0d839b39e8054759" kind="variable"><name>bitmap</name></member>
+    <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1afce141d21589376c27b9ce5698d75792" kind="variable"><name>selector_map</name></member>
+    <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae66fb334dbfa440f4a486a17a76407a1" kind="function"><name>TestIDSelectorStruct</name></member>
+  </compound>
   <compound refid="classfaiss_1_1ThreadedIndex" kind="class"><name>faiss::ThreadedIndex</name>
     <member refid="classfaiss_1_1ThreadedIndex_1a1223180acd3979e7205c91d2dba9d306" kind="variable"><name>own_indices</name></member>
     <member refid="classfaiss_1_1ThreadedIndex_1acb0dc6a321ad80636d5fef5cc7edd05b" kind="variable"><name>indices_</name></member>
@@ -12702,7 +12709,8 @@
     <member refid="namespacefaiss_1_1gpu_1aea8cc0513413b621ba2bcc3c5de02663" kind="function"><name>compareIndices</name></member>
     <member refid="namespacefaiss_1_1gpu_1a44bd51d4a1b6c300dbb9ac2192dce14b" kind="function"><name>compareLists</name></member>
     <member refid="namespacefaiss_1_1gpu_1a589a55d85f293c1ed9905e5aac936776" kind="function"><name>testIVFEquality</name></member>
-    <member refid="namespacefaiss_1_1gpu_1a0e7259c8fad696cd1c584575b1acf981" kind="function"><name>convert_to_bitset</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a66118822dd3b23092aa30c85e93cee00" kind="function"><name>testIDSelectorSearch</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a6a94dfdac89c80204d522da7b25a1ba4" kind="function"><name>convert_to_bitset</name></member>
     <member refid="namespacefaiss_1_1gpu_1abd145b4a4f9a03963167367460b4fe7a" kind="function"><name>metricFaissToCuvs</name></member>
     <member refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
     <member refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>

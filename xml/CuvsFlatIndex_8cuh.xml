@@ -34,6 +34,7 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuResources.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/IDSelector.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/impl/FlatIndex.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceTensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceVector.cuh&gt;</highlight></codeline>
@@ -64,7 +65,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>exactDistance)<sp/>override;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>exactDistance,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IDSelector*<sp/>sel)<sp/>override;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>query(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;half,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
@@ -73,7 +75,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>metricArg,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>exactDistance)<sp/>override;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>exactDistance,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IDSelector*<sp/>sel)<sp/>override;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>gpu</highlight></codeline>

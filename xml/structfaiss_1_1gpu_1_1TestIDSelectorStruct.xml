@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu_1_1TestIDSelectorStruct" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::TestIDSelectorStruct</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a8dc7cf10e108b48f73e47f1b7ccb99bc" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref> &gt;</type>
+        <definition>std::vector&lt;faiss::idx_t&gt; faiss::gpu::TestIDSelectorStruct::array_ids</definition>
+        <argsstring></argsstring>
+        <name>array_ids</name>
+        <qualifiedname>faiss::gpu::TestIDSelectorStruct::array_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="159" column="17" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a9e068a980614742cea29577274e6a16b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">faiss::idx_t</ref> &gt;</type>
+        <definition>std::vector&lt;faiss::idx_t&gt; faiss::gpu::TestIDSelectorStruct::batch_ids</definition>
+        <argsstring></argsstring>
+        <name>batch_ids</name>
+        <qualifiedname>faiss::gpu::TestIDSelectorStruct::batch_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="160" column="17" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae3d7d17c4ba73a0b0d839b39e8054759" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::gpu::TestIDSelectorStruct::bitmap</definition>
+        <argsstring></argsstring>
+        <name>bitmap</name>
+        <qualifiedname>faiss::gpu::TestIDSelectorStruct::bitmap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="161" column="17" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1afce141d21589376c27b9ce5698d75792" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::unique_ptr&lt; <ref refid="structfaiss_1_1IDSelector" kindref="compound">faiss::IDSelector</ref> &gt; &gt;</type>
+        <definition>std::map&lt;std::string, std::unique_ptr&lt;faiss::IDSelector&gt; &gt; faiss::gpu::TestIDSelectorStruct::selector_map</definition>
+        <argsstring></argsstring>
+        <name>selector_map</name>
+        <qualifiedname>faiss::gpu::TestIDSelectorStruct::selector_map</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="162" column="14" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae66fb334dbfa440f4a486a17a76407a1" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::gpu::TestIDSelectorStruct::TestIDSelectorStruct</definition>
+        <argsstring>(int numAdd)</argsstring>
+        <name>TestIDSelectorStruct</name>
+        <qualifiedname>faiss::gpu::TestIDSelectorStruct::TestIDSelectorStruct</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>numAdd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="164" column="14"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/gpu/test/TestUtils.h" line="157" column="1" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="157" bodyend="165"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a8dc7cf10e108b48f73e47f1b7ccb99bc" prot="public" virt="non-virtual"><scope>faiss::gpu::TestIDSelectorStruct</scope><name>array_ids</name></member>
+      <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1a9e068a980614742cea29577274e6a16b" prot="public" virt="non-virtual"><scope>faiss::gpu::TestIDSelectorStruct</scope><name>batch_ids</name></member>
+      <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae3d7d17c4ba73a0b0d839b39e8054759" prot="public" virt="non-virtual"><scope>faiss::gpu::TestIDSelectorStruct</scope><name>bitmap</name></member>
+      <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1afce141d21589376c27b9ce5698d75792" prot="public" virt="non-virtual"><scope>faiss::gpu::TestIDSelectorStruct</scope><name>selector_map</name></member>
+      <member refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct_1ae66fb334dbfa440f4a486a17a76407a1" prot="public" virt="non-virtual"><scope>faiss::gpu::TestIDSelectorStruct</scope><name>TestIDSelectorStruct</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

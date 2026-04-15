@@ -19,6 +19,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/Index.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/GpuIndicesOptions.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/IDSelector.h&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceTensor.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/gpu/utils/DeviceVector.cuh&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;memory&gt;</highlight></codeline>
@@ -104,7 +105,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>nprobe,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>k,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>outDistances,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices)<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>2,<sp/>true&gt;&amp;<sp/>outIndices,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IDSelector*<sp/>sel<sp/>=<sp/>nullptr)<sp/>=<sp/>0;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>Performs<sp/>search<sp/>when<sp/>we<sp/>are<sp/>already<sp/>given<sp/>the<sp/>IVF<sp/>cells<sp/>to<sp/>look<sp/>at</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>///<sp/>(GpuIndexIVF::search_preassigned<sp/>implementation)</highlight></codeline>

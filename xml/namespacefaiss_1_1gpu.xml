@@ -47,6 +47,7 @@
     <innerclass refid="classfaiss_1_1gpu_1_1StackDeviceMemory" prot="public">faiss::gpu::StackDeviceMemory</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResources" prot="public">faiss::gpu::StandardGpuResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1StandardGpuResourcesImpl" prot="public">faiss::gpu::StandardGpuResourcesImpl</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1TestIDSelectorStruct" prot="public">faiss::gpu::TestIDSelectorStruct</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1ToCPUCloner" prot="public">faiss::gpu::ToCPUCloner</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuCloner" prot="public">faiss::gpu::ToGpuCloner</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
@@ -1148,7 +1149,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="24" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="24" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="25" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="25" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a97a43b6f2ad18a336a6ffb7d182e70e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1167,7 +1168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="27" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="27" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="28" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="28" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a58c0d857ccd6d5003f38f05969a04d07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>float</type>
@@ -1190,7 +1191,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="31" column="7" declfile="faiss/gpu/test/TestUtils.h" declline="31" declcolumn="7"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="32" column="7" declfile="faiss/gpu/test/TestUtils.h" declline="32" declcolumn="7"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1aa0974d57bcb32037493b2e50f4bc6553" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -1213,7 +1214,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="34" column="5" declfile="faiss/gpu/test/TestUtils.h" declline="34" declcolumn="5"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="35" column="5" declfile="faiss/gpu/test/TestUtils.h" declline="35" declcolumn="5"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1aeaf4a47f6d9c0f1f21f6841a7dd3cb48" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -1228,7 +1229,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="37" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="37" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="38" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="38" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ab667286f1786526a19d5186f2df348a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1252,7 +1253,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="42" column="3" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="42" bodyend="55"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="43" column="3" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="43" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1aca3d71130e61aebd85684e5c7b443c23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
@@ -1275,7 +1276,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="58" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="58" declcolumn="13"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="59" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="59" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a43baee1452f9fc4b3a6e60cfbb4c08e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; unsigned char &gt;</type>
@@ -1298,7 +1299,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="61" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="61" declcolumn="13"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="62" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="62" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1ac9eef9d99be03444b5391bc5615d0d08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; float &gt;</type>
@@ -1316,7 +1317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="64" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="64" declcolumn="13"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="65" column="13" declfile="faiss/gpu/test/TestUtils.h" declline="65" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1af10d6d642f9c390100d2b8a31203918f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1374,7 +1375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="68" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="68" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="69" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="69" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1aea8cc0513413b621ba2bcc3c5de02663" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1428,7 +1429,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="82" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="82" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="83" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="83" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a44bd51d4a1b6c300dbb9ac2192dce14b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -1498,7 +1499,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="94" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="94" declcolumn="6"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="95" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="95" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a589a55d85f293c1ed9905e5aac936776" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -1529,12 +1530,51 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/test/TestUtils.h" line="111" column="6" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="111" bodyend="142"/>
+        <location file="faiss/gpu/test/TestUtils.h" line="112" column="6" bodyfile="faiss/gpu/test/TestUtils.h" bodystart="112" bodyend="143"/>
       </memberdef>
-      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a0e7259c8fad696cd1c584575b1acf981" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a66118822dd3b23092aa30c85e93cee00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::testIDSelectorSearch</definition>
+        <argsstring>(faiss::Index *index, faiss::SearchParameters *search_params, const std::vector&lt; float &gt; &amp;queryVecs, int numQuery, int k, const std::string &amp;selectorName)</argsstring>
+        <name>testIDSelectorSearch</name>
+        <qualifiedname>faiss::gpu::testIDSelectorSearch</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1Index" kindref="compound">faiss::Index</ref> *</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1SearchParameters" kindref="compound">faiss::SearchParameters</ref> *</type>
+          <declname>search_params</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; float &gt; &amp;</type>
+          <declname>queryVecs</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>numQuery</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>selectorName</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Run search with the given search_params and verify all returned labels are members of the selector. Works with any <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> that supports search with <ref refid="structfaiss_1_1SearchParameters" kindref="compound">SearchParameters</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/test/TestUtils.h" line="148" column="6" declfile="faiss/gpu/test/TestUtils.h" declline="148" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a6a94dfdac89c80204d522da7b25a1ba4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void faiss::gpu::convert_to_bitset</definition>
-        <argsstring>(faiss::gpu::GpuResources *res, const faiss::IDSelector &amp;selector, cuvs::core::bitset_view&lt; uint32_t, uint32_t &gt; bitset, int num_threads=0)</argsstring>
+        <argsstring>(faiss::gpu::GpuResources *res, const faiss::IDSelector &amp;selector, cuvs::core::bitset_view&lt; uint32_t, int64_t &gt; bitset, int num_threads=0)</argsstring>
         <name>convert_to_bitset</name>
         <qualifiedname>faiss::gpu::convert_to_bitset</qualifiedname>
         <param>
@@ -1546,7 +1586,7 @@
           <declname>selector</declname>
         </param>
         <param>
-          <type>cuvs::core::bitset_view&lt; uint32_t, uint32_t &gt;</type>
+          <type>cuvs::core::bitset_view&lt; uint32_t, int64_t &gt;</type>
           <declname>bitset</declname>
         </param>
         <param>

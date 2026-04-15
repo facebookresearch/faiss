@@ -39,6 +39,7 @@
 <codeline><highlight class="normal">#include<sp/>&lt;optional&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;faiss/MetricType.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;faiss/impl/IDSelector.h&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuvs/neighbors/cagra.hpp&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuvs/neighbors/ivf_pq.hpp&gt;</highlight></codeline>
@@ -112,7 +113,8 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>hashmap_min_bitlen,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>float<sp/>hashmap_max_fill_rate,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>num_random_samplings,</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>rand_xor_mask);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>idx_t<sp/>rand_xor_mask,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>IDSelector*<sp/>sel<sp/>=<sp/>nullptr);</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>reset();</highlight></codeline>
 <codeline></codeline>
