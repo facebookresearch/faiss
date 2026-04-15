@@ -28,6 +28,7 @@
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/distances.h>
 #include <gtest/gtest.h>
 #include <cmath>
@@ -916,6 +917,53 @@ TEST(TestGpuIndexIVFFlat, Reconstruct_n) {
 
     EXPECT_EQ(gpuVals, cpuVals);
 }
+
+void testIDSelectorIVFFlat(faiss::MetricType metricType) {
+    Options opt;
+
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    std::vector<float> addVecs = faiss::gpu::randVecs(opt.numAdd, opt.dim);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexIVFFlatConfig config;
+    config.device = opt.device;
+    config.indicesOptions = faiss::gpu::INDICES_64_BIT;
+    config.use_cuvs = true;
+
+    faiss::gpu::GpuIndexIVFFlat gpuIndex(
+            &res, opt.dim, opt.numCentroids, metricType, config);
+    gpuIndex.nprobe = opt.nprobe;
+
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+    gpuIndex.add(opt.numAdd, addVecs.data());
+
+    auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+    faiss::gpu::TestIDSelectorStruct selector_struct(opt.numAdd);
+    faiss::SearchParametersIVF search_params;
+    search_params.nprobe = opt.nprobe;
+    for (auto& [selectorName, selector] : selector_struct.selector_map) {
+        search_params.sel = selector.get();
+        faiss::gpu::testIDSelectorSearch(
+                &gpuIndex,
+                &search_params,
+                queryVecs,
+                opt.numQuery,
+                opt.k,
+                selectorName);
+    }
+}
+
+#if defined USE_NVIDIA_CUVS
+TEST(TestCuvsGpuIndexIVFFlat, IDSelector_L2) {
+    testIDSelectorIVFFlat(faiss::METRIC_L2);
+}
+
+TEST(TestCuvsGpuIndexIVFFlat, IDSelector_IP) {
+    testIDSelectorIVFFlat(faiss::METRIC_INNER_PRODUCT);
+}
+#endif
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

@@ -25,6 +25,7 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/FlatIndex.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
@@ -55,7 +56,8 @@ class CuvsFlatIndex : public FlatIndex {
             float metricArg,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
-            bool exactDistance) override;
+            bool exactDistance,
+            const IDSelector* sel) override;
 
     void query(
             Tensor<half, 2, true>& vecs,
@@ -64,7 +66,8 @@ class CuvsFlatIndex : public FlatIndex {
             float metricArg,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
-            bool exactDistance) override;
+            bool exactDistance,
+            const IDSelector* sel) override;
 };
 
 } // namespace gpu

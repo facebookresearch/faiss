@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/utils/distances.h>
 #include <cstddef>
 #include <faiss/gpu/utils/CopyUtils.cuh>
@@ -893,6 +894,53 @@ TEST(TestGpuIndexCagra, Float16_CopyFrom_L2) {
 
 TEST(TestGpuIndexCagra, Float16_CopyFrom_IP) {
     copyFromTestFP16(faiss::METRIC_INNER_PRODUCT, 0.98);
+}
+
+void testIDSelectorCagra(faiss::MetricType metricType) {
+    Options opt;
+    std::vector<float> trainVecs = faiss::gpu::randVecs(opt.numTrain, opt.dim);
+    if (metricType == faiss::METRIC_INNER_PRODUCT) {
+        faiss::fvec_renorm_L2(opt.numTrain, opt.dim, trainVecs.data());
+    }
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    faiss::gpu::GpuIndexCagraConfig config;
+    config.device = opt.device;
+    config.graph_degree = opt.graphDegree;
+    config.intermediate_graph_degree = opt.intermediateGraphDegree;
+    // Use only IVF_PQ to avoid NN_DESCENT + IP combination
+    config.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
+
+    faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metricType, config);
+    gpuIndex.train(opt.numTrain, trainVecs.data());
+
+    auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
+    if (metricType == faiss::METRIC_INNER_PRODUCT) {
+        faiss::fvec_renorm_L2(opt.numQuery, opt.dim, queryVecs.data());
+    }
+
+    faiss::gpu::TestIDSelectorStruct selector_struct(opt.numTrain);
+    faiss::gpu::SearchParametersCagra search_params;
+    for (auto& [selectorName, selector] : selector_struct.selector_map) {
+        search_params.sel = selector.get();
+        faiss::gpu::testIDSelectorSearch(
+                &gpuIndex,
+                &search_params,
+                queryVecs,
+                opt.numQuery,
+                opt.k,
+                selectorName);
+    }
+}
+
+TEST(TestGpuIndexCagra, IDSelector_L2) {
+    testIDSelectorCagra(faiss::METRIC_L2);
+}
+
+TEST(TestGpuIndexCagra, IDSelector_IP) {
+    testIDSelectorCagra(faiss::METRIC_INNER_PRODUCT);
 }
 
 int main(int argc, char** argv) {
