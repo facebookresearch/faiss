@@ -55,6 +55,8 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
     const bool is_multibit; // Whether to use multi-bit two-stage search
     size_t nup = 0;         // Number of heap updates
 
+    float refine_error_scale = 1.0f;
+
     // Cached block-layout constants (invariant for handler lifetime)
     const size_t storage_size;
     const size_t packed_block_size;

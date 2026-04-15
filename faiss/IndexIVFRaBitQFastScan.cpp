@@ -382,6 +382,16 @@ void IndexIVFRaBitQFastScan::search_preassigned(
     context.query_factors = query_factors_storage.data();
     context.nprobe = cur_nprobe;
 
+    // Resolve refine_error_scale: search params > index-level default
+    context.refine_error_scale = refine_error_scale;
+    if (params) {
+        auto* rq_params =
+                dynamic_cast<const IVFRaBitQSearchParameters*>(params);
+        if (rq_params && rq_params->refine_error_scale >= 0.0f) {
+            context.refine_error_scale = rq_params->refine_error_scale;
+        }
+    }
+
     const CoarseQuantized cq = {cur_nprobe, centroid_dis, assign};
     search_dispatch_implem(n, x, k, distances, labels, cq, context, params);
 }

@@ -35,6 +35,11 @@ struct FastScanDistancePostProcessing {
     /// Set to 0 to use index->nprobe as fallback.
     size_t nprobe = 0;
 
+    /// Effective refine_error_scale for this search. Resolved from
+    /// search params (if provided) or index-level default.
+    /// -1.0 means not set (use index default).
+    float refine_error_scale = -1.0f;
+
     /// Default constructor - no processing
     FastScanDistancePostProcessing() = default;
 

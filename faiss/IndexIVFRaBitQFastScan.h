@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <memory>
 #include <vector>
 
@@ -55,6 +56,14 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
 
     /// Use zero-centered scalar quantizer for queries
     bool centered = false;
+
+    /// Scale factor for the refinement error bound. Default 0.4.
+    /// Values < 1.0 tighten the bound (fewer refinements, faster, may lose
+    /// recall). Value 1.0 = exact bound (most conservative).
+    /// Must be finite and >= 0. Recommended range: [0.3, 1.0].
+    /// Benchmarked across Cohere-768d, Bioasq-1024d, OpenAI-1536d:
+    /// 0.4 gives +23% to +47% QPS with < 0.3% recall loss.
+    float refine_error_scale = 0.4f;
 
     // Constructors
 
@@ -208,6 +217,13 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
           unpack_buf(idx->code_size) {
     current_list_no = 0;
     probe_indices.clear();
+    // Use context scale if set, otherwise fall back to index default.
+    refine_error_scale = (ctx && ctx->refine_error_scale >= 0.0f)
+            ? ctx->refine_error_scale
+            : idx->refine_error_scale;
+    FAISS_THROW_IF_NOT_MSG(
+            std::isfinite(refine_error_scale) && refine_error_scale >= 0.0f,
+            "refine_error_scale must be finite and >= 0");
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
         heap_heapify<Cfloat>(k, heap_distances + q * k, heap_labels + q * k);
     }
@@ -299,7 +315,7 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                     index->metric_type == MetricType::METRIC_INNER_PRODUCT;
             bool should_refine = rabitq_utils::should_refine_candidate(
                     dist_1bit,
-                    full_factors.f_error,
+                    full_factors.f_error * refine_error_scale,
                     query_factors.g_error,
                     heap_dis[0],
                     is_similarity);

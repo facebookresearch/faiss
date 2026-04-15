@@ -21,6 +21,12 @@ namespace faiss {
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
     uint8_t qb = 4;
     bool centered = false;
+
+    /// Scale factor for the multibit refinement error bound.
+    /// Default -1.0 = use index-level setting.
+    /// Values in [0, 1]: tighten the bound (fewer refinements, faster).
+    /// Value 1.0: exact bound (most accurate).
+    float refine_error_scale = -1.0f;
 };
 
 // * by_residual is true, just by design
