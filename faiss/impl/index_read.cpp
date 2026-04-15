@@ -903,6 +903,7 @@ void read_ScalarQuantizer(
             case ScalarQuantizer::QT_bf16:
             case ScalarQuantizer::QT_8bit_direct:
             case ScalarQuantizer::QT_8bit_direct_signed:
+            case ScalarQuantizer::QT_0bit:
             case ScalarQuantizer::QT_count:
                 expected = 0;
                 break;
