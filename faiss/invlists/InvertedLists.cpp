@@ -289,7 +289,9 @@ size_t ArrayInvertedLists::add_entries(
     ids[list_no].resize(o + n_entry);
     memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
     codes[list_no].resize((o + n_entry) * code_size);
-    memcpy(&codes[list_no][o * code_size], code, code_size * n_entry);
+    if (code_size > 0) {
+        memcpy(&codes[list_no][o * code_size], code, code_size * n_entry);
+    }
     return o;
 }
 
@@ -328,7 +330,11 @@ void ArrayInvertedLists::update_entries(
     assert(list_no < nlist);
     assert(n_entry + offset <= ids[list_no].size());
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
-    memcpy(&codes[list_no][offset * code_size], codes_in, code_size * n_entry);
+    if (code_size > 0) {
+        memcpy(&codes[list_no][offset * code_size],
+               codes_in,
+               code_size * n_entry);
+    }
 }
 
 void ArrayInvertedLists::permute_invlists(const idx_t* map) {
