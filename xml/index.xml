@@ -3669,10 +3669,10 @@
     <member refid="structfaiss_1_1IndexHNSWCagra_1a92d77a82fe783100f1486df952cae2b9" kind="function"><name>IndexHNSWCagra</name></member>
     <member refid="structfaiss_1_1IndexHNSWCagra_1a6c4269a7dad6041856e4006d5d40c750" kind="function"><name>add</name></member>
     <member refid="structfaiss_1_1IndexHNSWCagra_1ab3f031a1ff0bbd2418fdc74bde6f0483" kind="function"><name>search</name></member>
+    <member refid="structfaiss_1_1IndexHNSWCagra_1acaf8f7dd4469b333d4ff804dad8ec666" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexHNSWCagra_1a8ace3336205a8eb1717d6241536d6f0e" kind="function"><name>get_numeric_type</name></member>
     <member refid="structfaiss_1_1IndexHNSWCagra_1a1307f73cdf2a304d44362810e366700f" kind="function"><name>set_numeric_type</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a40bc6d2c67545f95e322c63d68a47140" kind="function"><name>train</name></member>
-    <member refid="structfaiss_1_1IndexHNSW_1a1a8147a4071708c53967fde0dd294d4c" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a3c44c91bfe78cb7ef100d92b6512040b" kind="function"><name>search1</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1a660e5c8de1ba9c71bf3fe1f3bf0c8812" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexHNSW_1ad4b9f97d42e2521e01f8b60012985396" kind="function"><name>reset</name></member>
