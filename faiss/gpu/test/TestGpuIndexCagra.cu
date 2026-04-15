@@ -664,7 +664,7 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
-        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
         copiedGpuIndex.copyFrom(&cpuIndex);
 
         // train gpu index
@@ -782,7 +782,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
-        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, cpuIndex.d, metric);
+        faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
         copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
 
         // train gpu index
@@ -795,7 +795,7 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         // faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         // gpuIndex.train(opt.numTrain, trainVecs.data());
 
-        faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
+        faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
 
         // Create half vector
         std::vector<__half> trainVecs_half(trainVecs.size());

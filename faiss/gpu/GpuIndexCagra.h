@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 
 #include <variant>
+#include <vector>
 #include "faiss/Index.h"
 
 namespace faiss {
