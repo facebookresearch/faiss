@@ -56,26 +56,6 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::ARM_NEON>(
 }
 
 template <>
-void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
-        float* dis,
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t ny) {
-    fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
-}
-
-template <>
-void fvec_L2sqr_ny<SIMDLevel::ARM_NEON>(
-        float* dis,
-        const float* x,
-        const float* y,
-        size_t d,
-        size_t ny) {
-    fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
-}
-
-template <>
 size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_NEON>(
         float* distances_tmp_buffer,
         const float* x,

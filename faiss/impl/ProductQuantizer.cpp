@@ -44,6 +44,19 @@ int sgemm_(
 
 namespace faiss {
 
+#ifdef COMPILE_SIMD_ARM_NEON
+// Forward declarations for NEON-optimized functions defined in ProductQuantizer-neon.cpp
+void pq_compute_distance_table_neon(
+        const ProductQuantizer& pq,
+        const float* x,
+        float* dis_table);
+
+void pq_compute_inner_prod_table_neon(
+        const ProductQuantizer& pq,
+        const float* x,
+        float* dis_table);
+#endif
+
 /*********************************************
  * PQ implementation
  *********************************************/
@@ -439,6 +452,13 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
+#ifdef COMPILE_SIMD_ARM_NEON
+    if (!neon_transposed.data.empty() || !neon_transposed.data_f16.empty() ||
+        !neon_transposed.data_u8.empty()) {
+        pq_compute_distance_table_neon(*this, x, dis_table);
+        return;
+    }
+#endif // COMPILE_SIMD_ARM_NEON
     with_simd_level([&]<SIMDLevel SL>() {
         if (transposed_centroids.empty()) {
             // use regular version
@@ -469,6 +489,13 @@ void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
 void ProductQuantizer::compute_inner_prod_table(
         const float* x,
         float* dis_table) const {
+#ifdef COMPILE_SIMD_ARM_NEON
+    if (!neon_transposed.data.empty() || !neon_transposed.data_f16.empty() ||
+        !neon_transposed.data_u8.empty()) {
+        pq_compute_inner_prod_table_neon(*this, x, dis_table);
+        return;
+    }
+#endif // COMPILE_SIMD_ARM_NEON
     with_simd_level([&]<SIMDLevel SL>() {
         for (size_t m = 0; m < M; m++) {
             fvec_inner_products_ny<SL>(

@@ -32,10 +32,14 @@ set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
+  impl/ProductQuantizer-neon.cpp
+  impl/pq_code_distance/pq_code_distance-neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/simd_impl/distances_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
+  utils/simd_impl/matrix_transpose_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -489,6 +493,11 @@ endif()
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
+  # ProductQuantizer-neon.cpp uses vdotq_s32 which requires ARMv8.2-a+dotprod
+  set_source_files_properties(impl/ProductQuantizer-neon.cpp
+    TARGET_DIRECTORY faiss
+    PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+dotprod"
+  )
 endif()
 
 if(FAISS_ENABLE_SVS)

@@ -59,49 +59,6 @@ void pq_code_distance_four_impl<SIMDLevel::NONE>(
             result3);
 }
 
-#ifdef COMPILE_SIMD_ARM_NEON
-// ARM_NEON: No NEON-optimized PQ code distance exists. Use scalar.
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-float pq_code_distance_single_impl<SIMDLevel::ARM_NEON>(
-        size_t M,
-        size_t nbits,
-        const float* sim_table,
-        const uint8_t* code) {
-    return PQCodeDistanceScalar<PQDecoder8>::distance_single_code(
-            M, nbits, sim_table, code);
-}
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-void pq_code_distance_four_impl<SIMDLevel::ARM_NEON>(
-        size_t M,
-        size_t nbits,
-        const float* sim_table,
-        const uint8_t* __restrict code0,
-        const uint8_t* __restrict code1,
-        const uint8_t* __restrict code2,
-        const uint8_t* __restrict code3,
-        float& result0,
-        float& result1,
-        float& result2,
-        float& result3) {
-    PQCodeDistanceScalar<PQDecoder8>::distance_four_codes(
-            M,
-            nbits,
-            sim_table,
-            code0,
-            code1,
-            code2,
-            code3,
-            result0,
-            result1,
-            result2,
-            result3);
-}
-#endif // COMPILE_SIMD_ARM_NEON
-
 float pq_code_distance_single(
         size_t M,
         size_t nbits,

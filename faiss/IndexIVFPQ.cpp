@@ -33,6 +33,29 @@
 
 namespace faiss {
 
+#ifdef COMPILE_SIMD_ARM_NEON
+namespace pq_code_distance {
+// Forward declarations for NEON batch functions
+void pq_code_distance_batch(
+        size_t M,
+        size_t nbits,
+        size_t ncode,
+        const uint8_t* codes,
+        const float* sim_table,
+        float* dis,
+        float dis0);
+
+void pq_code_distance_batch_by_idx(
+        size_t M,
+        size_t ncode,
+        const uint8_t* codes,
+        const float* sim_table,
+        float* dis,
+        float dis0,
+        const size_t* idx);
+} // namespace pq_code_distance
+#endif
+
 /*****************************************
  * IndexIVFPQ implementation
  ******************************************/
@@ -814,6 +837,8 @@ struct IVFPQScannerT : QueryTables {
     }
 
     float dis0;
+    mutable std::vector<float> dis_buffer;
+    mutable std::vector<size_t> idx_buffer;
 
     void init_list(idx_t list_no, float coarse_dis_in, int mode) {
         this->key = list_no;
@@ -926,6 +951,59 @@ struct IVFPQScannerT : QueryTables {
                                 sim_table,
                                 codes + saved_j[2] * pq.code_size);
             res.add(saved_j[2], dis);
+        }
+    }
+
+    /// Batch version using pq_code_distance_batch for ARM_NEON optimization
+    template <class SearchResultType>
+    void scan_list_with_table_batch(
+            size_t ncode,
+            const uint8_t* codes,
+            SearchResultType& res) const {
+        if (dis_buffer.size() < ncode) {
+            dis_buffer.resize(ncode);
+        }
+
+        pq_code_distance::pq_code_distance_batch(
+                pq.M, pq.nbits, ncode, codes, sim_table, dis_buffer.data(), dis0);
+
+        for (size_t j = 0; j < ncode; j++) {
+            if (!res.skip_entry(j)) {
+                res.add(j, dis_buffer[j]);
+            }
+        }
+    }
+
+    /// Batch version with IDSelector pre-filtering for ARM_NEON optimization.
+    template <class SearchResultType>
+    void scan_list_with_table_batch_sel(
+            size_t ncode,
+            const uint8_t* codes,
+            SearchResultType& res) const {
+        // Build index list of passing entries
+        if (idx_buffer.size() < ncode) {
+            idx_buffer.resize(ncode);
+        }
+        size_t npass = 0;
+        for (size_t i = 0; i < ncode; i++) {
+            if (!res.skip_entry(i)) {
+                idx_buffer[npass++] = i;
+            }
+        }
+        if (npass == 0) {
+            return;
+        }
+        if (dis_buffer.size() < npass) {
+            dis_buffer.resize(npass);
+        }
+        // Compute distances only for passing entries
+        for (size_t j = 0; j < npass; j++) {
+            dis_buffer[j] = pq_code_distance_single(
+                    pq.M, pq.nbits, sim_table,
+                    codes + idx_buffer[j] * pq.code_size) + dis0;
+        }
+        for (size_t j = 0; j < npass; j++) {
+            res.add(idx_buffer[j], dis_buffer[j]);
         }
     }
 
@@ -1237,7 +1315,21 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             FAISS_THROW_IF_NOT(precompute_mode == 2);
             this->scan_list_polysemous(ncode, codes, res);
         } else if (precompute_mode == 2) {
+#ifdef COMPILE_SIMD_ARM_NEON
+            if (SIMDConfig::level == SIMDLevel::ARM_NEON && this->pq.nbits == 8) {
+                if constexpr (use_sel) {
+                    // ARM_NEON + IDSelector: pre-filter then batch compute
+                    this->scan_list_with_table_batch_sel(ncode, codes, res);
+                } else {
+                    // ARM_NEON, no IDSelector: full batch compute
+                    this->scan_list_with_table_batch(ncode, codes, res);
+                }
+            } else {
+                this->scan_list_with_table(ncode, codes, res);
+            }
+#else
             this->scan_list_with_table(ncode, codes, res);
+#endif
         } else if (precompute_mode == 1) {
             this->scan_list_with_pointer(ncode, codes, res);
         } else if (precompute_mode == 0) {
