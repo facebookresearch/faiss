@@ -150,6 +150,27 @@ class TestInterop(unittest.TestCase):
     def test_interop_IP_Int8(self):
         self.do_interop(faiss.METRIC_INNER_PRODUCT, faiss.Int8)
 
+    def test_base_level_only_range_search(self):
+        d = 32
+        nb = 1000
+        nq = 10
+        ds = datasets.SyntheticDataset(d, 0, nb, nq)
+        data_base = ds.get_database()
+        data_query = ds.get_queries()
+
+        res = faiss.StandardGpuResources()
+        index = faiss.GpuIndexCagra(res, d, faiss.METRIC_L2)
+        index.train(data_base, numeric_type=faiss.Float32)
+
+        cpu_index = faiss.index_gpu_to_cpu(index)
+        cpu_index.base_level_only = True
+        cpu_index.num_base_level_search_entrypoints = 8
+
+        radius = np.float32(1e9)
+        lims, _, _ = cpu_index.range_search(data_query, radius)
+        counts = lims[1:] - lims[:-1]
+        self.assertTrue(np.all(counts > 0))
+
 
 @unittest.skipIf(
     "CUVS" not in faiss.get_compile_options(),
