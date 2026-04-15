@@ -543,6 +543,7 @@
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public">faiss::scalar_quantizer::IVFSQScannerIP</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public">faiss::scalar_quantizer::IVFSQScannerL2</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" prot="public">faiss::scalar_quantizer::IVFCoarseDistanceScanner</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
     <innernamespace refid="namespacefaiss_1_1scalar__quantizer">faiss::scalar_quantizer</innernamespace>
     <briefdescription>
@@ -710,10 +711,36 @@
 <codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>store_pairs,</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>IDSelector*<sp/>sel,</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>by_residual);</highlight></codeline>
-<codeline lineno="161"><highlight class="normal"></highlight></codeline>
-<codeline lineno="162"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>scalar_quantizer</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="163"><highlight class="normal"></highlight></codeline>
-<codeline lineno="164"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="162"><highlight class="comment">///<sp/>Scanner<sp/>for<sp/>QT_0bit<sp/>/<sp/>centroid-only<sp/>distance:<sp/>always<sp/>returns<sp/>the</highlight></codeline>
+<codeline lineno="163"><highlight class="comment">///<sp/>coarse<sp/>distance<sp/>that<sp/>was<sp/>set<sp/>via<sp/>set_list().</highlight></codeline>
+<codeline lineno="164" refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" kindref="compound">IVFCoarseDistanceScanner</ref><sp/>:<sp/><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref><sp/>{</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>coarse_dis<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" kindref="compound">IVFCoarseDistanceScanner</ref>(</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_similarity,</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e" kindref="member">store_pairs</ref>,</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref>*<sp/><ref refid="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2" kindref="member">sel</ref>)</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/><ref refid="structfaiss_1_1InvertedListScanner" kindref="compound">InvertedListScanner</ref>(<ref refid="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e" kindref="member">store_pairs</ref>,<sp/><ref refid="structfaiss_1_1InvertedListScanner_1a5599f24188e06b9c4d3db82a401e6ac2" kindref="member">sel</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" kindref="member">code_size</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1InvertedListScanner_1a00cb1d807f47fe2a21077919e3458db7" kindref="member">keep_max</ref><sp/>=<sp/>is_similarity;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176" refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1ae8219353ae254850009f1da6e7cb2b09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1ae8219353ae254850009f1da6e7cb2b09" kindref="member">set_query</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/></highlight><highlight class="comment">/*query_vector*/</highlight><highlight class="normal">)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178" refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a531a6f0124c2aa32c2481e8083a56529" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a531a6f0124c2aa32c2481e8083a56529" kindref="member">set_list</ref>(<ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>list_no_in,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>coarse_dis_in)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="structfaiss_1_1InvertedListScanner_1a843a53d7df43c6dd9f6c550708e3a7fc" kindref="member">list_no</ref><sp/>=<sp/>list_no_in;</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;coarse_dis<sp/>=<sp/>coarse_dis_in;</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183" refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a68fae4e9b4fe7721b3d78cc5eaa5134f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a68fae4e9b4fe7721b3d78cc5eaa5134f" kindref="member">distance_to_code</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/></highlight><highlight class="comment">/*code*/</highlight><highlight class="normal">)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>coarse_dis;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>scalar_quantizer</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/scalar_quantizer/scanners.h"/>
   </compounddef>

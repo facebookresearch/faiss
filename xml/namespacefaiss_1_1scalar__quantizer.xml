@@ -12,6 +12,7 @@
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate_3_01Quantizer_00_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DCTemplate&lt; Quantizer, Similarity, SIMDLevel::NONE &gt;</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte" prot="public">faiss::scalar_quantizer::DistanceComputerByte</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1DistanceComputerByte_3_01Similarity_00_01SIMDLevel_1_1NONE_01_4" prot="public">faiss::scalar_quantizer::DistanceComputerByte&lt; Similarity, SIMDLevel::NONE &gt;</innerclass>
+    <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" prot="public">faiss::scalar_quantizer::IVFCoarseDistanceScanner</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public">faiss::scalar_quantizer::IVFSQScannerIP</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public">faiss::scalar_quantizer::IVFSQScannerL2</innerclass>
     <innerclass refid="structfaiss_1_1scalar__quantizer_1_1Quantizer8bitDirect" prot="public">faiss::scalar_quantizer::Quantizer8bitDirect</innerclass>
@@ -299,7 +300,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="44" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="44" bodyend="91"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="44" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="44" bodyend="94"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1abe2e7ac2fd556dfc65f3c4633b25d231" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -335,7 +336,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="98" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="98" bodyend="181"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="101" column="20" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="101" bodyend="187"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a633a0625bc3ff5fb2e8a0f9813990208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -367,7 +368,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="188" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="188" bodyend="200"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="194" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="194" bodyend="206"/>
       </memberdef>
       <memberdef kind="function" id="sq-dispatch_8h_1a18cda87f7f14bce99d80b0b2cf695df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -419,7 +420,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="207" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="207" bodyend="325"/>
+        <location file="faiss/impl/scalar_quantizer/sq-dispatch.h" line="213" column="1" bodyfile="faiss/impl/scalar_quantizer/sq-dispatch.h" bodystart="213" bodyend="334"/>
       </memberdef>
       <memberdef kind="function" id="training_8h_1a7832c78df26bd9df1561e07d4da31891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
