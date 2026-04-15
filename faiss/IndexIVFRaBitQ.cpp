@@ -231,14 +231,6 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         // Multi-bit: Two-stage search with adaptive filtering
         size_t nup = 0;
 
-        // Stats tracking for multi-bit two-stage search
-        // n_1bit_evaluations: candidates evaluated using 1-bit lower bound
-        // n_multibit_evaluations: candidates requiring full multi-bit distance
-#ifndef NDEBUG
-        size_t local_1bit_evaluations = 0;
-        size_t local_multibit_evaluations = 0;
-#endif
-
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
@@ -248,18 +240,8 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                 }
             }
 
-#ifndef NDEBUG
-            local_1bit_evaluations++;
-#endif
-
-            // Stage 1: Compute distance bound using 1-bit codes
-            // For L2 (min-heap): use lower_bound to safely skip if it's
-            //                    already worse than heap worst
-            // For IP (max-heap): use upper_bound because with a lower bound,
-            //                    we can't safely skip any candidate
             float est_distance = rabitq_dc->distance_to_code_1bit(codes);
 
-            // Extract f_error and g_error for filtering
             size_t code_size_base = (ivf_rabitq.d + 7) / 8;
             const rabitq_utils::SignBitFactorsWithError* base_fac =
                     reinterpret_cast<
@@ -273,10 +255,6 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     handler.threshold,
                     keep_max);
             if (should_refine) {
-#ifndef NDEBUG
-                local_multibit_evaluations++;
-#endif
-                // Lower bound is promising, compute full distance
                 float dis = distance_to_code(codes);
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
@@ -286,14 +264,6 @@ struct RaBitInvertedListScanner : InvertedListScanner {
             }
             codes += code_size;
         }
-
-#ifndef NDEBUG
-        // Update global stats atomically
-#pragma omp atomic
-        rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-        rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
-#endif
 
         return nup;
     }
