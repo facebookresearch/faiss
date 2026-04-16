@@ -12157,6 +12157,8 @@
     <member refid="namespacefaiss_1a38bd0dde8a1b229201a5fcb64d05daa6" kind="function"><name>kmeans_clustering</name></member>
     <member refid="namespacefaiss_1ab75a481411f1b880ec2f41c8685682c6" kind="function"><name>reverse_index_factory</name></member>
     <member refid="namespacefaiss_1ab296cc828e119931af0b6bb2daf3ebfa" kind="function"><name>reverse_index_factory</name></member>
+    <member refid="namespacefaiss_1a3f2b0d7122c741bcbcab083f097f8c37" kind="function"><name>approx_topk_by_mode</name></member>
+    <member refid="namespacefaiss_1a153d404f17cb85317df9c63206d9602f" kind="function"><name>approx_topk_by_mode</name></member>
     <member refid="namespacefaiss_1aec49be9536d13e5d4c18d7aadb101e0a" kind="function"><name>accum_and_store_tab</name></member>
     <member refid="namespacefaiss_1a5036cab9c94ec085cfbbc04df0fc59bb" kind="function"><name>accum_and_add_tab</name></member>
     <member refid="namespacefaiss_1a69b1fa81261ad780a3e08944576302bc" kind="function"><name>accum_and_finalize_tab</name></member>

@@ -1844,6 +1844,97 @@
         </inbodydescription>
         <location file="faiss/factory_tools.h" line="20" column="13" declfile="faiss/factory_tools.h" declline="20" declcolumn="13"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a3f2b0d7122c741bcbcab083f097f8c37" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::approx_topk_by_mode</definition>
+        <argsstring>(ApproxTopK_mode_t mode, uint32_t beam_size, uint32_t n_per_beam, const float *distances, uint32_t k, float *bh_val, int32_t *bh_ids)</argsstring>
+        <name>approx_topk_by_mode</name>
+        <qualifiedname>faiss::approx_topk_by_mode</qualifiedname>
+        <param>
+          <type>ApproxTopK_mode_t</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>beam_size</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>n_per_beam</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>bh_val</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>bh_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/approx_topk.h" line="223" column="13" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="223" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a153d404f17cb85317df9c63206d9602f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::approx_topk_by_mode</definition>
+        <argsstring>(ApproxTopK_mode_t mode, uint32_t beam_size, uint32_t n_per_beam, const float *distances, uint32_t k, float *bh_val, int32_t *bh_ids)</argsstring>
+        <name>approx_topk_by_mode</name>
+        <qualifiedname>faiss::approx_topk_by_mode</qualifiedname>
+        <param>
+          <type>ApproxTopK_mode_t</type>
+          <declname>mode</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>beam_size</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>n_per_beam</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>distances</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>bh_val</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>bh_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/approx_topk/approx_topk.h" line="262" column="13" bodyfile="faiss/impl/approx_topk/approx_topk.h" bodystart="262" bodyend="274"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1aec49be9536d13e5d4c18d7aadb101e0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
