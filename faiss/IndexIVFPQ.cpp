@@ -71,8 +71,9 @@ void IndexIVFPQ::train_encoder(
     pq.train(n, x);
 
     if (do_polysemous_training) {
-        if (verbose)
+        if (verbose) {
             printf("doing polysemous training for PQ\n");
+        }
         PolysemousTraining default_pt;
         PolysemousTraining* pt =
                 polysemous_training ? polysemous_training : &default_pt;
@@ -97,8 +98,9 @@ void IndexIVFPQ::encode(idx_t key, const float* x, uint8_t* code) const {
         std::vector<float> residual_vec(d);
         quantizer->compute_residual(x, residual_vec.data(), key);
         pq.compute_code(residual_vec.data(), code);
-    } else
+    } else {
         pq.compute_code(x, code);
+    }
 }
 
 void IndexIVFPQ::encode_multiple(
@@ -107,8 +109,9 @@ void IndexIVFPQ::encode_multiple(
         const float* x,
         uint8_t* xcodes,
         bool compute_keys) const {
-    if (compute_keys)
+    if (compute_keys) {
         quantizer->assign(n, x, keys);
+    }
 
     encode_vectors(n, x, keys, xcodes);
 }
@@ -153,11 +156,12 @@ static std::unique_ptr<float[]> compute_residuals(
     // Parallelize with OpenMP (each iteration is independent)
 #pragma omp parallel for if (n > 1000)
     for (idx_t i = 0; i < n; i++) {
-        if (list_nos[i] < 0)
+        if (list_nos[i] < 0) {
             memset(residuals.get() + i * d, 0, sizeof(float) * d);
-        else
+        } else {
             quantizer->compute_residual(
                     x + i * d, residuals.get() + i * d, list_nos[i]);
+        }
     }
     return residuals;
 }
@@ -290,8 +294,9 @@ void IndexIVFPQ::add_core_o(
         if (key < 0) {
             direct_map.add_single_id(id, -1, 0);
             n_ignore++;
-            if (residuals_2)
+            if (residuals_2) {
                 memset(residuals_2, 0, sizeof(*residuals_2) * d);
+            }
             continue;
         }
 
@@ -303,8 +308,9 @@ void IndexIVFPQ::add_core_o(
             float* res2 = residuals_2 + i * d;
             const float* xi = to_encode + i * d;
             pq.decode(code, res2);
-            for (int j = 0; j < d; j++)
+            for (int j = 0; j < d; j++) {
                 res2[j] = xi[j] - res2[j];
+            }
         }
 
         direct_map.add_single_id(id, key, offset);
@@ -313,8 +319,9 @@ void IndexIVFPQ::add_core_o(
     double t3 = getmillisecs();
     if (verbose) {
         char comment[100] = {0};
-        if (n_ignore > 0)
+        if (n_ignore > 0) {
             snprintf(comment, 100, "(%zd vectors ignored)", n_ignore);
+        }
         printf(" add_core times: %.3f %.3f %.3f %s\n",
                t1 - t0,
                t2 - t1,
@@ -401,9 +408,9 @@ void initialize_IVFPQ_precomputed_table(
         }
         const MultiIndexQuantizer* miq =
                 dynamic_cast<const MultiIndexQuantizer*>(quantizer);
-        if (miq && pq.M % miq->pq.M == 0)
+        if (miq && pq.M % miq->pq.M == 0) {
             use_precomputed_table = 2;
-        else {
+        } else {
             size_t table_size = pq.M * pq.ksub * nlist * sizeof(float);
             if (table_size > precomputed_table_max_bytes) {
                 if (verbose) {
@@ -425,11 +432,12 @@ void initialize_IVFPQ_precomputed_table(
 
     // squared norms of the PQ centroids
     std::vector<float> r_norms(pq.M * pq.ksub, NAN);
-    for (size_t m = 0; m < pq.M; m++)
+    for (size_t m = 0; m < pq.M; m++) {
         for (size_t j = 0; j < pq.ksub; j++) {
             r_norms[m * pq.ksub + j] =
                     fvec_norm_L2sqr_dispatch(pq.get_centroids(m, j), pq.dsub);
         }
+    }
 
     if (use_precomputed_table == 1) {
         precomputed_table.resize(nlist * pq.M * pq.ksub);
@@ -559,12 +567,14 @@ struct QueryTables {
     // query-specific initialization
     void init_query(const float* qi_in) {
         this->qi = qi_in;
-        if (metric_type == METRIC_INNER_PRODUCT)
+        if (metric_type == METRIC_INNER_PRODUCT) {
             init_query_IP();
-        else
+        } else {
             init_query_L2();
-        if (!by_residual && polysemous_ht != 0)
+        }
+        if (!by_residual && polysemous_ht != 0) {
             pq.compute_code(qi_in, q_code.data());
+        }
     }
 
     void init_query_IP() {
@@ -599,10 +609,11 @@ struct QueryTables {
         uint64_t t0;
         TIC;
         if (by_residual) {
-            if (metric_type == METRIC_INNER_PRODUCT)
+            if (metric_type == METRIC_INNER_PRODUCT) {
                 dis0 = precompute_list_tables_IP();
-            else
+            } else {
                 dis0 = precompute_list_tables_L2();
+            }
         }
         init_list_cycles += TOC;
         return dis0;
@@ -613,10 +624,11 @@ struct QueryTables {
         uint64_t t0;
         TIC;
         if (by_residual) {
-            if (metric_type == METRIC_INNER_PRODUCT)
+            if (metric_type == METRIC_INNER_PRODUCT) {
                 FAISS_THROW_MSG("not implemented");
-            else
+            } else {
                 dis0 = precompute_list_table_pointers_L2();
+            }
         }
         init_list_cycles += TOC;
         return dis0;
@@ -1328,8 +1340,9 @@ size_t IndexIVFPQ::find_duplicates(idx_t* dup_ids, size_t* lims) const {
     for (size_t list_no = 0; list_no < nlist; list_no++) {
         size_t n = invlists->list_size(list_no);
         std::vector<int> ord(n);
-        for (size_t i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++) {
             ord[i] = static_cast<int>(i);
+        }
         InvertedLists::ScopedCodes codes(invlists, list_no);
         CodeCmp cs = {codes.get(), code_size};
         std::sort(ord.begin(), ord.end(), cs);

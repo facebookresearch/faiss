@@ -176,9 +176,11 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
         FAISS_THROW_IF_NOT_MSG(
                 b.size() == static_cast<size_t>(d_out), "Bias not initialized");
         float* xi = xt;
-        for (idx_t i = 0; i < n; i++)
-            for (int j = 0; j < d_out; j++)
+        for (idx_t i = 0; i < n; i++) {
+            for (int j = 0; j < d_out; j++) {
                 *xi++ = b[j];
+            }
+        }
         c_factor = 1.0;
     } else {
         c_factor = 0.0;
@@ -237,8 +239,9 @@ void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
                &dii);
     }
 
-    if (have_bias)
+    if (have_bias) {
         delete[] y;
+    }
 }
 
 void LinearTransform::set_is_orthonormal() {
@@ -277,8 +280,9 @@ void LinearTransform::set_is_orthonormal() {
         for (long i = 0; i < d_out; i++) {
             for (long j = 0; j < d_out; j++) {
                 float v = ATA[i + j * d_out];
-                if (i == j)
+                if (i == j) {
                     v -= 1;
+                }
                 if (std::fabs(v) > eps) {
                     is_orthonormal = false;
                 }
@@ -302,8 +306,9 @@ void LinearTransform::print_if_verbose(
         const std::vector<double>& mat,
         int n,
         int d) const {
-    if (!verbose)
+    if (!verbose) {
         return;
+    }
     printf("matrix %s: %d*%d [\n", name, n, d);
     FAISS_THROW_IF_NOT_MSG(
             mat.size() >= static_cast<size_t>(n) * d,
@@ -553,8 +558,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
 
         if (verbose && d_in <= 10) {
             printf("info=%ld new eigvals=[", long(info));
-            for (size_t j = 0; j < d_in; j++)
+            for (size_t j = 0; j < d_in; j++) {
                 printf("%g ", eigenvalues[j]);
+            }
             printf("]\n");
 
             double* ci = cov;
@@ -574,8 +580,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
         std::swap(eigenvalues[i], eigenvalues[d_in - 1 - i]);
         double* v1 = cov + i * d_in;
         double* v2 = cov + (d_in - 1 - i) * d_in;
-        for (size_t j = 0; j < d_in; j++)
+        for (size_t j = 0; j < d_in; j++) {
             std::swap(v1[j], v2[j]);
+        }
     }
 }
 
@@ -592,16 +599,19 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
     if (have_bias) { // we may want to skip the bias
         const float* xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 mean[j] += *xi++;
+            }
         }
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             mean[j] /= n;
+        }
     }
     if (verbose) {
         printf("mean=[");
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             printf("%g ", mean[j]);
+        }
         printf("]\n");
     }
 
@@ -612,8 +622,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         { // initialize with  mean * mean^T term
             float* ci = cov;
             for (int i = 0; i < d_in; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     *ci++ = -n * mean[i] * mean[j];
+                }
             }
         }
         {
@@ -634,26 +645,30 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
             float* ci = cov;
             printf("cov=\n");
             for (int i = 0; i < d_in; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     printf("%10g ", *ci++);
+                }
                 printf("\n");
             }
         }
 
         std::vector<double> covd(d_in * d_in);
-        for (size_t i = 0; i < d_in * d_in; i++)
+        for (size_t i = 0; i < d_in * d_in; i++) {
             covd[i] = cov[i];
+        }
 
         std::vector<double> eigenvaluesd(d_in);
 
         eig(d_in, covd.data(), eigenvaluesd.data(), verbose);
 
-        for (size_t i = 0; i < d_in * d_in; i++)
+        for (size_t i = 0; i < d_in * d_in; i++) {
             PCAMat[i] = covd[i];
+        }
         eigenvalues.resize(d_in);
 
-        for (int i = 0; i < d_in; i++)
+        for (int i = 0; i < d_in; i++) {
             eigenvalues[i] = eigenvaluesd[i];
+        }
 
     } else {
         std::vector<float> xc(n * d_in);
@@ -693,8 +708,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         }
 
         std::vector<double> gramd(n * n);
-        for (size_t i = 0; i < n * n; i++)
+        for (size_t i = 0; i < n * n; i++) {
             gramd[i] = gram[i];
+        }
 
         std::vector<double> eigenvaluesd(n);
 
@@ -704,13 +720,15 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 
         PCAMat.resize(d_in * n);
 
-        for (size_t i = 0; i < n * n; i++)
+        for (size_t i = 0; i < n * n; i++) {
             gram[i] = gramd[i];
+        }
 
         eigenvalues.resize(d_in);
         // fill in only the n first ones
-        for (idx_t i = 0; i < n; i++)
+        for (idx_t i = 0; i < n; i++) {
             eigenvalues[i] = eigenvaluesd[i];
+        }
 
         { // compute PCAMat = x' * v
             FINTEGER di = d_in, ni = n;
@@ -735,8 +753,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
             float* ci = PCAMat.data();
             printf("PCAMat=\n");
             for (idx_t i = 0; i < n; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     printf("%10g ", *ci++);
+                }
                 printf("\n");
             }
         }
@@ -774,8 +793,9 @@ void PCAMatrix::prepare_Ab() {
             float* ai = A.data();
             for (int i = 0; i < d_out; i++) {
                 float factor = std::pow(eigenvalues[i] + epsilon, eigen_power);
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     *ai++ *= factor;
+                }
             }
         }
 
@@ -810,8 +830,9 @@ void PCAMatrix::prepare_Ab() {
 
             if (verbose) {
                 printf("  bin accu=[");
-                for (int i = 0; i < balanced_bins; i++)
+                for (int i = 0; i < balanced_bins; i++) {
                     printf("%g ", accu[i]);
+                }
                 printf("]\n");
             }
         }
@@ -829,8 +850,9 @@ void PCAMatrix::prepare_Ab() {
         if (eigen_power != 0) {
             for (int i = 0; i < d_out; i++) {
                 float factor = pow(eigenvalues[i], eigen_power);
-                for (int j = 0; j < d_out; j++)
+                for (int j = 0; j < d_out; j++) {
                     rr.A[j * d_out + i] *= factor;
+                }
             }
         }
 
@@ -860,8 +882,9 @@ void PCAMatrix::prepare_Ab() {
 
     for (int i = 0; i < d_out; i++) {
         float accu = 0;
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             accu -= mean[j] * A[j + i * d_in];
+        }
         b[i] = accu;
     }
 
@@ -1183,16 +1206,19 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
         std::vector<float> sum(d);
         const float* xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 sum[j] += *xi++;
+            }
         }
-        for (size_t i = 0; i < d; i++)
+        for (size_t i = 0; i < d; i++) {
             sum[i] /= n;
+        }
         float* yi = xtrain.data();
         xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 *yi++ = *xi++ - sum[j];
+            }
             yi += d - d_in;
         }
     }
@@ -1201,10 +1227,11 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
     if (A.size() == 0) {
         A.resize(d * d);
         rotation = A.data();
-        if (verbose)
+        if (verbose) {
             printf("  OPQMatrix::train: making random %zd*%zd rotation\n",
                    d,
                    d);
+        }
         float_randn(rotation, d * d, 1234);
         matrix_qr(d, d, rotation);
         // we use only the d * d2 upper part of the matrix
@@ -1260,13 +1287,14 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
 
         float pq_err = fvec_L2sqr(pq_recons.data(), xproj.data(), n * d2) / n;
 
-        if (verbose)
+        if (verbose) {
             printf("    Iteration %d (%d PQ iterations):"
                    "%.3f s, obj=%g\n",
                    iter,
                    pq_regular.cp.niter,
                    (getmillisecs() - t0) / 1000.0,
                    pq_err);
+        }
 
         {
             float *u = tmp.data(), *vt = &tmp[d * d];
@@ -1347,8 +1375,9 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
 
     // revert A matrix
     if (d > static_cast<size_t>(d_in)) {
-        for (long i = 0; i < d_out; i++)
+        for (long i = 0; i < d_out; i++) {
             memmove(&A[i * d_in], &A[i * d], sizeof(A[0]) * d_in);
+        }
         A.resize(d_in * d_out);
     }
 
@@ -1484,8 +1513,9 @@ RemapDimensionsTransform::RemapDimensionsTransform(
             }
         }
     } else {
-        for (int i = 0; i < din && i < dout; i++)
+        for (int i = 0; i < din && i < dout; i++) {
             map[i] = i;
+        }
     }
 }
 
@@ -1507,8 +1537,9 @@ void RemapDimensionsTransform::reverse_transform(
     memset(x, 0, sizeof(*x) * n * d_in);
     for (idx_t i = 0; i < n; i++) {
         for (int j = 0; j < d_out; j++) {
-            if (map[j] >= 0)
+            if (map[j] >= 0) {
                 x[map[j]] = xt[j];
+            }
         }
         x += d_in;
         xt += d_out;
