@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFRaBitQFastScan.h" line="217" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="217" bodyend="-1"/>
+        <location file="faiss/IndexIVFRaBitQFastScan.h" line="229" column="1" bodyfile="faiss/IndexIVFRaBitQFastScan.h" bodystart="229" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">

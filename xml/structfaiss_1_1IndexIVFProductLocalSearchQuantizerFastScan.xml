@@ -1064,12 +1064,13 @@
         </inbodydescription>
         <location file="faiss/IndexIVFFastScan.h" line="117" column="10"/>
       </memberdef>
-      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a32429ba6825a6003dbefd0b8eaa86e4d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1afb8f907022d60232e92fa7eb91ece608" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
-        <definition>void faiss::IndexIVFFastScan::compute_LUT_uint8</definition>
+        <definition>virtual void faiss::IndexIVFFastScan::compute_LUT_uint8</definition>
         <argsstring>(size_t n, const float *x, const CoarseQuantized &amp;cq, AlignedTable&lt; uint8_t &gt; &amp;dis_tables, AlignedTable&lt; uint16_t &gt; &amp;biases, float *normalizers, const FastScanDistancePostProcessing &amp;context) const</argsstring>
         <name>compute_LUT_uint8</name>
         <qualifiedname>faiss::IndexIVFFastScan::compute_LUT_uint8</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1IndexIVFRaBitQFastScan_1af949465388e9b34e972cdac5ca8c3cb6">compute_LUT_uint8</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -1163,7 +1164,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/IndexIVFFastScan.h" line="159" column="10"/>
+        <location file="faiss/IndexIVFFastScan.h" line="159" column="18"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1IndexIVFFastScan_1a4b2f2c0a1bd98fcb78a3ebd77261cfc1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3910,7 +3911,7 @@
       <member refid="structfaiss_1_1IndexIVF_1a46d1aeddb60643c5b3f096147c3e028f" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>code_size</name></member>
       <member refid="structfaiss_1_1Index_1af317cb1e2ad0bd145f716f2243b693eb" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>component_t</name></member>
       <member refid="structfaiss_1_1IndexIVFAdditiveQuantizerFastScan_1a2bd468808cff97fce85428c551f365c7" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>compute_LUT</name></member>
-      <member refid="structfaiss_1_1IndexIVFFastScan_1a32429ba6825a6003dbefd0b8eaa86e4d" prot="public" virt="non-virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>compute_LUT_uint8</name></member>
+      <member refid="structfaiss_1_1IndexIVFFastScan_1afb8f907022d60232e92fa7eb91ece608" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>compute_LUT_uint8</name></member>
       <member refid="structfaiss_1_1Index_1a1f12e2118b37a511f51d63e1aa9c0c20" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>compute_residual</name></member>
       <member refid="structfaiss_1_1Index_1aff98fbf8e7dadf9ff528a031c53a43fa" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>compute_residual_n</name></member>
       <member refid="structfaiss_1_1IndexIVF_1a12bade774680c5ec7a46c48bf7521fcb" prot="public" virt="virtual"><scope>faiss::IndexIVFProductLocalSearchQuantizerFastScan</scope><name>copy_subset_to</name></member>
