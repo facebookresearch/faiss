@@ -11,6 +11,7 @@
 #include <faiss/impl/io_macros.h>
 
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1294,6 +1295,20 @@ static std::unique_ptr<IndexIVFPQ> read_ivfpq(
             read_ProductQuantizer(&ivfpqr->refine_pq, f);
             READVECTOR(ivfpqr->refine_codes);
             READ1(ivfpqr->k_factor);
+            // k_factor multiplies k to size search-time allocations
+            // (n * k * k_factor labels + distances).  Defaults are 1
+            // (IndexRefine) and 4 (IndexIVFPQR); AutoTune explores
+            // powers-of-two up to 64.  Cap at 1000 to leave ample
+            // headroom beyond any known usage while still blocking
+            // OOM from crafted files (same cap as beam_factor in
+            // ResidualCoarseQuantizer).
+            FAISS_THROW_IF_NOT_FMT(
+                    std::isfinite(ivfpqr->k_factor) &&
+                            ivfpqr->k_factor >= 1.0f &&
+                            ivfpqr->k_factor <= 1000.0f,
+                    "k_factor %.6g out of valid range [1, 1000]"
+                    " for IndexIVFPQR",
+                    ivfpqr->k_factor);
         }
     }
     return ivpq;
@@ -1838,6 +1853,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto base = read_index_up(f, io_flags);
         auto refine = read_index_up(f, io_flags);
         READ1(idxrf->k_factor);
+        // Same rationale as IndexIVFPQR k_factor above.
+        FAISS_THROW_IF_NOT_FMT(
+                std::isfinite(idxrf->k_factor) && idxrf->k_factor >= 1.0f &&
+                        idxrf->k_factor <= 1000.0f,
+                "k_factor %.6g out of valid range [1, 1000] for IndexRefine",
+                idxrf->k_factor);
         if (h == fourcc("IxRP")) {
             // then make a RefineFlatPanorama with it
             auto idxrf_new = std::make_unique<IndexRefinePanorama>();

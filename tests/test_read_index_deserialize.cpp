@@ -22,7 +22,7 @@
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
-
+#include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
@@ -3299,6 +3299,160 @@ TEST(ReadIndexDeserialize, SVSFlatInvalidStreamThrows) {
                 faiss::read_index(&reader);
             },
             faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Tests: IndexRefine / IndexRefinePanorama k_factor validation.
+//
+// Format "IxRF" (IndexRefineFlat) and "IxRP" (IndexRefinePanorama):
+//   fourcc + index_header + base_index + refine_index + k_factor
+//
+// k_factor must be finite and in [1, 1000].
+// -----------------------------------------------------------------------
+
+// Helper: build a minimal IxRF or IxRP payload with the given k_factor.
+static void push_index_refine(
+        std::vector<uint8_t>& buf,
+        const char fourcc_str[4],
+        float k_factor) {
+    int d = 4;
+    push_fourcc(buf, fourcc_str);
+    push_index_header(buf, d, /*ntotal=*/0);
+    push_minimal_flat(buf, d); // base_index
+    push_minimal_flat(buf, d); // refine_index
+    push_val<float>(buf, k_factor);
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorValid) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", 1.0f);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorMax) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", 1000.0f);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorTooLarge) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", 1001.0f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorNegative) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", -1.0f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorZero) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", 0.0f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorInfinity) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", INFINITY);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefineKFactorNaN) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRF", NAN);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefinePanoramaKFactorTooLarge) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRP", 1e10f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexRefinePanoramaKFactorValid) {
+    std::vector<uint8_t> buf;
+    push_index_refine(buf, "IxRP", 4.0f);
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -----------------------------------------------------------------------
+// Tests: IndexIVFPQR k_factor validation via round-trip.
+//
+// Create a real IndexIVFPQR, serialize it, patch the k_factor bytes in
+// the serialized blob, and verify deserialization rejects invalid values.
+// -----------------------------------------------------------------------
+
+// Helper: serialize an index to a byte vector.
+static std::vector<uint8_t> serialize_index(const Index* idx) {
+    VectorIOWriter writer;
+    write_index(idx, &writer);
+    return writer.data;
+}
+
+// Helper: find and patch a float value in a byte buffer.
+// Searches backwards from the end (k_factor is the last field written
+// for IVFPQR).
+static void patch_last_float(std::vector<uint8_t>& buf, float new_val) {
+    size_t offset = buf.size() - sizeof(float);
+    std::memcpy(buf.data() + offset, &new_val, sizeof(float));
+}
+
+// Helper: create a trained IndexIVFPQR, serialize it, return the bytes.
+// Uses nbits=4 (16 centroids) so training succeeds with few vectors.
+static std::vector<uint8_t> make_ivfpqr_bytes(float k_factor) {
+    int d = 8;
+    IndexFlatL2 quantizer(d);
+    IndexIVFPQR ivfpqr(
+            &quantizer,
+            d,
+            /*nlist=*/1,
+            /*M=*/2,
+            /*nbits_per_idx=*/4,
+            /*M_refine=*/2,
+            /*nbits_per_idx_refine=*/4);
+
+    int ntrain = 64;
+    std::vector<float> train_data(d * ntrain, 0.0f);
+    for (size_t i = 0; i < train_data.size(); i++) {
+        train_data[i] = float(i) / float(train_data.size());
+    }
+    ivfpqr.train(ntrain, train_data.data());
+    ivfpqr.k_factor = k_factor;
+    return serialize_index(&ivfpqr);
+}
+
+TEST(ReadIndexDeserialize, IndexIVFPQRKFactorTooLarge) {
+    auto buf = make_ivfpqr_bytes(4.0f);
+    patch_last_float(buf, 1e10f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexIVFPQRKFactorNegative) {
+    auto buf = make_ivfpqr_bytes(4.0f);
+    patch_last_float(buf, -1.0f);
+    expect_read_throws_with(buf, "k_factor");
+}
+
+TEST(ReadIndexDeserialize, IndexIVFPQRKFactorValid) {
+    auto buf = make_ivfpqr_bytes(64.0f); // AutoTune max
+
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    auto* result = dynamic_cast<IndexIVFPQR*>(idx.get());
+    ASSERT_NE(result, nullptr);
+    EXPECT_FLOAT_EQ(result->k_factor, 64.0f);
 }
 
 #else // !FAISS_ENABLE_SVS
