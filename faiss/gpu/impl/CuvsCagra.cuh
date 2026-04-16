@@ -30,6 +30,7 @@
 #include <optional>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/IDSelector.h>
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
@@ -103,7 +104,8 @@ class CuvsCagra {
             idx_t hashmap_min_bitlen,
             float hashmap_max_fill_rate,
             idx_t num_random_samplings,
-            idx_t rand_xor_mask);
+            idx_t rand_xor_mask,
+            const IDSelector* sel = nullptr);
 
     void reset();
 

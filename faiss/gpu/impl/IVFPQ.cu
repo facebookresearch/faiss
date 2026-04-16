@@ -494,7 +494,8 @@ void IVFPQ::search(
         int nprobe,
         int k,
         Tensor<float, 2, true>& outDistances,
-        Tensor<idx_t, 2, true>& outIndices) {
+        Tensor<idx_t, 2, true>& outIndices,
+        const IDSelector* sel) {
     // These are caught at a higher level
     FAISS_ASSERT(nprobe <= GPU_MAX_SELECTION_K);
     FAISS_ASSERT(k <= GPU_MAX_SELECTION_K);

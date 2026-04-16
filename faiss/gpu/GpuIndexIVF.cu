@@ -342,8 +342,10 @@ void GpuIndexIVF::searchImpl_(
     Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(const_cast<idx_t*>(labels), {n, k});
 
+    const IDSelector* sel = params ? params->sel : nullptr;
+
     baseIndex_->search(
-            quantizer, queries, use_nprobe, k, outDistances, outLabels);
+            quantizer, queries, use_nprobe, k, outDistances, outLabels, sel);
 }
 
 void GpuIndexIVF::search_preassigned(

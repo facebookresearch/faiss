@@ -85,6 +85,9 @@ ScalarQuantizer::SQuantizer* sq_select_quantizer<THE_LEVEL_TO_DISPATCH>(
             return new Quantizer8bitDirect<SL>(d, trained);
         case ScalarQuantizer::QT_8bit_direct_signed:
             return new Quantizer8bitDirectSigned<SL>(d, trained);
+        case ScalarQuantizer::QT_0bit:
+            FAISS_THROW_MSG(
+                    "QT_0bit does not support standalone quantization, use IndexIVFScalarQuantizer");
         default:
             FAISS_THROW_MSG("unknown qtype");
     }
@@ -175,6 +178,9 @@ SQDistanceComputer* select_distance_computer_body(
         case ScalarQuantizer::QT_8bit_direct_signed:
             return new DCTemplate<Quantizer8bitDirectSigned<SL2>, Sim, SL2>(
                     d, trained);
+        case ScalarQuantizer::QT_0bit:
+            FAISS_THROW_MSG(
+                    "QT_0bit does not support standalone distance computation, use IndexIVFScalarQuantizer");
         default:
             FAISS_THROW_MSG("unknown qtype");
     }
@@ -309,6 +315,9 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         Quantizer8bitDirectSigned<SL2>,
                         Similarity,
                         SL2>>();
+            case ScalarQuantizer::QT_0bit:
+                return new IVFCoarseDistanceScanner(
+                        Similarity::metric_type != METRIC_L2, store_pairs, sel);
             default:
                 FAISS_THROW_MSG("unknown qtype");
         }

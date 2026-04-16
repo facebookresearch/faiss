@@ -11,7 +11,6 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>

@@ -305,7 +305,7 @@ IndexBinaryMultiHash::~IndexBinaryMultiHash() {
 void IndexBinaryMultiHash::reset() {
     storage->reset();
     ntotal = 0;
-    for (auto map : maps) {
+    for (auto& map : maps) {
         map.clear();
     }
 }
@@ -459,7 +459,7 @@ void IndexBinaryMultiHash::search(
 
 size_t IndexBinaryMultiHash::hashtable_size() const {
     size_t tot = 0;
-    for (auto map : maps) {
+    for (const auto& map : maps) {
         tot += map.size();
     }
 
