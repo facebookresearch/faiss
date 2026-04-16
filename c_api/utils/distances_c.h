@@ -74,13 +74,13 @@ void faiss_fvec_norms_L2sqr(float* norms, const float* x, size_t d, size_t nx);
 /// L2-renormalize a set of vector. Nothing done if the vector is 0-normed
 void faiss_fvec_renorm_L2(size_t d, size_t nx, float* x);
 
-/// Setter of threshold value on nx * d above which we switch to BLAS to compute
-/// distances
-void faiss_set_distance_compute_blas_threshold(int value);
+/// Setter of threshold for BLAS distance computation.
+/// BLAS is used when: nx * d >= threshold * omp_threads.
+void faiss_set_distance_compute_blas_threshold(int64_t value);
 
-/// Getter of threshold value on nx * d above which we switch to BLAS to compute
-/// distances
-int faiss_get_distance_compute_blas_threshold();
+/// Getter of threshold for BLAS distance computation.
+/// BLAS is used when: nx * d >= threshold * omp_threads.
+int64_t faiss_get_distance_compute_blas_threshold();
 
 /// Setter of block sizes value for BLAS distance computations
 void faiss_set_distance_compute_blas_query_bs(int value);
