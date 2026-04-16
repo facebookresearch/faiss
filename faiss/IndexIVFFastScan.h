@@ -156,7 +156,7 @@ struct IndexIVFFastScan : IndexIVF {
      * @param context       processing context containing query factors
      * processor
      */
-    void compute_LUT_uint8(
+    virtual void compute_LUT_uint8(
             size_t n,
             const float* x,
             const CoarseQuantized& cq,
