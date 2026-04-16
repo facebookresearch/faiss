@@ -271,23 +271,58 @@ bool IndexIVFRaBitQFastScan::lookup_table_is_3d() const {
     return true;
 }
 
+// out[code] = base + sum of v_i for each set bit in code.
+inline void write_subset_sum_lut(
+        float* out,
+        float base,
+        float v0,
+        float v1,
+        float v2,
+        float v3) {
+    out[0] = base;
+    out[1] = base + v0;
+    out[2] = base + v1;
+    out[3] = base + v0 + v1;
+    out[4] = base + v2;
+    out[5] = base + v0 + v2;
+    out[6] = base + v1 + v2;
+    out[7] = base + v0 + v1 + v2;
+    out[8] = base + v3;
+    out[9] = base + v0 + v3;
+    out[10] = base + v1 + v3;
+    out[11] = base + v0 + v1 + v3;
+    out[12] = base + v2 + v3;
+    out[13] = base + v0 + v2 + v3;
+    out[14] = base + v1 + v2 + v3;
+    out[15] = base + v0 + v1 + v2 + v3;
+}
+
 // Computes lookup table for residual vectors in RaBitQ FastScan format
 void IndexIVFRaBitQFastScan::compute_residual_LUT(
-        const float* residual,
+        const float* query,
+        idx_t centroid_id,
         QueryFactorsData& query_factors,
         float* lut_out,
         uint8_t qb_param,
         bool centered_param,
-        const float* original_query) const {
-    FAISS_THROW_IF_NOT(qb_param > 0 && qb_param <= 8);
+        std::vector<float>& rotated_q,
+        std::vector<float>& centroid_buf) const {
+    const size_t d_val = static_cast<size_t>(d);
+    FAISS_THROW_IF_NOT(d_val > 0);
+    rotated_q.resize(d_val);
+    centroid_buf.resize(d_val);
+    std::vector<uint8_t> rotated_qq(d_val);
 
-    std::vector<float> rotated_q(d);
-    std::vector<uint8_t> rotated_qq(d);
+    // Compute residual
+    quantizer->reconstruct(centroid_id, centroid_buf.data());
+    for (size_t i = 0; i < d_val; i++) {
+        rotated_q[i] = query[i] - centroid_buf[i];
+    }
 
-    // Use RaBitQUtils to compute query factors - eliminates code duplication
+    // Compute query factors using shared utility
     query_factors = rabitq_utils::compute_query_factors(
-            residual,
-            d,
+            rotated_q.data(),
+            d_val,
             nullptr,
             qb_param,
             centered_param,
@@ -295,63 +330,74 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
             rotated_q,
             rotated_qq);
 
-    if (metric_type == MetricType::METRIC_INNER_PRODUCT &&
-        original_query != nullptr) {
-        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(original_query, d);
-        query_factors.q_dot_c = query_factors.qr_norm_L2sqr -
-                fvec_inner_product(original_query, residual, d);
+    if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
+        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(query, d_val);
+        query_factors.q_dot_c =
+                fvec_inner_product(query, centroid_buf.data(), d_val);
     }
 
-    const size_t ex_bits = rabitq.nb_bits - 1;
-    if (ex_bits > 0) {
+    if (rabitq.nb_bits > 1) {
         query_factors.rotated_q = rotated_q;
     }
 
+    // Build LUT using branchless subset-sum construction
+    const size_t d_sz = d_val;
+
     if (centered_param) {
-        const float max_code_value = (1 << qb_param) - 1;
+        const float mcv = static_cast<float>((1 << qb_param) - 1);
 
         for (size_t m = 0; m < M; m++) {
-            const size_t dim_start = m * 4;
+            const size_t ds = m * 4;
+            float* out = lut_out + m * 16;
 
-            for (int code_val = 0; code_val < 16; code_val++) {
-                float xor_contribution = 0.0f;
-
-                for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
-                    const size_t dim_idx = dim_start + dim_offset;
-
-                    if (dim_idx < static_cast<size_t>(d)) {
-                        const bool db_bit = (code_val >> dim_offset) & 1;
-                        const float query_value = rotated_qq[dim_idx];
-
-                        xor_contribution += db_bit
-                                ? (max_code_value - query_value)
-                                : query_value;
-                    }
-                }
-
-                lut_out[m * 16 + code_val] = xor_contribution;
+            float base = 0.0f;
+            float v0 = 0.0f, v1 = 0.0f, v2 = 0.0f, v3 = 0.0f;
+            if (ds + 0 < d_sz) {
+                float q = rotated_qq[ds + 0];
+                base += q;
+                v0 = mcv - 2.0f * q;
             }
+            if (ds + 1 < d_sz) {
+                float q = rotated_qq[ds + 1];
+                base += q;
+                v1 = mcv - 2.0f * q;
+            }
+            if (ds + 2 < d_sz) {
+                float q = rotated_qq[ds + 2];
+                base += q;
+                v2 = mcv - 2.0f * q;
+            }
+            if (ds + 3 < d_sz) {
+                float q = rotated_qq[ds + 3];
+                base += q;
+                v3 = mcv - 2.0f * q;
+            }
+
+            write_subset_sum_lut(out, base, v0, v1, v2, v3);
         }
     } else {
+        const float c1 = query_factors.c1;
+        const float c2 = query_factors.c2;
+
         for (size_t m = 0; m < M; m++) {
-            const size_t dim_start = m * 4;
+            const size_t ds = m * 4;
+            float* out = lut_out + m * 16;
 
-            for (int code_val = 0; code_val < 16; code_val++) {
-                float inner_product = 0.0f;
-                int popcount = 0;
-
-                for (size_t dim_offset = 0; dim_offset < 4; dim_offset++) {
-                    const size_t dim_idx = dim_start + dim_offset;
-
-                    if (dim_idx < static_cast<size_t>(d) &&
-                        ((code_val >> dim_offset) & 1)) {
-                        inner_product += rotated_qq[dim_idx];
-                        popcount++;
-                    }
-                }
-                lut_out[m * 16 + code_val] = query_factors.c1 * inner_product +
-                        query_factors.c2 * popcount;
+            float v0 = 0.0f, v1 = 0.0f, v2 = 0.0f, v3 = 0.0f;
+            if (ds + 0 < d_sz) {
+                v0 = c1 * rotated_qq[ds + 0] + c2;
             }
+            if (ds + 1 < d_sz) {
+                v1 = c1 * rotated_qq[ds + 1] + c2;
+            }
+            if (ds + 2 < d_sz) {
+                v2 = c1 * rotated_qq[ds + 2] + c2;
+            }
+            if (ds + 3 < d_sz) {
+                v3 = c1 * rotated_qq[ds + 3] + c2;
+            }
+
+            write_subset_sum_lut(out, 0.0f, v0, v1, v2, v3);
         }
     }
 }
@@ -421,36 +467,145 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     if (n * cq_nprobe > 0) {
         memset(biases.get(), 0, sizeof(float) * n * cq_nprobe);
     }
-    std::unique_ptr<float[]> xrel(new float[n * cq_nprobe * d]);
 
 #pragma omp parallel for if (n * cq_nprobe > 1000)
     for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
         idx_t i = ij / cq_nprobe;
-        float* xij = &xrel[ij * d];
         idx_t cij = cq.ids[ij];
 
         if (cij >= 0) {
-            quantizer->compute_residual(x + i * d, xij, cij);
-
-            // Create QueryFactorsData for this query-list combination
+            std::vector<float> rotated_q(d);
+            std::vector<float> centroid_buf(d);
             QueryFactorsData query_factors_data;
 
             compute_residual_LUT(
-                    xij,
+                    x + i * d,
+                    cij,
                     query_factors_data,
                     dis_tables.get() + ij * dim12,
                     used_qb,
                     used_centered,
-                    x + i * d);
+                    rotated_q,
+                    centroid_buf);
 
-            // Store query factors using compact indexing (ij directly)
             if (context.query_factors != nullptr) {
                 context.query_factors[ij] = query_factors_data;
             }
 
         } else {
-            memset(xij, -1, sizeof(float) * d);
-            memset(dis_tables.get() + ij * dim12, -1, sizeof(float) * dim12);
+            memset(dis_tables.get() + ij * dim12, 0, sizeof(float) * dim12);
+        }
+    }
+}
+
+void IndexIVFRaBitQFastScan::compute_LUT_uint8(
+        size_t n,
+        const float* x,
+        const CoarseQuantized& cq,
+        AlignedTable<uint8_t>& dis_tables,
+        AlignedTable<uint16_t>& biases,
+        float* normalizers,
+        const FastScanDistancePostProcessing& context) const {
+    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT(by_residual);
+
+    const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
+    const bool used_centered = context.qb > 0 ? context.centered : centered;
+    const size_t cur_nprobe = cq.nprobe;
+    const size_t dim12 = 16 * M;
+    const size_t dim12_2 = 16 * M2;
+
+    // Allocate only the uint8 output table (no full float table)
+    dis_tables.resize(n * cur_nprobe * dim12_2);
+    biases.resize(n * cur_nprobe);
+
+#pragma omp parallel if (n > 1)
+    {
+        // Per-thread buffers reused across queries
+        AlignedTable<float> lut_float(cur_nprobe * dim12);
+        std::vector<float> rotated_q(d);
+        std::vector<float> centroid_buf(d);
+        std::vector<float> all_mins(cur_nprobe * M);
+        std::vector<float> probe_b(cur_nprobe);
+
+#pragma omp for schedule(dynamic)
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            const float* xi = x + i * d;
+
+            // Compute float LUT for all probes using fused path
+            for (size_t j = 0; j < cur_nprobe; j++) {
+                const size_t ij = i * cur_nprobe + j;
+                idx_t cij = cq.ids[ij];
+
+                if (cij >= 0) {
+                    QueryFactorsData qf;
+                    compute_residual_LUT(
+                            xi,
+                            cij,
+                            qf,
+                            lut_float.get() + j * dim12,
+                            used_qb,
+                            used_centered,
+                            rotated_q,
+                            centroid_buf);
+
+                    if (context.query_factors != nullptr) {
+                        context.query_factors[ij] = qf;
+                    }
+                } else {
+                    memset(lut_float.get() + j * dim12,
+                           0,
+                           sizeof(float) * dim12);
+                }
+            }
+
+            // Quantize float LUT to uint8 inline.
+            // Mirrors quantize_LUT_and_bias 3D path with zero biases.
+            // Single pass: find per-sub-q mins, max span, and per-probe b.
+            float glob_max_span = -HUGE_VAL;
+            float glob_max_dis = -HUGE_VAL;
+            float glob_b = HUGE_VAL;
+            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                float b_j = 0;
+                float span_j = 0;
+                for (size_t m = 0; m < M; m++) {
+                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
+                    float mn = tab[0], mx = tab[0];
+                    for (size_t s = 1; s < ksub; s++) {
+                        mn = std::min(mn, tab[s]);
+                        mx = std::max(mx, tab[s]);
+                    }
+                    all_mins[j2 * M + m] = mn;
+                    float span = mx - mn;
+                    glob_max_span = std::max(glob_max_span, span);
+                    b_j += mn;
+                    span_j += span;
+                }
+                probe_b[j2] = b_j;
+                glob_max_dis = std::max(glob_max_dis, span_j);
+                glob_b = std::min(glob_b, b_j);
+            }
+            float a = std::min(255.0f / glob_max_span, 65535.0f / glob_max_dis);
+
+            // Second pass: quantize LUT and compute biasq
+            uint8_t* out_base = dis_tables.get() + i * cur_nprobe * dim12_2;
+            uint16_t* bq = biases.get() + i * cur_nprobe;
+            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                for (size_t m = 0; m < M; m++) {
+                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
+                    float mn = all_mins[j2 * M + m];
+                    uint8_t* out = out_base + j2 * dim12_2 + m * ksub;
+                    for (size_t s = 0; s < ksub; s++) {
+                        out[s] = static_cast<uint8_t>(
+                                std::roundf(a * (tab[s] - mn)));
+                    }
+                }
+                memset(out_base + j2 * dim12_2 + M * ksub, 0, (M2 - M) * ksub);
+                bq[j2] = static_cast<uint16_t>(
+                        std::roundf(a * (probe_b[j2] - glob_b)));
+            }
+            normalizers[2 * i] = a;
+            normalizers[2 * i + 1] = glob_b;
         }
     }
 }
@@ -588,28 +743,31 @@ std::unique_ptr<FastScanCodeScanner> IndexIVFRaBitQFastScan::make_knn_scanner(
 namespace {
 
 /// Provides IVF scanner interface using FastScan's SIMD batch processing.
+/// Buffers are allocated once and reused across set_list + scan_codes calls.
 struct IVFRaBitQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    [[maybe_unused]] static constexpr int impl = 10;
     static constexpr size_t nq = 1;
 
     const IndexIVFRaBitQFastScan& index;
-
-    AlignedTable<uint8_t> dis_tables;
-    AlignedTable<uint16_t> biases;
-    /// [scale, offset] for converting uint16 to float
-    std::array<float, 2> normalizers{};
+    const uint8_t qb;
+    const bool centered;
 
     const float* xi = nullptr;
 
+    // Reusable buffers (allocated once in constructor)
+    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint16_t> biases;
+    std::array<float, 2> normalizers{};
+    AlignedTable<float> lut_float;
+    std::vector<float> rotated_q;
+    std::vector<float> centroid_buf;
     QueryFactorsData query_factors;
     FastScanDistancePostProcessing context;
+    std::vector<int> probe_map;
+    std::vector<float> mins_buf;
 
+    // Distance computer for distance_to_code (created in set_list)
     std::unique_ptr<FlatCodesDistanceComputer> dc;
-    std::vector<float> centroid;
-
-    uint8_t qb;
-    bool centered;
 
     IVFRaBitQFastScanScanner(
             const IndexIVFRaBitQFastScan& index_in,
@@ -620,50 +778,92 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
             : InvertedListScanner(store_pairs_in, sel_in),
               index(index_in),
               qb(qb_in),
-              centered(centered_in) {
+              centered(centered_in),
+              lut_float(16 * index_in.M),
+              rotated_q(index_in.d),
+              centroid_buf(index_in.d),
+              probe_map({0}),
+              mins_buf(index_in.M) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
         this->code_size = index_in.code_size;
+
+        // Pre-allocate output tables for single probe
+        dis_tables.resize(16 * index_in.M2);
+        biases.resize(1);
+
+        // Set up context once
+        context.query_factors = &query_factors;
+        context.nprobe = 1;
+        context.qb = qb;
+        context.centered = centered;
     }
 
     void set_query(const float* query) override {
         this->xi = query;
     }
 
-    void set_list(idx_t list_no_in, float coarse_dis_in) override {
+    void set_list(idx_t list_no_in, float /*coarse_dis_in*/) override {
         this->list_no = list_no_in;
 
-        IndexIVFFastScan::CoarseQuantized cq{
-                .nprobe = 1,
-                .dis = &coarse_dis_in,
-                .ids = &list_no_in,
-        };
+        index.compute_residual_LUT(
+                xi,
+                list_no_in,
+                query_factors,
+                lut_float.get(),
+                qb,
+                centered,
+                rotated_q,
+                centroid_buf);
 
-        // Set up context for use in scan_codes
-        context = FastScanDistancePostProcessing{};
-        context.query_factors = &query_factors;
-        context.nprobe = 1;
-        context.qb = qb;
-        context.centered = centered;
+        // Single-probe quantization (simplified inline, no OMP, no 3D)
+        const size_t M = index.M;
+        const size_t M2 = index.M2;
+        const size_t ksub = index.ksub;
 
-        index.compute_LUT_uint8(
-                1, xi, cq, dis_tables, biases, &normalizers[0], context);
+        float max_span = -HUGE_VAL;
+        float max_dis = 0;
+        float b = 0;
+        float* mins = mins_buf.data();
 
-        // Set up distance computer for distance_to_code
-        centroid.resize(index.d);
-        index.quantizer->reconstruct(list_no, centroid.data());
+        for (size_t m = 0; m < M; m++) {
+            const float* tab = lut_float.get() + m * ksub;
+            float mn = tab[0], mx = tab[0];
+            for (size_t s = 1; s < ksub; s++) {
+                mn = std::min(mn, tab[s]);
+                mx = std::max(mx, tab[s]);
+            }
+            mins[m] = mn;
+            float span = mx - mn;
+            max_span = std::max(max_span, span);
+            max_dis += span;
+            b += mn;
+        }
+
+        float a = std::min(255.0f / max_span, 65535.0f / max_dis);
+        uint8_t* out = dis_tables.get();
+        for (size_t m = 0; m < M; m++) {
+            const float* tab = lut_float.get() + m * ksub;
+            for (size_t s = 0; s < ksub; s++) {
+                out[m * ksub + s] = static_cast<uint8_t>(
+                        std::roundf(a * (tab[s] - mins[m])));
+            }
+        }
+        memset(out + M * ksub, 0, (M2 - M) * ksub);
+        biases[0] = 0;
+        normalizers[0] = a;
+        normalizers[1] = b;
+
+        // Create distance computer (reuses centroid_buf from
+        // compute_residual_LUT)
         dc.reset(index.rabitq.get_distance_computer(
-                qb, centroid.data(), centered));
+                qb, centroid_buf.data(), centered));
         dc->set_query(xi);
     }
 
     float distance_to_code(const uint8_t* code) const override {
-        FAISS_THROW_IF_NOT_MSG(
-                dc,
-                "set_query and set_list must be called before distance_to_code");
         return dc->distance_to_code(code);
     }
 
-   public:
     size_t scan_codes(
             size_t ntotal,
             const uint8_t* codes,
@@ -671,8 +871,6 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
             float* distances,
             idx_t* labels,
             size_t k) const override {
-        // initialize the current iteration heap to the worst possible value of
-        // the prior loop
         std::vector<float> curr_dists(k, distances[0]);
         std::vector<idx_t> curr_labels(k, labels[0]);
 
@@ -690,16 +888,10 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         int qmap1[1] = {0};
         handler->q_map = qmap1;
         handler->begin(&normalizers[0]);
-
-        const uint8_t* LUT = dis_tables.get();
         handler->dbias = biases.get();
         handler->ntotal = ntotal;
         handler->id_map = ids;
 
-        // RaBitQ needs list context for factor lookup.
-        // If invlists is unavailable (e.g., own_invlists=false), fall back
-        // to the codes pointer which already contains the block data.
-        std::vector<int> probe_map = {0};
         handler->set_list_context(list_no, probe_map);
         if (!handler->list_codes_ptr) {
             handler->list_codes_ptr = codes;
@@ -711,11 +903,10 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                 index.bbs,
                 static_cast<int>(index.M2),
                 codes,
-                LUT,
+                dis_tables.get(),
                 0,
                 index.get_block_stride());
 
-        // Combine results across iterations
         handler->end();
         if (keep_max) {
             minheap_addn(

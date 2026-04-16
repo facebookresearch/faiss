@@ -111,17 +111,29 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Compute per-vector auxiliary storage size based on nb_bits
     size_t compute_per_vector_storage_size() const;
 
-   private:
-    /// Compute query factors and lookup table for a residual vector
-    /// (similar to IndexRaBitQFastScan::compute_float_LUT)
+    /// Override: compute and quantize LUT per-query to avoid O(n*nprobe*M*16)
+    /// float table allocation.
+    void compute_LUT_uint8(
+            size_t n,
+            const float* x,
+            const CoarseQuantized& cq,
+            AlignedTable<uint8_t>& dis_tables,
+            AlignedTable<uint16_t>& biases,
+            float* normalizers,
+            const FastScanDistancePostProcessing& context) const override;
+
+    /// Compute residual, query factors, and float LUT in two passes over d.
     void compute_residual_LUT(
-            const float* residual,
+            const float* query,
+            idx_t centroid_id,
             QueryFactorsData& query_factors,
             float* lut_out,
             uint8_t qb_param,
             bool centered_param,
-            const float* original_query = nullptr) const;
+            std::vector<float>& rotated_q,
+            std::vector<float>& centroid_buf) const;
 
+   private:
     /// Decode FastScan code to RaBitQ residual vector with explicit
     /// dp_multiplier
     void decode_fastscan_to_residual(
