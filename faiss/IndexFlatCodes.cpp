@@ -13,12 +13,13 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 namespace faiss {
 
-IndexFlatCodes::IndexFlatCodes(size_t code_size, idx_t d, MetricType metric)
-        : Index(d, metric), code_size(code_size) {}
+IndexFlatCodes::IndexFlatCodes(size_t code_size_, idx_t d_, MetricType metric)
+        : Index(d_, metric), code_size(code_size_) {}
 
 IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
@@ -131,12 +132,16 @@ struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
     std::vector<float> vec_buffer;
     const float* query = nullptr;
 
-    GenericFlatCodesDistanceComputer(const IndexFlatCodes* codec, const VD& vd)
-            : FlatCodesDistanceComputer(codec->codes.data(), codec->code_size),
-              codec(*codec),
-              vd(vd),
-              code_buffer(codec->code_size * 4),
-              vec_buffer(codec->d * 4) {}
+    GenericFlatCodesDistanceComputer(
+            const IndexFlatCodes* codec_,
+            const VD& vd_)
+            : FlatCodesDistanceComputer(
+                      codec_->codes.data(),
+                      codec_->code_size),
+              codec(*codec_),
+              vd(vd_),
+              code_buffer(codec_->code_size * 4),
+              vec_buffer(codec_->d * 4) {}
 
     void set_query(const float* x) override {
         query = x;
@@ -182,15 +187,6 @@ struct GenericFlatCodesDistanceComputer : FlatCodesDistanceComputer {
     }
 };
 
-struct Run_get_distance_computer {
-    using T = FlatCodesDistanceComputer*;
-
-    template <class VD>
-    FlatCodesDistanceComputer* f(const VD& vd, const IndexFlatCodes* codec) {
-        return new GenericFlatCodesDistanceComputer<VD>(codec, vd);
-    }
-};
-
 template <class BlockResultHandler>
 struct Run_search_with_decompress {
     using T = void;
@@ -213,7 +209,7 @@ struct Run_search_with_decompress {
             std::unique_ptr<DC> dc(new DC(&index, vd));
             SingleResultHandler resi(res);
 #pragma omp for
-            for (int64_t q = 0; q < res.nq; q++) {
+            for (int64_t q = 0; q < static_cast<int64_t>(res.nq); q++) {
                 resi.begin(q);
                 dc->set_query(xq + vd.d * q);
                 for (size_t i = 0; i < ntotal; i++) {
@@ -235,15 +231,11 @@ struct Run_search_with_decompress_res {
     void f(BlockResultHandler& res,
            const IndexFlatCodes* index,
            const float* xq) {
-        Run_search_with_decompress<BlockResultHandler> r;
-        dispatch_VectorDistance(
-                index->d,
-                index->metric_type,
-                index->metric_arg,
-                r,
-                index,
-                xq,
-                res);
+        with_VectorDistance(
+                index->d, index->metric_type, index->metric_arg, [&](auto vd) {
+                    Run_search_with_decompress<BlockResultHandler> r;
+                    r.template f<decltype(vd)>(vd, index, xq, res);
+                });
     }
 };
 
@@ -251,8 +243,14 @@ struct Run_search_with_decompress_res {
 
 FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
         const {
-    Run_get_distance_computer r;
-    return dispatch_VectorDistance(d, metric_type, metric_arg, r, this);
+    return with_VectorDistance(
+            d,
+            metric_type,
+            metric_arg,
+            [&](auto vd) -> FlatCodesDistanceComputer* {
+                return new GenericFlatCodesDistanceComputer<decltype(vd)>(
+                        this, vd);
+            });
 }
 
 void IndexFlatCodes::search(
@@ -269,7 +267,7 @@ void IndexFlatCodes::search(
 }
 
 void IndexFlatCodes::range_search(
-        idx_t n,
+        idx_t /* n */,
         const float* x,
         float radius,
         RangeSearchResult* result,

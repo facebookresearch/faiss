@@ -113,7 +113,7 @@ struct OnDiskInvertedLists : InvertedLists {
     /// restrict the inverted lists to l0:l1 without touching the mmapped region
     void crop_invlists(size_t l0, size_t l1);
 
-    void prefetch_lists(const idx_t* list_nos, int nlist) const override;
+    void prefetch_lists(const idx_t* list_nos, int nlist_in) const override;
 
     ~OnDiskInvertedLists() override;
 

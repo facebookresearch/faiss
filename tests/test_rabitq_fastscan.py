@@ -9,6 +9,8 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
+from common_faiss_tests import for_all_simd_levels
+
 
 def compute_expected_code_size(d, nb_bits):
     """Helper: Compute expected code size based on formula."""
@@ -23,24 +25,39 @@ def compute_expected_code_size(d, nb_bits):
     return base_size
 
 
+def _create_fastscan_index(
+    d, metric, use_ivf=False,
+    nlist=16, nprobe=4, bbs=32, nb_bits=1,
+):
+    """Create FastScan index (IVF or non-IVF)."""
+    if use_ivf:
+        quantizer = faiss.IndexFlat(d, metric)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, metric, bbs,
+            True, nb_bits
+        )
+        index.nprobe = nprobe
+    else:
+        index = faiss.IndexRaBitQFastScan(d, metric, bbs, nb_bits)
+    return index
+
+
+@for_all_simd_levels
 class TestRaBitQFastScan(unittest.TestCase):
     """Unified tests for IndexRaBitQFastScan and IndexIVFRaBitQFastScan."""
 
     NLIST = 16
     NPROBE = 4
 
-    def _create_index(self, d, metric, use_ivf=False, nlist=None, bbs=32):
-        """Create FastScan index (IVF or non-IVF)."""
-        if use_ivf:
-            nlist = nlist or self.NLIST
-            quantizer = faiss.IndexFlat(d, metric)
-            index = faiss.IndexIVFRaBitQFastScan(
-                quantizer, d, nlist, metric, bbs
-            )
-            index.nprobe = self.NPROBE
-        else:
-            index = faiss.IndexRaBitQFastScan(d, metric, bbs, 1)
-        return index
+    def _create_index(
+        self, d, metric, use_ivf=False,
+        nlist=None, bbs=32, nb_bits=1,
+    ):
+        return _create_fastscan_index(
+            d, metric, use_ivf=use_ivf,
+            nlist=nlist or self.NLIST, nprobe=self.NPROBE,
+            bbs=bbs, nb_bits=nb_bits,
+        )
 
     def _create_baseline(self, d, metric, use_ivf=False, nlist=None):
         """Create baseline RaBitQ index (IVF or non-IVF)."""
@@ -152,24 +169,37 @@ class TestRaBitQFastScan(unittest.TestCase):
     def test_serialization(self):
         """Test serialize/deserialize preserves search results."""
         for use_ivf in [False, True]:
-            with self.subTest(use_ivf=use_ivf):
-                ds = datasets.SyntheticDataset(64, 1000, 100, 20)
+            for nb_bits in [1, 2, 4]:
+                with self.subTest(use_ivf=use_ivf, nb_bits=nb_bits):
+                    ds = datasets.SyntheticDataset(128, 1000, 200, 20)
 
-                index = self._create_index(ds.d, faiss.METRIC_L2, use_ivf)
-                index.train(ds.get_train())
-                index.add(ds.get_database())
+                    index = self._create_index(
+                        128, faiss.METRIC_L2, use_ivf,
+                        nb_bits=nb_bits,
+                    )
+                    index.train(ds.get_train())
+                    index.add(ds.get_database())
 
-                Dref, Iref = index.search(ds.get_queries(), 10)
+                    Dref, Iref = index.search(ds.get_queries(), 10)
 
-                b = faiss.serialize_index(index)
-                index2 = faiss.deserialize_index(b)
+                    b = faiss.serialize_index(index)
+                    index2 = faiss.deserialize_index(b)
+                    if use_ivf:
+                        index2.nprobe = self.NPROBE
+
+                    Dnew, Inew = index2.search(ds.get_queries(), 10)
+
+                    np.testing.assert_array_equal(Dref, Dnew)
+                    np.testing.assert_array_equal(Iref, Inew)
+
+                # Verify deserialized index is serializable again
+                b2 = faiss.serialize_index(index2)
+                index3 = faiss.deserialize_index(b2)
                 if use_ivf:
-                    index2.nprobe = self.NPROBE
-
-                Dnew, Inew = index2.search(ds.get_queries(), 10)
-
-                np.testing.assert_array_equal(Dref, Dnew)
-                np.testing.assert_array_equal(Iref, Inew)
+                    index3.nprobe = self.NPROBE
+                Dnew3, Inew3 = index3.search(ds.get_queries(), 10)
+                np.testing.assert_array_equal(Dref, Dnew3)
+                np.testing.assert_array_equal(Iref, Inew3)
 
     # ==================== Memory Management Tests ====================
 
@@ -471,12 +501,108 @@ class TestRaBitQFastScan(unittest.TestCase):
         self.assertGreater(recall, 0.4)
 
 
+@for_all_simd_levels
+class TestIVFRaBitQFastScanFiltering(unittest.TestCase):
+    NLIST = 32
+    NPROBE = 8
+
+    def _create_index(self, d, metric, nb_bits=1):
+        quantizer = faiss.IndexFlat(d, metric)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, self.NLIST, metric, 32, True, nb_bits
+        )
+        index.nprobe = self.NPROBE
+        return index
+
+    def _do_test_filter(
+        self,
+        selector_type="batch",
+        metric=faiss.METRIC_L2,
+        nb_bits=1,
+        k=10,
+        nb=1000,
+    ):
+        d = 32
+        ds = datasets.SyntheticDataset(d, 2000, nb, 20, metric=metric)
+        index = self._create_index(d, metric, nb_bits=nb_bits)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        rs = np.random.RandomState(123)
+        if selector_type == "batch":
+            subset = rs.choice(nb, max(nb // 3, 1), replace=False).astype(
+                "int64"
+            )
+            sel = faiss.IDSelectorBatch(subset)
+            allowed = set(subset.tolist())
+        elif selector_type == "whole_block_not":
+            excluded = np.concatenate([
+                np.arange(0, min(32, nb), dtype="int64"),
+                np.arange(64, min(96, nb), dtype="int64"),
+            ])
+            inner_sel = faiss.IDSelectorBatch(excluded)
+            sel = faiss.IDSelectorNot(inner_sel)
+            allowed = {i for i in range(nb) if i not in excluded}
+        elif selector_type == "partial_block_not":
+            excluded = np.array(
+                [i for i in [5, 10, 20, 31] if i < nb], dtype="int64"
+            )
+            inner_sel = faiss.IDSelectorBatch(excluded)
+            sel = faiss.IDSelectorNot(inner_sel)
+            allowed = {i for i in range(nb) if i not in excluded}
+        elif selector_type == "empty":
+            sel = faiss.IDSelectorBatch(np.array([], dtype="int64"))
+            allowed = set()
+        else:
+            raise ValueError(f"Unknown selector type: {selector_type}")
+
+        params = faiss.SearchParametersIVF(sel=sel, nprobe=self.NPROBE)
+        _, labels = index.search(ds.get_queries(), k, params=params)
+
+        for q in range(ds.nq):
+            for j in range(k):
+                idx = int(labels[q, j])
+                if idx >= 0:
+                    self.assertIn(
+                        idx,
+                        allowed,
+                        f"Query {q}, rank {j}: id {idx} not allowed",
+                    )
+
+        if selector_type == "empty":
+            np.testing.assert_array_equal(labels, -1)
+        elif len(allowed) > k:
+            self.assertGreater(np.sum(labels >= 0), 0)
+
+    def test_batch_filter_l2_1bit(self):
+        self._do_test_filter("batch", faiss.METRIC_L2, nb_bits=1)
+
+    def test_batch_filter_ip_1bit(self):
+        self._do_test_filter("batch", faiss.METRIC_INNER_PRODUCT, nb_bits=1)
+
+    def test_whole_block_exclusion_l2_1bit(self):
+        self._do_test_filter("whole_block_not", faiss.METRIC_L2, nb_bits=1)
+
+    def test_partial_block_exclusion_l2_1bit(self):
+        self._do_test_filter("partial_block_not", faiss.METRIC_L2, nb_bits=1)
+
+    def test_empty_selector_l2_1bit(self):
+        self._do_test_filter("empty", faiss.METRIC_L2, nb_bits=1)
+
+    def test_batch_filter_l2_multibit(self):
+        self._do_test_filter("batch", faiss.METRIC_L2, nb_bits=2)
+
+
+@for_all_simd_levels
 class TestMultiBitRaBitQFastScan(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ FastScan.
 
     Tests IndexRaBitQFastScan and IndexIVFRaBitQFastScan for construction,
     basic operations, recall, serialization, and factory construction.
     """
+
+    NLIST = 16
+    NPROBE = 4
 
     # ==================== Construction Tests ====================
 
@@ -743,6 +869,14 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        index3.qb = qb
+                        D3, I3 = index3.search(ds.get_queries(), 5)
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     def test_ivf_serialization(self):
         """Test IVF serialization preserves results."""
         ds = datasets.SyntheticDataset(64, 1000, 500, 20)
@@ -767,6 +901,13 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
                     self.assertEqual(index2.rabitq.nb_bits, nb_bits)
                     np.testing.assert_array_equal(I1, I2)
                     np.testing.assert_allclose(D1, D2, rtol=1e-5)
+
+                    # Verify deserialized index is serializable again
+                    index_bytes2 = faiss.serialize_index(index2)
+                    index3 = faiss.deserialize_index(index_bytes2)
+                    D3, I3 = index3.search(ds.get_queries(), 10)
+                    np.testing.assert_array_equal(I1, I3)
+                    np.testing.assert_allclose(D1, D3, rtol=1e-5)
 
     # ==================== Reconstruction Tests ====================
 
@@ -797,57 +938,38 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
 
     def test_encode_decode_roundtrip(self):
         """Test encode/decode round-trip produces consistent results."""
-        d = 64
-
-        for nb_bits in [1, 2, 4]:
-            for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-                with self.subTest(nb_bits=nb_bits, metric=metric):
-                    metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
-                    ds = datasets.SyntheticDataset(
-                        d, 500, 100, 10, metric=metric_str
-                    )
-
-                    index = faiss.IndexRaBitQFastScan(d, metric, 32, nb_bits)
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
-
-                    xb = ds.get_database()
-                    _, I = index.search(xb, 1)
-
-                    self_retrieval_count = sum(
-                        1 for i in range(len(xb)) if I[i, 0] == i
-                    )
-                    self_retrieval_rate = self_retrieval_count / len(xb)
-                    self.assertGreater(self_retrieval_rate, 0.5)
-
-    def test_ivf_encode_decode_roundtrip(self):
-        """Test IVF encode/decode round-trip produces consistent results."""
         d, nlist = 64, 8
 
-        for nb_bits in [1, 2, 4]:
-            for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
-                with self.subTest(nb_bits=nb_bits, metric=metric):
-                    metric_str = "L2" if metric == faiss.METRIC_L2 else "IP"
-                    ds = datasets.SyntheticDataset(
-                        d, 500, 100, 10, metric=metric_str
-                    )
+        for use_ivf in [False, True]:
+            for nb_bits in [1, 2, 4]:
+                for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+                    with self.subTest(
+                        use_ivf=use_ivf, nb_bits=nb_bits, metric=metric
+                    ):
+                        metric_str = (
+                            "L2" if metric == faiss.METRIC_L2 else "IP"
+                        )
+                        ds = datasets.SyntheticDataset(
+                            d, 500, 100, 10, metric=metric_str
+                        )
 
-                    quantizer = faiss.IndexFlat(d, metric)
-                    index = faiss.IndexIVFRaBitQFastScan(
-                        quantizer, d, nlist, metric, 32, True, nb_bits
-                    )
-                    index.nprobe = nlist
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
+                        index = _create_fastscan_index(
+                            d, metric, use_ivf=use_ivf,
+                            nlist=nlist, nb_bits=nb_bits,
+                        )
+                        if use_ivf:
+                            index.nprobe = nlist
+                        index.train(ds.get_train())
+                        index.add(ds.get_database())
 
-                    xb = ds.get_database()
-                    _, I = index.search(xb, 1)
+                        xb = ds.get_database()
+                        _, I = index.search(xb, 1)
 
-                    self_retrieval_count = sum(
-                        1 for i in range(len(xb)) if I[i, 0] == i
-                    )
-                    self_retrieval_rate = self_retrieval_count / len(xb)
-                    self.assertGreater(self_retrieval_rate, 0.5)
+                        self_retrieval_count = sum(
+                            1 for i in range(len(xb)) if I[i, 0] == i
+                        )
+                        self_retrieval_rate = self_retrieval_count / len(xb)
+                        self.assertGreater(self_retrieval_rate, 0.5)
 
     def test_ivf_encoding_format_consistency(self):
         """Verify IVF FastScan encoding matches non-IVF FastScan pattern."""
@@ -901,16 +1023,17 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
         """Test factory construction with both nb_bits and batch size."""
         ds = datasets.SyntheticDataset(64, 150, 200, 10)
 
-        factory_str = "RaBitQfs4_64"
-        index = faiss.index_factory(ds.d, factory_str)
-        self.assertIsInstance(index, faiss.IndexRaBitQFastScan)
-        self.assertEqual(index.rabitq.nb_bits, 4)
-        self.assertEqual(index.bbs, 64)
+        for bbs in [32, 64]:
+            factory_str = f"RaBitQfs4_{bbs}"
+            index = faiss.index_factory(ds.d, factory_str)
+            self.assertIsInstance(index, faiss.IndexRaBitQFastScan)
+            self.assertEqual(index.rabitq.nb_bits, 4)
+            self.assertEqual(index.bbs, bbs)
 
-        index.train(ds.get_train())
-        index.add(ds.get_database())
-        D, I = index.search(ds.get_queries(), 5)
-        self.assertEqual(D.shape, (ds.nq, 5))
+            index.train(ds.get_train())
+            index.add(ds.get_database())
+            D, I = index.search(ds.get_queries(), 5)
+            self.assertEqual(D.shape, (ds.nq, 5))
 
     def test_ivf_factory_construction(self):
         """Test that multi-bit IVF index can be constructed via factory."""
@@ -947,77 +1070,59 @@ class TestMultiBitRaBitQFastScan(unittest.TestCase):
         self.assertEqual(D.shape, (ds.nq, 5))
 
 
-class TestRaBitQStatsFastScan(unittest.TestCase):
-    """Test RaBitQStats tracking for multi-bit two-stage search in FastScan."""
+class TestRaBitQFastScanSearchParams(unittest.TestCase):
+    """Test that IVFRaBitQSearchParameters qb/centered are respected."""
 
-    INDEX_TYPES = [
-        "IndexRaBitQFastScan",
-        "IndexIVFRaBitQFastScan",
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.stats_available = hasattr(faiss, 'cvar') and hasattr(
-            faiss.cvar, 'rabitq_stats'
-        )
-        if cls.stats_available:
-            cls.rabitq_stats = faiss.cvar.rabitq_stats
-
-    def test_stats_reset_and_skip_percentage(self):
-        """Test that stats can be reset and skip_percentage works."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        self.rabitq_stats.reset()
-        self.assertEqual(self.rabitq_stats.n_1bit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.n_multibit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.skip_percentage(), 0.0)
-
-    def test_stats_collected_multibit_all_index_types(self):
-        """Test stats are collected for all multi-bit FastScan index types."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        ds = datasets.SyntheticDataset(384, 50000, 50000, 10)
+    def test_higher_qb_improves_recall(self):
+        """Search with qb=4 should give better recall than qb=1."""
+        d = 64
         nlist = 16
+        nprobe = 4
+        k = 10
+        ds = datasets.SyntheticDataset(d, 5000, 5000, 50)
 
-        for index_type in self.INDEX_TYPES:
-            for nb_bits in [2, 4]:
-                with self.subTest(index_type=index_type, nb_bits=nb_bits):
-                    self.rabitq_stats.reset()
+        # Ground truth with flat index
+        index_flat = faiss.IndexFlatL2(d)
+        index_flat.add(ds.get_database())
+        _, I_gt = index_flat.search(ds.get_queries(), k)
 
-                    if index_type == "IndexRaBitQFastScan":
-                        index = faiss.IndexRaBitQFastScan(
-                            ds.d, faiss.METRIC_L2, 32, nb_bits
-                        )
-                    elif index_type == "IndexIVFRaBitQFastScan":
-                        quantizer = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
-                        index = faiss.IndexIVFRaBitQFastScan(
-                            quantizer, ds.d, nlist, faiss.METRIC_L2,
-                            32, True, nb_bits
-                        )
-                        index.nprobe = 4
-                    else:
-                        raise ValueError(f"Unknown index type: {index_type}")
+        # Build IVF RaBitQ FastScan index with default qb=8
+        quantizer = faiss.IndexFlat(d, faiss.METRIC_L2)
+        index = faiss.IndexIVFRaBitQFastScan(
+            quantizer, d, nlist, faiss.METRIC_L2, 32, True
+        )
+        index.nprobe = nprobe
+        index.train(ds.get_train())
+        index.add(ds.get_database())
 
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
-                    index.search(ds.get_queries(), 10)
+        # Search with qb=1 (coarse quantization)
+        params_qb1 = faiss.IVFRaBitQSearchParameters()
+        params_qb1.nprobe = nprobe
+        params_qb1.qb = 1
+        _, I_qb1 = index.search(ds.get_queries(), k, params=params_qb1)
 
-                    self.assertGreater(self.rabitq_stats.n_1bit_evaluations, 0)
-                    self.assertGreater(self.rabitq_stats.n_multibit_evaluations, 0)
-                    # For multi-bit, filtering should skip some candidates
-                    self.assertLess(
-                        self.rabitq_stats.n_multibit_evaluations, self.rabitq_stats.n_1bit_evaluations
-                    )
-                    skip_pct = self.rabitq_stats.skip_percentage()
-                    self.assertGreater(skip_pct, 0.0)
-                    self.assertLessEqual(skip_pct, 100.0)
+        # Search with qb=4 (finer quantization)
+        params_qb4 = faiss.IVFRaBitQSearchParameters()
+        params_qb4.nprobe = nprobe
+        params_qb4.qb = 4
+        _, I_qb4 = index.search(ds.get_queries(), k, params=params_qb4)
 
-                    print(
-                        f"{index_type} nb_bits={nb_bits}: "
-                        f"total={self.rabitq_stats.n_1bit_evaluations}, "
-                        f"refined={self.rabitq_stats.n_multibit_evaluations}, "
-                        f"skip={skip_pct:.1f}%"
-                    )
+        # Compute recall@k
+        recall_qb1 = np.mean([
+            len(np.intersect1d(I_qb1[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
+        recall_qb4 = np.mean([
+            len(np.intersect1d(I_qb4[i], I_gt[i])) / k
+            for i in range(ds.nq)
+        ])
+
+        self.assertGreater(
+            recall_qb4, recall_qb1,
+            f"qb=4 recall ({recall_qb4:.3f}) should be higher "
+            f"than qb=1 recall ({recall_qb1:.3f})"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

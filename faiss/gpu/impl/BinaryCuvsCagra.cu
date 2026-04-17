@@ -22,10 +22,12 @@
  */
 
 #include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
 
+#include <cuvs/core/bitset.hpp>
 #include <cuvs/neighbors/cagra.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
@@ -49,9 +51,9 @@ BinaryCuvsCagra::BinaryCuvsCagra(
         IndicesOptions indicesOptions)
         : resources_(resources),
           dim_(dim),
+          store_dataset_(store_dataset),
           graph_build_algo_(graph_build_algo),
-          nn_descent_niter_(nn_descent_niter),
-          store_dataset_(store_dataset) {
+          nn_descent_niter_(nn_descent_niter) {
     FAISS_THROW_IF_NOT_MSG(
             indicesOptions == faiss::gpu::INDICES_64_BIT,
             "only INDICES_64_BIT is supported for cuVS CAGRA index");
@@ -161,6 +163,11 @@ void BinaryCuvsCagra::train(idx_t n, const uint8_t* x) {
         cuvs::neighbors::cagra::graph_build_params::iterative_search_params
                 graph_build_params;
         index_params_.graph_build_params = graph_build_params;
+        if (index_params_.graph_degree ==
+            index_params_.intermediate_graph_degree) {
+            index_params_.intermediate_graph_degree =
+                    1.5 * index_params_.graph_degree;
+        }
     }
 
     if (getDeviceForAddress(x) >= 0) {
@@ -197,7 +204,8 @@ void BinaryCuvsCagra::search(
         idx_t hashmap_min_bitlen,
         float hashmap_max_fill_rate,
         idx_t num_random_samplings,
-        idx_t rand_xor_mask) {
+        idx_t rand_xor_mask,
+        const IDSelector* sel) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     idx_t numQueries = queries.getSize(0);
@@ -250,13 +258,31 @@ void BinaryCuvsCagra::search(
             raft_handle, numQueries, k_);
     auto distances_float_view = distances_float.view();
 
+    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_holder;
+    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
+            bitset_filter;
+    cuvs::neighbors::filtering::none_sample_filter none_filter;
+
+    if (sel) {
+        bitset_holder =
+                cuvs::core::bitset<uint32_t, int64_t>(raft_handle, n_, false);
+        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_holder->view());
+        bitset_filter.emplace(bitset_holder->view());
+    }
+    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
+            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      bitset_filter.value())
+            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      none_filter);
+
     cuvs::neighbors::cagra::search(
             raft_handle,
             search_pams,
             *cuvs_index,
             queries_view,
             indices_copy.view(),
-            distances_float_view);
+            distances_float_view,
+            filter_ref);
 
     thrust::copy(
             raft::resource::get_thrust_policy(raft_handle),

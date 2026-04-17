@@ -47,17 +47,13 @@ if(FAISS_ENABLE_CUVS)
 endif()
 
 project(faiss
-  VERSION 1.13.2
+  VERSION 1.14.1
   DESCRIPTION "A library for efficient similarity search and clustering of dense vectors."
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES ${FAISS_LANGUAGES})
 include(GNUInstallDirs)
 
-if(FAISS_ENABLE_CUVS)
-  set(CMAKE_CXX_STANDARD 17)
-else()
-  set(CMAKE_CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 20)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

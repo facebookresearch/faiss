@@ -35,7 +35,7 @@ runs:
       if: inputs.setup_conda == 'true'
       uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         miniforge-version: latest # ensures conda-forge channel is used.
         channels: conda-forge
         conda-remove-defaults: 'true'
@@ -52,7 +52,7 @@ runs:
         conda install -y -q "conda<=25.07"
         echo "$CONDA/bin" >> $GITHUB_PATH
 
-        conda install -y -q python=3.11 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2
+        conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2 setuptools
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
@@ -71,15 +71,15 @@ runs:
           :
         # regular CUDA for GPU builds
         elif [ "${{ inputs.gpu }}" = "ON" ] && [ "${{ inputs.cuvs }}" = "OFF" ]; then
-          conda install -y -q cuda-toolkit=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
+          conda install -y -q cuda-libraries-dev=12.6 cuda-nvcc=12.6 cuda-nvtx=12.6 cuda-cupti=12.6 cuda-cudart-dev=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=25.10 'cuda-version=12.6' cuda-toolkit=12.6 gxx_linux-64=13.4.0 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-toolkit=12.9 sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
         # install SVS runtime for SVS builds
         if [ "${{ inputs.svs }}" = "ON" ]; then
-          conda install -y -q libsvs-runtime -c https://software.repos.intel.com/python/conda -c conda-forge
+          conda install -y -q libsvs-runtime -c conda-forge
         fi
 
         # install test packages
@@ -87,7 +87,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.6"
+          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
@@ -100,27 +100,43 @@ runs:
         sudo apt-get -qq update >/dev/null
         sudo apt-get -qq install -y kmod wget gpg >/dev/null
 
+        # Download, prepare, and install the package signing key
+        mkdir --parents --mode=0755 /etc/apt/keyrings
+        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+
+    - name: Add rocm repository
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
         # Get UBUNTU version name
         UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
 
         # Set ROCm version
         ROCM_VERSION="6.2"
 
-        # Download, prepare, and install the package signing key
-        mkdir --parents --mode=0755 /etc/apt/keyrings
-        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
+        rocm_baseurl="https://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
+        echo "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b  /tmp/rocm.gpg.key" | sha256sum --check
 
-        # Add rocm repository
-        wget -qO - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-        rocm_baseurl="http://repo.radeon.com/rocm/apt/${ROCM_VERSION}"
-        echo "deb [arch=amd64] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-        sudo apt-get -qq update --allow-insecure-repositories >/dev/null
-        sudo apt-get -qq install -y --allow-unauthenticated \
-            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" \
-            "rocm-libs${ROCM_VERSION}" >/dev/null
+        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] ${rocm_baseurl} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
+
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y \
+            "rocm-dev${ROCM_VERSION}" "rocm-utils${ROCM_VERSION}" "rocm-libs${ROCM_VERSION}" >/dev/null
+
+
+    - name: Pin BLAS/LAPACK versions
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        conda install -y \
+          "libblas=3.9.0=35_*" \
+          "libcblas=3.9.0=35_*" \
+          "liblapack=3.9.0=35_*"
 
         # Fake presence of MI200-class accelerators
-        echo "gfx90a" | sudo tee /opt/rocm/bin/target.lst
+        echo "gfx942" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
         sudo apt-get -qq autoclean >/dev/null
@@ -135,6 +151,14 @@ runs:
         sudo ln -s /lib/x86_64-linux-gnu/libc_nonshared.a /usr/lib64/libc_nonshared.a
         sudo ln -s /usr/lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
         sudo ln -s $HOME/miniconda3/x86_64-conda-linux-gnu/sysroot/usr/lib64/libpthread_nonshared.a /usr/lib64/libpthread_nonshared.a
+    - name: Print NVIDIA GPU info
+      if: inputs.gpu == 'ON' && inputs.rocm != 'ON'
+      shell: bash
+      run: nvidia-smi
+    - name: Print AMD GPU info
+      if: inputs.gpu == 'ON' && inputs.rocm == 'ON'
+      shell: bash
+      run: rocm-smi
     - name: Build all targets
       shell: bash
       run: |

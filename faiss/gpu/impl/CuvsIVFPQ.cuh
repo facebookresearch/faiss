@@ -76,7 +76,8 @@ class CuvsIVFPQ : public IVFPQ {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices) override;
+            Tensor<idx_t, 2, true>& outIndices,
+            const IDSelector* sel = nullptr) override;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <faiss/impl/CodePacker.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/impl/GpuScalarQuantizer.cuh>
 #include <faiss/gpu/impl/IVFFlat.cuh>
 
@@ -63,7 +64,8 @@ class CuvsIVFFlat : public IVFFlat {
             int nprobe,
             int k,
             Tensor<float, 2, true>& outDistances,
-            Tensor<idx_t, 2, true>& outIndices) override;
+            Tensor<idx_t, 2, true>& outIndices,
+            const IDSelector* sel = nullptr) override;
 
     /// Performs search when we are already given the IVF cells to look at
     /// (GpuIndexIVF::search_preassigned implementation)
@@ -136,6 +138,7 @@ struct CuvsIVFFlatCodePackerInterleaved : CodePacker {
             size_t list_size,
             uint32_t dim,
             uint32_t chunk_size);
+    CodePacker* clone() const final;
     void pack_1(const uint8_t* flat_code, size_t offset, uint8_t* block)
             const final;
     void unpack_1(const uint8_t* block, size_t offset, uint8_t* flat_code)

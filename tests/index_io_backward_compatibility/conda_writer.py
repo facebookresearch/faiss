@@ -12,7 +12,7 @@ serialization backward compatibility.
 """
 
 import sys
-from common_io import write_test_all_files
+from cmake_conda_io_utils import write_test_all_files
 
 
 if __name__ == "__main__":

@@ -43,8 +43,8 @@ struct TestLoop {
 template <intptr_t N_ELEMENTS, intptr_t CODE_BITS>
 struct TestLoop<N_ELEMENTS, CODE_BITS, N_ELEMENTS> {
     static void test(
-            const uint8_t* const container,
-            faiss::BitstringReader& br) {}
+            const uint8_t* const /*container*/,
+            faiss::BitstringReader& /*br*/) {}
 };
 
 template <intptr_t N_ELEMENTS, intptr_t CODE_BITS>

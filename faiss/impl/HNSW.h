@@ -16,6 +16,7 @@
 #include <faiss/Index.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/impl/maybe_owned_vector.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/Heap.h>
@@ -64,37 +65,11 @@ struct HNSW {
 
     typedef std::pair<float, storage_idx_t> Node;
 
-    /** Heap structure that allows fast access and updates.
-     */
-    struct MinimaxHeap {
-        int n;
-        int k;
-        int nvalid;
-
-        std::vector<storage_idx_t> ids;
-        std::vector<float> dis;
-        typedef faiss::CMax<float, storage_idx_t> HC;
-
-        explicit MinimaxHeap(int n) : n(n), k(0), nvalid(0), ids(n), dis(n) {}
-
-        void push(storage_idx_t i, float v);
-
-        float max() const;
-
-        int size() const;
-
-        void clear();
-
-        int pop_min(float* vmin_out = nullptr);
-
-        int count_below(float thresh);
-    };
-
     /// to sort pairs of (id, distance) from nearest to farthest or the reverse
     struct NodeDistCloser {
         float d;
         int id;
-        NodeDistCloser(float d, int id) : d(d), id(id) {}
+        NodeDistCloser(float d_in, int id_in) : d(d_in), id(id_in) {}
         bool operator<(const NodeDistCloser& obj1) const {
             return d < obj1.d;
         }
@@ -103,7 +78,7 @@ struct HNSW {
     struct NodeDistFarther {
         float d;
         int id;
-        NodeDistFarther(float d, int id) : d(d), id(id) {}
+        NodeDistFarther(float d_in, int id_in) : d(d_in), id(id_in) {}
         bool operator<(const NodeDistFarther& obj1) const {
             return d > obj1.d;
         }
@@ -141,6 +116,10 @@ struct HNSW {
 
     /// expansion factor at search time
     int efSearch = 16;
+
+    /// when pruning, leave room for more neighbors to avoid O(n^2)
+    /// costs and lock contention on frequently-pruned nodes.
+    float prune_headroom = 0.2f;
 
     /// during search: do we check whether the next best distance is good
     /// enough?
@@ -241,7 +220,7 @@ struct HNSW {
             DistanceComputer& qdis,
             std::priority_queue<NodeDistFarther>& input,
             std::vector<NodeDistFarther>& output,
-            int max_size,
+            size_t max_size,
             bool keep_max_size_level0 = false);
 
     void permute_entries(const idx_t* map);
@@ -275,7 +254,7 @@ int search_from_candidates(
         const HNSW& hnsw,
         DistanceComputer& qdis,
         ResultHandler& res,
-        HNSW::MinimaxHeap& candidates,
+        MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
         int level,
@@ -291,7 +270,7 @@ int search_from_candidates_panorama(
         const IndexHNSW* index,
         DistanceComputer& qdis,
         ResultHandler& res,
-        HNSW::MinimaxHeap& candidates,
+        MinimaxHeap& candidates,
         VisitedTable& vt,
         HNSWStats& stats,
         int level,

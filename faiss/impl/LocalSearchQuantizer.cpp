@@ -22,11 +22,11 @@
 #include <faiss/utils/distances.h>
 #include <faiss/utils/utils.h>
 
-#include <faiss/utils/approx_topk/approx_topk.h>
+#include <faiss/impl/approx_topk/approx_topk.h>
 
 // this is needed for prefetching
 
-#ifdef __AVX2__
+#ifdef COMPILE_SIMD_AVX2
 #include <xmmintrin.h>
 #endif
 
@@ -154,12 +154,15 @@ lsq::LSQTimer lsq_timer;
 using lsq::LSQTimerScope;
 
 LocalSearchQuantizer::LocalSearchQuantizer(
-        size_t d,
-        size_t M,
-        size_t nbits,
-        Search_type_t search_type)
-        : AdditiveQuantizer(d, std::vector<size_t>(M, nbits), search_type) {
-    K = (1 << nbits);
+        size_t d_in,
+        size_t M_in,
+        size_t nbits_in,
+        Search_type_t search_type_in)
+        : AdditiveQuantizer(
+                  d_in,
+                  std::vector<size_t>(M_in, nbits_in),
+                  search_type_in) {
+    K = (1 << nbits_in);
     std::srand(random_seed);
 }
 
@@ -170,7 +173,7 @@ LocalSearchQuantizer::~LocalSearchQuantizer() {
 LocalSearchQuantizer::LocalSearchQuantizer() : LocalSearchQuantizer(0, 0, 0) {}
 
 void LocalSearchQuantizer::train(size_t n, const float* x) {
-    FAISS_THROW_IF_NOT(K == (1 << nbits[0]));
+    FAISS_THROW_IF_NOT(K == static_cast<size_t>(1 << nbits[0]));
     nperts = std::min(nperts, M);
 
     lsq_timer.reset();
@@ -194,7 +197,7 @@ void LocalSearchQuantizer::train(size_t n, const float* x) {
     std::vector<float> stddev(d, 0);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < d; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(d); i++) {
         float mean = 0;
         for (size_t j = 0; j < n; j++) {
             mean += x[j * d + i];
@@ -362,7 +365,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -427,7 +430,7 @@ void LocalSearchQuantizer::update_codebooks(
         }
 
         // add a regularization term to B'B
-        for (int64_t i = 0; i < M * K; i++) {
+        for (size_t i = 0; i < M * K; i++) {
             bb[i * (M * K) + i] += lambd;
         }
 
@@ -540,7 +543,7 @@ void LocalSearchQuantizer::icm_encode_impl(
         std::mt19937& gen,
         size_t n,
         size_t ils_iters,
-        bool verbose) const {
+        bool verbose_in) const {
     std::vector<float> unaries(n * M * K); // [M, n, K]
     compute_unary_terms(x, unaries.data(), n);
 
@@ -564,7 +567,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         // select the best code for every vector xi
 #pragma omp parallel for reduction(+ : n_betters, mean_obj)
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             if (icm_objs[i] < best_objs[i]) {
                 best_objs[i] = icm_objs[i];
                 memcpy(best_codes.data() + i * M,
@@ -578,7 +581,7 @@ void LocalSearchQuantizer::icm_encode_impl(
 
         memcpy(codes, best_codes.data(), sizeof(int32_t) * n * M);
 
-        if (verbose) {
+        if (verbose_in) {
             printf("\tils_iter %zd: obj = %lf, n_betters/n = %zd/%zd\n",
                    iter1,
                    mean_obj,
@@ -597,73 +600,75 @@ void LocalSearchQuantizer::icm_encode_step(
     FAISS_THROW_IF_NOT(M != 0 && K != 0);
     FAISS_THROW_IF_NOT(binaries != nullptr);
 
+    // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
+    with_simd_level_256bit([&]<SIMDLevel SL>() {
 #pragma omp parallel for schedule(dynamic)
-    for (int64_t i = 0; i < n; i++) {
-        std::vector<float> objs(K);
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+            std::vector<float> objs(K);
 
-        for (size_t iter = 0; iter < n_iters; iter++) {
-            // condition on the m-th subcode
-            for (size_t m = 0; m < M; m++) {
-                // copy
-                auto u = unaries + m * n * K + i * K;
-                for (size_t code = 0; code < K; code++) {
-                    objs[code] = u[code];
-                }
-
-                // compute objective function by adding unary
-                // and binary terms together
-                for (size_t other_m = 0; other_m < M; other_m++) {
-                    if (other_m == m) {
-                        continue;
+            for (size_t iter = 0; iter < n_iters; iter++) {
+                // condition on the m-th subcode
+                for (size_t m = 0; m < M; m++) {
+                    // copy
+                    auto u = unaries + m * n * K + i * K;
+                    for (size_t code = 0; code < K; code++) {
+                        objs[code] = u[code];
                     }
 
-#ifdef __AVX2__
-                    // TODO: add platform-independent compiler-independent
-                    // prefetch utilities.
-                    if (other_m + 1 < M) {
-                        // do a single prefetch
-                        int32_t code2 = codes[i * M + other_m + 1];
-                        // for (int32_t code = 0; code < K; code += 64) {
-                        int32_t code = 0;
-                        {
-                            size_t binary_idx = (other_m + 1) * M * K * K +
-                                    m * K * K + code2 * K + code;
-                            _mm_prefetch(
-                                    (const char*)(binaries + binary_idx),
-                                    _MM_HINT_T0);
+                    // compute objective function by adding unary
+                    // and binary terms together
+                    for (size_t other_m = 0; other_m < M; other_m++) {
+                        if (other_m == m) {
+                            continue;
                         }
-                    }
+
+#ifdef COMPILE_SIMD_AVX2
+                        // TODO: add platform-independent compiler-independent
+                        // prefetch utilities.
+                        if (other_m + 1 < M) {
+                            // do a single prefetch
+                            int32_t code2 = codes[i * M + other_m + 1];
+                            // for (int32_t code = 0; code < K; code += 64) {
+                            int32_t code = 0;
+                            {
+                                size_t binary_idx = (other_m + 1) * M * K * K +
+                                        m * K * K + code2 * K + code;
+                                _mm_prefetch(
+                                        (const char*)(binaries + binary_idx),
+                                        _MM_HINT_T0);
+                            }
+                        }
 #endif
 
-                    for (int32_t code = 0; code < K; code++) {
-                        int32_t code2 = codes[i * M + other_m];
-                        size_t binary_idx = other_m * M * K * K + m * K * K +
-                                code2 * K + code;
-                        // binaries[m, other_m, code, code2].
-                        // It is symmetric over (m <-> other_m)
-                        //   and (code <-> code2).
-                        // So, replace the op with
-                        //   binaries[other_m, m, code2, code].
-                        objs[code] += binaries[binary_idx];
+                        for (size_t code = 0; code < K; code++) {
+                            int32_t code2 = codes[i * M + other_m];
+                            size_t binary_idx = other_m * M * K * K +
+                                    m * K * K + code2 * K + code;
+                            // binaries[m, other_m, code, code2].
+                            // It is symmetric over (m <-> other_m)
+                            //   and (code <-> code2).
+                            // So, replace the op with
+                            //   binaries[other_m, m, code2, code].
+                            objs[code] += binaries[binary_idx];
+                        }
                     }
-                }
 
-                // find the optimal value of the m-th subcode
-                float best_obj = HUGE_VALF;
-                int32_t best_code = 0;
+                    // find the optimal value of the m-th subcode
+                    float best_obj = HUGE_VALF;
+                    int32_t best_code = 0;
 
-                // find one using SIMD. The following operation is similar
-                // to the search of the smallest element in objs
-                using C = CMax<float, int>;
-                HeapWithBuckets<C, 16, 1>::addn(
-                        K, objs.data(), 1, &best_obj, &best_code);
+                    // find one using SIMD. The following operation is similar
+                    // to the search of the smallest element in objs
+                    HeapWithBucketsCMaxFloat<16, 1, SL>::addn(
+                            K, objs.data(), 1, &best_obj, &best_code);
 
-                // done
-                codes[i * M + m] = best_code;
+                    // done
+                    codes[i * M + m] = best_code;
 
-            } // loop M
+                } // loop M
+            }
         }
-    }
+    });
 }
 void LocalSearchQuantizer::perturb_codes(
         int32_t* codes,
@@ -687,7 +692,7 @@ void LocalSearchQuantizer::compute_binary_terms(float* binaries) const {
 
     with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
-        for (int64_t m12 = 0; m12 < M * M; m12++) {
+        for (int64_t m12 = 0; m12 < static_cast<int64_t>(M * M); m12++) {
             size_t m1 = m12 / M;
             size_t m2 = m12 % M;
 
@@ -744,7 +749,7 @@ void LocalSearchQuantizer::compute_unary_terms(
     fvec_norms_L2sqr(norms.data(), codebooks.data(), d, M * K);
 
 #pragma omp parallel for
-    for (int64_t i = 0; i < n; i++) {
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
         for (size_t m = 0; m < M; m++) {
             float* u = unaries + m * n * K + i * K;
             fvec_add(K, u, norms.data() + m * K, u);
@@ -766,7 +771,7 @@ float LocalSearchQuantizer::evaluate(
     with_simd_level([&]<SIMDLevel SL>() {
         float local_obj = 0.0f;
 #pragma omp parallel for reduction(+ : local_obj)
-        for (int64_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             const auto code = codes + i * M;
             const auto decoded_i = decoded_x.data() + i * d;
             for (size_t m = 0; m < M; m++) {
@@ -791,8 +796,8 @@ float LocalSearchQuantizer::evaluate(
 
 namespace lsq {
 
-IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq)
-        : verbose(false), lsq(lsq) {}
+IcmEncoder::IcmEncoder(const LocalSearchQuantizer* lsq_in)
+        : verbose(false), lsq(lsq_in) {}
 
 void IcmEncoder::set_binary_term() {
     auto M = lsq->M;
@@ -830,8 +835,8 @@ void LSQTimer::reset() {
     t.clear();
 }
 
-LSQTimerScope::LSQTimerScope(LSQTimer* timer, std::string name)
-        : timer(timer), name(std::move(name)), finished(false) {
+LSQTimerScope::LSQTimerScope(LSQTimer* timer_in, std::string name_in)
+        : timer(timer_in), name(std::move(name_in)), finished(false) {
     t0 = getmillisecs();
 }
 

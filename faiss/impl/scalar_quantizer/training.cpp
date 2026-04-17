@@ -37,7 +37,7 @@ void train_Uniform(
     if (rs == ScalarQuantizer::RS_minmax) {
         vmin = HUGE_VAL;
         vmax = -HUGE_VAL;
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             if (x[i] < vmin) {
                 vmin = x[i];
             }
@@ -50,7 +50,7 @@ void train_Uniform(
         vmax += vexp;
     } else if (rs == ScalarQuantizer::RS_meanstd) {
         double sum = 0, sum2 = 0;
-        for (size_t i = 0; i < n; i++) {
+        for (idx_t i = 0; i < n; i++) {
             sum += x[i];
             sum2 += x[i] * x[i];
         }
@@ -81,7 +81,7 @@ void train_Uniform(
         float sx = 0;
         {
             vmin = HUGE_VAL, vmax = -HUGE_VAL;
-            for (size_t i = 0; i < n; i++) {
+            for (idx_t i = 0; i < n; i++) {
                 if (x[i] < vmin) {
                     vmin = x[i];
                 }
@@ -161,9 +161,9 @@ void train_NonUniform(
     if (rs == ScalarQuantizer::RS_minmax) {
         memcpy(vmin, x, sizeof(*x) * d);
         memcpy(vmax, x, sizeof(*x) * d);
-        for (size_t i = 1; i < n; i++) {
+        for (idx_t i = 1; i < n; i++) {
             const float* xi = x + i * d;
-            for (size_t j = 0; j < d; j++) {
+            for (int j = 0; j < d; j++) {
                 if (xi[j] < vmin[j]) {
                     vmin[j] = xi[j];
                 }
@@ -173,7 +173,7 @@ void train_NonUniform(
             }
         }
         float* vdiff = vmax;
-        for (size_t j = 0; j < d; j++) {
+        for (int j = 0; j < d; j++) {
             float vexp = (vmax[j] - vmin[j]) * rs_arg;
             vmin[j] -= vexp;
             vmax[j] += vexp;
@@ -182,9 +182,9 @@ void train_NonUniform(
     } else {
         // transpose
         std::vector<float> xt(n * d);
-        for (size_t i = 1; i < n; i++) {
+        for (idx_t i = 1; i < n; i++) {
             const float* xi = x + i * d;
-            for (size_t j = 0; j < d; j++) {
+            for (int j = 0; j < d; j++) {
                 xt[j * n + i] = xi[j];
             }
         }

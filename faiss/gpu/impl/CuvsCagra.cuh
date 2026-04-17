@@ -30,6 +30,7 @@
 #include <optional>
 
 #include <faiss/MetricType.h>
+#include <faiss/impl/IDSelector.h>
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
@@ -39,9 +40,14 @@ namespace faiss {
 /// Algorithm used to build underlying CAGRA graph
 enum class cagra_build_algo { IVF_PQ, NN_DESCENT };
 
-enum class cagra_search_algo { SINGLE_CTA, MULTI_CTA };
+enum class cagra_search_algo {
+    SINGLE_CTA = 0,
+    MULTI_CTA = 1,
+    MULTI_KERNEL = 2,
+    AUTO = 100
+};
 
-enum class cagra_hash_mode { HASH, SMALL, AUTO };
+enum class cagra_hash_mode { HASH = 0, SMALL = 1, AUTO = 100 };
 
 namespace gpu {
 
@@ -98,7 +104,8 @@ class CuvsCagra {
             idx_t hashmap_min_bitlen,
             float hashmap_max_fill_rate,
             idx_t num_random_samplings,
-            idx_t rand_xor_mask);
+            idx_t rand_xor_mask,
+            const IDSelector* sel = nullptr);
 
     void reset();
 

@@ -226,7 +226,7 @@ The run produces two warnings:
 
 - the add() function complains that there is an inefficient memory allocation, but this is a concern only when it happens often, and we are not benchmarking the add time anyways.
 
-To index small datasets, it is more efficient to use a `GpuIVFFlat`, which just stores the full vectors in the inverted lists. We did not mention this in the the paper because it is not as scalable. To experiment with this setting, change the `index_factory` string from "IVF4096,PQ64" to "IVF16384,Flat". This gives:
+To index small datasets, it is more efficient to use a `GpuIVFFlat`, which just stores the full vectors in the inverted lists. We did not mention this in the paper because it is not as scalable. To experiment with this setting, change the `index_factory` string from "IVF4096,PQ64" to "IVF16384,Flat". This gives:
 
 ```
 nprobe=   1 0.025 s recalls= 0.4084 0.4105 0.4105
@@ -348,6 +348,7 @@ Certain tests / benchmarks might be outdated.
 * bench_hamming_computer.cpp - specialized implementations for Hamming distance computations
 * bench_heap_replace.cpp - benchmarks different implementations of certain calls for a Heap data structure
 * bench_hnsw.py - benchmarks HNSW in combination with other ones for SIFT1M dataset
+* bench_hnsw_prune_headroom.py - benchmarks HNSW prune_headroom recall and build time impact
 * bench_index_flat.py - benchmarks IndexFlatL2 on a synthetic dataset
 * bench_index_pq.py - benchmarks PQ on SIFT1M dataset
 * bench_ivf_fastscan_single_query.py - benchmarks a single query for different nprobe levels for IVF{nlist},PQ{M}x4fs on BIGANN dataset

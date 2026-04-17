@@ -14,6 +14,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <faiss/impl/FaissAssert.h>
+
 namespace faiss {
 
 /// The metric space for vector comparison for Faiss indices and algorithms.
@@ -21,13 +23,16 @@ namespace faiss {
 /// Most algorithms support both inner product and L2, with the flat
 /// (brute-force) indices supporting additional metric types for vector
 /// comparison.
+///
+/// NOTE: when adding or removing values, update metric_type_from_int()
+///       and metric_type_count() below.
 enum MetricType {
-    METRIC_INNER_PRODUCT = 0, ///< maximum inner product search
-    METRIC_L2 = 1,            ///< squared L2 search
-    METRIC_L1,                ///< L1 (aka cityblock)
-    METRIC_Linf,              ///< infinity distance
-    METRIC_Lp,                ///< L_p distance, p is given by a faiss::Index
-                              /// metric_arg
+    METRIC_INNER_PRODUCT, ///< maximum inner product search
+    METRIC_L2,            ///< squared L2 search
+    METRIC_L1,            ///< L1 (aka cityblock)
+    METRIC_Linf,          ///< infinity distance
+    METRIC_Lp,            ///< L_p distance, p is given by a faiss::Index
+                          /// metric_arg
 
     /// some additional metrics defined in scipy.spatial.distance
     METRIC_Canberra = 20,
@@ -51,6 +56,23 @@ using idx_t = int64_t;
 constexpr bool is_similarity_metric(MetricType metric_type) {
     return ((metric_type == METRIC_INNER_PRODUCT) ||
             (metric_type == METRIC_Jaccard));
+}
+
+/// Convert an integer to MetricType with range validation.
+/// Throws FaissException if the value is not a valid MetricType.
+inline MetricType metric_type_from_int(int x) {
+    FAISS_THROW_IF_NOT_FMT(
+            (x >= METRIC_INNER_PRODUCT && x <= METRIC_Lp) ||
+                    (x >= METRIC_Canberra && x <= METRIC_GOWER),
+            "invalid metric type %d",
+            x);
+    return static_cast<MetricType>(x);
+}
+
+/// Count of entries in the MetricType enum.
+constexpr size_t metric_type_count() {
+    return (METRIC_Lp - METRIC_INNER_PRODUCT) + 1 +
+            (METRIC_GOWER - METRIC_Canberra) + 1;
 }
 
 } // namespace faiss

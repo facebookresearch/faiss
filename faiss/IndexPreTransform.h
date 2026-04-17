@@ -26,7 +26,7 @@ struct IndexPreTransform : Index {
     std::vector<VectorTransform*> chain; ///! chain of transforms
     Index* index;                        ///! the sub-index
 
-    bool own_fields; ///! whether pointers are deleted in destructor
+    bool own_fields = false; ///! whether pointers are deleted in destructor
 
     explicit IndexPreTransform(Index* index);
 
