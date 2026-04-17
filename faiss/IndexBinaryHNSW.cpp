@@ -99,20 +99,22 @@ void hnsw_add_vertices(
     { // perform add
         RandomGenerator rng2(789);
 
-        int i1 = n;
+        size_t i1 = n;
 
         for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
              pt_level--) {
-            int i0 = i1 - hist[pt_level];
+            size_t i0 = i1 - hist[pt_level];
 
             if (verbose) {
-                printf("Adding %d elements at level %d\n", i1 - i0, pt_level);
+                printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
             }
 
             // random permutation to get rid of dataset order bias
-            for (int j = i0; j < i1; j++) {
-                std::swap(order[j], order[j + rng2.rand_int(i1 - j)]);
+            for (size_t j = i0; j < i1; j++) {
+                std::swap(
+                        order[j],
+                        order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
             }
 
 #pragma omp parallel
@@ -121,11 +123,11 @@ void hnsw_add_vertices(
 
                 std::unique_ptr<DistanceComputer> dis(
                         index_hnsw.get_distance_computer());
-                int prev_display =
-                        verbose && omp_get_thread_num() == 0 ? 0 : -1;
+                bool do_display = verbose && omp_get_thread_num() == 0;
+                size_t prev_display = 0;
 
 #pragma omp for schedule(dynamic)
-                for (int i = i0; i < i1; i++) {
+                for (int64_t i = i0; i < i1; i++) {
                     HNSW::storage_idx_t pt_id = order[i];
                     dis->set_query(
                             (float*)(x + (pt_id - n0) * index_hnsw.code_size));
@@ -138,9 +140,9 @@ void hnsw_add_vertices(
                             vt,
                             index_hnsw.keep_max_size_level0 && (pt_level == 0));
 
-                    if (prev_display >= 0 && i - i0 > prev_display + 10000) {
+                    if (do_display && i - i0 > prev_display + 10000) {
                         prev_display = i - i0;
-                        printf("  %d / %d\r", i - i0, i1 - i0);
+                        printf("  %zu / %zu\r", i - i0, i1 - i0);
                         fflush(stdout);
                     }
                 }
@@ -176,7 +178,7 @@ IndexBinaryHNSW::IndexBinaryHNSW(int d_, int M)
         : IndexBinary(d_),
           hnsw(M),
           own_fields(true),
-          storage(std::make_unique<IndexBinaryFlat>(d_).release()) {
+          storage(new IndexBinaryFlat(d_)) {
     is_trained = true;
 }
 
@@ -257,7 +259,7 @@ void IndexBinaryHNSW::search(
 
 void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
     FAISS_THROW_IF_NOT(is_trained);
-    int n0 = ntotal;
+    size_t n0 = ntotal;
     storage->add(n, x);
     ntotal = storage->ntotal;
 
