@@ -22,6 +22,7 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
+  impl/PolysemousTraining_avx512.cpp
   impl/pq_code_distance/pq_code_distance-avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
@@ -248,6 +249,7 @@ set(FAISS_HEADERS
   impl/Panorama.h
   impl/PanoramaStats.h
   impl/PolysemousTraining.h
+  impl/PolysemousTraining_avx512.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
@@ -462,7 +464,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       # Per-file SIMD flags
       set_source_files_properties(${FAISS_SIMD_AVX2_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma;-mf16c;-mpopcnt"
+        PROPERTIES COMPILE_OPTIONS "-mavx;-mavx2;-mfma;-mf16c;-mpopcnt"
       )
       set_source_files_properties(${FAISS_SIMD_AVX512_SRC}
         TARGET_DIRECTORY faiss

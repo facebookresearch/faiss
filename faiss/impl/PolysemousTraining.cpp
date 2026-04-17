@@ -18,6 +18,7 @@
 #include <cstring>
 #include <memory>
 
+#include <faiss/impl/PolysemousTraining_avx512.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
@@ -168,16 +169,16 @@ static inline int hamming_dis(uint64_t a, uint64_t b) {
     return __builtin_popcountl(a ^ b);
 }
 
+static inline double sqr(double x) {
+    return x * x;
+}
+
 namespace {
 
 /// optimize permutation to reproduce a distance table with Hamming distances
 struct ReproduceWithHammingObjective : PermutationObjective {
     int nbits;
     double dis_weight_factor;
-
-    static double sqr(double x) {
-        return x * x;
-    }
 
     // weighting of distances: it is more important to reproduce small
     // distances well
@@ -190,6 +191,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
 
     // cost = quadratic difference between actual distance and Hamming distance
     double compute_cost(const int* perm) const override {
+#ifdef COMPILE_SIMD_AVX512
+        if (SIMDConfig::level == SIMDLevel::AVX512 ||
+            SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+            return polysemous_avx512::hamming_compute_cost_avx512(
+                    n, perm, target_dis.data(), weights.data());
+        }
+#endif
         double cost = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -205,6 +213,13 @@ struct ReproduceWithHammingObjective : PermutationObjective {
     // what would the cost update be if iw and jw were swapped?
     // computed in O(n) instead of O(n^2) for the full re-computation
     double cost_update(const int* perm, int iw, int jw) const override {
+#ifdef COMPILE_SIMD_AVX512
+        if (SIMDConfig::level == SIMDLevel::AVX512 ||
+            SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+            return polysemous_avx512::hamming_cost_update_avx512(
+                    n, perm, iw, jw, target_dis.data(), weights.data());
+        }
+#endif
         double delta_cost = 0;
 
         for (int i = 0; i < n; i++) {
@@ -308,6 +323,12 @@ double ReproduceDistancesObjective::get_source_dis(int i, int j) const {
 
 // cost = quadratic difference between actual distance and Hamming distance
 double ReproduceDistancesObjective::compute_cost(const int* perm) const {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512 ||
+        SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+        return polysemous_avx512::distances_compute_cost_avx512(*this, perm);
+    }
+#endif
     double cost = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -324,6 +345,13 @@ double ReproduceDistancesObjective::compute_cost(const int* perm) const {
 // computed in O(n) instead of O(n^2) for the full re-computation
 double ReproduceDistancesObjective::cost_update(const int* perm, int iw, int jw)
         const {
+#ifdef COMPILE_SIMD_AVX512
+    if (SIMDConfig::level == SIMDLevel::AVX512 ||
+        SIMDConfig::level == SIMDLevel::AVX512_SPR) {
+        return polysemous_avx512::distances_cost_update_avx512(
+                *this, perm, iw, jw);
+    }
+#endif
     double delta_cost = 0;
     for (int i = 0; i < n; i++) {
         if (i == iw) {
