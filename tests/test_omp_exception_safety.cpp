@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissException.h>
@@ -299,4 +300,36 @@ TEST(OMPExceptionSafety, search_top_level_omp_slicing) {
             FaissException);
 
     f.restore(*throwing);
+}
+
+// Minimal IndexFlatCodes subclass whose sa_decode always throws, to
+// verify that exceptions thrown inside the OpenMP parallel region in
+// IndexFlatCodes::search are propagated to the caller.
+struct ThrowingIndex : IndexFlatCodes {
+    explicit ThrowingIndex(int d)
+            : IndexFlatCodes(sizeof(float) * d, d, METRIC_L2) {
+        ntotal = 1;
+        is_trained = true;
+        codes.resize(code_size, 0);
+    }
+
+    void sa_decode(idx_t /*n*/, const uint8_t* /*codes*/, float* /*x*/)
+            const override {
+        throw std::runtime_error("corrupt index");
+    }
+};
+
+// ---------------------------------------------------------------------------
+// IndexFlatCodes::search: exception in OMP worker propagates to caller
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, flatcodes_search) {
+    ThrowingIndex index(4);
+
+    std::vector<float> xq(4, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_THROW(
+            index.search(1, xq.data(), 1, distances.data(), labels.data()),
+            std::runtime_error);
 }
