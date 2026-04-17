@@ -10,12 +10,13 @@
 /** In this file are the implementations of extra metrics beyond L2
  *  and inner product */
 
-#include <stdint.h>
+#include <cstdint>
 
-#include <faiss/Index.h>
+#include <faiss/MetricType.h>
+#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
-
-#include <faiss/utils/Heap.h>
+#include <faiss/utils/ordered_key_value.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -100,6 +101,31 @@ inline auto with_metric_type(MetricType metric, LambdaType&& action) {
 }
 #endif // SWIG
 
-} // namespace faiss
+#ifndef SWIG
 
-#include <faiss/utils/extra_distances-inl.h>
+/***************************************************************************
+ * VectorDistance base class - contains common data members and type defs
+ * VectorDistance struct template - specializations for each metric type
+ **************************************************************************/
+
+template <MetricType mt, SIMDLevel level>
+struct VectorDistance {
+    size_t d;
+    float metric_arg;
+
+    VectorDistance(size_t d, float metric_arg) : d(d), metric_arg(metric_arg) {}
+
+    static constexpr MetricType metric = mt;
+    static constexpr bool is_similarity = is_similarity_metric(mt);
+
+    using C = typename std::conditional<
+            is_similarity_metric(mt),
+            CMin<float, int64_t>,
+            CMax<float, int64_t>>::type;
+
+    float operator()(const float* x, const float* y) const;
+};
+
+#endif // SWIG
+
+} // namespace faiss

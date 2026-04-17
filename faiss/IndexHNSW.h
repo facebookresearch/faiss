@@ -28,7 +28,7 @@ struct IndexHNSW;
  * link structure built on top */
 
 struct IndexHNSW : Index {
-    typedef HNSW::storage_idx_t storage_idx_t;
+    using storage_idx_t = HNSW::storage_idx_t;
 
     // the link structure
     HNSW hnsw;
@@ -259,9 +259,16 @@ struct IndexHNSWCagra : IndexHNSW {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
     faiss::NumericType get_numeric_type() const;
     void set_numeric_type(faiss::NumericType numeric_type);
-    NumericType numeric_type_;
+    NumericType numeric_type_ = Float32;
 };
 
 } // namespace faiss

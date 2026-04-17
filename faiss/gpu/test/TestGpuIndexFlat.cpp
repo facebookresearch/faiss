@@ -11,6 +11,7 @@
 #include <faiss/gpu/impl/IndexUtils.h>
 #include <faiss/gpu/test/TestUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
+#include <faiss/impl/IDSelector.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <unordered_map>
@@ -758,6 +759,51 @@ TEST(TestGpuIndexFlat, SearchAndReconstruct) {
 #if defined USE_NVIDIA_CUVS
 TEST(TestCuvsGpuIndexFlat, SearchAndReconstruct) {
     testSearchAndReconstruct(true);
+}
+#endif
+
+void testIDSelectorFlat(faiss::MetricType metricType) {
+    int numAdd = faiss::gpu::randVal(2000, 5000);
+    int dim = faiss::gpu::randVal(64, 200);
+    int numQuery = faiss::gpu::randVal(32, 100);
+    int k = faiss::gpu::randVal(10, 30);
+    int device = faiss::gpu::randVal(0, faiss::gpu::getNumDevices() - 1);
+
+    faiss::gpu::StandardGpuResources res;
+    res.noTempMemory();
+
+    auto queryVecs = faiss::gpu::randVecs(numQuery, dim);
+    faiss::gpu::GpuIndexFlatConfig config;
+    config.device = device;
+    config.use_cuvs = true;
+    for (bool useFloat16 : {false, true}) {
+        config.useFloat16 = useFloat16;
+        faiss::gpu::GpuIndexFlat gpuIndex(&res, dim, metricType, config);
+        std::vector<float> addVecs = faiss::gpu::randVecs(numAdd, dim);
+        gpuIndex.add(numAdd, addVecs.data());
+
+        faiss::gpu::TestIDSelectorStruct selector_struct(numAdd);
+        faiss::SearchParameters search_params;
+        for (auto& [selectorName, selector] : selector_struct.selector_map) {
+            search_params.sel = selector.get();
+            faiss::gpu::testIDSelectorSearch(
+                    &gpuIndex,
+                    &search_params,
+                    queryVecs,
+                    numQuery,
+                    k,
+                    selectorName);
+        }
+    }
+}
+
+#if defined USE_NVIDIA_CUVS
+TEST(TestCuvsGpuIndexFlat, IDSelector_L2) {
+    testIDSelectorFlat(faiss::METRIC_L2);
+}
+
+TEST(TestCuvsGpuIndexFlat, IDSelector_IP) {
+    testIDSelectorFlat(faiss::METRIC_INNER_PRODUCT);
 }
 #endif
 

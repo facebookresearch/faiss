@@ -11,6 +11,8 @@
 #include <cmath>
 #include <cstring>
 
+#include <faiss/impl/FaissAssert.h>
+
 namespace faiss {
 
 namespace {
@@ -52,12 +54,18 @@ inline void compute_cum_sums_impl(
  * Panorama structure implementation
  **************************************************************/
 
-Panorama::Panorama(size_t code_size, size_t n_levels, size_t batch_size)
-        : code_size(code_size), n_levels(n_levels), batch_size(batch_size) {
+Panorama::Panorama(
+        size_t code_size_in,
+        size_t n_levels_in,
+        size_t batch_size_in)
+        : code_size(code_size_in),
+          n_levels(n_levels_in),
+          batch_size(batch_size_in) {
     set_derived_values();
 }
 
 void Panorama::set_derived_values() {
+    FAISS_THROW_IF_NOT_MSG(n_levels > 0, "Panorama: n_levels must be > 0");
     this->d = code_size / sizeof(float);
     this->level_width_floats = ((d + n_levels - 1) / n_levels);
     this->level_width = this->level_width_floats * sizeof(float);

@@ -10,11 +10,7 @@ project(pyfaiss
   HOMEPAGE_URL "https://github.com/facebookresearch/faiss"
   LANGUAGES CXX)
 
-if(FAISS_ENABLE_CUVS)
-  set(CMAKE_CXX_STANDARD 17)
-else()
-  set(CMAKE_CXX_STANDARD 20)
-endif()
+set(CMAKE_CXX_STANDARD 20)
 
 find_package(SWIG REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
@@ -230,7 +226,7 @@ if(FAISS_ENABLE_GPU)
     target_link_libraries(faiss_example_external_module PRIVATE hip::host)
   else()
     find_package(CUDAToolkit REQUIRED)
-    if(FAISS_ENABLE_CUVS)
+    if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
       find_package(cuvs)
     endif()
     target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)

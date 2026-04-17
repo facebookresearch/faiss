@@ -15,6 +15,7 @@
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -37,8 +38,11 @@ int sgemm_(
         FINTEGER* ldc);
 }
 
-#define AUTOVEC_LEVEL SIMDLevel::AVX512
+#define THE_SIMD_LEVEL SIMDLevel::AVX512
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
+
 #include <faiss/utils/simd_impl/distances_sse-inl.h>
 #include <faiss/utils/transpose/transpose-avx512-inl.h>
 
@@ -47,10 +51,10 @@ namespace faiss {
 template <>
 void fvec_madd<SIMDLevel::AVX512>(
         const size_t n,
-        const float* __restrict a,
+        const float* a,
         const float bf,
-        const float* __restrict b,
-        float* __restrict c) {
+        const float* b,
+        float* c) {
     const size_t n16 = n / 16;
     const size_t n_for_masking = n % 16;
 
@@ -1117,11 +1121,8 @@ int fvec_madd_and_argmin<SIMDLevel::AVX512>(
     return fvec_madd_and_argmin_sse(n, a, bf, b, c);
 }
 
-} // namespace faiss
-
-namespace faiss {
-
-void exhaustive_L2sqr_blas_cmax_avx512(
+template <>
+void exhaustive_L2sqr_blas_cmax<SIMDLevel::AVX512>(
         const float* x,
         const float* y,
         size_t d,

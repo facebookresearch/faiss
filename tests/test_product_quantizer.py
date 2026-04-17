@@ -10,8 +10,10 @@ import numpy as np
 import faiss
 import unittest
 
+from common_faiss_tests import for_all_simd_levels
 
 
+@for_all_simd_levels
 class TestProductQuantizer(unittest.TestCase):
 
     def test_pq(self):
@@ -73,6 +75,7 @@ class TestProductQuantizer(unittest.TestCase):
             self.do_test_codec(i + 1)
 
 
+@for_all_simd_levels
 class TestPQTransposedCentroids(unittest.TestCase):
 
     def do_test(self, d, dsub):
@@ -111,6 +114,7 @@ class TestPQTransposedCentroids(unittest.TestCase):
         self.do_test(36, 4)
 
 
+@for_all_simd_levels
 class TestPQTables(unittest.TestCase):
 
     def do_test(self, d, dsub, nbit=8, metric=None):

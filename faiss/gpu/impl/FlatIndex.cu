@@ -116,7 +116,8 @@ void FlatIndex::query(
         float metricArg,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
-        bool exactDistance) {
+        bool exactDistance,
+        const IDSelector* sel) {
     auto stream = resources_->getDefaultStreamCurrentDevice();
 
     if (useFloat16_) {
@@ -130,7 +131,8 @@ void FlatIndex::query(
               metricArg,
               outDistances,
               outIndices,
-              exactDistance);
+              exactDistance,
+              sel);
     } else {
         bfKnnOnDevice(
                 resources_,
@@ -157,7 +159,8 @@ void FlatIndex::query(
         float metricArg,
         Tensor<float, 2, true>& outDistances,
         Tensor<idx_t, 2, true>& outIndices,
-        bool exactDistance) {
+        bool exactDistance,
+        const IDSelector* sel) {
     FAISS_ASSERT(useFloat16_);
 
     bfKnnOnDevice(

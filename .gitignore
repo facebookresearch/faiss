@@ -21,3 +21,13 @@ faiss/python/swigfaiss_avx2.swig
 faiss/python/swigfaiss_avx512.swig
 faiss/python/swigfaiss_avx512_spr.swig
 faiss/python/swigfaiss_sve.swig
+
+# Local intermediate build artifacts (CUDA 13.2 scripts)
+/_build/
+/_build_python_*/
+/_libfaiss_stage/
+/build_output/
+
+# Python package build outputs
+/dist/
+/*.egg-info/

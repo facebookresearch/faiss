@@ -22,7 +22,7 @@ namespace {
 
 // IndexBinary needs to update the code_size when d is set...
 
-void sync_d(Index* index) {}
+void sync_d(Index* /*index*/) {}
 
 void sync_d(IndexBinary* index) {
     FAISS_THROW_IF_NOT(index->d % 8 == 0);
@@ -46,38 +46,38 @@ void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
-        idx_t d,
+        idx_t d_,
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(static_cast<int>(d_), threaded),
+          successive_ids(successive_ids_) {
     sync_d(this);
 }
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
-        int d,
+        int d_,
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(d, threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(d_, threaded), successive_ids(successive_ids_) {
     sync_d(this);
 }
 
 template <typename IndexT>
 IndexShardsTemplate<IndexT>::IndexShardsTemplate(
         bool threaded,
-        bool successive_ids)
-        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids) {
+        bool successive_ids_)
+        : ThreadedIndex<IndexT>(threaded), successive_ids(successive_ids_) {
     sync_d(this);
 }
 
 template <typename IndexT>
-void IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* index /* unused */) {
+void IndexShardsTemplate<IndexT>::onAfterAddIndex(IndexT* /*index*/) {
     syncWithSubIndexes();
 }
 
 template <typename IndexT>
-void IndexShardsTemplate<IndexT>::onAfterRemoveIndex(
-        IndexT* index /* unused */) {
+void IndexShardsTemplate<IndexT>::onAfterRemoveIndex(IndexT* /*index*/) {
     syncWithSubIndexes();
 }
 

@@ -28,6 +28,7 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/utils/StaticUtils.h>
+#include <cstdio>
 #include <faiss/gpu/impl/BinaryCuvsCagra.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 
@@ -118,8 +119,6 @@ void GpuIndexBinaryCagra::search(
     if (n == 0) {
         return;
     }
-
-    FAISS_THROW_IF_NOT_MSG(!params, "params not implemented");
 
     // validateKSelect(k);
 
@@ -260,7 +259,8 @@ void GpuIndexBinaryCagra::searchImpl_(
             params->hashmap_min_bitlen,
             params->hashmap_max_fill_rate,
             params->num_random_samplings,
-            params->seed);
+            params->seed,
+            params->sel);
 
     if (not search_params) {
         delete params;
@@ -281,6 +281,10 @@ void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
     IndexBinaryFlat* flat_storage =
             dynamic_cast<IndexBinaryFlat*>(index->storage);
     FAISS_ASSERT(flat_storage);
+    fprintf(stderr,
+            "WARNING: GpuIndexBinaryCagra::copyFrom uses non-owning CPU "
+            "storage. Keep the source IndexBinaryHNSWCagra alive for the "
+            "lifetime of the GpuIndexBinaryCagra.\n");
 
     auto hnsw = index->hnsw;
     // copy level 0 to a dense knn graph matrix

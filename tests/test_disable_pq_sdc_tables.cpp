@@ -31,7 +31,7 @@ TEST(IO, TestReadHNSWPQ_whenSDCDisabledFlagPassed_thenDisableSDCTable) {
     std::default_random_engine rng(123);
     std::uniform_real_distribution<float> u(0, 100);
     std::vector<float> vectors(n * d);
-    for (size_t i = 0; i < n * d; i++) {
+    for (int i = 0; i < n * d; i++) {
         vectors[i] = u(rng);
     }
 

@@ -132,15 +132,17 @@ struct IDSelectorTranslated : IDSelector {
     const IDSelector* sel;
 
     IDSelectorTranslated(
-            const std::vector<int64_t>& id_map,
-            const IDSelector* sel)
-            : id_map(id_map), sel(sel) {}
+            const std::vector<int64_t>& id_map_in,
+            const IDSelector* sel_in)
+            : id_map(id_map_in), sel(sel_in) {}
 
-    IDSelectorTranslated(IndexBinaryIDMap& index_idmap, const IDSelector* sel)
-            : id_map(index_idmap.id_map), sel(sel) {}
+    IDSelectorTranslated(
+            IndexBinaryIDMap& index_idmap,
+            const IDSelector* sel_in)
+            : id_map(index_idmap.id_map), sel(sel_in) {}
 
-    IDSelectorTranslated(IndexIDMap& index_idmap, const IDSelector* sel)
-            : id_map(index_idmap.id_map), sel(sel) {}
+    IDSelectorTranslated(IndexIDMap& index_idmap, const IDSelector* sel_in)
+            : id_map(index_idmap.id_map), sel(sel_in) {}
 
     bool is_member(idx_t id) const override {
         return sel->is_member(id_map[id]);

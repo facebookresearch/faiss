@@ -9,6 +9,8 @@ import numpy as np
 import faiss
 from faiss.contrib import datasets
 
+from common_faiss_tests import for_all_simd_levels
+
 
 def random_rotation(d, seed=123):
     rs = np.random.RandomState(seed)
@@ -177,6 +179,7 @@ class ReferenceIVFRabitQ:
         return D, I
 
 
+@for_all_simd_levels
 class TestRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
         ds = datasets.SyntheticDataset(TEST_DIM, TEST_N, TEST_N, 100)
@@ -321,6 +324,7 @@ class TestRaBitQ(unittest.TestCase):
         do_test_serde("RaBitQ")
 
 
+@for_all_simd_levels
 class TestIVFRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
         nlist = 64
@@ -506,6 +510,7 @@ class TestIVFRaBitQ(unittest.TestCase):
         do_test_serde("IVF16,RaBitQ")
 
 
+@for_all_simd_levels
 class TestRaBitQuantizerEncodeDecode(unittest.TestCase):
     def do_test_encode_decode(self, d, metric):
         # rabitq must precisely reconstruct a vector,
@@ -595,7 +600,15 @@ def do_test_serde(description):
     np.testing.assert_equal(Dref, Dnew)
     np.testing.assert_equal(Iref, Inew)
 
+    # Verify deserialized index is serializable again
+    b2 = faiss.serialize_index(index2)
+    index3 = faiss.deserialize_index(b2)
+    Dnew3, Inew3 = index3.search(ds.get_queries(), 10)
+    np.testing.assert_equal(Dref, Dnew3)
+    np.testing.assert_equal(Iref, Inew3)
 
+
+@for_all_simd_levels
 class TestMultiBitRaBitQ(unittest.TestCase):
     """Consolidated tests for multi-bit RaBitQ.
 
@@ -769,6 +782,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     # ==================== IVF Tests ====================
 
     def test_ivf_basic_operations(self):
@@ -857,6 +879,15 @@ class TestMultiBitRaBitQ(unittest.TestCase):
                         np.testing.assert_array_equal(I1, I2)
                         np.testing.assert_allclose(D1, D2, rtol=1e-5)
 
+                        # Verify deserialized index is serializable again
+                        index_bytes2 = faiss.serialize_index(index2)
+                        index3 = faiss.deserialize_index(index_bytes2)
+                        D3, I3 = index3.search(
+                            ds.get_queries(), 5, params=params
+                        )
+                        np.testing.assert_array_equal(I1, I3)
+                        np.testing.assert_allclose(D1, D3, rtol=1e-5)
+
     # ==================== Query Quantization Tests ====================
 
     def test_query_quantization_levels(self):
@@ -940,85 +971,49 @@ class TestMultiBitRaBitQ(unittest.TestCase):
             self.assertEqual(D_ivf.shape, (ds.nq, 5))
             self.assertTrue(np.all(I_ivf >= 0))
 
+    def test_degenerate_centroid_distance(self):
+        """Test that a doc identical to its centroid gets correct distances.
 
-class TestRaBitQStats(unittest.TestCase):
-    """Test RaBitQStats tracking for multi-bit two-stage search."""
-
-    INDEX_TYPES = [
-        "IndexRaBitQ",
-        "IndexIVFRaBitQ",
-    ]
-
-    @classmethod
-    def setUpClass(cls):
-        cls.stats_available = hasattr(faiss, 'cvar') and hasattr(
-            faiss.cvar, 'rabitq_stats'
-        )
-        if cls.stats_available:
-            cls.rabitq_stats = faiss.cvar.rabitq_stats
-
-    def test_stats_reset_and_skip_percentage(self):
-        """Test that stats can be reset and skip_percentage works."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        self.rabitq_stats.reset()
-        self.assertEqual(self.rabitq_stats.n_1bit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.n_multibit_evaluations, 0)
-        self.assertEqual(self.rabitq_stats.skip_percentage(), 0.0)
-
-    def test_stats_collected_multibit_all_index_types(self):
-        """Test that stats are collected for all multi-bit index types."""
-        if not self.stats_available:
-            self.skipTest("rabitq_stats not available in Python bindings")
-        ds = datasets.SyntheticDataset(384, 50000, 50000, 10)
+        When a vector's residual (x - centroid) has near-zero norm,
+        quantize_ex_bits hits a degenerate early-return path. A previous
+        bug set f_rescale_ex=1 (should be 0) and f_add_ex=0 (should be
+        metric-dependent), causing wildly wrong multi-bit distances.
+        """
+        d = 128
         nlist = 16
+        rs = np.random.RandomState(42)
+        xt = rs.randn(2000, d).astype("float32")
+        xt /= np.linalg.norm(xt, axis=1, keepdims=True)
 
-        for index_type in self.INDEX_TYPES:
-            for nb_bits in [2, 4]:
-                with self.subTest(index_type=index_type, nb_bits=nb_bits):
-                    self.rabitq_stats.reset()
+        query = rs.randn(1, d).astype("float32")
+        query /= np.linalg.norm(query)
 
-                    if index_type == "IndexRaBitQ":
-                        index = faiss.IndexRaBitQ(
-                            ds.d, faiss.METRIC_L2, nb_bits
-                        )
-                    elif index_type == "IndexIVFRaBitQ":
-                        quantizer = faiss.IndexFlat(ds.d, faiss.METRIC_L2)
-                        index = faiss.IndexIVFRaBitQ(
-                            quantizer, ds.d, nlist, faiss.METRIC_L2,
-                            True, nb_bits
-                        )
-                        index.nprobe = 4
+        for metric in [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]:
+            for nb_bits in [2, 3, 4]:
+                with self.subTest(metric=metric, nb_bits=nb_bits):
+                    quantizer = faiss.IndexFlat(d, metric)
+                    index = faiss.IndexIVFRaBitQ(
+                        quantizer, d, nlist, metric, True, nb_bits
+                    )
+                    index.train(xt)
+                    index.nprobe = nlist  # exhaustive
+
+                    # Add the centroid itself as the only document
+                    centroid = index.quantizer.reconstruct(0).reshape(1, d)
+                    index.add(centroid)
+
+                    D, I = index.search(query, 1)
+
+                    if metric == faiss.METRIC_INNER_PRODUCT:
+                        true_dist = (query @ centroid.T).item()
                     else:
-                        raise ValueError(f"Unknown index type: {index_type}")
+                        true_dist = float(np.sum((query - centroid) ** 2))
 
-                    index.train(ds.get_train())
-                    index.add(ds.get_database())
-                    index.search(ds.get_queries(), 10)
+                    np.testing.assert_allclose(
+                        D[0, 0], true_dist, atol=0.15,
+                        err_msg=f"nb_bits={nb_bits}")
 
-                    self.assertGreater(
-                        self.rabitq_stats.n_1bit_evaluations, 0
-                    )
-                    self.assertGreater(
-                        self.rabitq_stats.n_multibit_evaluations, 0
-                    )
-                    # For multi-bit, filtering should skip some candidates
-                    self.assertLess(
-                        self.rabitq_stats.n_multibit_evaluations,
-                        self.rabitq_stats.n_1bit_evaluations,
-                    )
-                    skip_pct = self.rabitq_stats.skip_percentage()
-                    self.assertGreater(skip_pct, 0.0)
-                    self.assertLessEqual(skip_pct, 100.0)
 
-                    n_1bit = self.rabitq_stats.n_1bit_evaluations
-                    n_multibit = self.rabitq_stats.n_multibit_evaluations
-                    print(
-                        f"{index_type} nb_bits={nb_bits}: "
-                        f"n_1bit={n_1bit}, "
-                        f"n_multibit={n_multibit}, "
-                        f"skip={skip_pct:.1f}%"
-                    )
 
 if __name__ == "__main__":
     unittest.main()

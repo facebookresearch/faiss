@@ -9,9 +9,10 @@ import numpy as np
 import unittest
 import faiss
 
-from common_faiss_tests import get_dataset_2
+from common_faiss_tests import get_dataset_2, for_all_simd_levels
 
 
+@for_all_simd_levels
 class TestHNSW(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
@@ -91,6 +92,12 @@ class TestHNSW(unittest.TestCase):
 
         self.assertTrue(np.all(Dhnsw2 == Dhnsw))
         self.assertTrue(np.all(Ihnsw2 == Ihnsw))
+
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        Dhnsw2b, Ihnsw2b = index2b.search(self.xq, 1)
+        self.assertTrue(np.all(Dhnsw2b == Dhnsw))
+        self.assertTrue(np.all(Ihnsw2b == Ihnsw))
 
         # also test clone
         index3 = faiss.clone_index(index)
@@ -216,6 +223,32 @@ class TestHNSW(unittest.TestCase):
         self.assertEqual(index_hnsw.ntotal, 0)
 
 
+class TestHNSWNaN(unittest.TestCase):
+    """Adding a vector with NaN to an IVF+HNSW index used to crash because
+    NaN distances corrupt the MinimaxHeap ordering in HNSW search. The fix
+    converts NaN to +inf in MinimaxHeap::push so the heap stays well-ordered.
+    """
+
+    def test_add_nan_vector_to_ivf_hnsw(self):
+        d = 64
+        nt = 2000
+        nb = 1000
+        xt = np.random.default_rng(42).random((nt, d), dtype='float32')
+        xb = np.random.default_rng(43).random((nb, d), dtype='float32')
+
+        index = faiss.index_factory(d, "IVF256_HNSW32,SQ8")
+        index.train(xt)
+        index.add(xb)
+
+        # Create a vector with NaN in the first component
+        vec = np.zeros((1, d), dtype='float32')
+        vec[0, 0] = np.nan
+
+        # This should not crash
+        index.add(vec)
+        self.assertEqual(index.ntotal, nb + 1)
+
+
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
@@ -283,6 +316,12 @@ class TestNSG(unittest.TestCase):
         Dnsg2, Insg2 = index2.search(self.xq, 1)
         np.testing.assert_array_equal(Dnsg2, Dnsg)
         np.testing.assert_array_equal(Insg2, Insg)
+
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        Dnsg2b, Insg2b = index2b.search(self.xq, 1)
+        np.testing.assert_array_equal(Dnsg2b, Dnsg)
+        np.testing.assert_array_equal(Insg2b, Insg)
 
         # also test clone
         index3 = faiss.clone_index(index)
@@ -539,6 +578,12 @@ class TestNNDescent(unittest.TestCase):
         np.testing.assert_array_equal(D2, D)
         np.testing.assert_array_equal(I2, I)
 
+        # Verify deserialized index is serializable again
+        index2b = faiss.deserialize_index(faiss.serialize_index(index2))
+        D2b, I2b = index2b.search(self.xq, 1)
+        np.testing.assert_array_equal(D2b, D)
+        np.testing.assert_array_equal(I2b, I)
+
         # also test clone
         index3 = faiss.clone_index(index)
         D3, I3 = index3.search(self.xq, 1)
@@ -561,6 +606,29 @@ class TestNNDescent(unittest.TestCase):
         gt = np.arange(0, k)[np.newaxis, :]  # [1, k]
         gt = np.repeat(gt, nq, axis=0)  # [nq, k]
         np.testing.assert_array_equal(indices, gt)
+
+
+class TestNNDescentGenRandom(unittest.TestCase):
+    """Regression tests for gen_random edge cases in NNDescent."""
+
+    def test_search_L_equals_ntotal(self):
+        """gen_random(size, N) crashed with division by zero when size == N.
+
+        In search(), L_2 = max(search_L, topk). When search_L >= ntotal,
+        gen_random is called with size == N, causing rng() % 0.
+        """
+        d = 32
+        nb = 200  # just above NUM_EVAL_POINTS=100
+        xb = np.random.default_rng(42).random((nb, d)).astype('float32')
+        xq = np.random.default_rng(43).random((10, d)).astype('float32')
+
+        index = faiss.IndexNNDescentFlat(d, 32)
+        index.nndescent.search_L = nb  # triggers gen_random(size=nb, N=nb)
+        index.train(xb)
+        index.add(xb)
+
+        # This crashed with division by zero before the fix
+        D, I = index.search(xq, k=1)
 
 
 class TestNNDescentKNNG(unittest.TestCase):

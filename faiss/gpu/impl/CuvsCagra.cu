@@ -22,10 +22,12 @@
  */
 
 #include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/gpu/utils/CuvsFilterConvert.h>
 #include <faiss/gpu/utils/CuvsUtils.h>
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 
+#include <cuvs/core/bitset.hpp>
 #include <cuvs/neighbors/cagra.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/device_resources.hpp>
@@ -33,6 +35,7 @@
 
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
+#include <optional>
 
 namespace faiss {
 namespace gpu {
@@ -235,7 +238,8 @@ void CuvsCagra<data_t>::search(
         idx_t hashmap_min_bitlen,
         float hashmap_max_fill_rate,
         idx_t num_random_samplings,
-        idx_t rand_xor_mask) {
+        idx_t rand_xor_mask,
+        const IDSelector* sel) {
     const raft::device_resources& raft_handle =
             resources_->getRaftHandleCurrentDevice();
     idx_t numQueries = queries.getSize(0);
@@ -286,13 +290,31 @@ void CuvsCagra<data_t>::search(
     auto indices_copy = raft::make_device_matrix<uint32_t, int64_t>(
             raft_handle, numQueries, k_);
 
+    std::optional<cuvs::core::bitset<uint32_t, int64_t>> bitset_holder;
+    std::optional<cuvs::neighbors::filtering::bitset_filter<uint32_t, int64_t>>
+            bitset_filter;
+    cuvs::neighbors::filtering::none_sample_filter none_filter;
+
+    if (sel) {
+        bitset_holder =
+                cuvs::core::bitset<uint32_t, int64_t>(raft_handle, n_, false);
+        faiss::gpu::convert_to_bitset(resources_, *sel, bitset_holder->view());
+        bitset_filter.emplace(bitset_holder->view());
+    }
+    const cuvs::neighbors::filtering::base_filter& filter_ref = sel
+            ? static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      bitset_filter.value())
+            : static_cast<const cuvs::neighbors::filtering::base_filter&>(
+                      none_filter);
+
     cuvs::neighbors::cagra::search(
             raft_handle,
             search_pams,
             *cuvs_index,
             queries_view,
             indices_copy.view(),
-            distances_view);
+            distances_view,
+            filter_ref);
     thrust::copy(
             raft::resource::get_thrust_policy(raft_handle),
             indices_copy.data_handle(),

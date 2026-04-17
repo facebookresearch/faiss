@@ -25,7 +25,7 @@ set(FAISS_TEST_SRC
   test_approx_topk.cpp
   test_RCQ_cropping.cpp
   test_heap.cpp
-  test_code_distance.cpp
+  test_pq_code_distance.cpp
   test_hnsw.cpp
   test_NSG_compressed_graph.cpp
   test_partitioning.cpp
@@ -41,9 +41,12 @@ set(FAISS_TEST_SRC
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
   test_custom_result_handler.cpp
+  test_fastscan_filter.cpp
+  test_single_query_collect_handler.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp
+  test_fast_scan_distance_to_code.cpp
 )
 
 if(FAISS_ENABLE_SVS)
@@ -93,7 +96,7 @@ include(../cmake/link_to_faiss_lib.cmake)
 link_to_faiss_lib(faiss_test)
 
 if (FAISS_ENABLE_PYTHON)
-  target_link_libraries(faiss_test PUBLIC faiss_example_external_module)
+  add_dependencies(faiss_test faiss_example_external_module)
 endif()
 
 include(FetchContent)

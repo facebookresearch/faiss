@@ -25,6 +25,7 @@
 
 #include <faiss/MetricType.h>
 #include <faiss/gpu/GpuResources.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
 #include <faiss/gpu/utils/DeviceVector.cuh>
 
@@ -67,7 +68,8 @@ class FlatIndex {
             float metricArg,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
-            bool exactDistance);
+            bool exactDistance,
+            const IDSelector* sel = nullptr);
 
     virtual void query(
             Tensor<half, 2, true>& vecs,
@@ -76,7 +78,8 @@ class FlatIndex {
             float metricArg,
             Tensor<float, 2, true>& outDistances,
             Tensor<idx_t, 2, true>& outIndices,
-            bool exactDistance);
+            bool exactDistance,
+            const IDSelector* sel = nullptr);
 
     /// Compute residual for set of vectors
     void computeResidual(

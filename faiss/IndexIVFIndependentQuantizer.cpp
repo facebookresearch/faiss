@@ -13,13 +13,13 @@
 namespace faiss {
 
 IndexIVFIndependentQuantizer::IndexIVFIndependentQuantizer(
-        Index* quantizer,
-        IndexIVF* index_ivf,
-        VectorTransform* vt)
-        : Index(quantizer->d, index_ivf->metric_type),
-          quantizer(quantizer),
-          vt(vt),
-          index_ivf(index_ivf) {
+        Index* quantizer_in,
+        IndexIVF* index_ivf_in,
+        VectorTransform* vt_in)
+        : Index(quantizer_in->d, index_ivf_in->metric_type),
+          quantizer(quantizer_in),
+          vt(vt_in),
+          index_ivf(index_ivf_in) {
     if (vt) {
         FAISS_THROW_IF_NOT_MSG(
                 vt->d_in == d && vt->d_out == index_ivf->d,
@@ -29,14 +29,16 @@ IndexIVFIndependentQuantizer::IndexIVFIndependentQuantizer(
     }
 
     if (quantizer->is_trained && quantizer->ntotal != 0) {
-        FAISS_THROW_IF_NOT(quantizer->ntotal == index_ivf->nlist);
+        FAISS_THROW_IF_NOT(
+                quantizer->ntotal == static_cast<idx_t>(index_ivf->nlist));
     }
     if (index_ivf->is_trained && vt) {
         FAISS_THROW_IF_NOT(vt->is_trained);
     }
     ntotal = index_ivf->ntotal;
     is_trained =
-            (quantizer->is_trained && quantizer->ntotal == index_ivf->nlist &&
+            (quantizer->is_trained &&
+             quantizer->ntotal == static_cast<idx_t>(index_ivf->nlist) &&
              (!vt || vt->is_trained) && index_ivf->is_trained);
 
     // disable precomputed tables because they use the distances that are
@@ -57,15 +59,16 @@ IndexIVFIndependentQuantizer::~IndexIVFIndependentQuantizer() {
 namespace {
 
 struct VTransformedVectors : TransformedVectors {
-    VTransformedVectors(const VectorTransform* vt, idx_t n, const float* x)
-            : TransformedVectors(x, vt ? vt->apply(n, x) : x) {}
+    VTransformedVectors(const VectorTransform* vt, idx_t n, const float* x_in)
+            : TransformedVectors(x_in, vt ? vt->apply(n, x_in) : x_in) {}
 };
 
 struct SubsampledVectors : TransformedVectors {
-    SubsampledVectors(int d, idx_t* n, idx_t max_n, const float* x)
+    SubsampledVectors(int d, idx_t* n, idx_t max_n, const float* x_in)
             : TransformedVectors(
-                      x,
-                      fvecs_maybe_subsample(d, (size_t*)n, max_n, x, true)) {}
+                      x_in,
+                      fvecs_maybe_subsample(d, (size_t*)n, max_n, x_in, true)) {
+    }
 };
 
 } // anonymous namespace

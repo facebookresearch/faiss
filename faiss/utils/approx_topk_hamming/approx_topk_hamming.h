@@ -11,12 +11,17 @@
 #include <limits>
 #include <utility>
 
+#include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/Heap.h>
-#include <faiss/utils/simdlib.h>
 
 namespace faiss {
 
-// HeapWithBucketsForHamming32 uses simd8uint32 under the hood.
+// Explicit SIMD-level aliases for this file (no global bare aliases).
+using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+
+// HeapWithBucketsForHamming32 uses simd8uint32 under the
+// hood.
 
 template <typename C, uint32_t NBUCKETS, uint32_t N, typename HammingComputerT>
 struct HeapWithBucketsForHamming32 {
@@ -197,8 +202,9 @@ struct HeapWithBucketsForHamming32<
     }
 };
 
-// HeapWithBucketsForHamming16 uses simd16uint16 under the hood.
-// Less registers needed in total, so higher values of NBUCKETS/N can be used,
+// HeapWithBucketsForHamming16 uses simd16uint16 under
+// the hood. Less registers needed in total, so higher values of NBUCKETS/N can
+// be used,
 //   but somewhat slower.
 // No more than 32K elements currently, but it can be reorganized a bit
 //   to be limited to 32K elements per beam.

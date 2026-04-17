@@ -16,8 +16,8 @@
 #include <cstdio>
 
 #define FAISS_VERSION_MAJOR 1
-#define FAISS_VERSION_MINOR 13
-#define FAISS_VERSION_PATCH 2
+#define FAISS_VERSION_MINOR 14
+#define FAISS_VERSION_PATCH 1
 
 // Macro to combine the version components into a single string
 #ifndef FAISS_STRINGIFY
@@ -114,8 +114,8 @@ struct Index {
     MetricType metric_type;
     float metric_arg; ///< argument of the metric type
 
-    explicit Index(idx_t d = 0, MetricType metric = METRIC_L2)
-            : d(d),
+    explicit Index(idx_t d_in = 0, MetricType metric = METRIC_L2)
+            : d(d_in),
               ntotal(0),
               verbose(false),
               is_trained(true),
@@ -130,6 +130,20 @@ struct Index {
      * @param x      training vectors, size n * d
      */
     virtual void train(idx_t n, const float* x);
+
+    /** Perform training on a representative set of vectors and a representative
+     * set of queries
+     *
+     * @param n         nb of training vectors
+     * @param x         training vectors, size n * d
+     * @param n_train_q nb of training queries
+     * @param xq_train  training queries, size n_train_q * d
+     */
+    virtual void train_with_queries(
+            idx_t n,
+            const float* x,
+            idx_t n_train_q,
+            const float* xq_train);
 
     virtual void train_ex(idx_t n, const void* x, NumericType numeric_type) {
         if (numeric_type == NumericType::Float32) {

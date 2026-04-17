@@ -66,10 +66,10 @@ struct IndexBinaryHash : IndexBinary {
 };
 
 struct IndexBinaryHashStats {
-    size_t nq;     // nb of queries run
-    size_t n0;     // nb of empty lists
-    size_t nlist;  // nb of non-empty inverted lists scanned
-    size_t ndis{}; // nb of distances computed
+    size_t nq = 0;    // nb of queries run
+    size_t n0 = 0;    // nb of empty lists
+    size_t nlist = 0; // nb of non-empty inverted lists scanned
+    size_t ndis = 0;  // nb of distances computed
 
     IndexBinaryHashStats() {
         reset();
@@ -82,8 +82,8 @@ FAISS_API extern IndexBinaryHashStats indexBinaryHash_stats;
 /** just uses the b first bits as a hash value */
 struct IndexBinaryMultiHash : IndexBinary {
     // where the vectors are actually stored
-    IndexBinaryFlat* storage;
-    bool own_fields;
+    IndexBinaryFlat* storage = nullptr;
+    bool own_fields = false;
 
     // maps hash values to the ids that hash to them
     using Map = std::unordered_map<idx_t, std::vector<idx_t>>;
