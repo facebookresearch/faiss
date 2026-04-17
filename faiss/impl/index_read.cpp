@@ -58,6 +58,9 @@
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
@@ -2343,6 +2346,59 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             svs->deserialize_impl(is);
         }
         idx = std::move(svs);
+    } else if (
+            h == fourcc("ISIQ") || h == fourcc("ISIL") || h == fourcc("ISID")) {
+        std::unique_ptr<IndexSVSIVF> svs_ivf;
+        if (h == fourcc("ISIQ")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLVQ>();
+        } else if (h == fourcc("ISIL")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLeanVec>();
+        } else if (h == fourcc("ISID")) {
+            svs_ivf = std::make_unique<IndexSVSIVF>();
+        }
+
+        read_index_header(*svs_ivf, f);
+        READ1(svs_ivf->num_centroids);
+        READ1(svs_ivf->minibatch_size);
+        READ1(svs_ivf->num_iterations);
+        READ1(svs_ivf->is_hierarchical);
+        READ1(svs_ivf->training_fraction);
+        READ1(svs_ivf->hierarchical_level1_clusters);
+        READ1(svs_ivf->seed);
+        READ1(svs_ivf->n_probes);
+        READ1(svs_ivf->k_reorder);
+        READ1(svs_ivf->num_threads);
+        READ1(svs_ivf->intra_query_threads);
+        READ1(svs_ivf->storage_kind);
+        READ1(svs_ivf->is_static);
+        if (h == fourcc("ISIL")) {
+            auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+            READ1(leanvec->leanvec_d);
+        }
+
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs_ivf->deserialize_impl(is);
+        }
+        if (h == fourcc("ISIL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                auto* leanvec =
+                        dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+                FAISS_THROW_IF_NOT_MSG(
+                        leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+                leanvec->deserialize_training_data(is);
+            }
+        }
+        idx = std::move(svs_ivf);
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {
