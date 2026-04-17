@@ -1681,6 +1681,109 @@ TEST(ReadIndexDeserialize, IVFQuantizerUntrained) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexIVFScalarQuantizer with empty trained vector and
+// is_trained=false deserializes successfully (legitimate untrained index),
+// but searching it throws because IndexIVF::search checks is_trained.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFScalarQuantizerUntrainedSearchRejected) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwSq");
+    // IVF header: index_header + nlist + nprobe + quantizer + direct_map
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/false);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_minimal_flat(buf, /*d=*/4);
+    push_empty_direct_map(buf);
+    // ScalarQuantizer fields:
+    push_val<int>(buf, 0);       // qtype = QT_8bit
+    push_val<int>(buf, 0);       // rangestat
+    push_val<float>(buf, 0.0f);  // rangestat_arg
+    push_val<size_t>(buf, 4);    // d
+    push_val<size_t>(buf, 4);    // code_size
+    push_vector<float>(buf, {}); // trained (empty — untrained)
+    // IwSq additional fields:
+    push_val<size_t>(buf, 4);   // code_size
+    push_val<bool>(buf, false); // by_residual
+    push_null_invlists(buf);
+
+    // Deserialization should succeed — untrained indexes are legitimate
+    VectorIOReader reader;
+    reader.data = buf;
+    auto idx = read_index_up(&reader);
+    ASSERT_NE(idx, nullptr);
+    EXPECT_FALSE(idx->is_trained);
+
+    // search should throw — is_trained check in IndexIVF::search
+    std::vector<float> xq(4, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            idx->search(1, xq.data(), 1, distances.data(), labels.data()),
+            FaissException);
+
+    // range_search should throw — is_trained check in IndexIVF::range_search
+    RangeSearchResult rsr(1);
+    EXPECT_THROW(idx->range_search(1, xq.data(), 1.0f, &rsr), FaissException);
+
+    // search_preassigned should throw directly
+    auto* ivf = dynamic_cast<IndexIVF*>(idx.get());
+    ASSERT_NE(ivf, nullptr);
+    idx_t key = 0;
+    float coarse_dis = 0.0f;
+    EXPECT_THROW(
+            ivf->search_preassigned(
+                    1,
+                    xq.data(),
+                    1,
+                    &key,
+                    &coarse_dis,
+                    distances.data(),
+                    labels.data(),
+                    false,
+                    nullptr,
+                    nullptr),
+            FaissException);
+
+    // range_search_preassigned should throw directly
+    RangeSearchResult rsr2(1);
+    EXPECT_THROW(
+            ivf->range_search_preassigned(
+                    1,
+                    xq.data(),
+                    1.0f,
+                    &key,
+                    &coarse_dis,
+                    &rsr2,
+                    false,
+                    nullptr,
+                    nullptr),
+            FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexIVFScalarQuantizer with is_trained=true but empty trained
+// is rejected at deserialization time — corrupt data.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFScalarQuantizerTrainedEmptyTrained) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwSq");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0, /*is_trained=*/true);
+    push_val<size_t>(buf, 1); // nlist
+    push_val<size_t>(buf, 1); // nprobe
+    push_minimal_flat(buf, /*d=*/4);
+    push_empty_direct_map(buf);
+    // ScalarQuantizer fields:
+    push_val<int>(buf, 0);       // qtype = QT_8bit
+    push_val<int>(buf, 0);       // rangestat
+    push_val<float>(buf, 0.0f);  // rangestat_arg
+    push_val<size_t>(buf, 4);    // d
+    push_val<size_t>(buf, 4);    // code_size
+    push_vector<float>(buf, {}); // trained (empty — but is_trained=true!)
+
+    expect_read_throws_with(buf, "ScalarQuantizer trained size");
+}
+
+// -----------------------------------------------------------------------
 // Test: initialize_IVFPQ_precomputed_table rejects a null quantizer.
 // Protects against null-deref from corrupt serialized data where the
 // quantizer sub-index is absent (fourcc "null").
