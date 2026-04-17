@@ -1982,6 +1982,15 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxhnsw->storage->d,
                     idxhnsw->d);
         }
+        if (h == fourcc("IHN2")) {
+            FAISS_THROW_IF_NOT_MSG(
+                    idxhnsw->storage,
+                    "IndexHNSW2Level requires non-null storage");
+            FAISS_THROW_IF_NOT_MSG(
+                    dynamic_cast<Index2Layer*>(idxhnsw->storage) ||
+                            dynamic_cast<IndexIVFPQ*>(idxhnsw->storage),
+                    "IndexHNSW2Level storage must be Index2Layer or IndexIVFPQ");
+        }
         if (h == fourcc("IHNp") && !(io_flags & IO_FLAG_PQ_SKIP_SDC_TABLE)) {
             auto* storage_pq = dynamic_cast<IndexPQ*>(idxhnsw->storage);
             FAISS_THROW_IF_NOT_MSG(
