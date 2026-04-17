@@ -8,6 +8,11 @@
 #pragma once
 
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/scalar_quantizer/quantizers.h>
+#include <faiss/impl/scalar_quantizer/similarities.h>
+#include <faiss/utils/simd_levels.h>
+#include <faiss/utils/simdlib.h>
+#include <faiss/utils/bf16.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/utils/simd_levels.h>
 
@@ -24,6 +29,63 @@ using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
 
 template <class Quantizer, class Similarity, SIMDLevel SL>
 struct DCTemplate : SQDistanceComputer {};
+
+#if defined(__AVX512BF16__)
+
+// Fast path for QT_bf16 + IP on CPUs with AVX512_BF16.
+//
+// Key idea: quantize query to BF16 once in set_query(), then compute inner
+// products using VDPBF16PS against BF16-coded vectors.
+//
+// Notes:
+// - Only enabled when __AVX512BF16__ is available (e.g., -march=sapphirerapids).
+// - Requires d % 32 == 0 to use dpbf16 cleanly (32 bf16 elements per op).
+template <SIMDLevel SL>
+struct DCBF16IPDpbf16 : SQDistanceComputer {
+    using Sim = SimilarityIP<SL>;
+
+    QuantizerBF16<SL> quant;
+    std::vector<uint16_t> qbf16;
+
+    DCBF16IPDpbf16(size_t d, const std::vector<float>& trained)
+            : quant(d, trained), qbf16(d) {}
+
+    void set_query(const float* x) final {
+        q = x;
+        // Match QuantizerBF16::encode_vector semantics (encode_bf16()).
+        for (size_t i = 0; i < quant.d; i++) {
+            qbf16[i] = encode_bf16(x[i]);
+        }
+    }
+
+    FAISS_ALWAYS_INLINE float compute_code_ip_bf16(
+            const uint16_t* a,
+            const uint16_t* b) const {
+        // d is expected to be multiple of 32 for this fast path.
+        __m512 acc = _mm512_setzero_ps();
+        for (size_t i = 0; i < quant.d; i += 32) {
+            const __m512i va = _mm512_loadu_si512((const void*)(a + i));
+            const __m512i vb = _mm512_loadu_si512((const void*)(b + i));
+            const __m512bh bha = (__m512bh)va;
+            const __m512bh bhb = (__m512bh)vb;
+            acc = _mm512_dpbf16_ps(acc, bha, bhb);
+        }
+        return _mm512_reduce_add_ps(acc);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        const auto* code1 = (const uint16_t*)(codes + i * code_size);
+        const auto* code2 = (const uint16_t*)(codes + j * code_size);
+        return compute_code_ip_bf16(code1, code2);
+    }
+
+    float query_to_code(const uint8_t* code) const final {
+        const auto* c = (const uint16_t*)code;
+        return compute_code_ip_bf16(qbf16.data(), c);
+    }
+};
+
+#endif
 
 template <class Quantizer, class Similarity>
 struct DCTemplate<Quantizer, Similarity, SIMDLevel::NONE> : SQDistanceComputer {
