@@ -17,16 +17,27 @@
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cuda.h&gt;</highlight></codeline>
+<codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;rocm-core/rocm_version.h&gt;<sp/>//<sp/>ROCm<sp/>version<sp/>macros</highlight></codeline>
+<codeline><highlight class="normal">#if<sp/>ROCM_VERSION_MAJOR<sp/>&gt;=<sp/>7</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;rocprim/intrinsics/arch.hpp&gt;<sp/>//<sp/>rocprim::arch::wavefront</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">#ifdef<sp/>USE_AMD_ROCM</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#if<sp/>ROCM_VERSION_MAJOR<sp/>&lt;<sp/>7</highlight></codeline>
 <codeline><highlight class="normal">#if<sp/>__AMDGCN_WAVEFRONT_SIZE<sp/>==<sp/>32u</highlight></codeline>
 <codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>32;</highlight></codeline>
 <codeline><highlight class="normal">#else</highlight></codeline>
 <codeline><highlight class="normal">constexpr<sp/>int<sp/>kWarpSize<sp/>=<sp/>64;</highlight></codeline>
+<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal">#else</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>ROCm<sp/>7.0<sp/>and<sp/>above</highlight></codeline>
+<codeline><highlight class="normal">constexpr<sp/>__device__<sp/>int<sp/>kWarpSize<sp/>=<sp/>rocprim::arch::wavefront::max_size();</highlight></codeline>
 <codeline><highlight class="normal">#endif</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>is<sp/>a<sp/>memory<sp/>barrier<sp/>for<sp/>intra-warp<sp/>writes<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>

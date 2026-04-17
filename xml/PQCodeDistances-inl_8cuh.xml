@@ -29,11 +29,9 @@
 <codeline><highlight class="normal">namespace<sp/>faiss<sp/>{</highlight></codeline>
 <codeline><highlight class="normal">namespace<sp/>gpu<sp/>{</highlight></codeline>
 <codeline></codeline>
-<codeline><highlight class="normal">#if<sp/>defined(USE_AMD_ROCM)<sp/>&amp;&amp;<sp/>__AMDGCN_WAVEFRONT_SIZE<sp/>==<sp/>64u</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>LAUNCH_BOUND<sp/>320</highlight></codeline>
-<codeline><highlight class="normal">#else</highlight></codeline>
-<codeline><highlight class="normal">#define<sp/>LAUNCH_BOUND<sp/>288</highlight></codeline>
-<codeline><highlight class="normal">#endif</highlight></codeline>
+<codeline><highlight class="normal">__device__<sp/>constexpr<sp/>inline<sp/>int<sp/>getLaunchBound()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>kWarpSize<sp/>==<sp/>32<sp/>?<sp/>288<sp/>:<sp/>320;</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>Kernel<sp/>responsible<sp/>for<sp/>calculating<sp/>distance<sp/>from<sp/>residual<sp/>vector<sp/>to</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>each<sp/>product<sp/>quantizer<sp/>code<sp/>centroid</highlight></codeline>
@@ -42,7 +40,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>typename<sp/>CentroidT,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>DimsPerSubQuantizer,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bool<sp/>L2Distance&gt;</highlight></codeline>
-<codeline><highlight class="normal">__global__<sp/>void<sp/>__launch_bounds__(LAUNCH_BOUND,<sp/>3)<sp/>pqCodeDistances(</highlight></codeline>
+<codeline><highlight class="normal">__global__<sp/>void<sp/>__launch_bounds__(getLaunchBound(),<sp/>3)<sp/>pqCodeDistances(</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;<sp/>queries,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>queriesPerBlock,</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;CentroidT,<sp/>2,<sp/>true&gt;<sp/>coarseCentroids,</highlight></codeline>
