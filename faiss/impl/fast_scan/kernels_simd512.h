@@ -30,6 +30,13 @@ void kernel_accumulate_block_avx512_nq1(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
+    // Explicit SIMD levels for DD mode where bare aliases resolve to NONE
+    // (512-bit NONE types don't exist — empty primary templates).
+    using simd32uint16 = simd32uint16_tpl<SIMDLevel::AVX512>;
+    using simd64uint8 = simd64uint8_tpl<SIMDLevel::AVX512>;
+    using simd16uint16 = simd16uint16_tpl<SIMDLevel::AVX2>;
+    using simd32uint8 = simd32uint8_tpl<SIMDLevel::AVX2>;
+
     // NQ is kept in order to match the similarity to baseline function
     constexpr int NQ = 1;
     // distance accumulators. We can accept more for NQ=1
@@ -291,6 +298,12 @@ void kernel_accumulate_block_avx512_nqx(
         const uint8_t* LUT,
         ResultHandler& res,
         const Scaler& scaler) {
+    // Explicit SIMD levels for DD mode (see nq1 variant for explanation).
+    using simd32uint16 = simd32uint16_tpl<SIMDLevel::AVX512>;
+    using simd64uint8 = simd64uint8_tpl<SIMDLevel::AVX512>;
+    using simd16uint16 = simd16uint16_tpl<SIMDLevel::AVX2>;
+    using simd32uint8 = simd32uint8_tpl<SIMDLevel::AVX2>;
+
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
     // distance accumulators
