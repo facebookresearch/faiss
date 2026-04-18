@@ -16,6 +16,8 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexNNDescent.h>
+#include <faiss/IndexNSG.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -332,4 +334,50 @@ TEST(OMPExceptionSafety, flatcodes_search) {
     EXPECT_THROW(
             index.search(1, xq.data(), 1, distances.data(), labels.data()),
             std::runtime_error);
+}
+
+// ---------------------------------------------------------------------------
+// IndexNNDescent::search: exception in OMP worker propagates to caller.
+// Constructing with has_built=false triggers a FaissException inside the
+// worksharing loop body.
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, nndescent_search) {
+    int d = 4;
+    auto storage = std::make_unique<IndexFlatL2>(d);
+    std::vector<float> xb(d, 1.0f);
+    storage->add(1, xb.data());
+
+    IndexNNDescent index(storage.get(), 4);
+    index.ntotal = 1;
+    // has_built defaults to false, so nndescent.search() will throw.
+
+    std::vector<float> xq(d, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_THROW(
+            index.search(1, xq.data(), 1, distances.data(), labels.data()),
+            FaissException);
+}
+
+// ---------------------------------------------------------------------------
+// IndexNSG::search: exception in OMP worker propagates to caller
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, nsg_search) {
+    int d = 4;
+    auto storage = std::make_unique<IndexFlatL2>(d);
+    std::vector<float> xb(d, 1.0f);
+    storage->add(1, xb.data());
+
+    IndexNSG index(storage.get(), 4);
+    index.ntotal = 1;
+    // nsg graph is not built, so nsg.search() will throw.
+
+    std::vector<float> xq(d, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+
+    EXPECT_THROW(
+            index.search(1, xq.data(), 1, distances.data(), labels.data()),
+            FaissException);
 }
