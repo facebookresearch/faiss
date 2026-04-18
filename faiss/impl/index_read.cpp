@@ -421,6 +421,14 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 (int)rdt->map.size(),
                 rdt->d_out);
     }
+    if (h == fourcc("VNrm")) {
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_in == vt->d_out,
+                "NormalizationTransform requires d_in == d_out, "
+                "got d_in=%d d_out=%d",
+                vt->d_in,
+                vt->d_out);
+    }
     if (h == fourcc("VCnt")) {
         auto* ct = dynamic_cast<CenteringTransform*>(vt.get());
         FAISS_THROW_IF_NOT_MSG(ct, "dynamic_cast to CenteringTransform failed");
@@ -429,6 +437,12 @@ std::unique_ptr<VectorTransform> read_VectorTransform_up(IOReader* f) {
                 "CenteringTransform mean size %d < d_in %d",
                 (int)ct->mean.size(),
                 ct->d_in);
+        FAISS_THROW_IF_NOT_FMT(
+                vt->d_in == vt->d_out,
+                "CenteringTransform requires d_in == d_out, "
+                "got d_in=%d d_out=%d",
+                vt->d_in,
+                vt->d_out);
     }
     if (h == fourcc("Viqt")) {
         auto* itqt = dynamic_cast<ITQTransform*>(vt.get());
@@ -1841,6 +1855,36 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             ixpt->chain.push_back(read_VectorTransform(f));
         }
         ixpt->index = read_index(f, io_flags);
+        // Validate transform chain dimension consistency:
+        // chain[0].d_in must equal the outer index d, consecutive
+        // transforms must have matching d_out/d_in, and the last
+        // transform's d_out must equal the sub-index d.
+        if (nt > 0) {
+            FAISS_THROW_IF_NOT_FMT(
+                    ixpt->chain[0]->d_in == ixpt->d,
+                    "IndexPreTransform chain[0] d_in=%d != index d=%d",
+                    ixpt->chain[0]->d_in,
+                    ixpt->d);
+            for (int i = 1; i < nt; i++) {
+                FAISS_THROW_IF_NOT_FMT(
+                        ixpt->chain[i]->d_in == ixpt->chain[i - 1]->d_out,
+                        "IndexPreTransform chain[%d] d_in=%d != "
+                        "chain[%d] d_out=%d",
+                        i,
+                        ixpt->chain[i]->d_in,
+                        i - 1,
+                        ixpt->chain[i - 1]->d_out);
+            }
+            if (ixpt->index) {
+                FAISS_THROW_IF_NOT_FMT(
+                        ixpt->chain[nt - 1]->d_out == ixpt->index->d,
+                        "IndexPreTransform chain[%d] d_out=%d "
+                        "!= sub-index d=%d",
+                        nt - 1,
+                        ixpt->chain[nt - 1]->d_out,
+                        ixpt->index->d);
+            }
+        }
         idx = std::move(ixpt);
     } else if (h == fourcc("Imiq")) {
         auto imiq = std::make_unique<MultiIndexQuantizer>();
