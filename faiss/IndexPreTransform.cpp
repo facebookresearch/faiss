@@ -129,7 +129,9 @@ const float* IndexPreTransform::apply_chain(idx_t n, const float* x) const {
         del2.swap(del);
         prev_x = xt;
     }
-    del.release();
+    // Intentionally release ownership: caller takes ownership of the returned
+    // buffer
+    (void)del.release();
     return prev_x;
 }
 

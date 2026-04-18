@@ -279,7 +279,8 @@ size_t ParameterSpace::n_combinations() const {
 
 /// get string representation of the combination
 std::string ParameterSpace::combination_name(size_t cno) const {
-    char buf[1000], *wp = buf;
+    char buf[1000];
+    char* wp = buf;
     *wp = 0;
     for (size_t i = 0; i < parameter_ranges.size(); i++) {
         FAISS_THROW_IF_NOT_MSG(

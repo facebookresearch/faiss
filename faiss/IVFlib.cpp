@@ -492,7 +492,8 @@ IndexIVFResidualQuantizer* ivf_residual_from_quantizer(
                     faiss::METRIC_L2,
                     rq.search_type));
     index->own_fields = true;
-    rcq.release();
+    // Ownership transferred to index via own_fields = true
+    (void)rcq.release();
     index->by_residual = true;
     index->rq.initialize_from(rq, nlevel);
     index->is_trained = true;
