@@ -1468,6 +1468,38 @@ TEST(ReadIndexDeserialize, HNSWValidNeighborsSearchWorks) {
 }
 
 // -----------------------------------------------------------------------
+// Test: IndexHNSW2Level with wrong storage type is rejected.
+// Protects against corrupt serialized data where storage is not
+// Index2Layer or IndexIVFPQ, causing null-deref from failed dynamic_cast.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSW2LevelWrongStorageType) {
+    // Build an IHN2 with IndexFlat storage (wrong type — must be
+    // Index2Layer or IndexIVFPQ).
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHN2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // IndexFlat storage — wrong type for HNSW2Level
+    push_minimal_flat(buf, /*d=*/4, /*ntotal=*/0);
+
+    expect_read_throws_with(buf, "Index2Layer or IndexIVFPQ");
+}
+
+// -----------------------------------------------------------------------
+// Test: IndexHNSW2Level with null storage is rejected.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, HNSW2LevelNullStorage) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IHN2");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_minimal_hnsw(buf, /*ntotal=*/0);
+    // Null storage
+    push_fourcc(buf, "null");
+
+    expect_read_throws_with(buf, "non-null storage");
+}
+
+// -----------------------------------------------------------------------
 // Test: NSG ntotal != index ntotal.
 // -----------------------------------------------------------------------
 TEST(ReadIndexDeserialize, NSGNtotalMismatch) {
