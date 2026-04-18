@@ -50,6 +50,11 @@ struct IndexNSG : Index {
     explicit IndexNSG(Index* storage, int R = 32);
 
     ~IndexNSG() override;
+    // rule of five defaults
+    IndexNSG(const IndexNSG&) = default;
+    IndexNSG& operator=(const IndexNSG&) = default;
+    IndexNSG(IndexNSG&&) = default;
+    IndexNSG& operator=(IndexNSG&&) = default;
 
     void build(idx_t n, const float* x, idx_t* knn_graph, int GK);
 

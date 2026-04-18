@@ -51,6 +51,13 @@ struct IndexIVFIndependentQuantizer : Index {
     void reset() override;
 
     ~IndexIVFIndependentQuantizer() override;
+    // rule of five defaults
+    IndexIVFIndependentQuantizer(const IndexIVFIndependentQuantizer&) = default;
+    IndexIVFIndependentQuantizer& operator=(
+            const IndexIVFIndependentQuantizer&) = default;
+    IndexIVFIndependentQuantizer(IndexIVFIndependentQuantizer&&) = default;
+    IndexIVFIndependentQuantizer& operator=(IndexIVFIndependentQuantizer&&) =
+            default;
 };
 
 } // namespace faiss
