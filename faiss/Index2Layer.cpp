@@ -168,7 +168,7 @@ struct DistanceXPQ4 : Distance2Level {
                 dynamic_cast<IndexFlat*>(storage.q1.quantizer);
 
         FAISS_ASSERT(quantizer);
-        M = storage.pq.M;
+        M = static_cast<int>(storage.pq.M);
         pq_l1_tab = quantizer->get_xb();
     }
 
@@ -207,8 +207,8 @@ struct Distance2xXPQ4 : Distance2Level {
 
         FAISS_ASSERT(mi);
         FAISS_ASSERT(storage.pq.M % 2 == 0);
-        M_2 = storage.pq.M / 2;
-        mi_nbits = mi->pq.nbits;
+        M_2 = static_cast<int>(storage.pq.M / 2);
+        mi_nbits = static_cast<int>(mi->pq.nbits);
         pq_l1_tab = mi->pq.centroids.data();
     }
 
