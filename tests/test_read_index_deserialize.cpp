@@ -2540,6 +2540,8 @@ TEST(ReadIndexDeserialize, IwIQVtDinMismatch) {
 
     // Corrupt d_in to create mismatch with indep->d.
     size_t d_in_offset = vnrm_pos + 4 + 4; // after fourcc + norm
+    ASSERT_LE(d_in_offset + sizeof(int), data.size())
+            << "d_in_offset out of bounds";
     auto corrupted = data;
     int bad_d_in = d + 1;
     memcpy(&corrupted[d_in_offset], &bad_d_in, sizeof(int));
@@ -2588,6 +2590,8 @@ TEST(ReadIndexDeserialize, IwIQVtDoutMismatch) {
 
     // Corrupt d_out to create mismatch with index_ivf->d.
     size_t d_out_offset = vnrm_pos + 4 + 4 + 4; // after fourcc + norm + d_in
+    ASSERT_LE(d_out_offset + sizeof(int), data.size())
+            << "d_out_offset out of bounds";
     auto corrupted = data;
     int bad_d_out = d + 1;
     memcpy(&corrupted[d_out_offset], &bad_d_out, sizeof(int));
