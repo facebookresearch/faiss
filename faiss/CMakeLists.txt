@@ -484,7 +484,14 @@ endif()
 # NEON is mandatory on ARM64 — ensure COMPILE_SIMD_ARM_NEON is always defined
 # and NEON source files are always compiled into the main faiss target.
 # (On x86, AVX2/AVX512 are optional and only compiled per opt_level above.)
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
+#
+# MSVC ARM64 is excluded: MSVC implements NEON intrinsics as compiler builtins
+# whose addresses cannot be taken, breaking the function-pointer template pattern
+# in simdlib_neon.h. Additionally, MSVC collapses distinct NEON struct types
+# (e.g., uint8x16x2_t and uint16x8x2_t) to the same __n128x2, causing overload
+# ambiguity. Until proper MSVC NEON support is added, MSVC ARM64 falls back to
+# the scalar (SIMDLevel::NONE) implementation. See issue #4993.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
   target_compile_definitions(faiss PRIVATE COMPILE_SIMD_ARM_NEON)
   target_sources(faiss PRIVATE ${FAISS_SIMD_NEON_SRC})
 endif()
