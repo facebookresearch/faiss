@@ -332,6 +332,8 @@ void IndexIVFRaBitQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
     }
 }
 
+namespace {
+
 struct IVFRaBitDistanceComputer : DistanceComputer {
     const float* q = nullptr;
     const IndexIVFRaBitQ* parent = nullptr;
@@ -378,6 +380,8 @@ float IVFRaBitDistanceComputer::operator()(idx_t i) {
 float IVFRaBitDistanceComputer::symmetric_dis(idx_t /*i*/, idx_t /*j*/) {
     FAISS_THROW_MSG("Not implemented");
 }
+
+} // anonymous namespace
 
 DistanceComputer* IndexIVFRaBitQ::get_distance_computer() const {
     IVFRaBitDistanceComputer* dc = new IVFRaBitDistanceComputer;

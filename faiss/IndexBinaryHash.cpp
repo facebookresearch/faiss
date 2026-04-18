@@ -280,7 +280,8 @@ void IndexBinaryHashStats::reset() {
     memset((void*)this, 0, sizeof(*this));
 }
 
-IndexBinaryHashStats indexBinaryHash_stats;
+IndexBinaryHashStats
+        indexBinaryHash_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /*******************************************************
  * IndexBinaryMultiHash implementation
@@ -346,7 +347,7 @@ static void verify_shortlist(
 struct Run_verify_shortlist {
     using T = void;
     template <class HammingComputer, class... Types>
-    void f(Types... args) {
+    void f(Types... args) { // NOLINT(performance-unnecessary-value-param)
         verify_shortlist<HammingComputer>(args...);
     }
 };

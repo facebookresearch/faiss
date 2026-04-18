@@ -70,7 +70,8 @@ const int IO_FLAG_MMAP = IO_FLAG_SKIP_IVF_DATA | 0x646f0000;
 //   after OnDiskInvertedLists get properly updated.
 const int IO_FLAG_MMAP_IFC = 1 << 9;
 
-FAISS_API extern bool index_read_warn_on_null_invlists;
+FAISS_API extern bool
+        index_read_warn_on_null_invlists; // NOLINT(facebook-avoid-non-const-global-variables)
 
 Index* read_index(const char* fname, int io_flags = 0);
 Index* read_index(FILE* f, int io_flags = 0);

@@ -36,7 +36,7 @@ namespace faiss {
 using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
-HNSWStats hnsw_stats;
+HNSWStats hnsw_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /**************************************************************
  * add / search blocks of descriptors

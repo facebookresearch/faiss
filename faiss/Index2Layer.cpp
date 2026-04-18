@@ -266,7 +266,8 @@ DistanceComputer* Index2Layer::get_distance_computer() const {
 /* The standalone codec interface */
 
 // block size used in Index2Layer::sa_encode
-int index2layer_sa_encode_bs = 32768;
+int index2layer_sa_encode_bs =
+        32768; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void Index2Layer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
