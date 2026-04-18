@@ -496,16 +496,44 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         READ1(n_levels);
         FAISS_THROW_IF_NOT_FMT(
                 n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
+        constexpr size_t bs = Panorama::kDefaultBatchSize;
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
-                nlist, code_size, n_levels);
+                nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
         for (size_t i = 0; i < nlist; i++) {
             ailp->ids[i].resize(sizes[i]);
-            size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                     ArrayInvertedListsPanorama::kBatchSize) *
-                    ArrayInvertedListsPanorama::kBatchSize;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
+            ailp->codes[i].resize(num_elems * code_size);
+            ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
+        }
+        for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
+            if (n > 0) {
+                read_vector_with_known_size(
+                        ailp->codes[i], f, ailp->codes[i].size());
+                read_vector_with_known_size(ailp->ids[i], f, n);
+                read_vector_with_known_size(
+                        ailp->cum_sums[i], f, ailp->cum_sums[i].size());
+            }
+        }
+        return ailp;
+    } else if (h == fourcc("ilp2") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        size_t nlist, code_size, n_levels, bs;
+        READ1(nlist);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilp2 nlist");
+        READ1(code_size);
+        READ1(n_levels);
+        READ1(bs);
+        FAISS_THROW_IF_NOT_FMT(
+                n_levels > 0, "invalid ilp2 n_levels %zd", n_levels);
+        auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
+                nlist, code_size, n_levels, bs);
+        std::vector<size_t> sizes(nlist);
+        read_ArrayInvertedLists_sizes(f, sizes);
+        for (size_t i = 0; i < nlist; i++) {
+            ailp->ids[i].resize(sizes[i]);
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
         }
@@ -1676,6 +1704,15 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivfp.get(), f);
         ivfp->code_size = ivfp->d * sizeof(float);
         READ1(ivfp->n_levels);
+        ivfp->batch_size = Panorama::kDefaultBatchSize;
+        read_InvertedLists(*ivfp, f, io_flags);
+        idx = std::move(ivfp);
+    } else if (h == fourcc("IwP2")) {
+        auto ivfp = std::make_unique<IndexIVFFlatPanorama>();
+        read_ivf_header(ivfp.get(), f);
+        ivfp->code_size = ivfp->d * sizeof(float);
+        READ1(ivfp->n_levels);
+        READ1(ivfp->batch_size);
         read_InvertedLists(*ivfp, f, io_flags);
         idx = std::move(ivfp);
     } else if (h == fourcc("IwFl")) {

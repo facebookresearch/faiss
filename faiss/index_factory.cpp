@@ -342,9 +342,11 @@ IndexIVF* parse_IndexIVF(
     if (match("FlatDedup")) {
         return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
     }
-    if (match("FlatPanorama([0-9]+)?")) {
+    if (match("FlatPanorama([0-9]+)?(_([0-9]+))?")) {
         int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
-        return new IndexIVFFlatPanorama(get_q(), d, nlist, nlevels, mt, own_il);
+        int bs = mres_to_int(sm[3], 128);
+        return new IndexIVFFlatPanorama(
+                get_q(), d, nlist, nlevels, mt, own_il, bs);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
