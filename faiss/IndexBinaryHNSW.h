@@ -11,6 +11,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/impl/HNSW.h>
+#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -39,6 +40,11 @@ struct IndexBinaryHNSW : IndexBinary {
     // IndexBinaryHNSW to create a full base layer graph that is
     // used when GpuIndexBinaryCagra::copyFrom(IndexBinaryHNSW*) is called.
     bool keep_max_size_level0 = false;
+
+    // Per-node locks for HNSW graph construction.
+    LockVector locks;
+    // locks are freed after each call to add() unless this flag is set.
+    bool retain_locks = false;
 
     explicit IndexBinaryHNSW();
     explicit IndexBinaryHNSW(int d, int M = 32);

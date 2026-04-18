@@ -18,6 +18,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/Panorama.h>
+#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -52,11 +53,17 @@ struct IndexHNSW : Index {
     // See impl/VisitedTable.h.
     std::optional<bool> use_visited_hashset;
 
+    // Per-node locks for HNSW graph construction.
+    LockVector locks;
+    // locks are freed after each call to add() unless this flag is set.
+    bool retain_locks = false;
+
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
 
     ~IndexHNSW() override;
 
+    /// Adds vectors to the index. May not be called concurrently.
     void add(idx_t n, const float* x) override;
 
     /// Trains the storage if needed

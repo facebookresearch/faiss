@@ -28,6 +28,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 
@@ -81,10 +82,8 @@ void hnsw_add_vertices(
         printf("  max_level = %d\n", max_level);
     }
 
-    std::vector<omp_lock_t> locks(ntotal);
-    for (size_t i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+    auto& locks = index_hnsw.locks;
+    locks.prepare(ntotal);
 
     // add vectors from highest to lowest level
     std::vector<int> hist;
@@ -200,9 +199,8 @@ void hnsw_add_vertices(
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
-
-    for (size_t i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
+    if (!index_hnsw.retain_locks) {
+        locks.clear();
     }
 }
 
@@ -366,6 +364,7 @@ void IndexHNSW::add(idx_t n, const float* x) {
 
 void IndexHNSW::reset() {
     hnsw.reset();
+    locks.clear();
     storage->reset();
     ntotal = 0;
 }
@@ -528,10 +527,7 @@ void IndexHNSW::init_level_0_from_entry_points(
         int n,
         const storage_idx_t* points,
         const storage_idx_t* nearests) {
-    std::vector<omp_lock_t> locks(ntotal);
-    for (idx_t i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+    locks.prepare(ntotal);
 
 #pragma omp parallel
     {
@@ -549,7 +545,7 @@ void IndexHNSW::init_level_0_from_entry_points(
             dis->set_query(vec.data());
 
             hnsw.add_links_starting_from(
-                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks.data(), vt);
+                    *dis, pt_id, nearest, (*dis)(nearest), 0, locks, vt);
 
             if (verbose && i % 10000 == 0) {
                 printf("  %d / %d\r", i, n);
@@ -561,8 +557,8 @@ void IndexHNSW::init_level_0_from_entry_points(
         printf("\n");
     }
 
-    for (idx_t i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
+    if (!retain_locks) {
+        locks.clear();
     }
 }
 
