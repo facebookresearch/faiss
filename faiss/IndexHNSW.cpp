@@ -94,7 +94,7 @@ void hnsw_add_vertices(
 
         // build histogram
         for (size_t i = 0; i < n; i++) {
-            storage_idx_t pt_id = i + n0;
+            storage_idx_t pt_id = static_cast<storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
             while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
@@ -110,7 +110,7 @@ void hnsw_add_vertices(
 
         // bucket sort
         for (size_t i = 0; i < n; i++) {
-            storage_idx_t pt_id = i + n0;
+            storage_idx_t pt_id = static_cast<storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
         }
@@ -122,7 +122,7 @@ void hnsw_add_vertices(
     { // perform add
         RandomGenerator rng2(789);
 
-        size_t i1 = n;
+        size_t i1 = static_cast<int>(n);
 
         for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
@@ -437,7 +437,7 @@ void IndexHNSW::search_level_0(
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(nprobe > 0);
 
-    storage_idx_t hnsw_ntotal = hnsw.levels.size();
+    size_t hnsw_ntotal = hnsw.levels.size();
 
     using RH = HeapBlockResultHandler<HNSW::C>;
     RH bres(n, distances, labels, k);
@@ -498,7 +498,7 @@ void IndexHNSW::init_level_0_from_knngraph(
         std::priority_queue<NodeDistFarther> initial_list;
 
         for (int j = 0; j < k; j++) {
-            int v1 = I[i * k + j];
+            int v1 = static_cast<int>(I[i * k + j]);
             if (v1 == i) {
                 continue;
             }
@@ -866,7 +866,7 @@ void IndexHNSW2Level::search(
         const IndexIVFPQ* index_ivfpq =
                 dynamic_cast<const IndexIVFPQ*>(storage);
 
-        int nprobe = index_ivfpq->nprobe;
+        size_t nprobe = index_ivfpq->nprobe;
 
         std::unique_ptr<idx_t[]> coarse_assign(new idx_t[n * nprobe]);
         std::unique_ptr<float[]> coarse_dis(new float[n * nprobe]);
@@ -902,7 +902,7 @@ void IndexHNSW2Level::search(
 
                 // mark all inverted list elements as visited
 
-                for (int j = 0; j < nprobe; j++) {
+                for (size_t j = 0; j < nprobe; j++) {
                     idx_t key = coarse_assign[j + i * nprobe];
                     if (key < 0) {
                         break;
@@ -921,7 +921,8 @@ void IndexHNSW2Level::search(
                     if (idxi[j] < 0) {
                         break;
                     }
-                    candidates.push(idxi[j], simi[j]);
+                    candidates.push(
+                            static_cast<storage_idx_t>(idxi[j]), simi[j]);
                 }
 
                 // reorder from sorted to heap
@@ -931,14 +932,14 @@ void IndexHNSW2Level::search(
                 search_from_candidates_2(
                         hnsw,
                         *dis,
-                        k,
+                        static_cast<int>(k),
                         idxi,
                         simi,
                         candidates,
                         vt,
                         search_stats,
                         0,
-                        k);
+                        static_cast<int>(k));
                 n1 += search_stats.n1;
                 n2 += search_stats.n2;
                 ndis += search_stats.ndis;
@@ -1061,7 +1062,7 @@ void IndexHNSWCagra::search(
                 auto idx = distrib(gen);
                 auto distance = (*dis)(idx);
                 if (distance < nearest_d[i]) {
-                    nearest[i] = idx;
+                    nearest[i] = static_cast<storage_idx_t>(idx);
                     nearest_d[i] = distance;
                 }
             }

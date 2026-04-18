@@ -34,13 +34,25 @@ void IndexNeuralNetCodec::sa_encode(idx_t n, const float* x, uint8_t* bytes)
         const {
     nn::Tensor2D x_tensor(n, d, x);
     nn::Int32Tensor2D codes_tensor = net->encode(x_tensor);
-    pack_bitstrings(n, M, nbits, codes_tensor.data(), bytes, code_size);
+    pack_bitstrings(
+            n,
+            M,
+            static_cast<int>(nbits),
+            codes_tensor.data(),
+            bytes,
+            code_size);
 }
 
 void IndexNeuralNetCodec::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     nn::Int32Tensor2D codes_tensor(n, M);
-    unpack_bitstrings(n, M, nbits, bytes, code_size, codes_tensor.data());
+    unpack_bitstrings(
+            n,
+            M,
+            static_cast<int>(nbits),
+            bytes,
+            code_size,
+            codes_tensor.data());
     nn::Tensor2D x_tensor = net->decode(codes_tensor);
     memcpy(x, x_tensor.data(), d * n * sizeof(float));
 }

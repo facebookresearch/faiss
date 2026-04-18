@@ -78,7 +78,7 @@ void Level1Quantizer::train_q1(
             printf("Training level-1 quantizer on %zd vectors in %zdD\n", n, d);
         }
 
-        Clustering clus(d, nlist, cp);
+        Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
         quantizer->reset();
         if (clustering_index) {
             clus.train(n, x, *clustering_index);
@@ -100,7 +100,7 @@ void Level1Quantizer::train_q1(
                 metric_type == METRIC_L2 ||
                 (metric_type == METRIC_INNER_PRODUCT && cp.spherical));
 
-        Clustering clus(d, nlist, cp);
+        Clustering clus(static_cast<int>(d), static_cast<int>(nlist), cp);
         if (!clustering_index) {
             IndexFlatL2 assigner(d);
             clus.train(n, x, assigner);
@@ -339,7 +339,8 @@ void IndexIVF::search(
                 params ? params->quantizer_params : nullptr);
 
         double t1 = getmillisecs();
-        invlists->prefetch_lists(idx.get(), sub_n * cur_nprobe);
+        invlists->prefetch_lists(
+                idx.get(), static_cast<int>(sub_n * cur_nprobe));
 
         search_preassigned(
                 sub_n,
@@ -769,7 +770,7 @@ void IndexIVF::range_search(
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(keys.get(), nx * cur_nprobe);
+    invlists->prefetch_lists(keys.get(), static_cast<int>(nx * cur_nprobe));
 
     range_search_preassigned(
             nx,
@@ -984,7 +985,7 @@ void IndexIVF::search1(
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(keys.get(), nx * cur_nprobe);
+    invlists->prefetch_lists(keys.get(), static_cast<int>(nx * cur_nprobe));
 
     std::unique_ptr<InvertedListScanner> scanner(
             get_InvertedListScanner(false, nullptr, params));
@@ -1101,7 +1102,7 @@ void IndexIVF::search_and_reconstruct(
 
     quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx.get(), n * cur_nprobe);
+    invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -1123,8 +1124,8 @@ void IndexIVF::search_and_reconstruct(
             // Fill with NaNs
             memset(reconstructed, -1, sizeof(*reconstructed) * d);
         } else {
-            int list_no = lo_listno(key);
-            int offset = lo_offset(key);
+            size_t list_no = lo_listno(key);
+            size_t offset = lo_offset(key);
 
             // Update label to the actual id
             labels[ij] = invlists->get_single_id(list_no, offset);
@@ -1157,7 +1158,7 @@ void IndexIVF::search_and_return_codes(
 
     quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx.get(), n * cur_nprobe);
+    invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -1186,8 +1187,8 @@ void IndexIVF::search_and_return_codes(
             // Fill with 0xff
             memset(code1, -1, code_size_1);
         } else {
-            int list_no = lo_listno(key);
-            int offset = lo_offset(key);
+            size_t list_no = lo_listno(key);
+            size_t offset = lo_offset(key);
             const uint8_t* cc = invlists->get_single_code(list_no, offset);
 
             labels[ij] = invlists->get_single_id(list_no, offset);

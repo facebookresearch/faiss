@@ -151,7 +151,7 @@ void IndexBinaryIVF::search(
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(idx.get(), n * nprobe_);
+    invlists->prefetch_lists(idx.get(), static_cast<int>(n * nprobe_));
 
     search_preassigned(
             n,
@@ -209,7 +209,7 @@ void IndexBinaryIVF::search_and_reconstruct(
 
     quantizer->search(n, x, nprobe_2, coarse_dis.get(), idx.get());
 
-    invlists->prefetch_lists(idx.get(), n * nprobe_2);
+    invlists->prefetch_lists(idx.get(), static_cast<int>(n * nprobe_2));
 
     // search_preassigned() with `store_pairs` enabled to obtain the list_no
     // and offset into `codes` for reconstruction
@@ -277,7 +277,7 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
             printf("Training quantizer on %" PRId64 " vectors in %dD\n", n, d);
         }
 
-        Clustering clus(d, nlist, cp);
+        Clustering clus(d, static_cast<int>(nlist), cp);
         quantizer->reset();
 
         IndexFlatL2 index_tmp(d);
@@ -705,9 +705,10 @@ void search_knn_hamming_per_invlist(
     int32_t* keys = new int32_t[n * nprobe];
     std::unique_ptr<int32_t[]> delete_keys(keys);
     for (size_t i = 0; i < n * static_cast<size_t>(nprobe); i++) {
-        keys[i] = keys_in[i];
+        keys[i] = static_cast<int32_t>(keys_in[i]);
     }
-    matrix_bucket_sort_inplace(n, nprobe, keys, ivf->nlist, lims.data(), 0);
+    matrix_bucket_sort_inplace(
+            n, nprobe, keys, static_cast<int32_t>(ivf->nlist), lims.data(), 0);
 
     using C = CMax<int32_t, idx_t>;
     heap_heapify<C>(n * k, distances, labels);
@@ -754,7 +755,12 @@ void search_knn_hamming_per_invlist(
         } else {
             for (; i + BS <= nq; i += BS) {
                 BlockSearchVariableK<HammingComputer, BS> bc(
-                        code_size, k, x, keys + l0 + i, distances, labels);
+                        code_size,
+                        static_cast<int>(k),
+                        x,
+                        keys + l0 + i,
+                        distances,
+                        labels);
                 for (idx_t j = 0; j < nb; j++) {
                     bc.add_bcode(bcodes + j * code_size, ids[j]);
                 }
@@ -764,7 +770,8 @@ void search_knn_hamming_per_invlist(
         // leftovers
         for (; i < nq; i++) {
             idx_t qno = keys[l0 + i];
-            HammingComputer hc(x + qno * code_size, code_size);
+            HammingComputer hc(
+                    x + qno * code_size, static_cast<int>(code_size));
             idx_t* __restrict idxi = labels + qno * k;
             int32_t* __restrict simi = distances + qno * k;
             int32_t simi0 = simi[0];
@@ -868,7 +875,7 @@ void IndexBinaryIVF::range_search(
     indexIVF_stats.quantization_time += getmillisecs() - t0;
 
     t0 = getmillisecs();
-    invlists->prefetch_lists(idx.get(), n * nprobe_2);
+    invlists->prefetch_lists(idx.get(), static_cast<int>(n * nprobe_2));
 
     range_search_preassigned(n, x, radius, idx.get(), coarse_dis.get(), res);
 

@@ -92,7 +92,7 @@ idx_t subsample_training_set(
         const idx_t new_nx = clus.k * clus.max_points_per_centroid;
         perm.resize(new_nx);
         for (idx_t i = 0; i < new_nx; i++) {
-            perm[i] = rng.rand_int(nx);
+            perm[i] = rng.rand_int(static_cast<int>(nx));
         }
     } else {
         // use subsampling with a default std rng
@@ -262,7 +262,7 @@ int split_clusters(
         }
     }
 
-    return nsplit;
+    return static_cast<int>(nsplit);
 }
 
 } // namespace
@@ -538,7 +538,7 @@ void Clustering::train_encoded(
                     obj,
                     (getmillisecs() - t0) / 1000.0,
                     t_search_tot / 1000,
-                    imbalance_factor(nx, k, assign.get()),
+                    imbalance_factor(nx, static_cast<int>(k), assign.get()),
                     nsplit};
             iteration_stats.push_back(stats);
 
@@ -649,7 +649,7 @@ float kmeans_clustering(
         size_t k,
         const float* x,
         float* centroids) {
-    Clustering clus(d, k);
+    Clustering clus(static_cast<int>(d), static_cast<int>(k));
     clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
     IndexFlatL2 index(d);
@@ -700,7 +700,7 @@ void ProgressiveDimClustering::train(
         ProgressiveDimIndexFactory& factory) {
     int d_prev = 0;
 
-    PCAMatrix pca(d, d);
+    PCAMatrix pca(static_cast<int>(d), static_cast<int>(d));
 
     std::vector<float> xbuf;
     if (apply_pca) {
@@ -725,7 +725,7 @@ void ProgressiveDimClustering::train(
         }
         std::unique_ptr<Index> clustering_index(factory(di));
 
-        Clustering clus(di, k, *this);
+        Clustering clus(di, static_cast<int>(k), *this);
         if (d_prev > 0) {
             // copy warm-start centroids (padded with 0s)
             clus.centroids.resize(k * di);
