@@ -130,7 +130,8 @@ struct IndexPQStats {
     void reset();
 };
 
-FAISS_API extern IndexPQStats indexPQ_stats;
+FAISS_API extern IndexPQStats
+        indexPQ_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** Quantizer where centroids are virtual: they are the Cartesian
  *  product of sub-centroids. */
@@ -163,7 +164,8 @@ struct MultiIndexQuantizer : Index {
 };
 
 // block size used in MultiIndexQuantizer::search
-FAISS_API extern int multi_index_quantizer_search_bs;
+FAISS_API extern int
+        multi_index_quantizer_search_bs; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** MultiIndexQuantizer where the PQ assignment is performed by sub-indexes
  */

@@ -40,6 +40,11 @@ struct IndexNNDescent : Index {
     explicit IndexNNDescent(Index* storage, int K = 32);
 
     ~IndexNNDescent() override;
+    // rule of five defaults
+    IndexNNDescent(const IndexNNDescent&) = default;
+    IndexNNDescent& operator=(const IndexNNDescent&) = default;
+    IndexNNDescent(IndexNNDescent&&) = default;
+    IndexNNDescent& operator=(IndexNNDescent&&) = default;
 
     void add(idx_t n, const float* x) override;
 

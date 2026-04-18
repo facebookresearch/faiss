@@ -191,6 +191,16 @@ struct AdditiveCoarseQuantizer : Index {
 struct SearchParametersResidualCoarseQuantizer : SearchParameters {
     float beam_factor = 4.0f;
     ~SearchParametersResidualCoarseQuantizer() {}
+    // rule of five defaults
+    SearchParametersResidualCoarseQuantizer() = default;
+    SearchParametersResidualCoarseQuantizer(
+            const SearchParametersResidualCoarseQuantizer&) = default;
+    SearchParametersResidualCoarseQuantizer& operator=(
+            const SearchParametersResidualCoarseQuantizer&) = default;
+    SearchParametersResidualCoarseQuantizer(
+            SearchParametersResidualCoarseQuantizer&&) = default;
+    SearchParametersResidualCoarseQuantizer& operator=(
+            SearchParametersResidualCoarseQuantizer&&) = default;
 };
 
 /** The ResidualCoarseQuantizer is a bit specialized compared to the

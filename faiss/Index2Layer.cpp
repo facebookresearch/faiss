@@ -168,7 +168,7 @@ struct DistanceXPQ4 : Distance2Level {
                 dynamic_cast<IndexFlat*>(storage.q1.quantizer);
 
         FAISS_ASSERT(quantizer);
-        M = storage.pq.M;
+        M = static_cast<int>(storage.pq.M);
         pq_l1_tab = quantizer->get_xb();
     }
 
@@ -207,8 +207,8 @@ struct Distance2xXPQ4 : Distance2Level {
 
         FAISS_ASSERT(mi);
         FAISS_ASSERT(storage.pq.M % 2 == 0);
-        M_2 = storage.pq.M / 2;
-        mi_nbits = mi->pq.nbits;
+        M_2 = static_cast<int>(storage.pq.M / 2);
+        mi_nbits = static_cast<int>(mi->pq.nbits);
         pq_l1_tab = mi->pq.centroids.data();
     }
 
@@ -266,7 +266,8 @@ DistanceComputer* Index2Layer::get_distance_computer() const {
 /* The standalone codec interface */
 
 // block size used in Index2Layer::sa_encode
-int index2layer_sa_encode_bs = 32768;
+int index2layer_sa_encode_bs =
+        32768; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void Index2Layer::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);

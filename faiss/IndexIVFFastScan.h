@@ -104,6 +104,11 @@ struct IndexIVFFastScan : IndexIVF {
     void init_code_packer();
 
     ~IndexIVFFastScan() override;
+    // rule of five defaults
+    IndexIVFFastScan(const IndexIVFFastScan&) = default;
+    IndexIVFFastScan& operator=(const IndexIVFFastScan&) = default;
+    IndexIVFFastScan(IndexIVFFastScan&&) = default;
+    IndexIVFFastScan& operator=(IndexIVFFastScan&&) = default;
 
     /// orig's inverted lists (for debugging)
     InvertedLists* orig_invlists = nullptr;
@@ -424,10 +429,21 @@ struct IVFFastScanStats {
         reset();
     }
     void reset() {
-        memset(this, 0, sizeof(*this));
+        for (auto& t : times)
+            t = 0;
+        t_compute_distance_tables = 0;
+        t_round = 0;
+        t_copy_pack = 0;
+        t_scan = 0;
+        t_to_flat = 0;
+        for (auto& t : reservoir_times)
+            t = 0;
+        t_aq_encode = 0;
+        t_aq_norm_encode = 0;
     }
 };
 
-FAISS_API extern IVFFastScanStats IVFFastScan_stats;
+FAISS_API extern IVFFastScanStats
+        IVFFastScan_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss

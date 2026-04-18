@@ -63,6 +63,11 @@ struct Level1Quantizer {
     Level1Quantizer();
 
     ~Level1Quantizer();
+    // rule of five defaults
+    Level1Quantizer(const Level1Quantizer&) = default;
+    Level1Quantizer& operator=(const Level1Quantizer&) = default;
+    Level1Quantizer(Level1Quantizer&&) = default;
+    Level1Quantizer& operator=(Level1Quantizer&&) = default;
 };
 
 struct SearchParametersIVF : SearchParameters {
@@ -73,6 +78,12 @@ struct SearchParametersIVF : SearchParameters {
     void* inverted_list_context = nullptr;
 
     virtual ~SearchParametersIVF() {}
+    // rule of five defaults
+    SearchParametersIVF() = default;
+    SearchParametersIVF(const SearchParametersIVF&) = default;
+    SearchParametersIVF& operator=(const SearchParametersIVF&) = default;
+    SearchParametersIVF(SearchParametersIVF&&) = default;
+    SearchParametersIVF& operator=(SearchParametersIVF&&) = default;
 };
 
 // the new convention puts the index type after SearchParameters
@@ -150,6 +161,11 @@ struct IndexIVFInterface : Level1Quantizer {
             IndexIVFStats* stats = nullptr) const = 0;
 
     virtual ~IndexIVFInterface() {}
+    // rule of five defaults
+    IndexIVFInterface(const IndexIVFInterface&) = default;
+    IndexIVFInterface& operator=(const IndexIVFInterface&) = default;
+    IndexIVFInterface(IndexIVFInterface&&) = default;
+    IndexIVFInterface& operator=(IndexIVFInterface&&) = default;
 };
 
 /** Index based on a inverted file (IVF)
@@ -435,6 +451,11 @@ struct IndexIVF : Index, IndexIVFInterface {
             idx_t a2) const;
 
     ~IndexIVF() override;
+    // rule of five defaults
+    IndexIVF(const IndexIVF&) = default;
+    IndexIVF& operator=(const IndexIVF&) = default;
+    IndexIVF(IndexIVF&&) = default;
+    IndexIVF& operator=(IndexIVF&&) = default;
 
     size_t get_list_size(size_t list_no) const {
         return invlists->list_size(list_no);
@@ -556,10 +577,16 @@ struct InvertedListScanner {
             ResultHandler& handler) const;
 
     virtual ~InvertedListScanner() {}
+    // rule of five defaults
+    InvertedListScanner(const InvertedListScanner&) = default;
+    InvertedListScanner& operator=(const InvertedListScanner&) = default;
+    InvertedListScanner(InvertedListScanner&&) = default;
+    InvertedListScanner& operator=(InvertedListScanner&&) = default;
 };
 
 // whether to check that coarse quantizers are the same
-FAISS_API extern bool check_compatible_for_merge_expensive_check;
+FAISS_API extern bool
+        check_compatible_for_merge_expensive_check; // NOLINT(facebook-avoid-non-const-global-variables)
 
 struct IndexIVFStats {
     size_t nq;                // nb of queries run
@@ -577,7 +604,8 @@ struct IndexIVFStats {
 };
 
 // global var that collects them all
-FAISS_API extern IndexIVFStats indexIVF_stats;
+FAISS_API extern IndexIVFStats
+        indexIVF_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss
 

@@ -51,6 +51,11 @@ struct AutoTuneCriterion {
     virtual double evaluate(const float* D, const idx_t* I) const = 0;
 
     virtual ~AutoTuneCriterion() {}
+    // rule of five defaults
+    AutoTuneCriterion(const AutoTuneCriterion&) = default;
+    AutoTuneCriterion& operator=(const AutoTuneCriterion&) = default;
+    AutoTuneCriterion(AutoTuneCriterion&&) = default;
+    AutoTuneCriterion& operator=(AutoTuneCriterion&&) = default;
 };
 
 struct OneRecallAtRCriterion : AutoTuneCriterion {
@@ -61,6 +66,11 @@ struct OneRecallAtRCriterion : AutoTuneCriterion {
     double evaluate(const float* D, const idx_t* I) const override;
 
     ~OneRecallAtRCriterion() override {}
+    // rule of five defaults
+    OneRecallAtRCriterion(const OneRecallAtRCriterion&) = default;
+    OneRecallAtRCriterion& operator=(const OneRecallAtRCriterion&) = default;
+    OneRecallAtRCriterion(OneRecallAtRCriterion&&) = default;
+    OneRecallAtRCriterion& operator=(OneRecallAtRCriterion&&) = default;
 };
 
 struct IntersectionCriterion : AutoTuneCriterion {
@@ -71,6 +81,11 @@ struct IntersectionCriterion : AutoTuneCriterion {
     double evaluate(const float* D, const idx_t* I) const override;
 
     ~IntersectionCriterion() override {}
+    // rule of five defaults
+    IntersectionCriterion(const IntersectionCriterion&) = default;
+    IntersectionCriterion& operator=(const IntersectionCriterion&) = default;
+    IntersectionCriterion(IntersectionCriterion&&) = default;
+    IntersectionCriterion& operator=(IntersectionCriterion&&) = default;
 };
 
 /**
@@ -218,6 +233,11 @@ struct ParameterSpace {
             OperatingPoints* ops) const;
 
     virtual ~ParameterSpace() {}
+    // rule of five defaults
+    ParameterSpace(const ParameterSpace&) = default;
+    ParameterSpace& operator=(const ParameterSpace&) = default;
+    ParameterSpace(ParameterSpace&&) = default;
+    ParameterSpace& operator=(ParameterSpace&&) = default;
 };
 
 } // namespace faiss

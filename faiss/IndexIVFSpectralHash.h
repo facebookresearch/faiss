@@ -84,6 +84,11 @@ struct IndexIVFSpectralHash : IndexIVF {
     void replace_vt(IndexPreTransform* index, bool own = false);
 
     ~IndexIVFSpectralHash() override;
+    // rule of five defaults
+    IndexIVFSpectralHash(const IndexIVFSpectralHash&) = default;
+    IndexIVFSpectralHash& operator=(const IndexIVFSpectralHash&) = default;
+    IndexIVFSpectralHash(IndexIVFSpectralHash&&) = default;
+    IndexIVFSpectralHash& operator=(IndexIVFSpectralHash&&) = default;
 };
 
 } // namespace faiss

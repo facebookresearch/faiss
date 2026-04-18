@@ -30,6 +30,11 @@ struct IndexNeuralNetCodec : IndexFlatCodes {
     void sa_decode(idx_t n, const uint8_t* codes, float* x) const override;
 
     ~IndexNeuralNetCodec() override {}
+    // rule of five defaults
+    IndexNeuralNetCodec(const IndexNeuralNetCodec&) = default;
+    IndexNeuralNetCodec& operator=(const IndexNeuralNetCodec&) = default;
+    IndexNeuralNetCodec(IndexNeuralNetCodec&&) = default;
+    IndexNeuralNetCodec& operator=(IndexNeuralNetCodec&&) = default;
 };
 
 struct IndexQINCo : IndexNeuralNetCodec {
@@ -44,6 +49,11 @@ struct IndexQINCo : IndexNeuralNetCodec {
             MetricType metric = METRIC_L2);
 
     ~IndexQINCo() {}
+    // rule of five defaults
+    IndexQINCo(const IndexQINCo&) = default;
+    IndexQINCo& operator=(const IndexQINCo&) = default;
+    IndexQINCo(IndexQINCo&&) = default;
+    IndexQINCo& operator=(IndexQINCo&&) = default;
 };
 
 } // namespace faiss

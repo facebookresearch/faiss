@@ -90,6 +90,12 @@ struct SearchParameters {
     IDSelector* sel = nullptr;
     /// make sure we can dynamic_cast this
     virtual ~SearchParameters() {}
+    // rule of five defaults
+    SearchParameters() = default;
+    SearchParameters(const SearchParameters&) = default;
+    SearchParameters& operator=(const SearchParameters&) = default;
+    SearchParameters(SearchParameters&&) = default;
+    SearchParameters& operator=(SearchParameters&&) = default;
 };
 
 /** Abstract structure for an index, supports adding vectors and searching
@@ -115,7 +121,7 @@ struct Index {
     float metric_arg; ///< argument of the metric type
 
     explicit Index(idx_t d_in = 0, MetricType metric = METRIC_L2)
-            : d(d_in),
+            : d(static_cast<int>(d_in)),
               ntotal(0),
               verbose(false),
               is_trained(true),
@@ -123,6 +129,11 @@ struct Index {
               metric_arg(0) {}
 
     virtual ~Index();
+    // rule of five defaults
+    Index(const Index&) = default;
+    Index& operator=(const Index&) = default;
+    Index(Index&&) = default;
+    Index& operator=(Index&&) = default;
 
     /** Perform training on a representative set of vectors
      *
