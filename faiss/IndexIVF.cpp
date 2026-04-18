@@ -58,6 +58,7 @@ void Level1Quantizer::train_q1(
         const float* x,
         bool verbose,
         MetricType metric_type) {
+    FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     size_t d = quantizer->d;
     if (quantizer->is_trained &&
         (static_cast<size_t>(quantizer->ntotal) == nlist)) {
@@ -188,6 +189,7 @@ void IndexIVF::add(idx_t n, const float* x) {
 }
 
 void IndexIVF::add_with_ids(idx_t n, const float* x, const idx_t* xids) {
+    FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     std::unique_ptr<idx_t[]> coarse_idx(new idx_t[n]);
     quantizer->assign(n, x, coarse_idx.get());
@@ -309,6 +311,7 @@ void IndexIVF::search(
         idx_t* labels,
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     const IVFSearchParameters* params = nullptr;
     if (params_in) {
@@ -734,6 +737,7 @@ void IndexIVF::range_search(
         float radius,
         RangeSearchResult* result,
         const SearchParameters* params_in) const {
+    FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     const IVFSearchParameters* params = nullptr;
     const SearchParameters* quantizer_params = nullptr;
     if (params_in) {

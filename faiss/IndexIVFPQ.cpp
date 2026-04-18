@@ -388,6 +388,7 @@ void initialize_IVFPQ_precomputed_table(
         AlignedTable<float>& precomputed_table,
         bool by_residual,
         bool verbose) {
+    FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     size_t nlist = quantizer->ntotal;
     size_t d = quantizer->d;
     FAISS_THROW_IF_NOT(d == pq.d);
