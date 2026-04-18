@@ -165,16 +165,12 @@ struct QuantizerBF16<SIMDLevel::NONE> : ScalarQuantizer::SQuantizer {
     QuantizerBF16(size_t d_in, const std::vector<float>& /* unused */)
             : d(d_in) {}
 
-    void encode_vector(const float* x, uint8_t* code) const final {
-        for (size_t i = 0; i < d; i++) {
-            ((uint16_t*)code)[i] = encode_bf16(x[i]);
-        }
+    void encode_vector(const float* x, uint8_t* code) const override {
+        encode_bf16_simd(x, (uint16_t*)code, d);
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
-        for (size_t i = 0; i < d; i++) {
-            x[i] = decode_bf16(((uint16_t*)code)[i]);
-        }
+    void decode_vector(const uint8_t* code, float* x) const override {
+        decode_bf16_simd((const uint16_t*)code, x, d);
     }
 
     FAISS_ALWAYS_INLINE float reconstruct_component(
@@ -188,6 +184,11 @@ template <SIMDLevel SL>
 struct QuantizerBF16 : QuantizerBF16<SIMDLevel::NONE> {
     using QuantizerBF16<SIMDLevel::NONE>::QuantizerBF16;
 };
+
+template <>
+struct QuantizerBF16<SIMDLevel::AVX512>;
+template <>
+struct QuantizerBF16<SIMDLevel::AVX512_SPR>;
 
 /*******************************************************************
  * 8bit_direct quantizer
