@@ -31,6 +31,7 @@
 #include <cassert>
 #include <cinttypes>
 #include <cmath>
+#include <type_traits>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
@@ -38,6 +39,10 @@
 #include <faiss/utils/ordered_key_value.h>
 
 #include <faiss/impl/platform_macros.h>
+
+#if defined(COMPILE_SIMD_AVX512_SPR)
+#include <faiss/utils/simd_impl/partitioning_avx512_spr.h>
+#endif
 
 namespace faiss {
 
@@ -115,6 +120,18 @@ void count_lt_and_eq(
         uint16_t thresh,
         size_t& n_lt,
         size_t& n_eq) {
+#if defined(COMPILE_SIMD_AVX512_SPR)
+    if constexpr (THE_SIMD_LEVEL == SIMDLevel::AVX512_SPR) {
+        if constexpr (C::is_max) {
+            partitioning_avx512_spr::count_lt_and_eq_max_avx512(
+                    vals, n, thresh, n_lt, n_eq);
+        } else {
+            partitioning_avx512_spr::count_lt_and_eq_min_avx512(
+                    vals, n, thresh, n_lt, n_eq);
+        }
+        return;
+    }
+#endif
     n_lt = n_eq = 0;
     simd16uint16 thr16(thresh);
 
@@ -152,6 +169,29 @@ int simd_compress_array(
         size_t n,
         uint16_t thresh,
         int n_eq) {
+#if defined(COMPILE_SIMD_AVX512_SPR)
+    if constexpr (THE_SIMD_LEVEL == SIMDLevel::AVX512_SPR) {
+        if constexpr (C::is_max && std::is_same_v<typename C::TI, int>) {
+            return partitioning_avx512_spr::simd_compress_array_max_int_avx512(
+                    vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                !C::is_max && std::is_same_v<typename C::TI, int>) {
+            return partitioning_avx512_spr::simd_compress_array_min_int_avx512(
+                    vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                C::is_max && std::is_same_v<typename C::TI, int64_t>) {
+            return partitioning_avx512_spr::
+                    simd_compress_array_max_int64_avx512(
+                            vals, ids, n, thresh, n_eq);
+        } else if constexpr (
+                !C::is_max && std::is_same_v<typename C::TI, int64_t>) {
+            return partitioning_avx512_spr::
+                    simd_compress_array_min_int64_avx512(
+                            vals, ids, n, thresh, n_eq);
+        }
+        // fall through for any unsupported TI types
+    }
+#endif
     simd16uint16 thr16(thresh);
     simd16uint16 mixmask(0xff00);
 
