@@ -284,11 +284,12 @@ void BinaryCuvsCagra::search(
             distances_float_view,
             filter_ref);
 
-    thrust::copy(
-            raft::resource::get_thrust_policy(raft_handle),
+    faiss::gpu::sanitizeCuvsIndices(
+            resources_,
             indices_copy.data_handle(),
-            indices_copy.data_handle() + indices_copy.size(),
-            indices_view.data_handle());
+            indices_view.data_handle(),
+            indices_copy.size(),
+            n_);
     auto distances_view = raft::make_device_matrix_view(
             outDistances.data(),
             static_cast<int64_t>(numQueries),
