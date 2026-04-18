@@ -239,15 +239,21 @@ typename C::T partition_fuzzy(
     constexpr bool is_uint16 = std::is_same<typename C::T, uint16_t>::value;
     if constexpr (is_uint16) {
         if (is_aligned_pointer(vals)) {
-            return with_simd_level_256bit([&]<SIMDLevel SL>() -> typename C::T {
-                if constexpr (SL == SIMDLevel::NONE) {
-                    return partitioning::partition_fuzzy_median3<C>(
-                            vals, ids, n, q_min, q_max, q_out);
-                } else {
-                    return partition_fuzzy_simd<SL, C>(
-                            (uint16_t*)vals, ids, n, q_min, q_max, q_out);
-                }
-            });
+            return with_simd_level_partitioning(
+                    [&]<SIMDLevel SL>() -> typename C::T {
+                        if constexpr (SL == SIMDLevel::NONE) {
+                            return partitioning::partition_fuzzy_median3<C>(
+                                    vals, ids, n, q_min, q_max, q_out);
+                        } else {
+                            return partition_fuzzy_simd<SL, C>(
+                                    (uint16_t*)vals,
+                                    ids,
+                                    n,
+                                    q_min,
+                                    q_max,
+                                    q_out);
+                        }
+                    });
         }
     }
     return partitioning::partition_fuzzy_median3<C>(

@@ -45,6 +45,11 @@ constexpr int AVAILABLE_SIMD_LEVELS_A1 =
 constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
 
+// Partitioning: 256-bit simdlib-based path (NONE/AVX2/NEON) plus an
+// AVX512_SPR fast path that uses VBMI2 instructions (compress/expand).
+constexpr int AVAILABLE_SIMD_LEVELS_PARTITIONING =
+        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::AVX512_SPR));
+
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
 /** The complete dispatching function. It takes into account:
@@ -159,6 +164,18 @@ inline auto with_simd_level(LambdaType&& action) {
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
     return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            std::forward<LambdaType>(action));
+}
+
+/**
+ * Use for the partitioning hot path: 256-bit simdlib-based NONE/AVX2/NEON
+ * levels plus an AVX512_SPR specialization that uses VBMI2 compress/expand
+ * instructions. On SPR+ this gives the fast path; on AVX2/AVX512 hosts the
+ * SPR case falls through to AVX2 (via the dispatcher's fallthrough chain).
+ */
+template <typename LambdaType>
+inline auto with_simd_level_partitioning(LambdaType&& action) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_PARTITIONING>(
             std::forward<LambdaType>(action));
 }
 
