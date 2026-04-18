@@ -53,9 +53,15 @@ struct WriterStreambuf : std::streambuf {
 // without intermediate buffering.
 struct ReaderStreambuf : std::streambuf {
     IOReader* r;
-    char single_char_buffer; // Single-byte buffer for underflow() operations
+    char single_char_buffer;    // Single-byte buffer for underflow() operations
+    size_t per_read_byte_limit; // Max bytes per individual read (0 = unlimited)
 
-    explicit ReaderStreambuf(IOReader* rr);
+    /// Construct with an optional per-read byte limit matching READVECTOR
+    /// semantics. Each individual xsgetn call that meets or exceeds the
+    /// limit returns 0, matching how READVECTOR rejects individual vectors
+    /// whose allocation would exceed deserialization_vector_byte_limit.
+    /// A limit of 0 means unlimited.
+    explicit ReaderStreambuf(IOReader* rr, size_t limit = 0);
     ~ReaderStreambuf() override;
 
    protected:
