@@ -9,6 +9,7 @@
 
 #include <faiss/IndexNNDescent.h>
 
+#include <atomic>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -119,22 +120,36 @@ void IndexNNDescent::search(
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
 
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 #pragma omp parallel
         {
-            VisitedTable vt(ntotal);
-
-            std::unique_ptr<DistanceComputer> dis(
-                    storage_distance_computer(storage));
+            std::unique_ptr<DistanceComputer> dis;
+            std::unique_ptr<VisitedTable> vt;
+            try {
+                vt = std::make_unique<VisitedTable>(ntotal);
+                dis.reset(storage_distance_computer(storage));
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
 
 #pragma omp for
             for (idx_t i = i0; i < i1; i++) {
-                idx_t* idxi = labels + i * k;
-                float* simi = distances + i * k;
-                dis->set_query(x + i * d);
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
+                }
+                try {
+                    idx_t* idxi = labels + i * k;
+                    float* simi = distances + i * k;
+                    dis->set_query(x + i * d);
 
-                nndescent.search(*dis, k, idxi, simi, vt);
+                    nndescent.search(*dis, k, idxi, simi, *vt);
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
             }
         }
+        omp_rethrow_if_exception(ex);
         InterruptCallback::check();
     }
 
