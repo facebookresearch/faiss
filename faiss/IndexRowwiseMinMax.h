@@ -49,6 +49,11 @@ struct IndexRowwiseMinMaxBase : Index {
 
     IndexRowwiseMinMaxBase();
     ~IndexRowwiseMinMaxBase() override;
+    // rule of five defaults
+    IndexRowwiseMinMaxBase(const IndexRowwiseMinMaxBase&) = default;
+    IndexRowwiseMinMaxBase& operator=(const IndexRowwiseMinMaxBase&) = default;
+    IndexRowwiseMinMaxBase(IndexRowwiseMinMaxBase&&) = default;
+    IndexRowwiseMinMaxBase& operator=(IndexRowwiseMinMaxBase&&) = default;
 
     void add(idx_t n, const float* x) override;
     void search(
@@ -93,7 +98,9 @@ struct IndexRowwiseMinMax : IndexRowwiseMinMaxBase {
 };
 
 /// block size for performing sa_encode and sa_decode
-FAISS_API extern int rowwise_minmax_sa_encode_bs;
-FAISS_API extern int rowwise_minmax_sa_decode_bs;
+FAISS_API extern int
+        rowwise_minmax_sa_encode_bs; // NOLINT(facebook-avoid-non-const-global-variables)
+FAISS_API extern int
+        rowwise_minmax_sa_decode_bs; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss

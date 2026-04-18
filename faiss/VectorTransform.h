@@ -63,6 +63,11 @@ struct VectorTransform {
     virtual void check_identical(const VectorTransform& other) const = 0;
 
     virtual ~VectorTransform() {}
+    // rule of five defaults
+    VectorTransform(const VectorTransform&) = default;
+    VectorTransform& operator=(const VectorTransform&) = default;
+    VectorTransform(VectorTransform&&) = default;
+    VectorTransform& operator=(VectorTransform&&) = default;
 };
 
 /** Generic linear transformation, with bias term applied on output
@@ -109,6 +114,11 @@ struct LinearTransform : VectorTransform {
     void check_identical(const VectorTransform& other) const override;
 
     ~LinearTransform() override {}
+    // rule of five defaults
+    LinearTransform(const LinearTransform&) = default;
+    LinearTransform& operator=(const LinearTransform&) = default;
+    LinearTransform(LinearTransform&&) = default;
+    LinearTransform& operator=(LinearTransform&&) = default;
 };
 
 /// Randomly rotate a set of vectors

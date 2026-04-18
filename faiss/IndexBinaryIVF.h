@@ -77,6 +77,11 @@ struct IndexBinaryIVF : IndexBinary {
     IndexBinaryIVF();
 
     ~IndexBinaryIVF() override;
+    // rule of five defaults
+    IndexBinaryIVF(const IndexBinaryIVF&) = default;
+    IndexBinaryIVF& operator=(const IndexBinaryIVF&) = default;
+    IndexBinaryIVF(IndexBinaryIVF&&) = default;
+    IndexBinaryIVF& operator=(IndexBinaryIVF&&) = default;
 
     void reset() override;
 
@@ -257,6 +262,13 @@ struct BinaryInvertedListScanner {
             RangeQueryResult& result) const = 0;
 
     virtual ~BinaryInvertedListScanner() {}
+    // rule of five defaults
+    BinaryInvertedListScanner() = default;
+    BinaryInvertedListScanner(const BinaryInvertedListScanner&) = default;
+    BinaryInvertedListScanner& operator=(const BinaryInvertedListScanner&) =
+            default;
+    BinaryInvertedListScanner(BinaryInvertedListScanner&&) = default;
+    BinaryInvertedListScanner& operator=(BinaryInvertedListScanner&&) = default;
 };
 
 } // namespace faiss

@@ -106,6 +106,11 @@ struct IndexPreTransform : Index {
     void check_compatible_for_merge(const Index& otherIndex) const override;
 
     ~IndexPreTransform() override;
+    // rule of five defaults
+    IndexPreTransform(const IndexPreTransform&) = default;
+    IndexPreTransform& operator=(const IndexPreTransform&) = default;
+    IndexPreTransform(IndexPreTransform&&) = default;
+    IndexPreTransform& operator=(IndexPreTransform&&) = default;
 };
 
 } // namespace faiss

@@ -45,6 +45,11 @@ struct IndexBinaryHNSW : IndexBinary {
     explicit IndexBinaryHNSW(IndexBinary* storage, int M = 32);
 
     ~IndexBinaryHNSW() override;
+    // rule of five defaults
+    IndexBinaryHNSW(const IndexBinaryHNSW&) = default;
+    IndexBinaryHNSW& operator=(const IndexBinaryHNSW&) = default;
+    IndexBinaryHNSW(IndexBinaryHNSW&&) = default;
+    IndexBinaryHNSW& operator=(IndexBinaryHNSW&&) = default;
 
     DistanceComputer* get_distance_computer() const;
 

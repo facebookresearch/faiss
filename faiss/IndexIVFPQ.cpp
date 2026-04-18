@@ -691,7 +691,7 @@ struct QueryTables {
                     dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
             FAISS_THROW_IF_NOT(miq);
             const ProductQuantizer& cpq = miq->pq;
-            int Mf = pq.M / cpq.M;
+            size_t Mf = pq.M / cpq.M;
 
             const float* qtab = sim_table_2; // query-specific table
             float* ltab = sim_table;         // (output) list-specific table
@@ -699,7 +699,7 @@ struct QueryTables {
             long k = key;
             for (size_t cm = 0; cm < cpq.M; cm++) {
                 // compute PQ index
-                int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
+                size_t ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
                 // get corresponding table
@@ -745,18 +745,18 @@ struct QueryTables {
                     dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
             FAISS_THROW_IF_NOT(miq);
             const ProductQuantizer& cpq = miq->pq;
-            int Mf = pq.M / cpq.M;
+            size_t Mf = pq.M / cpq.M;
 
             long k = key;
-            int m0 = 0;
+            size_t m0 = 0;
             for (size_t cm = 0; cm < cpq.M; cm++) {
-                int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
+                size_t ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
                 const float* pc = ivfpq.precomputed_table.data() +
                         (ki * pq.M + cm * Mf) * pq.ksub;
 
-                for (int m = m0; m < m0 + Mf; m++) {
+                for (size_t m = m0; m < m0 + Mf; m++) {
                     sim_table_ptrs[m] = pc;
                     pc += pq.ksub;
                 }
@@ -1055,7 +1055,7 @@ struct IVFPQScannerT : QueryTables {
         int ht = ivfpq.polysemous_ht;
         size_t n_hamming_pass = 0;
 
-        int code_size = pq.code_size;
+        int code_size = static_cast<int>(pq.code_size);
 
         size_t saved_j[8];
         int counter = 0;

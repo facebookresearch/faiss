@@ -145,6 +145,11 @@ struct Clustering : ClusteringParameters {
     void post_process_centroids();
 
     virtual ~Clustering() {}
+    // rule of five defaults
+    Clustering(const Clustering&) = default;
+    Clustering& operator=(const Clustering&) = default;
+    Clustering(Clustering&&) = default;
+    Clustering& operator=(Clustering&&) = default;
 };
 
 /** Exact 1D clustering algorithm
@@ -159,6 +164,11 @@ struct Clustering1D : Clustering {
     void train_exact(idx_t n, const float* x);
 
     virtual ~Clustering1D() {}
+    // rule of five defaults
+    Clustering1D(const Clustering1D&) = default;
+    Clustering1D& operator=(const Clustering1D&) = default;
+    Clustering1D(Clustering1D&&) = default;
+    Clustering1D& operator=(Clustering1D&&) = default;
 };
 
 struct ProgressiveDimClusteringParameters : ClusteringParameters {
@@ -174,6 +184,14 @@ struct ProgressiveDimIndexFactory {
     virtual Index* operator()(int dim);
 
     virtual ~ProgressiveDimIndexFactory() {}
+    // rule of five defaults
+    ProgressiveDimIndexFactory() = default;
+    ProgressiveDimIndexFactory(const ProgressiveDimIndexFactory&) = default;
+    ProgressiveDimIndexFactory& operator=(const ProgressiveDimIndexFactory&) =
+            default;
+    ProgressiveDimIndexFactory(ProgressiveDimIndexFactory&&) = default;
+    ProgressiveDimIndexFactory& operator=(ProgressiveDimIndexFactory&&) =
+            default;
 };
 
 /** K-means clustering with progressive dimensions used
@@ -208,6 +226,12 @@ struct ProgressiveDimClustering : ProgressiveDimClusteringParameters {
     void train(idx_t n, const float* x, ProgressiveDimIndexFactory& factory);
 
     virtual ~ProgressiveDimClustering() {}
+    // rule of five defaults
+    ProgressiveDimClustering(const ProgressiveDimClustering&) = default;
+    ProgressiveDimClustering& operator=(const ProgressiveDimClustering&) =
+            default;
+    ProgressiveDimClustering(ProgressiveDimClustering&&) = default;
+    ProgressiveDimClustering& operator=(ProgressiveDimClustering&&) = default;
 };
 
 /** simplified interface
