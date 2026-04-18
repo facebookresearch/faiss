@@ -1529,6 +1529,7 @@ void IndexIVFFastScan::postprocess_packed_codes(
         size_t /*n_added*/,
         const uint8_t* /*flat_codes*/) {}
 
-IVFFastScanStats IVFFastScan_stats;
+IVFFastScanStats
+        IVFFastScan_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss

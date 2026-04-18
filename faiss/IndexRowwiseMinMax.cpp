@@ -333,8 +333,10 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
 } // namespace
 
 // block size for performing sa_encode and sa_decode
-int rowwise_minmax_sa_encode_bs = 16384;
-int rowwise_minmax_sa_decode_bs = 16384;
+int rowwise_minmax_sa_encode_bs =
+        16384; // NOLINT(facebook-avoid-non-const-global-variables)
+int rowwise_minmax_sa_decode_bs =
+        16384; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /*********************************************************
  * IndexRowwiseMinMaxBase implementation

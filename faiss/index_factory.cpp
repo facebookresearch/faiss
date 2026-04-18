@@ -13,7 +13,7 @@
 
 #include <map>
 
-#include <regex>
+#include <regex> // NOLINT(facebook-hte-BadInclude-regex): used for index_factory parsing, re2 not suitable here
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/random.h>
@@ -69,7 +69,8 @@ namespace faiss {
  * index_factory
  ***************************************************************/
 
-int index_factory_verbose = 0;
+int index_factory_verbose =
+        0; // NOLINT(facebook-avoid-non-const-global-variables)
 
 namespace {
 
@@ -147,6 +148,7 @@ int mres_to_int(const std::ssub_match& mr, int deflt = -1, int begin = 0) {
 }
 
 std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
+        // NOLINT(facebook-avoid-non-const-global-variables)
         {"SQ8", ScalarQuantizer::QT_8bit},
         {"SQ4", ScalarQuantizer::QT_4bit},
         {"SQ6", ScalarQuantizer::QT_6bit},
@@ -160,6 +162,7 @@ const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
+        // NOLINT(facebook-avoid-non-const-global-variables)
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
         {"_Nnone", AdditiveQuantizer::ST_LUT_nonorm},
         {"_Nqint8", AdditiveQuantizer::ST_norm_qint8},
@@ -330,7 +333,7 @@ IndexIVF* parse_IndexIVF(
         MetricType mt,
         bool own_il) {
     std::smatch sm;
-    auto match = [&sm, &code_string](const std::string pattern) {
+    auto match = [&sm, &code_string](const std::string& pattern) {
         return re_match(code_string, pattern, sm);
     };
     auto get_q = [&quantizer] { return quantizer.release(); };
@@ -491,7 +494,7 @@ IndexIVF* parse_IndexIVF(
  */
 
 IndexHNSW* parse_IndexHNSW(
-        const std::string code_string,
+        const std::string& code_string,
         int d,
         MetricType mt,
         int hnsw_M) {
@@ -548,7 +551,7 @@ IndexHNSW* parse_IndexHNSW(
  */
 
 IndexNSG* parse_IndexNSG(
-        const std::string code_string,
+        const std::string& code_string,
         int d,
         MetricType mt,
         int nsg_R) {
@@ -944,7 +947,8 @@ std::unique_ptr<Index> index_factory_sub(
         IndexPreTransform* index_pt = new IndexPreTransform(sub_index.get());
         std::unique_ptr<Index> ret(index_pt);
         index_pt->own_fields = true;
-        sub_index.release();
+        // Ownership transferred to index_pt via own_fields = true
+        (void)sub_index.release();
         while (vts.size() > 0) {
             if (verbose) {
                 printf("prepend trans %d -> %d\n",

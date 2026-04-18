@@ -515,7 +515,8 @@ void IndexFastScan::search_implem_12(
     }
 }
 
-FastScanStats FastScan_stats;
+FastScanStats
+        FastScan_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 template <class C>
 void IndexFastScan::search_implem_14(

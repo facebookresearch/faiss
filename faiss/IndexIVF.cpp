@@ -17,7 +17,6 @@
 #include <cstdio>
 #include <limits>
 
-#include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
 
 #include <faiss/IndexFlat.h>
@@ -1297,7 +1296,8 @@ void IndexIVF::train_encoder(
     }
 }
 
-bool check_compatible_for_merge_expensive_check = true;
+bool check_compatible_for_merge_expensive_check =
+        true; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void IndexIVF::check_compatible_for_merge(const Index& otherIndex) const {
     // minimal sanity checks
@@ -1386,7 +1386,8 @@ void IndexIVFStats::add(const IndexIVFStats& other) {
     search_time += other.search_time;
 }
 
-IndexIVFStats indexIVF_stats;
+IndexIVFStats
+        indexIVF_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /*************************************************************************
  * InvertedListScanner

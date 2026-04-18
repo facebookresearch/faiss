@@ -68,7 +68,7 @@ void IndexFlat::range_search(
     FAISS_THROW_IF_NOT_MSG(result, "RangeSearchResult object must not be null");
     IDSelector* sel = params ? params->sel : nullptr;
 
-    switch (metric_type) {
+    switch (metric_type) { // NOLINT(clang-diagnostic-switch-enum)
         case METRIC_INNER_PRODUCT:
             range_search_inner_product(
                     x, get_xb(), d, n, ntotal, radius, result, sel);
@@ -88,7 +88,7 @@ void IndexFlat::compute_distance_subset(
         float* distances,
         const idx_t* labels) const {
     FAISS_THROW_IF_NOT(k > 0);
-    switch (metric_type) {
+    switch (metric_type) { // NOLINT(clang-diagnostic-switch-enum)
         case METRIC_INNER_PRODUCT:
             fvec_inner_products_by_idx(distances, x, get_xb(), labels, d, n, k);
             break;

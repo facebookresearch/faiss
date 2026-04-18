@@ -28,7 +28,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h> // NOLINT(facebook-hte-InlineHeader)
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
@@ -222,7 +222,8 @@ void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
 }
 
 // block size used in IndexIVFPQ::add_core_o
-int index_ivfpq_add_core_o_bs = 32768;
+int index_ivfpq_add_core_o_bs =
+        32768; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void IndexIVFPQ::add_core_o(
         idx_t n,
@@ -349,7 +350,8 @@ void IndexIVFPQ::reconstruct_from_offset(
 }
 
 /// 2G by default, accommodates tables up to PQ32 w/ 65536 centroids
-size_t precomputed_table_max_bytes = ((size_t)1) << 31;
+size_t precomputed_table_max_bytes = ((size_t)1)
+        << 31; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** Precomputed tables for residuals
  *
@@ -1308,10 +1310,14 @@ InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
     });
 }
 
-IndexIVFPQStats indexIVFPQ_stats;
+IndexIVFPQStats
+        indexIVFPQ_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void IndexIVFPQStats::reset() {
-    memset(this, 0, sizeof(*this));
+    nrefine = 0;
+    n_hamming_pass = 0;
+    search_cycles = 0;
+    refine_cycles = 0;
 }
 
 IndexIVFPQ::IndexIVFPQ() {

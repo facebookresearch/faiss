@@ -19,7 +19,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
 
-#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h> // NOLINT(facebook-hte-InlineHeader)
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
@@ -277,7 +277,7 @@ void IndexPQStats::reset() {
     nq = ncode = n_hamming_pass = 0;
 }
 
-IndexPQStats indexPQ_stats;
+IndexPQStats indexPQ_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 namespace {
 
@@ -906,7 +906,8 @@ void MultiIndexQuantizer::train(idx_t n, const float* x) {
 }
 
 // block size used in MultiIndexQuantizer::search
-int multi_index_quantizer_search_bs = 32768;
+int multi_index_quantizer_search_bs =
+        32768; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void MultiIndexQuantizer::search(
         idx_t n,
