@@ -50,6 +50,14 @@ struct IndexAdditiveQuantizerFastScan : IndexFastScan {
     IndexAdditiveQuantizerFastScan();
 
     ~IndexAdditiveQuantizerFastScan() override;
+    // rule of five defaults
+    IndexAdditiveQuantizerFastScan(const IndexAdditiveQuantizerFastScan&) =
+            default;
+    IndexAdditiveQuantizerFastScan& operator=(
+            const IndexAdditiveQuantizerFastScan&) = default;
+    IndexAdditiveQuantizerFastScan(IndexAdditiveQuantizerFastScan&&) = default;
+    IndexAdditiveQuantizerFastScan& operator=(
+            IndexAdditiveQuantizerFastScan&&) = default;
 
     /// build from an existing IndexAQ
     explicit IndexAdditiveQuantizerFastScan(

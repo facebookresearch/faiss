@@ -256,10 +256,11 @@ struct FastScanStats {
         reset();
     }
     void reset() {
-        memset(this, 0, sizeof(*this));
+        t0 = t1 = t2 = t3 = 0;
     }
 };
 
-FAISS_API extern FastScanStats FastScan_stats;
+FAISS_API extern FastScanStats
+        FastScan_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss

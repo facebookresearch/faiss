@@ -68,6 +68,12 @@ struct IndexIVFAdditiveQuantizer : IndexIVF {
             const override;
 
     ~IndexIVFAdditiveQuantizer() override;
+    // rule of five defaults
+    IndexIVFAdditiveQuantizer(const IndexIVFAdditiveQuantizer&) = default;
+    IndexIVFAdditiveQuantizer& operator=(const IndexIVFAdditiveQuantizer&) =
+            default;
+    IndexIVFAdditiveQuantizer(IndexIVFAdditiveQuantizer&&) = default;
+    IndexIVFAdditiveQuantizer& operator=(IndexIVFAdditiveQuantizer&&) = default;
 };
 
 /** IndexIVF based on a residual quantizer. Stored vectors are
@@ -105,6 +111,12 @@ struct IndexIVFResidualQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFResidualQuantizer();
 
     virtual ~IndexIVFResidualQuantizer();
+    // rule of five defaults
+    IndexIVFResidualQuantizer(const IndexIVFResidualQuantizer&) = default;
+    IndexIVFResidualQuantizer& operator=(const IndexIVFResidualQuantizer&) =
+            default;
+    IndexIVFResidualQuantizer(IndexIVFResidualQuantizer&&) = default;
+    IndexIVFResidualQuantizer& operator=(IndexIVFResidualQuantizer&&) = default;
 };
 
 /** IndexIVF based on a residual quantizer. Stored vectors are
@@ -133,6 +145,13 @@ struct IndexIVFLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFLocalSearchQuantizer();
 
     virtual ~IndexIVFLocalSearchQuantizer();
+    // rule of five defaults
+    IndexIVFLocalSearchQuantizer(const IndexIVFLocalSearchQuantizer&) = default;
+    IndexIVFLocalSearchQuantizer& operator=(
+            const IndexIVFLocalSearchQuantizer&) = default;
+    IndexIVFLocalSearchQuantizer(IndexIVFLocalSearchQuantizer&&) = default;
+    IndexIVFLocalSearchQuantizer& operator=(IndexIVFLocalSearchQuantizer&&) =
+            default;
 };
 
 /** IndexIVF based on a product residual quantizer. Stored vectors are
@@ -163,6 +182,15 @@ struct IndexIVFProductResidualQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFProductResidualQuantizer();
 
     virtual ~IndexIVFProductResidualQuantizer();
+    // rule of five defaults
+    IndexIVFProductResidualQuantizer(const IndexIVFProductResidualQuantizer&) =
+            default;
+    IndexIVFProductResidualQuantizer& operator=(
+            const IndexIVFProductResidualQuantizer&) = default;
+    IndexIVFProductResidualQuantizer(IndexIVFProductResidualQuantizer&&) =
+            default;
+    IndexIVFProductResidualQuantizer& operator=(
+            IndexIVFProductResidualQuantizer&&) = default;
 };
 
 /** IndexIVF based on a product local search quantizer. Stored vectors are
@@ -193,6 +221,15 @@ struct IndexIVFProductLocalSearchQuantizer : IndexIVFAdditiveQuantizer {
     IndexIVFProductLocalSearchQuantizer();
 
     virtual ~IndexIVFProductLocalSearchQuantizer();
+    // rule of five defaults
+    IndexIVFProductLocalSearchQuantizer(
+            const IndexIVFProductLocalSearchQuantizer&) = default;
+    IndexIVFProductLocalSearchQuantizer& operator=(
+            const IndexIVFProductLocalSearchQuantizer&) = default;
+    IndexIVFProductLocalSearchQuantizer(IndexIVFProductLocalSearchQuantizer&&) =
+            default;
+    IndexIVFProductLocalSearchQuantizer& operator=(
+            IndexIVFProductLocalSearchQuantizer&&) = default;
 };
 
 } // namespace faiss

@@ -77,7 +77,8 @@ struct IndexBinaryHashStats {
     void reset();
 };
 
-FAISS_API extern IndexBinaryHashStats indexBinaryHash_stats;
+FAISS_API extern IndexBinaryHashStats
+        indexBinaryHash_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** just uses the b first bits as a hash value */
 struct IndexBinaryMultiHash : IndexBinary {
@@ -100,6 +101,11 @@ struct IndexBinaryMultiHash : IndexBinary {
     IndexBinaryMultiHash();
 
     ~IndexBinaryMultiHash() override;
+    // rule of five defaults
+    IndexBinaryMultiHash(const IndexBinaryMultiHash&) = default;
+    IndexBinaryMultiHash& operator=(const IndexBinaryMultiHash&) = default;
+    IndexBinaryMultiHash(IndexBinaryMultiHash&&) = default;
+    IndexBinaryMultiHash& operator=(IndexBinaryMultiHash&&) = default;
 
     void reset() override;
 

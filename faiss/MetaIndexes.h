@@ -47,6 +47,11 @@ struct IndexSplitVectors : Index {
     void reset() override;
 
     ~IndexSplitVectors() override;
+    // rule of five defaults
+    IndexSplitVectors(const IndexSplitVectors&) = default;
+    IndexSplitVectors& operator=(const IndexSplitVectors&) = default;
+    IndexSplitVectors(IndexSplitVectors&&) = default;
+    IndexSplitVectors& operator=(IndexSplitVectors&&) = default;
 };
 
 /** index that returns random results.
@@ -76,6 +81,11 @@ struct IndexRandom : Index {
     void reset() override;
 
     ~IndexRandom() override;
+    // rule of five defaults
+    IndexRandom(const IndexRandom&) = default;
+    IndexRandom& operator=(const IndexRandom&) = default;
+    IndexRandom(IndexRandom&&) = default;
+    IndexRandom& operator=(IndexRandom&&) = default;
 };
 
 } // namespace faiss

@@ -75,6 +75,11 @@ struct IndexRefine : Index {
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
 
     ~IndexRefine() override;
+    // rule of five defaults
+    IndexRefine(const IndexRefine&) = default;
+    IndexRefine& operator=(const IndexRefine&) = default;
+    IndexRefine(IndexRefine&&) = default;
+    IndexRefine& operator=(IndexRefine&&) = default;
 };
 
 /** Version where the refinement index is an IndexFlat. It has one additional

@@ -48,6 +48,11 @@ struct Index2Layer : IndexFlatCodes {
 
     Index2Layer();
     ~Index2Layer() override;
+    // rule of five defaults
+    Index2Layer(const Index2Layer&) = default;
+    Index2Layer& operator=(const Index2Layer&) = default;
+    Index2Layer(Index2Layer&&) = default;
+    Index2Layer& operator=(Index2Layer&&) = default;
 
     void train(idx_t n, const float* x) override;
 
@@ -71,6 +76,7 @@ struct Index2Layer : IndexFlatCodes {
 };
 
 // block size used in Index2Layer::sa_encode
-FAISS_API extern int index2layer_sa_encode_bs;
+FAISS_API extern int
+        index2layer_sa_encode_bs; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss

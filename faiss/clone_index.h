@@ -30,6 +30,12 @@ struct Cloner {
     virtual Index* clone_Index(const Index*);
     virtual IndexIVF* clone_IndexIVF(const IndexIVF*);
     virtual ~Cloner() {}
+    // rule of five defaults
+    Cloner() = default;
+    Cloner(const Cloner&) = default;
+    Cloner& operator=(const Cloner&) = default;
+    Cloner(Cloner&&) = default;
+    Cloner& operator=(Cloner&&) = default;
 };
 
 Quantizer* clone_Quantizer(const Quantizer* quant);

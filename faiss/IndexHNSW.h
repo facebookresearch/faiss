@@ -56,6 +56,11 @@ struct IndexHNSW : Index {
     explicit IndexHNSW(Index* storage, int M = 32);
 
     ~IndexHNSW() override;
+    // rule of five defaults
+    IndexHNSW(const IndexHNSW&) = default;
+    IndexHNSW& operator=(const IndexHNSW&) = default;
+    IndexHNSW(IndexHNSW&&) = default;
+    IndexHNSW& operator=(IndexHNSW&&) = default;
 
     void add(idx_t n, const float* x) override;
 
