@@ -217,7 +217,8 @@ void IndexRandom::search(
                 perm[j] = j;
             }
             for (int j = 0; j < k; j++) {
-                std::swap(perm[j], perm[rng.rand_int(ntotal)]);
+                std::swap(
+                        perm[j], perm[rng.rand_int(static_cast<int>(ntotal))]);
                 I[j] = perm[j];
             }
         }

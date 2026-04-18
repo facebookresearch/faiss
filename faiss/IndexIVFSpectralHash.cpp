@@ -231,7 +231,7 @@ struct IVFScanner : InvertedListScanner {
               q(nbit),
               zero(nbit),
               qcode(index_in->code_size),
-              hc(qcode.data(), index_in->code_size) {
+              hc(qcode.data(), static_cast<int>(index_in->code_size)) {
         this->store_pairs = store_pairs_in;
         this->code_size = index->code_size;
         this->keep_max = is_similarity_metric(index->metric_type);

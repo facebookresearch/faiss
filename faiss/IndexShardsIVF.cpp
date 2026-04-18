@@ -183,7 +183,7 @@ void IndexShardsIVF::search(
 
     quantizer->search(n, x, nprobe, Dq.data(), Iq.data());
 
-    int64_t nshard = this->count();
+    int nshard = this->count();
 
     std::vector<distance_t> all_distances(nshard * k * n);
     std::vector<idx_t> all_labels(nshard * k * n);

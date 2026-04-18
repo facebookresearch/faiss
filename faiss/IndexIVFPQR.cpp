@@ -173,8 +173,8 @@ void IndexIVFPQR::search_preassigned(
                     continue;
                 }
 
-                int list_no = lo_listno(sl);
-                int ofs = lo_offset(sl);
+                int list_no = static_cast<int>(lo_listno(sl));
+                int ofs = static_cast<int>(lo_offset(sl));
 
                 FAISS_THROW_IF_NOT(
                         list_no >= 0 && static_cast<size_t>(list_no) < nlist);

@@ -183,7 +183,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind('_');
+    size_t pos = stok.rfind('_');
     return aq_search_type[stok.substr(pos)];
 }
 
