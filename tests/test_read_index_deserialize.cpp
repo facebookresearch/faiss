@@ -22,6 +22,7 @@
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
+#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/VectorTransform.h>
@@ -1645,6 +1646,62 @@ TEST(ReadIndexDeserialize, IVFQuantizerUntrained) {
     VectorIOReader reader;
     reader.data = buf;
     EXPECT_NO_THROW(read_index_up(&reader));
+}
+
+// -----------------------------------------------------------------------
+// Test: initialize_IVFPQ_precomputed_table rejects a null quantizer.
+// Protects against null-deref from corrupt serialized data where the
+// quantizer sub-index is absent (fourcc "null").
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, IVFPQNullQuantizerPrecomputeTableRejected) {
+    ProductQuantizer pq(4, 1, 8);
+    AlignedTable<float> precomputed_table;
+    int use_precomputed_table = 0;
+    EXPECT_THROW(
+            initialize_IVFPQ_precomputed_table(
+                    use_precomputed_table,
+                    /*quantizer=*/nullptr,
+                    pq,
+                    precomputed_table,
+                    /*by_residual=*/true,
+                    /*verbose=*/false),
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, IVFNullQuantizerSearchRejected) {
+    IndexIVFFlat ivf;
+    ivf.quantizer = nullptr;
+    ivf.is_trained = true;
+    std::vector<float> x(4);
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            ivf.search(1, x.data(), 1, distances.data(), labels.data()),
+            faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, IVFNullQuantizerRangeSearchRejected) {
+    IndexIVFFlat ivf;
+    ivf.quantizer = nullptr;
+    ivf.is_trained = true;
+    std::vector<float> x(4);
+    RangeSearchResult result(1);
+    EXPECT_THROW(
+            ivf.range_search(1, x.data(), 1.0, &result), faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, IVFNullQuantizerAddRejected) {
+    IndexIVFFlat ivf;
+    ivf.quantizer = nullptr;
+    std::vector<float> x(4);
+    EXPECT_THROW(ivf.add(1, x.data()), faiss::FaissException);
+}
+
+TEST(ReadIndexDeserialize, IVFNullQuantizerTrainRejected) {
+    IndexIVFFlat ivf;
+    ivf.quantizer = nullptr;
+    std::vector<float> x(4);
+    EXPECT_THROW(ivf.train(1, x.data()), faiss::FaissException);
 }
 
 // -----------------------------------------------------------------------
