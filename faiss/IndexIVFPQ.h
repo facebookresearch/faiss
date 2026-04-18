@@ -24,9 +24,15 @@ struct IVFPQSearchParameters : IVFSearchParameters {
     int polysemous_ht;           ///< Hamming thresh for polysemous filtering
     IVFPQSearchParameters() : scan_table_threshold(0), polysemous_ht(0) {}
     ~IVFPQSearchParameters() {}
+    // rule of five defaults
+    IVFPQSearchParameters(const IVFPQSearchParameters&) = default;
+    IVFPQSearchParameters& operator=(const IVFPQSearchParameters&) = default;
+    IVFPQSearchParameters(IVFPQSearchParameters&&) = default;
+    IVFPQSearchParameters& operator=(IVFPQSearchParameters&&) = default;
 };
 
-FAISS_API extern size_t precomputed_table_max_bytes;
+FAISS_API extern size_t
+        precomputed_table_max_bytes; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** Inverted file with Product Quantizer encoding. Each residual
  * vector is encoded as a product quantizer code.
@@ -151,7 +157,8 @@ struct IndexIVFPQ : IndexIVF {
 };
 
 // block size used in IndexIVFPQ::add_core_o
-FAISS_API extern int index_ivfpq_add_core_o_bs;
+FAISS_API extern int
+        index_ivfpq_add_core_o_bs; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** Pre-compute distance tables for IVFPQ with by-residual and METRIC_L2
  *
@@ -191,7 +198,8 @@ struct IndexIVFPQStats {
 };
 
 // global var that collects them all
-FAISS_API extern IndexIVFPQStats indexIVFPQ_stats;
+FAISS_API extern IndexIVFPQStats
+        indexIVFPQ_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 } // namespace faiss
 

@@ -45,6 +45,11 @@ struct IndexBinary {
     explicit IndexBinary(idx_t d = 0, MetricType metric = METRIC_L2);
 
     virtual ~IndexBinary();
+    // rule of five defaults
+    IndexBinary(const IndexBinary&) = default;
+    IndexBinary& operator=(const IndexBinary&) = default;
+    IndexBinary(IndexBinary&&) = default;
+    IndexBinary& operator=(IndexBinary&&) = default;
 
     /** Perform training on a representative set of vectors.
      *

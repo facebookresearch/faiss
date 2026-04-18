@@ -33,6 +33,11 @@ struct IndexBinaryFromFloat : IndexBinary {
     explicit IndexBinaryFromFloat(Index* index);
 
     ~IndexBinaryFromFloat() override;
+    // rule of five defaults
+    IndexBinaryFromFloat(const IndexBinaryFromFloat&) = default;
+    IndexBinaryFromFloat& operator=(const IndexBinaryFromFloat&) = default;
+    IndexBinaryFromFloat(IndexBinaryFromFloat&&) = default;
+    IndexBinaryFromFloat& operator=(IndexBinaryFromFloat&&) = default;
 
     void add(idx_t n, const uint8_t* x) override;
 

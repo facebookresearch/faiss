@@ -79,6 +79,12 @@ struct IndexIDMapTemplate : IndexT {
     void add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids) override;
 
     ~IndexIDMapTemplate() override;
+    // rule of five defaults
+    IndexIDMapTemplate(const IndexIDMapTemplate&) = default;
+    IndexIDMapTemplate& operator=(const IndexIDMapTemplate&) = default;
+    IndexIDMapTemplate(IndexIDMapTemplate&&) = default;
+    IndexIDMapTemplate& operator=(IndexIDMapTemplate&&) = default;
+
     IndexIDMapTemplate() {
         own_fields = false;
         index = nullptr;
@@ -120,6 +126,12 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
     void merge_from(IndexT& otherIndex, idx_t add_id = 0) override;
 
     ~IndexIDMap2Template() override {}
+    // rule of five defaults
+    IndexIDMap2Template(const IndexIDMap2Template&) = default;
+    IndexIDMap2Template& operator=(const IndexIDMap2Template&) = default;
+    IndexIDMap2Template(IndexIDMap2Template&&) = default;
+    IndexIDMap2Template& operator=(IndexIDMap2Template&&) = default;
+
     IndexIDMap2Template() {}
 };
 

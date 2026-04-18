@@ -47,7 +47,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
             const IndexAdditiveQuantizer& iaq,
             VectorDistance vd_)
             : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-              tmp(iaq.d * 2),
+              tmp(static_cast<size_t>(iaq.d) * 2),
               aq(*iaq.aq),
               vd(vd_),
               d(iaq.d) {}
@@ -79,7 +79,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
 
     explicit AQDistanceComputerLUT(const IndexAdditiveQuantizer& iaq)
             : FlatCodesDistanceComputer(iaq.codes.data(), iaq.code_size),
-              LUT(iaq.aq->total_codebook_size + iaq.d * 2),
+              LUT(iaq.aq->total_codebook_size + static_cast<size_t>(iaq.d) * 2),
               aq(*iaq.aq),
               d(iaq.d) {}
 
@@ -219,6 +219,9 @@ FlatCodesDistanceComputer* IndexAdditiveQuantizer::
                             false,
                             AdditiveQuantizer::ST_norm_cqint8>(*this);
 #undef DISPATCH
+                case AdditiveQuantizer::ST_decompress:
+                case AdditiveQuantizer::ST_norm_from_LUT:
+                case AdditiveQuantizer::ST_count:
                 default:
                     FAISS_THROW_FMT(
                             "search type %d not supported", aq->search_type);
@@ -276,6 +279,8 @@ void IndexAdditiveQuantizer::search(
                             *this, x, rh);
                     break;
 #undef DISPATCH
+                case AdditiveQuantizer::ST_decompress:
+                case AdditiveQuantizer::ST_count:
                 default:
                     FAISS_THROW_FMT(
                             "search type %d not supported", aq->search_type);
@@ -543,7 +548,7 @@ void ResidualCoarseQuantizer::search(
 
     int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
-        beam_size = ntotal;
+        beam_size = static_cast<int>(ntotal);
     }
     size_t memory_per_point = rq.memory_per_point(beam_size);
 

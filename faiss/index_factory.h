@@ -23,7 +23,8 @@ Index* index_factory(
         bool own_invlists = true);
 
 /// set to > 0 to get more logs from index_factory
-FAISS_API extern int index_factory_verbose;
+FAISS_API extern int
+        index_factory_verbose; // NOLINT(facebook-avoid-non-const-global-variables)
 
 IndexBinary* index_binary_factory(
         int d,

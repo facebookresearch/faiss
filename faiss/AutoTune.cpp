@@ -174,7 +174,7 @@ double OperatingPoints::t_for_perf(double perf) const {
     if (perf > a.back().perf) {
         return 1e50;
     }
-    int i0 = -1, i1 = a.size() - 1;
+    int i0 = -1, i1 = static_cast<int>(a.size()) - 1;
     while (i0 + 1 < i1) {
         int imed = (i0 + i1 + 1) / 2;
         if (a[imed].perf < perf) {
@@ -786,7 +786,7 @@ void ParameterSpace::explore(
     // make sure the slowest and fastest experiment are run
     perm[0] = 0;
     if (n_comb > 1) {
-        perm[1] = n_comb - 1;
+        perm[1] = static_cast<int>(n_comb - 1);
         rand_perm(&perm[2], n_comb - 2, 1234);
         for (size_t i = 2; i < perm.size(); i++) {
             perm[i]++;

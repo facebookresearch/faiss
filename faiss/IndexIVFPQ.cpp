@@ -28,7 +28,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
-#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
+#include <faiss/impl/pq_code_distance/pq_code_distance-inl.h> // NOLINT(facebook-hte-InlineHeader)
 #include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
@@ -222,7 +222,8 @@ void IndexIVFPQ::sa_decode(idx_t n, const uint8_t* codes, float* x) const {
 }
 
 // block size used in IndexIVFPQ::add_core_o
-int index_ivfpq_add_core_o_bs = 32768;
+int index_ivfpq_add_core_o_bs =
+        32768; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void IndexIVFPQ::add_core_o(
         idx_t n,
@@ -349,7 +350,8 @@ void IndexIVFPQ::reconstruct_from_offset(
 }
 
 /// 2G by default, accommodates tables up to PQ32 w/ 65536 centroids
-size_t precomputed_table_max_bytes = ((size_t)1) << 31;
+size_t precomputed_table_max_bytes = ((size_t)1)
+        << 31; // NOLINT(facebook-avoid-non-const-global-variables)
 
 /** Precomputed tables for residuals
  *
@@ -691,7 +693,7 @@ struct QueryTables {
                     dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
             FAISS_THROW_IF_NOT(miq);
             const ProductQuantizer& cpq = miq->pq;
-            int Mf = pq.M / cpq.M;
+            size_t Mf = pq.M / cpq.M;
 
             const float* qtab = sim_table_2; // query-specific table
             float* ltab = sim_table;         // (output) list-specific table
@@ -699,7 +701,7 @@ struct QueryTables {
             long k = key;
             for (size_t cm = 0; cm < cpq.M; cm++) {
                 // compute PQ index
-                int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
+                size_t ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
                 // get corresponding table
@@ -745,18 +747,18 @@ struct QueryTables {
                     dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
             FAISS_THROW_IF_NOT(miq);
             const ProductQuantizer& cpq = miq->pq;
-            int Mf = pq.M / cpq.M;
+            size_t Mf = pq.M / cpq.M;
 
             long k = key;
-            int m0 = 0;
+            size_t m0 = 0;
             for (size_t cm = 0; cm < cpq.M; cm++) {
-                int ki = k & ((uint64_t(1) << cpq.nbits) - 1);
+                size_t ki = k & ((uint64_t(1) << cpq.nbits) - 1);
                 k >>= cpq.nbits;
 
                 const float* pc = ivfpq.precomputed_table.data() +
                         (ki * pq.M + cm * Mf) * pq.ksub;
 
-                for (int m = m0; m < m0 + Mf; m++) {
+                for (size_t m = m0; m < m0 + Mf; m++) {
                     sim_table_ptrs[m] = pc;
                     pc += pq.ksub;
                 }
@@ -1055,7 +1057,7 @@ struct IVFPQScannerT : QueryTables {
         int ht = ivfpq.polysemous_ht;
         size_t n_hamming_pass = 0;
 
-        int code_size = pq.code_size;
+        int code_size = static_cast<int>(pq.code_size);
 
         size_t saved_j[8];
         int counter = 0;
@@ -1308,10 +1310,14 @@ InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
     });
 }
 
-IndexIVFPQStats indexIVFPQ_stats;
+IndexIVFPQStats
+        indexIVFPQ_stats; // NOLINT(facebook-avoid-non-const-global-variables)
 
 void IndexIVFPQStats::reset() {
-    memset(this, 0, sizeof(*this));
+    nrefine = 0;
+    n_hamming_pass = 0;
+    search_cycles = 0;
+    refine_cycles = 0;
 }
 
 IndexIVFPQ::IndexIVFPQ() {

@@ -474,7 +474,8 @@ static void read_ArrayInvertedLists_sizes(
     }
 }
 
-bool index_read_warn_on_null_invlists = true;
+bool index_read_warn_on_null_invlists =
+        true; // NOLINT(facebook-avoid-non-const-global-variables)
 
 std::unique_ptr<InvertedLists> read_InvertedLists_up(
         IOReader* f,
