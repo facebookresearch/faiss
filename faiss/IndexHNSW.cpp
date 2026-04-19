@@ -865,6 +865,9 @@ void IndexHNSW2Level::search(
 
         const IndexIVFPQ* index_ivfpq =
                 dynamic_cast<const IndexIVFPQ*>(storage);
+        FAISS_THROW_IF_NOT_MSG(
+                index_ivfpq,
+                "IndexHNSW2Level mixed search requires IndexIVFPQ storage");
 
         int nprobe = index_ivfpq->nprobe;
 
