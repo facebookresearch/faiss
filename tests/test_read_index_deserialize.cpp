@@ -1843,6 +1843,70 @@ TEST(ReadIndexDeserialize, IVFNullQuantizerTrainRejected) {
 // VectorTransform deserialization validation tests
 // -----------------------------------------------------------------------
 
+// Test: NormalizationTransform with d_in != d_out is rejected.
+// Protects against corrupt serialized data where dimension mismatch
+// causes memcpy to overflow the output buffer in apply_noalloc.
+TEST(ReadIndexDeserialize, NormalizationTransformDinDoutMismatch) {
+    // VNrm format: fourcc("VNrm") + norm(float) + d_in(int) + d_out(int) +
+    //              is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f); // norm (L2)
+    push_val<int>(buf, 16);     // d_in
+    push_val<int>(buf, 8);      // d_out (mismatch!)
+    push_val<bool>(buf, true);  // is_trained
+
+    expect_vt_read_throws_with(buf, "d_in == d_out");
+}
+
+// Test: NormalizationTransform with d_in == d_out is accepted.
+TEST(ReadIndexDeserialize, NormalizationTransformDinDoutMatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f); // norm (L2)
+    push_val<int>(buf, 16);     // d_in
+    push_val<int>(buf, 16);     // d_out (match)
+    push_val<bool>(buf, true);  // is_trained
+
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW(read_VectorTransform_up(&reader));
+}
+
+// Test: CenteringTransform with d_in != d_out is rejected.
+TEST(ReadIndexDeserialize, CenteringTransformDinDoutMismatch) {
+    // VCnt format: fourcc("VCnt") + mean(vector<float>) + d_in(int) +
+    //              d_out(int) + is_trained(bool)
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "VCnt");
+    push_vector<float>(buf, std::vector<float>(16, 0.0f)); // mean
+    push_val<int>(buf, 16);                                // d_in
+    push_val<int>(buf, 8);                                 // d_out (mismatch!)
+    push_val<bool>(buf, true);
+
+    expect_vt_read_throws_with(buf, "d_in == d_out");
+}
+
+// Test: IndexPreTransform with mismatched chain dimensions is rejected.
+TEST(ReadIndexDeserialize, PreTransformChainDimensionMismatch) {
+    // Build an IxPT with a NormalizationTransform (d_in=d_out=4) followed
+    // by a sub-index with d=8. The chain's d_out (4) != sub-index d (8).
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPT");
+    push_index_header(buf, /*d=*/4, /*ntotal=*/0);
+    push_val<int>(buf, 1); // nt = 1 transform
+    // NormalizationTransform with d_in=d_out=4
+    push_fourcc(buf, "VNrm");
+    push_val<float>(buf, 2.0f);
+    push_val<int>(buf, 4); // d_in
+    push_val<int>(buf, 4); // d_out
+    push_val<bool>(buf, true);
+    // Sub-index: IndexFlat with d=8 (mismatch with chain d_out=4)
+    push_minimal_flat(buf, /*d=*/8);
+
+    expect_read_throws_with(buf, "d_out=4");
+}
+
 TEST(ReadIndexDeserialize, HadamardRotationInvalidDout) {
     // HRot format: fourcc("HRot") + seed(int) + d_in(int) + d_out(int) +
     //              is_trained(bool)
