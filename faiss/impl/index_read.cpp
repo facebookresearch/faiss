@@ -514,14 +514,40 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, n_levels);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        size_t byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < nlist; i++) {
+            FAISS_THROW_IF_NOT_FMT(
+                    sizes[i] <= byte_limit / sizeof(idx_t),
+                    "inverted list %zu ids size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    sizes[i]);
             ailp->ids[i].resize(sizes[i]);
             size_t num_elems =
                     ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
                      ArrayInvertedListsPanorama::kBatchSize) *
                     ArrayInvertedListsPanorama::kBatchSize;
-            ailp->codes[i].resize(num_elems * code_size);
-            ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
+            size_t codes_bytes = mul_no_overflow(
+                    num_elems, code_size, "inverted list codes");
+            FAISS_THROW_IF_NOT_FMT(
+                    codes_bytes <= byte_limit,
+                    "inverted list %zu codes size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    codes_bytes);
+            ailp->codes[i].resize(codes_bytes);
+            size_t cum_sums_count = mul_no_overflow(
+                    num_elems,
+                    add_no_overflow(
+                            n_levels, 1, "inverted list cum_sums n_levels"),
+                    "inverted list cum_sums");
+            FAISS_THROW_IF_NOT_FMT(
+                    cum_sums_count <= byte_limit / sizeof(ailp->cum_sums[0][0]),
+                    "inverted list %zu cum_sums size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    cum_sums_count);
+            ailp->cum_sums[i].resize(cum_sums_count);
         }
         for (size_t i = 0; i < nlist; i++) {
             size_t n = sizes[i];
@@ -543,10 +569,24 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         ails->codes.resize(ails->nlist);
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        size_t ilar_byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < ails->nlist; i++) {
+            FAISS_THROW_IF_NOT_FMT(
+                    sizes[i] <= ilar_byte_limit / sizeof(idx_t),
+                    "inverted list %zu ids size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    sizes[i]);
             ails->ids[i].resize(sizes[i]);
-            ails->codes[i].resize(mul_no_overflow(
-                    sizes[i], ails->code_size, "inverted list codes"));
+            size_t codes_bytes = mul_no_overflow(
+                    sizes[i], ails->code_size, "inverted list codes");
+            FAISS_THROW_IF_NOT_FMT(
+                    codes_bytes <= ilar_byte_limit,
+                    "inverted list %zu codes size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    codes_bytes);
+            ails->codes[i].resize(codes_bytes);
         }
         for (size_t i = 0; i < ails->nlist; i++) {
             size_t n = ails->ids[i].size();

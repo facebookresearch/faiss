@@ -2034,6 +2034,33 @@ static void push_ivf_header(std::vector<uint8_t>& buf, int d) {
     push_empty_direct_map(buf);
 }
 
+// -----------------------------------------------------------------------
+// Test: Inverted list with oversized entry exceeding deserialization byte
+// limit is rejected. Protects against corrupt data causing OOM via
+// unchecked vector::resize in read_InvertedLists_up.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, InvertedListOversizedEntry) {
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1024); // 1 KB limit
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IwFl");
+    push_ivf_header(buf, /*d=*/4);
+    // "ilar" inverted lists with 1 list, code_size=16
+    push_fourcc(buf, "ilar");
+    push_val<size_t>(buf, 1);  // nlist = 1
+    push_val<size_t>(buf, 16); // code_size = 16
+    // "full" list type with 1 size entry
+    push_fourcc(buf, "full");
+    // sizes vector: 1 entry with absurdly large value
+    push_val<size_t>(buf, 1);               // vector length
+    push_val<size_t>(buf, (size_t)1 << 40); // sizes[0] = 1 TB
+
+    expect_read_throws_with(buf, "deserialization byte limit");
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
 // -- Ixrq (IndexRaBitQ, single-bit) --
 // qb=0 is valid for Ixrq: disables query quantization, uses raw fp32 values.
 // See IndexRaBitQ.h comment on qb and RaBitQDistanceComputerNotQ.
