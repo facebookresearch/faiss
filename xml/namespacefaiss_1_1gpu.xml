@@ -1712,6 +1712,41 @@
         </inbodydescription>
         <location file="faiss/gpu/utils/CuvsUtils.h" line="70" column="7" declfile="faiss/gpu/utils/CuvsUtils.h" declline="70" declcolumn="7"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1_1gpu_1a2ef3598ed6322ff0531c93dc98b94015" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::gpu::sanitizeCuvsIndices</definition>
+        <argsstring>(GpuResources *res, uint32_t *src, idx_t *dst, size_t count, idx_t n)</argsstring>
+        <name>sanitizeCuvsIndices</name>
+        <qualifiedname>faiss::gpu::sanitizeCuvsIndices</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>uint32_t *</type>
+          <declname>src</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref> *</type>
+          <declname>dst</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>count</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy uint32_t indices to idx_t, replacing any index &gt;= n with -1. cuVS CAGRA returns sentinel values (e.g. INT32_MAX) for result slots where filtered search couldn&apos;t find a valid neighbor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/utils/CuvsUtils.h" line="78" column="6" declfile="faiss/gpu/utils/CuvsUtils.h" declline="78" declcolumn="6"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1gpu_1a18ddaf734a629ded5ad2a2f235937298" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int faiss::gpu::getCurrentDevice</definition>

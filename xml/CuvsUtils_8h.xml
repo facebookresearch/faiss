@@ -209,9 +209,20 @@
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;float,<sp/>2,<sp/>true&gt;&amp;<sp/>vecs,</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Tensor&lt;idx_t,<sp/>1,<sp/>true&gt;&amp;<sp/>indices);</highlight></codeline>
-<codeline lineno="74"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="75"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="76"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>GCC<sp/>visibility<sp/>pop</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="75"><highlight class="comment">///<sp/>Copy<sp/>uint32_t<sp/>indices<sp/>to<sp/>idx_t,<sp/>replacing<sp/>any<sp/>index<sp/>&gt;=<sp/>n<sp/>with<sp/>-1.</highlight></codeline>
+<codeline lineno="76"><highlight class="comment">///<sp/>cuVS<sp/>CAGRA<sp/>returns<sp/>sentinel<sp/>values<sp/>(e.g.<sp/>INT32_MAX)<sp/>for<sp/>result<sp/>slots</highlight></codeline>
+<codeline lineno="77"><highlight class="comment">///<sp/>where<sp/>filtered<sp/>search<sp/>couldn&apos;t<sp/>find<sp/>a<sp/>valid<sp/>neighbor.</highlight></codeline>
+<codeline lineno="78" refid="namespacefaiss_1_1gpu_1a2ef3598ed6322ff0531c93dc98b94015" refkind="member"><highlight class="comment"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1_1gpu_1a2ef3598ed6322ff0531c93dc98b94015" kindref="member">sanitizeCuvsIndices</ref>(</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classfaiss_1_1gpu_1_1GpuResources" kindref="compound">GpuResources</ref>*<sp/>res,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint32_t*<sp/>src,</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref>*<sp/>dst,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>count,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad63e84aa82f5bb0405ed924d58b20e2e" kindref="member">idx_t</ref><sp/>n);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>gpu</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>GCC<sp/>visibility<sp/>pop</highlight></codeline>
     </programlisting>
     <location file="faiss/gpu/utils/CuvsUtils.h"/>
   </compounddef>

@@ -12734,6 +12734,7 @@
     <member refid="namespacefaiss_1_1gpu_1abd145b4a4f9a03963167367460b4fe7a" kind="function"><name>metricFaissToCuvs</name></member>
     <member refid="namespacefaiss_1_1gpu_1a96b52c4a7d364a661afad37f4a75adfb" kind="function"><name>validRowIndices</name></member>
     <member refid="namespacefaiss_1_1gpu_1a3cc563a7cb538b461187b53cc29188ac" kind="function"><name>inplaceGatherFilteredRows</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a2ef3598ed6322ff0531c93dc98b94015" kind="function"><name>sanitizeCuvsIndices</name></member>
     <member refid="namespacefaiss_1_1gpu_1a18ddaf734a629ded5ad2a2f235937298" kind="function"><name>getCurrentDevice</name></member>
     <member refid="namespacefaiss_1_1gpu_1abf0b5b971122c7c024f70a2e690870ea" kind="function"><name>setCurrentDevice</name></member>
     <member refid="namespacefaiss_1_1gpu_1aaeb2757087735aef66e7ec5ba134530a" kind="function"><name>getNumDevices</name></member>
