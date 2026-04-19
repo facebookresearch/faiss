@@ -500,17 +500,17 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, n_levels);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Do resize + read in a single pass per list. See the matching
+        // comment in the `ilar` branch below for rationale.
         for (size_t i = 0; i < nlist; i++) {
-            ailp->ids[i].resize(sizes[i]);
+            size_t n = sizes[i];
+            ailp->ids[i].resize(n);
             size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
+                    ((n + ArrayInvertedListsPanorama::kBatchSize - 1) /
                      ArrayInvertedListsPanorama::kBatchSize) *
                     ArrayInvertedListsPanorama::kBatchSize;
             ailp->codes[i].resize(num_elems * code_size);
             ailp->cum_sums[i].resize(num_elems * (n_levels + 1));
-        }
-        for (size_t i = 0; i < nlist; i++) {
-            size_t n = sizes[i];
             if (n > 0) {
                 read_vector_with_known_size(
                         ailp->codes[i], f, ailp->codes[i].size());
@@ -529,13 +529,27 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         ails->codes.resize(ails->nlist);
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Do resize + read in a single pass per list.
+        //
+        // The previous two-loop form pre-allocated every list's owning
+        // std::vector storage up front (= full invlist data size on the
+        // heap), then replaced them one-by-one with mmap views from a
+        // MappedFileIOReader in the second loop. On large IVF indexes
+        // (hundreds of GB) this caused a transient private-memory spike
+        // equal to the whole invlist data during load, defeating the
+        // intent of IO_FLAG_MMAP_IFC.
+        //
+        // Merging the loops releases each list's owning heap allocation
+        // via the view-substitution before the next list's is made,
+        // bounding peak heap to a single list's worth. End state is
+        // byte-identical: with MappedFileIOReader every MaybeOwnedVector
+        // ends up as a view; with FileIOReader every MaybeOwnedVector
+        // ends up as owning storage.
         for (size_t i = 0; i < ails->nlist; i++) {
-            ails->ids[i].resize(sizes[i]);
+            size_t n = sizes[i];
+            ails->ids[i].resize(n);
             ails->codes[i].resize(mul_no_overflow(
-                    sizes[i], ails->code_size, "inverted list codes"));
-        }
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
+                    n, ails->code_size, "inverted list codes"));
             if (n > 0) {
                 read_vector_with_known_size(
                         ails->codes[i],
