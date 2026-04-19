@@ -29,6 +29,28 @@ For faiss-gpu, the nvidia channel is additionally required for CUDA, which is no
 
 For faiss-gpu-cuvs, the rapidsai, conda-forge and nvidia channels are required.
 
+## Installing with Pixi
+
+[Pixi](https://pixi.sh/latest/) can be used as a faster alternative to the
+conda CLI while still pulling Faiss packages from the same conda channels.
+
+``` shell
+# CPU-only version
+$ pixi init -c pytorch -c conda-forge
+$ pixi add faiss-cpu=1.14.1
+
+# GPU(+CPU) version
+$ pixi init -c pytorch -c nvidia -c conda-forge
+$ pixi add faiss-gpu=1.14.1
+
+# GPU(+CPU) version with NVIDIA cuVS
+$ pixi init -c pytorch -c nvidia -c rapidsai -c conda-forge
+$ pixi add libnvjitlink faiss-gpu-cuvs=1.14.1
+```
+
+Pixi uses the same channels and package names listed above, so the same channel
+requirements for `faiss-gpu` and `faiss-gpu-cuvs` still apply.
+
 Nightly pre-release packages can be installed as follows:
 
 ``` shell
