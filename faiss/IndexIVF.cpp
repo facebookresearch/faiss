@@ -312,6 +312,7 @@ void IndexIVF::search(
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IVF index is not trained");
     FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
     const IVFSearchParameters* params = nullptr;
     if (params_in) {
@@ -409,6 +410,7 @@ void IndexIVF::search_preassigned(
         const IVFSearchParameters* params,
         IndexIVFStats* ivf_stats) const {
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IVF index is not trained");
     FAISS_THROW_IF_NOT_MSG(invlists, "IVF index has no inverted lists");
 
     idx_t cur_nprobe = params ? params->nprobe : this->nprobe;
@@ -738,6 +740,7 @@ void IndexIVF::range_search(
         RangeSearchResult* result,
         const SearchParameters* params_in) const {
     FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IVF index is not trained");
     const IVFSearchParameters* params = nullptr;
     const SearchParameters* quantizer_params = nullptr;
     if (params_in) {
@@ -782,6 +785,7 @@ void IndexIVF::range_search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params,
         IndexIVFStats* stats) const {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IVF index is not trained");
     idx_t cur_nprobe = params ? params->nprobe : this->nprobe;
     cur_nprobe = std::min((idx_t)nlist, cur_nprobe);
     FAISS_THROW_IF_NOT(cur_nprobe > 0);
