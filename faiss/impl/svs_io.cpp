@@ -50,7 +50,8 @@ int WriterStreambuf::overflow(int ch) {
     return wrote == 1 ? ch : traits_type::eof();
 }
 
-ReaderStreambuf::ReaderStreambuf(IOReader* rr) : r(rr), single_char_buffer(0) {
+ReaderStreambuf::ReaderStreambuf(IOReader* rr, size_t limit)
+        : r(rr), single_char_buffer(0), per_read_byte_limit(limit) {
     // Initialize with empty get area
     setg(nullptr, nullptr, nullptr);
 }
@@ -77,9 +78,17 @@ std::streamsize ReaderStreambuf::xsgetn(char* s, std::streamsize n) {
     if (n <= 0) {
         return 0;
     }
+    size_t nbytes = n;
 
-    size_t got = (*r)(s, 1, n);
-    return static_cast<std::streamsize>(got);
+    // Per-read byte limit: reject individual reads that exceed the limit,
+    // matching READVECTOR semantics where each vector allocation is
+    // independently checked against deserialization_vector_byte_limit.
+    if (per_read_byte_limit > 0 && nbytes >= per_read_byte_limit) {
+        return 0;
+    }
+
+    size_t got = (*r)(s, 1, nbytes);
+    return got;
 }
 
 } // namespace svs_io

@@ -2406,7 +2406,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool initialized;
         READ1(initialized);
         if (initialized) {
-            faiss::svs_io::ReaderStreambuf rbuf(f);
+            faiss::svs_io::ReaderStreambuf rbuf(
+                    f, get_deserialization_vector_byte_limit());
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
         }
@@ -2414,7 +2415,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             bool trained;
             READ1(trained);
             if (trained) {
-                faiss::svs_io::ReaderStreambuf rbuf(f);
+                faiss::svs_io::ReaderStreambuf rbuf(
+                        f, get_deserialization_vector_byte_limit());
                 std::istream is(&rbuf);
                 auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
                 FAISS_THROW_IF_NOT_MSG(
@@ -2431,7 +2433,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool initialized;
         READ1(initialized);
         if (initialized) {
-            faiss::svs_io::ReaderStreambuf rbuf(f);
+            faiss::svs_io::ReaderStreambuf rbuf(
+                    f, get_deserialization_vector_byte_limit());
             std::istream is(&rbuf);
             svs->deserialize_impl(is);
         }
