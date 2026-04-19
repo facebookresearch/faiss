@@ -467,33 +467,39 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     if (n * cq_nprobe > 0) {
         memset(biases.get(), 0, sizeof(float) * n * cq_nprobe);
     }
+    // Use per-thread buffers instead of one O(n * nprobe * d) allocation.
+    // rotated_q / centroid_buf keep their capacity across iterations so the
+    // allocator is only hit once per thread.
+#pragma omp parallel if (n * cq_nprobe > 1000)
+    {
+        std::vector<float> rotated_q(d);
+        std::vector<float> centroid_buf(d);
 
-#pragma omp parallel for if (n * cq_nprobe > 1000)
-    for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
-        idx_t i = ij / cq_nprobe;
-        idx_t cij = cq.ids[ij];
+#pragma omp for
+        for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
+            idx_t i = ij / cq_nprobe;
+            idx_t cij = cq.ids[ij];
 
-        if (cij >= 0) {
-            std::vector<float> rotated_q(d);
-            std::vector<float> centroid_buf(d);
-            QueryFactorsData query_factors_data;
+            if (cij >= 0) {
+                QueryFactorsData query_factors_data;
 
-            compute_residual_LUT(
-                    x + i * d,
-                    cij,
-                    query_factors_data,
-                    dis_tables.get() + ij * dim12,
-                    used_qb,
-                    used_centered,
-                    rotated_q,
-                    centroid_buf);
+                compute_residual_LUT(
+                        x + i * d,
+                        cij,
+                        query_factors_data,
+                        dis_tables.get() + ij * dim12,
+                        used_qb,
+                        used_centered,
+                        rotated_q,
+                        centroid_buf);
 
-            if (context.query_factors != nullptr) {
-                context.query_factors[ij] = query_factors_data;
+                if (context.query_factors != nullptr) {
+                    context.query_factors[ij] = std::move(query_factors_data);
+                }
+
+            } else {
+                memset(dis_tables.get() + ij * dim12, 0, sizeof(float) * dim12);
             }
-
-        } else {
-            memset(dis_tables.get() + ij * dim12, 0, sizeof(float) * dim12);
         }
     }
 }
