@@ -32,25 +32,45 @@
         </inbodydescription>
         <location file="faiss/impl/svs_io.h" line="56" column="10" bodyfile="faiss/impl/svs_io.h" bodystart="56" bodyend="-1"/>
       </memberdef>
-    </sectiondef>
-    <sectiondef kind="public-func">
-      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1ae6a4bdafcd696b06a5e189458aca29dc" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
-        <type></type>
-        <definition>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</definition>
-        <argsstring>(IOReader *rr)</argsstring>
-        <name>ReaderStreambuf</name>
-        <qualifiedname>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</qualifiedname>
-        <param>
-          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
-          <declname>rr</declname>
-        </param>
+      <memberdef kind="variable" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a26fcaaed40d431da8ef480a0306a133f" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::svs_io::ReaderStreambuf::per_read_byte_limit</definition>
+        <argsstring></argsstring>
+        <name>per_read_byte_limit</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::per_read_byte_limit</qualifiedname>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/svs_io.h" line="58" column="14"/>
+        <location file="faiss/impl/svs_io.h" line="57" column="12" bodyfile="faiss/impl/svs_io.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a471830558d715cdfe8f3b7a49c8289a2" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</definition>
+        <argsstring>(IOReader *rr, size_t limit=0)</argsstring>
+        <name>ReaderStreambuf</name>
+        <qualifiedname>faiss::svs_io::ReaderStreambuf::ReaderStreambuf</qualifiedname>
+        <param>
+          <type><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref> *</type>
+          <declname>rr</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>limit</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct with an optional per-read byte limit matching READVECTOR semantics. Each individual xsgetn call that meets or exceeds the limit returns 0, matching how READVECTOR rejects individual vectors whose allocation would exceed deserialization_vector_byte_limit. A limit of 0 means unlimited. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/svs_io.h" line="64" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1af24ec95f2bf9a3f9a7038b1ae427a079" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -64,7 +84,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/svs_io.h" line="59" column="5"/>
+        <location file="faiss/impl/svs_io.h" line="65" column="5"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="protected-func">
@@ -80,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/svs_io.h" line="62" column="14"/>
+        <location file="faiss/impl/svs_io.h" line="68" column="14"/>
       </memberdef>
       <memberdef kind="function" id="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a5c9aba033bdf897b2f9a049a5548c9ee" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::streamsize</type>
@@ -102,7 +122,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/svs_io.h" line="63" column="21"/>
+        <location file="faiss/impl/svs_io.h" line="69" column="21"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -138,10 +158,11 @@
         <label>std::streambuf</label>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/svs_io.h" line="54" column="1" bodyfile="faiss/impl/svs_io.h" bodystart="54" bodyend="64"/>
+    <location file="faiss/impl/svs_io.h" line="54" column="1" bodyfile="faiss/impl/svs_io.h" bodystart="54" bodyend="70"/>
     <listofallmembers>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a26fcaaed40d431da8ef480a0306a133f" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>per_read_byte_limit</name></member>
       <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a2bdd68a8b44293587c89899965c42c53" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>r</name></member>
-      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1ae6a4bdafcd696b06a5e189458aca29dc" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>ReaderStreambuf</name></member>
+      <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a471830558d715cdfe8f3b7a49c8289a2" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>ReaderStreambuf</name></member>
       <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a07de7b2b8c93aa433809bd2d0c347772" prot="public" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>single_char_buffer</name></member>
       <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1aba3e9de84351b353b89c31f2949ae676" prot="protected" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>underflow</name></member>
       <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a5c9aba033bdf897b2f9a049a5548c9ee" prot="protected" virt="non-virtual"><scope>faiss::svs_io::ReaderStreambuf</scope><name>xsgetn</name></member>

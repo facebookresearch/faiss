@@ -2536,6 +2536,74 @@
         </inbodydescription>
         <location file="faiss/impl/FaissException.h" line="60" column="13" declfile="faiss/impl/FaissException.h" declline="60" declcolumn="13"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aaec34bd61b113ec82b53002ea766fa23" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::omp_capture_exception</definition>
+        <argsstring>(std::exception_ptr &amp;ex)</argsstring>
+        <name>omp_capture_exception</name>
+        <qualifiedname>faiss::omp_capture_exception</qualifiedname>
+        <param>
+          <type>std::exception_ptr &amp;</type>
+          <declname>ex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Capture the current exception into <computeroutput>ex</computeroutput> if no prior exception has been recorded. Call from a catch block inside an OpenMP parallel region. Uses <computeroutput>#pragma omp critical</computeroutput> to serialize access to <computeroutput>ex</computeroutput>.</para>
+<para>The optional <computeroutput>cleanup</computeroutput> callable runs inside the critical section alongside the exception capture, so that side-effects visible to other threads (e.g. setting an interrupt flag) are serialized with the exception_ptr write.</para>
+<para>Usage: std::exception_ptr ex; bool interrupt = false; #pragma omp parallel { try { ... } catch (...) { omp_capture_exception(ex, [&amp;] { interrupt = true; }); } } omp_rethrow_if_exception(ex); </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="81" column="13" bodyfile="faiss/impl/FaissException.h" bodystart="81" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1abdcdae6235afd56ef7eb2a9c9e308fce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Cleanup</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::omp_capture_exception</definition>
+        <argsstring>(std::exception_ptr &amp;ex, Cleanup &amp;&amp;cleanup)</argsstring>
+        <name>omp_capture_exception</name>
+        <qualifiedname>faiss::omp_capture_exception</qualifiedname>
+        <param>
+          <type>std::exception_ptr &amp;</type>
+          <declname>ex</declname>
+        </param>
+        <param>
+          <type>Cleanup &amp;&amp;</type>
+          <declname>cleanup</declname>
+        </param>
+        <briefdescription>
+<para>Overload with cleanup that runs inside the critical section. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="92" column="13" bodyfile="faiss/impl/FaissException.h" bodystart="92" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a30b47255277c66b9f3e82ee6af18714c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::omp_rethrow_if_exception</definition>
+        <argsstring>(std::exception_ptr &amp;ex)</argsstring>
+        <name>omp_rethrow_if_exception</name>
+        <qualifiedname>faiss::omp_rethrow_if_exception</qualifiedname>
+        <param>
+          <type>std::exception_ptr &amp;</type>
+          <declname>ex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Rethrow the captured exception, if any. Call on the main thread after the parallel region completes. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/FaissException.h" line="104" column="13" bodyfile="faiss/impl/FaissException.h" bodystart="104" bodyend="108"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a0ecf7aeb41fa52ecea9997c9bb299465" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>

@@ -119,18 +119,24 @@
 <codeline lineno="53"><highlight class="normal"></highlight><highlight class="comment">//<sp/>without<sp/>intermediate<sp/>buffering.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="54" refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" kindref="compound">ReaderStreambuf</ref><sp/>:<sp/>std::streambuf<sp/>{</highlight></codeline>
 <codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref>*<sp/>r;</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>single_char_buffer;<sp/></highlight><highlight class="comment">//<sp/>Single-byte<sp/>buffer<sp/>for<sp/>underflow()<sp/>operations</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="57"><highlight class="normal"></highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" kindref="compound">ReaderStreambuf</ref>(<ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref>*<sp/>rr);</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" kindref="compound">~ReaderStreambuf</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"></highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>int_type<sp/>underflow()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>std::streamsize<sp/>xsgetn(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>s,<sp/>std::streamsize<sp/>n)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="64"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"></highlight></codeline>
-<codeline lineno="66"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>svs_io</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="67"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>single_char_buffer;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Single-byte<sp/>buffer<sp/>for<sp/>underflow()<sp/>operations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>per_read_byte_limit;<sp/></highlight><highlight class="comment">//<sp/>Max<sp/>bytes<sp/>per<sp/>individual<sp/>read<sp/>(0<sp/>=<sp/>unlimited)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Construct<sp/>with<sp/>an<sp/>optional<sp/>per-read<sp/>byte<sp/>limit<sp/>matching<sp/>READVECTOR</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>semantics.<sp/>Each<sp/>individual<sp/>xsgetn<sp/>call<sp/>that<sp/>meets<sp/>or<sp/>exceeds<sp/>the</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>limit<sp/>returns<sp/>0,<sp/>matching<sp/>how<sp/>READVECTOR<sp/>rejects<sp/>individual<sp/>vectors</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>whose<sp/>allocation<sp/>would<sp/>exceed<sp/>deserialization_vector_byte_limit.</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>A<sp/>limit<sp/>of<sp/>0<sp/>means<sp/>unlimited.</highlight></codeline>
+<codeline lineno="64" refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a471830558d715cdfe8f3b7a49c8289a2" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a471830558d715cdfe8f3b7a49c8289a2" kindref="member">ReaderStreambuf</ref>(<ref refid="structfaiss_1_1IOReader" kindref="compound">IOReader</ref>*<sp/>rr,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>limit<sp/>=<sp/>0);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" kindref="compound">~ReaderStreambuf</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>int_type<sp/>underflow()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>std::streamsize<sp/>xsgetn(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>s,<sp/>std::streamsize<sp/>n)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>svs_io</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="faiss/impl/svs_io.h"/>
   </compounddef>

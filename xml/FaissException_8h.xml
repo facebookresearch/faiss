@@ -1336,10 +1336,58 @@
 <codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
 <codeline lineno="59"><highlight class="comment">///<sp/>make<sp/>typeids<sp/>more<sp/>readable</highlight></codeline>
 <codeline lineno="60" refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" refkind="member"><highlight class="comment"></highlight><highlight class="normal">std::string<sp/><ref refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kindref="member">demangle_cpp_symbol</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>name);</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="62"><highlight class="comment">///<sp/>Capture<sp/>the<sp/>current<sp/>exception<sp/>into<sp/>`ex`<sp/>if<sp/>no<sp/>prior<sp/>exception<sp/>has<sp/>been</highlight></codeline>
+<codeline lineno="63"><highlight class="comment">///<sp/>recorded.<sp/><sp/>Call<sp/>from<sp/>a<sp/>catch<sp/>block<sp/>inside<sp/>an<sp/>OpenMP<sp/>parallel<sp/>region.</highlight></codeline>
+<codeline lineno="64"><highlight class="comment">///<sp/>Uses<sp/>`#pragma<sp/>omp<sp/>critical`<sp/>to<sp/>serialize<sp/>access<sp/>to<sp/>`ex`.</highlight></codeline>
+<codeline lineno="65"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="66"><highlight class="comment">///<sp/>The<sp/>optional<sp/>`cleanup`<sp/>callable<sp/>runs<sp/>inside<sp/>the<sp/>critical<sp/>section</highlight></codeline>
+<codeline lineno="67"><highlight class="comment">///<sp/>alongside<sp/>the<sp/>exception<sp/>capture,<sp/>so<sp/>that<sp/>side-effects<sp/>visible<sp/>to</highlight></codeline>
+<codeline lineno="68"><highlight class="comment">///<sp/>other<sp/>threads<sp/>(e.g.<sp/>setting<sp/>an<sp/>interrupt<sp/>flag)<sp/>are<sp/>serialized<sp/>with</highlight></codeline>
+<codeline lineno="69"><highlight class="comment">///<sp/>the<sp/>exception_ptr<sp/>write.</highlight></codeline>
+<codeline lineno="70"><highlight class="comment">///</highlight></codeline>
+<codeline lineno="71"><highlight class="comment">///<sp/>Usage:</highlight></codeline>
+<codeline lineno="72"><highlight class="comment">///<sp/><sp/><sp/>std::exception_ptr<sp/>ex;</highlight></codeline>
+<codeline lineno="73"><highlight class="comment">///<sp/><sp/><sp/>bool<sp/>interrupt<sp/>=<sp/>false;</highlight></codeline>
+<codeline lineno="74"><highlight class="comment">///<sp/><sp/><sp/>#pragma<sp/>omp<sp/>parallel</highlight></codeline>
+<codeline lineno="75"><highlight class="comment">///<sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="comment">///<sp/><sp/><sp/><sp/><sp/><sp/><sp/>try<sp/>{<sp/>...<sp/>}<sp/>catch<sp/>(...)<sp/>{</highlight></codeline>
+<codeline lineno="77"><highlight class="comment">///<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>omp_capture_exception(ex,<sp/>[&amp;]<sp/>{<sp/>interrupt<sp/>=<sp/>true;<sp/>});</highlight></codeline>
+<codeline lineno="78"><highlight class="comment">///<sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="79"><highlight class="comment">///<sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="comment">///<sp/><sp/><sp/>omp_rethrow_if_exception(ex);</highlight></codeline>
+<codeline lineno="81" refid="namespacefaiss_1aaec34bd61b113ec82b53002ea766fa23" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aaec34bd61b113ec82b53002ea766fa23" kindref="member">omp_capture_exception</ref>(std::exception_ptr&amp;<sp/>ex)<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>omp<sp/>critical(faiss_omp_exception)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!ex)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex<sp/>=<sp/>std::current_exception();</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="90"><highlight class="comment">///<sp/>Overload<sp/>with<sp/>cleanup<sp/>that<sp/>runs<sp/>inside<sp/>the<sp/>critical<sp/>section.</highlight></codeline>
+<codeline lineno="91"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Cleanup&gt;</highlight></codeline>
+<codeline lineno="92" refid="namespacefaiss_1abdcdae6235afd56ef7eb2a9c9e308fce" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1aaec34bd61b113ec82b53002ea766fa23" kindref="member">omp_capture_exception</ref>(std::exception_ptr&amp;<sp/>ex,<sp/>Cleanup&amp;&amp;<sp/>cleanup)<sp/>{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>omp<sp/>critical(faiss_omp_exception)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cleanup();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!ex)<sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ex<sp/>=<sp/>std::current_exception();</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="102"><highlight class="comment">///<sp/>Rethrow<sp/>the<sp/>captured<sp/>exception,<sp/>if<sp/>any.<sp/><sp/>Call<sp/>on<sp/>the<sp/>main<sp/>thread</highlight></codeline>
+<codeline lineno="103"><highlight class="comment">///<sp/>after<sp/>the<sp/>parallel<sp/>region<sp/>completes.</highlight></codeline>
+<codeline lineno="104" refid="namespacefaiss_1a30b47255277c66b9f3e82ee6af18714c" refkind="member"><highlight class="comment"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespacefaiss_1a30b47255277c66b9f3e82ee6af18714c" kindref="member">omp_rethrow_if_exception</ref>(std::exception_ptr&amp;<sp/>ex)<sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(ex)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::rethrow_exception(ex);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="faiss/impl/FaissException.h"/>
   </compounddef>

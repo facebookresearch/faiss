@@ -10083,7 +10083,8 @@
   <compound refid="structfaiss_1_1svs__io_1_1ReaderStreambuf" kind="struct"><name>faiss::svs_io::ReaderStreambuf</name>
     <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a2bdd68a8b44293587c89899965c42c53" kind="variable"><name>r</name></member>
     <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a07de7b2b8c93aa433809bd2d0c347772" kind="variable"><name>single_char_buffer</name></member>
-    <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1ae6a4bdafcd696b06a5e189458aca29dc" kind="function"><name>ReaderStreambuf</name></member>
+    <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a26fcaaed40d431da8ef480a0306a133f" kind="variable"><name>per_read_byte_limit</name></member>
+    <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a471830558d715cdfe8f3b7a49c8289a2" kind="function"><name>ReaderStreambuf</name></member>
     <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1af24ec95f2bf9a3f9a7038b1ae427a079" kind="function"><name>~ReaderStreambuf</name></member>
     <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1aba3e9de84351b353b89c31f2949ae676" kind="function"><name>underflow</name></member>
     <member refid="structfaiss_1_1svs__io_1_1ReaderStreambuf_1a5c9aba033bdf897b2f9a049a5548c9ee" kind="function"><name>xsgetn</name></member>
@@ -12167,6 +12168,9 @@
     <member refid="namespacefaiss_1adc5288ebc7f5f08400e897dd6ec69f75" kind="function"><name>add_no_overflow</name></member>
     <member refid="namespacefaiss_1ad9737fc7ae37894085c9816a924cce3a" kind="function"><name>handleExceptions</name></member>
     <member refid="namespacefaiss_1a0dbf4403e68d46d45d8432b99657ffd0" kind="function"><name>demangle_cpp_symbol</name></member>
+    <member refid="namespacefaiss_1aaec34bd61b113ec82b53002ea766fa23" kind="function"><name>omp_capture_exception</name></member>
+    <member refid="namespacefaiss_1abdcdae6235afd56ef7eb2a9c9e308fce" kind="function"><name>omp_capture_exception</name></member>
+    <member refid="namespacefaiss_1a30b47255277c66b9f3e82ee6af18714c" kind="function"><name>omp_rethrow_if_exception</name></member>
     <member refid="namespacefaiss_1a0ecf7aeb41fa52ecea9997c9bb299465" kind="function"><name>accumulate_fixed_blocks</name></member>
     <member refid="namespacefaiss_1a41e9eb9902fa6b72e8ac13d2764c7291" kind="function"><name>pq4_accumulate_loop_fixed_scaler</name></member>
     <member refid="namespacefaiss_1aba3af6f1fcc2aeaade605527062cf06f" kind="function"><name>accumulate_q_4step_256</name></member>
