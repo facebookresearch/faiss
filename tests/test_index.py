@@ -612,8 +612,7 @@ class TestDistancesPositive(unittest.TestCase):
     def test_l2_pos(self):
         """
         roundoff errors occur only with the L2 decomposition used
-        with BLAS, ie. in IndexFlatL2 and with
-        n * d > distance_compute_blas_threshold
+        with BLAS, ie. in IndexFlatL2 when the BLAS path is active
         """
 
         d = 128
@@ -622,12 +621,17 @@ class TestDistancesPositive(unittest.TestCase):
         rs = np.random.RandomState(1234)
         x = rs.rand(n, d).astype('float32')
 
-        index = faiss.IndexFlatL2(d)
-        index.add(x)
+        saved_threshold = faiss.cvar.distance_compute_blas_threshold
+        faiss.cvar.distance_compute_blas_threshold = 1
+        try:
+            index = faiss.IndexFlatL2(d)
+            index.add(x)
 
-        D, I = index.search(x, 10)
+            D, I = index.search(x, 10)
 
-        assert np.all(D >= 0)
+            assert np.all(D >= 0)
+        finally:
+            faiss.cvar.distance_compute_blas_threshold = saved_threshold
 
 
 class TestShardReplicas(unittest.TestCase):
