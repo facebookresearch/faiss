@@ -71,6 +71,17 @@ idx_t inplaceGatherFilteredRows(
         GpuResources* res,
         Tensor<float, 2, true>& vecs,
         Tensor<idx_t, 1, true>& indices);
+
+/// Copy uint32_t indices to idx_t, replacing any index >= n with -1.
+/// cuVS CAGRA returns sentinel values (e.g. INT32_MAX) for result slots
+/// where filtered search couldn't find a valid neighbor.
+void sanitizeCuvsIndices(
+        GpuResources* res,
+        uint32_t* src,
+        idx_t* dst,
+        size_t count,
+        idx_t n);
+
 } // namespace gpu
 } // namespace faiss
 #pragma GCC visibility pop

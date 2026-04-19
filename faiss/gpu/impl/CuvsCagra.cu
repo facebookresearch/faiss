@@ -315,11 +315,12 @@ void CuvsCagra<data_t>::search(
             indices_copy.view(),
             distances_view,
             filter_ref);
-    thrust::copy(
-            raft::resource::get_thrust_policy(raft_handle),
+    faiss::gpu::sanitizeCuvsIndices(
+            resources_,
             indices_copy.data_handle(),
-            indices_copy.data_handle() + indices_copy.size(),
-            indices_view.data_handle());
+            indices_view.data_handle(),
+            indices_copy.size(),
+            n_);
 }
 
 template <typename data_t>
