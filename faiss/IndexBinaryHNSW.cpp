@@ -61,10 +61,8 @@ void hnsw_add_vertices(
         printf("  max_level = %d\n", max_level);
     }
 
-    std::vector<omp_lock_t> locks(ntotal);
-    for (size_t i = 0; i < ntotal; i++) {
-        omp_init_lock(&locks[i]);
-    }
+    auto& locks = index_hnsw.locks;
+    locks.prepare(ntotal);
 
     // add vectors from highest to lowest level
     std::vector<int> hist;
@@ -158,9 +156,8 @@ void hnsw_add_vertices(
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
-
-    for (size_t i = 0; i < ntotal; i++) {
-        omp_destroy_lock(&locks[i]);
+    if (!index_hnsw.retain_locks) {
+        locks.clear();
     }
 }
 
@@ -274,6 +271,7 @@ void IndexBinaryHNSW::add(idx_t n, const uint8_t* x) {
 
 void IndexBinaryHNSW::reset() {
     hnsw.reset();
+    locks.clear();
     storage->reset();
     ntotal = 0;
 }
