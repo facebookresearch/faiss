@@ -309,14 +309,6 @@ struct FlatHammingDis : DistanceComputer {
     }
 };
 
-struct BuildDistanceComputer {
-    using T = DistanceComputer*;
-    template <class HammingComputer>
-    DistanceComputer* f(IndexBinaryFlat* flat_storage) {
-        return new FlatHammingDis<HammingComputer>(*flat_storage);
-    }
-};
-
 } // namespace
 
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
@@ -324,8 +316,10 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     FAISS_THROW_IF_NOT_MSG(
             flat_storage != nullptr,
             "IndexBinaryHNSW requires IndexBinaryFlat storage");
-    BuildDistanceComputer bd;
-    return dispatch_HammingComputer(code_size, bd, flat_storage);
+    return with_HammingComputer(
+            code_size, [&]<class HammingComputer>() -> DistanceComputer* {
+                return new FlatHammingDis<HammingComputer>(*flat_storage);
+            });
 }
 
 /**************************************************************

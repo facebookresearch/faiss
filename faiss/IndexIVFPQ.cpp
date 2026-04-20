@@ -1168,22 +1168,14 @@ struct IVFPQScannerT : QueryTables {
     }
 
     template <class SearchResultType>
-    struct Run_scan_list_polysemous_hc {
-        using T = void;
-        template <class HammingComputer, class... Types>
-        void f(const IVFPQScannerT* scanner, Types... args) {
-            scanner->scan_list_polysemous_hc<HammingComputer, SearchResultType>(
-                    args...);
-        }
-    };
-
-    template <class SearchResultType>
     void scan_list_polysemous(
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        Run_scan_list_polysemous_hc<SearchResultType> r;
-        dispatch_HammingComputer(pq.code_size, r, this, ncode, codes, res);
+        with_HammingComputer(pq.code_size, [&]<class HammingComputer>() {
+            this->scan_list_polysemous_hc<HammingComputer, SearchResultType>(
+                    ncode, codes, res);
+        });
     }
 };
 

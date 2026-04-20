@@ -784,40 +784,16 @@ void search_knn_hamming_per_invlist(
     }
 }
 
-struct Run_search_knn_hamming_per_invlist {
-    using T = void;
-
-    template <class HammingComputer, class... Types>
-    void f(Types... args) {
-        search_knn_hamming_per_invlist<HammingComputer>(args...);
-    }
-};
-
-template <bool store_pairs>
-struct Run_search_knn_hamming_count {
-    using T = void;
-
-    template <class HammingComputer, class... Types>
-    void f(Types... args) {
-        search_knn_hamming_count<HammingComputer, store_pairs>(args...);
-    }
-};
-
-struct BuildScanner {
-    using T = BinaryInvertedListScanner*;
-
-    template <class HammingComputer>
-    T f(size_t code_size, bool store_pairs) {
-        return new IVFBinaryScannerL2<HammingComputer>(code_size, store_pairs);
-    }
-};
-
 } // anonymous namespace
 
 BinaryInvertedListScanner* IndexBinaryIVF::get_InvertedListScanner(
         bool store_pairs) const {
-    BuildScanner bs;
-    return dispatch_HammingComputer(code_size, bs, code_size, store_pairs);
+    return with_HammingComputer(
+            code_size,
+            [&]<class HammingComputer>() -> BinaryInvertedListScanner* {
+                return new IVFBinaryScannerL2<HammingComputer>(
+                        code_size, store_pairs);
+            });
 }
 
 void IndexBinaryIVF::search_preassigned(
@@ -831,23 +807,23 @@ void IndexBinaryIVF::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params) const {
     if (per_invlist_search) {
-        Run_search_knn_hamming_per_invlist r;
-        // clang-format off
-        dispatch_HammingComputer(
-                code_size, r, this, n, x, k,
-                cidx, cdis, dis, idx, store_pairs, params);
-        // clang-format on
+        with_HammingComputer(code_size, [&]<class HammingComputer>() {
+            search_knn_hamming_per_invlist<HammingComputer>(
+                    this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
+        });
     } else if (use_heap) {
         search_knn_hamming_heap(
                 this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
     } else if (store_pairs) { // !use_heap && store_pairs
-        Run_search_knn_hamming_count<true> r;
-        dispatch_HammingComputer(
-                code_size, r, this, n, x, cidx, k, dis, idx, params);
+        with_HammingComputer(code_size, [&]<class HammingComputer>() {
+            search_knn_hamming_count<HammingComputer, true>(
+                    this, n, x, cidx, k, dis, idx, params);
+        });
     } else { // !use_heap && !store_pairs
-        Run_search_knn_hamming_count<false> r;
-        dispatch_HammingComputer(
-                code_size, r, this, n, x, cidx, k, dis, idx, params);
+        with_HammingComputer(code_size, [&]<class HammingComputer>() {
+            search_knn_hamming_count<HammingComputer, false>(
+                    this, n, x, cidx, k, dis, idx, params);
+        });
     }
 }
 

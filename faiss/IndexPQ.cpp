@@ -323,14 +323,6 @@ size_t polysemous_inner_loop(
     return n_pass_i;
 }
 
-struct Run_polysemous_inner_loop {
-    using T = size_t;
-    template <class HammingComputer, class... Types>
-    size_t f(Types... args) {
-        return polysemous_inner_loop<HammingComputer>(args...);
-    }
-};
-
 } // anonymous namespace
 
 void IndexPQ::search_core_polysemous(
@@ -381,17 +373,17 @@ void IndexPQ::search_core_polysemous(
         maxheap_heapify(k, heap_dis, heap_ids);
 
         if (!generalized_hamming) {
-            Run_polysemous_inner_loop r;
-            n_pass += dispatch_HammingComputer(
-                    pq.code_size,
-                    r,
-                    this,
-                    dis_table_qi,
-                    q_code,
-                    k,
-                    heap_dis,
-                    heap_ids,
-                    param_polysemous_ht);
+            n_pass += with_HammingComputer(
+                    pq.code_size, [&]<class HammingComputer>() -> size_t {
+                        return polysemous_inner_loop<HammingComputer>(
+                                this,
+                                dis_table_qi,
+                                q_code,
+                                k,
+                                heap_dis,
+                                heap_ids,
+                                param_polysemous_ht);
+                    });
 
         } else { // generalized hamming
             switch (pq.code_size) {

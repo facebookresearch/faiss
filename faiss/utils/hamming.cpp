@@ -332,30 +332,6 @@ void hamming_range_search(
     }
 }
 
-struct Run_hammings_knn_hc {
-    using T = void;
-    template <class HammingComputer, class... Types>
-    void f(Types... args) {
-        hammings_knn_hc<HammingComputer>(args...);
-    }
-};
-
-struct Run_hammings_knn_mc {
-    using T = void;
-    template <class HammingComputer, class... Types>
-    void f(Types... args) {
-        hammings_knn_mc<HammingComputer>(args...);
-    }
-};
-
-struct Run_hamming_range_search {
-    using T = void;
-    template <class HammingComputer, class... Types>
-    void f(Types... args) {
-        hamming_range_search<HammingComputer>(args...);
-    }
-};
-
 } // namespace
 
 /* Functions to maps vectors to bits. Assume proper allocation done beforehand,
@@ -511,19 +487,10 @@ void hammings_knn_hc(
         int order,
         ApproxTopK_mode_t approx_topk_mode,
         const faiss::IDSelector* sel) {
-    Run_hammings_knn_hc r;
-    dispatch_HammingComputer(
-            ncodes,
-            r,
-            ncodes,
-            ha,
-            a,
-            b,
-            nb,
-            order,
-            true,
-            approx_topk_mode,
-            sel);
+    with_HammingComputer(ncodes, [&]<class HammingComputer>() {
+        hammings_knn_hc<HammingComputer>(
+                ncodes, ha, a, b, nb, order, true, approx_topk_mode, sel);
+    });
 }
 
 void hammings_knn_mc(
@@ -536,9 +503,10 @@ void hammings_knn_mc(
         int32_t* __restrict distances,
         int64_t* __restrict labels,
         const faiss::IDSelector* sel) {
-    Run_hammings_knn_mc r;
-    dispatch_HammingComputer(
-            ncodes, r, ncodes, a, b, na, nb, k, distances, labels, sel);
+    with_HammingComputer(ncodes, [&]<class HammingComputer>() {
+        hammings_knn_mc<HammingComputer>(
+                ncodes, a, b, na, nb, k, distances, labels, sel);
+    });
 }
 
 void hamming_range_search(
@@ -550,9 +518,10 @@ void hamming_range_search(
         size_t code_size,
         RangeSearchResult* result,
         const faiss::IDSelector* sel) {
-    Run_hamming_range_search r;
-    dispatch_HammingComputer(
-            code_size, r, a, b, na, nb, radius, code_size, result, sel);
+    with_HammingComputer(code_size, [&]<class HammingComputer>() {
+        hamming_range_search<HammingComputer>(
+                a, b, na, nb, radius, code_size, result, sel);
+    });
 }
 
 /* Count number of matches given a max threshold            */

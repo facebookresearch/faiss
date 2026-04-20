@@ -56,30 +56,29 @@ SPECIALIZED_HC(64);
 #undef SPECIALIZED_HC
 
 /***************************************************************************
- * Dispatching function that takes a code size and a consumer object
- * the consumer object should contain a retun type t and a operation template
- * function f() that must be called to perform the operation.
+ * Dispatching function that takes a code size and a C++20 template lambda.
+ * The lambda is called with the appropriate HammingComputer type:
+ *   with_HammingComputer(code_size, [&]<class HammingComputer>() { ... });
  **************************************************************************/
 
-template <class Consumer, class... Types>
-typename Consumer::T dispatch_HammingComputer(
-        int code_size,
-        Consumer& consumer,
-        Types... args) {
+template <class F>
+decltype(auto) with_HammingComputer(int code_size, F&& f) {
     switch (code_size) {
-#define DISPATCH_HC(CODE_SIZE) \
-    case CODE_SIZE:            \
-        return consumer.template f<HammingComputer##CODE_SIZE>(args...);
-        DISPATCH_HC(4);
-        DISPATCH_HC(8);
-        DISPATCH_HC(16);
-        DISPATCH_HC(20);
-        DISPATCH_HC(32);
-        DISPATCH_HC(64);
+        case 4:
+            return f.template operator()<HammingComputer4>();
+        case 8:
+            return f.template operator()<HammingComputer8>();
+        case 16:
+            return f.template operator()<HammingComputer16>();
+        case 20:
+            return f.template operator()<HammingComputer20>();
+        case 32:
+            return f.template operator()<HammingComputer32>();
+        case 64:
+            return f.template operator()<HammingComputer64>();
         default:
-            return consumer.template f<HammingComputerDefault>(args...);
+            return f.template operator()<HammingComputerDefault>();
     }
-#undef DISPATCH_HC
 }
 
 } // namespace faiss
