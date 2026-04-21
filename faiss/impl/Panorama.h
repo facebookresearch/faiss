@@ -65,8 +65,8 @@ static inline void compute_level_dot_products_flat(
         dot_products[i + 3] = dp3;
     }
     for (; i < num_active; i++) {
-        const float* yj = level_storage +
-                (Direct ? i : active_indices[i]) * width;
+        const float* yj =
+                level_storage + (Direct ? i : active_indices[i]) * width;
         float dp = 0;
         FAISS_PRAGMA_IMPRECISE_LOOP
         for (size_t j = 0; j < width; j++) {
@@ -90,17 +90,14 @@ static inline size_t compact_active_pext(
         memcpy(&bytes, &active_byteset[i], 8);
         int mask = (int)_pext_u64(bytes, 0x0101010101010101ULL);
 
-        uint64_t expanded =
-                _pdep_u64(mask, 0x0101010101010101ULL) * 0xFFULL;
+        uint64_t expanded = _pdep_u64(mask, 0x0101010101010101ULL) * 0xFFULL;
         uint64_t packed = _pext_u64(0x0706050403020100ULL, expanded);
 
-        __m256i perm = _mm256_cvtepu8_epi32(
-                _mm_cvtsi64_si128((long long)packed));
-        __m256i data =
-                _mm256_loadu_si256((const __m256i*)&active_indices[i]);
+        __m256i perm =
+                _mm256_cvtepu8_epi32(_mm_cvtsi64_si128((long long)packed));
+        __m256i data = _mm256_loadu_si256((const __m256i*)&active_indices[i]);
         __m256i compacted = _mm256_permutevar8x32_epi32(data, perm);
-        _mm256_storeu_si256(
-                (__m256i*)&active_indices[next_active], compacted);
+        _mm256_storeu_si256((__m256i*)&active_indices[next_active], compacted);
 
         next_active += __builtin_popcount(mask);
     }
@@ -197,14 +194,23 @@ static inline size_t panorama_flat_level_body(
         float threshold) {
     with_level_width(actual_level_width, [&]<size_t W>() {
         compute_level_dot_products_flat<Direct, W>(
-                query_level, level_storage, active_indices,
-                num_active, actual_level_width, dot_buffer);
+                query_level,
+                level_storage,
+                active_indices,
+                num_active,
+                actual_level_width,
+                dot_buffer);
     });
 
     prune_level_kernel<Direct, C, M>(
-            exact_distances, dot_buffer, level_cum_sums, active_byteset,
-            active_indices, (uint32_t)num_active,
-            query_cum_norm, threshold);
+            exact_distances,
+            dot_buffer,
+            level_cum_sums,
+            active_byteset,
+            active_indices,
+            (uint32_t)num_active,
+            query_cum_norm,
+            threshold);
 
     return compact_active_pext(active_indices, active_byteset, num_active);
 }
@@ -370,8 +376,8 @@ size_t Panorama::progressive_filter_batch(
         size_t actual_level_width =
                 std::min(level_width_floats, d - level * level_width_floats);
 
-        num_active = with_bool(
-                level == 0 && first_level_direct, [&]<bool Direct>() {
+        num_active =
+                with_bool(level == 0 && first_level_direct, [&]<bool Direct>() {
                     return panorama_flat_level_body<Direct, C, M>(
                             query_level,
                             level_storage,
