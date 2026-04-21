@@ -864,7 +864,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
         return dc->distance_to_code(code);
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t ntotal,
             const uint8_t* codes,
             const idx_t* ids,
@@ -925,7 +925,10 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                     curr_labels.data(),
                     k);
         }
-        return handler->num_updates();
+        InvertedListScannerStats stats;
+        stats.scan_cnt = handler->count_scanned_rows();
+        stats.nheap_updates = handler->num_updates();
+        return stats;
     }
 };
 

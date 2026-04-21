@@ -390,7 +390,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
 
     // Based on IVFFastScan search_implem_10, since it also deals with 1 query
     // at a time.
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t ntotal,
             const uint8_t* codes,
             const idx_t* ids,
@@ -451,7 +451,10 @@ struct IVFPQFastScanScanner : InvertedListScanner {
                     k);
         }
 
-        return rh->num_updates();
+        InvertedListScannerStats stats;
+        stats.scan_cnt = rh->count_scanned_rows();
+        stats.nheap_updates = rh->num_updates();
+        return stats;
     }
 };
 

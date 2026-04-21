@@ -435,10 +435,11 @@ void search_knn_hamming_heap(
                     ids = sids->get();
                 }
 
-                nheap += scanner->scan_codes(
+                auto stats = scanner->scan_codes(
                         list_size, scodes.get(), ids, simi, idxi, k);
+                nheap += stats.nheap_updates;
 
-                nscan += list_size;
+                nscan += stats.scan_cnt;
                 if (nscan >= static_cast<size_t>(max_codes)) {
                     break;
                 }
@@ -586,9 +587,9 @@ void IndexBinaryIVF::range_search_preassigned(
 
             scanner->set_list(key, assign[i * nprobe_2 + ik]);
             nlistv++;
-            ndis += list_size;
-            scanner->scan_codes_range(
+            auto stats = scanner->scan_codes_range(
                     list_size, scodes.get(), ids.get(), radius, qres);
+            ndis += stats.scan_cnt;
         };
 
 #pragma omp for

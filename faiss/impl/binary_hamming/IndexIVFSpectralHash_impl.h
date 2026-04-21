@@ -99,41 +99,48 @@ struct IVFScanner : InvertedListScanner {
         return hc.hamming(code);
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             float* simi,
             idx_t* idxi,
             size_t k) const override {
-        size_t nup = 0;
+        InvertedListScannerStats stats;
+        // get_InvertedListScanner asserts no IDSelector, so every code
+        // in the list has its distance computed.
+        stats.scan_cnt = list_size;
         for (size_t j = 0; j < list_size; j++) {
             float dis = hc.hamming(codes);
 
             if (dis < simi[0]) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 maxheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
+                stats.nheap_updates++;
             }
             codes += code_size;
         }
-        return nup;
+        return stats;
     }
 
-    void scan_codes_range(
+    InvertedListScannerStats scan_codes_range(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
             float radius,
             RangeQueryResult& result) const override {
+        InvertedListScannerStats stats;
+        stats.scan_cnt = list_size;
         for (size_t j = 0; j < list_size; j++) {
             float dis = hc.hamming(codes);
             if (dis < radius) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 result.add(dis, id);
+                stats.nheap_updates++;
             }
             codes += code_size;
         }
+        return stats;
     }
 };
 

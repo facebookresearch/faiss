@@ -781,7 +781,7 @@ struct QueryTables {
 template <class C, bool use_sel>
 struct WrappedSearchResult {
     ResultHandler& res;
-    size_t nup = 0;
+    InvertedListScannerStats stats;
     idx_t list_no;
 
     const idx_t* ids;
@@ -799,10 +799,13 @@ struct WrappedSearchResult {
     }
 
     inline void add(idx_t j, float dis) {
+        // Reached only for codes that passed skip_entry — i.e. distance
+        // was actually computed for this code (post-filter).
+        stats.scan_cnt++;
         if (C::cmp(res.threshold, dis)) {
             idx_t id = ids ? ids[j] : lo_build(this->list_no, j);
             res.add_result(dis, id);
-            nup++;
+            stats.nheap_updates++;
         }
     }
 };
@@ -1228,7 +1231,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         return dis;
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t ncode,
             const uint8_t* codes,
             const idx_t* ids,
@@ -1251,7 +1254,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         } else {
             FAISS_THROW_MSG("bad precomp mode");
         }
-        return res.nup;
+        return res.stats;
     }
 };
 

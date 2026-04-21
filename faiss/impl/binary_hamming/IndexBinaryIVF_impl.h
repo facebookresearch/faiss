@@ -61,7 +61,7 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
         return hc.hamming(code);
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t n,
             const uint8_t* __restrict codes,
             const idx_t* __restrict ids,
@@ -70,33 +70,40 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             size_t k) const override {
         using C = CMax<int32_t, idx_t>;
 
-        size_t nup = 0;
+        InvertedListScannerStats stats;
+        // Binary IVF Hamming scanner has no IDSelector, so all codes
+        // contribute to the post-filter scan_cnt.
+        stats.scan_cnt = n;
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming(codes);
             if (dis < static_cast<uint32_t>(simi[0])) {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 heap_replace_top<C>(k, simi, idxi, dis, id);
-                nup++;
+                stats.nheap_updates++;
             }
             codes += code_size;
         }
-        return nup;
+        return stats;
     }
 
-    void scan_codes_range(
+    InvertedListScannerStats scan_codes_range(
             size_t n,
             const uint8_t* __restrict codes,
             const idx_t* __restrict ids,
             int radius,
             RangeQueryResult& result) const override {
+        InvertedListScannerStats stats;
+        stats.scan_cnt = n;
         for (size_t j = 0; j < n; j++) {
             uint32_t dis = hc.hamming(codes);
             if (dis < static_cast<uint32_t>(radius)) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 result.add(dis, id);
+                stats.nheap_updates++;
             }
             codes += code_size;
         }
+        return stats;
     }
 };
 

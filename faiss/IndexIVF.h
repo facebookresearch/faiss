@@ -15,6 +15,7 @@
 #include <faiss/Clustering.h>
 #include <faiss/Index.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/invlists/InvertedLists.h>
@@ -68,6 +69,25 @@ struct Level1Quantizer {
 struct SearchParametersIVF : SearchParameters {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
+
+    /// FastScan k-NN only: maximum number of inverted lists to visit.
+    /// 0 means unlimited, i.e. bounded only by nprobe. When set together
+    /// with max_codes, either budget may stop the scan. With
+    /// ensure_topk_full, this limit is treated as at least k lists.
+    size_t max_lists_num = 0;
+
+    /// For k-NN search, make small early-stop budgets less aggressive:
+    /// max_codes is treated as at least k post-IDSelector scans. Supported
+    /// by generic IVF in parallel_mode 0 and 3, and by FastScan k-NN
+    /// implementations 10 and 11.
+    bool ensure_topk_full = false;
+
+    /// Range-search only: stop after this many consecutive probed lists add
+    /// no in-radius results. 0 disables the heuristic. This trades recall
+    /// for less work. Supported in parallel_mode 0; FastScan range search
+    /// uses implementation 10 for this option.
+    size_t max_empty_result_buckets = 0;
+
     SearchParameters* quantizer_params = nullptr;
     /// context object to pass to InvertedLists
     void* inverted_list_context = nullptr;
@@ -512,9 +532,9 @@ struct InvertedListScanner {
      * @param distances  heap distances (size k)
      * @param labels     heap labels (size k)
      * @param k          heap size
-     * @return number of heap updates performed
+     * @return per-list scan statistics
      */
-    virtual size_t scan_codes(
+    virtual InvertedListScannerStats scan_codes(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,
@@ -523,18 +543,17 @@ struct InvertedListScanner {
             size_t k) const;
 
     // same as scan_codes, using an iterator
-    virtual size_t iterate_codes(
+    virtual InvertedListScannerStats iterate_codes(
             InvertedListsIterator* iterator,
             float* distances,
             idx_t* labels,
-            size_t k,
-            size_t& list_size) const;
+            size_t k) const;
 
     /** scan a set of codes, compute distances to current query and
      * update results if distances are below radius
      *
      * (default implementation fails) */
-    virtual void scan_codes_range(
+    virtual InvertedListScannerStats scan_codes_range(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,
@@ -542,14 +561,13 @@ struct InvertedListScanner {
             RangeQueryResult& result) const;
 
     // same as scan_codes_range, using an iterator
-    virtual void iterate_codes_range(
+    virtual InvertedListScannerStats iterate_codes_range(
             InvertedListsIterator* iterator,
             float radius,
-            RangeQueryResult& result,
-            size_t& list_size) const;
+            RangeQueryResult& result) const;
 
     // accumulate results with a ResultHandler
-    virtual size_t scan_codes(
+    virtual InvertedListScannerStats scan_codes(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,

@@ -207,7 +207,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
 
     // redefiniing the scan_codes allows to inline the distance_to_code
     // (this is unlikely to matter because it contains a virtual function call)
-    size_t scan_codes_1bit(
+    InvertedListScannerStats scan_codes_1bit(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
@@ -216,7 +216,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
     }
 
     /// Override scan_codes to implement adaptive filtering for multi-bit codes
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
@@ -229,7 +229,7 @@ struct RaBitInvertedListScanner : InvertedListScanner {
         }
 
         // Multi-bit: Two-stage search with adaptive filtering
-        size_t nup = 0;
+        InvertedListScannerStats stats;
 
         for (size_t j = 0; j < list_size; j++) {
             if (sel != nullptr) {
@@ -255,17 +255,20 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     handler.threshold,
                     keep_max);
             if (should_refine) {
+                // Refining computes the full distance — counts as a
+                // post-filter "distance computed" for stats purposes.
+                stats.scan_cnt++;
                 float dis = distance_to_code(codes);
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
                 if (handler.add_result(dis, id)) {
-                    nup++;
+                    stats.nheap_updates++;
                 }
             }
             codes += code_size;
         }
 
-        return nup;
+        return stats;
     }
 
     void internal_try_setup_dc() {

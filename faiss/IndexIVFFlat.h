@@ -87,7 +87,7 @@ struct IVFFlatScanner : InvertedListScanner {
 
     float distance_to_code(const uint8_t* code) const final;
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,

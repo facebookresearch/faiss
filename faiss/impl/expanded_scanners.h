@@ -10,6 +10,7 @@
 #include <cstdio>
 
 #include <faiss/IndexIVF.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/impl/ResultHandler.h>
 
 /* This is the inner loop of the inverted list scanners. The default version
@@ -24,13 +25,13 @@ namespace faiss {
 namespace {
 
 template <class ScannerType, typename C, bool store_pairs, bool use_sel>
-size_t run_scan_codes1(
+InvertedListScannerStats run_scan_codes1(
         const ScannerType& scanner,
         size_t list_size,
         const uint8_t* codes,
         const idx_t* ids,
         ResultHandler& handler) {
-    size_t nup = 0;
+    InvertedListScannerStats stats;
     size_t list_no = scanner.list_no;
     size_t code_size = scanner.code_size;
     const IDSelector* sel = scanner.sel;
@@ -45,17 +46,19 @@ size_t run_scan_codes1(
             }
         }
 
+        // post-IDSelector: distance is about to be computed for this code.
+        stats.scan_cnt++;
         float dis = scanner.distance_to_code(codes); // will be inlined if final
         if (C::cmp(threshold, dis)) {
             int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
             handler.add_result(dis, id);
             threshold = handler.threshold;
-            nup++;
+            stats.nheap_updates++;
         }
         codes += code_size;
     }
 
-    return nup;
+    return stats;
 }
 
 /*****************************************************************************
@@ -64,7 +67,7 @@ size_t run_scan_codes1(
  */
 
 template <bool store_pairs, bool use_sel, class ScannerType>
-size_t run_scan_codes_fix_store_pairs_fix_use_sel(
+InvertedListScannerStats run_scan_codes_fix_store_pairs_fix_use_sel(
         const ScannerType& scanner,
         size_t list_size,
         const uint8_t* codes,
@@ -86,7 +89,7 @@ size_t run_scan_codes_fix_store_pairs_fix_use_sel(
 }
 
 template <class C, bool use_sel, class ScannerType>
-size_t run_scan_codes_fix_C_fix_use_sel(
+InvertedListScannerStats run_scan_codes_fix_C_fix_use_sel(
         const ScannerType& scanner,
         size_t list_size,
         const uint8_t* codes,
@@ -102,7 +105,7 @@ size_t run_scan_codes_fix_C_fix_use_sel(
 }
 
 template <class C, class ScannerType>
-size_t run_scan_codes_fix_C(
+InvertedListScannerStats run_scan_codes_fix_C(
         const ScannerType& scanner,
         size_t list_size,
         const uint8_t* codes,
@@ -128,7 +131,7 @@ size_t run_scan_codes_fix_C(
 }
 
 template <class ScannerType>
-size_t run_scan_codes(
+InvertedListScannerStats run_scan_codes(
         const ScannerType& scanner,
         size_t list_size,
         const uint8_t* codes,

@@ -74,7 +74,7 @@ struct IVFSQScannerIP : InvertedListScanner {
         return accu0 + dc.query_to_code(code);
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
@@ -133,7 +133,7 @@ struct IVFSQScannerL2 : InvertedListScanner {
         return dc.query_to_code(code);
     }
 
-    size_t scan_codes(
+    InvertedListScannerStats scan_codes(
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,

@@ -26,7 +26,8 @@ constexpr faiss::SIMDLevel THE_SL = THE_SIMD_LEVEL;
         return vd(xi, yj);                                                     \
     }                                                                          \
     template <>                                                                \
-    size_t IVFFlatScanner<VectorDistance<mt, THE_SL>>::scan_codes(             \
+    InvertedListScannerStats                                                   \
+    IVFFlatScanner<VectorDistance<mt, THE_SL>>::scan_codes(                    \
             size_t list_size,                                                  \
             const uint8_t* codes,                                              \
             const idx_t* ids,                                                  \

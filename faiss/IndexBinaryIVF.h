@@ -241,7 +241,7 @@ struct BinaryInvertedListScanner {
      * @param labels     heap labels (size k)
      * @param k          heap size
      */
-    virtual size_t scan_codes(
+    virtual InvertedListScannerStats scan_codes(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,
@@ -249,7 +249,7 @@ struct BinaryInvertedListScanner {
             idx_t* labels,
             size_t k) const = 0;
 
-    virtual void scan_codes_range(
+    virtual InvertedListScannerStats scan_codes_range(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,
