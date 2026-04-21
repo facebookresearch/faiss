@@ -524,10 +524,7 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     sizes[i]);
             ailp->ids[i].resize(sizes[i]);
-            size_t num_elems =
-                    ((sizes[i] + ArrayInvertedListsPanorama::kBatchSize - 1) /
-                     ArrayInvertedListsPanorama::kBatchSize) *
-                    ArrayInvertedListsPanorama::kBatchSize;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             size_t codes_bytes = mul_no_overflow(
                     num_elems, code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
