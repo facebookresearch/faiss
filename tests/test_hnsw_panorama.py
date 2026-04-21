@@ -19,9 +19,11 @@ import os
 import numpy as np
 
 import faiss
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexHNSWFlatPanorama(unittest.TestCase):
     """Test Suite for IndexHNSWFlatPanorama."""
 

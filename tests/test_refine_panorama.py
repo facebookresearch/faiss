@@ -20,9 +20,11 @@ identical distances.
 import unittest
 import faiss
 import numpy as np
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexRefinePanorama(unittest.TestCase):
 
     # Metrics to test

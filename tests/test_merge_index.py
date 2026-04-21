@@ -8,7 +8,7 @@ import faiss
 import numpy as np
 from faiss.contrib.datasets import SyntheticDataset
 
-from common_faiss_tests import Randu10k
+from common_faiss_tests import for_all_simd_levels, Randu10k
 
 ru = Randu10k()
 xb = ru.xb
@@ -18,6 +18,7 @@ nb, d = xb.shape
 nq, d = xq.shape
 
 
+@for_all_simd_levels
 class TestMerge1(unittest.TestCase):
     def make_index_for_merge(self, quant, index_type, master_index):
         ncent = 40
@@ -147,6 +148,7 @@ class TestMerge1(unittest.TestCase):
 
 
 # Test merge_from method for all IndexFlatCodes Types
+@for_all_simd_levels
 class TestMerge2(unittest.TestCase):
 
     def do_flat_codes_test(self, factory_key):
@@ -243,6 +245,7 @@ class TestMerge2(unittest.TestCase):
         self.do_test_with_ids("Flat,IDMap2")
 
 
+@for_all_simd_levels
 class TestRemoveFastScan(unittest.TestCase):
 
     def do_fast_scan_test(self,
