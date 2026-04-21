@@ -18,9 +18,196 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
+#if defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
+        defined(_M_IX86)
+#include <immintrin.h>
+#endif
+
 namespace faiss {
+
+FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+template <bool Direct = false, size_t FixedWidth = 0>
+static inline void compute_level_dot_products_flat(
+        const float* FAISS_RESTRICT query_level,
+        const float* FAISS_RESTRICT level_storage,
+        const uint32_t* active_indices,
+        size_t num_active,
+        size_t level_width_dims,
+        float* FAISS_RESTRICT dot_products) {
+    const size_t width = FixedWidth > 0 ? FixedWidth : level_width_dims;
+    size_t i = 0;
+    for (; i + 4 <= num_active; i += 4) {
+        const float* y0 = level_storage +
+                (Direct ? (i + 0) : active_indices[i + 0]) * width;
+        const float* y1 = level_storage +
+                (Direct ? (i + 1) : active_indices[i + 1]) * width;
+        const float* y2 = level_storage +
+                (Direct ? (i + 2) : active_indices[i + 2]) * width;
+        const float* y3 = level_storage +
+                (Direct ? (i + 3) : active_indices[i + 3]) * width;
+
+        float dp0 = 0, dp1 = 0, dp2 = 0, dp3 = 0;
+        FAISS_PRAGMA_IMPRECISE_LOOP
+        for (size_t j = 0; j < width; j++) {
+            float q = query_level[j];
+            dp0 += q * y0[j];
+            dp1 += q * y1[j];
+            dp2 += q * y2[j];
+            dp3 += q * y3[j];
+        }
+
+        dot_products[i + 0] = dp0;
+        dot_products[i + 1] = dp1;
+        dot_products[i + 2] = dp2;
+        dot_products[i + 3] = dp3;
+    }
+    for (; i < num_active; i++) {
+        const float* yj = level_storage +
+                (Direct ? i : active_indices[i]) * width;
+        float dp = 0;
+        FAISS_PRAGMA_IMPRECISE_LOOP
+        for (size_t j = 0; j < width; j++) {
+            dp += query_level[j] * yj[j];
+        }
+        dot_products[i] = dp;
+    }
+}
+FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+static inline size_t compact_active_pext(
+        uint32_t* active_indices,
+        const uint8_t* active_byteset,
+        size_t num_active) {
+    size_t next_active = 0;
+    size_t i = 0;
+
+#ifdef __BMI2__
+    for (; i + 8 <= num_active; i += 8) {
+        uint64_t bytes;
+        memcpy(&bytes, &active_byteset[i], 8);
+        int mask = (int)_pext_u64(bytes, 0x0101010101010101ULL);
+
+        uint64_t expanded =
+                _pdep_u64(mask, 0x0101010101010101ULL) * 0xFFULL;
+        uint64_t packed = _pext_u64(0x0706050403020100ULL, expanded);
+
+        __m256i perm = _mm256_cvtepu8_epi32(
+                _mm_cvtsi64_si128((long long)packed));
+        __m256i data =
+                _mm256_loadu_si256((const __m256i*)&active_indices[i]);
+        __m256i compacted = _mm256_permutevar8x32_epi32(data, perm);
+        _mm256_storeu_si256(
+                (__m256i*)&active_indices[next_active], compacted);
+
+        next_active += __builtin_popcount(mask);
+    }
+#endif
+
+    for (; i < num_active; i++) {
+        active_indices[next_active] = active_indices[i];
+        next_active += active_byteset[i] ? 1 : 0;
+    }
+
+    return next_active;
+}
+
+FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
+template <bool Direct, typename C, MetricType M>
+static inline void prune_level_kernel(
+        float* FAISS_RESTRICT exact_distances,
+        const float* FAISS_RESTRICT dot_buffer,
+        const float* FAISS_RESTRICT level_cum_sums,
+        uint8_t* FAISS_RESTRICT active_byteset,
+        const uint32_t* FAISS_RESTRICT active_indices,
+        uint32_t num_active,
+        float query_cum_norm,
+        float threshold) {
+    FAISS_PRAGMA_IMPRECISE_LOOP
+    for (uint32_t i = 0; i < num_active; i++) {
+        uint32_t idx = Direct ? i : active_indices[i];
+        if constexpr (M == METRIC_INNER_PRODUCT) {
+            exact_distances[idx] += dot_buffer[i];
+        } else {
+            exact_distances[idx] -= 2.0f * dot_buffer[i];
+        }
+
+        float cum_sum = level_cum_sums[idx];
+        float cauchy_schwarz_bound;
+        if constexpr (M == METRIC_INNER_PRODUCT) {
+            cauchy_schwarz_bound = -cum_sum * query_cum_norm;
+        } else {
+            cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
+        }
+
+        float lower_bound = exact_distances[idx] - cauchy_schwarz_bound;
+        if constexpr (C::is_max) {
+            active_byteset[i] = (threshold > lower_bound) ? 1 : 0;
+        } else {
+            active_byteset[i] = (threshold < lower_bound) ? 1 : 0;
+        }
+    }
+}
+FAISS_PRAGMA_IMPRECISE_FUNCTION_END
+
+namespace detail {
+template <size_t Lo, size_t Hi, size_t Step, typename Lambda>
+inline auto dispatch_width(size_t width, Lambda&& fn) {
+    if constexpr (Lo > Hi) {
+        return fn.template operator()<0>();
+    } else {
+        if (width == Lo) {
+            return fn.template operator()<Lo>();
+        }
+        return dispatch_width<Lo + Step, Hi, Step>(
+                width, std::forward<Lambda>(fn));
+    }
+}
+} // namespace detail
+
+template <typename LambdaType>
+inline auto with_level_width(size_t width, LambdaType&& action) {
+    return detail::dispatch_width<16, 128, 16>(
+            width, std::forward<LambdaType>(action));
+}
+
+template <typename Lambda>
+inline auto with_bool(bool value, Lambda&& fn) {
+    if (value) {
+        return fn.template operator()<true>();
+    } else {
+        return fn.template operator()<false>();
+    }
+}
+
+template <bool Direct, typename C, MetricType M>
+static inline size_t panorama_flat_level_body(
+        const float* query_level,
+        const float* level_storage,
+        uint32_t* active_indices,
+        size_t num_active,
+        uint8_t* active_byteset,
+        size_t actual_level_width,
+        float* exact_distances,
+        float* dot_buffer,
+        const float* level_cum_sums,
+        float query_cum_norm,
+        float threshold) {
+    with_level_width(actual_level_width, [&]<size_t W>() {
+        compute_level_dot_products_flat<Direct, W>(
+                query_level, level_storage, active_indices,
+                num_active, actual_level_width, dot_buffer);
+    });
+
+    prune_level_kernel<Direct, C, M>(
+            exact_distances, dot_buffer, level_cum_sums, active_byteset,
+            active_indices, (uint32_t)num_active,
+            query_cum_norm, threshold);
+
+    return compact_active_pext(active_indices, active_byteset, num_active);
+}
 
 /**
  * Implements the core logic of Panorama-based refinement.
@@ -110,7 +297,9 @@ struct Panorama {
             const idx_t* ids,
             bool use_sel,
             std::vector<uint32_t>& active_indices,
+            std::vector<uint8_t>& active_byteset,
             std::vector<float>& exact_distances,
+            std::vector<float>& dot_buffer,
             float threshold,
             PanoramaStats& local_stats) const;
 
@@ -129,7 +318,9 @@ size_t Panorama::progressive_filter_batch(
         const idx_t* ids,
         bool use_sel,
         std::vector<uint32_t>& active_indices,
+        std::vector<uint8_t>& active_byteset,
         std::vector<float>& exact_distances,
+        std::vector<float>& dot_buffer,
         float threshold,
         PanoramaStats& local_stats) const {
     size_t batch_start = batch_no * batch_size;
@@ -162,12 +353,10 @@ size_t Panorama::progressive_filter_batch(
         num_active += include;
     }
 
-    if (num_active == 0) {
-        return 0;
-    }
-
     size_t total_active = num_active;
-    for (size_t level = 0; level < n_levels; level++) {
+    bool first_level_direct = (num_active == curr_batch_size);
+
+    for (size_t level = 0; (level < n_levels) && (num_active > 0); level++) {
         local_stats.total_dims_scanned += num_active;
         local_stats.total_dims += total_active;
 
@@ -176,40 +365,26 @@ size_t Panorama::progressive_filter_batch(
         size_t level_offset = level * level_width * batch_size;
         const float* level_storage =
                 (const float*)(storage_base + level_offset);
+        const float* query_level = query + level * level_width_floats;
+        size_t actual_level_width =
+                std::min(level_width_floats, d - level * level_width_floats);
 
-        size_t next_active = 0;
-        for (size_t i = 0; i < num_active; i++) {
-            uint32_t idx = active_indices[i];
-            size_t actual_level_width = std::min(
-                    level_width_floats, d - level * level_width_floats);
+        num_active = with_bool(
+                level == 0 && first_level_direct, [&]<bool Direct>() {
+                    return panorama_flat_level_body<Direct, C, M>(
+                            query_level,
+                            level_storage,
+                            active_indices.data(),
+                            num_active,
+                            active_byteset.data(),
+                            actual_level_width,
+                            exact_distances.data(),
+                            dot_buffer.data(),
+                            level_cum_sums,
+                            query_cum_norm,
+                            threshold);
+                });
 
-            const float* yj = level_storage + idx * actual_level_width;
-            const float* query_level = query + level * level_width_floats;
-
-            float dot_product =
-                    fvec_inner_product(query_level, yj, actual_level_width);
-
-            if constexpr (M == METRIC_INNER_PRODUCT) {
-                exact_distances[idx] += dot_product;
-            } else {
-                exact_distances[idx] -= 2.0f * dot_product;
-            }
-
-            float cum_sum = level_cum_sums[idx];
-            float cauchy_schwarz_bound;
-            if constexpr (M == METRIC_INNER_PRODUCT) {
-                cauchy_schwarz_bound = -cum_sum * query_cum_norm;
-            } else {
-                cauchy_schwarz_bound = 2.0f * cum_sum * query_cum_norm;
-            }
-
-            float lower_bound = exact_distances[idx] - cauchy_schwarz_bound;
-
-            active_indices[next_active] = idx;
-            next_active += C::cmp(threshold, lower_bound) ? 1 : 0;
-        }
-
-        num_active = next_active;
         level_cum_sums += batch_size;
     }
 

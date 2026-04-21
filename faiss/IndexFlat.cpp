@@ -628,8 +628,10 @@ inline void flat_pano_search_core(
         SingleResultHandler res(handler);
 
         std::vector<float> query_cum_norms(index.n_levels + 1);
-        std::vector<float> exact_distances(index.batch_size);
         std::vector<uint32_t> active_indices(index.batch_size);
+        std::vector<uint8_t> active_byteset(index.batch_size);
+        std::vector<float> exact_distances(index.batch_size);
+        std::vector<float> dot_buffer(index.batch_size);
 
 #pragma omp for
         for (int64_t i = 0; i < n; i++) {
@@ -664,7 +666,9 @@ inline void flat_pano_search_core(
                                     nullptr,
                                     use_sel,
                                     active_indices,
+                                    active_byteset,
                                     exact_distances,
+                                    dot_buffer,
                                     threshold,
                                     local_stats);
                         });
