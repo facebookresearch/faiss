@@ -209,16 +209,17 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
 void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
         const {
+    std::vector<float> y_bias_corrected;
     if (have_bias) { // allocate buffer to store bias-corrected data
-        float* y_new = new float[n * d_out];
+        y_bias_corrected.resize(n * d_out);
         const float* yr = y;
-        float* yw = y_new;
+        float* yw = y_bias_corrected.data();
         for (idx_t i = 0; i < n; i++) {
             for (int j = 0; j < d_out; j++) {
                 *yw++ = *yr++ - b[j];
             }
         }
-        y = y_new;
+        y = y_bias_corrected.data();
     }
 
     {
@@ -237,10 +238,6 @@ void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
                &zero,
                x,
                &dii);
-    }
-
-    if (have_bias) {
-        delete[] y;
     }
 }
 
@@ -534,7 +531,7 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                &lwork,
                &info);
         lwork = FINTEGER(workq);
-        double* work = new double[lwork];
+        std::vector<double> work(lwork);
 
         dsyev_("Vectors as well",
                "Upper",
@@ -542,11 +539,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                cov,
                &di,
                eigenvalues,
-               work,
+               work.data(),
                &lwork,
                &info);
-
-        delete[] work;
 
         if (info != 0) {
             fprintf(stderr,
@@ -732,7 +727,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 
         { // compute PCAMat = x' * v
             FINTEGER di = d_in, ni = n;
-            float one = 1.0;
+            float one = 1.0, zero = 0.0;
 
             sgemm_("Non",
                    "Non Trans",
@@ -744,7 +739,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
                    &di,
                    gram.data(),
                    &ni,
-                   &one,
+                   &zero,
                    PCAMat.data(),
                    &di);
         }
@@ -989,8 +984,10 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                     &lwork,
                     &info);
 
-            FAISS_THROW_IF_NOT_MSG(
-                    info == 0, "LAPACK dgesvd workspace query failed");
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK dgesvd workspace query returned info=%d",
+                    int(info));
             lwork = size_t(lwork1);
             std::vector<double> work(lwork);
             dgesvd_("A",
@@ -1338,6 +1335,10 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
                     &lwork,
                     &info);
 
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK sgesvd workspace query returned info=%d",
+                    int(info));
             lwork = int(worksz);
             std::vector<float> work(lwork);
             // u and vt swapped
