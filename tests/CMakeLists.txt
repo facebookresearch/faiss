@@ -10,9 +10,7 @@ set(FAISS_TEST_SRC
   test_ivfpq_indexing.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
-  test_merge.cpp
   test_omp_threads.cpp
-  test_ondisk_ivf.cpp
   test_pairs_decoding.cpp
   test_params_override.cpp
   test_pq_encoding.cpp
@@ -31,12 +29,10 @@ set(FAISS_TEST_SRC
   test_partitioning.cpp
   test_fastscan_perf.cpp
   test_pqfs_unaligned.cpp
-  test_disable_pq_sdc_tables.cpp
   test_common_ivf_empty_index.cpp
   test_callback.cpp
   test_utils.cpp
   test_hamming.cpp
-  test_mmap.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp
@@ -48,6 +44,16 @@ set(FAISS_TEST_SRC
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
 )
+
+# Tests that use POSIX APIs or have platform-specific issues on Windows
+if(NOT WIN32)
+  list(APPEND FAISS_TEST_SRC
+    test_merge.cpp
+    test_ondisk_ivf.cpp
+    test_disable_pq_sdc_tables.cpp
+    test_mmap.cpp
+  )
+endif()
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
@@ -138,4 +144,10 @@ target_link_libraries(faiss_test PRIVATE
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-gtest_discover_tests(faiss_test)
+if(WIN32)
+  # On Windows, defer test discovery to ctest time (PRE_TEST) instead of
+  # build time (POST_BUILD) because faiss.dll is not in PATH during build.
+  gtest_discover_tests(faiss_test DISCOVERY_MODE PRE_TEST)
+else()
+  gtest_discover_tests(faiss_test)
+endif()

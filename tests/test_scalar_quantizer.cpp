@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <memory>
+#include <random>
 #include <vector>
 
 #include <faiss/IndexFlat.h>
@@ -110,12 +111,14 @@ TEST(TestSQ0bit, CoarseOnlySearch) {
     int nq = 10;
     int k = 5;
 
+    std::mt19937 rng(42);
+    std::uniform_real_distribution<float> distrib(0.0f, 1.0f);
     std::vector<float> xb(nb * d), xq(nq * d);
     for (int i = 0; i < nb * d; i++) {
-        xb[i] = drand48();
+        xb[i] = distrib(rng);
     }
     for (int i = 0; i < nq * d; i++) {
-        xq[i] = drand48();
+        xq[i] = distrib(rng);
     }
 
     faiss::IndexFlatL2 quantizer(d);
@@ -180,12 +183,14 @@ TEST(TestSQ0bit, InnerProduct) {
     int nq = 5;
     int k = 3;
 
+    std::mt19937 rng2(43);
+    std::uniform_real_distribution<float> distrib2(0.0f, 1.0f);
     std::vector<float> xb(nb * d), xq(nq * d);
     for (int i = 0; i < nb * d; i++) {
-        xb[i] = drand48();
+        xb[i] = distrib2(rng2);
     }
     for (int i = 0; i < nq * d; i++) {
-        xq[i] = drand48();
+        xq[i] = distrib2(rng2);
     }
 
     faiss::IndexFlatIP quantizer(d);
