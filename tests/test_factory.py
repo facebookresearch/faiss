@@ -9,6 +9,7 @@ import unittest
 import gc
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import factory_tools
 from faiss.contrib import datasets
 
@@ -321,6 +322,7 @@ class TestAdditive(unittest.TestCase):
             faiss.AdditiveQuantizer.ST_norm_qint8)
 
 
+@for_all_simd_levels
 class TestSpectralHash(unittest.TestCase):
 
     def test_sh(self):

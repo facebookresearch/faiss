@@ -365,6 +365,15 @@ endif()
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
+# Detect BMI2 compiler support.
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-mbmi2" COMPILER_SUPPORTS_BMI2)
+if(COMPILER_SUPPORTS_BMI2)
+  set(FAISS_BMI2_FLAGS "-mbmi2")
+else()
+  set(FAISS_BMI2_FLAGS "")
+endif()
+
 add_library(faiss ${FAISS_SRC})
 
 add_library(faiss_avx2 ${FAISS_SRC})
@@ -372,7 +381,7 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512"
   set_target_properties(faiss_avx2 PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
-  target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt>)
+  target_compile_options(faiss_avx2 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mpopcnt ${FAISS_BMI2_FLAGS}>)
 else()
   # MSVC enables FMA with /arch:AVX2; no separate flags for F16C, POPCNT
   # Ref. FMA (under /arch:AVX2): https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64
@@ -392,7 +401,7 @@ endif()
 if(NOT WIN32)
   # All modern CPUs support F, CD, VL, DQ, BW extensions.
   # Ref: https://en.wikipedia.org/wiki/AVX512
-  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt>)
+  target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mpopcnt ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512 PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
@@ -408,7 +417,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper

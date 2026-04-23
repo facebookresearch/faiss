@@ -636,7 +636,7 @@ class TestBigBatchSearch(unittest.TestCase):
         index.add(ds.get_database())
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
-        # faiss.omp_set_num_threads(1)
+        faiss.omp_set_num_threads(1)
         for method in ("pairwise_distances", "knn_function", "index"):
             for threaded in 0, 1, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
@@ -668,6 +668,7 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
 
+        faiss.omp_set_num_threads(1)
         checkpoint = tempfile.mktemp()
         try:
             # First big batch search

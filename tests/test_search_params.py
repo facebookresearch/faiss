@@ -9,12 +9,14 @@ import faiss
 import unittest
 import sys
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import datasets
 from faiss.contrib.evaluation import sort_range_res_2, check_ref_range_results
 
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestSelector(unittest.TestCase):
     """
     Test the IDSelector filtering for as many (index class, id selector class)
@@ -358,6 +360,7 @@ class TestSelector(unittest.TestCase):
         self.do_test_id_selector("BinaryFlat", use_heap=False)
 
 
+@for_all_simd_levels
 class TestSearchParams(unittest.TestCase):
 
     def do_test_with_param(

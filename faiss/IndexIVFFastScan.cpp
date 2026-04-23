@@ -254,14 +254,14 @@ void estimators_from_tables_generic(
         const dis_t* __restrict dt = dis_table;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
-            uint64_t c = bsr.read(index.nbits);
+            uint64_t c = bsr.read(static_cast<int>(index.nbits));
             dis += dt[c];
             dt += index.ksub;
         }
 
         if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
-                uint64_t c = bsr.read(index.nbits);
+                uint64_t c = bsr.read(static_cast<int>(index.nbits));
                 dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
@@ -462,7 +462,7 @@ int compute_search_nslice(
         size_t cur_nprobe) {
     int nslice;
     if (n <= static_cast<size_t>(omp_get_max_threads())) {
-        nslice = n;
+        nslice = static_cast<int>(n);
     } else if (index->lookup_table_is_3d()) {
         // make sure we don't make too big LUT tables
         size_t lut_size_per_query = index->M * index->ksub * cur_nprobe *
@@ -471,8 +471,8 @@ int compute_search_nslice(
         size_t max_lut_size = precomputed_table_max_bytes;
         // how many queries we can handle within mem budget
         size_t nq_ok = std::max(max_lut_size / lut_size_per_query, size_t(1));
-        nslice = roundup(
-                std::max(size_t(n / nq_ok), size_t(1)), omp_get_max_threads());
+        nslice = static_cast<int>(roundup(
+                std::max(size_t(n / nq_ok), size_t(1)), omp_get_max_threads()));
     } else {
         // LUTs unlikely to be a limiting factor
         nslice = omp_get_max_threads();
@@ -552,7 +552,7 @@ void IndexIVFFastScan::search_dispatch_implem(
         // sliced over threads (then it is more efficient to have each thread do
         // its own coarse quantization)
         cq.quantize(quantizer, n, x, quantizer_params);
-        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
+        invlists->prefetch_lists(cq.ids, static_cast<int>(n * cq.nprobe));
     }
 
     if (impl == 1) {
@@ -717,7 +717,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
 
     if (!multiple_threads && !cq.done()) {
         cq.quantize(quantizer, n, x, quantizer_params);
-        invlists->prefetch_lists(cq.ids, n * cq.nprobe);
+        invlists->prefetch_lists(cq.ids, static_cast<int>(n * cq.nprobe));
     }
 
     size_t ndis = 0, nlist_visited = 0;
@@ -990,7 +990,7 @@ void IndexIVFFastScan::search_implem_10(
 
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* LUT = nullptr;
-        qmap1[0] = i;
+        qmap1[0] = static_cast<int>(i);
 
         if (single_LUT) {
             LUT = dis_tables.get() + i * dim12;
@@ -1028,7 +1028,7 @@ void IndexIVFFastScan::search_implem_10(
                     1,
                     roundup(ls, bbs),
                     bbs,
-                    M2,
+                    static_cast<int>(M2),
                     codes.get(),
                     LUT,
                     context.pq2x4_scale,
@@ -1094,7 +1094,7 @@ void IndexIVFFastScan::search_implem_12(
 
     // prepare the result handlers
 
-    int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
+    int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
 
     std::vector<uint16_t> tmp_bias;
     if (biases.get()) {
@@ -1131,7 +1131,7 @@ void IndexIVFFastScan::search_implem_12(
         nlist_visited++;
 
         // re-organize LUTs and biases into the right order
-        int nc = i1 - i0;
+        int nc = static_cast<int>(i1 - i0);
 
         std::vector<int> q_map(nc), lut_entries(nc);
         AlignedTable<uint8_t> LUT(nc * dim12);
@@ -1141,7 +1141,7 @@ void IndexIVFFastScan::search_implem_12(
         for (size_t i = i0; i < i1; i++) {
             const QC& qc = qcs[i];
             q_map[i - i0] = qc.qno;
-            int ij = qc.qno * cur_nprobe + qc.rank;
+            int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
             lut_entries[i - i0] = single_LUT ? qc.qno : ij;
             if (biases.get()) {
                 tmp_bias[i - i0] = biases[ij];
@@ -1149,7 +1149,7 @@ void IndexIVFFastScan::search_implem_12(
         }
         pq4_pack_LUT_qbs_q_map(
                 qbs_for_list,
-                M2,
+                static_cast<int>(M2),
                 dis_tables.get(),
                 lut_entries.data(),
                 LUT.get());
@@ -1180,7 +1180,7 @@ void IndexIVFFastScan::search_implem_12(
         scanner.accumulate_loop_qbs(
                 qbs_for_list,
                 list_size,
-                M2,
+                static_cast<int>(M2),
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,
@@ -1328,7 +1328,7 @@ void IndexIVFFastScan::search_implem_14(
         SIMDResultHandlerToFloat* handler_ptr = scanner->handler();
         handler_ptr->begin(normalizers.get());
 
-        int actual_qbs2 = this->qbs2 ? this->qbs2 : 11;
+        int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
 
         std::vector<uint16_t> tmp_bias;
         if (biases.get()) {
@@ -1353,7 +1353,7 @@ void IndexIVFFastScan::search_implem_14(
             int list_no = qcs[i0].list_no;
 
             // re-organize LUTs and biases into the right order
-            int nc = i1 - i0;
+            int nc = static_cast<int>(i1 - i0);
 
             std::vector<int> q_map(nc), lut_entries(nc);
             AlignedTable<uint8_t> LUT(nc * dim12);
@@ -1364,7 +1364,7 @@ void IndexIVFFastScan::search_implem_14(
                 const QC& qc = qcs[i];
                 q_map[i - i0] = qc.qno;
                 q_set.insert(qc.qno);
-                int ij = qc.qno * cur_nprobe + qc.rank;
+                int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
                 lut_entries[i - i0] = single_LUT ? qc.qno : ij;
                 if (biases.get()) {
                     tmp_bias[i - i0] = biases[ij];
@@ -1372,7 +1372,7 @@ void IndexIVFFastScan::search_implem_14(
             }
             pq4_pack_LUT_qbs_q_map(
                     qbs_for_list,
-                    M2,
+                    static_cast<int>(M2),
                     dis_tables.get(),
                     lut_entries.data(),
                     LUT.get());
@@ -1403,7 +1403,7 @@ void IndexIVFFastScan::search_implem_14(
             scanner->accumulate_loop_qbs(
                     qbs_for_list,
                     list_size,
-                    M2,
+                    static_cast<int>(M2),
                     codes.get(),
                     LUT.get(),
                     context.pq2x4_scale,
@@ -1465,7 +1465,7 @@ void IndexIVFFastScan::reconstruct_from_offset(
     for (size_t m = 0; m < M; m++) {
         uint8_t c =
                 pq4_get_packed_element(list_codes.get(), bbs, M2, offset, m);
-        bsw.write(c, nbits);
+        bsw.write(c, static_cast<int>(nbits));
     }
 
     sa_decode(1, code.data(), recons);
@@ -1488,7 +1488,7 @@ void IndexIVFFastScan::reconstruct_orig_invlists() {
             for (size_t m = 0; m < M; m++) {
                 uint8_t c =
                         pq4_get_packed_element(codes.get(), bbs, M2, offset, m);
-                bsw.write(c, nbits);
+                bsw.write(c, static_cast<int>(nbits));
             }
 
             // get id

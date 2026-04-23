@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import argparse
 import multiprocessing as mp
 import time
 
@@ -11,11 +12,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 try:
-    from faiss.contrib.datasets_fb import DatasetGIST1M
+    from faiss.contrib.datasets_fb import DatasetSIFT1M, DatasetGIST1M
 except ImportError:
-    from faiss.contrib.datasets import DatasetGIST1M
+    from faiss.contrib.datasets import DatasetSIFT1M, DatasetGIST1M
 
-ds = DatasetGIST1M()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--dataset", default="gist1m", choices=["sift1m", "gist1m"]
+)
+args = parser.parse_args()
+
+if args.dataset == "sift1m":
+    ds = DatasetSIFT1M()
+else:
+    ds = DatasetGIST1M()
 
 xq = ds.get_queries()
 xb = ds.get_database()
@@ -29,7 +39,7 @@ nt, d = xt.shape
 
 k = 10
 gt = gt[:, :k]
-nlevels = 8
+nlevels = 16 if args.dataset == "gist1m" else 8
 
 
 def get_ivf_index(index):
@@ -90,12 +100,12 @@ plt.figure(figsize=(8, 6), dpi=80)
 eval_and_plot(f"IVF{nlist},Flat")
 
 # IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
-eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}")
+eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}_{1024}")
 
-plt.title("IVF Flat Indexes on GIST1M")
-plt.title("Indices on GIST1M")
+dataset_label = args.dataset.upper()
+plt.title(f"IVF Flat Indexes on {dataset_label}")
 plt.xlabel(f"Recall@{k}")
 plt.ylabel("QPS")
 plt.yscale("log")
 plt.legend(bbox_to_anchor=(1.02, 0.1), loc="upper left", borderaxespad=0)
-plt.savefig("bench_ivf_flat_panorama.png", bbox_inches="tight")
+plt.savefig(f"bench_ivf_flat_panorama_{args.dataset}.png", bbox_inches="tight")

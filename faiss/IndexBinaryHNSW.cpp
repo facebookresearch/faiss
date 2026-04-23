@@ -72,7 +72,8 @@ void hnsw_add_vertices(
 
         // build histogram
         for (size_t i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id = i + n0;
+            HNSW::storage_idx_t pt_id =
+                    static_cast<HNSW::storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
             while (pt_level >= static_cast<int>(hist.size())) {
                 hist.push_back(0);
@@ -88,7 +89,8 @@ void hnsw_add_vertices(
 
         // bucket sort
         for (size_t i = 0; i < n; i++) {
-            HNSW::storage_idx_t pt_id = i + n0;
+            HNSW::storage_idx_t pt_id =
+                    static_cast<HNSW::storage_idx_t>(i + n0);
             int pt_level = hnsw.levels[pt_id] - 1;
             order[offsets[pt_level]++] = pt_id;
         }
@@ -97,7 +99,7 @@ void hnsw_add_vertices(
     { // perform add
         RandomGenerator rng2(789);
 
-        size_t i1 = n;
+        size_t i1 = static_cast<int>(n);
 
         for (int pt_level = static_cast<int>(hist.size()) - 1;
              pt_level >= int(!index_hnsw.init_level0);
@@ -384,7 +386,7 @@ void IndexBinaryHNSWCagra::search(
                 float distance = (*dis)(idx);
 
                 if (distance < nearest_d[i]) {
-                    nearest[i] = idx;
+                    nearest[i] = static_cast<storage_idx_t>(idx);
                     nearest_d[i] = distance;
                 }
             }

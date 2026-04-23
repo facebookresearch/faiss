@@ -191,7 +191,7 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
             "Transformation matrix not initialized");
 
     float one = 1;
-    FINTEGER nbiti = d_out, ni = n, di = d_in;
+    FINTEGER nbiti = d_out, ni = static_cast<FINTEGER>(n), di = d_in;
     sgemm_("Transposed",
            "Not transposed",
            &nbiti,
@@ -209,20 +209,21 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
 void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
         const {
+    std::vector<float> y_bias_corrected;
     if (have_bias) { // allocate buffer to store bias-corrected data
-        float* y_new = new float[n * d_out];
+        y_bias_corrected.resize(n * d_out);
         const float* yr = y;
-        float* yw = y_new;
+        float* yw = y_bias_corrected.data();
         for (idx_t i = 0; i < n; i++) {
             for (int j = 0; j < d_out; j++) {
                 *yw++ = *yr++ - b[j];
             }
         }
-        y = y_new;
+        y = y_bias_corrected.data();
     }
 
     {
-        FINTEGER dii = d_in, doi = d_out, ni = n;
+        FINTEGER dii = d_in, doi = d_out, ni = static_cast<FINTEGER>(n);
         float one = 1.0, zero = 0.0;
         sgemm_("Not",
                "Not",
@@ -237,10 +238,6 @@ void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
                &zero,
                x,
                &dii);
-    }
-
-    if (have_bias) {
-        delete[] y;
     }
 }
 
@@ -521,7 +518,7 @@ namespace {
 
 void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
     { // compute eigenvalues and vectors
-        FINTEGER info = 0, lwork = -1, di = d_in;
+        FINTEGER info = 0, lwork = -1, di = static_cast<FINTEGER>(d_in);
         double workq;
 
         dsyev_("Vectors as well",
@@ -533,8 +530,8 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                &workq,
                &lwork,
                &info);
-        lwork = FINTEGER(workq);
-        double* work = new double[lwork];
+        lwork = static_cast<FINTEGER>(workq);
+        std::vector<double> work(lwork);
 
         dsyev_("Vectors as well",
                "Upper",
@@ -542,11 +539,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                cov,
                &di,
                eigenvalues,
-               work,
+               work.data(),
                &lwork,
                &info);
-
-        delete[] work;
 
         if (info != 0) {
             fprintf(stderr,
@@ -628,7 +623,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
             }
         }
         {
-            FINTEGER di = d_in, ni = n;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
             float one = 1.0;
             ssyrk_("Up",
                    "Non transposed",
@@ -682,7 +677,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         // compute Gram matrix
         std::vector<float> gram(n * n);
         {
-            FINTEGER di = d_in, ni = n;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
             float one = 1.0, zero = 0.0;
             ssyrk_("Up",
                    "Transposed",
@@ -731,8 +726,8 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         }
 
         { // compute PCAMat = x' * v
-            FINTEGER di = d_in, ni = n;
-            float one = 1.0;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
+            float one = 1.0, zero = 0.0;
 
             sgemm_("Non",
                    "Non Trans",
@@ -744,7 +739,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
                    &di,
                    gram.data(),
                    &ni,
-                   &one,
+                   &zero,
                    PCAMat.data(),
                    &di);
         }
@@ -908,7 +903,7 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                init_rotation.data(),
                d * d * sizeof(rotation[0]));
     } else {
-        RandomRotationMatrix rrot(d, d);
+        RandomRotationMatrix rrot(static_cast<int>(d), static_cast<int>(d));
         rrot.init(seed);
         for (size_t i = 0; i < d * d; i++) {
             rotation[i] = rrot.A[i];
@@ -925,9 +920,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
     std::vector<double> u(d * d), vt(d * d), singvals(d);
 
     for (int i = 0; i < max_iter; i++) {
-        print_if_verbose("rotation", rotation, d, d);
+        print_if_verbose(
+                "rotation", rotation, static_cast<int>(d), static_cast<int>(d));
         { // rotated_data = np.dot(training_data, rotation)
-            FINTEGER di = d, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     ni = static_cast<FINTEGER>(n);
             double one = 1, zero = 0;
             dgemm_("N",
                    "N",
@@ -943,14 +940,19 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    rotated_x.data(),
                    &di);
         }
-        print_if_verbose("rotated_x", rotated_x, n, d);
+        print_if_verbose(
+                "rotated_x",
+                rotated_x,
+                static_cast<int>(n),
+                static_cast<int>(d));
         // binarize
         for (size_t j = 0; j < n * d; j++) {
             rotated_x[j] = rotated_x[j] < 0 ? -1 : 1;
         }
         // covariance matrix
         { // rotated_data = np.dot(training_data, rotation)
-            FINTEGER di = d, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     ni = static_cast<FINTEGER>(n);
             double one = 1, zero = 0;
             dgemm_("N",
                    "T",
@@ -966,10 +968,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    cov_mat.data(),
                    &di);
         }
-        print_if_verbose("cov_mat", cov_mat, d, d);
+        print_if_verbose(
+                "cov_mat", cov_mat, static_cast<int>(d), static_cast<int>(d));
         // SVD
         {
-            FINTEGER di = d;
+            FINTEGER di = static_cast<FINTEGER>(d);
             FINTEGER lwork = -1, info;
             double lwork1;
 
@@ -989,9 +992,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                     &lwork,
                     &info);
 
-            FAISS_THROW_IF_NOT_MSG(
-                    info == 0, "LAPACK dgesvd workspace query failed");
-            lwork = size_t(lwork1);
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK dgesvd workspace query returned info=%d",
+                    int(info));
+            lwork = static_cast<FINTEGER>(lwork1);
             std::vector<double> work(lwork);
             dgesvd_("A",
                     "A",
@@ -1009,11 +1014,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                     &info);
             FAISS_THROW_IF_NOT_FMT(info == 0, "sgesvd returned info=%d", info);
         }
-        print_if_verbose("u", u, d, d);
-        print_if_verbose("vt", vt, d, d);
+        print_if_verbose("u", u, static_cast<int>(d), static_cast<int>(d));
+        print_if_verbose("vt", vt, static_cast<int>(d), static_cast<int>(d));
         // update rotation
         {
-            FINTEGER di = d;
+            FINTEGER di = static_cast<FINTEGER>(d);
             double one = 1, zero = 0;
             dgemm_("N",
                    "T",
@@ -1029,7 +1034,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    rotation.data(),
                    &di);
         }
-        print_if_verbose("final rot", rotation, d, d);
+        print_if_verbose(
+                "final rot",
+                rotation,
+                static_cast<int>(d),
+                static_cast<int>(d));
     }
     A.resize(d * d);
     for (size_t i = 0; i < d; i++) {
@@ -1252,7 +1261,9 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
     double t0 = getmillisecs();
     for (int iter = 0; iter < niter; iter++) {
         { // torch.mm(xtrain, rotation:t())
-            FINTEGER di = d, d2i = d2, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     d2i = static_cast<FINTEGER>(d2),
+                     ni = static_cast<FINTEGER>(n);
             float zero = 0, one = 1;
             sgemm_("Transposed",
                    "Not transposed",
@@ -1299,7 +1310,9 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
         {
             float *u = tmp.data(), *vt = &tmp[d * d];
             float* sing_val = &tmp[2 * d * d];
-            FINTEGER di = d, d2i = d2, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     d2i = static_cast<FINTEGER>(d2),
+                     ni = static_cast<FINTEGER>(n);
             float one = 1, zero = 0;
 
             if (verbose) {
@@ -1338,7 +1351,11 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
                     &lwork,
                     &info);
 
-            lwork = int(worksz);
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK sgesvd workspace query returned info=%d",
+                    int(info));
+            lwork = static_cast<FINTEGER>(worksz);
             std::vector<float> work(lwork);
             // u and vt swapped
             sgesvd_("All",

@@ -312,6 +312,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
             case AdditiveQuantizer::ST_norm_rq2x4:
                 A(ST_norm_cqint8)
 #undef A
+            case AdditiveQuantizer::ST_count:
             default:
                 FAISS_THROW_FMT(
                         "search type %d not supported", aq->search_type);

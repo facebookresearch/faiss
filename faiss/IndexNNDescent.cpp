@@ -142,7 +142,8 @@ void IndexNNDescent::search(
                     float* simi = distances + i * k;
                     dis->set_query(x + i * d);
 
-                    nndescent.search(*dis, k, idxi, simi, *vt);
+                    nndescent.search(
+                            *dis, static_cast<int>(k), idxi, simi, *vt);
                 } catch (...) {
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
@@ -177,7 +178,7 @@ void IndexNNDescent::add(idx_t n, const float* x) {
     ntotal = storage->ntotal;
 
     std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
-    nndescent.build(*dis, ntotal, verbose);
+    nndescent.build(*dis, static_cast<int>(ntotal), verbose);
 }
 
 void IndexNNDescent::reset() {

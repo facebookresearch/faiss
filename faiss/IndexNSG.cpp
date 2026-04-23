@@ -18,7 +18,6 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/VisitedTable.h>
-#include <faiss/utils/distances.h>
 
 namespace faiss {
 
@@ -99,7 +98,7 @@ void IndexNSG::search(
                     float* simi = distances + i * k;
                     dis->set_query(x + i * d);
 
-                    nsg.search(*dis, k, idxi, simi, *vt);
+                    nsg.search(*dis, static_cast<int>(k), idxi, simi, *vt);
 
                     vt->advance();
                 } catch (...) {
@@ -132,7 +131,7 @@ void IndexNSG::build(idx_t n, const float* x, idx_t* knn_graph, int gk) {
     // check the knn graph
     check_knn_graph(knn_graph, n, gk);
 
-    const nsg::Graph<idx_t> knng(knn_graph, n, gk);
+    const nsg::Graph<idx_t> knng(knn_graph, static_cast<int>(n), gk);
     nsg.build(storage, n, knng, verbose);
     is_built = true;
 }
@@ -240,7 +239,7 @@ void IndexNSG::add(idx_t n, const float* x) {
         printf("  nsg building\n");
     }
 
-    const nsg::Graph<idx_t> knn_graph(knng.data(), n, GK);
+    const nsg::Graph<idx_t> knn_graph(knng.data(), static_cast<int>(n), GK);
     nsg.build(storage, n, knn_graph, verbose);
     is_built = true;
 }

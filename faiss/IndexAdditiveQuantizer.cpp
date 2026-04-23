@@ -543,7 +543,7 @@ void ResidualCoarseQuantizer::search(
 
     int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
-        beam_size = ntotal;
+        beam_size = static_cast<int>(ntotal);
     }
     size_t memory_per_point = rq.memory_per_point(beam_size);
 
