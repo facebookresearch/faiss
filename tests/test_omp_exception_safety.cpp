@@ -13,9 +13,12 @@
 
 #include <gtest/gtest.h>
 
+#include <faiss/Index2Layer.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexFlatCodes.h>
+#include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexNNDescent.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -380,4 +383,337 @@ TEST(OMPExceptionSafety, nsg_search) {
     EXPECT_THROW(
             index.search(1, xq.data(), 1, distances.data(), labels.data()),
             FaissException);
+}
+
+// ---------------------------------------------------------------------------
+// IndexHNSW OMP exception safety tests.
+//
+// There are 3 OMP regions wrapped with exception capture in IndexHNSW.cpp:
+//   1. hnsw_search()             — primary search path
+//   2. IndexHNSW::search_level_0 — level-0 search
+//   3. IndexHNSW2Level::search   — mixed IVFPQ+HNSW path
+//
+// Each region has two throw locations:
+//   (a) Init phase  — DistanceComputer/VisitedTable construction
+//   (b) Loop body   — set_query, graph traversal, etc.
+// ---------------------------------------------------------------------------
+
+// DistanceComputer that throws from set_query(). Exercises loop-body
+// try/catch after successful init-phase construction.
+struct ThrowingDC : DistanceComputer {
+    void set_query(const float*) override {
+        throw std::runtime_error("corrupt storage");
+    }
+    float operator()(idx_t) override {
+        return 0;
+    }
+    float symmetric_dis(idx_t, idx_t) override {
+        return 0;
+    }
+};
+
+// Storage whose get_distance_computer() returns a ThrowingDC.
+// Exercises loop-body throws (DC construction succeeds, set_query throws).
+struct LoopThrowingStorage : IndexFlatL2 {
+    using IndexFlatL2::IndexFlatL2;
+    DistanceComputer* get_distance_computer() const override {
+        return new ThrowingDC();
+    }
+};
+
+// Storage whose get_distance_computer() itself throws.
+// Exercises init-phase throws (DC construction fails).
+struct InitThrowingStorage : IndexFlatL2 {
+    using IndexFlatL2::IndexFlatL2;
+    DistanceComputer* get_distance_computer() const override {
+        throw std::runtime_error("corrupt storage init");
+    }
+};
+
+// Helper: build a valid IndexHNSWFlat with data, then swap storage.
+struct HNSWFixture {
+    static constexpr int d = 4;
+    static constexpr int nb = 10;
+    static constexpr int M = 16;
+
+    IndexHNSWFlat index{d, M};
+    std::vector<float> xb;
+    std::vector<float> xq;
+
+    HNSWFixture() : xb(d * nb), xq(d) {
+        std::mt19937 rng(42);
+        std::uniform_real_distribution<float> dist;
+        for (auto& v : xb) {
+            v = dist(rng);
+        }
+        index.add(nb, xb.data());
+        for (auto& v : xq) {
+            v = dist(rng);
+        }
+    }
+
+    void swap_storage(Index* new_storage) {
+        index.own_fields = false;
+        index.storage = new_storage;
+    }
+
+    void restore_storage(Index* old_storage) {
+        index.storage = old_storage;
+        index.own_fields = true;
+    }
+};
+
+// ---------------------------------------------------------------------------
+// hnsw_search() init-phase throw: storage_distance_computer() throws
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_search_init) {
+    HNSWFixture f;
+    auto throwing = std::make_unique<InitThrowingStorage>(f.d);
+    throwing->add(f.nb, f.xb.data());
+    auto* old = f.index.storage;
+    f.swap_storage(throwing.get());
+
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            f.index.search(1, f.xq.data(), 1, distances.data(), labels.data()),
+            std::runtime_error);
+
+    f.restore_storage(old);
+}
+
+// ---------------------------------------------------------------------------
+// hnsw_search() loop-body throw: set_query() throws
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_search_loop) {
+    HNSWFixture f;
+    auto throwing = std::make_unique<LoopThrowingStorage>(f.d);
+    throwing->add(f.nb, f.xb.data());
+    auto* old = f.index.storage;
+    f.swap_storage(throwing.get());
+
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            f.index.search(1, f.xq.data(), 1, distances.data(), labels.data()),
+            std::runtime_error);
+
+    f.restore_storage(old);
+}
+
+// ---------------------------------------------------------------------------
+// search_level_0() init-phase throw: storage_distance_computer() throws
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_search_level_0_init) {
+    HNSWFixture f;
+    auto throwing = std::make_unique<InitThrowingStorage>(f.d);
+    throwing->add(f.nb, f.xb.data());
+    auto* old = f.index.storage;
+    f.swap_storage(throwing.get());
+
+    idx_t k = 1;
+    int nprobe = 1;
+    std::vector<HNSW::storage_idx_t> nearest(nprobe, 0);
+    std::vector<float> nearest_d(nprobe, 0.0f);
+    std::vector<float> distances(k);
+    std::vector<idx_t> labels(k);
+
+    EXPECT_THROW(
+            f.index.search_level_0(
+                    1,
+                    f.xq.data(),
+                    k,
+                    nearest.data(),
+                    nearest_d.data(),
+                    distances.data(),
+                    labels.data(),
+                    nprobe),
+            std::runtime_error);
+
+    f.restore_storage(old);
+}
+
+// ---------------------------------------------------------------------------
+// search_level_0() loop-body throw: set_query() throws
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_search_level_0_loop) {
+    HNSWFixture f;
+    auto throwing = std::make_unique<LoopThrowingStorage>(f.d);
+    throwing->add(f.nb, f.xb.data());
+    auto* old = f.index.storage;
+    f.swap_storage(throwing.get());
+
+    idx_t k = 1;
+    int nprobe = 1;
+    std::vector<HNSW::storage_idx_t> nearest(nprobe, 0);
+    std::vector<float> nearest_d(nprobe, 0.0f);
+    std::vector<float> distances(k);
+    std::vector<idx_t> labels(k);
+
+    EXPECT_THROW(
+            f.index.search_level_0(
+                    1,
+                    f.xq.data(),
+                    k,
+                    nearest.data(),
+                    nearest_d.data(),
+                    distances.data(),
+                    labels.data(),
+                    nprobe),
+            std::runtime_error);
+
+    f.restore_storage(old);
+}
+
+// IndexIVFPQ subclass with a counted throw mechanism. The first
+// `throw_after` calls to get_distance_computer() delegate to the
+// real implementation; subsequent calls throw (init) or return
+// ThrowingDC (loop). This lets search_preassigned succeed while
+// the HNSW2Level OMP region's storage_distance_computer() fails.
+struct CountedThrowIVFPQ : IndexIVFPQ {
+    mutable std::atomic<int> calls_remaining;
+    bool throw_from_init;
+
+    CountedThrowIVFPQ(
+            Index* quantizer,
+            size_t d,
+            size_t nlist,
+            size_t M,
+            size_t nbits,
+            MetricType metric,
+            int throw_after,
+            bool init_throw)
+            : IndexIVFPQ(quantizer, d, nlist, M, nbits, metric),
+              calls_remaining(throw_after),
+              throw_from_init(init_throw) {}
+
+    DistanceComputer* get_distance_computer() const override {
+        if (calls_remaining.fetch_sub(1) <= 0) {
+            if (throw_from_init) {
+                throw std::runtime_error("IVFPQ init throw");
+            }
+            return new ThrowingDC();
+        }
+        return IndexIVFPQ::get_distance_computer();
+    }
+};
+
+struct HNSW2LevelFixture {
+    static constexpr int d = 8;
+    static constexpr int nlist = 4;
+    static constexpr int m_pq = 4;
+    static constexpr int nb = 512;
+    static constexpr int M = 16;
+
+    IndexFlatL2 quantizer{d};
+    IndexHNSW2Level index{&quantizer, nlist, m_pq, M};
+    std::vector<float> xb;
+    std::vector<float> xq;
+
+    HNSW2LevelFixture() : xb(nb * d), xq(d) {
+        index.own_fields = false;
+        std::mt19937 rng(42);
+        std::uniform_real_distribution<float> dist;
+        for (auto& v : xb) {
+            v = dist(rng);
+        }
+        index.train(nb, xb.data());
+        index.add(nb, xb.data());
+        // Convert Index2Layer storage to IndexIVFPQ for the mixed
+        // search path. After this, storage is an IndexIVFPQ owned
+        // by the HNSW2Level index.
+        index.flip_to_ivf();
+        index.own_fields = true;
+        for (auto& v : xq) {
+            v = dist(rng);
+        }
+    }
+};
+
+// ---------------------------------------------------------------------------
+// IndexHNSW2Level::search() mixed path init-phase throw:
+// storage_distance_computer() throws during OMP init, after
+// search_preassigned has already succeeded.
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_2level_mixed_init) {
+    HNSW2LevelFixture f;
+
+    // The replacement IVFPQ shares the real index's trained state
+    // (codebooks, inverted lists). We copy the real IVFPQ's invlists
+    // and PQ so search_preassigned succeeds, then the counted throw
+    // fires during the HNSW2Level OMP init phase.
+    auto* real_ivfpq = dynamic_cast<IndexIVFPQ*>(f.index.storage);
+    ASSERT_NE(real_ivfpq, nullptr);
+
+    CountedThrowIVFPQ throwing(
+            &f.quantizer,
+            f.d,
+            f.nlist,
+            f.m_pq,
+            8,
+            METRIC_L2,
+            /*throw_after=*/100,
+            /*init_throw=*/true);
+    throwing.own_fields = false;
+    throwing.is_trained = true;
+    throwing.ntotal = real_ivfpq->ntotal;
+    throwing.pq = real_ivfpq->pq;
+    throwing.code_size = real_ivfpq->code_size;
+    throwing.nprobe = real_ivfpq->nprobe;
+    throwing.replace_invlists(real_ivfpq->invlists, false);
+
+    auto* old = f.index.storage;
+    f.index.storage = &throwing;
+    f.index.own_fields = false;
+
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            f.index.search(1, f.xq.data(), 1, distances.data(), labels.data()),
+            std::exception);
+
+    f.index.storage = old;
+    f.index.own_fields = true;
+}
+
+// ---------------------------------------------------------------------------
+// IndexHNSW2Level::search() mixed path loop-body throw:
+// set_query() throws inside OMP for loop, after search_preassigned
+// and OMP init have succeeded.
+// ---------------------------------------------------------------------------
+TEST(OMPExceptionSafety, hnsw_2level_mixed_loop) {
+    HNSW2LevelFixture f;
+
+    auto* real_ivfpq = dynamic_cast<IndexIVFPQ*>(f.index.storage);
+    ASSERT_NE(real_ivfpq, nullptr);
+
+    CountedThrowIVFPQ throwing(
+            &f.quantizer,
+            f.d,
+            f.nlist,
+            f.m_pq,
+            8,
+            METRIC_L2,
+            /*throw_after=*/100,
+            /*init_throw=*/false);
+    throwing.own_fields = false;
+    throwing.is_trained = true;
+    throwing.ntotal = real_ivfpq->ntotal;
+    throwing.pq = real_ivfpq->pq;
+    throwing.code_size = real_ivfpq->code_size;
+    throwing.nprobe = real_ivfpq->nprobe;
+    throwing.replace_invlists(real_ivfpq->invlists, false);
+
+    auto* old = f.index.storage;
+    f.index.storage = &throwing;
+    f.index.own_fields = false;
+
+    std::vector<float> distances(1);
+    std::vector<idx_t> labels(1);
+    EXPECT_THROW(
+            f.index.search(1, f.xq.data(), 1, distances.data(), labels.data()),
+            std::exception);
+
+    f.index.storage = old;
+    f.index.own_fields = true;
 }
