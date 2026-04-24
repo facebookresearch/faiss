@@ -568,6 +568,9 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
+// IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
+// built-in destructor for; ignore the field to avoid memory leak warnings.
+%ignore faiss::IndexIVFFlatDedup::instances;
 %include  <faiss/IndexIVFFlat.h>
 %include  <faiss/IndexIVFFlatPanorama.h>
 
