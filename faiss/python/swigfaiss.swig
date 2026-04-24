@@ -208,6 +208,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/impl/TurboQuantizer.h>
+#include <faiss/IndexIVFTurboQ.h>
 
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSVamana.h>
@@ -674,6 +676,8 @@ void gpu_sync_all_devices()
 %include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
 %include <faiss/IndexIVFRaBitQFastScan.h>
+%include <faiss/impl/TurboQuantizer.h>
+%include <faiss/IndexIVFTurboQ.h>
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -780,6 +784,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFRaBitQFastScan )
+    DOWNCAST ( IndexIVFTurboQ )
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )

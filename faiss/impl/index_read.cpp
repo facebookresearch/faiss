@@ -44,6 +44,7 @@
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/IndexIVFTurboQ.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexNNDescent.h>
@@ -2594,6 +2595,45 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
 
         idx = std::move(ivrqfs);
+    } else if (h == fourcc("IwTq") || h == fourcc("IwT2")) {
+        auto ivtq = std::make_unique<IndexIVFTurboQ>();
+        read_ivf_header(ivtq.get(), f);
+        auto& tq = ivtq->turboq;
+        READ1(tq.d);
+        READ1(tq.code_size);
+        int metric_type_int;
+        READ1(metric_type_int);
+        tq.metric_type = metric_type_from_int(metric_type_int);
+        READ1(tq.nb_bits);
+        {
+            uint8_t qjl_type_u8;
+            READ1(qjl_type_u8);
+            tq.qjl_type = static_cast<QJLProjectionType>(qjl_type_u8);
+        }
+        READ1(tq.seed);
+        if (h == fourcc("IwT2")) {
+            READ1(tq.nb_bits_lo);
+            READ1(tq.n_hi_dims);
+        }
+        tq.init_codebook();
+        switch (tq.qjl_type) {
+            case QJLProjectionType::FWHT:
+                tq.init_fwht();
+                break;
+            case QJLProjectionType::RANDOM_ROTATION:
+                tq.init_random_rotation();
+                break;
+        }
+        tq.code_size =
+                tq.mse_code_size() + tq.qjl_code_size() + sizeof(TurboQFactors);
+        READ1(ivtq->code_size);
+        READ1(ivtq->by_residual);
+        {
+            uint8_t qb_ignored;
+            READ1(qb_ignored);
+        }
+        read_InvertedLists(*ivtq, f, io_flags);
+        idx = std::move(ivtq);
     } else {
         FAISS_THROW_FMT(
                 "Index type 0x%08x (\"%s\") not recognized",

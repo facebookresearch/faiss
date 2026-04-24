@@ -39,6 +39,7 @@
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/IndexIVFTurboQ.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexNNDescent.h>
@@ -1012,6 +1013,33 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->by_residual);
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
+    } else if (
+            const IndexIVFTurboQ* ivtq =
+                    dynamic_cast<const IndexIVFTurboQ*>(idx)) {
+        const auto& tq = ivtq->turboq;
+        uint32_t h = tq.is_adaptive() ? fourcc("IwT2") : fourcc("IwTq");
+        WRITE1(h);
+        write_ivf_header(ivtq, f);
+        WRITE1(tq.d);
+        WRITE1(tq.code_size);
+        WRITE1(tq.metric_type);
+        WRITE1(tq.nb_bits);
+        {
+            uint8_t qjl_type_u8 = static_cast<uint8_t>(tq.qjl_type);
+            WRITE1(qjl_type_u8);
+        }
+        WRITE1(tq.seed);
+        if (tq.is_adaptive()) {
+            WRITE1(tq.nb_bits_lo);
+            WRITE1(tq.n_hi_dims);
+        }
+        WRITE1(ivtq->code_size);
+        WRITE1(ivtq->by_residual);
+        {
+            uint8_t qb_compat = 0;
+            WRITE1(qb_compat);
+        }
+        write_InvertedLists(ivtq->invlists, f);
     }
 #ifdef FAISS_ENABLE_SVS
     else if (

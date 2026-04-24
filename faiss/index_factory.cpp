@@ -34,6 +34,7 @@
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
+#include <faiss/IndexIVFTurboQ.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexNSG.h>
@@ -490,6 +491,54 @@ IndexIVF* parse_IndexIVF(
         return new IndexIVFRaBitQFastScan(
                 get_q(), d, nlist, mt, bbs, own_il, nb_bits);
     }
+    // IndexIVFTurboQ: adaptive bit widths
+    if (match("TurboQ2\\.5")) {
+        return new IndexIVFTurboQ(
+                get_q(),
+                d,
+                nlist,
+                mt,
+                own_il,
+                3,
+                QJLProjectionType::FWHT,
+                2,
+                d / 4);
+    }
+    if (match("TurboQ3\\.5")) {
+        return new IndexIVFTurboQ(
+                get_q(),
+                d,
+                nlist,
+                mt,
+                own_il,
+                4,
+                QJLProjectionType::FWHT,
+                3,
+                d / 2);
+    }
+    // IndexIVFTurboQ: suffixed variants (check before default)
+    if (match("TurboQ([1-9])r")) {
+        uint8_t nb_bits = std::stoi(sm[1].str());
+        return new IndexIVFTurboQ(
+                get_q(),
+                d,
+                nlist,
+                mt,
+                own_il,
+                nb_bits,
+                QJLProjectionType::RANDOM_ROTATION);
+    }
+    if (match("TurboQ([1-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 2;
+        return new IndexIVFTurboQ(
+                get_q(),
+                d,
+                nlist,
+                mt,
+                own_il,
+                nb_bits,
+                QJLProjectionType::FWHT);
+    }
     return nullptr;
 }
 
@@ -858,6 +907,66 @@ Index* parse_other_indexes(
         uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 1;
         int bbs = mres_to_int(sm[2], 32, 1);
         return new IndexRaBitQFastScan(d, metric, bbs, nb_bits);
+    }
+
+    // Standalone TurboQ (wraps in IVF1)
+    if (match("TurboQ2\\.5")) {
+        auto* quantizer = new IndexFlat(d, metric);
+        auto* idx = new IndexIVFTurboQ(
+                quantizer,
+                d,
+                1,
+                metric,
+                true,
+                3,
+                QJLProjectionType::FWHT,
+                2,
+                d / 4);
+        idx->own_fields = true;
+        return idx;
+    }
+    if (match("TurboQ3\\.5")) {
+        auto* quantizer = new IndexFlat(d, metric);
+        auto* idx = new IndexIVFTurboQ(
+                quantizer,
+                d,
+                1,
+                metric,
+                true,
+                4,
+                QJLProjectionType::FWHT,
+                3,
+                d / 2);
+        idx->own_fields = true;
+        return idx;
+    }
+    if (match("TurboQ([1-9])r")) {
+        uint8_t nb_bits = std::stoi(sm[1].str());
+        auto* quantizer = new IndexFlat(d, metric);
+        auto* idx = new IndexIVFTurboQ(
+                quantizer,
+                d,
+                1,
+                metric,
+                true,
+                nb_bits,
+                QJLProjectionType::RANDOM_ROTATION);
+        idx->own_fields = true;
+        return idx;
+    }
+    if (match("TurboQ([1-9])?")) {
+        uint8_t nb_bits = sm[1].length() > 0 ? std::stoi(sm[1].str()) : 2;
+        auto* quantizer = new IndexFlat(d, metric);
+        auto* idx = new IndexIVFTurboQ(
+                quantizer,
+                d,
+                1,
+                metric,
+                true,
+                nb_bits,
+                QJLProjectionType::FWHT);
+        idx->own_fields = true;
+        return idx;
     }
 
     return nullptr;
