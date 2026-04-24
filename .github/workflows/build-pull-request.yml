@@ -170,6 +170,75 @@ jobs:
           fetch-tags: true
       - name: Build and Package (conda)
         uses: ./.github/actions/build_conda
+  windows-x86_64-DD-cmake:
+    name: Windows x86_64 Dynamic Dispatch (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.12'
+          miniforge-version: latest
+          channels: conda-forge
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          conda install -y -q cmake swig "numpy>=2.0,<3.0" scipy pytest gflags setuptools
+          conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
+      - name: Build
+        shell: pwsh
+        run: |
+          $pythonExe = (Get-Command python).Source
+          $pythonDir = Split-Path $pythonExe
+          # Add Python libs dir so MSVC linker can find python312.lib
+          $env:LIB = "$pythonDir\libs;$env:LIB"
+          cmake -B build -T v143 -A x64 -G "Visual Studio 17 2022" `
+            -DBUILD_TESTING=ON `
+            -DBUILD_SHARED_LIBS=ON `
+            -DFAISS_ENABLE_GPU=OFF `
+            -DFAISS_OPT_LEVEL=dd `
+            -DFAISS_ENABLE_PYTHON=ON `
+            -DFAISS_ENABLE_C_API=OFF `
+            -DBLA_VENDOR=Intel10_64_dyn `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DPython_ROOT_DIR="$pythonDir" `
+            .
+          # Add faiss.dll and dependency DLLs to PATH for GoogleTest discovery
+          $env:PATH = "$PWD\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
+      - name: C++ tests
+        shell: pwsh
+        run: |
+          # Copy all required DLLs next to the test executable:
+          # faiss.dll, gtest/gtest_main DLLs, and conda dependency DLLs
+          Copy-Item build\faiss\Release\*.dll build\tests\Release\
+          Copy-Item build\bin\Release\*.dll build\tests\Release\
+          Copy-Item "$env:CONDA_PREFIX\Library\bin\*.dll" build\tests\Release\ -ErrorAction SilentlyContinue
+          $env:PATH = "$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          cd build
+          ctest --output-on-failure -C Release -E "SIMDConfig.modern_hardware_has_simd_support"
+      - name: Install Python extension
+        shell: pwsh
+        run: |
+          $repoRoot = $PWD.Path
+          $env:PATH = "$repoRoot\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          cd build\faiss\python
+          python setup.py install
+          # Copy faiss.dll and MKL DLLs next to the installed _swigfaiss.pyd
+          $siteDir = python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
+          $siteDir = "$siteDir\faiss"
+          Copy-Item "$repoRoot\build\faiss\Release\faiss.dll" $siteDir\
+          Copy-Item "$env:CONDA_PREFIX\Library\bin\mkl_*.dll" $siteDir\ -ErrorAction SilentlyContinue
+          Copy-Item "$env:CONDA_PREFIX\Library\bin\libiomp5md.dll" $siteDir\ -ErrorAction SilentlyContinue
+      - name: Python tests
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          $tests = (Get-ChildItem tests/test_*.py).FullName
+          pytest $tests
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
     needs: linux-x86_64-cmake

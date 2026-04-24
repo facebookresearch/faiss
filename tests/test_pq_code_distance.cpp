@@ -51,7 +51,7 @@ void test(
 
     // rng
     std::minstd_rand rng(123);
-    std::uniform_int_distribution<uint8_t> u(0, 255);
+    std::uniform_int_distribution<int> u(0, 255);
     std::uniform_real_distribution<float> uf(0, 1);
 
     // initialize lookup
@@ -65,10 +65,10 @@ void test(
 #pragma omp parallel
     {
         std::minstd_rand rng0(123);
-        std::uniform_int_distribution<uint8_t> u1(0, 255);
+        std::uniform_int_distribution<int> u1(0, 255);
 
 #pragma omp for schedule(guided)
-        for (size_t i = 0; i < codes.size(); i++) {
+        for (int64_t i = 0; i < (int64_t)codes.size(); i++) {
             codes[i] = u1(rng0);
         }
     }
@@ -77,7 +77,7 @@ void test(
     std::vector<float> resultsRef(n, 0);
     for (size_t k = 0; k < 10; k++) {
 #pragma omp parallel for schedule(guided)
-        for (size_t i = 0; i < n; i++) {
+        for (int64_t i = 0; i < (int64_t)n; i++) {
             resultsRef[i] = faiss::PQCodeDistance<
                     faiss::PQDecoder8,
                     faiss::SIMDLevel::NONE>::
@@ -93,7 +93,7 @@ void test(
         const auto startingTimepoint = std::chrono::steady_clock::now();
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < (int64_t)n; i++) {
                 resultsScalar1x[i] = faiss::PQCodeDistance<
                         faiss::PQDecoder8,
                         faiss::SIMDLevel::NONE>::
@@ -118,7 +118,7 @@ void test(
         const auto startingTimepoint = std::chrono::steady_clock::now();
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
-            for (size_t i = 0; i < n; i += 4) {
+            for (int64_t i = 0; i < (int64_t)n; i += 4) {
                 faiss::PQCodeDistance<
                         faiss::PQDecoder8,
                         faiss::SIMDLevel::NONE>::
@@ -151,7 +151,7 @@ void test(
         const auto startingTimepoint = std::chrono::steady_clock::now();
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
-            for (size_t i = 0; i < n; i++) {
+            for (int64_t i = 0; i < (int64_t)n; i++) {
                 resultsDispatched1x[i] = faiss::pq_code_distance_single(
                         subq, 8, lookup.data(), codes.data() + subq * i);
             }
@@ -170,7 +170,7 @@ void test(
         const auto startingTimepoint = std::chrono::steady_clock::now();
         for (size_t k = 0; k < 1000; k++) {
 #pragma omp parallel for schedule(guided)
-            for (size_t i = 0; i < n; i += 4) {
+            for (int64_t i = 0; i < (int64_t)n; i += 4) {
                 faiss::pq_code_distance_four(
                         subq,
                         8,
