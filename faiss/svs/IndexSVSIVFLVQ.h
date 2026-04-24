@@ -34,7 +34,7 @@ struct IndexSVSIVFLVQ : IndexSVSIVF {
             idx_t d,
             size_t nlist,
             MetricType metric = METRIC_L2,
-            SVSStorageKind storage = SVSStorageKind::SVS_LVQ4x4,
+            SVSStorageKind storage = SVSStorageKind::SVS_LVQ4x0,
             bool is_static = false);
 
     ~IndexSVSIVFLVQ() override = default;

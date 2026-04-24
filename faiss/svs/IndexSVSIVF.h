@@ -63,7 +63,11 @@ struct IndexSVSIVF : Index {
 
     /// Number of threads for inter-query parallelism (0 = use all available)
     size_t num_threads = 0;
-    /// Number of threads for intra-query parallelism (cluster exploration)
+    /// Number of threads for intra-query parallelism (cluster exploration).
+    /// NOTE: Must be set before train() or deserialize_impl(); changes after
+    /// index creation are not propagated to the SVS backend. This is a
+    /// limitation of the current SVS runtime API and will be fixed in a
+    /// future SVS version.
     size_t intra_query_threads = 1;
 
     /// Whether this is a static (immutable) IVF index

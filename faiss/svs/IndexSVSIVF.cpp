@@ -83,11 +83,19 @@ IndexSVSIVF::IndexSVSIVF(
 
 bool IndexSVSIVF::is_lvq_leanvec_enabled() {
     auto lvq = to_svs_storage_kind(SVS_LVQ4x0);
-    auto status = svs_runtime::DynamicIVFIndex::check_storage_kind(lvq);
+    auto status = svs_runtime::IVFIndex::check_storage_kind(lvq);
+    if (!status.ok()) {
+        return false;
+    }
+    status = svs_runtime::DynamicIVFIndex::check_storage_kind(lvq);
     if (!status.ok()) {
         return false;
     }
     auto leanvec = to_svs_storage_kind(SVS_LeanVec4x4);
+    status = svs_runtime::IVFIndex::check_storage_kind(leanvec);
+    if (!status.ok()) {
+        return false;
+    }
     status = svs_runtime::DynamicIVFIndex::check_storage_kind(leanvec);
     if (!status.ok()) {
         return false;
@@ -116,8 +124,8 @@ void IndexSVSIVF::train(idx_t n, const float* x) {
 }
 
 void IndexSVSIVF::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_static,
+    FAISS_THROW_IF_MSG(
+            is_static,
             "Static IVF index does not support add() after initial index "
             "creation. All data must be provided during train().");
     FAISS_THROW_IF_MSG(
@@ -195,8 +203,8 @@ void IndexSVSIVF::search(
 }
 
 size_t IndexSVSIVF::remove_ids(const IDSelector& sel) {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_static,
+    FAISS_THROW_IF_MSG(
+            is_static,
             "Static IVF index does not support remove_ids(). "
             "The index is immutable after creation.");
     FAISS_THROW_IF_NOT(impl);
@@ -321,8 +329,8 @@ void IndexSVSIVF::deserialize_impl(std::istream& in) {
 }
 
 svs_runtime::DynamicIVFIndex* IndexSVSIVF::dynamic_impl() const {
-    FAISS_THROW_IF_NOT_MSG(
-            !is_static, "Operation not supported on a static IVF index.");
+    FAISS_THROW_IF_MSG(
+            is_static, "Operation not supported on a static IVF index.");
     FAISS_THROW_IF_NOT(impl);
     return static_cast<svs_runtime::DynamicIVFIndex*>(impl);
 }
