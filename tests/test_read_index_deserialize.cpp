@@ -10,9 +10,11 @@
 #include <cstdint>
 #include <cstring>
 #include <numeric>
+#include <random>
 #include <vector>
 
 #include <faiss/Index.h>
+#include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryHNSW.h>
@@ -1483,6 +1485,88 @@ TEST(ReadIndexDeserialize, HNSW2LevelWrongStorageType) {
     push_minimal_flat(buf, /*d=*/4, /*ntotal=*/0);
 
     expect_read_throws_with(buf, "Index2Layer or IndexIVFPQ");
+}
+
+// -----------------------------------------------------------------------
+// Test: Index2Layer deserialization sets own_fields=true so the
+// sub-quantizer is freed when the deserialized index is destroyed.
+// -----------------------------------------------------------------------
+
+struct CountedDestructorIndex : IndexFlatL2 {
+    static int destructor_count;
+    using IndexFlatL2::IndexFlatL2;
+    ~CountedDestructorIndex() override {
+        destructor_count++;
+    }
+};
+int CountedDestructorIndex::destructor_count = 0;
+
+TEST(ReadIndexDeserialize, Index2LayerQuantizerOwnership) {
+    int d = 4, nb = 512, nlist = 2;
+
+    // Build and serialize a valid Index2Layer.
+    auto original_q = std::make_unique<IndexFlatL2>(d);
+    Index2Layer original(original_q.release(), nlist, 2);
+    original.q1.own_fields = true;
+    std::vector<float> xb(d * nb);
+    {
+        std::mt19937 rng(42);
+        std::uniform_real_distribution<float> dist;
+        for (auto& v : xb) {
+            v = dist(rng);
+        }
+    }
+    original.train(nb, xb.data());
+    original.add(nb, xb.data());
+
+    VectorIOWriter writer;
+    write_index(&original, &writer);
+
+    // Deserialize and swap in a CountedDestructorIndex as the quantizer.
+    // When the deserialized index is destroyed, own_fields controls
+    // whether the quantizer is freed. The destructor counter verifies
+    // this independently of any flag check.
+    CountedDestructorIndex::destructor_count = 0;
+    {
+        VectorIOReader reader;
+        reader.data = writer.data;
+        auto idx = std::unique_ptr<Index>(read_index(&reader));
+        auto* idx2l = dynamic_cast<Index2Layer*>(idx.get());
+        ASSERT_NE(idx2l, nullptr);
+        ASSERT_NE(idx2l->q1.quantizer, nullptr);
+
+        // Replace the deserialized quantizer with a CountedDestructorIndex.
+        delete idx2l->q1.quantizer;
+        idx2l->q1.quantizer = new CountedDestructorIndex(d);
+        EXPECT_EQ(CountedDestructorIndex::destructor_count, 0);
+        // idx goes out of scope here. If own_fields is true,
+        // ~Level1Quantizer deletes the CountedDestructorIndex.
+    }
+    EXPECT_EQ(CountedDestructorIndex::destructor_count, 1);
+}
+
+// -----------------------------------------------------------------------
+// Test: Index2Layer with a null quantizer (serialized as "null" fourcc)
+// still sets own_fields=true. Deleting a nullptr is safe, so this
+// verifies the fix doesn't assume the quantizer is non-null.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, Index2LayerNullQuantizerOwnership) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "Ix2L");
+    push_index_header(buf, 4, 0);
+    // Null sub-quantizer.
+    push_fourcc(buf, "null");
+    push_val<size_t>(buf, size_t(1)); // nlist
+    // Truncate here — the next READ1 will fail and trigger cleanup.
+    // With own_fields=true and quantizer=nullptr, the destructor
+    // must not crash (delete nullptr is well-defined).
+    EXPECT_THROW(
+            {
+                VectorIOReader reader;
+                reader.data = buf;
+                read_index(&reader);
+            },
+            FaissException);
 }
 
 // -----------------------------------------------------------------------
