@@ -683,8 +683,12 @@ TEST_F(SVS, IVFSearchWithIDSelector) {
     std::vector<float> distances(nq * k);
     std::vector<faiss::idx_t> labels(nq * k);
 
-    // IVF search does not support IDSelector via the SVS runtime,
-    // so we just test that search works without crashing
+    // The current SVS runtime IVFIndex::search() API does not accept an
+    // IDFilter parameter (unlike VamanaIndex::search()), so the IDSelector
+    // passed via SearchParameters is silently ignored. This test verifies
+    // that search still works (without filtering). Once the SVS runtime
+    // exposes IDFilter support for IVF search, this can be wired up the
+    // same way Vamana uses make_faiss_id_filter().
     ASSERT_NO_THROW(index.search(nq, xq, k, distances.data(), labels.data()));
 }
 
@@ -831,12 +835,12 @@ TEST_F(SVS, IVFIntraQueryThreadsSetBeforeTrain) {
     const int k = 5;
     std::vector<float> distances(nq * k);
     std::vector<faiss::idx_t> labels(nq * k);
-    ASSERT_NO_THROW(
-            index.search(nq, test_data.data(), k, distances.data(), labels.data()));
+    ASSERT_NO_THROW(index.search(
+            nq, test_data.data(), k, distances.data(), labels.data()));
 
     // Changing intra_query_threads AFTER train() has no effect — this is a
     // known limitation of the current SVS runtime API.
     index.intra_query_threads = 4;
-    ASSERT_NO_THROW(
-            index.search(nq, test_data.data(), k, distances.data(), labels.data()));
+    ASSERT_NO_THROW(index.search(
+            nq, test_data.data(), k, distances.data(), labels.data()));
 }
