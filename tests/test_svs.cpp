@@ -813,3 +813,30 @@ TEST_F(SVS, StaticIVFRemoveThrows) {
     faiss::IDSelectorRange selector(0, 10);
     ASSERT_THROW(index.remove_ids(selector), faiss::FaissException);
 }
+
+// Verify that intra_query_threads must be set before train().
+// The SVS runtime API does not currently expose a setter for
+// intra_query_threads after index creation, so changes made between
+// train() and search() are silently ignored. This test documents the
+// expected usage pattern.
+TEST_F(SVS, IVFIntraQueryThreadsSetBeforeTrain) {
+    faiss::IndexSVSIVF index{d, 4ul};
+
+    // Set intra_query_threads BEFORE train — this is the supported pattern.
+    index.intra_query_threads = 2;
+    index.train(n, test_data.data());
+    index.add(n, test_data.data());
+
+    const int nq = 4;
+    const int k = 5;
+    std::vector<float> distances(nq * k);
+    std::vector<faiss::idx_t> labels(nq * k);
+    ASSERT_NO_THROW(
+            index.search(nq, test_data.data(), k, distances.data(), labels.data()));
+
+    // Changing intra_query_threads AFTER train() has no effect — this is a
+    // known limitation of the current SVS runtime API.
+    index.intra_query_threads = 4;
+    ASSERT_NO_THROW(
+            index.search(nq, test_data.data(), k, distances.data(), labels.data()));
+}
