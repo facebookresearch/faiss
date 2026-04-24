@@ -306,7 +306,7 @@ InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         const IDSelector* sel,
         const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
-    return with_HammingComputer(
+    return with_HammingComputer<SIMDLevel::NONE>(
             code_size, [&]<class HammingComputer>() -> InvertedListScanner* {
                 return new IVFScanner<HammingComputer>(this, store_pairs);
             });

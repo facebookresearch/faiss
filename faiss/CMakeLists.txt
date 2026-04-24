@@ -15,6 +15,7 @@ set(FAISS_SIMD_AVX2_SRC
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   utils/simd_impl/distances_avx2.cpp
+  utils/hamming_distance/hamming_avx2.cpp
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
   utils/simd_impl/rabitq_avx2.cpp
@@ -26,6 +27,7 @@ set(FAISS_SIMD_AVX512_SRC
   impl/scalar_quantizer/sq-avx512.cpp
   utils/simd_impl/distances_avx512.cpp
   utils/distances_fused/avx512.cpp
+  utils/hamming_distance/hamming_avx512.cpp
   utils/simd_impl/rabitq_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
@@ -33,6 +35,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
+  utils/hamming_distance/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
@@ -336,13 +339,14 @@ set(FAISS_HEADERS
   utils/transpose/transpose-avx2-inl.h
   utils/transpose/transpose-avx512-inl.h
   utils/hamming_distance/common.h
-  utils/hamming_distance/generic-inl.h
-  utils/hamming_distance/hamdis-inl.h
-  utils/hamming_distance/neon-inl.h
-  utils/hamming_distance/avx2-inl.h
-  utils/hamming_distance/avx512-inl.h
+  utils/hamming_distance/hamming_computer.h
+  utils/hamming_distance/hamming_computer-avx2.h
+  utils/hamming_distance/hamming_computer-avx512.h
+  utils/hamming_distance/hamming_computer-generic.h
+  utils/hamming_distance/hamming_computer-neon.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
+  utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
   utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h

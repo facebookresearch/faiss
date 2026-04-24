@@ -295,7 +295,8 @@ struct FlatHammingDis : DistanceComputer {
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
-        return HammingComputerDefault(b + j * code_size, code_size)
+        return HammingComputerDefault_tpl<SIMDLevel::NONE>(
+                       b + j * code_size, code_size)
                 .hamming(b + i * code_size);
     }
 
@@ -316,7 +317,7 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     FAISS_THROW_IF_NOT_MSG(
             flat_storage != nullptr,
             "IndexBinaryHNSW requires IndexBinaryFlat storage");
-    return with_HammingComputer(
+    return with_HammingComputer<SIMDLevel::NONE>(
             code_size, [&]<class HammingComputer>() -> DistanceComputer* {
                 return new FlatHammingDis<HammingComputer>(*flat_storage);
             });
