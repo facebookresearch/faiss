@@ -350,6 +350,23 @@ class TestQuantizerClone(unittest.TestCase):
         np.testing.assert_array_equal(codes, codes2)
 
 
+class TestTurboQuantMSESQFactory(unittest.TestCase):
+
+    def test_factory_tqmse(self):
+        cases = [
+            ("SQtqmse1", faiss.ScalarQuantizer.QT_1bit_tqmse),
+            ("SQtqmse2", faiss.ScalarQuantizer.QT_2bit_tqmse),
+            ("SQtqmse3", faiss.ScalarQuantizer.QT_3bit_tqmse),
+            ("SQtqmse4", faiss.ScalarQuantizer.QT_4bit_tqmse),
+            ("SQtqmse8", faiss.ScalarQuantizer.QT_8bit_tqmse),
+        ]
+        for factory_str, qtype in cases:
+            with self.subTest(factory_str=factory_str):
+                index = faiss.index_factory(32, factory_str)
+                self.assertEqual(index.__class__, faiss.IndexScalarQuantizer)
+                self.assertEqual(index.sq.qtype, qtype)
+
+
 class TestIVFSpectralHashOwnership(unittest.TestCase):
 
     def test_constructor(self):

@@ -978,7 +978,7 @@ void read_ScalarQuantizer(
     READ1(qtype_int);
     FAISS_THROW_IF_NOT_FMT(
             qtype_int >= ScalarQuantizer::QT_8bit &&
-                    qtype_int <= ScalarQuantizer::QT_8bit_direct_signed,
+                    qtype_int < ScalarQuantizer::QT_count,
             "invalid ScalarQuantizer qtype %d",
             qtype_int);
     ivsc->qtype = static_cast<ScalarQuantizer::QuantizerType>(qtype_int);
@@ -1016,6 +1016,21 @@ void read_ScalarQuantizer(
             case ScalarQuantizer::QT_0bit:
             case ScalarQuantizer::QT_count:
                 expected = 0;
+                break;
+            case ScalarQuantizer::QT_1bit_tqmse:
+                expected = 2 + 1; // 2^bits centroids + (2^bits - 1) boundaries
+                break;
+            case ScalarQuantizer::QT_2bit_tqmse:
+                expected = 4 + 3;
+                break;
+            case ScalarQuantizer::QT_3bit_tqmse:
+                expected = 8 + 7;
+                break;
+            case ScalarQuantizer::QT_4bit_tqmse:
+                expected = 16 + 15;
+                break;
+            case ScalarQuantizer::QT_8bit_tqmse:
+                expected = 256 + 255;
                 break;
         }
         if (ivsc->trained.empty() && expected > 0) {
