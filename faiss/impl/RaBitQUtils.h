@@ -380,6 +380,41 @@ inline T* get_block_aux_ptr(
             (vec_pos % bbs) * storage_size;
 }
 
+/// Extract sign bits from PQ4-interleaved block into flat byte packing.
+/// Like CodePackerRaBitQ::unpack_1 but sign-bits-only and with the
+/// vector's in-block address hoisted out of the per-SQ loop.
+inline void unpack_sign_bits_from_packed(
+        const uint8_t* block,
+        size_t bbs,
+        size_t nsq,
+        size_t offset,
+        size_t block_stride,
+        uint8_t* sign_bits_out) {
+    block += (offset / bbs) * block_stride;
+    offset = offset % bbs;
+
+    const bool nibble_high = offset > 15;
+    const size_t vid = offset & 15;
+    const size_t in_group_addr =
+            (vid < 8) ? (vid << 1) : (((vid - 8) << 1) + 1);
+
+    const size_t num_pairs = nsq / 2;
+    for (size_t k = 0; k < num_pairs; k++) {
+        const size_t base = k * bbs;
+        const uint8_t raw_even = block[base + in_group_addr];
+        const uint8_t raw_odd = block[base + in_group_addr + 16];
+
+        const uint8_t nib0 = nibble_high ? (raw_even >> 4) : (raw_even & 0xF);
+        const uint8_t nib1 = nibble_high ? (raw_odd >> 4) : (raw_odd & 0xF);
+        sign_bits_out[k] = nib0 | (nib1 << 4);
+    }
+
+    if (nsq & 1) {
+        const uint8_t raw = block[num_pairs * bbs + in_group_addr];
+        sign_bits_out[num_pairs] = nibble_high ? (raw >> 4) : (raw & 0xF);
+    }
+}
+
 /** Compute per-vector auxiliary storage size.
  *
  * @param nb_bits  number of quantization bits (1 = sign-bit only)

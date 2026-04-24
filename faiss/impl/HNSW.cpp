@@ -9,6 +9,7 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <cstdlib>
 
 #include <faiss/IndexHNSW.h>
 
@@ -16,6 +17,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 
 namespace faiss {
 
@@ -188,7 +190,7 @@ void HNSW::fill_with_random_links(size_t n) {
         for (size_t ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
             size_t begin, end;
-            neighbor_range(i, 0, &begin, &end);
+            neighbor_range(i, level, &begin, &end);
             for (size_t j = begin; j < end; j++) {
                 int other = 0;
                 do {
@@ -497,7 +499,7 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
@@ -519,13 +521,13 @@ void HNSW::add_links_starting_from(
         link_targets.pop();
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
     for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
+        locks.lock(other_id);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
+        locks.unlock(other_id);
     }
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 }
 
 /**************************************************************
@@ -536,7 +538,7 @@ void HNSW::add_with_locks(
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     storage_idx_t nearest = entry_point;
@@ -556,7 +558,7 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
@@ -573,16 +575,19 @@ void HNSW::add_with_locks(
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
+                locks,
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
 
-    if (pt_level > max_level) {
-        max_level = pt_level;
-        entry_point = pt_id;
+#pragma omp critical
+    {
+        if (pt_level > max_level) {
+            max_level = pt_level;
+            entry_point = pt_id;
+        }
     }
 }
 
@@ -1000,6 +1005,18 @@ int search_from_candidates_panorama(
     return nres;
 }
 
+template <typename T, typename Container, typename Compare>
+void reservePriorityQueue(
+        std::priority_queue<T, Container, Compare>& q,
+        std::size_t size) {
+    struct Access : std::priority_queue<T, Container, Compare> {
+        using std::priority_queue<T, Container, Compare>::c;
+    };
+    Access access{std::move(q)};
+    access.c.reserve(size);
+    q = std::move(access);
+}
+
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         const HNSW& hnsw,
         const Node& node,
@@ -1009,7 +1026,10 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         HNSWStats& stats) {
     int ndis = 0;
     std::priority_queue<Node> top_candidates;
+    reservePriorityQueue(top_candidates, ef);
+
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
+    reservePriorityQueue(candidates, ef);
 
     top_candidates.push(node);
     candidates.push(node);
@@ -1048,11 +1068,11 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (top_candidates.top().first > dis ||
-                top_candidates.size() < static_cast<size_t>(ef)) {
+                top_candidates.size() < ef) {
                 candidates.emplace(dis, idx);
                 top_candidates.emplace(dis, idx);
 
-                if (top_candidates.size() > static_cast<size_t>(ef)) {
+                if (top_candidates.size() > ef) {
                     top_candidates.pop();
                 }
             }

@@ -12,7 +12,10 @@ import unittest
 
 from faiss.contrib.datasets import SyntheticDataset
 
+from common_faiss_tests import for_all_simd_levels
 
+
+@for_all_simd_levels
 class TestScalarQuantizerEncodeDecode(unittest.TestCase):
 
     def setUp(self):
@@ -42,6 +45,7 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
         self.do_encode_decode(faiss.ScalarQuantizer.QT_4bit_uniform, 0.1)
 
 
+@for_all_simd_levels
 class TestScalarQuantizerSearch(unittest.TestCase):
 
     def setUp(self):
@@ -70,6 +74,7 @@ class TestScalarQuantizerSearch(unittest.TestCase):
         self.do_search('SQfp16', 0.99)
 
 
+@for_all_simd_levels
 class TestScalarQuantizerDistances(unittest.TestCase):
 
     def test_distance_matches_reconstruct(self):
@@ -90,6 +95,7 @@ class TestScalarQuantizerDistances(unittest.TestCase):
             self.assertAlmostEqual(D[0, i], dist, places=4)
 
 
+@for_all_simd_levels
 class TestScalarQuantizerEdgeCases(unittest.TestCase):
 
     def test_zero_vectors(self):
@@ -139,6 +145,7 @@ class TestScalarQuantizerEdgeCases(unittest.TestCase):
                 self.assertEqual(I.shape, (5, 10))
 
 
+@for_all_simd_levels
 class TestScalarQuantizerIP(unittest.TestCase):
 
     def test_inner_product(self):

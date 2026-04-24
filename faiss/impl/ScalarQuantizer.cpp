@@ -62,6 +62,10 @@ void ScalarQuantizer::set_derived_sizes() {
             code_size = d * 2;
             bits = 16;
             break;
+        case QT_0bit:
+            code_size = 0;
+            bits = 0;
+            break;
         default:
             break;
     }
@@ -70,6 +74,10 @@ void ScalarQuantizer::set_derived_sizes() {
 void ScalarQuantizer::train(size_t n, const float* x) {
     using scalar_quantizer::train_NonUniform;
     using scalar_quantizer::train_Uniform;
+
+    if (qtype == QT_0bit) {
+        return; // nothing to train for centroid-only mode
+    }
 
     int bit_per_dim = qtype == QT_4bit_uniform ? 4
             : qtype == QT_4bit                 ? 4
@@ -128,6 +136,9 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
+    if (code_size == 0) {
+        return; // QT_0bit: nothing to encode
+    }
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
@@ -138,6 +149,10 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
+    if (code_size == 0) {
+        memset(x, 0, sizeof(float) * d * n);
+        return; // QT_0bit: no per-vector data, zero-fill
+    }
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for

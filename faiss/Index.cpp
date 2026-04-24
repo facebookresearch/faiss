@@ -55,7 +55,7 @@ void Index::add_with_ids(
 
 size_t Index::remove_ids(const IDSelector& /*sel*/) {
     FAISS_THROW_MSG("remove_ids not implemented for this type of index");
-    return -1;
+    return static_cast<size_t>(-1);
 }
 
 void Index::reconstruct(idx_t, float*) const {
@@ -168,7 +168,7 @@ struct GenericDistanceComputer : DistanceComputer {
     size_t d;
     const Index& storage;
     std::vector<float> buf;
-    const float* q;
+    const float* q = nullptr;
 
     explicit GenericDistanceComputer(const Index& storage_in)
             : storage(storage_in) {

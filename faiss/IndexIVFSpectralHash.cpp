@@ -10,6 +10,7 @@
 #include <faiss/IndexIVFSpectralHash.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 
@@ -159,7 +160,7 @@ void binarize_with_freq(
     memset(codes, 0, (nbit + 7) / 8);
     for (size_t i = 0; i < nbit; i++) {
         float xf = (x[i] - c[i]);
-        int64_t xi = int64_t(floor(xf * freq));
+        int64_t xi = int64_t(std::floor(xf * freq));
         int64_t bit = xi & 1;
         codes[i >> 3] |= bit << (i & 7);
     }
@@ -230,7 +231,7 @@ struct IVFScanner : InvertedListScanner {
               q(nbit),
               zero(nbit),
               qcode(index_in->code_size),
-              hc(qcode.data(), index_in->code_size) {
+              hc(qcode.data(), static_cast<int>(index_in->code_size)) {
         this->store_pairs = store_pairs_in;
         this->code_size = index->code_size;
         this->keep_max = is_similarity_metric(index->metric_type);
@@ -298,15 +299,6 @@ struct IVFScanner : InvertedListScanner {
     }
 };
 
-struct BuildScanner {
-    using T = InvertedListScanner*;
-
-    template <class HammingComputer>
-    static T f(const IndexIVFSpectralHash* index, bool store_pairs) {
-        return new IVFScanner<HammingComputer>(index, store_pairs);
-    }
-};
-
 } // anonymous namespace
 
 InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
@@ -314,8 +306,10 @@ InvertedListScanner* IndexIVFSpectralHash::get_InvertedListScanner(
         const IDSelector* sel,
         const IVFSearchParameters*) const {
     FAISS_THROW_IF_NOT(!sel);
-    BuildScanner bs;
-    return dispatch_HammingComputer(code_size, bs, this, store_pairs);
+    return with_HammingComputer(
+            code_size, [&]<class HammingComputer>() -> InvertedListScanner* {
+                return new IVFScanner<HammingComputer>(this, store_pairs);
+            });
 }
 
 void IndexIVFSpectralHash::replace_vt(VectorTransform* vt_in, bool own) {

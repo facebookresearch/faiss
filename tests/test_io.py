@@ -545,7 +545,7 @@ class TestIVFPQRead(unittest.TestCase):
 
 class TestIOFlatMMap(unittest.TestCase):
     @unittest.skipIf(
-        platform.system() not in ["Windows", "Linux"],
+        platform.system() not in ["Windows", "Linux", "Darwin"],
         "supported OSes only"
     )
     def test_mmap(self):

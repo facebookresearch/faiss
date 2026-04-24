@@ -9,6 +9,8 @@ import numpy as np
 import unittest
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
+
 
 def make_binary_dataset(d, nb, nt, nq):
     assert d % 8 == 0
@@ -24,6 +26,7 @@ def binary_to_float(x):
     return c8.astype('float32').reshape(n, d * 8)
 
 
+@for_all_simd_levels
 class TestIndexBinaryFromFloat(unittest.TestCase):
     """Use a binary index backed by a float index"""
 

@@ -41,14 +41,14 @@ struct Quantizer;
 
 struct IndexIVFFastScan : IndexIVF {
     // size of the kernel
-    int bbs; // set at build time
+    int bbs = 0; // set at build time
 
-    size_t M;
-    size_t nbits;
-    size_t ksub;
+    size_t M = 0;
+    size_t nbits = 0;
+    size_t ksub = 0;
 
     // M rounded up to a multiple of 2
-    size_t M2;
+    size_t M2 = 0;
 
     // search-time implementation
     int implem = 0;
@@ -156,7 +156,7 @@ struct IndexIVFFastScan : IndexIVF {
      * @param context       processing context containing query factors
      * processor
      */
-    void compute_LUT_uint8(
+    virtual void compute_LUT_uint8(
             size_t n,
             const float* x,
             const CoarseQuantized& cq,
@@ -346,6 +346,18 @@ struct IndexIVFFastScan : IndexIVF {
      * @param x       output vectors, size n * d
      */
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /** Get the size of the code portion packed by pq4_pack_codes.
+     *
+     * Returns the number of bytes per vector that are interleaved into
+     * SIMD blocks by pq4_pack_codes, excluding any embedded metadata
+     * (e.g., RaBitQ factors). The meaning of these bytes depends on the
+     * quantizer: for PQ/AQ they are 4-bit sub-quantizer nibbles, for
+     * RaBitQ they are 1-bit-per-dimension sign bits packed into nibbles.
+     *
+     * Must be implemented by all derived classes.
+     */
+    virtual size_t fast_scan_code_size() const = 0;
 
    protected:
     /** Get stride for interpreting codes during SIMD packing.

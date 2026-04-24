@@ -28,6 +28,24 @@ struct InvertedListsIterator {
     virtual bool is_available() const = 0;
     virtual void next() = 0;
     virtual std::pair<idx_t, const uint8_t*> get_id_and_codes() = 0;
+
+    /// When true, iterate_codes will invoke on_distance_computed() and
+    /// on_heap_changed() via virtual dispatch. When false (the default),
+    /// iterate_codes skips the callbacks entirely — the guard branch is
+    /// perfectly predicted and costs ~0 cycles, so non-callback users
+    /// pay no overhead. Derived classes that override the callbacks
+    /// should set this to true in their constructor.
+    bool has_search_callbacks_ = false;
+
+    /// Called from iterate_codes after distance computation for the vector
+    /// returned by the most recent get_id_and_codes(). Default: no-op.
+    /// Only invoked when has_search_callbacks_ is true.
+    virtual void on_distance_computed(idx_t /* vid */, float /* distance */) {}
+
+    /// Called from iterate_codes when a vector replaces the current worst
+    /// in the top-K heap. evicted_id is the displaced entry. Default: no-op.
+    /// Only invoked when has_search_callbacks_ is true.
+    virtual void on_heap_changed(idx_t /* new_id */, idx_t /* evicted_id */) {}
 };
 
 /** Table of inverted lists
@@ -280,7 +298,6 @@ struct ArrayInvertedLists : InvertedLists {
 /// Level-oriented storage as defined in the IVFFlat section of Panorama
 /// (https://www.arxiv.org/pdf/2510.00566).
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
-    static constexpr size_t kBatchSize = 128;
     std::vector<MaybeOwnedVector<float>> cum_sums;
     const size_t n_levels;
     const size_t level_width; // in code units
@@ -289,7 +306,8 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     ArrayInvertedListsPanorama(
             size_t nlist_in,
             size_t code_size_in,
-            size_t n_levels_in);
+            size_t n_levels_in,
+            size_t batch_size = Panorama::kDefaultBatchSize);
 
     const float* get_cum_sums(size_t list_no) const;
 

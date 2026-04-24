@@ -8,6 +8,7 @@ import numpy as np
 import faiss
 import unittest
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
@@ -188,6 +189,7 @@ def eval_codec(q, xb):
     return ((xb - decoded) ** 2).sum()
 
 
+@for_all_simd_levels
 class TestResidualQuantizer(unittest.TestCase):
 
     def test_training(self):
@@ -211,7 +213,7 @@ class TestResidualQuantizer(unittest.TestCase):
         pq.train(xt)
         err_pq = eval_codec(pq, xb)
 
-        # in practice RQ is often better than PQ but it does not the case here, so just check
+        # in practice RQ is often better than PQ but it is not the case here, so just check
         # that we are within some factor.
         self.assertLess(err_rq, err_pq * 1.2)
 
@@ -741,6 +743,7 @@ class TestAdditiveQuantizerWithLUT(unittest.TestCase):
         np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
 
 
+@for_all_simd_levels
 class TestIndexResidualQuantizerSearch(unittest.TestCase):
 
     def test_search_IP(self):

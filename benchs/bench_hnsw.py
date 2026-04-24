@@ -32,7 +32,7 @@ xt = ds.get_train()
 nq, d = xq.shape
 
 if todo == []:
-    todo = 'hnsw hnsw_sq ivf ivf_hnsw_quantizer kmeans kmeans_hnsw nsg'.split()
+    todo = "hnsw hnsw_sq ivf ivf_hnsw_quantizer kmeans kmeans_hnsw nsg".split()
 
 
 def evaluate(index):
@@ -45,11 +45,13 @@ def evaluate(index):
 
     missing_rate = (I == -1).sum() / float(k * nq)
     recall_at_1 = (I == gt[:, :1]).sum() / float(nq)
-    print("\t %7.3f ms per query, R@1 %.4f, missing rate %.4f" % (
-        (t1 - t0) * 1000.0 / nq, recall_at_1, missing_rate))
+    print(
+        "\t %7.3f ms per query, R@1 %.4f, missing rate %.4f"
+        % ((t1 - t0) * 1000.0 / nq, recall_at_1, missing_rate)
+    )
 
 
-if 'hnsw' in todo:
+if "hnsw" in todo:
 
     print("Testing HNSW Flat")
 
@@ -69,12 +71,12 @@ if 'hnsw' in todo:
     print("search")
     for efSearch in 16, 32, 64, 128, 256:
         for bounded_queue in [True, False]:
-            print("efSearch", efSearch, "bounded queue", bounded_queue, end=' ')
+            print("efSearch", efSearch, "bounded queue", bounded_queue, end=" ")
             index.hnsw.search_bounded_queue = bounded_queue
             index.hnsw.efSearch = efSearch
             evaluate(index)
 
-if 'hnsw_sq' in todo:
+if "hnsw_sq" in todo:
 
     print("Testing HNSW with a scalar quantizer")
     # also set M so that the vectors and links both use 128 bytes per
@@ -96,16 +98,16 @@ if 'hnsw_sq' in todo:
 
     print("search")
     for efSearch in 16, 32, 64, 128, 256:
-        print("efSearch", efSearch, end=' ')
+        print("efSearch", efSearch, end=" ")
         index.hnsw.efSearch = efSearch
         evaluate(index)
 
-if 'ivf' in todo:
+if "ivf" in todo:
 
     print("Testing IVF Flat (baseline)")
     quantizer = faiss.IndexFlatL2(d)
     index = faiss.IndexIVFFlat(quantizer, d, 16384)
-    index.cp.min_points_per_centroid = 5   # quiet warning
+    index.cp.min_points_per_centroid = 5  # quiet warning
 
     # to see progress
     index.verbose = True
@@ -118,16 +120,16 @@ if 'ivf' in todo:
 
     print("search")
     for nprobe in 1, 4, 16, 64, 256:
-        print("nprobe", nprobe, end=' ')
+        print("nprobe", nprobe, end=" ")
         index.nprobe = nprobe
         evaluate(index)
 
-if 'ivf_hnsw_quantizer' in todo:
+if "ivf_hnsw_quantizer" in todo:
 
     print("Testing IVF Flat with HNSW quantizer")
     quantizer = faiss.IndexHNSWFlat(d, 32)
     index = faiss.IndexIVFFlat(quantizer, d, 16384)
-    index.cp.min_points_per_centroid = 5   # quiet warning
+    index.cp.min_points_per_centroid = 5  # quiet warning
     index.quantizer_trains_alone = 2
 
     # to see progress
@@ -142,13 +144,13 @@ if 'ivf_hnsw_quantizer' in todo:
     print("search")
     quantizer.hnsw.efSearch = 64
     for nprobe in 1, 4, 16, 64, 256:
-        print("nprobe", nprobe, end=' ')
+        print("nprobe", nprobe, end=" ")
         index.nprobe = nprobe
         evaluate(index)
 
 # Bonus: 2 kmeans tests
 
-if 'kmeans' in todo:
+if "kmeans" in todo:
     print("Performing kmeans on sift1M database vectors (baseline)")
     clus = faiss.Clustering(d, 16384)
     clus.verbose = True
@@ -157,7 +159,7 @@ if 'kmeans' in todo:
     clus.train(xb, index)
 
 
-if 'kmeans_hnsw' in todo:
+if "kmeans_hnsw" in todo:
     print("Performing kmeans on sift1M using HNSW assignment")
     clus = faiss.Clustering(d, 16384)
     clus.verbose = True
@@ -168,7 +170,7 @@ if 'kmeans_hnsw' in todo:
     index.hnsw.efSearch = 128
     clus.train(xb, index)
 
-if 'nsg' in todo:
+if "nsg" in todo:
 
     print("Testing NSG Flat")
 
@@ -186,6 +188,47 @@ if 'nsg' in todo:
 
     print("search")
     for search_L in -1, 16, 32, 64, 128, 256:
-        print("search_L", search_L, end=' ')
+        print("search_L", search_L, end=" ")
         index.nsg.search_L = search_L
         evaluate(index)
+
+
+if "hnsw_locks" in todo:
+
+    ntotal, _ = xb.shape
+    batch_size = ntotal // 100
+    print(
+        f"Testing HNSW Flat: add with {batch_size=}, "
+        "with and without retaining locks"
+    )
+
+    # Unbatched
+    t0 = time.time()
+    index = faiss.IndexHNSWFlat(d, 32)
+    index.add(xb)
+    t1 = time.time()
+    print(
+        f"\t single bulk add(): {index.ntotal} added in {t1 - t0:6.3f}s"
+        f" = {index.ntotal / (t1 - t0):.0f}/s"
+    )
+
+    for retain_locks in [False, True]:
+        index = faiss.IndexHNSWFlat(d, 32)
+        index.retain_locks = retain_locks
+
+        t0 = time.time()
+        t1 = None
+        t2 = None
+        for i in range(0, len(xb), batch_size):
+            t1 = time.time()
+            index.add(xb[i: i + batch_size])
+            t2 = time.time()
+            if i > 2 and t2 - t0 > 2:
+                break
+
+        assert t1 and t2
+        dt = t2 - t0
+        print(
+            f"\t {retain_locks=:1}: {index.ntotal} added in {t2 - t0:6.3f}s"
+            f" = {index.ntotal / (t2 - t0):.0f}/s"
+        )

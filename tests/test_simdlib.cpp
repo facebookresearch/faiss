@@ -11,6 +11,11 @@
 
 using namespace faiss;
 
+// Explicit SIMD-level aliases (no global bare aliases).
+using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
+using simd8uint32 = simd8uint32_tpl<SINGLE_SIMD_LEVEL_256>;
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
+
 TEST(TestSIMDLib, TestCmpltAndBlendInplace) {
     simd8float32 lowestValues(0, 1, 2, 3, 4, 5, 6, 7);
     simd8uint32 lowestIndices(0, 1, 2, 3, 4, 5, 6, 7);

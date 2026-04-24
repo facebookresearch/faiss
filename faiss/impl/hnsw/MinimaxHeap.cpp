@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <cmath>
+
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 
 #include <cassert>
@@ -14,6 +16,10 @@
 namespace faiss {
 
 void MinimaxHeap::push(storage_idx_t i, float v) {
+    // Treat NaN distances as infinitely far away so heap ordering is preserved.
+    if (std::isnan(v)) {
+        v = HC::neutral();
+    }
     if (k == n) {
         if (v >= dis[0]) {
             return;

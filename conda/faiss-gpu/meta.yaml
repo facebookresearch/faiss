@@ -49,7 +49,7 @@ outputs:
         - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
-        - {{ compiler('cxx') }} =12.4
+        - {{ compiler('cxx') }} >=13.4,<14
         - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.24.0
@@ -85,7 +85,7 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }} =12.4
+        - {{ compiler('cxx') }} >=13.4,<14
         - sysroot_linux-64 =2.17 # [linux64]
         - swig =4.0
         - cmake >=3.24.0

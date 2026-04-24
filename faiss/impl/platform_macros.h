@@ -110,6 +110,7 @@ inline int __builtin_clzll(uint64_t x) {
 // MSVC uses pragma pack instead of __attribute__((packed))
 // Use FAISS_PACK_STRUCTS_BEGIN/END to wrap packed structure definitions
 #define FAISS_PACKED
+#define FAISS_RESTRICT __restrict
 #define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
 #define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
 
@@ -126,9 +127,11 @@ inline int __builtin_clzll(uint64_t x) {
 #ifdef SWIG
 #define ALIGNED(x)
 #define FAISS_PACKED
+#define FAISS_RESTRICT
 #else
 #define ALIGNED(x) __attribute__((aligned(x)))
 #define FAISS_PACKED __attribute__((packed))
+#define FAISS_RESTRICT __restrict
 #endif
 
 // On non-Windows, FAISS_PACKED handles packing, so these are no-ops

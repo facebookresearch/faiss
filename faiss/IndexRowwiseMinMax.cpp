@@ -166,11 +166,6 @@ void sa_decode_impl(
                      ? chunk_size
                      : static_cast<size_t>(n_input)) *
             old_code_size);
-    std::vector<StorageMinMaxFP16> minmax(
-            (chunk_size < static_cast<size_t>(n_input)
-                     ? chunk_size
-                     : static_cast<size_t>(n_input)));
-
     // all the elements to process
     size_t n_left = n_input;
 
@@ -231,7 +226,7 @@ void train_inplace_impl(
     std::vector<StorageMinMaxT> minmax(n);
 
     // normalize
-#pragma omp for
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         // compute min & max values
         float minv = std::numeric_limits<float>::max();
@@ -269,6 +264,7 @@ void train_inplace_impl(
     sub_index->train(n, x);
 
     // rescale data back
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         float scaler = 0;
         float minv = 0;
@@ -294,7 +290,7 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
     // temp buffer
     std::vector<float> tmp(n * d);
 
-#pragma omp for
+#pragma omp parallel for
     for (idx_t i = 0; i < n; i++) {
         // compute min & max values
         float minv = std::numeric_limits<float>::max();
@@ -309,7 +305,7 @@ void train_impl(IndexRowwiseMinMaxBase* const index, idx_t n, const float* x) {
         const float scaler = maxv - minv;
 
         // save the coefficients
-        StorageMinMaxT storage;
+        StorageMinMaxT storage = {};
         storage.from_floats(scaler, minv);
 
         // and load them back, because the coefficients might

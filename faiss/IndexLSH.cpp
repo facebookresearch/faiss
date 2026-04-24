@@ -49,13 +49,18 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
         // also applies bias if exists
         xt = rrot.apply(n, x);
     } else if (d != nbits) {
-        assert(nbits < d);
+        FAISS_THROW_IF_NOT_FMT(
+                nbits < d,
+                "nbits (%d) must be less than d (%d)",
+                nbits,
+                (int)d);
         xt = new float[nbits * n];
         float* xp = xt;
         for (idx_t i = 0; i < n; i++) {
             const float* xl = x + i * d;
-            for (int j = 0; j < nbits; j++)
+            for (int j = 0; j < nbits; j++) {
                 *xp++ = xl[j];
+            }
         }
     }
 
@@ -66,9 +71,11 @@ const float* IndexLSH::apply_preprocess(idx_t n, const float* x) const {
         }
 
         float* xp = xt;
-        for (idx_t i = 0; i < n; i++)
-            for (int j = 0; j < nbits; j++)
+        for (idx_t i = 0; i < n; i++) {
+            for (int j = 0; j < nbits; j++) {
                 *xp++ -= thresholds[j];
+            }
+        }
     }
 
     return xt ? xt : x;
@@ -84,9 +91,11 @@ void IndexLSH::train(idx_t n, const float* x) {
 
         std::unique_ptr<float[]> transposed_x(new float[n * nbits]);
 
-        for (idx_t i = 0; i < n; i++)
-            for (idx_t j = 0; j < nbits; j++)
+        for (idx_t i = 0; i < n; i++) {
+            for (idx_t j = 0; j < nbits; j++) {
                 transposed_x[j * n + i] = xt[i * nbits + j];
+            }
+        }
 
         for (idx_t i = 0; i < nbits; i++) {
             float* xi = transposed_x.get() + i * n;
@@ -128,20 +137,24 @@ void IndexLSH::search(
     hammings_knn_hc(&res, qcodes.get(), codes.data(), ntotal, code_size, true);
 
     // convert distances to floats
-    for (int i = 0; i < k * n; i++)
+    for (int i = 0; i < k * n; i++) {
         distances[i] = idistances[i];
+    }
 }
 
 void IndexLSH::transfer_thresholds(LinearTransform* vt) {
-    if (!train_thresholds)
+    if (!train_thresholds) {
         return;
+    }
     FAISS_THROW_IF_NOT(nbits == vt->d_out);
     if (!vt->have_bias) {
         vt->b.resize(nbits, 0);
         vt->have_bias = true;
     }
-    for (int i = 0; i < nbits; i++)
+    FAISS_THROW_IF_NOT(!vt->b.empty());
+    for (int i = 0; i < nbits; i++) {
         vt->b[i] -= thresholds[i];
+    }
     train_thresholds = false;
     thresholds.clear();
 }

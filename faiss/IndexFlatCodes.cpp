@@ -7,6 +7,8 @@
 
 #include <faiss/IndexFlatCodes.h>
 
+#include <atomic>
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/DistanceComputer.h>
@@ -204,23 +206,39 @@ struct Run_search_with_decompress {
         using SingleResultHandler =
                 typename BlockResultHandler::SingleResultHandler;
         using DC = GenericFlatCodesDistanceComputer<VectorDistance>;
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 #pragma omp parallel // if (res.nq > 100)
         {
-            std::unique_ptr<DC> dc(new DC(&index, vd));
-            SingleResultHandler resi(res);
+            std::unique_ptr<DC> dc;
+            std::unique_ptr<SingleResultHandler> resi;
+            try {
+                dc = std::make_unique<DC>(&index, vd);
+                resi = std::make_unique<SingleResultHandler>(res);
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
 #pragma omp for
             for (int64_t q = 0; q < static_cast<int64_t>(res.nq); q++) {
-                resi.begin(q);
-                dc->set_query(xq + vd.d * q);
-                for (size_t i = 0; i < ntotal; i++) {
-                    if (res.is_in_selection(i)) {
-                        float dis = (*dc)(i);
-                        resi.add_result(dis, i);
-                    }
+                if (interrupt.load(std::memory_order_relaxed)) {
+                    continue;
                 }
-                resi.end();
+                try {
+                    resi->begin(q);
+                    dc->set_query(xq + vd.d * q);
+                    for (size_t i = 0; i < ntotal; i++) {
+                        if (res.is_in_selection(i)) {
+                            float dis = (*dc)(i);
+                            resi->add_result(dis, i);
+                        }
+                    }
+                    resi->end();
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { interrupt = true; });
+                }
             }
         }
+        omp_rethrow_if_exception(ex);
     }
 };
 
