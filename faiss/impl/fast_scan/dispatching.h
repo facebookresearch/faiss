@@ -48,7 +48,9 @@ using namespace simd_result_handlers;
  * so callers don't need to know the handler type.
  ***************************************************************/
 
-template <class Handler>
+// SIMDLevel SL = THE_LEVEL_TO_DISPATCH added to make the mangled
+// symbol name unique per translation unit.
+template <class Handler, SIMDLevel SL = THE_LEVEL_TO_DISPATCH>
 struct ScannerMixIn : FastScanCodeScanner {
     Handler handler_;
 
