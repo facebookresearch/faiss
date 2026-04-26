@@ -58,6 +58,21 @@ class TestEncodeDecode(unittest.TestCase):
     def test_SQ8(self):
         self.do_encode_twice('SQ8')
 
+    def test_SQtqmse1(self):
+        self.do_encode_twice('SQtqmse1')
+
+    def test_SQtqmse2(self):
+        self.do_encode_twice('SQtqmse2')
+
+    def test_SQtqmse3(self):
+        self.do_encode_twice('SQtqmse3')
+
+    def test_SQtqmse4(self):
+        self.do_encode_twice('SQtqmse4')
+
+    def test_SQtqmse8(self):
+        self.do_encode_twice('SQtqmse8')
+
     def test_IVFSQ8(self):
         self.do_encode_twice('IVF256,SQ8')
 
@@ -190,6 +205,33 @@ class TestAccuracy(unittest.TestCase):
 
     def test_SQ4(self):
         self.compare_accuracy('SQ8', 'SQbf16')
+
+    def test_SQtqmse(self):
+        self.compare_accuracy('SQtqmse4', 'SQtqmse8')
+
+    def test_SQtqmse_ordering(self):
+        d = 96
+        nb = 1000
+        nq = 0
+        nt = 2000
+
+        xt, x, _ = get_dataset_2(d, nt, nb, nq)
+
+        errs = []
+        for factory_string in (
+                'SQtqmse1',
+                'SQtqmse2',
+                'SQtqmse3',
+                'SQtqmse4',
+                'SQtqmse8'):
+            codec = faiss.index_factory(d, factory_string)
+            codec.train(xt)
+            codes = codec.sa_encode(x)
+            x2 = codec.sa_decode(codes)
+            errs.append(((x - x2) ** 2).sum())
+
+        for i in range(len(errs) - 1):
+            self.assertGreaterEqual(errs[i], errs[i + 1])
 
     def test_PQ(self):
         self.compare_accuracy('PQ6x8np', 'PQ8x8np')
