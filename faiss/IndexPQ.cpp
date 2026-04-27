@@ -22,6 +22,13 @@
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
 
+// Scalar (NONE) fallback for dynamic dispatch
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexPQ_impl.h>
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
+#undef THE_SIMD_LEVEL
+
 namespace faiss {
 
 /*********************************************************
@@ -279,51 +286,8 @@ void IndexPQStats::reset() {
 
 IndexPQStats indexPQ_stats;
 
-namespace {
-
-template <class HammingComputer>
-size_t polysemous_inner_loop(
-        const IndexPQ* index,
-        const float* dis_table_qi,
-        const uint8_t* q_code,
-        size_t k,
-        float* heap_dis,
-        int64_t* heap_ids,
-        int ht) {
-    size_t M = index->pq.M;
-    size_t code_size = index->pq.code_size;
-    size_t ksub = index->pq.ksub;
-    size_t ntotal = index->ntotal;
-
-    const uint8_t* b_code = index->codes.data();
-
-    size_t n_pass_i = 0;
-
-    HammingComputer hc(q_code, static_cast<int>(code_size));
-
-    for (int64_t bi = 0; bi < static_cast<int64_t>(ntotal); bi++) {
-        int hd = hc.hamming(b_code);
-
-        if (hd < ht) {
-            n_pass_i++;
-
-            float dis = 0;
-            const float* dis_table = dis_table_qi;
-            for (size_t m = 0; m < M; m++) {
-                dis += dis_table[b_code[m]];
-                dis_table += ksub;
-            }
-
-            if (dis < heap_dis[0]) {
-                maxheap_replace_top(k, heap_dis, heap_ids, dis, bi);
-            }
-        }
-        b_code += code_size;
-    }
-    return n_pass_i;
-}
-
-} // anonymous namespace
+// polysemous_inner_loop template code is now in
+// impl/binary_hamming/IndexPQ_impl.h (compiled per-ISA)
 
 void IndexPQ::search_core_polysemous(
         idx_t n,
@@ -373,17 +337,17 @@ void IndexPQ::search_core_polysemous(
         maxheap_heapify(k, heap_dis, heap_ids);
 
         if (!generalized_hamming) {
-            n_pass += with_HammingComputer<SIMDLevel::NONE>(
-                    pq.code_size, [&]<class HammingComputer>() -> size_t {
-                        return polysemous_inner_loop<HammingComputer>(
-                                this,
-                                dis_table_qi,
-                                q_code,
-                                k,
-                                heap_dis,
-                                heap_ids,
-                                param_polysemous_ht);
-                    });
+            n_pass += with_simd_level([&]<SIMDLevel SL>() {
+                return polysemous_inner_loop_fixSL<SL>(
+                        pq.code_size,
+                        this,
+                        dis_table_qi,
+                        q_code,
+                        k,
+                        heap_dis,
+                        heap_ids,
+                        param_polysemous_ht);
+            });
 
         } else { // generalized hamming
             switch (pq.code_size) {

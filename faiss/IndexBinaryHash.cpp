@@ -20,6 +20,16 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 
+#include <faiss/impl/simd_dispatch.h>
+
+// Scalar (NONE) fallback for dynamic dispatch
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexBinaryHash_impl.h>
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
+#undef THE_SIMD_LEVEL
+
 namespace faiss {
 
 void IndexBinaryHash::InvertedList::add(
@@ -64,133 +74,8 @@ void IndexBinaryHash::add_with_ids(
     ntotal += n;
 }
 
-namespace {
-
-/** Enumerate all bit vectors of size nbit with up to maxflip 1s
- * test in P127257851 P127258235
- */
-struct FlipEnumerator {
-    int nbit, nflip, maxflip;
-    uint64_t mask, x;
-
-    FlipEnumerator(int nbit_, int maxflip_) : nbit(nbit_), maxflip(maxflip_) {
-        nflip = 0;
-        mask = 0;
-        x = 0;
-    }
-
-    bool next() {
-        if (x == mask) {
-            if (nflip == maxflip) {
-                return false;
-            }
-            // increase Hamming radius
-            nflip++;
-            mask = (((uint64_t)1 << nflip) - 1);
-            x = mask << (nbit - nflip);
-            return true;
-        }
-
-        int i = __builtin_ctzll(x);
-
-        if (i > 0) {
-            x ^= (uint64_t)3 << (i - 1);
-        } else {
-            // nb of LSB 1s
-            int n1 = __builtin_ctzll(~x);
-            // clear them
-            x &= ((uint64_t)(-1) << n1);
-            int n2 = __builtin_ctzll(x);
-            x ^= (((uint64_t)1 << (n1 + 2)) - 1) << (n2 - n1 - 1);
-        }
-        return true;
-    }
-};
-
-struct RangeSearchResults {
-    int radius;
-    RangeQueryResult& qres;
-
-    inline void add(float dis, idx_t id) {
-        if (dis < radius) {
-            qres.add(dis, id);
-        }
-    }
-};
-
-struct KnnSearchResults {
-    // heap params
-    idx_t k;
-    int32_t* heap_sim;
-    idx_t* heap_ids;
-
-    using C = CMax<int, idx_t>;
-
-    inline void add(float dis, idx_t id) {
-        if (dis < heap_sim[0]) {
-            heap_replace_top<C>(k, heap_sim, heap_ids, dis, id);
-        }
-    }
-};
-
-template <class HammingComputer, class SearchResults>
-void search_single_query_template(
-        const IndexBinaryHash& index,
-        const uint8_t* q,
-        SearchResults& res,
-        size_t& n0,
-        size_t& nlist,
-        size_t& ndis) {
-    size_t code_size = index.code_size;
-    BitstringReader br(q, code_size);
-    uint64_t qhash = br.read(index.b);
-    HammingComputer hc(q, code_size);
-    FlipEnumerator fe(index.b, index.nflip);
-
-    // loop over neighbors that are at most at nflip bits
-    do {
-        uint64_t hash = qhash ^ fe.x;
-        auto it = index.invlists.find(hash);
-
-        if (it == index.invlists.end()) {
-            continue;
-        }
-
-        const IndexBinaryHash::InvertedList& il = it->second;
-
-        size_t nv = il.ids.size();
-
-        if (nv == 0) {
-            n0++;
-        } else {
-            const uint8_t* codes = il.vecs.data();
-            for (size_t i = 0; i < nv; i++) {
-                int dis = hc.hamming(codes);
-                res.add(dis, il.ids[i]);
-                codes += code_size;
-            }
-            ndis += nv;
-            nlist++;
-        }
-    } while (fe.next());
-}
-
-template <class SearchResults>
-void search_single_query(
-        const IndexBinaryHash& index,
-        const uint8_t* q,
-        SearchResults& res,
-        size_t& n0,
-        size_t& nlist,
-        size_t& ndis) {
-    with_HammingComputer<SIMDLevel::NONE>(
-            index.code_size, [&]<class HammingComputer>() {
-                search_single_query_template<HammingComputer>(
-                        index, q, res, n0, nlist, ndis);
-            });
-}
-
-} // anonymous namespace
+// search_single_query_template and helpers are now in
+// impl/binary_hamming/IndexBinaryHash_impl.h (compiled per-ISA)
 
 void IndexBinaryHash::range_search(
         idx_t n,
@@ -209,10 +94,12 @@ void IndexBinaryHash::range_search(
 #pragma omp for
         for (idx_t i = 0; i < n; i++) { // loop queries
             RangeQueryResult& qres = pres.new_result(i);
-            RangeSearchResults res = {radius, qres};
             const uint8_t* q = x + i * code_size;
 
-            search_single_query(*this, q, res, n0, nlist, ndis);
+            with_simd_level([&]<SIMDLevel SL>() {
+                binary_hash_range_search_fixSL<SL>(
+                        *this, q, radius, qres, n0, nlist, ndis);
+            });
         }
         pres.finalize();
     }
@@ -242,10 +129,12 @@ void IndexBinaryHash::search(
         idx_t* idxi = labels + k * i;
 
         heap_heapify<HeapForL2>(k, simi, idxi);
-        KnnSearchResults res = {k, simi, idxi};
         const uint8_t* q = x + i * code_size;
 
-        search_single_query(*this, q, res, n0, nlist, ndis);
+        with_simd_level([&]<SIMDLevel SL>() {
+            binary_hash_knn_search_fixSL<SL>(
+                    *this, q, k, simi, idxi, n0, nlist, ndis);
+        });
 
         heap_reorder<HeapForL2>(k, simi, idxi);
     }
@@ -318,69 +207,8 @@ void IndexBinaryMultiHash::add(idx_t n, const uint8_t* x) {
     ntotal += n;
 }
 
-namespace {
-
-template <class HammingComputer, class SearchResults>
-static void verify_shortlist(
-        const IndexBinaryFlat* index,
-        const uint8_t* q,
-        const std::unordered_set<idx_t>& shortlist,
-        SearchResults& res) {
-    size_t code_size = index->code_size;
-
-    HammingComputer hc(q, code_size);
-    const uint8_t* codes = index->xb.data();
-
-    for (auto i : shortlist) {
-        int dis = hc.hamming(codes + i * code_size);
-        res.add(dis, i);
-    }
-}
-
-template <class SearchResults>
-void search_1_query_multihash(
-        const IndexBinaryMultiHash& index,
-        const uint8_t* xi,
-        SearchResults& res,
-        size_t& n0,
-        size_t& nlist,
-        size_t& ndis) {
-    std::unordered_set<idx_t> shortlist;
-    int b = index.b;
-
-    BitstringReader br(xi, index.code_size);
-    for (int h = 0; h < index.nhash; h++) {
-        uint64_t qhash = br.read(b);
-        const IndexBinaryMultiHash::Map& map = index.maps[h];
-
-        FlipEnumerator fe(index.b, index.nflip);
-        // loop over neighbors that are at most at nflip bits
-        do {
-            uint64_t hash = qhash ^ fe.x;
-            auto it = map.find(hash);
-
-            if (it != map.end()) {
-                const std::vector<idx_t>& v = it->second;
-                for (auto i : v) {
-                    shortlist.insert(i);
-                }
-                nlist++;
-            } else {
-                n0++;
-            }
-        } while (fe.next());
-    }
-    ndis += shortlist.size();
-
-    // verify shortlist
-    with_HammingComputer<SIMDLevel::NONE>(
-            index.code_size, [&]<class HammingComputer>() {
-                verify_shortlist<HammingComputer>(
-                        index.storage, xi, shortlist, res);
-            });
-}
-
-} // anonymous namespace
+// verify_shortlist and search_1_query_multihash are now in
+// impl/binary_hamming/IndexBinaryHash_impl.h (compiled per-ISA)
 
 void IndexBinaryMultiHash::range_search(
         idx_t n,
@@ -399,10 +227,12 @@ void IndexBinaryMultiHash::range_search(
 #pragma omp for
         for (idx_t i = 0; i < n; i++) { // loop queries
             RangeQueryResult& qres = pres.new_result(i);
-            RangeSearchResults res = {radius, qres};
             const uint8_t* q = x + i * code_size;
 
-            search_1_query_multihash(*this, q, res, n0, nlist, ndis);
+            with_simd_level([&]<SIMDLevel SL>() {
+                binary_multihash_range_search_fixSL<SL>(
+                        *this, q, radius, qres, n0, nlist, ndis);
+            });
         }
         pres.finalize();
     }
@@ -432,10 +262,12 @@ void IndexBinaryMultiHash::search(
         idx_t* idxi = labels + k * i;
 
         heap_heapify<HeapForL2>(k, simi, idxi);
-        KnnSearchResults res = {k, simi, idxi};
         const uint8_t* q = x + i * code_size;
 
-        search_1_query_multihash(*this, q, res, n0, nlist, ndis);
+        with_simd_level([&]<SIMDLevel SL>() {
+            binary_multihash_knn_search_fixSL<SL>(
+                    *this, q, k, simi, idxi, n0, nlist, ndis);
+        });
 
         heap_reorder<HeapForL2>(k, simi, idxi);
     }

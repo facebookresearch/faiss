@@ -27,7 +27,17 @@
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/random.h>
 
+#include <faiss/impl/simd_dispatch.h>
+
 #include <random>
+
+// Scalar (NONE) fallback for dynamic dispatch
+#define THE_SIMD_LEVEL SIMDLevel::NONE
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+// NOLINTNEXTLINE(facebook-hte-InlineHeader)
+#include <faiss/impl/binary_hamming/IndexBinaryHNSW_impl.h>
+#include <faiss/utils/hamming_distance/hamming_computer-generic.h>
+#undef THE_SIMD_LEVEL
 
 namespace faiss {
 
@@ -282,45 +292,15 @@ void IndexBinaryHNSW::reconstruct(idx_t key, uint8_t* recons) const {
     storage->reconstruct(key, recons);
 }
 
-namespace {
-
-template <class HammingComputer>
-struct FlatHammingDis : DistanceComputer {
-    const int code_size;
-    const uint8_t* b;
-    HammingComputer hc;
-
-    float operator()(idx_t i) override {
-        return hc.hamming(b + i * code_size);
-    }
-
-    float symmetric_dis(idx_t i, idx_t j) override {
-        return HammingComputerDefault_tpl<SIMDLevel::NONE>(
-                       b + j * code_size, code_size)
-                .hamming(b + i * code_size);
-    }
-
-    explicit FlatHammingDis(const IndexBinaryFlat& storage)
-            : code_size(storage.code_size), b(storage.xb.data()), hc() {}
-
-    // NOTE: Pointers are cast from float in order to reuse the floating-point
-    //   DistanceComputer.
-    void set_query(const float* x) override {
-        hc.set((uint8_t*)x, code_size);
-    }
-};
-
-} // namespace
-
 DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
     IndexBinaryFlat* flat_storage = dynamic_cast<IndexBinaryFlat*>(storage);
     FAISS_THROW_IF_NOT_MSG(
             flat_storage != nullptr,
             "IndexBinaryHNSW requires IndexBinaryFlat storage");
-    return with_HammingComputer<SIMDLevel::NONE>(
-            code_size, [&]<class HammingComputer>() -> DistanceComputer* {
-                return new FlatHammingDis<HammingComputer>(*flat_storage);
-            });
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_binary_hnsw_distance_computer_fixSL<SL>(
+                code_size, flat_storage);
+    });
 }
 
 /**************************************************************
