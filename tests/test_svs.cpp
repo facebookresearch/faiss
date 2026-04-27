@@ -765,7 +765,7 @@ void write_and_read_static_ivf_index(
 
     // Verify search works on loaded index
     ASSERT_NO_THROW(
-            index.search(nq, xb.data(), k, distances.data(), labels.data()));
+            loaded->search(nq, xb.data(), k, distances.data(), labels.data()));
 
     delete loaded;
 }

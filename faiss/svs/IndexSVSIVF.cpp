@@ -308,6 +308,16 @@ void IndexSVSIVF::deserialize_impl(std::istream& in) {
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
+
+    // Workaround: re-apply the thread count after load to fully initialize
+    // the backend's thread pool. Without this, search() on the freshly
+    // deserialized index can crash under some SVS runtime builds.
+    size_t current_threads = 0;
+    impl->get_num_threads(&current_threads);
+    auto thread_status = impl->set_num_threads(current_threads);
+    if (!thread_status.ok()) {
+        FAISS_THROW_MSG(thread_status.message());
+    }
 }
 
 svs_runtime::DynamicIVFIndex* IndexSVSIVF::dynamic_impl() const {
