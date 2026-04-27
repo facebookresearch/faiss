@@ -183,10 +183,11 @@ void search_single_query(
         size_t& n0,
         size_t& nlist,
         size_t& ndis) {
-    with_HammingComputer(index.code_size, [&]<class HammingComputer>() {
-        search_single_query_template<HammingComputer>(
-                index, q, res, n0, nlist, ndis);
-    });
+    with_HammingComputer<SIMDLevel::NONE>(
+            index.code_size, [&]<class HammingComputer>() {
+                search_single_query_template<HammingComputer>(
+                        index, q, res, n0, nlist, ndis);
+            });
 }
 
 } // anonymous namespace
@@ -372,9 +373,11 @@ void search_1_query_multihash(
     ndis += shortlist.size();
 
     // verify shortlist
-    with_HammingComputer(index.code_size, [&]<class HammingComputer>() {
-        verify_shortlist<HammingComputer>(index.storage, xi, shortlist, res);
-    });
+    with_HammingComputer<SIMDLevel::NONE>(
+            index.code_size, [&]<class HammingComputer>() {
+                verify_shortlist<HammingComputer>(
+                        index.storage, xi, shortlist, res);
+            });
 }
 
 } // anonymous namespace

@@ -796,7 +796,7 @@ void search_knn_hamming_per_invlist(
 
 BinaryInvertedListScanner* IndexBinaryIVF::get_InvertedListScanner(
         bool store_pairs) const {
-    return with_HammingComputer(
+    return with_HammingComputer<SIMDLevel::NONE>(
             code_size,
             [&]<class HammingComputer>() -> BinaryInvertedListScanner* {
                 return new IVFBinaryScannerL2<HammingComputer>(
@@ -815,7 +815,8 @@ void IndexBinaryIVF::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params) const {
     if (per_invlist_search) {
-        with_HammingComputer(code_size, [&]<class HammingComputer>() {
+        with_HammingComputer<
+                SIMDLevel::NONE>(code_size, [&]<class HammingComputer>() {
             search_knn_hamming_per_invlist<HammingComputer>(
                     this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
         });
@@ -823,15 +824,17 @@ void IndexBinaryIVF::search_preassigned(
         search_knn_hamming_heap(
                 this, n, x, k, cidx, cdis, dis, idx, store_pairs, params);
     } else if (store_pairs) { // !use_heap && store_pairs
-        with_HammingComputer(code_size, [&]<class HammingComputer>() {
-            search_knn_hamming_count<HammingComputer, true>(
-                    this, n, x, cidx, k, dis, idx, params);
-        });
+        with_HammingComputer<SIMDLevel::NONE>(
+                code_size, [&]<class HammingComputer>() {
+                    search_knn_hamming_count<HammingComputer, true>(
+                            this, n, x, cidx, k, dis, idx, params);
+                });
     } else { // !use_heap && !store_pairs
-        with_HammingComputer(code_size, [&]<class HammingComputer>() {
-            search_knn_hamming_count<HammingComputer, false>(
-                    this, n, x, cidx, k, dis, idx, params);
-        });
+        with_HammingComputer<SIMDLevel::NONE>(
+                code_size, [&]<class HammingComputer>() {
+                    search_knn_hamming_count<HammingComputer, false>(
+                            this, n, x, cidx, k, dis, idx, params);
+                });
     }
 }
 

@@ -373,7 +373,7 @@ void IndexPQ::search_core_polysemous(
         maxheap_heapify(k, heap_dis, heap_ids);
 
         if (!generalized_hamming) {
-            n_pass += with_HammingComputer(
+            n_pass += with_HammingComputer<SIMDLevel::NONE>(
                     pq.code_size, [&]<class HammingComputer>() -> size_t {
                         return polysemous_inner_loop<HammingComputer>(
                                 this,
@@ -387,23 +387,25 @@ void IndexPQ::search_core_polysemous(
 
         } else { // generalized hamming
             switch (pq.code_size) {
-#define DISPATCH(cs)                                             \
-    case cs:                                                     \
-        n_pass += polysemous_inner_loop<GenHammingComputer##cs>( \
-                this,                                            \
-                dis_table_qi,                                    \
-                q_code,                                          \
-                k,                                               \
-                heap_dis,                                        \
-                heap_ids,                                        \
-                param_polysemous_ht);                            \
+#define DISPATCH(cs)                                            \
+    case cs:                                                    \
+        n_pass += polysemous_inner_loop<                        \
+                GenHammingComputer##cs##_tpl<SIMDLevel::NONE>>( \
+                this,                                           \
+                dis_table_qi,                                   \
+                q_code,                                         \
+                k,                                              \
+                heap_dis,                                       \
+                heap_ids,                                       \
+                param_polysemous_ht);                           \
         break;
                 DISPATCH(8)
                 DISPATCH(16)
                 DISPATCH(32)
                 default:
                     if (pq.code_size % 8 == 0) {
-                        n_pass += polysemous_inner_loop<GenHammingComputerM8>(
+                        n_pass += polysemous_inner_loop<
+                                GenHammingComputerM8_tpl<SIMDLevel::NONE>>(
                                 this,
                                 dis_table_qi,
                                 q_code,
