@@ -15,18 +15,21 @@
 
 #include <faiss/Index.h>
 #include <faiss/Index2Layer.h>
+#include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexRaBitQFastScan.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ScalarQuantizer.h>
@@ -3582,6 +3585,217 @@ TEST(ReadIndexDeserialize, IndexRQFastScanAQDimensionMismatch) {
     push_val<int>(buf, 0);  // qbs
 
     expect_read_throws_with(buf, "does not match index d");
+}
+
+// ============================================================
+// code_size cross-validation against quantizer-derived values.
+//
+// Several index types read code_size from the serialized stream
+// independently of the quantizer parameters. A corrupt code_size
+// that passes the codes.size() == ntotal * code_size check (e.g.
+// when ntotal == 0) can cause excessive allocations in
+// GenericFlatCodesDistanceComputer during search.
+// ============================================================
+
+// Locate the byte offset of code_size in a serialized index by
+// diffing two serializations: one with the real code_size and one
+// with a probe value. This avoids false matches from other fields
+// that happen to share the same numeric value.
+static ssize_t find_code_size_offset(
+        Index* index,
+        size_t* code_size_ptr,
+        size_t real_cs) {
+    VectorIOWriter w1;
+    write_index(index, &w1);
+
+    size_t probe_cs = real_cs ^ 0xDEAD;
+    *code_size_ptr = probe_cs;
+    VectorIOWriter w2;
+    write_index(index, &w2);
+    *code_size_ptr = real_cs;
+
+    EXPECT_EQ(w1.data.size(), w2.data.size());
+    if (w1.data.size() != w2.data.size()) {
+        return -1;
+    }
+
+    ssize_t offset = -1;
+    for (size_t i = 0; i + sizeof(size_t) <= w1.data.size(); i++) {
+        if (w1.data[i] != w2.data[i]) {
+            size_t v1, v2;
+            memcpy(&v1, w1.data.data() + i, sizeof(size_t));
+            memcpy(&v2, w2.data.data() + i, sizeof(size_t));
+            if (v1 == real_cs && v2 == probe_cs) {
+                offset = i;
+            }
+            i += sizeof(size_t) - 1;
+        }
+    }
+    return offset;
+}
+
+// Serialize a valid index, locate the exact byte offset of its
+// code_size field via double-serialization diffing, corrupt it,
+// and verify deserialization rejects it.
+static void corrupt_code_size_and_expect_throw(
+        Index* index,
+        size_t* code_size_ptr,
+        const std::string& expected_substr) {
+    size_t real_cs = *code_size_ptr;
+    ssize_t offset = find_code_size_offset(index, code_size_ptr, real_cs);
+    ASSERT_GE(offset, 0) << "could not locate code_size field in "
+                         << "serialized data via double-serialization diff";
+
+    VectorIOWriter writer;
+    write_index(index, &writer);
+
+    size_t corrupt_cs = real_cs + 999;
+    memcpy(writer.data.data() + offset, &corrupt_cs, sizeof(size_t));
+
+    VectorIOReader reader;
+    reader.data = writer.data;
+    try {
+        auto idx = std::unique_ptr<Index>(read_index(&reader));
+        FAIL() << "expected FaissException containing '" << expected_substr
+               << "'";
+    } catch (const FaissException& e) {
+        EXPECT_NE(
+                std::string(e.what()).find(expected_substr), std::string::npos)
+                << "expected '" << expected_substr << "' in: " << e.what();
+    }
+}
+
+static std::vector<float> make_random_data(int d, int n, int seed = 42) {
+    std::vector<float> data(d * n);
+    std::mt19937 rng(seed);
+    std::uniform_real_distribution<float> dist;
+    for (auto& v : data) {
+        v = dist(rng);
+    }
+    return data;
+}
+
+TEST(ReadIndexDeserialize, ResidualQuantizerCodeSizeMismatch) {
+    int d = 8, nb = 256;
+    IndexResidualQuantizer idx(d, 2, 4);
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, LocalSearchQuantizerCodeSizeMismatch) {
+    int d = 8, nb = 256;
+    IndexLocalSearchQuantizer idx(d, 2, 4);
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, ProductResidualQuantizerCodeSizeMismatch) {
+    int d = 16, nb = 512;
+    IndexProductResidualQuantizer idx(d, 2, 4, 8);
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, ProductLocalSearchQuantizerCodeSizeMismatch) {
+    int d = 8, nb = 256;
+    IndexProductLocalSearchQuantizer idx(d, 2, 2, 4);
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size, "code_size mismatch");
+}
+
+// IndexLSH code_size is validated against (nbits + 7) / 8. Use a
+// crafted payload with a mismatched code_size to exercise the check.
+TEST(ReadIndexDeserialize, LSHCodeSizeMismatch) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxHe"); // new format IndexLSH
+    push_index_header(buf, 8, 0);
+    push_val<int>(buf, 64);      // nbits
+    push_val<bool>(buf, false);  // rotate_data
+    push_val<bool>(buf, false);  // train_thresholds
+    push_vector<float>(buf, {}); // thresholds
+    push_val<int>(buf, 99);      // code_size = 99 (should be 8)
+    // rrot: RandomRotationMatrix
+    push_fourcc(buf, "rrot");
+    push_val<int>(buf, 8);         // d_in
+    push_val<int>(buf, 64);        // d_out
+    push_val<bool>(buf, false);    // is_trained
+    push_val<bool>(buf, false);    // have_bias
+    push_vector<float>(buf, {});   // A
+    push_vector<float>(buf, {});   // b
+    push_vector<uint8_t>(buf, {}); // codes
+
+    expect_read_throws_with(buf, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, IVFScalarQuantizerCodeSizeMismatch) {
+    // QT_fp16 gives code_size = d * 2 = 16, distinctive enough.
+    int d = 8, nb = 256, nlist = 4;
+    IndexFlatL2 quantizer(d);
+    IndexIVFScalarQuantizer idx(&quantizer, d, nlist, ScalarQuantizer::QT_fp16);
+    idx.own_fields = false;
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    // The corrupted code_size is caught either by our
+    // validate_code_size_match or by the InvertedLists code_size
+    // consistency check — both reject corrupt data.
+    corrupt_code_size_and_expect_throw(&idx, &idx.code_size, "code_size");
+}
+
+TEST(ReadIndexDeserialize, IVFAdditiveQuantizerCodeSizeMismatch) {
+    int d = 16, nb = 512, nlist = 4;
+    IndexFlatL2 quantizer(d);
+    IndexIVFResidualQuantizer idx(&quantizer, d, nlist, 2, 8);
+    idx.own_fields = false;
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    corrupt_code_size_and_expect_throw(&idx, &idx.code_size, "code_size");
+}
+
+TEST(ReadIndexDeserialize, Index2LayerCodeSize2Mismatch) {
+    int d = 8, nb = 256, nlist = 4;
+    auto quantizer = std::make_unique<IndexFlatL2>(d);
+    Index2Layer idx(quantizer.release(), nlist, 4);
+    idx.q1.own_fields = true;
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    idx.add(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size_2, "code_size mismatch");
+}
+
+TEST(ReadIndexDeserialize, Index2LayerCodeSizeSumMismatch) {
+    int d = 8, nb = 256, nlist = 4;
+    auto quantizer = std::make_unique<IndexFlatL2>(d);
+    Index2Layer idx(quantizer.release(), nlist, 4);
+    idx.q1.own_fields = true;
+    auto xb = make_random_data(d, nb);
+    idx.train(nb, xb.data());
+    idx.add(nb, xb.data());
+    corrupt_code_size_and_expect_throw(
+            &idx, &idx.code_size, "code_size mismatch");
+}
+
+// IndexLattice code_size is derived from scale_nbit, lattice_nbit,
+// and nsq. A corrupt scale_nbit (e.g. negative) causes integer
+// overflow in the total_nbit → code_size computation, producing
+// a huge code_size that is rejected at deserialization.
+TEST(ReadIndexDeserialize, IndexLatticeCodeSizeTooLarge) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxLa");
+    push_val<int>(buf, 4);    // d
+    push_val<int>(buf, 2);    // nsq (dsq = 4/2 = 2, power of 2 >= 2)
+    push_val<int>(buf, -100); // scale_nbit (corrupt → overflows code_size)
+    push_val<int>(buf, 1);    // r2
+
+    expect_read_throws_with(buf, "code_size");
 }
 
 // ============================================================
