@@ -2061,6 +2061,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxp = std::make_unique<Index2Layer>();
         read_index_header(*idxp, f);
         idxp->q1.quantizer = read_index(f, io_flags);
+        idxp->q1.own_fields = true;
         READ1(idxp->q1.nlist);
         READ1(idxp->q1.quantizer_trains_alone);
         read_ProductQuantizer(&idxp->pq, f);
