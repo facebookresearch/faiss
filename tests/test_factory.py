@@ -54,7 +54,7 @@ class TestFactory(unittest.TestCase):
 
     def test_factory_4(self):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
-        assert index.instances is not None
+        assert isinstance(index, faiss.IndexIVFFlatDedup)
 
     def test_factory_5(self):
         index = faiss.index_factory(128, "OPQ16,Flat")

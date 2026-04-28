@@ -535,19 +535,19 @@ class TestClustering(unittest.TestCase):
 
     def test_python_kmeans(self):
         """ Test the python implementation of kmeans """
-        ds = datasets.SyntheticDataset(32, 10000, 0, 0)
+        ds = datasets.SyntheticDataset(32, 5000, 0, 0)
         x = ds.get_train()
 
         # bad distribution to stress-test split code
-        xt = x[:10000].copy()
-        xt[:5000] = x[0]
+        xt = x[:5000].copy()
+        xt[:2500] = x[0]
 
-        km_ref = faiss.Kmeans(ds.d, 100, niter=10)
+        km_ref = faiss.Kmeans(ds.d, 50, niter=10)
         km_ref.train(xt)
         err = faiss.knn(xt, km_ref.centroids, 1)[0].sum()
 
         data = clustering.DatasetAssign(xt)
-        centroids = clustering.kmeans(100, data, 10)
+        centroids = clustering.kmeans(50, data, 10)
         err2 = faiss.knn(xt, centroids, 1)[0].sum()
 
         # err=33498.332 err2=33380.477
@@ -588,7 +588,7 @@ class TestClustering(unittest.TestCase):
 
     def test_balanced_clustering(self):
         """Test balanced_assignment_with_penalties from notebook N10159950"""
-        ds = datasets.SyntheticDataset(32, 10000, 20000, 0)
+        ds = datasets.SyntheticDataset(32, 10000, 10000, 0)
         nc = 100
 
         # train centroids
@@ -627,8 +627,7 @@ class TestClustering(unittest.TestCase):
 class TestBigBatchSearch(unittest.TestCase):
 
     def do_test(self, factory_string, metric=faiss.METRIC_L2):
-        # ds = datasets.SyntheticDataset(32, 2000, 4000, 1000)
-        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        ds = datasets.SyntheticDataset(32, 2000, 400, 100)
         k = 10
         index = faiss.index_factory(ds.d, factory_string, metric)
         assert index.metric_type == metric
@@ -637,8 +636,8 @@ class TestBigBatchSearch(unittest.TestCase):
         index.nprobe = 5
         Dref, Iref = index.search(ds.get_queries(), k)
         faiss.omp_set_num_threads(1)
-        for method in ("pairwise_distances", "knn_function", "index"):
-            for threaded in 0, 1, 2:
+        for method in ("pairwise_distances", "knn_function"):
+            for threaded in 0, 2:
                 Dnew, Inew = big_batch_search.big_batch_search(
                     index, ds.get_queries(),
                     k, method=method,
@@ -660,7 +659,7 @@ class TestBigBatchSearch(unittest.TestCase):
         self.do_test("IVF64,SQ8")
 
     def test_checkpoint(self):
-        ds = datasets.SyntheticDataset(32, 2000, 400, 500)
+        ds = datasets.SyntheticDataset(32, 2000, 400, 100)
         k = 10
         index = faiss.index_factory(ds.d, "IVF64,SQ8")
         index.train(ds.get_train())

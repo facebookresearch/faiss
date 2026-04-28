@@ -101,6 +101,14 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
             }
             [[fallthrough]];
 #endif
+
+#ifdef COMPILE_SIMD_RISCV_RVV
+        case SIMDLevel::RISCV_RVV:
+            if constexpr (available_levels & (1 << int(SIMDLevel::RISCV_RVV))) {
+                return action.template operator()<SIMDLevel::RISCV_RVV>();
+            }
+            [[fallthrough]];
+#endif
         default:
             return action.template operator()<SIMDLevel::NONE>();
     }

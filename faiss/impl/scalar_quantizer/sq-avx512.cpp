@@ -495,6 +495,42 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
     float query_to_code(const uint8_t* code) const final {
         return compute_distance(q, code);
     }
+
+    void query_to_codes_batch_4(
+            const uint8_t* code_0,
+            const uint8_t* code_1,
+            const uint8_t* code_2,
+            const uint8_t* code_3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) const final {
+        Similarity sim0(q);
+        Similarity sim1(q);
+        Similarity sim2(q);
+        Similarity sim3(q);
+
+        sim0.begin_16();
+        sim1.begin_16();
+        sim2.begin_16();
+        sim3.begin_16();
+
+        for (size_t i = 0; i < quant.d; i += 16) {
+            simd16float32 xi0 = quant.reconstruct_16_components(code_0, i);
+            simd16float32 xi1 = quant.reconstruct_16_components(code_1, i);
+            simd16float32 xi2 = quant.reconstruct_16_components(code_2, i);
+            simd16float32 xi3 = quant.reconstruct_16_components(code_3, i);
+            sim0.add_16_components(xi0);
+            sim1.add_16_components(xi1);
+            sim2.add_16_components(xi2);
+            sim3.add_16_components(xi3);
+        }
+
+        dis0 = sim0.result_16();
+        dis1 = sim1.result_16();
+        dis2 = sim2.result_16();
+        dis3 = sim3.result_16();
+    }
 };
 
 template <class Similarity>
