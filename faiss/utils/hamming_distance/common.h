@@ -273,7 +273,7 @@ inline void crosshamming_count_thres_impl(
     size_t i, j, posm = 0;
     const uint64_t* bs1 = dbs;
     for (i = 0; i < n; i++) {
-        const uint64_t* bs2 = bs1 + 2;
+        const uint64_t* bs2 = bs1 + nwords;
         for (j = i + 1; j < n; j++) {
             if (hamming<nbits>(bs1, bs2) <= ht) {
                 posm++;
