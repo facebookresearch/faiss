@@ -51,7 +51,12 @@ set(FAISS_SIMD_SVE_SRC
   utils/simd_impl/distances_arm_sve.cpp
 )
 set(FAISS_SIMD_RVV_SRC
+  impl/pq_code_distance/rvv.cpp
   impl/scalar_quantizer/sq-rvv.cpp
+  impl/binary_hamming/rvv.cpp
+  utils/simd_impl/distances_rvv.cpp
+  utils/hamming_distance/hamming_rvv.cpp
+  utils/simd_impl/rabitq_rvv.cpp
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
@@ -370,6 +375,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/hamming_computer-avx512.h
   utils/hamming_distance/hamming_computer-generic.h
   utils/hamming_distance/hamming_computer-neon.h
+  utils/hamming_distance/hamming_computer-rvv.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h

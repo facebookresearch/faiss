@@ -32,9 +32,9 @@ constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
 
-// A0: same + AVX512
-constexpr int AVAILABLE_SIMD_LEVELS_A0 =
-        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::AVX512));
+// A0: same + AVX512 + RISCV_RVV
+constexpr int AVAILABLE_SIMD_LEVELS_A0 = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+        (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
 // A1: same + ARM_SVE (for functions with dedicated SVE implementations)
 constexpr int AVAILABLE_SIMD_LEVELS_A1 =
@@ -147,8 +147,8 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
  *   });
  *
  * The lambda must be a generic lambda with a SIMDLevel template parameter.
- * By default, the lambda uses levels AVX2 + AVX512 + NEON, since these are the
- * most common cases.
+ * By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV, since these
+ * are the most common cases.
  *
  * @param action A generic lambda with signature `template<SIMDLevel> T
  * operator()()`

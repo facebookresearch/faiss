@@ -4,10 +4,10 @@
 
 Single Instruction, Multiple Data (SIMD) is used heavily in Faiss to speed up
 many types of operations. This includes AVX2, AVX512 (various flavors) for
-x86_64 CPUs and NEON, SVE for ARM CPUs. SIMD code that is run on a machine
-that does not support it will crash with SIGILL (illegal instruction signal),
-therefore it is important to select the right implementation for the current
-machine.
+x86_64 CPUs, NEON and SVE for ARM CPUs, and RVV for RISC-V CPUs. SIMD code
+that is run on a machine that does not support it will crash with SIGILL
+(illegal instruction signal), therefore it is important to select the right
+implementation for the current machine.
 
 Faiss is transitioning from a **monolithic SIMD** model to a **dynamic
 dispatch** model. New code should be written with dynamic dispatch in mind.
@@ -211,12 +211,13 @@ FlatCodesDistanceComputer* get_distance_computer() {
 ```
 
 **Dispatch masks:** `with_simd_level` assumes NONE + AVX2 + AVX512 +
-ARM_NEON implementations exist. If your function has another subset of available
-implementations, it can be passed with
+ARM_NEON + RISCV_RVV implementations exist. If your function has another subset
+of available implementations, it can be passed with
 `with_selected_simd_levels<mask>` with a bitmask of available levels. Missing
 levels in the mask cause the dispatch to **fall through** to the next lower
 level in the same architecture family (x86: AVX512_SPR → AVX512 → AVX2 →
-NONE; ARM: ARM_SVE → ARM_NEON → NONE — x86 and ARM chains are independent):
+NONE; ARM: ARM_SVE → ARM_NEON → NONE; RISC-V: RISCV_RVV → NONE —
+architecture chains are independent):
 
 ```cpp
 // Only NONE, AVX2, and ARM_SVE implementations exist.
@@ -237,7 +238,7 @@ your own with `(1 << int(SIMDLevel::X)) | ...`):
 |------|--------|---------|
 | `AVAILABLE_SIMD_LEVELS_NONE` | NONE only | Scalar-only functions |
 | `AVAILABLE_SIMD_LEVELS_AVX2_NEON` | NONE, AVX2, ARM_NEON | 256-bit `simdlib` ops (`with_simd_level_256bit`) |
-| `AVAILABLE_SIMD_LEVELS_A0` | NONE, AVX2, AVX512, ARM_NEON | Default (`with_simd_level`) |
+| `AVAILABLE_SIMD_LEVELS_A0` | NONE, AVX2, AVX512, ARM_NEON, RISCV_RVV | Default (`with_simd_level`) |
 | `AVAILABLE_SIMD_LEVELS_A1` | A0 + ARM_SVE | Functions with dedicated SVE implementations |
 | `AVAILABLE_SIMD_LEVELS_ALL` | All levels | Identity / diagnostic functions |
 
@@ -265,6 +266,10 @@ set(FAISS_SIMD_SVE_SRC
   # ... existing entries ...
   path/to/functions_sve.cpp         # <-- add (if SVE implementation exists)
 )
+set(FAISS_SIMD_RVV_SRC
+  # ... existing entries ...
+  path/to/functions_rvv.cpp         # <-- add (if RVV implementation exists)
+)
 # Also add any new headers to FAISS_HEADERS
 ```
 
@@ -289,6 +294,7 @@ SIMD_FILES = {
     "path/to/functions_avx2.cpp": (X86_64, AVX2),
     "path/to/functions_avx512.cpp": (X86_64, AVX512),
     "path/to/functions_neon.cpp": (AARCH64, ARM_NEON),
+    "path/to/functions_rvv.cpp": (RISCV64, RISCV_RVV),
 }
 # Also add headers to header_files()
 ```
@@ -377,9 +383,9 @@ The `simdlib` wrappers (`simd8float32_tpl`,
 `simd8uint32_tpl`) provide portable 256-bit and 512-bit operations
 across AVX2, AVX512 and NEON (two 128 bit NEON registers are clumped
 together in 256 bits)
-There is **no simdlib for SVE** (`simdlib_sve.h` does not exist).
-Use raw intrinsics when you need SVE
-(variable-length vectors via `svcntw()`).
+There is **no simdlib for SVE or RVV** (`simdlib_sve.h` and `simdlib_rvv.h`
+do not exist). Use raw intrinsics when you need SVE (variable-length vectors
+via `svcntw()`) or RVV (variable-length vectors via `__riscv_vsetvl*`).
 An example of usage is with `-inl.h` files
 
 **The include order matters** —
@@ -423,11 +429,17 @@ void my_kernel(...) {
    factory/constructor boundary. The constructed object carries its
    `SIMDLevel` as a compile-time template parameter.
 
-5. **Private dispatch machinery.** `simd_dispatch.h` is internal — do not
+5. **Variable-width SIMD is not fixed-width simdlib.** SVE and RVV are
+   variable-width architectures. Do not route them through fixed-width helpers
+   such as `with_simd_level_256bit`, `with_simd_level_512bit`, or
+   `simd8float32_tpl` unless an explicit selector maps them to a supported
+   fixed-width fallback.
+
+6. **Private dispatch machinery.** `simd_dispatch.h` is internal — do not
    include in public headers. The public API is `SIMDConfig` and `SIMDLevel`
    in `utils/simd_levels.h`.
 
-6. **Build system parity.** Every change must be reflected in both
+7. **Build system parity.** Every change must be reflected in both
    CMakeLists.txt and Buck's xplat.bzl.
 
 ## Conversion approach
@@ -470,11 +482,16 @@ cd build_dd && ctest --output-on-failure
 # Verify dispatch at different levels (DD mode only)
 FAISS_SIMD_LEVEL=NONE ctest --output-on-failure
 FAISS_SIMD_LEVEL=AVX2 ctest --output-on-failure
+FAISS_SIMD_LEVEL=RISCV_RVV ctest --output-on-failure
 
 # Also build/test static modes for comparison
 cmake -B build_avx2 -DFAISS_OPT_LEVEL=avx2 -DBUILD_TESTING=ON .
 cmake --build build_avx2 -j$(nproc) && cd build_avx2 && ctest --output-on-failure
 ```
+
+For RVV, build on `riscv64` or cross-build with RISC-V flags and run the
+resulting tests under hardware or QEMU with vector support enabled, for example
+`QEMU_CPU=rv64,v=true`.
 
 ### Buck (internal)
 
@@ -503,3 +520,6 @@ buck2 test -c faiss.dynamic_dispatch=true fbcode//faiss/tests:test_your_module
 - Building with CMake's default `FAISS_OPT_LEVEL=generic` and thinking DD is
   enabled — generic mode has no SIMD and no dispatch. Use
   `FAISS_OPT_LEVEL=dd` explicitly.
+- Treating SVE or RVV as fixed-width `simdlib` backends — they are
+  variable-width ISAs and need raw-intrinsic implementations or explicit scalar
+  fallbacks for fixed-width helper paths.
