@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include <faiss/utils/popcount.h>
 #include <faiss/utils/simd_levels.h>
 
 namespace faiss::rabitq {
@@ -71,14 +72,14 @@ inline uint64_t bitwise_and_dot_product<SIMDLevel::NONE>(
         const auto yv = *(const uint64_t*)(data + offset);
         for (int j = 0; j < qb; j++) {
             const auto qv = *(const uint64_t*)(query + j * size + offset);
-            sum += __builtin_popcountll(qv & yv) << j;
+            sum += popcount64(qv & yv) << j;
         }
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
         for (int j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
-            sum += __builtin_popcount(qv & yv) << j;
+            sum += popcount32(qv & yv) << j;
         }
     }
     return sum;
@@ -96,14 +97,14 @@ inline uint64_t bitwise_xor_dot_product<SIMDLevel::NONE>(
         const auto yv = *(const uint64_t*)(data + offset);
         for (int j = 0; j < qb; j++) {
             const auto qv = *(const uint64_t*)(query + j * size + offset);
-            sum += __builtin_popcountll(qv ^ yv) << j;
+            sum += popcount64(qv ^ yv) << j;
         }
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
         for (int j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
-            sum += __builtin_popcount(qv ^ yv) << j;
+            sum += popcount32(qv ^ yv) << j;
         }
     }
     return sum;
@@ -115,11 +116,11 @@ inline uint64_t popcount<SIMDLevel::NONE>(const uint8_t* data, size_t size) {
     size_t offset = 0;
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         const auto yv = *(const uint64_t*)(data + offset);
-        sum += __builtin_popcountll(yv);
+        sum += popcount64(yv);
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        sum += __builtin_popcount(yv);
+        sum += popcount32(yv);
     }
     return sum;
 }

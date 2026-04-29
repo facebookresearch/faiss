@@ -56,7 +56,7 @@ void IndexAdditiveQuantizerFastScan::init(
     } else {
         M = aq_init->M;
     }
-    init_fastscan(aq_init->d, M, 4, metric, bbs_);
+    init_fastscan(static_cast<int>(aq_init->d), M, 4, metric, bbs_);
 
     max_train_points = 1024 * ksub * M;
 }
@@ -215,6 +215,10 @@ void IndexAdditiveQuantizerFastScan::sa_decode(
         const uint8_t* bytes,
         float* x) const {
     aq->decode(bytes, x, n);
+}
+
+size_t IndexAdditiveQuantizerFastScan::fast_scan_code_size() const {
+    return M2 / 2;
 }
 
 /**************************************************************************************

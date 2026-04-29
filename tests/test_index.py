@@ -12,7 +12,7 @@ import unittest
 import faiss
 import re
 
-from common_faiss_tests import get_dataset, get_dataset_2
+from common_faiss_tests import for_all_simd_levels, get_dataset, get_dataset_2
 from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 
@@ -23,6 +23,7 @@ class TestModuleInterface(unittest.TestCase):
         assert re.match('^\\d+\\.\\d+\\.\\d+$', faiss.__version__)
 
 
+@for_all_simd_levels
 class TestIndexFlat(unittest.TestCase):
 
     def do_test(self, nq, metric_type=faiss.METRIC_L2, k=10):
@@ -110,6 +111,7 @@ class TestIndexFlat(unittest.TestCase):
         self.do_test(200, faiss.METRIC_INNER_PRODUCT, k=150)
 
 
+@for_all_simd_levels
 class TestDbParallelSearch(unittest.TestCase):
     """Test the database-parallel search path that activates when
     the number of queries is smaller than the thread count and the
@@ -193,6 +195,7 @@ class TestDbParallelSearch(unittest.TestCase):
             faiss.omp_set_num_threads(saved_nt)
 
 
+@for_all_simd_levels
 class TestIndexFlatL2(unittest.TestCase):
     def test_indexflat_l2_sync_norms_1(self):
         d = 32
@@ -228,6 +231,7 @@ class TestIndexFlatL2(unittest.TestCase):
         np.testing.assert_equal(D3, D1)
 
 
+@for_all_simd_levels
 class TestIndexFlatL2Panorama(unittest.TestCase):
     def test_indexflat_l2_panorama(self):
         d = 32
@@ -274,6 +278,7 @@ class TestIndexFlatL2Panorama(unittest.TestCase):
             )
 
 
+@for_all_simd_levels
 class EvalIVFPQAccuracy(unittest.TestCase):
 
     def test_IndexIVFPQ(self):
@@ -426,6 +431,7 @@ class TestMultiIndexQuantizer(unittest.TestCase):
         self.assertEqual(np.abs(D1[:, :1] - D5[:, :1]).max(), 0)
 
 
+@for_all_simd_levels
 class TestScalarQuantizer(unittest.TestCase):
 
     def test_4variants_ivf(self):

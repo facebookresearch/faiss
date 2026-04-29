@@ -117,6 +117,10 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs_in)
     orig_invlists = orig.invlists;
 }
 
+size_t IndexIVFPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/
@@ -185,6 +189,9 @@ void IndexIVFPQFastScan::encode_vectors(
 /*********************************************************
  * Look-Up Table functions
  *********************************************************/
+
+// Explicit SIMD-level alias (no global bare aliases).
+using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
 
 void fvec_madd_simd(
         size_t n,
@@ -312,7 +319,8 @@ namespace {
 
 struct IVFPQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    static constexpr int impl = 10; // based on search_implem_10
+    [[maybe_unused]] static constexpr int impl =
+            10;                     // based on search_implem_10
     static constexpr size_t nq = 1; // 1 query at a time.
     const IndexIVFPQFastScan& index;
     AlignedTable<uint8_t> dis_tables;

@@ -8,9 +8,11 @@ import numpy as np
 import unittest
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import datasets, evaluation
 
 
+@for_all_simd_levels
 class TestDistanceComputer(unittest.TestCase):
 
     def do_test(self, factory_string, metric_type=faiss.METRIC_L2):
@@ -66,6 +68,7 @@ class TestDistanceComputer(unittest.TestCase):
         self.do_test("RQ3x4_Nqint8", faiss.METRIC_INNER_PRODUCT)
 
 
+@for_all_simd_levels
 class TestIndexRefineSearchParams(unittest.TestCase):
 
     def do_test(self, factory_string):
@@ -129,6 +132,7 @@ class TestIndexRefineSearchParams(unittest.TestCase):
         self.do_test("IVF8,PQ2x4np,Refine(SQ8)")
 
 
+@for_all_simd_levels
 class TestIndexRefineRangeSearch(unittest.TestCase):
 
     def do_test(self, factory_string):

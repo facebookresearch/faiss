@@ -38,15 +38,29 @@ ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
+        case QT_1bit_tqmse:
+            code_size = (d + 7) / 8;
+            bits = 1;
+            break;
+        case QT_2bit_tqmse:
+            code_size = (d * 2 + 7) / 8;
+            bits = 2;
+            break;
+        case QT_3bit_tqmse:
+            code_size = (d * 3 + 7) / 8;
+            bits = 3;
+            break;
         case QT_8bit:
         case QT_8bit_uniform:
         case QT_8bit_direct:
         case QT_8bit_direct_signed:
+        case QT_8bit_tqmse:
             code_size = d;
             bits = 8;
             break;
         case QT_4bit:
         case QT_4bit_uniform:
+        case QT_4bit_tqmse:
             code_size = (d + 1) / 2;
             bits = 4;
             break;
@@ -62,6 +76,10 @@ void ScalarQuantizer::set_derived_sizes() {
             code_size = d * 2;
             bits = 16;
             break;
+        case QT_0bit:
+            code_size = 0;
+            bits = 0;
+            break;
         default:
             break;
     }
@@ -70,6 +88,10 @@ void ScalarQuantizer::set_derived_sizes() {
 void ScalarQuantizer::train(size_t n, const float* x) {
     using scalar_quantizer::train_NonUniform;
     using scalar_quantizer::train_Uniform;
+
+    if (qtype == QT_0bit) {
+        return; // nothing to train for centroid-only mode
+    }
 
     int bit_per_dim = qtype == QT_4bit_uniform ? 4
             : qtype == QT_4bit                 ? 4
@@ -107,6 +129,21 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_8bit_direct_signed:
             // no training necessary
             break;
+        case QT_1bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 1, trained);
+            break;
+        case QT_2bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 2, trained);
+            break;
+        case QT_3bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 3, trained);
+            break;
+        case QT_4bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 4, trained);
+            break;
+        case QT_8bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 8, trained);
+            break;
         default:
             break;
     }
@@ -128,6 +165,9 @@ ScalarQuantizer::SQuantizer* ScalarQuantizer::select_quantizer() const {
 
 void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
         const {
+    if (code_size == 0) {
+        return; // QT_0bit: nothing to encode
+    }
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
     memset(codes, 0, code_size * n);
@@ -138,6 +178,10 @@ void ScalarQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 }
 
 void ScalarQuantizer::decode(const uint8_t* codes, float* x, size_t n) const {
+    if (code_size == 0) {
+        memset(x, 0, sizeof(float) * d * n);
+        return; // QT_0bit: no per-vector data, zero-fill
+    }
     std::unique_ptr<SQuantizer> squant(select_quantizer());
 
 #pragma omp parallel for

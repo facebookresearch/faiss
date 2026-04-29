@@ -18,9 +18,11 @@ import unittest
 
 import faiss
 import numpy as np
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib.datasets import SyntheticDataset
 
 
+@for_all_simd_levels
 class TestIndexIVFFlatPanorama(unittest.TestCase):
     """Test Suite for IndexIVFFlatPanorama."""
 
@@ -446,7 +448,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     # Batch size and edge case tests
 
     def test_batch_boundaries(self):
-        """Test correctness at various batch size boundaries (kBatchSize=256)"""
+        """Test correctness at various batch size boundaries (kDefaultBatchSize=128)"""
         d, nlist, nlevels, nt, nq, k = 128, 64, 8, 10000, 200, 15
         np.random.seed(987)
         xt = np.random.rand(nt, d).astype("float32")

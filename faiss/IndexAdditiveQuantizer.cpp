@@ -52,7 +52,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
               vd(vd_),
               d(iaq.d) {}
 
-    const float* q;
+    const float* q = nullptr;
     void set_query(const float* x) final {
         q = x;
     }
@@ -83,7 +83,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
               aq(*iaq.aq),
               d(iaq.d) {}
 
-    float bias;
+    float bias = 0.0f;
     void set_query(const float* x) final {
         q = x;
         // this is quite sub-optimal for multiple queries
@@ -543,7 +543,7 @@ void ResidualCoarseQuantizer::search(
 
     int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
-        beam_size = ntotal;
+        beam_size = static_cast<int>(ntotal);
     }
     size_t memory_per_point = rq.memory_per_point(beam_size);
 

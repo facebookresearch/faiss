@@ -12,7 +12,6 @@
 
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexRaBitQ.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -77,6 +76,10 @@ struct IndexRaBitQFastScan : IndexFastScan {
             const FastScanDistancePostProcessing& context) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    /// Packed code size: (d + 7) / 8 bytes (1-bit-per-dimension sign bits,
+    /// excluding factors)
+    size_t fast_scan_code_size() const override;
 
     /// Return CodePackerRaBitQ with enlarged block size
     CodePacker* get_CodePacker() const override;
@@ -147,10 +150,7 @@ struct RaBitQHeapHandler
     const size_t storage_size;
     const size_t packed_block_size;
     const size_t full_block_size;
-    std::unique_ptr<CodePacker> packer; // cached for unpack in hot path
-    // Handler-local scratch reused across refinements. This assumes a handler
-    // instance is confined to one search slice and not entered concurrently.
-    std::vector<uint8_t> unpack_buf; // reusable buffer for unpack_1
+    std::vector<uint8_t> unpack_buf; // sign bits scratch buffer
 
     // Use float-based comparator for heap operations
     using Cfloat = typename std::conditional<
@@ -178,8 +178,7 @@ struct RaBitQHeapHandler
               storage_size(index->compute_per_vector_storage_size()),
               packed_block_size(((index->M2 + 1) / 2) * index->bbs),
               full_block_size(index->get_block_stride()),
-              packer(index->get_CodePacker()),
-              unpack_buf(index->code_size) {
+              unpack_buf((index->d + 7) / 8) {
 #pragma omp parallel for if (nq > 100)
         for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
             float* heap_dis = heap_distances + q * k;
@@ -213,17 +212,12 @@ struct RaBitQHeapHandler
         const uint8_t* aux_base = rabitq_index->codes.get() +
                 block_idx * full_block_size + packed_block_size;
 
-        size_t local_1bit_evaluations = 0;
-        size_t local_multibit_evaluations = 0;
-
         for (size_t i = 0; i < max_vectors; i++) {
             const size_t db_idx = base_db_idx + i;
             const float normalized_distance = d32tab[i] * one_a + bias;
             const uint8_t* base_ptr = aux_base + i * storage_size;
 
             if (is_multi_bit) {
-                local_1bit_evaluations++;
-
                 const SignBitFactorsWithError& full_factors =
                         *reinterpret_cast<const SignBitFactorsWithError*>(
                                 base_ptr);
@@ -248,7 +242,6 @@ struct RaBitQHeapHandler
                         is_similarity);
 
                 if (should_refine) {
-                    local_multibit_evaluations++;
                     float dist_full = compute_full_multibit_distance(db_idx, q);
 
                     if (Cfloat::cmp(heap_dis[0], dist_full)) {
@@ -276,11 +269,6 @@ struct RaBitQHeapHandler
                 }
             }
         }
-
-#pragma omp atomic
-        rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-        rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
     }
 
     void begin(const float* norms) override {
@@ -319,9 +307,13 @@ struct RaBitQHeapHandler
         const rabitq_utils::QueryFactorsData& query_factors =
                 context->query_factors[q];
 
-        // Reuse pre-allocated unpack_buf to avoid per-refinement heap
-        // allocation.
-        packer->unpack_1(rabitq_index->codes.get(), db_idx, unpack_buf.data());
+        rabitq_utils::unpack_sign_bits_from_packed(
+                rabitq_index->codes.get(),
+                rabitq_index->bbs,
+                rabitq_index->M2,
+                db_idx,
+                full_block_size,
+                unpack_buf.data());
         const uint8_t* sign_bits = unpack_buf.data();
 
         return rabitq_utils::compute_full_multibit_distance(

@@ -59,6 +59,54 @@ struct TransformedVectors {
 /// make typeids more readable
 std::string demangle_cpp_symbol(const char* name);
 
+/// Capture the current exception into `ex` if no prior exception has been
+/// recorded.  Call from a catch block inside an OpenMP parallel region.
+/// Uses `#pragma omp critical` to serialize access to `ex`.
+///
+/// The optional `cleanup` callable runs inside the critical section
+/// alongside the exception capture, so that side-effects visible to
+/// other threads (e.g. setting an interrupt flag) are serialized with
+/// the exception_ptr write.
+///
+/// Usage:
+///   std::exception_ptr ex;
+///   bool interrupt = false;
+///   #pragma omp parallel
+///   {
+///       try { ... } catch (...) {
+///           omp_capture_exception(ex, [&] { interrupt = true; });
+///       }
+///   }
+///   omp_rethrow_if_exception(ex);
+inline void omp_capture_exception(std::exception_ptr& ex) {
+#pragma omp critical(faiss_omp_exception)
+    {
+        if (!ex) {
+            ex = std::current_exception();
+        }
+    }
+}
+
+/// Overload with cleanup that runs inside the critical section.
+template <typename Cleanup>
+inline void omp_capture_exception(std::exception_ptr& ex, Cleanup&& cleanup) {
+#pragma omp critical(faiss_omp_exception)
+    {
+        cleanup();
+        if (!ex) {
+            ex = std::current_exception();
+        }
+    }
+}
+
+/// Rethrow the captured exception, if any.  Call on the main thread
+/// after the parallel region completes.
+inline void omp_rethrow_if_exception(std::exception_ptr& ex) {
+    if (ex) {
+        std::rethrow_exception(ex);
+    }
+}
+
 } // namespace faiss
 
 #endif

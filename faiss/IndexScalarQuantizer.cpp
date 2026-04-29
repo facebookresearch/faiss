@@ -133,6 +133,10 @@ IndexIVFScalarQuantizer::IndexIVFScalarQuantizer(
         invlists->code_size = code_size;
     }
     is_trained = false;
+    if (qtype == ScalarQuantizer::QT_0bit) {
+        by_residual = false;
+        is_trained = true; // no training needed
+    }
 }
 
 IndexIVFScalarQuantizer::IndexIVFScalarQuantizer() : IndexIVF() {
@@ -156,6 +160,19 @@ void IndexIVFScalarQuantizer::encode_vectors(
         const idx_t* list_nos,
         uint8_t* codes,
         bool include_listnos) const {
+    if (sq.code_size == 0) {
+        // QT_0bit: nothing to encode, but handle coarse codes if needed
+        if (include_listnos) {
+            size_t coarse_size = coarse_code_size();
+            for (idx_t i = 0; i < n; i++) {
+                int64_t list_no = list_nos[i];
+                if (list_no >= 0) {
+                    encode_listno(list_no, codes + i * coarse_size);
+                }
+            }
+        }
+        return;
+    }
     std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
     memset(codes, 0, (code_size + coarse_size) * n);
@@ -186,14 +203,42 @@ void IndexIVFScalarQuantizer::encode_vectors(
 void IndexIVFScalarQuantizer::decode_vectors(
         idx_t n,
         const uint8_t* codes,
-        const idx_t*,
+        const idx_t* list_nos,
         float* x) const {
+    if (sq.code_size == 0 && list_nos) {
+        // QT_0bit: reconstruct centroids if list_nos provided
+        for (idx_t i = 0; i < n; i++) {
+            quantizer->reconstruct(list_nos[i], x + i * d);
+        }
+        return;
+    }
     FAISS_THROW_IF_NOT(is_trained);
-    return sq.decode(codes, x, n);
+    sq.decode(codes, x, n);
+    if (by_residual) {
+        FAISS_THROW_IF_NOT_MSG(
+                list_nos, "decode_vectors with by_residual requires list_nos");
+#pragma omp parallel for if (n > 1000)
+        for (idx_t i = 0; i < n; i++) {
+            std::vector<float> centroid(d);
+            quantizer->reconstruct(list_nos[i], centroid.data());
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+                x[i * d + j] += centroid[j];
+            }
+        }
+    }
 }
 
 void IndexIVFScalarQuantizer::sa_decode(idx_t n, const uint8_t* codes, float* x)
         const {
+    if (sq.code_size == 0) {
+        size_t coarse_size = coarse_code_size();
+        for (idx_t i = 0; i < n; i++) {
+            const uint8_t* code = codes + i * coarse_size;
+            int64_t list_no = decode_listno(code);
+            quantizer->reconstruct(list_no, x + i * d);
+        }
+        return;
+    }
     std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
     size_t coarse_size = coarse_code_size();
 
@@ -224,6 +269,23 @@ void IndexIVFScalarQuantizer::add_core(
         const idx_t* coarse_idx,
         void* inverted_list_context) {
     FAISS_THROW_IF_NOT(is_trained);
+    if (sq.code_size == 0) {
+        // QT_0bit: just add IDs with empty codes
+        uint8_t dummy_code = 0;
+        DirectMapAdd dm_add(direct_map, n, xids);
+        for (idx_t i = 0; i < n; i++) {
+            int64_t list_no = coarse_idx[i];
+            if (list_no >= 0) {
+                int64_t id = xids ? xids[i] : ntotal + i;
+                size_t ofs = invlists->add_entry(list_no, id, &dummy_code);
+                dm_add.add(i, list_no, ofs);
+            } else {
+                dm_add.add(i, -1, 0);
+            }
+        }
+        ntotal += n;
+        return;
+    }
 
     std::unique_ptr<ScalarQuantizer::SQuantizer> squant(sq.select_quantizer());
 
@@ -277,6 +339,11 @@ void IndexIVFScalarQuantizer::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
         float* recons) const {
+    if (sq.code_size == 0) {
+        // QT_0bit: reconstruct from centroid
+        quantizer->reconstruct(list_no, recons);
+        return;
+    }
     const uint8_t* code = invlists->get_single_code(list_no, offset);
 
     if (by_residual) {

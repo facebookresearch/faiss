@@ -49,6 +49,7 @@ enum SVSStorageKind {
     SVS_LeanVec4x4,
     SVS_LeanVec4x8,
     SVS_LeanVec8x8,
+    SVS_count,
 };
 
 inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
@@ -86,7 +87,7 @@ struct IndexSVSVamana : Index {
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
 
-    SVSStorageKind storage_kind;
+    SVSStorageKind storage_kind = SVS_FP32;
 
     IndexSVSVamana();
 

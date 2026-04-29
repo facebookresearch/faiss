@@ -159,6 +159,12 @@ runs:
       if: inputs.gpu == 'ON' && inputs.rocm == 'ON'
       shell: bash
       run: rocm-smi
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1
+      with:
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ inputs.opt_level }}-gpu${{ inputs.gpu }}-cuvs${{ inputs.cuvs }}-rocm${{ inputs.rocm }}-svs${{ inputs.svs }}
+        max-size: 2G
+        update-package-index: true
     - name: Build all targets
       shell: bash
       run: |
@@ -176,6 +182,9 @@ runs:
               -DFAISS_ENABLE_C_API=ON \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache \
               -DBLA_VENDOR=${{ runner.arch == 'X64' && 'Intel10_64_dyn' || '' }} \
               -DCMAKE_CUDA_FLAGS=${{ runner.arch == 'X64' && '"-gencode arch=compute_75,code=sm_75"' || '' }} \
               .

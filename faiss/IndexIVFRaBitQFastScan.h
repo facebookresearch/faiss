@@ -13,7 +13,6 @@
 #include <faiss/IndexIVFFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/fast_scan/rabitq_result_handler.h>
@@ -83,6 +82,10 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             uint8_t* codes,
             bool include_listnos = false) const override;
 
+    /// Packed code size: (d + 7) / 8 bytes (1-bit-per-dimension sign bits,
+    /// excluding factors)
+    size_t fast_scan_code_size() const override;
+
    protected:
     /// Return code_size as stride to skip embedded factor data during packing
     size_t code_packing_stride() const override;
@@ -108,15 +111,29 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
     /// Compute per-vector auxiliary storage size based on nb_bits
     size_t compute_per_vector_storage_size() const;
 
-   private:
-    /// Compute query factors and lookup table for a residual vector
-    /// (similar to IndexRaBitQFastScan::compute_float_LUT)
+    /// Override: compute and quantize LUT per-query to avoid O(n*nprobe*M*16)
+    /// float table allocation.
+    void compute_LUT_uint8(
+            size_t n,
+            const float* x,
+            const CoarseQuantized& cq,
+            AlignedTable<uint8_t>& dis_tables,
+            AlignedTable<uint16_t>& biases,
+            float* normalizers,
+            const FastScanDistancePostProcessing& context) const override;
+
+    /// Compute residual, query factors, and float LUT in two passes over d.
     void compute_residual_LUT(
-            const float* residual,
+            const float* query,
+            idx_t centroid_id,
             QueryFactorsData& query_factors,
             float* lut_out,
-            const float* original_query = nullptr) const;
+            uint8_t qb_param,
+            bool centered_param,
+            std::vector<float>& rotated_q,
+            std::vector<float>& centroid_buf) const;
 
+   private:
     /// Decode FastScan code to RaBitQ residual vector with explicit
     /// dp_multiplier
     void decode_fastscan_to_residual(
@@ -200,14 +217,16 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
           storage_size(idx->compute_per_vector_storage_size()),
           packed_block_size(((idx->M2 + 1) / 2) * idx->bbs),
           full_block_size(idx->get_block_stride()),
-          packer(idx->get_CodePacker()),
-          unpack_buf(idx->code_size) {
+          unpack_buf((idx->d + 7) / 8) {
     current_list_no = 0;
     probe_indices.clear();
     for (int64_t q = 0; q < static_cast<int64_t>(nq); q++) {
         heap_heapify<Cfloat>(k, heap_distances + q * k, heap_labels + q * k);
     }
 }
+
+// Explicit alias — must match SIMDResultHandler::handle() signature.
+using simd16uint16 = simd16uint16_tpl<SINGLE_SIMD_LEVEL_256>;
 
 template <class C, SIMDLevel SL>
 void IVFRaBitQHeapHandler<C, SL>::handle(
@@ -237,23 +256,31 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                 "Query factors not available: FastScanDistancePostProcessing with query_factors required");
     }
 
-    size_t probe_rank = probe_indices[local_q];
-    size_t nprobe = context->nprobe > 0 ? context->nprobe : index->nprobe;
-    size_t storage_idx = q * nprobe + probe_rank;
+    const size_t probe_rank = probe_indices[local_q];
+    const size_t storage_idx = q * cached_nprobe + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx];
 
     const float one_a =
             this->normalizers ? (1.0f / this->normalizers[2 * q]) : 1.0f;
     const float bias = this->normalizers ? this->normalizers[2 * q + 1] : 0.0f;
 
-    uint64_t idx_base = this->j0 + b * 32;
+    const uint64_t idx_base = this->j0 + b * 32;
     if (idx_base >= this->ntotal) {
         return;
     }
-    size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
+    const size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
 
-    size_t local_1bit_evaluations = 0;
-    size_t local_multibit_evaluations = 0;
+    // Hoist aux pointer base out of loop: all 32 elements in this block share
+    // the same block base. Only the per-element offset (j * storage_size)
+    // varies.
+    const uint8_t* aux_base = this->list_codes_ptr +
+            (idx_base / index->bbs) * full_block_size + packed_block_size;
+
+    // Cache index fields used in the inner loop.
+    // Use overridden qb/centered from context if provided, else index defaults.
+    const bool centered = context->qb > 0 ? context->centered : index->centered;
+    const size_t qb = context->qb > 0 ? context->qb : index->qb;
+    const size_t d = index->d;
 
     for (size_t j = 0; j < max_positions; j++) {
         const int64_t result_id = this->adjust_id(b, j);
@@ -267,16 +294,9 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
         this->scan_cnt++;
 
         const float normalized_distance = d32tab[j] * one_a + bias;
-        const uint8_t* base_ptr = rabitq_utils::get_block_aux_ptr(
-                list_codes_ptr,
-                idx_base + j,
-                index->bbs,
-                packed_block_size,
-                full_block_size,
-                storage_size);
+        const uint8_t* base_ptr = aux_base + j * storage_size;
 
         if (is_multibit) {
-            local_1bit_evaluations++;
             const SignBitFactorsWithError& full_factors =
                     *reinterpret_cast<const SignBitFactorsWithError*>(base_ptr);
 
@@ -284,12 +304,10 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                     normalized_distance,
                     full_factors,
                     query_factors,
-                    index->centered,
-                    index->qb,
-                    index->d);
+                    centered,
+                    qb,
+                    d);
 
-            const bool is_similarity =
-                    index->metric_type == MetricType::METRIC_INNER_PRODUCT;
             bool should_refine = rabitq_utils::should_refine_candidate(
                     dist_1bit,
                     full_factors.f_error,
@@ -297,10 +315,9 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                     heap_dis[0],
                     is_similarity);
             if (should_refine) {
-                local_multibit_evaluations++;
-                size_t local_offset = this->j0 + b * 32 + j;
+                size_t local_offset = idx_base + j;
                 float dist_full = compute_full_multibit_distance(
-                        result_id, local_q, q, local_offset);
+                        local_q, q, local_offset, base_ptr);
                 if (Cfloat::cmp(heap_dis[0], dist_full)) {
                     heap_replace_top<Cfloat>(
                             k, heap_dis, heap_ids, dist_full, result_id);
@@ -315,9 +332,9 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
                             normalized_distance,
                             db_factors,
                             query_factors,
-                            index->centered,
-                            index->qb,
-                            index->d);
+                            centered,
+                            qb,
+                            d);
             if (Cfloat::cmp(heap_dis[0], adjusted_distance)) {
                 heap_replace_top<Cfloat>(
                         k, heap_dis, heap_ids, adjusted_distance, result_id);
@@ -325,11 +342,6 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
             }
         }
     }
-
-#pragma omp atomic
-    rabitq_stats.n_1bit_evaluations += local_1bit_evaluations;
-#pragma omp atomic
-    rabitq_stats.n_multibit_evaluations += local_multibit_evaluations;
 }
 
 template <class C, SIMDLevel SL>
@@ -338,7 +350,12 @@ void IVFRaBitQHeapHandler<C, SL>::set_list_context(
         const std::vector<int>& probe_map) {
     current_list_no = list_no;
     probe_indices = probe_map;
-    list_codes_ptr = index->invlists->get_codes(list_no);
+    cached_nprobe =
+            context && context->nprobe > 0 ? context->nprobe : index->nprobe;
+    is_similarity = index->metric_type == MetricType::METRIC_INNER_PRODUCT;
+    if (index->invlists) {
+        this->list_codes_ptr = index->invlists->get_codes(list_no);
+    }
 }
 
 template <class C, SIMDLevel SL>
@@ -356,44 +373,36 @@ void IVFRaBitQHeapHandler<C, SL>::end() {
 
 template <class C, SIMDLevel SL>
 float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
-        size_t /*db_idx*/,
         size_t local_q,
         size_t global_q,
-        size_t local_offset) {
+        size_t local_offset,
+        const uint8_t* aux_ptr) {
     const size_t ex_bits = index->rabitq.nb_bits - 1;
     const size_t dim = index->d;
 
-    const uint8_t* base_ptr = rabitq_utils::get_block_aux_ptr(
-            list_codes_ptr,
-            local_offset,
-            index->bbs,
-            packed_block_size,
-            full_block_size,
-            storage_size);
-
     const size_t ex_code_size = (dim * ex_bits + 7) / 8;
-    const uint8_t* ex_code = base_ptr + sizeof(SignBitFactorsWithError);
+    const uint8_t* ex_code = aux_ptr + sizeof(SignBitFactorsWithError);
     const ExtraBitsFactors& ex_fac = *reinterpret_cast<const ExtraBitsFactors*>(
-            base_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
+            aux_ptr + sizeof(SignBitFactorsWithError) + ex_code_size);
 
-    size_t probe_rank = probe_indices[local_q];
-    size_t nprobe_val = context->nprobe > 0 ? context->nprobe : index->nprobe;
-    size_t storage_idx_val = global_q * nprobe_val + probe_rank;
+    const size_t probe_rank = probe_indices[local_q];
+    const size_t storage_idx_val = global_q * cached_nprobe + probe_rank;
     const auto& query_factors = context->query_factors[storage_idx_val];
 
-    // Use list_codes_ptr (already set by set_list_context) and the
-    // pre-allocated unpack_buf to avoid per-refinement ScopedCodes
-    // re-acquisition and heap allocation.
-    packer->unpack_1(list_codes_ptr, local_offset, unpack_buf.data());
+    rabitq_utils::unpack_sign_bits_from_packed(
+            this->list_codes_ptr,
+            index->bbs,
+            index->M2,
+            local_offset,
+            full_block_size,
+            unpack_buf.data());
 
     return rabitq_utils::compute_full_multibit_distance(
             unpack_buf.data(),
             ex_code,
             ex_fac,
             query_factors.rotated_q.data(),
-            (index->metric_type == MetricType::METRIC_INNER_PRODUCT)
-                    ? query_factors.q_dot_c
-                    : query_factors.qr_to_c_L2sqr,
+            is_similarity ? query_factors.q_dot_c : query_factors.qr_to_c_L2sqr,
             dim,
             ex_bits,
             index->metric_type);

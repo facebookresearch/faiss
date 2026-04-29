@@ -154,9 +154,15 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
         {"SQbf16", ScalarQuantizer::QT_bf16},
         {"SQ8_direct_signed", ScalarQuantizer::QT_8bit_direct_signed},
         {"SQ8_direct", ScalarQuantizer::QT_8bit_direct},
+        {"SQ0", ScalarQuantizer::QT_0bit},
+        {"SQtqmse1", ScalarQuantizer::QT_1bit_tqmse},
+        {"SQtqmse2", ScalarQuantizer::QT_2bit_tqmse},
+        {"SQtqmse3", ScalarQuantizer::QT_3bit_tqmse},
+        {"SQtqmse4", ScalarQuantizer::QT_4bit_tqmse},
+        {"SQtqmse8", ScalarQuantizer::QT_8bit_tqmse},
 };
 const std::string sq_pattern =
-        "(SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct)";
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8)";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -182,7 +188,7 @@ AdditiveQuantizer::Search_type_t aq_parse_search_type(
         return metric == METRIC_L2 ? AdditiveQuantizer::ST_decompress
                                    : AdditiveQuantizer::ST_LUT_nonorm;
     }
-    int pos = stok.rfind('_');
+    size_t pos = stok.rfind('_');
     return aq_search_type[stok.substr(pos)];
 }
 
@@ -341,9 +347,11 @@ IndexIVF* parse_IndexIVF(
     if (match("FlatDedup")) {
         return new IndexIVFFlatDedup(get_q(), d, nlist, mt, own_il);
     }
-    if (match("FlatPanorama([0-9]+)?")) {
+    if (match("FlatPanorama([0-9]+)?(_([0-9]+))?")) {
         int nlevels = mres_to_int(sm[1], 8); // default to 8 levels
-        return new IndexIVFFlatPanorama(get_q(), d, nlist, nlevels, mt, own_il);
+        int bs = mres_to_int(sm[3], 128);
+        return new IndexIVFFlatPanorama(
+                get_q(), d, nlist, nlevels, mt, own_il, bs);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(

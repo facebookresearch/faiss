@@ -165,7 +165,7 @@ double SimulatedAnnealingOptimizer::optimize(int* perm) {
  ****************************************************/
 
 static inline int hamming_dis(uint64_t a, uint64_t b) {
-    return __builtin_popcountl(a ^ b);
+    return popcount64(a ^ b);
 }
 
 namespace {

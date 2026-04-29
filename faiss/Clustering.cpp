@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <limits>
 
 #include <omp.h>
 
@@ -84,7 +85,7 @@ idx_t subsample_training_set(
 
     const uint64_t actual_seed = get_actual_rng_seed(clus.seed);
 
-    std::vector<int> perm;
+    std::vector<idx_t> perm;
     if (clus.use_faster_subsampling) {
         // use subsampling with splitmix64 rng
         SplitMix64RandomGenerator rng(actual_seed);
@@ -92,12 +93,19 @@ idx_t subsample_training_set(
         const idx_t new_nx = clus.k * clus.max_points_per_centroid;
         perm.resize(new_nx);
         for (idx_t i = 0; i < new_nx; i++) {
-            perm[i] = rng.rand_int(nx);
+            perm[i] = rng.rand_int64() % nx;
         }
     } else {
         // use subsampling with a default std rng
-        perm.resize(nx);
-        rand_perm(perm.data(), nx, actual_seed);
+        FAISS_THROW_IF_NOT_FMT(
+                nx <= static_cast<idx_t>(std::numeric_limits<int>::max()),
+                "Dataset too large (%" PRId64
+                ") for standard subsampling; "
+                "set use_faster_subsampling=true",
+                nx);
+        std::vector<int> int_perm(nx);
+        rand_perm(int_perm.data(), nx, actual_seed);
+        perm.assign(int_perm.begin(), int_perm.end());
     }
 
     nx = clus.k * clus.max_points_per_centroid;
@@ -232,12 +240,27 @@ int split_clusters(
     for (size_t ci = 0; ci < k; ci++) {
         if (hassign[ci] == 0) { /* need to redefine a centroid */
             size_t cj;
-            for (cj = 0; true; cj = (cj + 1) % k) {
-                /* probability to pick this cluster for split */
+            // Try probabilistic selection, with a deterministic fallback
+            // to the largest cluster if too many iterations pass.
+            size_t max_tries = 10 * k;
+            size_t n_tries = 0;
+            bool found = false;
+            for (cj = 0; n_tries < max_tries; cj = (cj + 1) % k) {
                 float p = (hassign[cj] - 1.0) / (float)(n - k);
                 float r = rng.rand_float();
                 if (r < p) {
-                    break; /* found our cluster to be split */
+                    found = true;
+                    break;
+                }
+                n_tries++;
+            }
+            if (!found) {
+                // Deterministic fallback: split the largest cluster.
+                cj = 0;
+                for (size_t j = 1; j < k; j++) {
+                    if (hassign[j] > hassign[cj]) {
+                        cj = j;
+                    }
                 }
             }
             memcpy(centroids + ci * d,
@@ -262,7 +285,7 @@ int split_clusters(
         }
     }
 
-    return nsplit;
+    return static_cast<int>(nsplit);
 }
 
 } // namespace
@@ -510,7 +533,7 @@ void Clustering::train_encoded(
 
             // accumulate objective
             obj = 0;
-            for (int j = 0; j < nx; j++) {
+            for (idx_t j = 0; j < nx; j++) {
                 obj += dis[j];
             }
 
@@ -538,7 +561,7 @@ void Clustering::train_encoded(
                     obj,
                     (getmillisecs() - t0) / 1000.0,
                     t_search_tot / 1000,
-                    imbalance_factor(nx, k, assign.get()),
+                    imbalance_factor(nx, static_cast<int>(k), assign.get()),
                     nsplit};
             iteration_stats.push_back(stats);
 
@@ -649,7 +672,7 @@ float kmeans_clustering(
         size_t k,
         const float* x,
         float* centroids) {
-    Clustering clus(d, k);
+    Clustering clus(static_cast<int>(d), static_cast<int>(k));
     clus.verbose = d * n * k > (size_t(1) << 30);
     // display logs if > 1Gflop per iteration
     IndexFlatL2 index(d);
@@ -700,7 +723,7 @@ void ProgressiveDimClustering::train(
         ProgressiveDimIndexFactory& factory) {
     int d_prev = 0;
 
-    PCAMatrix pca(d, d);
+    PCAMatrix pca(static_cast<int>(d), static_cast<int>(d));
 
     std::vector<float> xbuf;
     if (apply_pca) {
@@ -725,7 +748,7 @@ void ProgressiveDimClustering::train(
         }
         std::unique_ptr<Index> clustering_index(factory(di));
 
-        Clustering clus(di, k, *this);
+        Clustering clus(di, static_cast<int>(k), *this);
         if (d_prev > 0) {
             // copy warm-start centroids (padded with 0s)
             clus.centroids.resize(k * di);
