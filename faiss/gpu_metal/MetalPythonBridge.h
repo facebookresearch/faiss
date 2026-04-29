@@ -21,8 +21,7 @@ struct StandardMetalResourcesHolder {
     void* impl = nullptr;
     StandardMetalResourcesHolder();
     ~StandardMetalResourcesHolder();
-    StandardMetalResourcesHolder(
-            const StandardMetalResourcesHolder&) = delete;
+    StandardMetalResourcesHolder(const StandardMetalResourcesHolder&) = delete;
     StandardMetalResourcesHolder& operator=(
             const StandardMetalResourcesHolder&) = delete;
 };
