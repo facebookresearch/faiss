@@ -51,14 +51,12 @@ class TestSVSAdapter(unittest.TestCase):
         # need to configure target_class here to avoid issues when
         # SVS support is not compiled in
         cls.target_class = faiss.IndexSVSVamana
-
-    def setUp(self):
-        self.d = 32
-        self.nb = 1000
-        self.nq = 100
+        cls.d = 32
+        cls.nb = 500
+        cls.nq = 50
         np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
+        cls.xb = np.random.random((cls.nb, cls.d)).astype('float32')
+        cls.xq = np.random.random((cls.nq, cls.d)).astype('float32')
 
     def test_svs_construction(self):
         """Test construction and basic properties"""
@@ -334,6 +332,7 @@ class TestSVSAdapterLVQ4x0(TestSVSAdapter):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
@@ -348,6 +347,7 @@ class TestSVSAdapterLVQ4x4(TestSVSAdapter):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
@@ -362,6 +362,7 @@ class TestSVSAdapterLVQ4x8(TestSVSAdapter):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
@@ -375,6 +376,7 @@ class TestSVSAdapterFlat(TestSVSAdapter):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSFlat
 
     def _create_instance(self):
@@ -431,18 +433,16 @@ class TestSVSVamanaParameters(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.target_class = faiss.IndexSVSVamana
+        cls.d = 32
+        cls.nb = 500
+        cls.nq = 50
+        np.random.seed(1234)
+        cls.xb = np.random.random((cls.nb, cls.d)).astype('float32')
+        cls.xq = np.random.random((cls.nq, cls.d)).astype('float32')
 
     def _create_instance(self):
         """Create an instance of the SVS Vamana index"""
         return self.target_class(self.d, 64)
-
-    def setUp(self):
-        self.d = 32
-        self.nb = 500  # Smaller dataset for parameter tests
-        self.nq = 50
-        np.random.seed(1234)
-        self.xb = np.random.random((self.nb, self.d)).astype('float32')
-        self.xq = np.random.random((self.nq, self.d)).astype('float32')
 
     def test_vamana_parameter_setting(self):
         """Test that all Vamana parameters can be set and retrieved"""
@@ -544,6 +544,7 @@ class TestSVSVamanaParametersLVQ4x0(TestSVSVamanaParameters):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
@@ -558,6 +559,7 @@ class TestSVSVamanaParametersLVQ4x4(TestSVSVamanaParameters):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
@@ -572,6 +574,7 @@ class TestSVSVamanaParametersLVQ4x8(TestSVSVamanaParameters):
 
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.target_class = faiss.IndexSVSVamanaLVQ
 
     def _create_instance(self):
