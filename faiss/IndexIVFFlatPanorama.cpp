@@ -140,6 +140,11 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                         local_stats);
             });
 
+            // num_active is the count of codes for which exact distance
+            // was computed in this batch (post-filter, post-pruning).
+            handler.stats.scan_cnt += num_active;
+
+            // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
                 uint32_t idx = active_indices_[i];
                 size_t global_idx = batch_start + idx;
@@ -148,8 +153,10 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                 if (C::cmp(handler.threshold, dis)) {
                     int64_t id = store_pairs ? lo_build(list_no, global_idx)
                                              : ids[global_idx];
-                    handler.add_result(dis, id);
-                    nup++;
+                    if (handler.add_result(dis, id)) {
+                        handler.stats.nheap_updates++;
+                        nup++;
+                    }
                 }
             }
         }

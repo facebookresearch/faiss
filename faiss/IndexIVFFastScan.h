@@ -292,10 +292,11 @@ struct IndexIVFFastScan : IndexIVF {
             const IVFSearchParameters* params = nullptr) const;
 
     // implem 10 and 12 are not multithreaded internally, so
-    // export search stats
+    // export search stats. k is required for ensure_topk_full support.
     void search_implem_10(
             idx_t n,
             const float* x,
+            idx_t k,
             SIMDResultHandlerToFloat& handler,
             const CoarseQuantized& cq,
             size_t* ndis_out,

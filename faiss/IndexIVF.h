@@ -68,6 +68,25 @@ struct Level1Quantizer {
 struct SearchParametersIVF : SearchParameters {
     size_t nprobe = 1;    ///< number of probes at query time
     size_t max_codes = 0; ///< max nb of codes to visit to do a query
+
+    /// FastScan k-NN only: maximum number of inverted lists to visit.
+    /// 0 means unlimited, i.e. bounded only by nprobe. When set together
+    /// with max_codes, either budget may stop the scan. With
+    /// ensure_topk_full, this limit is treated as at least k lists.
+    size_t max_lists_num = 0;
+
+    /// For k-NN search, make small early-stop budgets less aggressive:
+    /// max_codes is treated as at least k post-IDSelector scans. Supported
+    /// by generic IVF in parallel_mode 0 and 3, and by FastScan k-NN
+    /// implementations 10 and 11.
+    bool ensure_topk_full = false;
+
+    /// Range-search only: stop after this many consecutive probed lists add
+    /// no in-radius results. 0 disables the heuristic. This trades recall
+    /// for less work. Supported in parallel_mode 0; FastScan range search
+    /// uses implementation 10 for this option.
+    size_t max_empty_result_buckets = 0;
+
     SearchParameters* quantizer_params = nullptr;
     /// context object to pass to InvertedLists
     void* inverted_list_context = nullptr;
@@ -514,7 +533,7 @@ struct InvertedListScanner {
      * @param k          heap size
      * @return number of heap updates performed
      */
-    virtual size_t scan_codes(
+    size_t scan_codes(
             size_t n,
             const uint8_t* codes,
             const idx_t* ids,

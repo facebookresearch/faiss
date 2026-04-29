@@ -15,6 +15,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/partitioning.h>
 #include <algorithm>
@@ -28,6 +29,9 @@ template <typename T, typename TI>
 struct ResultHandlerUnordered {
     // if not better than threshold, then not necessary to call add_result
     T threshold{};
+
+    // per-list scan statistics populated by inverted-list scanners
+    InvertedListScannerStats stats;
 
     // return whether threshold was updated
     virtual bool add_result(T dis, TI idx) = 0;

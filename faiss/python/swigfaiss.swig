@@ -93,6 +93,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
@@ -547,6 +548,7 @@ void gpu_sync_all_devices()
 %ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
+%include  <faiss/impl/InvertedListScannerStats.h>
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.

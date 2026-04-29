@@ -799,10 +799,15 @@ struct WrappedSearchResult {
     }
 
     inline void add(idx_t j, float dis) {
+        // Reached only for codes that passed skip_entry — i.e. distance
+        // was actually computed for this code (post-filter).
+        res.stats.scan_cnt++;
         if (C::cmp(res.threshold, dis)) {
             idx_t id = ids ? ids[j] : lo_build(this->list_no, j);
-            res.add_result(dis, id);
-            nup++;
+            if (res.add_result(dis, id)) {
+                res.stats.nheap_updates++;
+                nup++;
+            }
         }
     }
 };

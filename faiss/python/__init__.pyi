@@ -2268,6 +2268,11 @@ def range_search_with_parameters(
 class IVFSearchParameters(SearchParameters):
     nprobe: int
     max_codes: int
+    max_lists_num: int
+    ensure_topk_full: bool
+    max_empty_result_buckets: int
+    quantizer_params: SearchParameters | None
+    inverted_list_context: Any
     sel: IDSelector | None
     def __init__(self) -> None: ...
 

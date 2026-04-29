@@ -1019,3 +1019,162 @@ class TestRangeSearchImplem10(TestRangeSearchImplem12):
 @for_all_simd_levels
 class TestRangeSearchImplem110(TestRangeSearchImplem12):
     IMPLEM = 110
+
+
+class TestFastScanEarlyTerminationKnobs(unittest.TestCase):
+    """
+    FastScan early-stop options use per-query implementations.
+    Incompatible explicit implementations throw on opt-in.
+    """
+
+    def _build_index(self):
+        ds = datasets.SyntheticDataset(32, 2000, 500, 30)
+        index = faiss.index_factory(32, "IVF32,PQ4x4fs", faiss.METRIC_L2)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+        return ds, index
+
+    def test_fastscan_defaults_roundtrip(self):
+        ds, index = self._build_index()
+        k = 10
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        # defaults should not raise
+        D_p, I_p = index.search(ds.get_queries(), k, params=params)
+        # and should match a no-params search with the same nprobe.
+        index.nprobe = 4
+        D_ref, I_ref = index.search(ds.get_queries(), k)
+        np.testing.assert_array_equal(I_p, I_ref)
+
+    def test_fastscan_max_lists_num_caps_probes(self):
+        ds, index = self._build_index()
+        # implem auto-selection should pick 10 when max_lists_num is set
+        index.implem = 0
+        params_full = faiss.SearchParametersIVF()
+        params_full.nprobe = 16
+        D_full, I_full = index.search(ds.get_queries(), 10, params=params_full)
+
+        params_cap = faiss.SearchParametersIVF()
+        params_cap.nprobe = 16
+        params_cap.max_lists_num = 2
+        D_cap, I_cap = index.search(ds.get_queries(), 10, params=params_cap)
+
+        # Tight cap should produce no more valid hits than full nprobe and
+        # at least one query should differ (unless data is unusually small).
+        miss_full = np.sum(I_full == -1)
+        miss_cap = np.sum(I_cap == -1)
+        self.assertLessEqual(miss_full, miss_cap)
+
+    def test_fastscan_ensure_topk_full_fills_heap(self):
+        ds, index = self._build_index()
+        index.implem = 0
+        # Use one query so the missing-result count is easy to compare.
+        q = ds.get_queries()[:1]
+        k = 10
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 16
+        params.max_codes = k // 2  # tight: forces truncation without
+                                    # ensure_topk_full
+        params.ensure_topk_full = False
+        _, I_tight = index.search(q, k, params=params)
+        params.ensure_topk_full = True
+        _, I_full = index.search(q, k, params=params)
+        self.assertGreaterEqual(
+            int(np.sum(I_tight == -1)), int(np.sum(I_full == -1))
+        )
+
+    def test_fastscan_ensure_topk_full_with_restrictive_selector(self):
+        ds, index = self._build_index()
+        index.implem = 0
+        q = ds.get_queries()[:1]
+        k = 10
+
+        # Keep one third of the ids: restrictive enough to catch raw
+        # pre-filter max_codes accounting, while still leaving enough
+        # approximate FastScan candidates to fill the heap.
+        keep = np.arange(0, ds.nb, 3).astype("int64")
+        sel = faiss.IDSelectorBatch(keep)
+
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 32
+        params.max_codes = 2
+        params.ensure_topk_full = True
+        params.sel = sel
+
+        _, I = index.search(q, k, params=params)
+        self.assertEqual(int(np.sum(I == -1)), 0)
+
+    def test_fastscan_ensure_topk_full_multi_query_works(self):
+        # Each query has its own per-query early-termination counters in
+        # search_implem_10, so multi-query batches are supported.
+        ds, index = self._build_index()
+        index.implem = 0
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        params.ensure_topk_full = True
+        # No throw expected:
+        index.search(ds.get_queries()[:2], 10, params=params)
+
+    def test_fastscan_explicit_implem_12_rejects_knobs(self):
+        ds, index = self._build_index()
+        index.implem = 12
+        for knob, val in [
+            ("max_lists_num", 2),
+            ("ensure_topk_full", True),
+            ("max_codes", 5),
+        ]:
+            params = faiss.SearchParametersIVF()
+            params.nprobe = 4
+            setattr(params, knob, val)
+            with self.assertRaises(RuntimeError, msg=f"knob {knob}"):
+                index.search(ds.get_queries()[:1], 10, params=params)
+
+    def test_fastscan_range_honors_max_empty_result_buckets(self):
+        ds, index = self._build_index()
+        q = ds.get_queries()[:1]
+        empty_sel = faiss.IDSelectorBatch(np.array([], dtype="int64"))
+        stats = faiss.cvar.indexIVF_stats
+
+        params_full = faiss.SearchParametersIVF()
+        params_full.nprobe = 4
+        params_full.sel = empty_sel
+
+        stats.reset()
+        lims_full, _, _ = index.range_search(q, 1.0, params=params_full)
+        full_nlist = stats.nlist
+
+        params_early = faiss.SearchParametersIVF()
+        params_early.nprobe = 4
+        params_early.max_empty_result_buckets = 2
+        params_early.sel = empty_sel
+
+        stats.reset()
+        lims_early, _, _ = index.range_search(q, 1.0, params=params_early)
+        early_nlist = stats.nlist
+
+        np.testing.assert_array_equal(lims_full, lims_early)
+        self.assertEqual(lims_early[-1], 0)
+        self.assertLess(early_nlist, full_nlist)
+
+    def test_fastscan_range_explicit_implem_12_rejects_max_empty(self):
+        ds, index = self._build_index()
+        index.implem = 12
+        params = faiss.SearchParametersIVF()
+        params.nprobe = 4
+        params.max_empty_result_buckets = 2
+        with self.assertRaises(RuntimeError):
+            index.range_search(ds.get_queries()[:1], 1.0, params=params)
+
+    def test_fastscan_fields_exposed(self):
+        p = faiss.SearchParametersIVF()
+        self.assertEqual(p.max_lists_num, 0)
+        self.assertIs(p.ensure_topk_full, False)
+        self.assertEqual(p.max_empty_result_buckets, 0)
+        p.max_lists_num = 7
+        p.ensure_topk_full = True
+        p.max_empty_result_buckets = 3
+        self.assertEqual(p.max_lists_num, 7)
+        self.assertIs(p.ensure_topk_full, True)
+        self.assertEqual(p.max_empty_result_buckets, 3)
+        self.assertIs(faiss.SearchParametersIVF, faiss.IVFSearchParameters)

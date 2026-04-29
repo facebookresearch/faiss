@@ -255,10 +255,14 @@ struct RaBitInvertedListScanner : InvertedListScanner {
                     handler.threshold,
                     keep_max);
             if (should_refine) {
+                // Refining computes the full distance — counts as a
+                // post-filter "distance computed" for stats purposes.
+                handler.stats.scan_cnt++;
                 float dis = distance_to_code(codes);
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
                 if (handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
                     nup++;
                 }
             }
