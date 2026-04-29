@@ -25,6 +25,8 @@ enum class SIMDLevel {
     // arm & aarch64
     ARM_NEON,
     ARM_SVE, // Scalable Vector Extension (ARMv8.2+)
+    // riscv
+    RISCV_RVV, // RISC-V Vector Extension (rv64gcv)
 
     COUNT
 };
@@ -58,6 +60,8 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX2;
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_SVE;
 #elif defined(COMPILE_SIMD_ARM_NEON)
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
+#elif defined(COMPILE_SIMD_RISCV_RVV)
+inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::RISCV_RVV;
 #else
 inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
 #endif
@@ -113,6 +117,9 @@ constexpr int simd_width() {
     static_assert(
             SL != SIMDLevel::ARM_SVE,
             "simd_width<ARM_SVE> is not supported: SVE is variable-width");
+    static_assert(
+            SL != SIMDLevel::RISCV_RVV,
+            "simd_width<RISCV_RVV> is not supported: RVV is variable-width");
     if constexpr (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
         return 16;
     else if constexpr (SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON)

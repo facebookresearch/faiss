@@ -74,7 +74,6 @@ typedef uint64_t size_t;
 
 #ifdef SWIGPYTHON
 
-#undef popcount64
 
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -192,6 +191,7 @@ typedef uint64_t size_t;
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/hamming_distance/common.h>
+#include <faiss/utils/popcount.h>
 
 #include <faiss/AutoTune.h>
 #include <faiss/MatrixStats.h>
@@ -343,6 +343,7 @@ namespace std {
 
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
+%include <faiss/utils/popcount.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
 
@@ -606,6 +607,9 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
+// IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
+// built-in destructor for; ignore the field to avoid memory leak warnings.
+%ignore faiss::IndexIVFFlatDedup::instances;
 %include  <faiss/IndexIVFFlat.h>
 %include  <faiss/IndexIVFFlatPanorama.h>
 

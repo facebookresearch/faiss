@@ -38,15 +38,29 @@ ScalarQuantizer::ScalarQuantizer() {}
 
 void ScalarQuantizer::set_derived_sizes() {
     switch (qtype) {
+        case QT_1bit_tqmse:
+            code_size = (d + 7) / 8;
+            bits = 1;
+            break;
+        case QT_2bit_tqmse:
+            code_size = (d * 2 + 7) / 8;
+            bits = 2;
+            break;
+        case QT_3bit_tqmse:
+            code_size = (d * 3 + 7) / 8;
+            bits = 3;
+            break;
         case QT_8bit:
         case QT_8bit_uniform:
         case QT_8bit_direct:
         case QT_8bit_direct_signed:
+        case QT_8bit_tqmse:
             code_size = d;
             bits = 8;
             break;
         case QT_4bit:
         case QT_4bit_uniform:
+        case QT_4bit_tqmse:
             code_size = (d + 1) / 2;
             bits = 4;
             break;
@@ -114,6 +128,21 @@ void ScalarQuantizer::train(size_t n, const float* x) {
         case QT_bf16:
         case QT_8bit_direct_signed:
             // no training necessary
+            break;
+        case QT_1bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 1, trained);
+            break;
+        case QT_2bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 2, trained);
+            break;
+        case QT_3bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 3, trained);
+            break;
+        case QT_4bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 4, trained);
+            break;
+        case QT_8bit_tqmse:
+            scalar_quantizer::train_TurboQuantMSE(d, 8, trained);
             break;
         default:
             break;

@@ -1172,7 +1172,8 @@ struct IVFPQScannerT : QueryTables {
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        with_HammingComputer(pq.code_size, [&]<class HammingComputer>() {
+        with_HammingComputer<
+                SIMDLevel::NONE>(pq.code_size, [&]<class HammingComputer>() {
             this->scan_list_polysemous_hc<HammingComputer, SearchResultType>(
                     ncode, codes, res);
         });

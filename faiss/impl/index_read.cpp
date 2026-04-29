@@ -855,6 +855,18 @@ static void validate_aq_dimension_match(
             idx_d);
 }
 
+static void validate_code_size_match(
+        size_t stored,
+        size_t expected,
+        const char* index_type) {
+    FAISS_THROW_IF_NOT_FMT(
+            stored == expected,
+            "%s code_size mismatch: stored %zd vs derived %zd",
+            index_type,
+            stored,
+            expected);
+}
+
 static void read_ResidualQuantizer(
         ResidualQuantizer& rq,
         IOReader* f,
@@ -978,7 +990,7 @@ void read_ScalarQuantizer(
     READ1(qtype_int);
     FAISS_THROW_IF_NOT_FMT(
             qtype_int >= ScalarQuantizer::QT_8bit &&
-                    qtype_int <= ScalarQuantizer::QT_8bit_direct_signed,
+                    qtype_int < ScalarQuantizer::QT_count,
             "invalid ScalarQuantizer qtype %d",
             qtype_int);
     ivsc->qtype = static_cast<ScalarQuantizer::QuantizerType>(qtype_int);
@@ -1016,6 +1028,21 @@ void read_ScalarQuantizer(
             case ScalarQuantizer::QT_0bit:
             case ScalarQuantizer::QT_count:
                 expected = 0;
+                break;
+            case ScalarQuantizer::QT_1bit_tqmse:
+                expected = 2 + 1; // 2^bits centroids + (2^bits - 1) boundaries
+                break;
+            case ScalarQuantizer::QT_2bit_tqmse:
+                expected = 4 + 3;
+                break;
+            case ScalarQuantizer::QT_3bit_tqmse:
+                expected = 8 + 7;
+                break;
+            case ScalarQuantizer::QT_4bit_tqmse:
+                expected = 16 + 15;
+                break;
+            case ScalarQuantizer::QT_8bit_tqmse:
+                expected = 256 + 255;
                 break;
         }
         if (ivsc->trained.empty() && expected > 0) {
@@ -1478,6 +1505,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READVECTOR(idxl->thresholds);
         int code_size_i;
         READ1(code_size_i);
+        FAISS_THROW_IF_NOT_FMT(
+                code_size_i >= 0,
+                "IndexLSH invalid code_size %d (must be >= 0)",
+                code_size_i);
         idxl->code_size = code_size_i;
         if (h == fourcc("IxHE")) {
             FAISS_THROW_IF_NOT_FMT(
@@ -1488,6 +1519,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             // leak
             idxl->code_size *= 8;
         }
+        validate_code_size_match(
+                idxl->code_size, (idxl->nbits + 7) / 8, "IndexLSH");
         {
             // Read, dereference, discard.
             auto sub_vt = read_VectorTransform_up(f);
@@ -1535,6 +1568,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);
+        validate_code_size_match(
+                idxr->code_size, idxr->rq.code_size, "IndexResidualQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxr->codes.size() == idxr->ntotal * idxr->code_size);
@@ -1546,6 +1581,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxr->lsq, idxr->d, "IndexLocalSearchQuantizer");
         READ1(idxr->code_size);
+        validate_code_size_match(
+                idxr->code_size,
+                idxr->lsq.code_size,
+                "IndexLocalSearchQuantizer");
         read_vector(idxr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxr->codes.size() == idxr->ntotal * idxr->code_size);
@@ -1557,6 +1596,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxpr->prq, idxpr->d, "IndexProductResidualQuantizer");
         READ1(idxpr->code_size);
+        validate_code_size_match(
+                idxpr->code_size,
+                idxpr->prq.code_size,
+                "IndexProductResidualQuantizer");
         read_vector(idxpr->codes, f);
         FAISS_THROW_IF_NOT(
                 idxpr->codes.size() == idxpr->ntotal * idxpr->code_size);
@@ -1568,6 +1611,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         validate_aq_dimension_match(
                 idxpl->plsq, idxpl->d, "IndexProductLocalSearchQuantizer");
         READ1(idxpl->code_size);
+        validate_code_size_match(
+                idxpl->code_size,
+                idxpl->plsq.code_size,
+                "IndexProductLocalSearchQuantizer");
         read_vector(idxpl->codes, f);
         FAISS_THROW_IF_NOT(
                 idxpl->codes.size() == idxpl->ntotal * idxpl->code_size);
@@ -1832,6 +1879,27 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 nsq,
                 dsq);
         auto idxl = std::make_unique<IndexLattice>(d, nsq, scale_nbit, r2);
+        // IndexLattice is a lossy compressor: code_size should be
+        // smaller than the uncompressed vector (d floats). A corrupt
+        // scale_nbit can overflow the total_nbit computation, producing
+        // a code_size that wraps to a huge value.
+        {
+            size_t max_code_size = mul_no_overflow(
+                    static_cast<size_t>(d),
+                    sizeof(float),
+                    "IndexLattice uncompressed vector size");
+            FAISS_THROW_IF_NOT_FMT(
+                    idxl->code_size <= max_code_size,
+                    "IndexLattice code_size %zd exceeds uncompressed "
+                    "vector size %zd (likely corrupt scale_nbit=%d, "
+                    "d=%d, nsq=%d, r2=%d)",
+                    idxl->code_size,
+                    max_code_size,
+                    scale_nbit,
+                    d,
+                    nsq,
+                    r2);
+        }
         read_index_header(*idxl, f);
         READVECTOR(idxl->trained);
         idx = std::move(idxl);
@@ -1841,6 +1909,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivsc.get(), f, &ids);
         read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
+        validate_code_size_match(
+                ivsc->code_size, ivsc->sq.code_size, "IndexIVFScalarQuantizer");
         ArrayInvertedLists* ail = set_array_invlist(ivsc.get(), ids);
         for (size_t i = 0; i < ivsc->nlist; i++)
             READVECTOR(ail->codes[i]);
@@ -1850,6 +1920,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         read_ivf_header(ivsc.get(), f);
         read_ScalarQuantizer(&ivsc->sq, f, *ivsc);
         READ1(ivsc->code_size);
+        validate_code_size_match(
+                ivsc->code_size, ivsc->sq.code_size, "IndexIVFScalarQuantizer");
         if (h == fourcc("IwSQ")) {
             ivsc->by_residual = true;
         } else {
@@ -1888,6 +1960,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         }
         validate_aq_dimension_match(
                 *iva->aq, iva->d, "IndexIVFAdditiveQuantizer");
+        validate_code_size_match(
+                iva->code_size,
+                iva->aq->code_size,
+                "IndexIVFAdditiveQuantizer");
         READ1(iva->by_residual);
         READ1(iva->use_precomputed_table);
         read_InvertedLists(*iva, f, io_flags);
@@ -2046,12 +2122,21 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         auto idxp = std::make_unique<Index2Layer>();
         read_index_header(*idxp, f);
         idxp->q1.quantizer = read_index(f, io_flags);
+        idxp->q1.own_fields = true;
         READ1(idxp->q1.nlist);
         READ1(idxp->q1.quantizer_trains_alone);
         read_ProductQuantizer(&idxp->pq, f);
         READ1(idxp->code_size_1);
         READ1(idxp->code_size_2);
         READ1(idxp->code_size);
+        validate_code_size_match(
+                idxp->code_size_2,
+                idxp->pq.code_size,
+                "Index2Layer code_size_2");
+        validate_code_size_match(
+                idxp->code_size,
+                idxp->code_size_1 + idxp->code_size_2,
+                "Index2Layer");
         read_vector(idxp->codes, f);
         idx = std::move(idxp);
     } else if (
