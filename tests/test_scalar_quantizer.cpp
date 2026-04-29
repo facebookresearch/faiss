@@ -367,6 +367,30 @@ TEST(ScalarQuantizer, RSQuantilesSmallDataset) {
     ASSERT_NO_THROW(sq.train(n, x.data()));
 }
 
+TEST(ScalarQuantizer, MinimalTraining) {
+    std::vector<float> x = {1.0f, 2.0f, 3.0f, 4.0f};
+    using SQ = faiss::ScalarQuantizer;
+    for (auto qt : {
+                 SQ::QT_4bit,
+                 SQ::QT_4bit_uniform,
+                 SQ::QT_6bit,
+                 SQ::QT_8bit,
+                 SQ::QT_8bit_uniform,
+         }) {
+        SCOPED_TRACE(qt);
+        for (size_t d : {1, 2}) {
+            faiss::IndexScalarQuantizer index(d, qt);
+            index.sq.rangestat = SQ::RS_minmax;
+            // n=0 is insufficient.
+            EXPECT_THROW(index.train(0, x.data()), faiss::FaissException);
+            // nullptr throws, not crashes.
+            EXPECT_THROW(index.train(1, nullptr), faiss::FaissException);
+            // 1x1 values is allowed.
+            EXPECT_NO_THROW(index.train(1, x.data()));
+        }
+    }
+}
+
 TEST(TestSQ0bit, CoarseOnlySearch) {
     // Test QT_0bit: centroid-only distance
     int d = 64;
