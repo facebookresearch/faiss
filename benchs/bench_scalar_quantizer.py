@@ -67,7 +67,7 @@ if True:
                 index.sq.rangestat = getattr(faiss.ScalarQuantizer,
                                           rsname)
 
-                index.rangestat_arg = val
+                index.sq.rangestat_arg = val
 
                 index.train(xt)
                 index.add(xb)

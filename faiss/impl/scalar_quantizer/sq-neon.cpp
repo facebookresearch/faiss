@@ -180,6 +180,12 @@ struct QuantizerTemplate<
                                 xi.data.val[1],
                                 this->vdiff)});
     }
+
+    /// Raw codec decode without denormalization (for pre-decode opt)
+    FAISS_ALWAYS_INLINE simd8float32
+    decode_8_raw(const uint8_t* code, int i) const {
+        return Codec::decode_8_components(code, i);
+    }
 };
 
 template <class Codec>
@@ -444,8 +450,23 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
 
     Quantizer quant;
 
+    // Pre-adjusted query buffer for uniform quantizers
+    std::vector<float> q_adj;
+    float scale_factor = 0;
+    float bias = 0;
+
+    static constexpr bool has_decode_raw() {
+        return requires(const Quantizer& q, const uint8_t* c, int i) {
+            { q.decode_8_raw(c, i) };
+        };
+    }
+
     DCTemplate(size_t d, const std::vector<float>& trained)
-            : quant(d, trained) {}
+            : quant(d, trained) {
+        if constexpr (has_decode_raw()) {
+            q_adj.resize(d);
+        }
+    }
 
     float compute_distance(const float* x, const uint8_t* code) const {
         Similarity sim(x);
@@ -471,6 +492,47 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
 
     void set_query(const float* x) final {
         q = x;
+        if constexpr (has_decode_raw()) {
+            if constexpr (Sim::metric_type == METRIC_L2) {
+                float inv_vdiff =
+                        (quant.vdiff != 0) ? 1.0f / quant.vdiff : 0.0f;
+                for (size_t i = 0; i < quant.d; i++) {
+                    q_adj[i] = (x[i] - quant.vmin) * inv_vdiff;
+                }
+                scale_factor = quant.vdiff * quant.vdiff;
+                bias = 0;
+            } else {
+                float sum_q = 0;
+                for (size_t i = 0; i < quant.d; i++) {
+                    q_adj[i] = x[i];
+                    sum_q += x[i];
+                }
+                scale_factor = quant.vdiff;
+                bias = quant.vmin * sum_q;
+            }
+        }
+    }
+
+    float query_to_code_predecoded(const uint8_t* code) const {
+        float32x4_t accu0 = vdupq_n_f32(0);
+        float32x4_t accu1 = vdupq_n_f32(0);
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi = quant.decode_8_raw(code, i);
+            float32x4_t qi0 = vld1q_f32(q_adj.data() + i);
+            float32x4_t qi1 = vld1q_f32(q_adj.data() + i + 4);
+            if constexpr (Sim::metric_type == METRIC_L2) {
+                float32x4_t d0 = vsubq_f32(qi0, xi.data.val[0]);
+                float32x4_t d1 = vsubq_f32(qi1, xi.data.val[1]);
+                accu0 = vfmaq_f32(accu0, d0, d0);
+                accu1 = vfmaq_f32(accu1, d1, d1);
+            } else {
+                accu0 = vfmaq_f32(accu0, qi0, xi.data.val[0]);
+                accu1 = vfmaq_f32(accu1, qi1, xi.data.val[1]);
+            }
+        }
+        float32x4_t sum4 = vaddq_f32(accu0, accu1);
+        float result = vaddvq_f32(sum4);
+        return bias + scale_factor * result;
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
@@ -479,7 +541,11 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::ARM_NEON>
     }
 
     float query_to_code(const uint8_t* code) const final {
-        return compute_distance(q, code);
+        if constexpr (has_decode_raw()) {
+            return query_to_code_predecoded(code);
+        } else {
+            return compute_distance(q, code);
+        }
     }
 
     void query_to_codes_batch_4(
