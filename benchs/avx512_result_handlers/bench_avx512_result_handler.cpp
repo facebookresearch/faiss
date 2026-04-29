@@ -24,7 +24,7 @@ using namespace faiss;
 // Parameters
 constexpr int d = 64;          // dimension
 constexpr size_t nb = 1000000; // database size
-constexpr size_t nt = 10000;   // training size
+constexpr size_t nt = 50000;   // training size (>= 39 * nlist for IVF1024)
 constexpr size_t nq = 100;     // number of queries
 constexpr int nrun = 5;        // number of timing runs
 
@@ -53,8 +53,7 @@ int main() {
 
     // Set nprobe for IVF index
     IndexIVF* index_ivf = dynamic_cast<IndexIVF*>(index.get());
-    if (index_ivf) {
-    }
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "Index is not an IVF index");
     omp_set_num_threads(1);
 
     // Test with varying k values
