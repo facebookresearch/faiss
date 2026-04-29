@@ -20,6 +20,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/simd_impl/partitioning_avx2.cpp
   utils/distances_fused/simdlib_based.cpp
   utils/simd_impl/rabitq_avx2.cpp
+  utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
@@ -31,6 +32,7 @@ set(FAISS_SIMD_AVX512_SRC
   utils/distances_fused/avx512.cpp
   utils/hamming_distance/hamming_avx512.cpp
   utils/simd_impl/rabitq_avx512.cpp
+  utils/simd_impl/super_kmeans_kernels_avx512.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -115,9 +117,11 @@ set(FAISS_SRC
   VectorTransform.cpp
   clone_index.cpp
   index_factory.cpp
+  impl/AdSampling.cpp
   impl/AuxIndexStructures.cpp
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
+  impl/ClusteringHelpers.cpp
   impl/CodePacker.cpp
   impl/CodePackerRaBitQ.cpp
   impl/IDSelector.cpp
@@ -150,6 +154,7 @@ set(FAISS_SRC
   impl/NNDescent.cpp
   impl/Panorama.cpp
   impl/PanoramaStats.cpp
+  impl/PdxLayout.cpp
   invlists/BlockInvertedLists.cpp
   invlists/DirectMap.cpp
   invlists/InvertedLists.cpp
@@ -238,10 +243,12 @@ set(FAISS_HEADERS
   index_factory.h
   factory_tools.h
   index_io.h
+  impl/AdSampling.h
   impl/AdditiveQuantizer.h
   impl/AuxIndexStructures.h
   impl/VisitedTable.h
   impl/ClusteringInitialization.h
+  impl/ClusteringHelpers.h
   impl/CodePacker.h
   impl/CodePackerRaBitQ.h
   impl/IDSelector.h
@@ -260,6 +267,7 @@ set(FAISS_HEADERS
   impl/NSG.h
   impl/Panorama.h
   impl/PanoramaStats.h
+  impl/PdxLayout.h
   impl/PolysemousTraining.h
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
@@ -356,6 +364,8 @@ set(FAISS_HEADERS
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h
   utils/simd_impl/exhaustive_L2sqr_blas_cmax.h
+  utils/simd_impl/super_kmeans_dispatch.h
+  utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
   utils/simd_impl/distances_sse-inl.h
 )

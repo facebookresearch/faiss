@@ -43,6 +43,7 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_super_kmeans_foundations.cpp
 )
 
 # Tests that use POSIX APIs or have platform-specific issues on Windows
