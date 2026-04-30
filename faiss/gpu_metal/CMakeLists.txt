@@ -11,6 +11,7 @@
 set(FAISS_METAL_SRC
   MetalResources.mm
   MetalIndex.mm
+  MetalKernels.mm
   MetalFlatKernels.mm
   MetalIndexFlat.mm
   StandardMetalResources.mm
