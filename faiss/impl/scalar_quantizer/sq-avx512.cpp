@@ -669,7 +669,9 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
 } // namespace scalar_quantizer
 } // namespace faiss
 
+#ifndef SQ_AVX512_SKIP_DISPATCH
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX512
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
+#endif
 
 #endif // COMPILE_SIMD_AVX512
