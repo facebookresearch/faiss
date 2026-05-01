@@ -652,14 +652,28 @@ if(MKL_FOUND)
   target_link_libraries(faiss_avx512_spr PRIVATE ${MKL_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${MKL_LIBRARIES})
 else()
-  find_package(BLAS REQUIRED)
+  # Prefer threaded OpenBLAS (OpenMP or pthreads) over the serial default.
+  # On RHEL/Fedora, the default libopenblas.so is the serial variant;
+  # libopenblaso is OpenMP-threaded and libopenblasp is pthreads-threaded.
+  find_library(BLAS_PREFER_THREADED NAMES openblaso openblasp)
+  if(BLAS_PREFER_THREADED)
+    message(STATUS "Using threaded OpenBLAS: ${BLAS_PREFER_THREADED}")
+    set(BLAS_LIBRARIES "${BLAS_PREFER_THREADED}")
+    # OpenBLAS bundles LAPACK routines, so no separate find_package(LAPACK)
+    # is needed. Calling it would trigger FindBLAS internally, which
+    # unconditionally resets BLAS_LIBRARIES to the serial libopenblas,
+    # causing auditwheel to bundle both serial and threaded variants.
+    set(LAPACK_LIBRARIES "${BLAS_PREFER_THREADED}")
+  else()
+    find_package(BLAS REQUIRED)
+    find_package(LAPACK REQUIRED)
+  endif()
   target_link_libraries(faiss PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_avx512_spr PRIVATE ${BLAS_LIBRARIES})
   target_link_libraries(faiss_sve PRIVATE ${BLAS_LIBRARIES})
 
-  find_package(LAPACK REQUIRED)
   target_link_libraries(faiss PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx2 PRIVATE ${LAPACK_LIBRARIES})
   target_link_libraries(faiss_avx512 PRIVATE ${LAPACK_LIBRARIES})
