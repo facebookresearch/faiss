@@ -421,7 +421,6 @@ void IndexIVF::search_preassigned(
     const idx_t unlimited_list_size = std::numeric_limits<idx_t>::max();
     idx_t cur_max_codes = params ? params->max_codes : this->max_codes;
     const bool ensure_topk_full = params ? params->ensure_topk_full : false;
-    idx_t effective_max_codes = cur_max_codes;
 
     IDSelector* sel = params ? params->sel : nullptr;
     const IDSelectorRange* selr = dynamic_cast<const IDSelectorRange*>(sel);
@@ -466,7 +465,7 @@ void IndexIVF::search_preassigned(
     }
     // Budget used by the probe loop below. ensure_topk_full makes a small
     // max_codes budget large enough to give k post-filter candidates a chance.
-    effective_max_codes =
+    idx_t effective_max_codes =
             ensure_topk_full ? std::max(cur_max_codes, k) : cur_max_codes;
 
     [[maybe_unused]] bool do_parallel = omp_get_max_threads() >= 2 &&
