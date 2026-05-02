@@ -8,7 +8,7 @@ import numpy as np
 import faiss
 import unittest
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import for_all_simd_levels, NoneSIMDLevel
 from faiss.contrib import datasets
 from faiss.contrib.inspect_tools import get_additive_quantizer_codebooks
 
@@ -267,12 +267,7 @@ class TestResidualQuantizer(unittest.TestCase):
         """RQ encode is integer-valued, so codes must be bit-exact across
         SIMD levels. Catches dispatch drift in
         residual_quantizer_encode_steps.cpp:96,369 (with_simd_level_256bit).
-        Static-build CI lanes only have one SIMD level, so the comparison
-        is vacuous and skipped there.
         """
-        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
-            self.skipTest("SIMDLevel.NONE not available in this build")
-
         ds = datasets.SyntheticDataset(32, 1000, 200, 0)
         rq = faiss.ResidualQuantizer(ds.d, 4, 6)
         rq.train_type = faiss.ResidualQuantizer.Train_default
@@ -281,14 +276,8 @@ class TestResidualQuantizer(unittest.TestCase):
 
         xb = ds.get_database()
         codes = rq.compute_codes(xb)
-        # Switch to NONE, compute the reference, and restore so the rest of
-        # this test instance (and tearDown) sees the decorator's level.
-        prev_level = faiss.SIMDConfig.get_level()
-        faiss.SIMDConfig.set_level(faiss.SIMDLevel_NONE)
-        try:
+        with NoneSIMDLevel():
             codes_none = rq.compute_codes(xb)
-        finally:
-            faiss.SIMDConfig.set_level(prev_level)
         np.testing.assert_array_equal(codes, codes_none)
 
     def test_clipping(self):
