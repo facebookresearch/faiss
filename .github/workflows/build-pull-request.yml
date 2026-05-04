@@ -6,7 +6,6 @@ env:
 jobs:
   format:
     name: Format
-    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,7 +32,6 @@ jobs:
             fi
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake)
-    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,7 +43,6 @@ jobs:
           make -C build demo_diversity_result_handler
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +54,6 @@ jobs:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-m7i.large
     steps:
@@ -69,7 +65,6 @@ jobs:
           opt_level: avx512
   linux-x86_64-AVX512_SPR-cmake:
     name: Linux x86_64 AVX512_SPR (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-m7i.large
     steps:
@@ -81,7 +76,6 @@ jobs:
           opt_level: avx512_spr
   linux-x86_64-DD-cmake:
     name: Linux x86_64 Dynamic Dispatch (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-m7i.large
     steps:
@@ -93,7 +87,6 @@ jobs:
           opt_level: dd
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
@@ -105,7 +98,6 @@ jobs:
           gpu: ON
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
@@ -129,7 +121,6 @@ jobs:
           rocm: ON
   linux-x86_64-GPU-w-CUVS-cmake:
     name: Linux x86_64 GPU w/ cuVS (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
@@ -142,7 +133,6 @@ jobs:
           cuvs: ON
   macos-arm64-Metal-cmake:
     name: macOS arm64 Metal (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: macos-15
     steps:
@@ -156,7 +146,6 @@ jobs:
           upload_artifacts: 'false'
   linux-arm64-SVE-cmake:
     name: Linux arm64 SVE (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-r8g.large
     steps:
@@ -171,7 +160,6 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-arm64-DD-cmake:
     name: Linux arm64 Dynamic Dispatch (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: faiss-aws-r8g.large
     steps:
@@ -185,7 +173,6 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: ubuntu-latest
     steps:
@@ -198,7 +185,6 @@ jobs:
         uses: ./.github/actions/build_conda
   windows-x86_64-DD-cmake:
     name: Windows x86_64 Dynamic Dispatch (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: windows-2022
     steps:
@@ -268,6 +254,7 @@ jobs:
           pytest $tests
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
+    needs: linux-x86_64-cmake
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -279,7 +266,6 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-arm64-conda:
     name: Linux arm64 (conda)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: 2-core-ubuntu-arm
     steps:
@@ -292,7 +278,6 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-x86_64-svs:
     name: Linux x86_64 w/ SVS (cmake)
-    if: false
     needs: linux-x86_64-cmake
     runs-on: ubuntu-latest
     steps:
@@ -303,7 +288,6 @@ jobs:
         with:
           svs: ON
   index-io-backward-compatibility:
-    if: false
     needs: linux-x86_64-cmake
     name: Index serialization backward compatibility
     uses: ./.github/workflows/index-io-backward-compatibility.yml
