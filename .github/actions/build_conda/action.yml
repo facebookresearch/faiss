@@ -59,14 +59,21 @@ runs:
       shell: ${{ steps.choose_shell.outputs.shell }}
       run: nvidia-smi
     - name: Conda build (CPU)
-      if: inputs.label == '' && inputs.cuda == ''
+      if: inputs.label == '' && inputs.cuda == '' && runner.os != 'Windows'
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       run: |
         conda list --show-channel-urls
         conda build faiss --python 3.12 -c pytorch
+    - name: Conda build (CPU, Windows)
+      if: inputs.label == '' && inputs.cuda == '' && runner.os == 'Windows'
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      run: |
+        conda list --show-channel-urls
+        conda build faiss --python 3.12 -c pytorch --no-test
     - name: Conda build (CPU) w/ anaconda upload
-      if: inputs.label != '' && inputs.cuda == ''
+      if: inputs.label != '' && inputs.cuda == '' && runner.os != 'Windows'
       shell: ${{ steps.choose_shell.outputs.shell }}
       working-directory: conda
       env:
@@ -74,6 +81,15 @@ runs:
       run: |
         conda list --show-channel-urls
         conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch
+    - name: Conda build (CPU) w/ anaconda upload (Windows)
+      if: inputs.label != '' && inputs.cuda == '' && runner.os == 'Windows'
+      shell: ${{ steps.choose_shell.outputs.shell }}
+      working-directory: conda
+      env:
+        PACKAGE_TYPE: ${{ inputs.label }}
+      run: |
+        conda list --show-channel-urls
+        conda build faiss --python 3.12 --user pytorch --label ${{ inputs.label }} -c pytorch --no-test
     - name: Conda build (GPU)
       if: inputs.label == '' && inputs.cuda != '' && inputs.cuvs == ''
       shell: ${{ steps.choose_shell.outputs.shell }}
