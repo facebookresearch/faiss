@@ -33,7 +33,7 @@ runs:
         miniforge-version: latest # ensures conda-forge channel is used.
         channels: conda-forge
         conda-remove-defaults: 'true'
-        activate-environment: ''
+        activate-environment: 'base'
         # Set to runner.arch=aarch64 if we're on arm64 because
         # there's no miniforge ARM64 package, just aarch64.
         # They are the same thing, just named differently.
