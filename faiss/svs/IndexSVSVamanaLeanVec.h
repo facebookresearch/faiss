@@ -55,8 +55,6 @@ struct IndexSVSVamanaLeanVec : IndexSVSVamana {
             idx_t n_train_q,
             const float* xq_train) override;
 
-    void reset() override;
-
     void serialize_training_data(std::ostream& out) const;
     void deserialize_training_data(std::istream& in);
 

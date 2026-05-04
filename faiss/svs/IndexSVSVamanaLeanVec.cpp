@@ -91,15 +91,6 @@ void IndexSVSVamanaLeanVec::train_with_queries(
     is_trained = true;
 }
 
-void IndexSVSVamanaLeanVec::reset() {
-    if (training_data) {
-        auto status = svs_runtime::LeanVecTrainingData::destroy(training_data);
-        FAISS_ASSERT(status.ok());
-        training_data = nullptr;
-    }
-    IndexSVSVamana::reset();
-}
-
 void IndexSVSVamanaLeanVec::serialize_training_data(std::ostream& out) const {
     FAISS_THROW_IF_NOT_MSG(
             training_data, "Cannot serialize: Training data not initialized.");
