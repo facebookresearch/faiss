@@ -54,7 +54,7 @@ runs:
         conda config --set solver libmamba
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        conda install -y -q "conda<=25.07"
+        conda install -y -q "conda<=25.03"
         echo "$CONDA/bin" >> $GITHUB_PATH
 
         conda install -y -q python=3.12 cmake=3.30.4 make=4.2 swig=4.0 "numpy>=2.0,<3.0" scipy=1.16 pytest=7.4 gflags=2.2 setuptools
@@ -79,7 +79,7 @@ runs:
           conda install -y -q cuda-libraries-dev=12.6 cuda-nvcc=12.6 cuda-nvtx=12.6 cuda-cupti=12.6 cuda-cudart-dev=12.6 gxx_linux-64=12.4 -c "nvidia/label/cuda-12.6"
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
-          conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-toolkit=12.9 sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          conda install -y -q libcuvs=26.02 'cuda-version=12.9' cuda-libraries-dev cuda-nvcc sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
         fi
 
         # install SVS runtime for SVS builds
@@ -92,7 +92,7 @@ runs:
           : # skip torch install via conda, we need to install via pip to get
             #  ROCm-enabled version until it's supported in conda by PyTorch
         elif [ "${{ inputs.gpu }}" = "ON" ]; then
-          conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
+          CONDA_OVERRIDE_CUDA="12.6" conda install -y -q "pytorch>=2.7" "pytorch-gpu>=2.7" -c pytorch -c "nvidia/label/12.9"
         else
           # TestLowLevelIVF.IVFRQ hangs on pytorch>=2.7, so left it as <2.5 for now.
           conda install -y -q "pytorch<2.5" -c pytorch
@@ -168,8 +168,14 @@ runs:
       uses: hendrikmuhs/ccache-action@v1
       with:
         key: ${{ runner.os }}-${{ runner.arch }}-${{ inputs.opt_level }}-gpu${{ inputs.gpu }}-cuvs${{ inputs.cuvs }}-rocm${{ inputs.rocm }}-svs${{ inputs.svs }}
-        max-size: 2G
+        max-size: ${{ inputs.gpu == 'ON' && '4G' || '2G' }}
         update-package-index: true
+    - name: Configure ccache for CUDA/ROCm
+      if: inputs.gpu == 'ON'
+      shell: bash
+      run: |
+        ccache --set-config=sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
+        ccache --set-config=hash_dir=false
     - name: Setup macOS Metal environment
       if: inputs.metal == 'ON'
       shell: bash
@@ -177,6 +183,8 @@ runs:
     - name: Build all targets
       if: inputs.metal != 'ON'
       shell: bash
+      env:
+        CUDAARCHS: "75"
       run: |
         eval "$(conda shell.bash hook)"
         conda activate
@@ -209,6 +217,8 @@ runs:
               -DFAISS_ENABLE_PYTHON=OFF \
               -DBUILD_TESTING=ON \
               -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
               .
         cmake --build build --target faiss_metal TestMetalIndexFlat -j$(sysctl -n hw.logicalcpu)

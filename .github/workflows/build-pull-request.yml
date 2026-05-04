@@ -201,6 +201,11 @@ jobs:
         run: |
           conda install -y -q cmake swig "numpy>=2.0,<3.0" scipy pytest gflags setuptools
           conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ runner.os }}-${{ runner.arch }}-dd-gpuOFF
+          max-size: 2G
       - name: Build
         shell: pwsh
         run: |
@@ -217,6 +222,8 @@ jobs:
             -DFAISS_ENABLE_C_API=OFF `
             -DBLA_VENDOR=Intel10_64_dyn `
             -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache `
             -DPython_ROOT_DIR="$pythonDir" `
             .
           # Add faiss.dll and dependency DLLs to PATH for GoogleTest discovery
