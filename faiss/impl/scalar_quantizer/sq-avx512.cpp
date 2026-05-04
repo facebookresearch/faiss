@@ -417,6 +417,22 @@ struct SimilarityL2<SIMDLevel::AVX512> {
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -450,6 +466,23 @@ struct SimilarityIP<SIMDLevel::AVX512> {
 
     FAISS_ALWAYS_INLINE float result_16() {
         return horizontal_add(accu16);
+    }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
     }
 };
 
@@ -507,39 +540,25 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX512>
     void set_query(const float* x) final {
         q = x;
         if constexpr (has_decode_raw()) {
-            if constexpr (Sim::metric_type == METRIC_L2) {
-                float inv_vdiff =
-                        (quant.vdiff != 0) ? 1.0f / quant.vdiff : 0.0f;
-                for (size_t i = 0; i < quant.d; i++) {
-                    q_adj[i] = (x[i] - quant.vmin) * inv_vdiff;
-                }
-                scale_factor = quant.vdiff * quant.vdiff;
-                bias = 0;
-            } else {
-                float sum_q = 0;
-                for (size_t i = 0; i < quant.d; i++) {
-                    q_adj[i] = x[i];
-                    sum_q += x[i];
-                }
-                scale_factor = quant.vdiff;
-                bias = quant.vmin * sum_q;
-            }
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
         }
     }
 
     float query_to_code_predecoded(const uint8_t* code) const {
-        __m512 accu = _mm512_setzero_ps();
+        Similarity sim(q_adj.data());
+        sim.begin_16();
         for (size_t i = 0; i < quant.d; i += 16) {
-            __m512 xi = quant.decode_16_raw(code, i).f;
-            __m512 qi = _mm512_loadu_ps(q_adj.data() + i);
-            if constexpr (Sim::metric_type == METRIC_L2) {
-                __m512 diff = _mm512_sub_ps(qi, xi);
-                accu = _mm512_fmadd_ps(diff, diff, accu);
-            } else {
-                accu = _mm512_fmadd_ps(qi, xi, accu);
-            }
+            simd16float32 xi = quant.decode_16_raw(code, i);
+            sim.add_16_components(xi);
         }
-        return bias + scale_factor * _mm512_reduce_add_ps(accu);
+        return bias + scale_factor * sim.result_16();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {

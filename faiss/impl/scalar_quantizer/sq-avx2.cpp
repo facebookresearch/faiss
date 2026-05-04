@@ -405,6 +405,22 @@ struct SimilarityL2<SIMDLevel::AVX2> {
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
     }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float inv_vdiff = (vdiff != 0) ? 1.0f / vdiff : 0.0f;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = (x[i] - vmin) * inv_vdiff;
+        }
+        scale_factor = vdiff * vdiff;
+        bias = 0;
+    }
 };
 
 template <>
@@ -447,6 +463,23 @@ struct SimilarityIP<SIMDLevel::AVX2> {
         __m128 v2 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0, 0, 0, 1));
         const __m128 v3 = _mm_add_ps(v1, v2);
         return _mm_cvtss_f32(v3);
+    }
+
+    static void adjust_query_for_raw_decode(
+            const float* x,
+            float* q_adj,
+            size_t d,
+            float vmin,
+            float vdiff,
+            float& scale_factor,
+            float& bias) {
+        float sum_q = 0;
+        for (size_t i = 0; i < d; i++) {
+            q_adj[i] = x[i];
+            sum_q += x[i];
+        }
+        scale_factor = vdiff;
+        bias = vmin * sum_q;
     }
 };
 
@@ -506,66 +539,25 @@ struct DCTemplate<Quantizer, Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     void set_query(const float* x) final {
         q = x;
         if constexpr (has_decode_raw()) {
-            if constexpr (Sim::metric_type == METRIC_L2) {
-                float inv_vdiff =
-                        (quant.vdiff != 0) ? 1.0f / quant.vdiff : 0.0f;
-                for (size_t i = 0; i < quant.d; i++) {
-                    q_adj[i] = (x[i] - quant.vmin) * inv_vdiff;
-                }
-                scale_factor = quant.vdiff * quant.vdiff;
-                bias = 0;
-            } else {
-                float sum_q = 0;
-                for (size_t i = 0; i < quant.d; i++) {
-                    q_adj[i] = x[i];
-                    sum_q += x[i];
-                }
-                scale_factor = quant.vdiff;
-                bias = quant.vmin * sum_q;
-            }
+            Sim::adjust_query_for_raw_decode(
+                    x,
+                    q_adj.data(),
+                    quant.d,
+                    quant.vmin,
+                    quant.vdiff,
+                    scale_factor,
+                    bias);
         }
     }
 
     float query_to_code_predecoded(const uint8_t* code) const {
-        __m256 acc0 = _mm256_setzero_ps();
-        __m256 acc1 = _mm256_setzero_ps();
-        const float* qptr = q_adj.data(); // hoist out of loop
-
-        size_t i = 0;
-        for (; i + 16 <= quant.d; i += 16) {
-            __m256 x0 = quant.decode_8_raw(code, static_cast<int>(i)).f;
-            __m256 x1 = quant.decode_8_raw(code, static_cast<int>(i + 8)).f;
-            __m256 q0 = _mm256_loadu_ps(qptr + i);
-            __m256 q1 = _mm256_loadu_ps(qptr + i + 8);
-            if constexpr (Sim::metric_type == METRIC_L2) {
-                __m256 d0 = _mm256_sub_ps(q0, x0);
-                __m256 d1 = _mm256_sub_ps(q1, x1);
-                acc0 = _mm256_fmadd_ps(d0, d0, acc0);
-                acc1 = _mm256_fmadd_ps(d1, d1, acc1);
-            } else {
-                acc0 = _mm256_fmadd_ps(q0, x0, acc0);
-                acc1 = _mm256_fmadd_ps(q1, x1, acc1);
-            }
+        Similarity sim(q_adj.data());
+        sim.begin_8();
+        for (size_t i = 0; i < quant.d; i += 8) {
+            simd8float32 xi = quant.decode_8_raw(code, static_cast<int>(i));
+            sim.add_8_components(xi);
         }
-        // tail for remaining 8-lane block if d isn't a multiple of 16
-        for (; i < quant.d; i += 8) {
-            __m256 xi = quant.decode_8_raw(code, static_cast<int>(i)).f;
-            __m256 qi = _mm256_loadu_ps(qptr + i);
-            if constexpr (Sim::metric_type == METRIC_L2) {
-                __m256 diff = _mm256_sub_ps(qi, xi);
-                acc0 = _mm256_fmadd_ps(diff, diff, acc0);
-            } else {
-                acc0 = _mm256_fmadd_ps(qi, xi, acc0);
-            }
-        }
-        __m256 accu = _mm256_add_ps(acc0, acc1);
-
-        // horizontal sum
-        __m128 sum = _mm_add_ps(
-                _mm256_castps256_ps128(accu), _mm256_extractf128_ps(accu, 1));
-        sum = _mm_add_ps(sum, _mm_movehl_ps(sum, sum));
-        sum = _mm_add_ss(sum, _mm_shuffle_ps(sum, sum, 1));
-        return bias + scale_factor * _mm_cvtss_f32(sum);
+        return bias + scale_factor * sim.result_8();
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
