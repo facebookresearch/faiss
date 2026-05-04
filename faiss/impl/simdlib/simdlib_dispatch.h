@@ -32,7 +32,11 @@
 
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
-#elif defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
+// MSVC ARM64 is intentionally excluded: MSVC NEON builtins cannot be used as
+// non-type template parameters, and MSVC collapses distinct NEON struct types
+// to the same underlying type causing overload ambiguity. See issue #4993.
+#elif defined(COMPILE_SIMD_ARM_NEON) && \
+        (defined(__aarch64__) || defined(_M_ARM64)) && !defined(_MSC_VER)
 
 #include <faiss/impl/simdlib/simdlib_neon.h>
 
