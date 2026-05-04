@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512
+#pragma once
 
 #include <immintrin.h>
 
@@ -22,9 +22,8 @@ namespace pq_code_distance {
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
-float pq_code_distance_single_impl<SIMDLevel::AVX512>(
+float pq_code_distance_8bit_single_impl<SIMDLevel::AVX512>(
         size_t M,
-        size_t nbits,
         const float* sim_table,
         const uint8_t* code0) {
     float result0 = 0;
@@ -69,7 +68,7 @@ float pq_code_distance_single_impl<SIMDLevel::AVX512>(
 
     // Process leftovers.
     if (m < M) {
-        PQDecoder8 decoder0(code0 + m, nbits);
+        PQDecoder8 decoder0(code0 + m, 8);
         for (; m < M; m++) {
             result0 += tab[decoder0.decode()];
             tab += ksub;
@@ -79,12 +78,11 @@ float pq_code_distance_single_impl<SIMDLevel::AVX512>(
     return result0;
 }
 
-// Combines 4 operations of pq_code_distance_single_impl().
+// Combines 4 operations of pq_code_distance_8bit_single_impl().
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
-void pq_code_distance_four_impl<SIMDLevel::AVX512>(
+void pq_code_distance_8bit_four_impl<SIMDLevel::AVX512>(
         size_t M,
-        size_t nbits,
         const float* sim_table,
         const uint8_t* __restrict code0,
         const uint8_t* __restrict code1,
@@ -145,10 +143,10 @@ void pq_code_distance_four_impl<SIMDLevel::AVX512>(
 
     // Process leftovers.
     if (m < M) {
-        PQDecoder8 decoder0(code0 + m, nbits);
-        PQDecoder8 decoder1(code1 + m, nbits);
-        PQDecoder8 decoder2(code2 + m, nbits);
-        PQDecoder8 decoder3(code3 + m, nbits);
+        PQDecoder8 decoder0(code0 + m, 8);
+        PQDecoder8 decoder1(code1 + m, 8);
+        PQDecoder8 decoder2(code2 + m, 8);
+        PQDecoder8 decoder3(code3 + m, 8);
         for (; m < M; m++) {
             result0 += tab[decoder0.decode()];
             result1 += tab[decoder1.decode()];
@@ -161,5 +159,3 @@ void pq_code_distance_four_impl<SIMDLevel::AVX512>(
 
 } // namespace pq_code_distance
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512
