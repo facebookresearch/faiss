@@ -135,7 +135,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/ResultHandler.h" line="596" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="596" bodyend="601"/>
+        <location file="faiss/impl/ResultHandler.h" line="596" column="10" bodyfile="faiss/impl/ResultHandler.h" bodystart="596" bodyend="602"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -221,7 +221,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="faiss/impl/ResultHandler.h" line="584" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="584" bodyend="602"/>
+    <location file="faiss/impl/ResultHandler.h" line="584" column="1" bodyfile="faiss/impl/ResultHandler.h" bodystart="584" bodyend="603"/>
     <listofallmembers>
       <member refid="structfaiss_1_1RangeResultHandler_1a0a30d7847cfeeb4ccbbd0a83de578f89" prot="public" virt="virtual"><scope>faiss::RangeResultHandler</scope><name>add_result</name></member>
       <member refid="structfaiss_1_1RangeResultHandler_1a48ebbc12e00ce7f4f0bacf3b7e991af1" prot="public" virt="non-virtual"><scope>faiss::RangeResultHandler</scope><name>qr</name></member>
