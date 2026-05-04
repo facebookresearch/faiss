@@ -7,7 +7,8 @@
     <includes local="no">utility</includes>
     <includes refid="simdlib__dispatch_8h" local="no">faiss/impl/simdlib/simdlib_dispatch.h</includes>
     <includes refid="Heap_8h" local="no">faiss/utils/Heap.h</includes>
-    <includedby refid="hamming__impl_8h" local="no">faiss/utils/hamming_distance/hamming_impl.h</includedby>
+    <includedby refid="hamming__distance_2hamming__impl_8h" local="no">faiss/utils/hamming_distance/hamming_impl.h</includedby>
+    <includedby refid="simd__impl_2hamming__impl_8h" local="no">faiss/utils/simd_impl/hamming_impl.h</includedby>
     <incdepgraph>
       <node id="10">
         <label>faiss/impl/platform_macros.h</label>
@@ -141,10 +142,16 @@
         <link refid="approx__topk__hamming_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>faiss/utils/hamming_distance/hamming_impl.h</label>
-        <link refid="hamming__impl_8h_source"/>
+        <link refid="hamming__distance_2hamming__impl_8h_source"/>
+      </node>
+      <node id="3">
+        <label>faiss/utils/simd_impl/hamming_impl.h</label>
+        <link refid="simd__impl_2hamming__impl_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="structfaiss_1_1HeapWithBucketsForHamming32" prot="public">faiss::HeapWithBucketsForHamming32</innerclass>

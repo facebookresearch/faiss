@@ -290,6 +290,8 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1af4602275509ac492f5e37de3ede50b2a">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1aa0a064413a7205841ad31070dc839901">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7">scan_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0">scan_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a3b87583e9686b4251b4b29ca682f7178">scan_codes</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>n</declname>

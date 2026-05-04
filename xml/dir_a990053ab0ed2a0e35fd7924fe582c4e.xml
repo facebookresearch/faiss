@@ -8,7 +8,7 @@
     <innerfile refid="hamming__computer-generic_8h">hamming_computer-generic.h</innerfile>
     <innerfile refid="hamming__computer-neon_8h">hamming_computer-neon.h</innerfile>
     <innerfile refid="hamming__computer_8h">hamming_computer.h</innerfile>
-    <innerfile refid="hamming__impl_8h">hamming_impl.h</innerfile>
+    <innerfile refid="hamming__distance_2hamming__impl_8h">hamming_impl.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

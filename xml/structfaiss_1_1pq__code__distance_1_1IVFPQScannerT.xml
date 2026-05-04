@@ -1,0 +1,893 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pq_code_distance::IVFPQScannerT</compoundname>
+    <basecompoundref refid="structfaiss_1_1pq__code__distance_1_1QueryTables" prot="public" virt="non-virtual">faiss::pq_code_distance::QueryTables</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename IDType</type>
+      </param>
+      <param>
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <declname>METRIC_TYPE</declname>
+        <defname>METRIC_TYPE</defname>
+      </param>
+      <param>
+        <type>class PQCodeDist</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a95aecd9fda64993237bb065ee5af679f" prot="public" static="no">
+        <type>typename PQCodeDist::PQDecoder</type>
+        <definition>using faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::PQDecoder =  typename PQCodeDist::PQDecoder</definition>
+        <argsstring></argsstring>
+        <name>PQDecoder</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::PQDecoder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="68" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::list_codes</definition>
+        <argsstring></argsstring>
+        <name>list_codes</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::list_codes</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="69" column="19" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" prot="public" static="no" mutable="no">
+        <type>const IDType *</type>
+        <definition>const IDType* faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::list_ids</definition>
+        <argsstring></argsstring>
+        <name>list_ids</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::list_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="70" column="18" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::list_size</definition>
+        <argsstring></argsstring>
+        <name>list_size</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::list_size</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="71" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref> &amp;</type>
+        <definition>const IndexIVFPQ&amp; faiss::pq_code_distance::QueryTables::ivfpq</definition>
+        <argsstring></argsstring>
+        <name>ivfpq</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::ivfpq</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="36" column="22" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
+        <definition>const IVFSearchParameters* faiss::pq_code_distance::QueryTables::params</definition>
+        <argsstring></argsstring>
+        <name>params</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::params</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="37" column="31" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pq_code_distance::QueryTables::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="40" column="9" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1155e08d03476c7b18c0d640cc0866c4" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+        <definition>const ProductQuantizer&amp; faiss::pq_code_distance::QueryTables::pq</definition>
+        <argsstring></argsstring>
+        <name>pq</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::pq</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="41" column="28" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1aacbacec664dc8e1aa2bcc8f70c35aeed" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::pq_code_distance::QueryTables::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::metric_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="42" column="16" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::pq_code_distance::QueryTables::by_residual</definition>
+        <argsstring></argsstring>
+        <name>by_residual</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::by_residual</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="43" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1aa5e9a0b2933fb73acf9c224c147b16e9" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pq_code_distance::QueryTables::use_precomputed_table</definition>
+        <argsstring></argsstring>
+        <name>use_precomputed_table</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::use_precomputed_table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="44" column="9" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9ed5bb0f76f70b7501e774c796bcba0e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::pq_code_distance::QueryTables::polysemous_ht</definition>
+        <argsstring></argsstring>
+        <name>polysemous_ht</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::polysemous_ht</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="45" column="9" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1abe9ce88e206b1f2f8fa1a485d9aa6d7d" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::pq_code_distance::QueryTables::sim_table</definition>
+        <argsstring></argsstring>
+        <name>sim_table</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::sim_table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="48" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a399b340bfb830df74a6e766aa1c1f2e4" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float * faiss::pq_code_distance::QueryTables::sim_table_2</definition>
+        <argsstring></argsstring>
+        <name>sim_table_2</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::sim_table_2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="48" column="21" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a7b5c7921221254da40b8b5b4875ba9f6" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float* faiss::pq_code_distance::QueryTables::residual_vec</definition>
+        <argsstring></argsstring>
+        <name>residual_vec</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::residual_vec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="49" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac63e8d8e0fa6912a7dd0202fbef2311f" prot="public" static="no" mutable="no">
+        <type>float *</type>
+        <definition>float * faiss::pq_code_distance::QueryTables::decoded_vec</definition>
+        <argsstring></argsstring>
+        <name>decoded_vec</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::decoded_vec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="49" column="24" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6bbb9b2c35dc9752921134db302867f8" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::pq_code_distance::QueryTables::mem</definition>
+        <argsstring></argsstring>
+        <name>mem</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::mem</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="52" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a02af1b98160efa7048504cc0b4e2451c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; const float * &gt;</type>
+        <definition>std::vector&lt;const float*&gt; faiss::pq_code_distance::QueryTables::sim_table_ptrs</definition>
+        <argsstring></argsstring>
+        <name>sim_table_ptrs</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::sim_table_ptrs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="55" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9337e434a659f11573a00b3ff9744f7b" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::pq_code_distance::QueryTables::qi</definition>
+        <argsstring></argsstring>
+        <name>qi</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::qi</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="66" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1fffc40a6522aaf7dac7a13b429e0e37" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::pq_code_distance::QueryTables::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::key</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="80" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::coarse_dis</definition>
+        <argsstring></argsstring>
+        <name>coarse_dis</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::coarse_dis</qualifiedname>
+        <initializer>= 0.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="81" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a5ccbbe6e79073c3e2a048b7e496504c0" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::pq_code_distance::QueryTables::q_code</definition>
+        <argsstring></argsstring>
+        <name>q_code</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::q_code</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="82" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t faiss::pq_code_distance::QueryTables::init_list_cycles</definition>
+        <argsstring></argsstring>
+        <name>init_list_cycles</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::init_list_cycles</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="84" column="14" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::dis0</definition>
+        <argsstring></argsstring>
+        <name>dis0</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::dis0</qualifiedname>
+        <initializer>= 0.0f</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="93" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a2d120f24c307a815fe7263fea003c984" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::IVFPQScannerT</definition>
+        <argsstring>(const IndexIVFPQ &amp;ivfpq_in, const IVFSearchParameters *params_in)</argsstring>
+        <name>IVFPQScannerT</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::IVFPQScannerT</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexIVFPQ" kindref="compound">IndexIVFPQ</ref> &amp;</type>
+          <declname>ivfpq_in</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SearchParametersIVF" kindref="compound">IVFSearchParameters</ref> *</type>
+          <declname>params_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="73" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="73" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class SearchResultType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::scan_list_with_table</definition>
+        <argsstring>(size_t ncode, const uint8_t *codes, SearchResultType &amp;res) const</argsstring>
+        <name>scan_list_with_table</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::scan_list_with_table</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ncode</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>SearchResultType &amp;</type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+<para>version of the scan where we use precomputed tables. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="110" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="110" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class SearchResultType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::scan_list_with_pointer</definition>
+        <argsstring>(size_t ncode, const uint8_t *codes, SearchResultType &amp;res) const</argsstring>
+        <name>scan_list_with_pointer</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::scan_list_with_pointer</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ncode</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>SearchResultType &amp;</type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>tables are not precomputed, but pointers are provided to the relevant X_c|x_r tables </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="186" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="186" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class SearchResultType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::scan_on_the_fly_dist</definition>
+        <argsstring>(size_t ncode, const uint8_t *codes, SearchResultType &amp;res) const</argsstring>
+        <name>scan_on_the_fly_dist</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::scan_on_the_fly_dist</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ncode</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>SearchResultType &amp;</type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+<para>nothing is precomputed: access residuals on-the-fly </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="209" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="209" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class HammingComputer</type>
+          </param>
+          <param>
+            <type>class SearchResultType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::scan_list_polysemous_hc</definition>
+        <argsstring>(size_t ncode, const uint8_t *codes, SearchResultType &amp;res) const</argsstring>
+        <name>scan_list_polysemous_hc</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::scan_list_polysemous_hc</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ncode</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>SearchResultType &amp;</type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="290" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="290" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class SearchResultType</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;::scan_list_polysemous</definition>
+        <argsstring>(size_t ncode, const uint8_t *codes, SearchResultType &amp;res) const</argsstring>
+        <name>scan_list_polysemous</name>
+        <qualifiedname>faiss::pq_code_distance::IVFPQScannerT::scan_list_polysemous</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>ncode</declname>
+        </param>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>codes</declname>
+        </param>
+        <param>
+          <type>SearchResultType &amp;</type>
+          <declname>res</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="409" column="10" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="409" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::QueryTables::init_query</definition>
+        <argsstring>(const float *qi_in)</argsstring>
+        <name>init_query</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::init_query</qualifiedname>
+        <param>
+          <type>const float *</type>
+          <declname>qi_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="69" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0df88c6063c40313971f9c13fa91ed23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::QueryTables::init_query_IP</definition>
+        <argsstring>()</argsstring>
+        <name>init_query_IP</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::init_query_IP</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="71" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a41357b4202fb7fc16be59cdf85e66b32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::QueryTables::init_query_L2</definition>
+        <argsstring>()</argsstring>
+        <name>init_query_L2</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::init_query_L2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="73" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8b19b158c238265b75b873e358a834da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::precompute_list_tables</definition>
+        <argsstring>()</argsstring>
+        <name>precompute_list_tables</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::precompute_list_tables</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>once we know the query and the centroid, we can prepare the sim_table that will be used for accumulation and dis0, the initial value </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="89" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac497594c561879196c459058fb3ce77f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::precompute_list_table_pointers</definition>
+        <argsstring>()</argsstring>
+        <name>precompute_list_table_pointers</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::precompute_list_table_pointers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="91" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::QueryTables::init_list</definition>
+        <argsstring>(idx_t list_no, float coarse_dis_in, int mode)</argsstring>
+        <name>init_list</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::init_list</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>list_no</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>coarse_dis_in</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="95" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1ad73934441528f9d9c52bb6c2f7ac7fa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::precompute_list_tables_IP</definition>
+        <argsstring>()</argsstring>
+        <name>precompute_list_tables_IP</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::precompute_list_tables_IP</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="97" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1a56faeed588cd21316cf540ec6398e8dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::precompute_list_tables_L2</definition>
+        <argsstring>()</argsstring>
+        <name>precompute_list_tables_L2</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::precompute_list_tables_L2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="99" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1QueryTables_1ab6f131ed06c21e350fd8127a90e022bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::QueryTables::precompute_list_table_pointers_L2</definition>
+        <argsstring>()</argsstring>
+        <name>precompute_list_table_pointers_L2</name>
+        <qualifiedname>faiss::pq_code_distance::QueryTables::precompute_list_table_pointers_L2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQ_QueryTables.h" line="101" column="11"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::pq_code_distance::QueryTables</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1QueryTables"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="15">
+        <label>faiss::AlignedTable&lt; float &gt;</label>
+        <link refid="structfaiss_1_1AlignedTable"/>
+        <childnode refid="16" relation="usage">
+          <edgelabel>tab</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>faiss::AlignedTableTightAlloc&lt; float, 32 &gt;</label>
+        <link refid="structfaiss_1_1AlignedTableTightAlloc"/>
+      </node>
+      <node id="8">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="10">
+        <label>faiss::DirectMap</label>
+        <link refid="structfaiss_1_1DirectMap"/>
+      </node>
+      <node id="19">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="5">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="4">
+        <label>faiss::IndexIVF</label>
+        <link refid="structfaiss_1_1IndexIVF"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>invlists</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>direct_map</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>faiss::IndexIVFInterface</label>
+        <link refid="structfaiss_1_1IndexIVFInterface"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>faiss::IndexIVFPQ</label>
+        <link refid="structfaiss_1_1IndexIVFPQ"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>polysemous_training</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>precomputed_table</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss::InvertedLists</label>
+        <link refid="structfaiss_1_1InvertedLists"/>
+      </node>
+      <node id="7">
+        <label>faiss::Level1Quantizer</label>
+        <link refid="structfaiss_1_1Level1Quantizer"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>clustering_index</edgelabel>
+          <edgelabel>quantizer</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss::PolysemousTraining</label>
+        <link refid="structfaiss_1_1PolysemousTraining"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="18">
+        <label>faiss::SearchParameters</label>
+        <link refid="structfaiss_1_1SearchParameters"/>
+        <childnode refid="19" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>faiss::SearchParametersIVF</label>
+        <link refid="structfaiss_1_1SearchParametersIVF"/>
+        <childnode refid="18" relation="public-inheritance">
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>quantizer_params</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>faiss::SimulatedAnnealingParameters</label>
+        <link refid="structfaiss_1_1SimulatedAnnealingParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::pq_code_distance::IVFPQScannerT&lt; IDType, METRIC_TYPE, PQCodeDist &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::pq_code_distance::QueryTables</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1QueryTables"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ivfpq</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>params</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="67" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="67" bodyend="420"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>by_residual</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>coarse_dis</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>d</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac63e8d8e0fa6912a7dd0202fbef2311f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>decoded_vec</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>dis0</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>init_list</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>init_list_cycles</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>init_query</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0df88c6063c40313971f9c13fa91ed23" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>init_query_IP</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a41357b4202fb7fc16be59cdf85e66b32" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>init_query_L2</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>ivfpq</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a2d120f24c307a815fe7263fea003c984" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>IVFPQScannerT</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1fffc40a6522aaf7dac7a13b429e0e37" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>key</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>list_codes</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>list_ids</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>list_size</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6bbb9b2c35dc9752921134db302867f8" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>mem</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aacbacec664dc8e1aa2bcc8f70c35aeed" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>params</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9ed5bb0f76f70b7501e774c796bcba0e" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>polysemous_ht</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1155e08d03476c7b18c0d640cc0866c4" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>pq</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a95aecd9fda64993237bb065ee5af679f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>PQDecoder</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac497594c561879196c459058fb3ce77f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>precompute_list_table_pointers</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ab6f131ed06c21e350fd8127a90e022bd" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>precompute_list_table_pointers_L2</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8b19b158c238265b75b873e358a834da" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>precompute_list_tables</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ad73934441528f9d9c52bb6c2f7ac7fa2" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>precompute_list_tables_IP</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a56faeed588cd21316cf540ec6398e8dd" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>precompute_list_tables_L2</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a5ccbbe6e79073c3e2a048b7e496504c0" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>q_code</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9337e434a659f11573a00b3ff9744f7b" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>qi</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1b6d1b94783689e54fba6947440a6e3f" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>QueryTables</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a7b5c7921221254da40b8b5b4875ba9f6" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>residual_vec</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>scan_list_polysemous</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>scan_list_polysemous_hc</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>scan_list_with_pointer</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>scan_list_with_table</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>scan_on_the_fly_dist</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1abe9ce88e206b1f2f8fa1a485d9aa6d7d" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>sim_table</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a399b340bfb830df74a6e766aa1c1f2e4" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>sim_table_2</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a02af1b98160efa7048504cc0b4e2451c" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>sim_table_ptrs</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aa5e9a0b2933fb73acf9c224c147b16e9" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::IVFPQScannerT</scope><name>use_precomputed_table</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

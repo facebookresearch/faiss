@@ -8596,6 +8596,103 @@
     <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1a3e37fd29e824d40d97bd34a59d26e862" kind="variable"><name>force_random_rotation</name></member>
     <member refid="structfaiss_1_1gpu_1_1IVFPQBuildCagraConfig_1afa6d4e798be91d7037d80bdad690236a" kind="variable"><name>conservative_memory_allocation</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner" kind="struct"><name>faiss::pq_code_distance::IVFPQScanner</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1ac0263f7814137b3d964db18a57b55b3e" kind="variable"><name>precompute_mode</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1ab5d167c487a84221045ec123cd69e3af" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" kind="variable"><name>list_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" kind="variable"><name>list_ids</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" kind="variable"><name>list_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" kind="variable"><name>ivfpq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" kind="variable"><name>params</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1155e08d03476c7b18c0d640cc0866c4" kind="variable"><name>pq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aacbacec664dc8e1aa2bcc8f70c35aeed" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" kind="variable"><name>by_residual</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aa5e9a0b2933fb73acf9c224c147b16e9" kind="variable"><name>use_precomputed_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9ed5bb0f76f70b7501e774c796bcba0e" kind="variable"><name>polysemous_ht</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1abe9ce88e206b1f2f8fa1a485d9aa6d7d" kind="variable"><name>sim_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a399b340bfb830df74a6e766aa1c1f2e4" kind="variable"><name>sim_table_2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a7b5c7921221254da40b8b5b4875ba9f6" kind="variable"><name>residual_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac63e8d8e0fa6912a7dd0202fbef2311f" kind="variable"><name>decoded_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6bbb9b2c35dc9752921134db302867f8" kind="variable"><name>mem</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a02af1b98160efa7048504cc0b4e2451c" kind="variable"><name>sim_table_ptrs</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9337e434a659f11573a00b3ff9744f7b" kind="variable"><name>qi</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1fffc40a6522aaf7dac7a13b429e0e37" kind="variable"><name>key</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" kind="variable"><name>coarse_dis</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a5ccbbe6e79073c3e2a048b7e496504c0" kind="variable"><name>q_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" kind="variable"><name>init_list_cycles</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" kind="variable"><name>dis0</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a843a53d7df43c6dd9f6c550708e3a7fc" kind="variable"><name>list_no</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a00cb1d807f47fe2a21077919e3458db7" kind="variable"><name>keep_max</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a005618e4c8d1198d8cd55a520778344e" kind="variable"><name>store_pairs</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a5f1aeb6b7f06f79c3a2b2fc9e1404b3c" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1abcbe554c139a0f5cf588b80fe997a3e7" kind="function"><name>IVFPQScanner</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a2d07fec4013aff537e760f8f5a5f6e2b" kind="function"><name>set_query</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a8132a080a79a5432c7be481d6693f34d" kind="function"><name>set_list</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a017f80ea597db3ceaf0f2ad910910ab9" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a3b87583e9686b4251b4b29ca682f7178" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a223ad1cbc52c397f55dc3ad70a7c9643" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0" kind="function"><name>scan_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" kind="function"><name>scan_list_with_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" kind="function"><name>scan_list_with_pointer</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" kind="function"><name>scan_on_the_fly_dist</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" kind="function"><name>scan_list_polysemous_hc</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" kind="function"><name>scan_list_polysemous</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" kind="function"><name>init_query</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0df88c6063c40313971f9c13fa91ed23" kind="function"><name>init_query_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a41357b4202fb7fc16be59cdf85e66b32" kind="function"><name>init_query_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8b19b158c238265b75b873e358a834da" kind="function"><name>precompute_list_tables</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac497594c561879196c459058fb3ce77f" kind="function"><name>precompute_list_table_pointers</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" kind="function"><name>init_list</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ad73934441528f9d9c52bb6c2f7ac7fa2" kind="function"><name>precompute_list_tables_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a56faeed588cd21316cf540ec6398e8dd" kind="function"><name>precompute_list_tables_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ab6f131ed06c21e350fd8127a90e022bd" kind="function"><name>precompute_list_table_pointers_L2</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a19253dd282bf8f07d35ca953d2c33b2c" kind="function"><name>iterate_codes</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a7c9489c951e682c72930b7a26b5418b2" kind="function"><name>scan_codes_range</name></member>
+    <member refid="structfaiss_1_1InvertedListScanner_1a173186ff4f20b144f0066571fa2a50e4" kind="function"><name>iterate_codes_range</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a95aecd9fda64993237bb065ee5af679f" kind="typedef"><name>PQDecoder</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT" kind="struct"><name>faiss::pq_code_distance::IVFPQScannerT</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a95aecd9fda64993237bb065ee5af679f" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3608482faa8e7b3a6c5a7f1beec54047" kind="variable"><name>list_codes</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a207c7ff8a340bd6b617db92a068222af" kind="variable"><name>list_ids</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ad244a914949bdaf2626d6df76b262263" kind="variable"><name>list_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" kind="variable"><name>ivfpq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" kind="variable"><name>params</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1155e08d03476c7b18c0d640cc0866c4" kind="variable"><name>pq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aacbacec664dc8e1aa2bcc8f70c35aeed" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" kind="variable"><name>by_residual</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aa5e9a0b2933fb73acf9c224c147b16e9" kind="variable"><name>use_precomputed_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9ed5bb0f76f70b7501e774c796bcba0e" kind="variable"><name>polysemous_ht</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1abe9ce88e206b1f2f8fa1a485d9aa6d7d" kind="variable"><name>sim_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a399b340bfb830df74a6e766aa1c1f2e4" kind="variable"><name>sim_table_2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a7b5c7921221254da40b8b5b4875ba9f6" kind="variable"><name>residual_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac63e8d8e0fa6912a7dd0202fbef2311f" kind="variable"><name>decoded_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6bbb9b2c35dc9752921134db302867f8" kind="variable"><name>mem</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a02af1b98160efa7048504cc0b4e2451c" kind="variable"><name>sim_table_ptrs</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9337e434a659f11573a00b3ff9744f7b" kind="variable"><name>qi</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1fffc40a6522aaf7dac7a13b429e0e37" kind="variable"><name>key</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" kind="variable"><name>coarse_dis</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a5ccbbe6e79073c3e2a048b7e496504c0" kind="variable"><name>q_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" kind="variable"><name>init_list_cycles</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" kind="variable"><name>dis0</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a2d120f24c307a815fe7263fea003c984" kind="function"><name>IVFPQScannerT</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a707d0ae0caf7e3abb72bbe908514068c" kind="function"><name>scan_list_with_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a20c699fb036bf5bb4987fe3144d092d2" kind="function"><name>scan_list_with_pointer</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a3df4fee8862e6189a74e32fc70944be0" kind="function"><name>scan_on_the_fly_dist</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1ae059184099f1d223969fd65bedad8465" kind="function"><name>scan_list_polysemous_hc</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1IVFPQScannerT_1a4e0fc9a619671dbce5cdc4013611e15b" kind="function"><name>scan_list_polysemous</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" kind="function"><name>init_query</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0df88c6063c40313971f9c13fa91ed23" kind="function"><name>init_query_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a41357b4202fb7fc16be59cdf85e66b32" kind="function"><name>init_query_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8b19b158c238265b75b873e358a834da" kind="function"><name>precompute_list_tables</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac497594c561879196c459058fb3ce77f" kind="function"><name>precompute_list_table_pointers</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" kind="function"><name>init_list</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ad73934441528f9d9c52bb6c2f7ac7fa2" kind="function"><name>precompute_list_tables_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a56faeed588cd21316cf540ec6398e8dd" kind="function"><name>precompute_list_tables_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ab6f131ed06c21e350fd8127a90e022bd" kind="function"><name>precompute_list_table_pointers_L2</name></member>
+  </compound>
   <compound refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig" kind="struct"><name>faiss::gpu::IVFPQSearchCagraConfig</name>
     <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1afeb146ff3cef908dc0fa53c50dfd10df" kind="variable"><name>n_probes</name></member>
     <member refid="structfaiss_1_1gpu_1_1IVFPQSearchCagraConfig_1ae8fa079d7df3d3a8e798487e4c301024" kind="variable"><name>lut_dtype</name></member>
@@ -9715,11 +9812,18 @@
   </compound>
   <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kind="struct"><name>faiss::pq_code_distance::PQCodeDistance</name>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a92c8225de4266b4f34b7889e64dada89" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a8174115db8da3b24c6f784434dae40f7" kind="variable"><name>simd_level</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" kind="function"><name>distance_four_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a319459004d7bdee95b605e6cf270446a" kind="function"><name>distance_single_code</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance_1a15ff0f79903c0f71d2fa3b605e309222" kind="function"><name>distance_four_codes</name></member>
   </compound>
   <compound refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kind="struct"><name>faiss::pq_code_distance::PQCodeDistanceScalar</name>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a8c961f237a2d2b2c56ff6deaf9c7d5ff" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1a8c961f237a2d2b2c56ff6deaf9c7d5ff" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ada869c139227aafbdec6e2afbbb96906" kind="function"><name>distance_single_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad2cd4c81c19de2dc8e6fcf67058a591d" kind="function"><name>distance_four_codes</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ada869c139227aafbdec6e2afbbb96906" kind="function"><name>distance_single_code</name></member>
     <member refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar_1ad2cd4c81c19de2dc8e6fcf67058a591d" kind="function"><name>distance_four_codes</name></member>
   </compound>
@@ -9743,6 +9847,27 @@
     <member refid="structfaiss_1_1PQDecoderGeneric_1a45efeff5d38aba4c19e401cfeeecf171" kind="variable"><name>reg</name></member>
     <member refid="structfaiss_1_1PQDecoderGeneric_1a00b9756b944961e40fbaed51407b9efd" kind="function"><name>PQDecoderGeneric</name></member>
     <member refid="structfaiss_1_1PQDecoderGeneric_1ae926ee1fb5832d5a302132ef6d1a496f" kind="function"><name>decode</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer" kind="struct"><name>faiss::pq_code_distance::PQDistanceComputer</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ace2649caf02f3306d90892742810c8a6" kind="typedef"><name>PQDecoder</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a33f4c87ffdcae59d2aa32cb55928f137" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acc88554cf99fb35ed07bc14c580aefe4" kind="variable"><name>metric</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a4d9286cd02b80accad27711ebcfc50d6" kind="variable"><name>nb</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ae978ffdfab924404d3b3bd572d9450ed" kind="variable"><name>pq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a165836670fc79f32a56193d68a05b974" kind="variable"><name>sdc</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a5b7d8dfc9509bac5d0f2f07acaf5b9fe" kind="variable"><name>precomputed_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1aad79f5d3a86189660c0d2cb033f0a684" kind="variable"><name>ndis</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ab2aed9d99983ed7729d864b543fcec6b" kind="variable"><name>q</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" kind="variable"><name>code_size</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ac86a888908927c54b41342d7f4976812" kind="function"><name>distance_to_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1adce69b0f0c6dbf0fa295cd76ae711af4" kind="function"><name>symmetric_dis</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a45488eda6d6968021a8d72f3d8378c64" kind="function"><name>PQDistanceComputer</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527" kind="function"><name>set_query</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" kind="function"><name>operator()</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" kind="function"><name>partial_dot_product</name></member>
+    <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" kind="function"><name>partial_dot_product_batch_4</name></member>
+    <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" kind="function"><name>distances_batch_4</name></member>
   </compound>
   <compound refid="structfaiss_1_1PQEncoder16" kind="struct"><name>faiss::PQEncoder16</name>
     <member refid="structfaiss_1_1PQEncoder16_1a6218a32c8034826c8327bc11876b2650" kind="variable"><name>code</name></member>
@@ -10191,6 +10316,38 @@
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1ac5162712b614a52247f3a77f3601936d" kind="variable"><name>int_dot_scale</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a57162cc6445d6c321a669a684022e6b0" kind="variable"><name>g_error</name></member>
     <member refid="structfaiss_1_1rabitq__utils_1_1QueryFactorsData_1a7bf1ca5dc837e7ac3e8ef97e7bdefe84" kind="variable"><name>rotated_q</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1QueryTables" kind="struct"><name>faiss::pq_code_distance::QueryTables</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9f4c8bf4642f5639cbcd101d0b778766" kind="variable"><name>ivfpq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aadfa3dfce72e11b6eac20d7540147c95" kind="variable"><name>params</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a2adefc871ae7000728181eed1f366794" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1155e08d03476c7b18c0d640cc0866c4" kind="variable"><name>pq</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aacbacec664dc8e1aa2bcc8f70c35aeed" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6cd7203ba440e80bb5d8189340846ef9" kind="variable"><name>by_residual</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aa5e9a0b2933fb73acf9c224c147b16e9" kind="variable"><name>use_precomputed_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9ed5bb0f76f70b7501e774c796bcba0e" kind="variable"><name>polysemous_ht</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1abe9ce88e206b1f2f8fa1a485d9aa6d7d" kind="variable"><name>sim_table</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a399b340bfb830df74a6e766aa1c1f2e4" kind="variable"><name>sim_table_2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a7b5c7921221254da40b8b5b4875ba9f6" kind="variable"><name>residual_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac63e8d8e0fa6912a7dd0202fbef2311f" kind="variable"><name>decoded_vec</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a6bbb9b2c35dc9752921134db302867f8" kind="variable"><name>mem</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a02af1b98160efa7048504cc0b4e2451c" kind="variable"><name>sim_table_ptrs</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a9337e434a659f11573a00b3ff9744f7b" kind="variable"><name>qi</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1fffc40a6522aaf7dac7a13b429e0e37" kind="variable"><name>key</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0dc6128a30ee72ea68a319319b2ec6d5" kind="variable"><name>coarse_dis</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a5ccbbe6e79073c3e2a048b7e496504c0" kind="variable"><name>q_code</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac42bc903a0a3b00a00fcc2a644781d0f" kind="variable"><name>init_list_cycles</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1aff544e8018be17736dc6a72af94d320f" kind="variable"><name>dis0</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a1b6d1b94783689e54fba6947440a6e3f" kind="function"><name>QueryTables</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a4066b26450a4dc08677b99b4f26acb25" kind="function"><name>init_query</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a0df88c6063c40313971f9c13fa91ed23" kind="function"><name>init_query_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a41357b4202fb7fc16be59cdf85e66b32" kind="function"><name>init_query_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8b19b158c238265b75b873e358a834da" kind="function"><name>precompute_list_tables</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ac497594c561879196c459058fb3ce77f" kind="function"><name>precompute_list_table_pointers</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a8a0cf44570e8fa877ad10f3a3d7bda85" kind="function"><name>init_list</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ad73934441528f9d9c52bb6c2f7ac7fa2" kind="function"><name>precompute_list_tables_IP</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1a56faeed588cd21316cf540ec6398e8dd" kind="function"><name>precompute_list_tables_L2</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1QueryTables_1ab6f131ed06c21e350fd8127a90e022bd" kind="function"><name>precompute_list_table_pointers_L2</name></member>
   </compound>
   <compound refid="structfaiss_1_1RaBitQDistanceComputer" kind="struct"><name>faiss::RaBitQDistanceComputer</name>
     <member refid="structfaiss_1_1RaBitQDistanceComputer_1a0c137ca82f40b6143c43900fbf4f98ad" kind="variable"><name>d</name></member>
@@ -12316,6 +12473,16 @@
     <member refid="classfaiss_1_1WorkerThread_1a3bcba1e74bc0106710834cebba8109a9" kind="function"><name>threadMain</name></member>
     <member refid="classfaiss_1_1WorkerThread_1a1995b2a276e75326778af7e108d5a696" kind="function"><name>threadLoop</name></member>
   </compound>
+  <compound refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult" kind="struct"><name>faiss::pq_code_distance::WrappedSearchResult</name>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a3cda8b43e6976ad751b88c3dc3fea61c" kind="variable"><name>res</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a7d9b615dc4f97654122471ccb7a42ff4" kind="variable"><name>nup</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a26bb99d81275a2a97807b9e34ac6bdc4" kind="variable"><name>list_no</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a103c4e5d1c4301d108ed78b47cb49f64" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1aeb0ff1c4375f3cec288f861f27fad9b2" kind="variable"><name>sel</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1ac1d27d05cb0143296d84f067e37b2d09" kind="function"><name>WrappedSearchResult</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a15cbab84ac5ba6bfe0f0b20b2483687c" kind="function"><name>skip_entry</name></member>
+    <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a2642fb8a9ebbd0e45cf8753920571935" kind="function"><name>add</name></member>
+  </compound>
   <compound refid="structfaiss_1_1svs__io_1_1WriterStreambuf" kind="struct"><name>faiss::svs_io::WriterStreambuf</name>
     <member refid="structfaiss_1_1svs__io_1_1WriterStreambuf_1a2c6048378c1c6795bc6905c2ac0b2395" kind="variable"><name>w</name></member>
     <member refid="structfaiss_1_1svs__io_1_1WriterStreambuf_1a97739403e8896f1e800f1e17decadf97" kind="function"><name>WriterStreambuf</name></member>
@@ -12407,6 +12574,8 @@
     <member refid="structfaiss_1_1ZnSphereSearch_1adc8a713b54cc6be8c348c6e4545479d8" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" kind="function"><name>search_multi</name></member>
+  </compound>
+  <compound refid="namespace_0d109" kind="namespace"><name>@109</name>
   </compound>
   <compound refid="namespacefaiss" kind="namespace"><name>faiss</name>
     <member refid="namespacefaiss_1a3b270886d10d9188ac96726f40b669e8" kind="function"><name>make_binary_hnsw_distance_computer_fixSL</name></member>
@@ -12942,6 +13111,14 @@
     <member refid="namespacefaiss_1a6d2ac818c8d058b1cc926a28fbd9e4ba" kind="function"><name>fvec_madd_and_argmin_sse</name></member>
     <member refid="namespacefaiss_1ad1b6ea1858c274ec9aed96539f5c0259" kind="function"><name>masked_read</name></member>
     <member refid="namespacefaiss_1aa0dbe6e1a44f8bf5ee8ecb7ef94161c2" kind="function"><name>exhaustive_L2sqr_blas_cmax</name></member>
+    <member refid="namespacefaiss_1a7e7970c7b6e78837074358ff5756abcd" kind="function"><name>hammings_knn_hc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1ae22e5a9dc806d1f71c7cad99f0deb9d8" kind="function"><name>hammings_knn_mc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a71d5671337c8c4749970ebbcfaf64ffa" kind="function"><name>hamming_range_search_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a266f0d1f649b46fd7aca59afcdb96d5d" kind="function"><name>hammings_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1adcf203dcbeb99d34bb3ea12b27d52126" kind="function"><name>generalized_hammings_knn_hc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a99f4eccf995e726436cba10280af60b4" kind="function"><name>hamming_count_thres_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a23deeebdc288d699af8ca1ef2f96ffea" kind="function"><name>crosshamming_count_thres_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="namespacefaiss_1a5a016901d28f4acae79709d1a5aa3f6a" kind="function"><name>match_hamming_thres_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1a3a09e6b692b03d53b4fc07d9b6c8c5f2" kind="function"><name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int64_t &gt; &gt;</name></member>
     <member refid="namespacefaiss_1a365c7b264fd4da7aa79578276f96813d" kind="function"><name>partition_fuzzy_simd&lt; SL, CMin&lt; uint16_t, int64_t &gt; &gt;</name></member>
     <member refid="namespacefaiss_1affbb8aa8afdebbd4b862b4bb17bc3abe" kind="function"><name>partition_fuzzy_simd&lt; SL, CMax&lt; uint16_t, int &gt; &gt;</name></member>
@@ -12982,25 +13159,27 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d128" kind="namespace"><name>faiss::@128</name>
+  <compound refid="namespacefaiss_1_1_0d134" kind="namespace"><name>faiss::@134</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d131" kind="namespace"><name>faiss::@131</name>
+  <compound refid="namespacefaiss_1_1_0d137" kind="namespace"><name>faiss::@137</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d132" kind="namespace"><name>faiss::@132</name>
+  <compound refid="namespacefaiss_1_1_0d138" kind="namespace"><name>faiss::@138</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d133" kind="namespace"><name>faiss::@133</name>
+  <compound refid="namespacefaiss_1_1_0d139" kind="namespace"><name>faiss::@139</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d205" kind="namespace"><name>faiss::@205</name>
+  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d209" kind="namespace"><name>faiss::@209</name>
+  <compound refid="namespacefaiss_1_1_0d215" kind="namespace"><name>faiss::@215</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d213" kind="namespace"><name>faiss::@213</name>
+  <compound refid="namespacefaiss_1_1_0d219" kind="namespace"><name>faiss::@219</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d223" kind="namespace"><name>faiss::@223</name>
+  <compound refid="namespacefaiss_1_1_0d229" kind="namespace"><name>faiss::@229</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d235" kind="namespace"><name>faiss::@235</name>
+  <compound refid="namespacefaiss_1_1_0d241" kind="namespace"><name>faiss::@241</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d239" kind="namespace"><name>faiss::@239</name>
+  <compound refid="namespacefaiss_1_1_0d244" kind="namespace"><name>faiss::@244</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d246" kind="namespace"><name>faiss::@246</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d62" kind="namespace"><name>faiss::@62</name>
   </compound>
@@ -13253,6 +13432,20 @@
     <member refid="NSG_8h_1a0e25b3a231c2eb38fcec063865811e52" kind="function"><name>storage_distance_computer</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1pq__code__distance" kind="namespace"><name>faiss::pq_code_distance</name>
+    <member refid="IVFPQScanner__impl_8h_1ac71fd8eb5fcd11e122ee350a5f1d9437" kind="function"><name>make_IVFPQInvertedListScanner</name></member>
+    <member refid="IVFPQScanner__impl_8h_1af6a7d6a634808cfff4adb38078cb54a4" kind="function"><name>make_IVFPQInvertedListScanner&lt; THE_SIMD_LEVEL &gt;</name></member>
+    <member refid="pq__code__distance-avx2_8h_1a3f7e7a9be9cca31a8862257caa3c42b9" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::AVX2 &gt;</name></member>
+    <member refid="pq__code__distance-avx2_8h_1a10a1e541baf4537ece501bda4cb42f05" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::AVX2 &gt;</name></member>
+    <member refid="pq__code__distance-avx512_8h_1a1eaddce4085fab8aa65f9cdea89485a5" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::AVX512 &gt;</name></member>
+    <member refid="pq__code__distance-avx512_8h_1a3d859e591db60b14dc411921810b3a80" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::AVX512 &gt;</name></member>
+    <member refid="pq__code__distance-generic_8h_1a77ef1c47f045d5de1c42d82b0b3f5baa" kind="function"><name>pq_code_distance_8bit_single_impl&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="pq__code__distance-generic_8h_1a5a1dd905dac5db29649f9f85deb33a1c" kind="function"><name>pq_code_distance_8bit_four_impl&lt; SIMDLevel::NONE &gt;</name></member>
+    <member refid="pq__code__distance-inl_8h_1ae074d865d432950d5d1196c379125ea3" kind="function"><name>pq_code_distance_8bit_single_impl</name></member>
+    <member refid="pq__code__distance-inl_8h_1a3ad1ef996be0787ff9aa55d21e2c2cba" kind="function"><name>pq_code_distance_8bit_four_impl</name></member>
+    <member refid="pq__code__distance-inl_8h_1abe61927878ed9cacf7871fa8f557b08a" kind="function"><name>pq_code_distance_8bit_single</name></member>
+    <member refid="pq__code__distance-inl_8h_1adcab48d9e39ee72a7c180f72ed4d048e" kind="function"><name>pq_code_distance_8bit_four</name></member>
+    <member refid="PQDistanceComputer__impl_8h_1ac0f61604a0d9a19dec87e128fe7216d9" kind="function"><name>get_PQFlatCodesDistanceComputer</name></member>
+    <member refid="PQDistanceComputer__impl_8h_1a3d7d13c460872fe43575f62068e2e263" kind="function"><name>get_PQFlatCodesDistanceComputer&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="pq__code__distance_8h_1ae54f510e7f28d07e83966797daee014e" kind="function"><name>pq_code_distance_single_impl</name></member>
     <member refid="pq__code__distance_8h_1a3a6ae99a6247180c63c3ab105d70c7ec" kind="function"><name>pq_code_distance_four_impl</name></member>
     <member refid="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" kind="function"><name>pq_code_distance_single</name></member>
@@ -13770,7 +13963,21 @@
   </compound>
   <compound refid="PolysemousTraining_8h" kind="file"><name>PolysemousTraining.h</name>
   </compound>
+  <compound refid="IVFPQ__QueryTables_8h" kind="file"><name>IVFPQ_QueryTables.h</name>
+    <member refid="IVFPQ__QueryTables_8h_1a043fba147e9f9707cc6f201bedc9012b" kind="define"><name>TIC</name></member>
+    <member refid="IVFPQ__QueryTables_8h_1a41274c91f890aa7ffd5c2a87aee8e7be" kind="define"><name>TOC</name></member>
+  </compound>
+  <compound refid="IVFPQScanner__impl_8h" kind="file"><name>IVFPQScanner_impl.h</name>
+  </compound>
+  <compound refid="pq__code__distance-avx2_8h" kind="file"><name>pq_code_distance-avx2.h</name>
+  </compound>
+  <compound refid="pq__code__distance-avx512_8h" kind="file"><name>pq_code_distance-avx512.h</name>
+  </compound>
+  <compound refid="pq__code__distance-generic_8h" kind="file"><name>pq_code_distance-generic.h</name>
+  </compound>
   <compound refid="pq__code__distance-inl_8h" kind="file"><name>pq_code_distance-inl.h</name>
+  </compound>
+  <compound refid="PQDistanceComputer__impl_8h" kind="file"><name>PQDistanceComputer_impl.h</name>
   </compound>
   <compound refid="ProductAdditiveQuantizer_8h" kind="file"><name>ProductAdditiveQuantizer.h</name>
   </compound>
@@ -14016,9 +14223,13 @@
   </compound>
   <compound refid="hamming__computer_8h" kind="file"><name>hamming_computer.h</name>
   </compound>
-  <compound refid="hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
-    <member refid="hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
-    <member refid="hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
+  <compound refid="hamming__distance_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="hamming__distance_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="hamming__distance_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
+  </compound>
+  <compound refid="simd__impl_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="simd__impl_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="simd__impl_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
   </compound>
   <compound refid="Heap_8h" kind="file"><name>Heap.h</name>
   </compound>

@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pq_code_distance::WrappedSearchResult</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class C</type>
+      </param>
+      <param>
+        <type>bool</type>
+        <declname>use_sel</declname>
+        <defname>use_sel</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a3cda8b43e6976ad751b88c3dc3fea61c" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+        <definition>ResultHandler&amp; faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::res</definition>
+        <argsstring></argsstring>
+        <name>res</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::res</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="29" column="19" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a7d9b615dc4f97654122471ccb7a42ff4" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::nup</definition>
+        <argsstring></argsstring>
+        <name>nup</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::nup</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="30" column="12" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a26bb99d81275a2a97807b9e34ac6bdc4" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::list_no</definition>
+        <argsstring></argsstring>
+        <name>list_no</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::list_no</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="31" column="11" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a103c4e5d1c4301d108ed78b47cb49f64" prot="public" static="no" mutable="no">
+        <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+        <definition>const idx_t* faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="33" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1aeb0ff1c4375f3cec288f861f27fad9b2" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+        <definition>const IDSelector* faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::sel</definition>
+        <argsstring></argsstring>
+        <name>sel</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::sel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="34" column="22" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1ac1d27d05cb0143296d84f067e37b2d09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::WrappedSearchResult</definition>
+        <argsstring>(idx_t list_no_in, const idx_t *ids_in, const IDSelector *sel_in, ResultHandler &amp;res_in)</argsstring>
+        <name>WrappedSearchResult</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::WrappedSearchResult</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>list_no_in</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref> *</type>
+          <declname>ids_in</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IDSelector" kindref="compound">IDSelector</ref> *</type>
+          <declname>sel_in</declname>
+        </param>
+        <param>
+          <type><ref refid="structfaiss_1_1ResultHandlerUnordered" kindref="compound">ResultHandler</ref> &amp;</type>
+          <declname>res_in</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="36" column="5" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="36" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a15cbab84ac5ba6bfe0f0b20b2483687c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::skip_entry</definition>
+        <argsstring>(idx_t j)</argsstring>
+        <name>skip_entry</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::skip_entry</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="43" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="43" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a2642fb8a9ebbd0e45cf8753920571935" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;::add</definition>
+        <argsstring>(idx_t j, float dis)</argsstring>
+        <name>add</name>
+        <qualifiedname>faiss::pq_code_distance::WrappedSearchResult::add</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>j</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="47" column="17" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="47" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>faiss::IDSelector</label>
+        <link refid="structfaiss_1_1IDSelector"/>
+      </node>
+      <node id="3">
+        <label>faiss::InvertedListScannerStats</label>
+        <link refid="structfaiss_1_1InvertedListScannerStats"/>
+      </node>
+      <node id="2">
+        <label>faiss::ResultHandlerUnordered&lt; T, TI &gt;</label>
+        <link refid="structfaiss_1_1ResultHandlerUnordered"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>stats</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::pq_code_distance::WrappedSearchResult&lt; C, use_sel &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>res</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sel</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" line="28" column="1" bodyfile="faiss/impl/pq_code_distance/IVFPQScanner_impl.h" bodystart="28" bodyend="59"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a2642fb8a9ebbd0e45cf8753920571935" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>add</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a103c4e5d1c4301d108ed78b47cb49f64" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a26bb99d81275a2a97807b9e34ac6bdc4" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>list_no</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a7d9b615dc4f97654122471ccb7a42ff4" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>nup</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a3cda8b43e6976ad751b88c3dc3fea61c" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>res</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1aeb0ff1c4375f3cec288f861f27fad9b2" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>sel</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1a15cbab84ac5ba6bfe0f0b20b2483687c" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>skip_entry</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1WrappedSearchResult_1ac1d27d05cb0143296d84f067e37b2d09" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::WrappedSearchResult</scope><name>WrappedSearchResult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,501 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::pq_code_distance::PQDistanceComputer</compoundname>
+    <basecompoundref refid="structfaiss_1_1FlatCodesDistanceComputer" prot="public" virt="non-virtual">faiss::FlatCodesDistanceComputer</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>class PQCodeDist</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ace2649caf02f3306d90892742810c8a6" prot="public" static="no">
+        <type>typename PQCodeDist::PQDecoder</type>
+        <definition>using faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::PQDecoder =  typename PQCodeDist::PQDecoder</definition>
+        <argsstring></argsstring>
+        <name>PQDecoder</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::PQDecoder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="24" column="5" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a33f4c87ffdcae59d2aa32cb55928f137" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="25" column="12" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acc88554cf99fb35ed07bc14c580aefe4" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::metric</definition>
+        <argsstring></argsstring>
+        <name>metric</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::metric</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="26" column="16" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a4d9286cd02b80accad27711ebcfc50d6" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::nb</definition>
+        <argsstring></argsstring>
+        <name>nb</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::nb</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="27" column="11" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ae978ffdfab924404d3b3bd572d9450ed" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structfaiss_1_1ProductQuantizer" kindref="compound">ProductQuantizer</ref> &amp;</type>
+        <definition>const ProductQuantizer&amp; faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::pq</definition>
+        <argsstring></argsstring>
+        <name>pq</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::pq</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="28" column="28" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a165836670fc79f32a56193d68a05b974" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::sdc</definition>
+        <argsstring></argsstring>
+        <name>sdc</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::sdc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="29" column="17" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a5b7d8dfc9509bac5d0f2f07acaf5b9fe" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::precomputed_table</definition>
+        <argsstring></argsstring>
+        <name>precomputed_table</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::precomputed_table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="30" column="17" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1aad79f5d3a86189660c0d2cb033f0a684" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::ndis</definition>
+        <argsstring></argsstring>
+        <name>ndis</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::ndis</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="31" column="12" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ab2aed9d99983ed7729d864b543fcec6b" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::q</definition>
+        <argsstring></argsstring>
+        <name>q</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::q</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="32" column="17" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::FlatCodesDistanceComputer::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::codes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="113" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::FlatCodesDistanceComputer::code_size</definition>
+        <argsstring></argsstring>
+        <name>code_size</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::code_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="114" column="12" bodyfile="faiss/impl/DistanceComputer.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ac86a888908927c54b41342d7f4976812" prot="public" static="no" const="no" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::distance_to_code</definition>
+        <argsstring>(const uint8_t *code) final</argsstring>
+        <name>distance_to_code</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::distance_to_code</qualifiedname>
+        <reimplements refid="structfaiss_1_1FlatCodesDistanceComputer_1a25f3f5c0fabb20d56e29ac7ecef3eb11">distance_to_code</reimplements>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>code</declname>
+        </param>
+        <briefdescription>
+<para>compute distance of current query to an encoded vector </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="34" column="11" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="34" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1adce69b0f0c6dbf0fa295cd76ae711af4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::symmetric_dis</definition>
+        <argsstring>(idx_t i, idx_t j) override</argsstring>
+        <name>symmetric_dis</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::symmetric_dis</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4b7236a757c788401aac00598ed902c7">symmetric_dis</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>j</declname>
+        </param>
+        <briefdescription>
+<para>compute distance between two stored vectors </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="42" column="11" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="42" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a45488eda6d6968021a8d72f3d8378c64" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::PQDistanceComputer</definition>
+        <argsstring>(const IndexPQ &amp;storage)</argsstring>
+        <name>PQDistanceComputer</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::PQDistanceComputer</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1IndexPQ" kindref="compound">IndexPQ</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="57" column="14" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="57" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;::set_query</definition>
+        <argsstring>(const float *x) override</argsstring>
+        <name>set_query</name>
+        <qualifiedname>faiss::pq_code_distance::PQDistanceComputer::set_query</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1aaa4472453365b786adc2ab21e9cee5ec">set_query</reimplements>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>called before computing distances. Pointer x should remain valid while operator () is called </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="75" column="10" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="75" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>float faiss::FlatCodesDistanceComputer::operator()</definition>
+        <argsstring>(idx_t i) override</argsstring>
+        <name>operator()</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::operator()</qualifiedname>
+        <reimplements refid="structfaiss_1_1DistanceComputer_1a4d71be87bbd904043f6bc2fae03d037f">operator()</reimplements>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+<para>compute distance of vector i to current query </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="129" column="11" bodyfile="faiss/impl/DistanceComputer.h" bodystart="129" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>float</type>
+        <definition>virtual float faiss::FlatCodesDistanceComputer::partial_dot_product</definition>
+        <argsstring>(const idx_t, const uint32_t, const uint32_t)</argsstring>
+        <name>partial_dot_product</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Computes a partial dot product over a slice of the query vector. The slice is defined by the following parameters: — <computeroutput>offset</computeroutput>: the starting index of the first component to include — <computeroutput>num_components</computeroutput>: the number of consecutive components to include</para>
+<para>Components refer to raw dimensions of the flat (uncompressed) query vector.</para>
+<para>By default, this method throws an error, as it is only implemented in specific subclasses such as <computeroutput>FlatL2Dis</computeroutput>. Other flat distance computers may override this when partial dot product support is needed.</para>
+<para>Over time, this method might be changed to a pure virtual function (<computeroutput>= 0</computeroutput>) to enforce implementation in subclasses that require this functionality.</para>
+<para>This method is not part of the generic <computeroutput><ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref></computeroutput> interface because for compressed representations (e.g., product quantization), calling <computeroutput>partial_dot_product</computeroutput> repeatedly is often less efficient than computing the full distance at once.</para>
+<para>Supporting efficient partial scans generally requires a different memory layout, such as interleaved blocks that keep SIMD lanes full. This is a non-trivial change and not supported in the current flat layout.</para>
+<para>For more details on partial (or chunked) dot product computations and the performance trade-offs involved, refer to the <ref refid="structfaiss_1_1Panorama" kindref="compound">Panorama</ref> paper: <ulink url="https://arxiv.org/pdf/2510.00566">https://arxiv.org/pdf/2510.00566</ulink> </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="161" column="19" bodyfile="faiss/impl/DistanceComputer.h" bodystart="161" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dp0, float &amp;dp1, float &amp;dp2, float &amp;dp3, const uint32_t offset, const uint32_t num_components)</argsstring>
+        <name>partial_dot_product_batch_4</name>
+        <qualifiedname>faiss::FlatCodesDistanceComputer::partial_dot_product_batch_4</qualifiedname>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dp3</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>const uint32_t</type>
+          <declname>num_components</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Compute partial dot products of current query to 4 stored vectors. See <computeroutput>partial_dot_product</computeroutput> for more details. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="173" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="173" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void faiss::DistanceComputer::distances_batch_4</definition>
+        <argsstring>(const idx_t idx0, const idx_t idx1, const idx_t idx2, const idx_t idx3, float &amp;dis0, float &amp;dis1, float &amp;dis2, float &amp;dis3)</argsstring>
+        <name>distances_batch_4</name>
+        <qualifiedname>faiss::DistanceComputer::distances_batch_4</qualifiedname>
+        <reimplementedby refid="structfaiss_1_1NegativeDistanceComputer_1a62901b5b662e6b8f791f166d85e8525c">distances_batch_4</reimplementedby>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx0</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx2</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>idx3</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis0</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis1</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis2</declname>
+        </param>
+        <param>
+          <type>float &amp;</type>
+          <declname>dis3</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>compute distances of current query to 4 stored vectors. certain <ref refid="structfaiss_1_1DistanceComputer" kindref="compound">DistanceComputer</ref> implementations may benefit heavily from this. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DistanceComputer.h" line="36" column="18" bodyfile="faiss/impl/DistanceComputer.h" bodystart="36" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+      <node id="2">
+        <label>faiss::FlatCodesDistanceComputer</label>
+        <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="3">
+        <label>faiss::DistanceComputer</label>
+        <link refid="structfaiss_1_1DistanceComputer"/>
+      </node>
+      <node id="2">
+        <label>faiss::FlatCodesDistanceComputer</label>
+        <link refid="structfaiss_1_1FlatCodesDistanceComputer"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>faiss::Index</label>
+        <link refid="structfaiss_1_1Index"/>
+      </node>
+      <node id="4">
+        <label>faiss::ProductQuantizer</label>
+        <link refid="structfaiss_1_1ProductQuantizer"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>assign_index</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss::Quantizer</label>
+        <link refid="structfaiss_1_1Quantizer"/>
+      </node>
+      <node id="1">
+        <label>faiss::pq_code_distance::PQDistanceComputer&lt; PQCodeDist &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pq</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" line="23" column="1" bodyfile="faiss/impl/pq_code_distance/PQDistanceComputer_impl.h" bodystart="23" bodyend="83"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a1cf8e1e4652cef0e3dedd38a05f4ff8a" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>code_size</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a4ec2d004151ff20fe2b7f1189b668cb6" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a33f4c87ffdcae59d2aa32cb55928f137" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>d</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ac86a888908927c54b41342d7f4976812" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>distance_to_code</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1af6e114e82ca59caa7040d0bd3ba1c4ff" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>distances_batch_4</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2831443db8f8612590acb5f14b93d32e" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a2aeb8bf1449b80ee60f178cb0118bbaf" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa57e61e170bdad3ac7d138af3d76b15d" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>FlatCodesDistanceComputer</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acc88554cf99fb35ed07bc14c580aefe4" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a4d9286cd02b80accad27711ebcfc50d6" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>nb</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1aad79f5d3a86189660c0d2cb033f0a684" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>ndis</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1ae9a61bfa23567fc0ee689c2e0b1ac287" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>operator()</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1aa16621e09ff7856177e9f31366d9a502" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>partial_dot_product</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a0a1a06140ca552b2d3362758be66b962" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>partial_dot_product_batch_4</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ae978ffdfab924404d3b3bd572d9450ed" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>pq</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ace2649caf02f3306d90892742810c8a6" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>PQDecoder</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a45488eda6d6968021a8d72f3d8378c64" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>PQDistanceComputer</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a5b7d8dfc9509bac5d0f2f07acaf5b9fe" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>precomputed_table</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1ab2aed9d99983ed7729d864b543fcec6b" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>q</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1a165836670fc79f32a56193d68a05b974" prot="public" virt="non-virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>sdc</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1acd7effc0f77263d0383197e8856f1527" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>set_query</name></member>
+      <member refid="structfaiss_1_1pq__code__distance_1_1PQDistanceComputer_1adce69b0f0c6dbf0fa295cd76ae711af4" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>symmetric_dis</name></member>
+      <member refid="structfaiss_1_1DistanceComputer_1a804c42a1f74d9382d5a6c94affd7bfda" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>~DistanceComputer</name></member>
+      <member refid="structfaiss_1_1FlatCodesDistanceComputer_1a743c45ee4140ff06315d1ce3f7ec4cb2" prot="public" virt="virtual"><scope>faiss::pq_code_distance::PQDistanceComputer</scope><name>~FlatCodesDistanceComputer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

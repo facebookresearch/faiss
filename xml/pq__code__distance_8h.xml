@@ -8,7 +8,6 @@
     <includes refid="ProductQuantizer_8h" local="no">faiss/impl/ProductQuantizer.h</includes>
     <includes refid="platform__macros_8h" local="no">faiss/impl/platform_macros.h</includes>
     <includes refid="simd__levels_8h" local="no">faiss/utils/simd_levels.h</includes>
-    <includedby refid="pq__code__distance-inl_8h" local="no">faiss/impl/pq_code_distance/pq_code_distance-inl.h</includedby>
     <incdepgraph>
       <node id="8">
         <label>faiss/Clustering.h</label>
@@ -223,18 +222,6 @@
         <label>vector</label>
       </node>
     </incdepgraph>
-    <invincdepgraph>
-      <node id="2">
-        <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
-        <link refid="pq__code__distance-inl_8h"/>
-      </node>
-      <node id="1">
-        <label>faiss/utils/pq_code_distance.h</label>
-        <link refid="pq__code__distance_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
-    </invincdepgraph>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" prot="public">faiss::pq_code_distance::PQCodeDistanceScalar</innerclass>
     <innerclass refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" prot="public">faiss::pq_code_distance::PQCodeDistance</innerclass>
     <innernamespace refid="namespacefaiss">faiss</innernamespace>
@@ -303,7 +290,7 @@
 <codeline lineno="57"><highlight class="comment">///<sp/>Used<sp/>directly<sp/>by<sp/>non-PQDecoder8<sp/>decoders<sp/>(PQDecoder16,</highlight></codeline>
 <codeline lineno="58"><highlight class="comment">///<sp/>PQDecoderGeneric)<sp/>and<sp/>as<sp/>fallback<sp/>for<sp/>PQDecoder8<sp/>at<sp/>NONE/NEON.</highlight></codeline>
 <codeline lineno="59"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>PQDecoderT&gt;</highlight></codeline>
-<codeline lineno="60" refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">PQCodeDistanceScalar</ref><sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">PQCodeDistanceScalar<sp/>{</highlight></codeline>
 <codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">PQDecoder<sp/>=<sp/>PQDecoderT;</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>distance_single_code(</highlight></codeline>
@@ -395,7 +382,7 @@
 <codeline lineno="149"><highlight class="comment">///<sp/>link<sp/>time<sp/>to<sp/>per-SIMD<sp/>implementations).<sp/>For<sp/>other<sp/>decoders,<sp/>uses</highlight></codeline>
 <codeline lineno="150"><highlight class="comment">///<sp/>scalar<sp/>—<sp/>their<sp/>sequential<sp/>decode()<sp/>methods<sp/>don&apos;t<sp/>benefit<sp/>from<sp/>SIMD.</highlight></codeline>
 <codeline lineno="151"><highlight class="comment"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>PQDecoderT,<sp/>SIMDLevel<sp/>SL&gt;</highlight></codeline>
-<codeline lineno="152" refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kindref="compound">PQCodeDistance</ref><sp/>{</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">PQCodeDistance<sp/>{</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">PQDecoder<sp/>=<sp/>PQDecoderT;</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"></highlight></codeline>
 <codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>distance_single_code(</highlight></codeline>
@@ -406,7 +393,7 @@
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>(std::is_same_v&lt;PQDecoderT,<sp/>PQDecoder8&gt;)<sp/>{</highlight></codeline>
 <codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pq_code_distance_single_impl&lt;SL&gt;(M,<sp/>nbits,<sp/>sim_table,<sp/>code);</highlight></codeline>
 <codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">PQCodeDistanceScalar&lt;PQDecoderT&gt;::distance_single_code</ref>(</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>PQCodeDistanceScalar&lt;PQDecoderT&gt;::distance_single_code(</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>M,<sp/>nbits,<sp/>sim_table,<sp/>code);</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -437,7 +424,7 @@
 <codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result2,</highlight></codeline>
 <codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result3);</highlight></codeline>
 <codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">PQCodeDistanceScalar&lt;PQDecoderT&gt;::distance_four_codes</ref>(</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PQCodeDistanceScalar&lt;PQDecoderT&gt;::distance_four_codes(</highlight></codeline>
 <codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>M,</highlight></codeline>
 <codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nbits,</highlight></codeline>
 <codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sim_table,</highlight></codeline>
@@ -491,8 +478,8 @@
 <codeline lineno="245"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Re-export<sp/>public<sp/>API<sp/>into<sp/>namespace<sp/>faiss<sp/>for<sp/>convenience</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="246"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_four;</highlight></codeline>
 <codeline lineno="247"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::pq_code_distance_single;</highlight></codeline>
-<codeline lineno="248"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistance" kindref="compound">pq_code_distance::PQCodeDistance</ref>;</highlight></codeline>
-<codeline lineno="249"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1pq__code__distance_1_1PQCodeDistanceScalar" kindref="compound">pq_code_distance::PQCodeDistanceScalar</ref>;</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::PQCodeDistance;</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">pq_code_distance::PQCodeDistanceScalar;</highlight></codeline>
 <codeline lineno="250"><highlight class="normal"></highlight></codeline>
 <codeline lineno="251"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>

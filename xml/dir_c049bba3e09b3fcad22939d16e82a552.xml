@@ -2,7 +2,13 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_c049bba3e09b3fcad22939d16e82a552" kind="dir">
     <compoundname>faiss/impl/pq_code_distance</compoundname>
+    <innerfile refid="IVFPQ__QueryTables_8h">IVFPQ_QueryTables.h</innerfile>
+    <innerfile refid="IVFPQScanner__impl_8h">IVFPQScanner_impl.h</innerfile>
+    <innerfile refid="pq__code__distance-avx2_8h">pq_code_distance-avx2.h</innerfile>
+    <innerfile refid="pq__code__distance-avx512_8h">pq_code_distance-avx512.h</innerfile>
+    <innerfile refid="pq__code__distance-generic_8h">pq_code_distance-generic.h</innerfile>
     <innerfile refid="pq__code__distance-inl_8h">pq_code_distance-inl.h</innerfile>
+    <innerfile refid="PQDistanceComputer__impl_8h">PQDistanceComputer_impl.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

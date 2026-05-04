@@ -3,6 +3,7 @@
   <compounddef id="structfaiss_1_1InvertedListScanner" kind="struct" language="C++" prot="public" abstract="yes">
     <compoundname>faiss::InvertedListScanner</compoundname>
     <derivedcompoundref refid="structfaiss_1_1IVFFlatScanner" prot="public" virt="non-virtual">faiss::IVFFlatScanner&lt; VectorDistance &gt;</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner" prot="public" virt="non-virtual">faiss::pq_code_distance::IVFPQScanner&lt; METRIC_TYPE, C, PQCodeDist, use_sel &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner" prot="public" virt="non-virtual">faiss::scalar_quantizer::IVFCoarseDistanceScanner</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP" prot="public" virt="non-virtual">faiss::scalar_quantizer::IVFSQScannerIP&lt; DCClass &gt;</derivedcompoundref>
     <derivedcompoundref refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2" prot="public" virt="non-virtual">faiss::scalar_quantizer::IVFSQScannerL2&lt; DCClass &gt;</derivedcompoundref>
@@ -119,6 +120,7 @@
         <name>set_query</name>
         <qualifiedname>faiss::InvertedListScanner::set_query</qualifiedname>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1ae8219353ae254850009f1da6e7cb2b09">set_query</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a2d07fec4013aff537e760f8f5a5f6e2b">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a35e0e0dd17881bf2350ef7aff22ac628">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a255923afc0c80b1041e51d2c37047031">set_query</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1aa2e6024a4b382cff5dde6b2f1a6b157f">set_query</reimplementedby>
@@ -144,6 +146,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1ad0e44119153ba72e078d01b1d64232be">set_list</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a15a9254cb50839bbae6ef8e70091f82e">set_list</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1a554a16daa1af18ccc551f92b9c098b71">set_list</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a8132a080a79a5432c7be481d6693f34d">set_list</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner_1a531a6f0124c2aa32c2481e8083a56529">set_list</reimplementedby>
         <param>
           <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -172,6 +175,7 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1a799c381d6dc4c1ce219ce21b9706415e">distance_to_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1a92a120a2b6f83a9a1037771e134e15f5">distance_to_code</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1a4a6451c30aa63d933b4eb4edd95f899e">distance_to_code</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a017f80ea597db3ceaf0f2ad910910ab9">distance_to_code</reimplementedby>
         <param>
           <type>const uint8_t *</type>
           <declname>code</declname>
@@ -385,6 +389,8 @@
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP_1af4602275509ac492f5e37de3ede50b2a">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2_1aa0a064413a7205841ad31070dc839901">scan_codes</reimplementedby>
         <reimplementedby refid="structfaiss_1_1IVFFlatScanner_1adaab9927cefb200b5fd0cbd4ab5fe3d7">scan_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a9f01f56555294a395bd527f761f32ab0">scan_codes</reimplementedby>
+        <reimplementedby refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner_1a3b87583e9686b4251b4b29ca682f7178">scan_codes</reimplementedby>
         <param>
           <type>size_t</type>
           <declname>n</declname>
@@ -441,18 +447,24 @@
         <link refid="structfaiss_1_1InvertedListScanner"/>
       </node>
       <node id="3">
+        <label>faiss::pq_code_distance::IVFPQScanner&lt; METRIC_TYPE, C, PQCodeDist, use_sel &gt;</label>
+        <link refid="structfaiss_1_1pq__code__distance_1_1IVFPQScanner"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
         <label>faiss::scalar_quantizer::IVFCoarseDistanceScanner</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1IVFCoarseDistanceScanner"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>faiss::scalar_quantizer::IVFSQScannerIP&lt; DCClass &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerIP"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="6">
         <label>faiss::scalar_quantizer::IVFSQScannerL2&lt; DCClass &gt;</label>
         <link refid="structfaiss_1_1scalar__quantizer_1_1IVFSQScannerL2"/>
         <childnode refid="1" relation="public-inheritance">

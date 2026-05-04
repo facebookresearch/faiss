@@ -6,6 +6,7 @@
     <innerfile refid="distances__simdlib256_8h">distances_simdlib256.h</innerfile>
     <innerfile refid="distances__sse-inl_8h">distances_sse-inl.h</innerfile>
     <innerfile refid="exhaustive__L2sqr__blas__cmax_8h">exhaustive_L2sqr_blas_cmax.h</innerfile>
+    <innerfile refid="simd__impl_2hamming__impl_8h">hamming_impl.h</innerfile>
     <innerfile refid="IVFFlatScanner-inl_8h">IVFFlatScanner-inl.h</innerfile>
     <innerfile refid="partitioning__simdlib256_8h">partitioning_simdlib256.h</innerfile>
     <innerfile refid="super__kmeans__dispatch_8h">super_kmeans_dispatch.h</innerfile>
