@@ -1607,8 +1607,8 @@
         <argsstring></argsstring>
         <name>AVAILABLE_SIMD_LEVELS_A0</name>
         <qualifiedname>faiss::AVAILABLE_SIMD_LEVELS_A0</qualifiedname>
-        <initializer>=
-        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 &lt;&lt; int(SIMDLevel::AVX512))</initializer>
+        <initializer>= AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+        (1 &lt;&lt; int(SIMDLevel::AVX512)) | (1 &lt;&lt; int(SIMDLevel::RISCV_RVV))</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -2167,7 +2167,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="90" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="90" bodyend="-1"/>
+        <location file="faiss/utils/simd_levels.h" line="92" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="92" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1aba162c9eeaabb62aebb068258bcd8652" prot="public" static="no" constexpr="yes" mutable="no">
         <type>constexpr SIMDLevel</type>
@@ -2184,7 +2184,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="110" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="110" bodyend="-1"/>
+        <location file="faiss/utils/simd_levels.h" line="114" column="28" bodyfile="faiss/utils/simd_levels.h" bodystart="114" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="namespacefaiss_1a68d671ff6d57b17f9fbf3c65607fbcff" prot="public" static="no" extern="yes" mutable="no">
         <type>FAISS_API int</type>
@@ -6857,7 +6857,7 @@
 <para>The key benefit is that the SIMD dispatch happens once, outside any loops, so the loop body runs with the optimal SIMD implementation without per-iteration dispatch overhead.</para>
 <para>Example with a loop (the dispatch happens once, not per iteration):</para>
 <para>std::vector&lt;float&gt; distances(n); with_simd_level([&amp;]&lt;SIMDLevel level&gt;() { for (size_t i = 0; i &lt; n; i++) { distances[i] = fvec_L2sqr&lt;level&gt;(query, vectors + i * d, d); } });</para>
-<para>The lambda must be a generic lambda with a SIMDLevel template parameter. By default, the lambda uses levels AVX2 + AVX512 + NEON, since these are the most common cases.</para>
+<para>The lambda must be a generic lambda with a SIMDLevel template parameter. By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV, since these are the most common cases.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>action</parametername>
@@ -15079,6 +15079,159 @@
         </inbodydescription>
         <location file="faiss/utils/hamming_distance/hamming_computer-generic.h" line="22" column="12" bodyfile="faiss/utils/hamming_distance/hamming_computer-generic.h" bodystart="22" bodyend="90"/>
       </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a2c7df3d33b13c1573d73e2855593ada6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(HammingComputer16)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>HammingComputer16</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="25" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="25" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a0c475ea83c36ae62f3d88ea0527c2855" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(HammingComputer20)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>HammingComputer20</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="26" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="26" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a6b3c8932a6084292c5363213f10cbe9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(HammingComputer32)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>HammingComputer32</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="27" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="27" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ad3c0163bf8340e1e1924eb693e72069e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(HammingComputer64)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>HammingComputer64</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="28" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="28" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aa82700933b32ea03459a56bd37d1a44b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(HammingComputerDefault)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>HammingComputerDefault</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="29" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="29" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a2b9acc8f72a62ea16fdba8eb5bfca1b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(GenHammingComputer8)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>GenHammingComputer8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="30" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="30" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1ab93b30f7abfb72001f660f4fcb4690c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(GenHammingComputer16)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>GenHammingComputer16</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="31" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="31" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1aafff511693037b1c0743ada51d2feb5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(GenHammingComputer32)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>GenHammingComputer32</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="32" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="32" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacefaiss_1a31343f9c0024c7c0597705ecb93cc2d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::FAISS_INHERIT_HAMMING_RVV</definition>
+        <argsstring>(GenHammingComputerM8)</argsstring>
+        <name>FAISS_INHERIT_HAMMING_RVV</name>
+        <qualifiedname>faiss::FAISS_INHERIT_HAMMING_RVV</qualifiedname>
+        <param>
+          <type>GenHammingComputerM8</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/utils/hamming_distance/hamming_computer-rvv.h" line="33" column="1" declfile="faiss/utils/hamming_distance/hamming_computer-rvv.h" declline="33" declcolumn="1"/>
+      </memberdef>
       <memberdef kind="function" id="namespacefaiss_1ace414a88fc1c43aceb6c6ad164823847" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
           <param>
@@ -18740,7 +18893,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="116" column="15" bodyfile="faiss/utils/simd_levels.h" bodystart="116" bodyend="129"/>
+        <location file="faiss/utils/simd_levels.h" line="120" column="15" bodyfile="faiss/utils/simd_levels.h" bodystart="120" bodyend="133"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a79e514996c26613456730d2427a8a842" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -18759,7 +18912,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="132" column="13" declfile="faiss/utils/simd_levels.h" declline="132" declcolumn="13"/>
+        <location file="faiss/utils/simd_levels.h" line="136" column="13" declfile="faiss/utils/simd_levels.h" declline="136" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a119eb2565e7e64e0edc288c10cf35a73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>SIMDLevel</type>
@@ -18778,7 +18931,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/utils/simd_levels.h" line="135" column="11" declfile="faiss/utils/simd_levels.h" declline="135" declcolumn="11"/>
+        <location file="faiss/utils/simd_levels.h" line="139" column="11" declfile="faiss/utils/simd_levels.h" declline="139" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a027b726c606d329c30840e51b539ddb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>

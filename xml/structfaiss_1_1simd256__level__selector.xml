@@ -19,7 +19,9 @@
         <initializer>=
             (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
             ? SIMDLevel::AVX2
-            : (SL == SIMDLevel::ARM_SVE ? SIMDLevel::ARM_NEON : SL)</initializer>
+            : (SL == SIMDLevel::ARM_SVE             ? SIMDLevel::ARM_NEON
+                       : SL == SIMDLevel::RISCV_RVV ? SIMDLevel::NONE
+                                                    : SL)</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
@@ -33,7 +35,7 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="faiss/utils/simd_levels.h" line="80" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="80" bodyend="85"/>
+    <location file="faiss/utils/simd_levels.h" line="80" column="1" bodyfile="faiss/utils/simd_levels.h" bodystart="80" bodyend="87"/>
     <listofallmembers>
       <member refid="structfaiss_1_1simd256__level__selector_1a0442d683eb47751eaf1ddd5a57a171f1" prot="public" virt="non-virtual"><scope>faiss::simd256_level_selector</scope><name>value</name></member>
     </listofallmembers>

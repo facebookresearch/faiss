@@ -356,9 +356,9 @@
 <codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AVAILABLE_SIMD_LEVELS_AVX2_NEON<sp/>=<sp/><ref refid="namespacefaiss_1a12459a18353dd0cbfcc26e1090da53a5" kindref="member">AVAILABLE_SIMD_LEVELS_NONE</ref><sp/>|</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1<sp/>&lt;&lt;<sp/>int(SIMDLevel::AVX2))<sp/>|<sp/>(1<sp/>&lt;&lt;<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">(SIMDLevel::ARM_NEON));</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>A0:<sp/>same<sp/>+<sp/>AVX512</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AVAILABLE_SIMD_LEVELS_A0<sp/>=</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AVAILABLE_SIMD_LEVELS_AVX2_NEON<sp/>|<sp/>(1<sp/>&lt;&lt;<sp/>int(SIMDLevel::AVX512));</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>A0:<sp/>same<sp/>+<sp/>AVX512<sp/>+<sp/>RISCV_RVV</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AVAILABLE_SIMD_LEVELS_A0<sp/>=<sp/>AVAILABLE_SIMD_LEVELS_AVX2_NEON<sp/>|</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1<sp/>&lt;&lt;<sp/>int(SIMDLevel::AVX512))<sp/>|<sp/>(1<sp/>&lt;&lt;<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">(SIMDLevel::RISCV_RVV));</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment">//<sp/>A1:<sp/>same<sp/>+<sp/>ARM_SVE<sp/>(for<sp/>functions<sp/>with<sp/>dedicated<sp/>SVE<sp/>implementations)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AVAILABLE_SIMD_LEVELS_A1<sp/>=</highlight></codeline>
@@ -471,8 +471,8 @@
 <codeline lineno="147"><highlight class="comment"><sp/>*<sp/><sp/><sp/>});</highlight></codeline>
 <codeline lineno="148"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="149"><highlight class="comment"><sp/>*<sp/>The<sp/>lambda<sp/>must<sp/>be<sp/>a<sp/>generic<sp/>lambda<sp/>with<sp/>a<sp/>SIMDLevel<sp/>template<sp/>parameter.</highlight></codeline>
-<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>By<sp/>default,<sp/>the<sp/>lambda<sp/>uses<sp/>levels<sp/>AVX2<sp/>+<sp/>AVX512<sp/>+<sp/>NEON,<sp/>since<sp/>these<sp/>are<sp/>the</highlight></codeline>
-<codeline lineno="151"><highlight class="comment"><sp/>*<sp/>most<sp/>common<sp/>cases.</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/>*<sp/>By<sp/>default,<sp/>the<sp/>lambda<sp/>uses<sp/>levels<sp/>AVX2<sp/>+<sp/>AVX512<sp/>+<sp/>NEON<sp/>+<sp/>RVV,<sp/>since<sp/>these</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/>*<sp/>are<sp/>the<sp/>most<sp/>common<sp/>cases.</highlight></codeline>
 <codeline lineno="152"><highlight class="comment"><sp/>*</highlight></codeline>
 <codeline lineno="153"><highlight class="comment"><sp/>*<sp/>@param<sp/>action<sp/>A<sp/>generic<sp/>lambda<sp/>with<sp/>signature<sp/>`template&lt;SIMDLevel&gt;<sp/>T</highlight></codeline>
 <codeline lineno="154"><highlight class="comment"><sp/>*<sp/>operator()()`</highlight></codeline>

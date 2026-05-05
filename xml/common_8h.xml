@@ -134,6 +134,12 @@
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>faiss/utils/hamming_distance/hamming_computer-rvv.h</label>
+        <link refid="hamming__computer-rvv_8h_source"/>
       </node>
       <node id="2">
         <label>faiss/utils/hamming_distance/hamming_computer.h</label>

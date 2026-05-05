@@ -13028,6 +13028,15 @@
     <member refid="namespacefaiss_1a92b1fe06f47f7252f04e079e95128a90" kind="function"><name>FAISS_INHERIT_HAMMING</name></member>
     <member refid="namespacefaiss_1ad8a3bac72b2e76f7b203eb5991adc7ce" kind="function"><name>FAISS_INHERIT_HAMMING</name></member>
     <member refid="namespacefaiss_1a74d57ebe67a55441fa7b7c2a13563d43" kind="function"><name>hamming_popcount_tail</name></member>
+    <member refid="namespacefaiss_1a2c7df3d33b13c1573d73e2855593ada6" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1a0c475ea83c36ae62f3d88ea0527c2855" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1a6b3c8932a6084292c5363213f10cbe9e" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1ad3c0163bf8340e1e1924eb693e72069e" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1aa82700933b32ea03459a56bd37d1a44b" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1a2b9acc8f72a62ea16fdba8eb5bfca1b9" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1ab93b30f7abfb72001f660f4fcb4690c3" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1aafff511693037b1c0743ada51d2feb5a" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
+    <member refid="namespacefaiss_1a31343f9c0024c7c0597705ecb93cc2d3" kind="function"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
     <member refid="namespacefaiss_1ace414a88fc1c43aceb6c6ad164823847" kind="function"><name>with_HammingComputer</name></member>
     <member refid="namespacefaiss_1a7e7970c7b6e78837074358ff5756abcd" kind="function"><name>hammings_knn_hc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
     <member refid="namespacefaiss_1ae22e5a9dc806d1f71c7cad99f0deb9d8" kind="function"><name>hammings_knn_mc_fixSL&lt; THE_SIMD_LEVEL &gt;</name></member>
@@ -13173,13 +13182,13 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d219" kind="namespace"><name>faiss::@219</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d229" kind="namespace"><name>faiss::@229</name>
+  <compound refid="namespacefaiss_1_1_0d230" kind="namespace"><name>faiss::@230</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d241" kind="namespace"><name>faiss::@241</name>
+  <compound refid="namespacefaiss_1_1_0d242" kind="namespace"><name>faiss::@242</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d244" kind="namespace"><name>faiss::@244</name>
+  <compound refid="namespacefaiss_1_1_0d245" kind="namespace"><name>faiss::@245</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d246" kind="namespace"><name>faiss::@246</name>
+  <compound refid="namespacefaiss_1_1_0d247" kind="namespace"><name>faiss::@247</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d62" kind="namespace"><name>faiss::@62</name>
   </compound>
@@ -14220,6 +14229,9 @@
   <compound refid="hamming__computer-generic_8h" kind="file"><name>hamming_computer-generic.h</name>
   </compound>
   <compound refid="hamming__computer-neon_8h" kind="file"><name>hamming_computer-neon.h</name>
+  </compound>
+  <compound refid="hamming__computer-rvv_8h" kind="file"><name>hamming_computer-rvv.h</name>
+    <member refid="hamming__computer-rvv_8h_1aa71541874135099ffe5709c921cc9dc8" kind="define"><name>FAISS_INHERIT_HAMMING_RVV</name></member>
   </compound>
   <compound refid="hamming__computer_8h" kind="file"><name>hamming_computer.h</name>
   </compound>
