@@ -318,8 +318,14 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
+            cuvs::neighbors::brute_force::search_params search_params_bf;
             cuvs::neighbors::brute_force::search(
-                    handle, idx, search.view(), inds.view(), dists.view());
+                    handle,
+                    search_params_bf,
+                    idx,
+                    search.view(),
+                    inds.view(),
+                    dists.view());
         } else {
             auto index = raft::make_readonly_temporary_device_buffer<
                     const float,
@@ -357,8 +363,14 @@ void bfKnn(GpuResourcesProvider* prov, const GpuDistanceParams& args) {
 
             cuvs::neighbors::brute_force::index<float> idx(
                     handle, index.view(), norms_view, distance, metric_arg);
+            cuvs::neighbors::brute_force::search_params search_params_bf;
             cuvs::neighbors::brute_force::search(
-                    handle, idx, search.view(), inds.view(), dists.view());
+                    handle,
+                    search_params_bf,
+                    idx,
+                    search.view(),
+                    inds.view(),
+                    dists.view());
         }
 
         if (args.metric == MetricType::METRIC_Lp) {

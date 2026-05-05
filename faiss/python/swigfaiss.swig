@@ -74,7 +74,6 @@ typedef uint64_t size_t;
 
 #ifdef SWIGPYTHON
 
-#undef popcount64
 
 #define SWIG_FILE_WITH_INIT
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -94,6 +93,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexIVFPQPanorama.h>
@@ -122,6 +122,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexShards.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/IndexReplicas.h>
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/IndexHNSW.h>
 
@@ -192,6 +193,7 @@ typedef uint64_t size_t;
 
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/hamming_distance/common.h>
+#include <faiss/utils/popcount.h>
 
 #include <faiss/AutoTune.h>
 #include <faiss/MatrixStats.h>
@@ -203,7 +205,6 @@ typedef uint64_t size_t;
 #include <faiss/IndexNeuralNetCodec.h>
 
 #include <faiss/impl/RaBitQuantizer.h>
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -215,6 +216,9 @@ typedef uint64_t size_t;
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 
 %}
@@ -344,6 +348,7 @@ namespace std {
 
 %include <faiss/utils/AlignedTable.h>
 %include <faiss/utils/partitioning.h>
+%include <faiss/utils/popcount.h>
 %include <faiss/utils/hamming.h>
 %include <faiss/utils/hamming_distance/common.h>
 
@@ -548,6 +553,7 @@ void gpu_sync_all_devices()
 %ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
+%include  <faiss/impl/InvertedListScannerStats.h>
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
@@ -558,7 +564,10 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
+%include  <faiss/impl/hnsw/MinimaxHeap.h>
 %include  <faiss/impl/HNSW.h>
+%ignore faiss::IndexHNSW::locks;
+%ignore faiss::IndexBinaryHNSW::locks;
 %include  <faiss/IndexHNSW.h>
 
 %include <faiss/impl/kmeans1d.h>
@@ -567,6 +576,9 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/NNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
+// IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
+// built-in destructor for; ignore the field to avoid memory leak warnings.
+%ignore faiss::IndexIVFFlatDedup::instances;
 %include  <faiss/IndexIVFFlat.h>
 %include  <faiss/IndexIVFFlatPanorama.h>
 
@@ -669,7 +681,6 @@ void gpu_sync_all_devices()
 %include <faiss/IndexNeuralNetCodec.h>
 
 %include <faiss/impl/RaBitQuantizer.h>
-%include <faiss/impl/RaBitQStats.h>
 %include <faiss/impl/RaBitQUtils.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
@@ -703,6 +714,9 @@ void gpu_sync_all_devices()
 %include  <faiss/svs/IndexSVSFlat.h>
 %include  <faiss/svs/IndexSVSVamanaLVQ.h>
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+%include  <faiss/svs/IndexSVSIVF.h>
+%include  <faiss/svs/IndexSVSIVFLVQ.h>
+%include  <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
@@ -829,6 +843,7 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexHNSWFlat )
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
+    DOWNCAST ( IndexHNSWCagra )
     DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
@@ -844,6 +859,9 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexSVSVamanaLeanVec )
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
+    DOWNCAST ( IndexSVSIVFLeanVec )
+    DOWNCAST ( IndexSVSIVFLVQ )
+    DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

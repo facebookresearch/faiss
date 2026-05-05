@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
 
@@ -189,11 +190,14 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     }
 #endif
 
+#if defined(__riscv) && defined(COMPILE_SIMD_RISCV_RVV)
+    // RVV is always available on RISC-V builds compiled with rv64gcv.
+    supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::RISCV_RVV));
+    detected_level = SIMDLevel::RISCV_RVV;
+#endif
+
     return detected_level;
 }
-
-// Include private header for DISPATCH_SIMDLevel macro
-#include <faiss/impl/simd_dispatch.h>
 
 namespace {
 
@@ -205,7 +209,8 @@ SIMDLevel get_dispatched_level_impl() {
 } // namespace
 
 SIMDLevel SIMDConfig::get_dispatched_level() {
-    DISPATCH_SIMDLevel(get_dispatched_level_impl);
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_ALL>(
+            [&]<SIMDLevel SL>() { return get_dispatched_level_impl<SL>(); });
 }
 
 #else // Static mode
@@ -260,6 +265,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     return SIMDLevel::ARM_SVE;
 #elif defined(COMPILE_SIMD_ARM_NEON)
     return SIMDLevel::ARM_NEON;
+#elif defined(COMPILE_SIMD_RISCV_RVV)
+    return SIMDLevel::RISCV_RVV;
 #else
     return SIMDLevel::NONE;
 #endif
@@ -290,6 +297,8 @@ std::string to_string(SIMDLevel level) {
             return "ARM_NEON";
         case SIMDLevel::ARM_SVE:
             return "ARM_SVE";
+        case SIMDLevel::RISCV_RVV:
+            return "RISCV_RVV";
         case SIMDLevel::COUNT:
         default:
             throw FaissException("Invalid SIMDLevel");
@@ -314,6 +323,9 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "ARM_SVE") {
         return SIMDLevel::ARM_SVE;
+    }
+    if (level_str == "RISCV_RVV") {
+        return SIMDLevel::RISCV_RVV;
     }
 
     throw FaissException("Invalid SIMD level string: " + level_str);

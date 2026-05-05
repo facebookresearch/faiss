@@ -150,7 +150,9 @@ void VectorTransform::reverse_transform(idx_t, const float*, float*) const {
 }
 
 void VectorTransform::check_identical(const VectorTransform& other) const {
-    FAISS_THROW_IF_NOT(other.d_in == d_in && other.d_in == d_in);
+    FAISS_THROW_IF_NOT_MSG(
+            other.d_in == d_in && other.d_out == d_out,
+            "transforms must have matching d_in and d_out");
 }
 
 /*********************************************
@@ -174,9 +176,11 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
         FAISS_THROW_IF_NOT_MSG(
                 b.size() == static_cast<size_t>(d_out), "Bias not initialized");
         float* xi = xt;
-        for (idx_t i = 0; i < n; i++)
-            for (int j = 0; j < d_out; j++)
+        for (idx_t i = 0; i < n; i++) {
+            for (int j = 0; j < d_out; j++) {
                 *xi++ = b[j];
+            }
+        }
         c_factor = 1.0;
     } else {
         c_factor = 0.0;
@@ -187,7 +191,7 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
             "Transformation matrix not initialized");
 
     float one = 1;
-    FINTEGER nbiti = d_out, ni = n, di = d_in;
+    FINTEGER nbiti = d_out, ni = static_cast<FINTEGER>(n), di = d_in;
     sgemm_("Transposed",
            "Not transposed",
            &nbiti,
@@ -205,20 +209,21 @@ void LinearTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
 void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
         const {
+    std::vector<float> y_bias_corrected;
     if (have_bias) { // allocate buffer to store bias-corrected data
-        float* y_new = new float[n * d_out];
+        y_bias_corrected.resize(n * d_out);
         const float* yr = y;
-        float* yw = y_new;
+        float* yw = y_bias_corrected.data();
         for (idx_t i = 0; i < n; i++) {
             for (int j = 0; j < d_out; j++) {
                 *yw++ = *yr++ - b[j];
             }
         }
-        y = y_new;
+        y = y_bias_corrected.data();
     }
 
     {
-        FINTEGER dii = d_in, doi = d_out, ni = n;
+        FINTEGER dii = d_in, doi = d_out, ni = static_cast<FINTEGER>(n);
         float one = 1.0, zero = 0.0;
         sgemm_("Not",
                "Not",
@@ -234,9 +239,6 @@ void LinearTransform::transform_transpose(idx_t n, const float* y, float* x)
                x,
                &dii);
     }
-
-    if (have_bias)
-        delete[] y;
 }
 
 void LinearTransform::set_is_orthonormal() {
@@ -275,9 +277,10 @@ void LinearTransform::set_is_orthonormal() {
         for (long i = 0; i < d_out; i++) {
             for (long j = 0; j < d_out; j++) {
                 float v = ATA[i + j * d_out];
-                if (i == j)
+                if (i == j) {
                     v -= 1;
-                if (fabs(v) > eps) {
+                }
+                if (std::fabs(v) > eps) {
                     is_orthonormal = false;
                 }
             }
@@ -300,10 +303,13 @@ void LinearTransform::print_if_verbose(
         const std::vector<double>& mat,
         int n,
         int d) const {
-    if (!verbose)
+    if (!verbose) {
         return;
+    }
     printf("matrix %s: %d*%d [\n", name, n, d);
-    FAISS_THROW_IF_NOT(mat.size() >= static_cast<size_t>(n) * d);
+    FAISS_THROW_IF_NOT_MSG(
+            mat.size() >= static_cast<size_t>(n) * d,
+            "matrix size is too small for the given dimensions");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < d; j++) {
             printf("%10.5g ", mat[i * d + j]);
@@ -316,8 +322,10 @@ void LinearTransform::print_if_verbose(
 void LinearTransform::check_identical(const VectorTransform& other_in) const {
     VectorTransform::check_identical(other_in);
     auto other = dynamic_cast<const LinearTransform*>(&other_in);
-    FAISS_THROW_IF_NOT(other);
-    FAISS_THROW_IF_NOT(other->A == A && other->b == b);
+    FAISS_THROW_IF_NOT_MSG(other, "failed to cast to LinearTransform");
+    FAISS_THROW_IF_NOT_MSG(
+            other->A == A && other->b == b,
+            "LinearTransform matrix A and bias vector b must match");
 }
 
 /*********************************************
@@ -390,7 +398,8 @@ static void generate_signs(
         std::vector<float>& s1,
         std::vector<float>& s2,
         std::vector<float>& s3) {
-    FAISS_THROW_IF_NOT(p > 0);
+    FAISS_THROW_IF_NOT_MSG(
+            p > 0, "number of Hadamard factors p must be positive");
     SplitMix64RandomGenerator rng(seed);
     s1.resize(p);
     s2.resize(p);
@@ -426,9 +435,15 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
     size_t d = d_in;
     size_t p = d_out;
-    FAISS_THROW_IF_NOT(signs1.size() == p);
-    FAISS_THROW_IF_NOT(signs2.size() == p);
-    FAISS_THROW_IF_NOT(signs3.size() == p);
+    FAISS_THROW_IF_NOT_MSG(
+            signs1.size() == p,
+            "sign-flip vector 1 size must match output dimension");
+    FAISS_THROW_IF_NOT_MSG(
+            signs2.size() == p,
+            "sign-flip vector 2 size must match output dimension");
+    FAISS_THROW_IF_NOT_MSG(
+            signs3.size() == p,
+            "sign-flip vector 3 size must match output dimension");
 
     // Each unnormalized FWHT scales norms by sqrt(p).
     // Three rounds scale by p^(3/2). Normalize once at the end.
@@ -468,10 +483,14 @@ void HadamardRotation::apply_noalloc(idx_t n, const float* x, float* xt) const {
 
 void HadamardRotation::check_identical(const VectorTransform& other) const {
     auto* hr = dynamic_cast<const HadamardRotation*>(&other);
-    FAISS_THROW_IF_NOT(hr);
-    FAISS_THROW_IF_NOT(d_in == hr->d_in);
-    FAISS_THROW_IF_NOT(d_out == hr->d_out);
-    FAISS_THROW_IF_NOT(seed == hr->seed);
+    FAISS_THROW_IF_NOT_MSG(hr, "failed to cast to HadamardRotation");
+    FAISS_THROW_IF_NOT_MSG(
+            d_in == hr->d_in, "HadamardRotation input dimensions must match");
+    FAISS_THROW_IF_NOT_MSG(
+            d_out == hr->d_out,
+            "HadamardRotation output dimensions must match");
+    FAISS_THROW_IF_NOT_MSG(
+            seed == hr->seed, "HadamardRotation seeds must match");
 }
 
 /*********************************************
@@ -499,7 +518,7 @@ namespace {
 
 void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
     { // compute eigenvalues and vectors
-        FINTEGER info = 0, lwork = -1, di = d_in;
+        FINTEGER info = 0, lwork = -1, di = static_cast<FINTEGER>(d_in);
         double workq;
 
         dsyev_("Vectors as well",
@@ -511,8 +530,8 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                &workq,
                &lwork,
                &info);
-        lwork = FINTEGER(workq);
-        double* work = new double[lwork];
+        lwork = static_cast<FINTEGER>(workq);
+        std::vector<double> work(lwork);
 
         dsyev_("Vectors as well",
                "Upper",
@@ -520,11 +539,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
                cov,
                &di,
                eigenvalues,
-               work,
+               work.data(),
                &lwork,
                &info);
-
-        delete[] work;
 
         if (info != 0) {
             fprintf(stderr,
@@ -536,8 +553,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
 
         if (verbose && d_in <= 10) {
             printf("info=%ld new eigvals=[", long(info));
-            for (size_t j = 0; j < d_in; j++)
+            for (size_t j = 0; j < d_in; j++) {
                 printf("%g ", eigenvalues[j]);
+            }
             printf("]\n");
 
             double* ci = cov;
@@ -557,8 +575,9 @@ void eig(size_t d_in, double* cov, double* eigenvalues, int verbose) {
         std::swap(eigenvalues[i], eigenvalues[d_in - 1 - i]);
         double* v1 = cov + i * d_in;
         double* v2 = cov + (d_in - 1 - i) * d_in;
-        for (size_t j = 0; j < d_in; j++)
+        for (size_t j = 0; j < d_in; j++) {
             std::swap(v1[j], v2[j]);
+        }
     }
 }
 
@@ -575,16 +594,19 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
     if (have_bias) { // we may want to skip the bias
         const float* xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 mean[j] += *xi++;
+            }
         }
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             mean[j] /= n;
+        }
     }
     if (verbose) {
         printf("mean=[");
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             printf("%g ", mean[j]);
+        }
         printf("]\n");
     }
 
@@ -595,12 +617,13 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         { // initialize with  mean * mean^T term
             float* ci = cov;
             for (int i = 0; i < d_in; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     *ci++ = -n * mean[i] * mean[j];
+                }
             }
         }
         {
-            FINTEGER di = d_in, ni = n;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
             float one = 1.0;
             ssyrk_("Up",
                    "Non transposed",
@@ -617,26 +640,30 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
             float* ci = cov;
             printf("cov=\n");
             for (int i = 0; i < d_in; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     printf("%10g ", *ci++);
+                }
                 printf("\n");
             }
         }
 
         std::vector<double> covd(d_in * d_in);
-        for (size_t i = 0; i < d_in * d_in; i++)
+        for (size_t i = 0; i < d_in * d_in; i++) {
             covd[i] = cov[i];
+        }
 
         std::vector<double> eigenvaluesd(d_in);
 
         eig(d_in, covd.data(), eigenvaluesd.data(), verbose);
 
-        for (size_t i = 0; i < d_in * d_in; i++)
+        for (size_t i = 0; i < d_in * d_in; i++) {
             PCAMat[i] = covd[i];
+        }
         eigenvalues.resize(d_in);
 
-        for (int i = 0; i < d_in; i++)
+        for (int i = 0; i < d_in; i++) {
             eigenvalues[i] = eigenvaluesd[i];
+        }
 
     } else {
         std::vector<float> xc(n * d_in);
@@ -650,7 +677,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         // compute Gram matrix
         std::vector<float> gram(n * n);
         {
-            FINTEGER di = d_in, ni = n;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
             float one = 1.0, zero = 0.0;
             ssyrk_("Up",
                    "Transposed",
@@ -676,8 +703,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         }
 
         std::vector<double> gramd(n * n);
-        for (size_t i = 0; i < n * n; i++)
+        for (size_t i = 0; i < n * n; i++) {
             gramd[i] = gram[i];
+        }
 
         std::vector<double> eigenvaluesd(n);
 
@@ -687,17 +715,19 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 
         PCAMat.resize(d_in * n);
 
-        for (size_t i = 0; i < n * n; i++)
+        for (size_t i = 0; i < n * n; i++) {
             gram[i] = gramd[i];
+        }
 
         eigenvalues.resize(d_in);
         // fill in only the n first ones
-        for (idx_t i = 0; i < n; i++)
+        for (idx_t i = 0; i < n; i++) {
             eigenvalues[i] = eigenvaluesd[i];
+        }
 
         { // compute PCAMat = x' * v
-            FINTEGER di = d_in, ni = n;
-            float one = 1.0;
+            FINTEGER di = d_in, ni = static_cast<FINTEGER>(n);
+            float one = 1.0, zero = 0.0;
 
             sgemm_("Non",
                    "Non Trans",
@@ -709,7 +739,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
                    &di,
                    gram.data(),
                    &ni,
-                   &one,
+                   &zero,
                    PCAMat.data(),
                    &di);
         }
@@ -718,8 +748,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
             float* ci = PCAMat.data();
             printf("PCAMat=\n");
             for (idx_t i = 0; i < n; i++) {
-                for (int j = 0; j < d_in; j++)
+                for (int j = 0; j < d_in; j++) {
                     printf("%10g ", *ci++);
+                }
                 printf("\n");
             }
         }
@@ -731,7 +762,9 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 }
 
 void PCAMatrix::copy_from(const PCAMatrix& other) {
-    FAISS_THROW_IF_NOT(other.is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            other.is_trained,
+            "source PCAMatrix must be trained before copying");
     mean = other.mean;
     eigenvalues = other.eigenvalues;
     PCAMat = other.PCAMat;
@@ -754,14 +787,17 @@ void PCAMatrix::prepare_Ab() {
         if (eigen_power != 0) {
             float* ai = A.data();
             for (int i = 0; i < d_out; i++) {
-                float factor = pow(eigenvalues[i] + epsilon, eigen_power);
-                for (int j = 0; j < d_in; j++)
+                float factor = std::pow(eigenvalues[i] + epsilon, eigen_power);
+                for (int j = 0; j < d_in; j++) {
                     *ai++ *= factor;
+                }
             }
         }
 
         if (balanced_bins != 0) {
-            FAISS_THROW_IF_NOT(d_out % balanced_bins == 0);
+            FAISS_THROW_IF_NOT_MSG(
+                    d_out % balanced_bins == 0,
+                    "output dimension must be divisible by balanced_bins");
             int dsub = d_out / balanced_bins;
             std::vector<float> Ain;
             std::swap(A, Ain);
@@ -789,8 +825,9 @@ void PCAMatrix::prepare_Ab() {
 
             if (verbose) {
                 printf("  bin accu=[");
-                for (int i = 0; i < balanced_bins; i++)
+                for (int i = 0; i < balanced_bins; i++) {
                     printf("%g ", accu[i]);
+                }
                 printf("]\n");
             }
         }
@@ -808,8 +845,9 @@ void PCAMatrix::prepare_Ab() {
         if (eigen_power != 0) {
             for (int i = 0; i < d_out; i++) {
                 float factor = pow(eigenvalues[i], eigen_power);
-                for (int j = 0; j < d_out; j++)
+                for (int j = 0; j < d_out; j++) {
                     rr.A[j * d_out + i] *= factor;
+                }
             }
         }
 
@@ -839,8 +877,9 @@ void PCAMatrix::prepare_Ab() {
 
     for (int i = 0; i < d_out; i++) {
         float accu = 0;
-        for (int j = 0; j < d_in; j++)
+        for (int j = 0; j < d_in; j++) {
             accu -= mean[j] * A[j + i * d_in];
+        }
         b[i] = accu;
     }
 
@@ -864,7 +903,7 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                init_rotation.data(),
                d * d * sizeof(rotation[0]));
     } else {
-        RandomRotationMatrix rrot(d, d);
+        RandomRotationMatrix rrot(static_cast<int>(d), static_cast<int>(d));
         rrot.init(seed);
         for (size_t i = 0; i < d * d; i++) {
             rotation[i] = rrot.A[i];
@@ -881,9 +920,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
     std::vector<double> u(d * d), vt(d * d), singvals(d);
 
     for (int i = 0; i < max_iter; i++) {
-        print_if_verbose("rotation", rotation, d, d);
+        print_if_verbose(
+                "rotation", rotation, static_cast<int>(d), static_cast<int>(d));
         { // rotated_data = np.dot(training_data, rotation)
-            FINTEGER di = d, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     ni = static_cast<FINTEGER>(n);
             double one = 1, zero = 0;
             dgemm_("N",
                    "N",
@@ -899,14 +940,19 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    rotated_x.data(),
                    &di);
         }
-        print_if_verbose("rotated_x", rotated_x, n, d);
+        print_if_verbose(
+                "rotated_x",
+                rotated_x,
+                static_cast<int>(n),
+                static_cast<int>(d));
         // binarize
         for (size_t j = 0; j < n * d; j++) {
             rotated_x[j] = rotated_x[j] < 0 ? -1 : 1;
         }
         // covariance matrix
         { // rotated_data = np.dot(training_data, rotation)
-            FINTEGER di = d, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     ni = static_cast<FINTEGER>(n);
             double one = 1, zero = 0;
             dgemm_("N",
                    "T",
@@ -922,10 +968,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    cov_mat.data(),
                    &di);
         }
-        print_if_verbose("cov_mat", cov_mat, d, d);
+        print_if_verbose(
+                "cov_mat", cov_mat, static_cast<int>(d), static_cast<int>(d));
         // SVD
         {
-            FINTEGER di = d;
+            FINTEGER di = static_cast<FINTEGER>(d);
             FINTEGER lwork = -1, info;
             double lwork1;
 
@@ -945,8 +992,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                     &lwork,
                     &info);
 
-            FAISS_THROW_IF_NOT(info == 0);
-            lwork = size_t(lwork1);
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK dgesvd workspace query returned info=%d",
+                    int(info));
+            lwork = static_cast<FINTEGER>(lwork1);
             std::vector<double> work(lwork);
             dgesvd_("A",
                     "A",
@@ -964,11 +1014,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                     &info);
             FAISS_THROW_IF_NOT_FMT(info == 0, "sgesvd returned info=%d", info);
         }
-        print_if_verbose("u", u, d, d);
-        print_if_verbose("vt", vt, d, d);
+        print_if_verbose("u", u, static_cast<int>(d), static_cast<int>(d));
+        print_if_verbose("vt", vt, static_cast<int>(d), static_cast<int>(d));
         // update rotation
         {
-            FINTEGER di = d;
+            FINTEGER di = static_cast<FINTEGER>(d);
             double one = 1, zero = 0;
             dgemm_("N",
                    "T",
@@ -984,7 +1034,11 @@ void ITQMatrix::train(idx_t n, const float* xf) {
                    rotation.data(),
                    &di);
         }
-        print_if_verbose("final rot", rotation, d, d);
+        print_if_verbose(
+                "final rot",
+                rotation,
+                static_cast<int>(d),
+                static_cast<int>(d));
     }
     A.resize(d * d);
     for (size_t i = 0; i < d; i++) {
@@ -1001,14 +1055,17 @@ ITQTransform::ITQTransform(int din, int dout, bool do_pca_in)
           itq(dout),
           pca_then_itq(din, dout, false) {
     if (!do_pca_in) {
-        FAISS_THROW_IF_NOT(din == dout);
+        FAISS_THROW_IF_NOT_MSG(
+                din == dout,
+                "input and output dimensions must match when PCA is disabled");
     }
     max_train_per_dim = 10;
     is_trained = false;
 }
 
 void ITQTransform::train(idx_t n, const float* x_in) {
-    FAISS_THROW_IF_NOT(!is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            !is_trained, "ITQTransform has already been trained");
 
     size_t max_train_points = std::max(d_in * max_train_per_dim, 32768);
     const float* x =
@@ -1100,9 +1157,10 @@ void ITQTransform::apply_noalloc(idx_t n, const float* x, float* xt) const {
 void ITQTransform::check_identical(const VectorTransform& other_in) const {
     VectorTransform::check_identical(other_in);
     auto other = dynamic_cast<const ITQTransform*>(&other_in);
-    FAISS_THROW_IF_NOT(other);
+    FAISS_THROW_IF_NOT_MSG(other, "failed to cast to ITQTransform");
     pca_then_itq.check_identical(other->pca_then_itq);
-    FAISS_THROW_IF_NOT(other->mean == mean);
+    FAISS_THROW_IF_NOT_MSG(
+            other->mean == mean, "ITQTransform mean vectors must match");
 }
 
 /*********************************************
@@ -1157,16 +1215,19 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
         std::vector<float> sum(d);
         const float* xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 sum[j] += *xi++;
+            }
         }
-        for (size_t i = 0; i < d; i++)
+        for (size_t i = 0; i < d; i++) {
             sum[i] /= n;
+        }
         float* yi = xtrain.data();
         xi = x;
         for (idx_t i = 0; i < n; i++) {
-            for (int j = 0; j < d_in; j++)
+            for (int j = 0; j < d_in; j++) {
                 *yi++ = *xi++ - sum[j];
+            }
             yi += d - d_in;
         }
     }
@@ -1175,16 +1236,18 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
     if (A.size() == 0) {
         A.resize(d * d);
         rotation = A.data();
-        if (verbose)
+        if (verbose) {
             printf("  OPQMatrix::train: making random %zd*%zd rotation\n",
                    d,
                    d);
+        }
         float_randn(rotation, d * d, 1234);
         matrix_qr(d, d, rotation);
         // we use only the d * d2 upper part of the matrix
         A.resize(d * d2);
     } else {
-        FAISS_THROW_IF_NOT(A.size() == d * d2);
+        FAISS_THROW_IF_NOT_MSG(
+                A.size() == d * d2, "rotation matrix A has incorrect size");
         rotation = A.data();
     }
 
@@ -1198,7 +1261,9 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
     double t0 = getmillisecs();
     for (int iter = 0; iter < niter; iter++) {
         { // torch.mm(xtrain, rotation:t())
-            FINTEGER di = d, d2i = d2, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     d2i = static_cast<FINTEGER>(d2),
+                     ni = static_cast<FINTEGER>(n);
             float zero = 0, one = 1;
             sgemm_("Transposed",
                    "Not transposed",
@@ -1233,18 +1298,21 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
 
         float pq_err = fvec_L2sqr(pq_recons.data(), xproj.data(), n * d2) / n;
 
-        if (verbose)
+        if (verbose) {
             printf("    Iteration %d (%d PQ iterations):"
                    "%.3f s, obj=%g\n",
                    iter,
                    pq_regular.cp.niter,
                    (getmillisecs() - t0) / 1000.0,
                    pq_err);
+        }
 
         {
             float *u = tmp.data(), *vt = &tmp[d * d];
             float* sing_val = &tmp[2 * d * d];
-            FINTEGER di = d, d2i = d2, ni = n;
+            FINTEGER di = static_cast<FINTEGER>(d),
+                     d2i = static_cast<FINTEGER>(d2),
+                     ni = static_cast<FINTEGER>(n);
             float one = 1, zero = 0;
 
             if (verbose) {
@@ -1283,7 +1351,11 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
                     &lwork,
                     &info);
 
-            lwork = int(worksz);
+            FAISS_THROW_IF_NOT_FMT(
+                    info == 0,
+                    "LAPACK sgesvd workspace query returned info=%d",
+                    int(info));
+            lwork = static_cast<FINTEGER>(worksz);
             std::vector<float> work(lwork);
             // u and vt swapped
             sgesvd_("All",
@@ -1320,8 +1392,9 @@ void OPQMatrix::train(idx_t n, const float* x_in) {
 
     // revert A matrix
     if (d > static_cast<size_t>(d_in)) {
-        for (long i = 0; i < d_out; i++)
+        for (long i = 0; i < d_out; i++) {
             memmove(&A[i * d_in], &A[i * d], sizeof(A[0]) * d_in);
+        }
         A.resize(d_in * d_out);
     }
 
@@ -1360,8 +1433,9 @@ void NormalizationTransform::check_identical(
         const VectorTransform& other_in) const {
     VectorTransform::check_identical(other_in);
     auto other = dynamic_cast<const NormalizationTransform*>(&other_in);
-    FAISS_THROW_IF_NOT(other);
-    FAISS_THROW_IF_NOT(other->norm == norm);
+    FAISS_THROW_IF_NOT_MSG(other, "failed to cast to NormalizationTransform");
+    FAISS_THROW_IF_NOT_MSG(
+            other->norm == norm, "normalization type must match");
 }
 
 /*********************************************
@@ -1389,7 +1463,8 @@ void CenteringTransform::train(idx_t n, const float* x) {
 
 void CenteringTransform::apply_noalloc(idx_t n, const float* x, float* xt)
         const {
-    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            is_trained, "CenteringTransform has not been trained");
 
     for (idx_t i = 0; i < n; i++) {
         for (int j = 0; j < d_in; j++) {
@@ -1400,7 +1475,8 @@ void CenteringTransform::apply_noalloc(idx_t n, const float* x, float* xt)
 
 void CenteringTransform::reverse_transform(idx_t n, const float* xt, float* x)
         const {
-    FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            is_trained, "CenteringTransform has not been trained");
 
     for (idx_t i = 0; i < n; i++) {
         for (int j = 0; j < d_in; j++) {
@@ -1413,8 +1489,9 @@ void CenteringTransform::check_identical(
         const VectorTransform& other_in) const {
     VectorTransform::check_identical(other_in);
     auto other = dynamic_cast<const CenteringTransform*>(&other_in);
-    FAISS_THROW_IF_NOT(other);
-    FAISS_THROW_IF_NOT(other->mean == mean);
+    FAISS_THROW_IF_NOT_MSG(other, "failed to cast to CenteringTransform");
+    FAISS_THROW_IF_NOT_MSG(
+            other->mean == mean, "CenteringTransform mean vectors must match");
 }
 
 /*********************************************
@@ -1429,7 +1506,9 @@ RemapDimensionsTransform::RemapDimensionsTransform(
     map.resize(dout);
     for (int i = 0; i < dout; i++) {
         map[i] = map_in[i];
-        FAISS_THROW_IF_NOT(map[i] == -1 || (map[i] >= 0 && map[i] < din));
+        FAISS_THROW_IF_NOT_MSG(
+                map[i] == -1 || (map[i] >= 0 && map[i] < din),
+                "map entries must be -1 (unused) or valid input dimension indices");
     }
 }
 
@@ -1451,8 +1530,9 @@ RemapDimensionsTransform::RemapDimensionsTransform(
             }
         }
     } else {
-        for (int i = 0; i < din && i < dout; i++)
+        for (int i = 0; i < din && i < dout; i++) {
             map[i] = i;
+        }
     }
 }
 
@@ -1474,8 +1554,9 @@ void RemapDimensionsTransform::reverse_transform(
     memset(x, 0, sizeof(*x) * n * d_in);
     for (idx_t i = 0; i < n; i++) {
         for (int j = 0; j < d_out; j++) {
-            if (map[j] >= 0)
+            if (map[j] >= 0) {
                 x[map[j]] = xt[j];
+            }
         }
         x += d_in;
         xt += d_out;
@@ -1486,6 +1567,7 @@ void RemapDimensionsTransform::check_identical(
         const VectorTransform& other_in) const {
     VectorTransform::check_identical(other_in);
     auto other = dynamic_cast<const RemapDimensionsTransform*>(&other_in);
-    FAISS_THROW_IF_NOT(other);
-    FAISS_THROW_IF_NOT(other->map == map);
+    FAISS_THROW_IF_NOT_MSG(other, "failed to cast to RemapDimensionsTransform");
+    FAISS_THROW_IF_NOT_MSG(
+            other->map == map, "RemapDimensionsTransform maps must match");
 }

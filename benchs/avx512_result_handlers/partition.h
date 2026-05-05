@@ -7,6 +7,8 @@
 
 #pragma once
 
+#if defined(__x86_64__)
+
 #include <cstddef>
 #include <cstdint>
 
@@ -38,3 +40,5 @@ void argpartition(size_t n, float* val, int32_t* idx, size_t k);
  * @param idx   Array of indices (modified in place, reordered with values)
  */
 void argsort(size_t n, float* val, int32_t* idx);
+
+#endif // defined(__x86_64__)

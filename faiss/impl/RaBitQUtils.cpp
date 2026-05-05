@@ -8,6 +8,7 @@
 #include <faiss/impl/RaBitQUtils.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <algorithm>
@@ -153,6 +154,7 @@ QueryFactorsData compute_query_factors(
         std::vector<uint8_t>& rotated_qq) {
     FAISS_THROW_IF_NOT(qb <= 8);
     FAISS_THROW_IF_NOT(qb > 0);
+    FAISS_THROW_IF_NOT(d > 0);
 
     QueryFactorsData query_factors;
 
@@ -165,38 +167,42 @@ QueryFactorsData compute_query_factors(
     query_factors.g_error = std::sqrt(query_factors.qr_to_c_L2sqr);
 
     // Rotate the query (subtract centroid)
+    // Save aliasing state before resize(), which may reallocate the buffer.
+    const bool query_aliased = (query == rotated_q.data());
+    FAISS_THROW_IF_NOT_MSG(
+            !query_aliased || centroid == nullptr,
+            "query aliasing is only supported in the IVF residual path "
+            "(centroid == nullptr)");
     rotated_q.resize(d);
-    for (size_t i = 0; i < d; i++) {
-        if (i < rotated_q.size()) {
-            rotated_q[i] =
-                    query[i] - ((centroid == nullptr) ? 0.0f : centroid[i]);
+    if (centroid == nullptr) {
+        // Caller may pass query == rotated_q.data() (IVF residual path);
+        // memcpy with overlapping src/dst is UB, so skip the copy in that case.
+        if (!query_aliased) {
+            memcpy(rotated_q.data(), query, d * sizeof(float));
+        }
+    } else {
+        for (size_t i = 0; i < d; i++) {
+            rotated_q[i] = query[i] - centroid[i];
         }
     }
 
-    const float inv_d_sqrt =
-            (d == 0) ? 1.0f : (1.0f / std::sqrt(static_cast<float>(d)));
+    const float inv_d_sqrt = 1.0f / std::sqrt(static_cast<float>(d));
 
     // Compute quantization range
     float v_min = std::numeric_limits<float>::max();
     float v_max = std::numeric_limits<float>::lowest();
 
+    const float* rq = rotated_q.data();
     if (centered) {
         float z_max = Z_MAX_BY_QB[qb - 1];
         float v_radius = z_max * std::sqrt(query_factors.qr_to_c_L2sqr / d);
         v_min = -v_radius;
         v_max = v_radius;
     } else {
-        // Only compute min/max if we have dimensions to process
-        if (d > 0 && !rotated_q.empty()) {
-            for (size_t i = 0; i < d; i++) {
-                const float v_q = rotated_q[i];
-                v_min = std::min(v_min, v_q);
-                v_max = std::max(v_max, v_q);
-            }
-        } else {
-            // For empty dimensions, use default range
-            v_min = 0.0f;
-            v_max = 1.0f;
+        for (size_t i = 0; i < d; i++) {
+            const float v_q = rq[i];
+            v_min = std::min(v_min, v_q);
+            v_max = std::max(v_max, v_q);
         }
     }
 
@@ -209,25 +215,18 @@ QueryFactorsData compute_query_factors(
     size_t sum_qq = 0;
     int64_t sum2_signed_odd_int = 0;
 
-    // Process arrays - throw error if they are unexpectedly empty
-    if (d > 0 && !rotated_q.empty() && !rotated_qq.empty()) {
-        for (size_t i = 0; i < d; i++) {
-            const float v_q = rotated_q[i];
-            // Non-randomized scalar quantization
-            const uint8_t v_qq = std::clamp<float>(
-                    std::round((v_q - v_min) * inv_delta), 0, max_code);
-            rotated_qq[i] = v_qq;
-            sum_qq += v_qq;
+    uint8_t* rqq = rotated_qq.data();
+    for (size_t i = 0; i < d; i++) {
+        const float v_q = rq[i];
+        const uint8_t v_qq = std::clamp<float>(
+                std::round((v_q - v_min) * inv_delta), 0, max_code);
+        rqq[i] = v_qq;
+        sum_qq += v_qq;
 
-            if (centered) {
-                int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
-                sum2_signed_odd_int += signed_odd_int * signed_odd_int;
-            }
+        if (centered) {
+            int64_t signed_odd_int = int64_t(v_qq) * 2 - max_code;
+            sum2_signed_odd_int += signed_odd_int * signed_odd_int;
         }
-    } else {
-        FAISS_THROW_MSG(
-                "Arrays unexpectedly empty when d=" + std::to_string(d) +
-                "or d is incorrectly set");
     }
 
     // Compute query factors
@@ -242,11 +241,15 @@ QueryFactorsData compute_query_factors(
         query_factors.int_dot_scale = 1.0f;
     }
 
-    // Compute query norm for inner product metric
+    // Compute query norm for inner product metric.
+    // When centroid is nullptr (IVF residual path), qr_to_c_L2sqr already
+    // holds fvec_norm_L2sqr(query, d) from line 164, so reuse it.
     query_factors.qr_norm_L2sqr = 0.0f;
     query_factors.q_dot_c = 0.0f;
     if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
-        query_factors.qr_norm_L2sqr = fvec_norm_L2sqr(query, d);
+        query_factors.qr_norm_L2sqr = (centroid == nullptr)
+                ? query_factors.qr_to_c_L2sqr
+                : fvec_norm_L2sqr(query, d);
         if (centroid != nullptr) {
             query_factors.q_dot_c = fvec_inner_product(query, centroid, d);
         }
@@ -306,6 +309,9 @@ size_t compute_per_vector_storage_size(size_t nb_bits, size_t d) {
     }
 }
 
+// Non-template wrapper with dynamic dispatch (one dispatch per call).
+// The hot path in RaBitQuantizer dispatches once at distance computer
+// construction, so per-vector dispatch only affects this utility path.
 float compute_full_multibit_distance(
         const uint8_t* sign_bits,
         const uint8_t* ex_code,
@@ -315,18 +321,18 @@ float compute_full_multibit_distance(
         size_t d,
         size_t ex_bits,
         MetricType metric_type) {
-    const float cb = -(static_cast<float>(1 << ex_bits) - 0.5f);
-
-    float ex_ip = rabitq::multibit::compute_inner_product(
-            sign_bits, ex_code, rotated_q, d, ex_bits, cb);
-
-    float dist = qr_base + ex_fac.f_add_ex + ex_fac.f_rescale_ex * ex_ip;
-
-    if (metric_type == MetricType::METRIC_L2) {
-        dist = std::max(0.0f, dist);
-    }
-
-    return dist;
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+            [&]<SIMDLevel SL>() {
+                return compute_full_multibit_distance<SL>(
+                        sign_bits,
+                        ex_code,
+                        ex_fac,
+                        rotated_q,
+                        qr_base,
+                        d,
+                        ex_bits,
+                        metric_type);
+            });
 }
 
 void populate_block_aux_from_flat_storage(

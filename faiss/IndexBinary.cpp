@@ -17,7 +17,9 @@
 namespace faiss {
 
 IndexBinary::IndexBinary(idx_t d_, MetricType metric)
-        : d(d_), code_size(d_ / 8), metric_type(metric) {
+        : d(static_cast<int>(d_)),
+          code_size(static_cast<int>(d_ / 8)),
+          metric_type(metric) {
     FAISS_THROW_IF_NOT(d_ % 8 == 0);
 }
 

@@ -29,7 +29,7 @@ ArrayInvertedLists* set_array_invlist(
         IndexIVF* ivf,
         std::vector<std::vector<idx_t>>& ids);
 void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f);
-void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f);
+void read_ScalarQuantizer(ScalarQuantizer* ivsc, IOReader* f, const Index& idx);
 
 } // namespace faiss
 

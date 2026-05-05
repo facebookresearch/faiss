@@ -185,6 +185,62 @@ class TestException(unittest.TestCase):
         #    assert 'could not parse' in str(e)
 
 
+class TestAddSACodes(unittest.TestCase):
+    """Regression tests for add_sa_codes and sa_encode wrapper correctness."""
+
+    D = 32
+    NB = 200
+
+    def setUp(self):
+        rng = np.random.default_rng(42)
+        self.xb = rng.random((self.NB, self.D), dtype=np.float32)
+        self.xtrain = rng.random((500, self.D), dtype=np.float32)
+        # IDMap2 wrapping PQ8x2: outer index stores (id → code) pairs;
+        # inner PQ8x2 encodes vectors via sa_encode / add_sa_codes.
+        self.index = faiss.index_factory(self.D, "IDMap2,PQ8x2")
+        self.index.train(self.xtrain)
+
+    def test_add_sa_codes_int32_ids_stored_correctly(self):
+        """int32 ids must be coerced to int64 before the C++ boundary.
+
+        Without coercion swig_ptr hands the C++ side a pointer to 4-byte
+        int32 data; C++ interprets every 8 bytes as one idx_t, producing
+        garbage ids with no exception."""
+        codes = self.index.index.sa_encode(self.xb)
+
+        ids_int64 = np.arange(self.NB, dtype="int64") + 1000
+        ids_int32 = ids_int64.astype("int32")
+
+        self.index.add_sa_codes(codes, ids_int32)
+
+        stored = faiss.vector_to_array(self.index.id_map)
+        np.testing.assert_array_equal(stored, ids_int64)
+
+    def test_add_sa_codes_int64_ids_unchanged(self):
+        """int64 ids must pass through as-is (np.ascontiguousarray is a no-op
+        when the array is already int64 and contiguous)."""
+        codes = self.index.index.sa_encode(self.xb)
+
+        ids = np.arange(self.NB, dtype="int64") + 500
+        self.index.add_sa_codes(codes, ids)
+
+        stored = faiss.vector_to_array(self.index.id_map)
+        np.testing.assert_array_equal(stored, ids)
+
+    def test_sa_encode_preallocated_matches_auto_allocated(self):
+        """sa_encode with a pre-allocated buffer must return the same codes
+        as the auto-allocated path, exercising both branches of the hoisted
+        sa_code_size() call."""
+        inner = self.index.index
+        codes_auto = inner.sa_encode(self.xb)
+
+        buf = np.empty_like(codes_auto)
+        codes_pre = inner.sa_encode(self.xb, buf)
+
+        np.testing.assert_array_equal(codes_auto, codes_pre)
+        self.assertIs(codes_pre, buf)
+
+
 @unittest.skipIf(faiss.swig_version() < 0x040000, "swig < 4 does not support Doxygen comments")
 class TestDoxygen(unittest.TestCase):
 

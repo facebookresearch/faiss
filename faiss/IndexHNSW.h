@@ -18,6 +18,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/Panorama.h>
+#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -28,7 +29,7 @@ struct IndexHNSW;
  * link structure built on top */
 
 struct IndexHNSW : Index {
-    typedef HNSW::storage_idx_t storage_idx_t;
+    using storage_idx_t = HNSW::storage_idx_t;
 
     // the link structure
     HNSW hnsw;
@@ -52,11 +53,17 @@ struct IndexHNSW : Index {
     // See impl/VisitedTable.h.
     std::optional<bool> use_visited_hashset;
 
+    // Per-node locks for HNSW graph construction.
+    LockVector locks;
+    // locks are freed after each call to add() unless this flag is set.
+    bool retain_locks = false;
+
     explicit IndexHNSW(int d = 0, int M = 32, MetricType metric = METRIC_L2);
     explicit IndexHNSW(Index* storage, int M = 32);
 
     ~IndexHNSW() override;
 
+    /// Adds vectors to the index. May not be called concurrently.
     void add(idx_t n, const float* x) override;
 
     /// Trains the storage if needed
@@ -259,9 +266,16 @@ struct IndexHNSWCagra : IndexHNSW {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    void range_search(
+            idx_t n,
+            const float* x,
+            float radius,
+            RangeSearchResult* result,
+            const SearchParameters* params = nullptr) const override;
+
     faiss::NumericType get_numeric_type() const;
     void set_numeric_type(faiss::NumericType numeric_type);
-    NumericType numeric_type_;
+    NumericType numeric_type_ = Float32;
 };
 
 } // namespace faiss

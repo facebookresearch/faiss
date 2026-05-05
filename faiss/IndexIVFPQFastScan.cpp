@@ -8,16 +8,16 @@
 #include <faiss/IndexIVFPQFastScan.h>
 
 #include <array>
-#include <cassert>
 #include <cstdio>
 
 #include <memory>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 #include <faiss/invlists/BlockInvertedLists.h>
@@ -117,6 +117,10 @@ IndexIVFPQFastScan::IndexIVFPQFastScan(const IndexIVFPQ& orig, int bbs_in)
     orig_invlists = orig.invlists;
 }
 
+size_t IndexIVFPQFastScan::fast_scan_code_size() const {
+    return M2 / 2;
+}
+
 /*********************************************************
  * Training
  *********************************************************/
@@ -186,16 +190,19 @@ void IndexIVFPQFastScan::encode_vectors(
  * Look-Up Table functions
  *********************************************************/
 
+// Explicit SIMD-level alias (no global bare aliases).
+using simd8float32 = simd8float32_tpl<SINGLE_SIMD_LEVEL_256>;
+
 void fvec_madd_simd(
         size_t n,
         const float* a,
         float bf,
         const float* b,
         float* c) {
-    assert(is_aligned_pointer(a));
-    assert(is_aligned_pointer(b));
-    assert(is_aligned_pointer(c));
-    assert(n % 8 == 0);
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(a), "pointer a is not aligned");
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(b), "pointer b is not aligned");
+    FAISS_THROW_IF_NOT_MSG(is_aligned_pointer(c), "pointer c is not aligned");
+    FAISS_THROW_IF_NOT_MSG(n % 8 == 0, "n must be a multiple of 8");
     simd8float32 bf8(bf);
     n /= 8;
     for (size_t i = 0; i < n; i++) {
@@ -312,7 +319,8 @@ namespace {
 
 struct IVFPQFastScanScanner : InvertedListScanner {
     using InvertedListScanner::scan_codes;
-    static constexpr int impl = 10; // based on search_implem_10
+    [[maybe_unused]] static constexpr int impl =
+            10;                     // based on search_implem_10
     static constexpr size_t nq = 1; // 1 query at a time.
     const IndexIVFPQFastScan& index;
     AlignedTable<uint8_t> dis_tables;
@@ -386,64 +394,86 @@ struct IVFPQFastScanScanner : InvertedListScanner {
             size_t ntotal,
             const uint8_t* codes,
             const idx_t* ids,
-            float* distances,
-            idx_t* labels,
-            size_t k) const override {
-        // initialize the current iteration heap to the worst possible value of
-        // the prior loop
-        std::vector<float> curr_dists(k, distances[0]);
-        std::vector<idx_t> curr_labels(k, labels[0]);
+            ResultHandler& handler) const override {
+        auto scan_with_heap = [&](auto* heap_handler) -> size_t {
+            const size_t k = heap_handler->k;
+            if (k == 0) {
+                return 0;
+            }
 
-        auto scanner = index.make_knn_scanner(
-                !keep_max, nq, k, curr_dists.data(), curr_labels.data(), sel);
+            // initialize the current iteration heap to the worst possible value
+            // of the caller-owned result handler.
+            std::vector<float> curr_dists(k, handler.threshold);
+            std::vector<idx_t> curr_labels(k, -1);
 
-        SIMDResultHandlerToFloat* rh = scanner->handler();
-
-        // This does not quite match search_implem_10, but it is fine because
-        // the scanner operates on a single query at a time, and this value is
-        // used as the query index. For a single query, the value is always 0.
-        int qmap1[1] = {0};
-
-        rh->q_map = qmap1;
-        rh->begin(&normalizers[0]);
-
-        rh->dbias = biases.get();
-        rh->ntotal = ntotal;
-        rh->id_map = ids;
-
-        scanner->accumulate_loop(
-                1,
-                roundup(ntotal, index.bbs),
-                index.bbs,
-                static_cast<int>(index.M2),
-                codes,
-                dis_tables.get(),
-                0,
-                index.get_block_stride());
-
-        // The handler is for the results of this iteration.
-        // Then we need a second heap to combine across iterations.
-        rh->end();
-
-        if (keep_max) {
-            minheap_addn(
+            auto scanner = index.make_knn_scanner(
+                    !keep_max,
+                    nq,
                     k,
-                    distances,
-                    labels,
                     curr_dists.data(),
                     curr_labels.data(),
-                    k);
+                    sel);
+
+            SIMDResultHandlerToFloat* rh = scanner->handler();
+
+            // This does not quite match search_implem_10, but it is fine
+            // because the scanner operates on a single query at a time, and
+            // this value is used as the query index. For a single query, the
+            // value is always 0.
+            int qmap1[1] = {0};
+
+            rh->q_map = qmap1;
+            rh->begin(&normalizers[0]);
+
+            rh->dbias = biases.get();
+            rh->ntotal = ntotal;
+            rh->id_map = ids;
+
+            scanner->accumulate_loop(
+                    1,
+                    roundup(ntotal, index.bbs),
+                    index.bbs,
+                    static_cast<int>(index.M2),
+                    codes,
+                    dis_tables.get(),
+                    0,
+                    index.get_block_stride());
+
+            const size_t scan_cnt = rh->count_scanned_rows();
+            rh->end();
+
+            handler.stats.scan_cnt += scan_cnt;
+            size_t nup = 0;
+            for (size_t j = 0; j < k; j++) {
+                if (curr_labels[j] < 0) {
+                    continue;
+                }
+                if (handler.add_result(curr_dists[j], curr_labels[j])) {
+                    handler.stats.nheap_updates++;
+                    nup++;
+                }
+            }
+            return nup;
+        };
+
+        if (!keep_max) {
+            using C = CMax<float, idx_t>;
+            if (auto* heap_handler =
+                        dynamic_cast<HeapResultHandler<C, false>*>(&handler)) {
+                return scan_with_heap(heap_handler);
+            }
         } else {
-            maxheap_addn(
-                    k,
-                    distances,
-                    labels,
-                    curr_dists.data(),
-                    curr_labels.data(),
-                    k);
+            using C = CMin<float, idx_t>;
+            if (auto* heap_handler =
+                        dynamic_cast<HeapResultHandler<C, false>*>(&handler)) {
+                return scan_with_heap(heap_handler);
+            }
         }
 
-        return rh->num_updates();
+        FAISS_THROW_MSG(
+                "IVFPQFastScanScanner::scan_codes requires HeapResultHandler; "
+                "custom ResultHandler scan is not supported by this optimized "
+                "scanner");
     }
 };
 

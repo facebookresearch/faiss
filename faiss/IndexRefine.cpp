@@ -84,6 +84,8 @@ void IndexRefine::search(
 
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            n <= INT64_MAX / k_base, "n * k_base would overflow int64");
     idx_t* base_labels = labels;
     float* base_distances = distances;
     std::unique_ptr<idx_t[]> del1;
@@ -99,8 +101,8 @@ void IndexRefine::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    for (idx_t i = 0; i < n * k_base; i++) {
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // parallelize over queries
@@ -125,12 +127,12 @@ void IndexRefine::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
@@ -200,10 +202,9 @@ void IndexRefine::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
 
 void IndexRefine::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
     size_t cs1 = base_index->sa_code_size(), cs2 = refine_index->sa_code_size();
-    std::unique_ptr<uint8_t[]> tmp2(
-            new uint8_t[n * refine_index->sa_code_size()]);
+    std::unique_ptr<uint8_t[]> tmp2(new uint8_t[n * cs2]);
     for (idx_t i = 0; i < n; i++) {
-        memcpy(tmp2.get() + i * cs2, bytes + i * (cs1 + cs2), cs2);
+        memcpy(tmp2.get() + i * cs2, bytes + i * (cs1 + cs2) + cs1, cs2);
     }
 
     refine_index->sa_decode(n, tmp2.get(), x);
@@ -271,6 +272,8 @@ void IndexRefineFlat::search(
 
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            n <= INT64_MAX / k_base, "n * k_base would overflow int64");
     idx_t* base_labels = labels;
     float* base_distances = distances;
     std::unique_ptr<idx_t[]> del1;
@@ -286,8 +289,8 @@ void IndexRefineFlat::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    for (idx_t i = 0; i < n * k_base; i++) {
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     // compute refined distances
@@ -298,12 +301,12 @@ void IndexRefineFlat::search(
 
     // sort and store result
     if (metric_type == METRIC_L2) {
-        typedef CMax<float, idx_t> C;
+        using C = CMax<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
 
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        typedef CMin<float, idx_t> C;
+        using C = CMin<float, idx_t>;
         reorder_2_heaps<C>(
                 n, k, labels, distances, k_base, base_labels, base_distances);
     } else {
@@ -326,7 +329,7 @@ void IndexRefinePanorama::search(
     if (params_in) {
         params = dynamic_cast<const IndexRefineSearchParameters*>(params_in);
         FAISS_THROW_IF_NOT_MSG(
-                params, "IndexRefineFlat params have incorrect type");
+                params, "IndexRefinePanorama params have incorrect type");
     }
 
     idx_t k_base = (params != nullptr) ? idx_t(k * params->k_factor)
@@ -341,6 +344,8 @@ void IndexRefinePanorama::search(
 
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT(is_trained);
+    FAISS_THROW_IF_NOT_MSG(
+            n <= INT64_MAX / k_base, "n * k_base would overflow int64");
 
     std::unique_ptr<idx_t[]> del1;
     std::unique_ptr<float[]> del2;
@@ -352,8 +357,8 @@ void IndexRefinePanorama::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (int i = 0; i < n * k_base; i++) {
-        assert(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    for (idx_t i = 0; i < n * k_base; i++) {
+        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
     }
 
     refine_index->search_subset(

@@ -21,13 +21,24 @@
 #pragma once
 
 #include <faiss/impl/ResultHandler.h>
-
 #include <faiss/utils/Heap.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
 // Returns true if the fused kernel is available and the data was processed.
 // Returns false if the fused kernel is not available.
+bool exhaustive_L2sqr_fused_cmax(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms);
+
+// Per-SIMD-level implementation (defined in per-SIMD TUs).
+template <SIMDLevel>
 bool exhaustive_L2sqr_fused_cmax(
         const float* x,
         const float* y,

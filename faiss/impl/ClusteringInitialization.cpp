@@ -221,27 +221,27 @@ void ClusteringInitialization::init_kmeans_plus_plus(
     std::vector<double> cumsum(n);
 
     // Select remaining centroids using D² sampling
-    for (size_t c = result.first_new_centroid_idx; c < k; c++) {
-        // Compute cumulative sum
-        cumsum[0] = min_distances[0];
-        for (size_t i = 1; i < n; i++) {
-            cumsum[i] = cumsum[i - 1] + min_distances[i];
-        }
+    with_simd_level([&]<SIMDLevel SL>() {
+        for (size_t c = result.first_new_centroid_idx; c < k; c++) {
+            // Compute cumulative sum
+            cumsum[0] = min_distances[0];
+            for (size_t i = 1; i < n; i++) {
+                cumsum[i] = cumsum[i - 1] + min_distances[i];
+            }
 
-        // Sample using precomputed cumsum
-        size_t next_idx = sample_from_cumsum(cumsum, rng);
+            // Sample using precomputed cumsum
+            size_t next_idx = sample_from_cumsum(cumsum, rng);
 
-        float* new_centroid = centroids + c * d;
-        std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
+            float* new_centroid = centroids + c * d;
+            std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
 
-        // Update min distances incrementally
-        with_simd_level([&]<SIMDLevel SL>() {
+            // Update min distances incrementally
             for (size_t i = 0; i < n; i++) {
                 double dist = fvec_L2sqr<SL>(x + i * d, new_centroid, d);
                 min_distances[i] = std::min(min_distances[i], dist);
             }
-        });
-    }
+        }
+    });
 }
 
 void ClusteringInitialization::init_afkmc2(

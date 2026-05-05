@@ -181,14 +181,14 @@ struct AQInvertedListScanner : InvertedListScanner {
         tmp.resize(ia.d);
     }
 
-    const float* q0;
+    const float* q0 = nullptr;
 
     /// from now on we handle this query.
     void set_query(const float* query_vector) override {
         q0 = query_vector;
     }
 
-    const float* q;
+    const float* q = nullptr;
     /// following codes come from this inverted list
     void set_list(idx_t list_no_, float /*coarse_dis*/) override {
         this->list_no = list_no_;
@@ -312,6 +312,7 @@ InvertedListScanner* IndexIVFAdditiveQuantizer::get_InvertedListScanner(
             case AdditiveQuantizer::ST_norm_rq2x4:
                 A(ST_norm_cqint8)
 #undef A
+            case AdditiveQuantizer::ST_count:
             default:
                 FAISS_THROW_FMT(
                         "search type %d not supported", aq->search_type);

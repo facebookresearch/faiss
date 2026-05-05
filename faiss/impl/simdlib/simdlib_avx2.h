@@ -141,12 +141,17 @@ struct simd16uint16_tpl<SIMDLevel::AVX2> : simd256bit_tpl<SIMDLevel::AVX2> {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int idx = 0; idx < 16; idx++) {
-            ptr += sprintf(ptr, fmt, bytes[idx]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[idx]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -462,12 +467,17 @@ struct simd32uint8_tpl<SIMDLevel::AVX2> : simd256bit_tpl<SIMDLevel::AVX2> {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int idx = 0; idx < 32; idx++) {
-            ptr += sprintf(ptr, fmt, bytes[idx]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[idx]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -601,12 +611,17 @@ struct simd8uint32_tpl<SIMDLevel::AVX2> : simd256bit_tpl<SIMDLevel::AVX2> {
         storeu((void*)bytes);
         char res[1000];
         char* ptr = res;
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         for (int idx = 0; idx < 8; idx++) {
-            ptr += sprintf(ptr, fmt, bytes[idx]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[idx]);
         }
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         // strip last ,
         ptr[-1] = 0;
         return std::string(res);
@@ -727,7 +742,8 @@ struct simd8float32_tpl<SIMDLevel::AVX2> : simd256bit_tpl<SIMDLevel::AVX2> {
         char res[1000];
         char* ptr = res;
         for (int idx = 0; idx < 8; idx++) {
-            ptr += sprintf(ptr, "%g,", tab[idx]);
+            ptr += snprintf(
+                    ptr, (size_t)(res + sizeof(res) - ptr), "%g,", tab[idx]);
         }
         // strip last ,
         ptr[-1] = 0;

@@ -187,14 +187,14 @@ void estimators_from_tables_generic(
         int nscale = context.pq2x4_scale ? 2 : 0;
 
         for (size_t m = 0; m < index.M - nscale; m++) {
-            uint64_t c = bsr.read(index.nbits);
+            uint64_t c = bsr.read(static_cast<int>(index.nbits));
             dis += dt[c];
             dt += index.ksub;
         }
 
         if (nscale) {
             for (size_t m = 0; m < nscale; m++) {
-                uint64_t c = bsr.read(index.nbits);
+                uint64_t c = bsr.read(static_cast<int>(index.nbits));
                 dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;
             }
@@ -487,8 +487,8 @@ void IndexFastScan::search_implem_12(
         qbs_ = pq4_preferred_qbs(static_cast<int>(n));
     }
 
-    int LUT_nq =
-            pq4_pack_LUT_qbs(qbs_, M2, quantized_dis_tables.get(), LUT.get());
+    int LUT_nq = pq4_pack_LUT_qbs(
+            qbs_, static_cast<int>(M2), quantized_dis_tables.get(), LUT.get());
     FAISS_THROW_IF_NOT(LUT_nq == n);
 
     auto scanner = make_knn_scanner(
@@ -504,7 +504,7 @@ void IndexFastScan::search_implem_12(
                 qbs_,
 
                 ntotal2,
-                M2,
+                static_cast<int>(M2),
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,
@@ -528,7 +528,14 @@ void IndexFastScan::search_implem_14(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(bbs % 32 == 0);
 
-    int qbs2 = qbs == 0 ? 4 : qbs;
+    // The accumulate loop dispatch table only instantiates certain
+    // (nq, BB) pairs where BB = bbs/32.  Cap the query batch size to
+    // the maximum nq instantiated for the current BB so the caller
+    // doesn't have to know about internal template constraints.
+    //   BB=1 → nq up to 4,  BB=2 → nq up to 2,  BB>=3 → nq=1
+    int BB = bbs / 32;
+    int max_qbs = BB <= 1 ? 4 : BB == 2 ? 2 : 1;
+    int qbs2 = std::min(qbs == 0 ? 4 : qbs, max_qbs);
 
     // handle qbs2 blocking by recursive call
     if (n > qbs2) {
@@ -563,7 +570,11 @@ void IndexFastScan::search_implem_14(
     }
 
     AlignedTable<uint8_t> LUT(n * dim12);
-    pq4_pack_LUT(n, M2, quantized_dis_tables.get(), LUT.get());
+    pq4_pack_LUT(
+            static_cast<int>(n),
+            static_cast<int>(M2),
+            quantized_dis_tables.get(),
+            LUT.get());
 
     auto scanner = make_knn_scanner(
             C::is_max, n, k, ntotal, distances, labels, nullptr, impl, context);
@@ -575,10 +586,10 @@ void IndexFastScan::search_implem_14(
     // accessible through the SIMDResultHandlerToFloat* interface.
     if (!(skip & (2 | 4))) {
         scanner->accumulate_loop(
-                n,
+                static_cast<int>(n),
                 ntotal2,
                 bbs,
-                M2,
+                static_cast<int>(M2),
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,

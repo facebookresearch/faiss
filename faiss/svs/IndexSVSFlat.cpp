@@ -107,11 +107,11 @@ void IndexSVSFlat::serialize_impl(std::ostream& out) const {
 void IndexSVSFlat::deserialize_impl(std::istream& in) {
     FAISS_THROW_IF_MSG(impl, "Cannot deserialize: SVS index already loaded.");
     auto metric = to_svs_metric(metric_type);
-    auto status = impl->load(&impl, in, metric);
+    auto status = svs_runtime::FlatIndex::load(&impl, in, metric);
     if (!status.ok()) {
         FAISS_THROW_MSG(status.message());
     }
-    FAISS_THROW_IF_NOT(impl);
+    FAISS_THROW_IF_NOT_MSG(impl, "Failed to load SVS Flat index.");
 }
 
 } // namespace faiss

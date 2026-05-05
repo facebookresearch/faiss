@@ -4,6 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+#if defined(__x86_64__)
+
 #include <immintrin.h>
 #include <algorithm>
 #include <cassert>
@@ -109,3 +112,5 @@ int main() {
 
     return 0;
 }
+
+#endif // defined(__x86_64__)

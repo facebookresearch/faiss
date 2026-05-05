@@ -7,12 +7,22 @@
 
 #include <faiss/utils/distances_fused/distances_fused.h>
 
-#include <faiss/impl/platform_macros.h> // NOLINT
-
-#include <faiss/utils/distances_fused/avx512.h> // NOLINT
-#include <faiss/utils/distances_fused/simdlib_based.h>
+#include <faiss/impl/simd_dispatch.h>
 
 namespace faiss {
+
+// Scalar fallback: no fused kernel available.
+template <>
+bool exhaustive_L2sqr_fused_cmax<SIMDLevel::NONE>(
+        const float*,
+        const float*,
+        size_t,
+        size_t,
+        size_t,
+        Top1BlockResultHandler<CMax<float, int64_t>>&,
+        const float*) {
+    return false;
+}
 
 bool exhaustive_L2sqr_fused_cmax(
         const float* x,
@@ -27,21 +37,11 @@ bool exhaustive_L2sqr_fused_cmax(
         return true;
     }
 
-#ifdef __AVX512F__
-    // avx512 kernel
-    return exhaustive_L2sqr_fused_cmax_AVX512(x, y, d, nx, ny, res, y_norms);
-#elif defined(__AVX2__) || defined(__aarch64__)
-    // avx2 or arm neon kernel
-    return exhaustive_L2sqr_fused_cmax_simdlib(x, y, d, nx, ny, res, y_norms);
-#else
-    // not supported, please use a general-purpose kernel
-    (void)x;
-    (void)y;
-    (void)d;
-    (void)res;
-    (void)y_norms;
-    return false;
-#endif
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+            [&]<SIMDLevel SL>() {
+                return exhaustive_L2sqr_fused_cmax<SL>(
+                        x, y, d, nx, ny, res, y_norms);
+            });
 }
 
 } // namespace faiss

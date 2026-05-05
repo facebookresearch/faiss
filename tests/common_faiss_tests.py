@@ -8,6 +8,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
+import unittest
 
 import numpy as np
 import faiss
@@ -138,6 +139,50 @@ _SIMD_LEVEL_NAMES = {
     faiss.SIMDLevel_ARM_NEON: "ARM_NEON",
     faiss.SIMDLevel_ARM_SVE: "ARM_SVE",
 }
+
+
+class NoneSIMDLevel:
+    """Context manager that temporarily pins SIMDConfig to SIMDLevel.NONE.
+
+    Use inside a @for_all_simd_levels test to compute a reference value at
+    NONE for a cross-level equivalence check::
+
+        codes = quantizer.compute_codes(xb)
+        with NoneSIMDLevel():
+            codes_none = quantizer.compute_codes(xb)
+        np.testing.assert_array_equal(codes, codes_none)
+
+    The previous level is restored on exit (including via exception).
+
+    If SIMDLevel.NONE is not compiled into this build (static-AVX2 CI
+    lane), the context manager raises SkipTest from __enter__, so the
+    enclosing test_method is skipped cleanly without per-call guards.
+
+    Caveat: SkipTest raised from inside a self.subTest(...) block is
+    swallowed by the subTest mechanism instead of skipping the parent
+    test. When iterating with subTest, do an up-front availability check
+    before the loop::
+
+        if not faiss.SIMDConfig.is_simd_level_available(
+                faiss.SIMDLevel_NONE):
+            self.skipTest("SIMDLevel.NONE not available")
+        for x in cases:
+            with self.subTest(x=x):
+                ...
+                with NoneSIMDLevel():
+                    ...
+    """
+
+    def __enter__(self):
+        if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
+            raise unittest.SkipTest("SIMDLevel.NONE not available")
+        self._prev = faiss.SIMDConfig.get_level()
+        faiss.SIMDConfig.set_level(faiss.SIMDLevel_NONE)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        faiss.SIMDConfig.set_level(self._prev)
+        return False
 
 
 def for_all_simd_levels(cls):

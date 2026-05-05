@@ -13,6 +13,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResidualQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
 namespace faiss {
@@ -51,7 +52,7 @@ struct AQDistanceComputerDecompress : FlatCodesDistanceComputer {
               vd(vd_),
               d(iaq.d) {}
 
-    const float* q;
+    const float* q = nullptr;
     void set_query(const float* x) final {
         q = x;
     }
@@ -82,7 +83,7 @@ struct AQDistanceComputerLUT : FlatCodesDistanceComputer {
               aq(*iaq.aq),
               d(iaq.d) {}
 
-    float bias;
+    float bias = 0.0f;
     void set_query(const float* x) final {
         q = x;
         // this is quite sub-optimal for multiple queries
@@ -542,7 +543,7 @@ void ResidualCoarseQuantizer::search(
 
     int beam_size = int(k * actual_beam_factor);
     if (beam_size > ntotal) {
-        beam_size = ntotal;
+        beam_size = static_cast<int>(ntotal);
     }
     size_t memory_per_point = rq.memory_per_point(beam_size);
 
@@ -575,8 +576,17 @@ void ResidualCoarseQuantizer::search(
         return;
     }
 
-    std::vector<int32_t> codes(beam_size * rq.M * n);
-    std::vector<float> beam_distances(n * beam_size);
+    size_t codes_size = mul_no_overflow(
+            mul_no_overflow(
+                    static_cast<size_t>(beam_size), rq.M, "beam_size * M"),
+            static_cast<size_t>(n),
+            "beam_size * M * n");
+    size_t beam_dist_size = mul_no_overflow(
+            static_cast<size_t>(n),
+            static_cast<size_t>(beam_size),
+            "n * beam_size");
+    std::vector<int32_t> codes(codes_size);
+    std::vector<float> beam_distances(beam_dist_size);
 
     rq.refine_beam(
             n, 1, x, beam_size, codes.data(), nullptr, beam_distances.data());

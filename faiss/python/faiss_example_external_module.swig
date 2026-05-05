@@ -77,7 +77,7 @@ struct IDSelectorModulo : faiss::IDSelector {
 
     IDSelectorModulo(int mod): mod(mod) {}
 
-    bool is_member(faiss::idx_t id) const {
+    bool is_member(faiss::idx_t id) const override {
         return id % mod == 0;
     }
 

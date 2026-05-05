@@ -7,7 +7,10 @@
 import unittest
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
 
+
+@for_all_simd_levels
 class TestParameterSpace(unittest.TestCase):
 
     def test_nprobe(self):

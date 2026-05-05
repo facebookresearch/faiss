@@ -121,6 +121,78 @@ def train_ivf_index_with_2level(index, xt, **args):
     index.train(xt)
 
 
+def balanced_assignment_with_penalties(x, centroids, alpha = 0.03, num_iter = 20, maxk = 100): 
+    """
+    Assign vectors x to centroids with a balance constraint.
+
+    Iteratively adjusts per-cluster penalties so that oversized clusters
+    become less attractive. At each iteration the penalized distance for
+    cluster c is ``d(x, c)^2 + penalty_c^2`` and the penalty is updated as
+    ``penalty_c *= (binsize_c / n_opt) ** alpha`` where ``n_opt = n / nc``.
+
+    A single kNN call (with *maxk* neighbors) is done upfront; subsequent
+    iterations only re-weight among those candidates, making the routine
+    fast even for large datasets.
+
+    Reference: "Balancing clusters to reduce response time variability in
+    large scale image search", Tavenard et al., CBMI 2011.
+    https://inria.hal.science/inria-00576886/document
+    See also notebook N10159950.
+
+    Args:
+        x:          (n, d) float32 array of vectors to assign.
+        centroids:  (nc, d) float32 array of cluster centroids.
+        alpha:      exponent that controls how aggressively penalties grow.
+                    Higher values yield more balanced clusters at the cost
+                    of higher MSE.  Typical range: 0.01 – 0.1.
+        num_iter:   number of penalty-update iterations.
+        maxk:       number of nearest centroids to consider per vector.
+                    Must be <= nc.
+
+    Returns:
+        assign:  (n,) int64 array of centroid indices.
+        stats:   dict with keys
+
+                 - *imf*: imbalance factor (1.0 = perfectly balanced)
+                 - *mse*: mean squared error of the assignment
+                 - *binsize_min*, *binsize_max*: smallest / largest cluster
+                 - *penalty_min*, *penalty_max*: penalty value range
+                 - *alpha*: the alpha value used
+    """
+
+    nc = len(centroids)
+    n = len(x)
+    nopt = n / nc  # targed bin sizes
+
+    # we assign to the top-maxk clusters. The final assignment will pick among these clusters. 
+    full_d2, full_assign = faiss.knn(x, centroids, maxk)
+
+    # scalar penalty for each cluster
+    penalties = np.ones(nc, dtype=np.float32)
+
+    for it in range(num_iter):
+        # compute penalized assignment 
+        penalties2 = penalties ** 2
+        full_d2_penalized = full_d2 + penalties2[full_assign]
+        a0 = full_d2_penalized.argmin(axis=1)
+        assign = np.take_along_axis(full_assign, a0[:, None], axis=1).ravel()
+        binsizes = np.bincount(assign, minlength=nc)
+        # print(imbalance_factor(nc, assign), mse, int(binsizes.min()), int(binsizes.max()))
+        penalties *= (binsizes / nopt) ** alpha
+
+    stats = dict(
+        alpha=alpha,
+        imf=imbalance_factor(nc, assign),
+        mse = ((x - centroids[assign]) ** 2).sum(1).mean(),  # recompute MSE 
+        binsize_min=int(binsizes.min()),
+        binsize_max=int(binsizes.max()),
+        penalty_min=penalties.min(),
+        penalty_max=penalties.max(),
+    )
+    
+    return assign, stats
+
+
 ###############################################################################
 # K-means implementation in Python
 #

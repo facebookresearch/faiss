@@ -360,7 +360,8 @@ inline int fvec_madd_and_argmin_sse(
         float bf,
         const float* b,
         float* c) {
-    if ((n & 3) == 0 && ((((long)a) | ((long)b) | ((long)c)) & 15) == 0) {
+    if ((n & 3) == 0 &&
+        ((((uintptr_t)a) | ((uintptr_t)b) | ((uintptr_t)c)) & 15) == 0) {
         return fvec_madd_and_argmin_sse_ref(n, a, bf, b, c);
     } else {
         return fvec_madd_and_argmin<SIMDLevel::NONE>(n, a, bf, b, c);

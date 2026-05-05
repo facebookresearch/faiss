@@ -49,7 +49,7 @@ outputs:
         - FAISS_FLATTEN_CONDA_INCLUDES
     requirements:
       build:
-        - {{ compiler('cxx') }} =12.4
+        - {{ compiler('cxx') }} >=13.4,<14
         - sysroot_linux-64 =2.17 # [linux64]
         - llvm-openmp  # [osx]
         - cmake >=3.24.0
@@ -59,14 +59,14 @@ outputs:
         - cuda-toolkit {{ cudatoolkit }}
       host:
         - mkl >=2024.2.2  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
-        - libsvs-runtime =0.2.0  # [x86_64 and linux]
+        - openblas =0.3.32 # [not x86_64]
+        - libsvs-runtime =0.3.0  # [x86_64 and linux]
       run:
         - mkl >=2024.2.2  # [x86_64]
-        - openblas =0.3.30 # [not x86_64]
+        - openblas =0.3.32 # [not x86_64]
         - cuda-cudart {{ cuda_constraints }}
         - libcublas {{ libcublas_constraints }}
-        - libsvs-runtime =0.2.0  # [x86_64 and linux]
+        - libsvs-runtime =0.3.0  # [x86_64 and linux]
     test:
       requires:
         - conda-build
@@ -85,7 +85,7 @@ outputs:
       string: "py{{ PY_VER }}_h{{ PKG_HASH }}_{{ number }}_cuda{{ cudatoolkit }}{{ suffix }}"
     requirements:
       build:
-        - {{ compiler('cxx') }} =12.4
+        - {{ compiler('cxx') }} >=13.4,<14
         - sysroot_linux-64 =2.17 # [linux64]
         - swig =4.0
         - cmake >=3.24.0

@@ -9,6 +9,7 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <cstdlib>
 
 #include <faiss/IndexHNSW.h>
 
@@ -16,13 +17,7 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
-
-#ifdef __AVX2__
-#include <immintrin.h>
-
-#include <limits>
-#include <type_traits>
-#endif
+#include <faiss/impl/hnsw/MinimaxHeap.h>
 
 namespace faiss {
 
@@ -195,7 +190,7 @@ void HNSW::fill_with_random_links(size_t n) {
         for (size_t ii = 0; ii < elts.size(); ii++) {
             int i = elts[ii];
             size_t begin, end;
-            neighbor_range(i, 0, &begin, &end);
+            neighbor_range(i, level, &begin, &end);
             for (size_t j = begin; j < end; j++) {
                 int other = 0;
                 do {
@@ -504,7 +499,7 @@ void HNSW::add_links_starting_from(
         storage_idx_t nearest,
         float d_nearest,
         int level,
-        omp_lock_t* locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     std::priority_queue<NodeDistCloser> link_targets;
@@ -526,13 +521,13 @@ void HNSW::add_links_starting_from(
         link_targets.pop();
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
     for (storage_idx_t other_id : neighbors_to_add) {
-        omp_set_lock(&locks[other_id]);
+        locks.lock(other_id);
         add_link(*this, ptdis, other_id, pt_id, level, keep_max_size_level0);
-        omp_unset_lock(&locks[other_id]);
+        locks.unlock(other_id);
     }
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 }
 
 /**************************************************************
@@ -543,7 +538,7 @@ void HNSW::add_with_locks(
         DistanceComputer& ptdis,
         int pt_level,
         int pt_id,
-        std::vector<omp_lock_t>& locks,
+        LockVector& locks,
         VisitedTable& vt,
         bool keep_max_size_level0) {
     storage_idx_t nearest = entry_point;
@@ -563,7 +558,7 @@ void HNSW::add_with_locks(
         return;
     }
 
-    omp_set_lock(&locks[pt_id]);
+    locks.lock(pt_id);
 
     int level = max_level; // level at which we start adding neighbors
     float d_nearest = ptdis(nearest);
@@ -580,16 +575,19 @@ void HNSW::add_with_locks(
                 nearest,
                 d_nearest,
                 level,
-                locks.data(),
+                locks,
                 vt,
                 keep_max_size_level0);
     }
 
-    omp_unset_lock(&locks[pt_id]);
+    locks.unlock(pt_id);
 
-    if (pt_level > max_level) {
-        max_level = pt_level;
-        entry_point = pt_id;
+#pragma omp critical
+    {
+        if (pt_level > max_level) {
+            max_level = pt_level;
+            entry_point = pt_id;
+        }
     }
 }
 
@@ -597,7 +595,6 @@ void HNSW::add_with_locks(
  * Searching
  **************************************************************/
 
-using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 using C = HNSW::C;
 
@@ -1008,6 +1005,18 @@ int search_from_candidates_panorama(
     return nres;
 }
 
+template <typename T, typename Container, typename Compare>
+void reservePriorityQueue(
+        std::priority_queue<T, Container, Compare>& q,
+        std::size_t size) {
+    struct Access : std::priority_queue<T, Container, Compare> {
+        using std::priority_queue<T, Container, Compare>::c;
+    };
+    Access access{std::move(q)};
+    access.c.reserve(size);
+    q = std::move(access);
+}
+
 std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         const HNSW& hnsw,
         const Node& node,
@@ -1017,7 +1026,10 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
         HNSWStats& stats) {
     int ndis = 0;
     std::priority_queue<Node> top_candidates;
+    reservePriorityQueue(top_candidates, ef);
+
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> candidates;
+    reservePriorityQueue(candidates, ef);
 
     top_candidates.push(node);
     candidates.push(node);
@@ -1056,11 +1068,11 @@ std::priority_queue<HNSW::Node> search_from_candidate_unbounded(
 
         auto add_to_heap = [&](const size_t idx, const float dis) {
             if (top_candidates.top().first > dis ||
-                top_candidates.size() < static_cast<size_t>(ef)) {
+                top_candidates.size() < ef) {
                 candidates.emplace(dis, idx);
                 top_candidates.emplace(dis, idx);
 
-                if (top_candidates.size() > static_cast<size_t>(ef)) {
+                if (top_candidates.size() > ef) {
                     top_candidates.pop();
                 }
             }
@@ -1190,7 +1202,6 @@ HNSWStats greedy_update_nearest(
 }
 
 namespace {
-using MinimaxHeap = HNSW::MinimaxHeap;
 using Node = HNSW::Node;
 using C = HNSW::C;
 
@@ -1386,259 +1397,6 @@ void HNSW::permute_entries(const idx_t* map) {
     std::swap(levels, new_levels);
     std::swap(offsets, new_offsets);
     neighbors = std::move(new_neighbors);
-}
-
-/**************************************************************
- * MinimaxHeap
- **************************************************************/
-
-void HNSW::MinimaxHeap::push(storage_idx_t i, float v) {
-    if (k == n) {
-        if (v >= dis[0]) {
-            return;
-        }
-        if (ids[0] != -1) {
-            --nvalid;
-        }
-        faiss::heap_pop<HC>(k--, dis.data(), ids.data());
-    }
-    faiss::heap_push<HC>(++k, dis.data(), ids.data(), v, i);
-    ++nvalid;
-}
-
-float HNSW::MinimaxHeap::max() const {
-    return dis[0];
-}
-
-int HNSW::MinimaxHeap::size() const {
-    return nvalid;
-}
-
-void HNSW::MinimaxHeap::clear() {
-    nvalid = k = 0;
-}
-
-#ifdef __AVX512F__
-
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    static_assert(
-            std::is_same<storage_idx_t, int32_t>::value,
-            "This code expects storage_idx_t to be int32_t");
-
-    int32_t min_idx = -1;
-    float min_dis = std::numeric_limits<float>::infinity();
-
-    __m512i min_indices = _mm512_set1_epi32(-1);
-    __m512 min_distances =
-            _mm512_set1_ps(std::numeric_limits<float>::infinity());
-    __m512i current_indices = _mm512_setr_epi32(
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-    __m512i offset = _mm512_set1_epi32(16);
-
-    // The following loop tracks the rightmost index with the min distance.
-    // -1 index values are ignored.
-    const size_t k16 = (k / 16) * 16;
-    for (size_t iii = 0; iii < k16; iii += 16) {
-        __m512i indices =
-                _mm512_loadu_si512((const __m512i*)(ids.data() + iii));
-        __m512 distances = _mm512_loadu_ps(dis.data() + iii);
-
-        // This mask filters out -1 values among indices.
-        __mmask16 m1mask =
-                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
-
-        __mmask16 dmask =
-                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
-        __mmask16 finalmask = m1mask | dmask;
-
-        const __m512i min_indices_new = _mm512_mask_blend_epi32(
-                finalmask, current_indices, min_indices);
-        const __m512 min_distances_new =
-                _mm512_mask_blend_ps(finalmask, distances, min_distances);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-
-        current_indices = _mm512_add_epi32(current_indices, offset);
-    }
-
-    // leftovers
-    if (k16 != static_cast<size_t>(k)) {
-        const __mmask16 kmask = (1 << (k - k16)) - 1;
-
-        __m512i indices = _mm512_mask_loadu_epi32(
-                _mm512_set1_epi32(-1), kmask, ids.data() + k16);
-        __m512 distances = _mm512_maskz_loadu_ps(kmask, dis.data() + k16);
-
-        // This mask filters out -1 values among indices.
-        __mmask16 m1mask =
-                _mm512_cmpgt_epi32_mask(_mm512_setzero_si512(), indices);
-
-        __mmask16 dmask =
-                _mm512_cmp_ps_mask(min_distances, distances, _CMP_LT_OS);
-        __mmask16 finalmask = m1mask | dmask;
-
-        const __m512i min_indices_new = _mm512_mask_blend_epi32(
-                finalmask, current_indices, min_indices);
-        const __m512 min_distances_new =
-                _mm512_mask_blend_ps(finalmask, distances, min_distances);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-    }
-
-    // grab min distance
-    min_dis = _mm512_reduce_min_ps(min_distances);
-    // blend
-    __mmask16 mindmask =
-            _mm512_cmpeq_ps_mask(min_distances, _mm512_set1_ps(min_dis));
-    // pick the max one
-    min_idx = _mm512_mask_reduce_max_epi32(mindmask, min_indices);
-
-    if (min_idx == -1) {
-        return -1;
-    }
-
-    if (vmin_out) {
-        *vmin_out = min_dis;
-    }
-    int ret = ids[min_idx];
-    ids[min_idx] = -1;
-    --nvalid;
-    return ret;
-}
-
-#elif __AVX2__
-
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    static_assert(
-            std::is_same<storage_idx_t, int32_t>::value,
-            "This code expects storage_idx_t to be int32_t");
-
-    int32_t min_idx = -1;
-    float min_dis = std::numeric_limits<float>::infinity();
-
-    size_t iii = 0;
-
-    __m256i min_indices = _mm256_setr_epi32(-1, -1, -1, -1, -1, -1, -1, -1);
-    __m256 min_distances =
-            _mm256_set1_ps(std::numeric_limits<float>::infinity());
-    __m256i current_indices = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
-    __m256i offset = _mm256_set1_epi32(8);
-
-    // The baseline version is available in non-AVX2 branch.
-
-    // The following loop tracks the rightmost index with the min distance.
-    // -1 index values are ignored.
-    const size_t k8 = (k / 8) * 8;
-    for (; iii < k8; iii += 8) {
-        __m256i indices =
-                _mm256_loadu_si256((const __m256i*)(ids.data() + iii));
-        __m256 distances = _mm256_loadu_ps(dis.data() + iii);
-
-        // This mask filters out -1 values among indices.
-        __m256i m1mask = _mm256_cmpgt_epi32(_mm256_setzero_si256(), indices);
-
-        __m256i dmask = _mm256_castps_si256(
-                _mm256_cmp_ps(min_distances, distances, _CMP_LT_OS));
-        __m256 finalmask = _mm256_castsi256_ps(_mm256_or_si256(m1mask, dmask));
-
-        const __m256i min_indices_new = _mm256_castps_si256(_mm256_blendv_ps(
-                _mm256_castsi256_ps(current_indices),
-                _mm256_castsi256_ps(min_indices),
-                finalmask));
-
-        const __m256 min_distances_new =
-                _mm256_blendv_ps(distances, min_distances, finalmask);
-
-        min_indices = min_indices_new;
-        min_distances = min_distances_new;
-
-        current_indices = _mm256_add_epi32(current_indices, offset);
-    }
-
-    // Vectorizing is doable, but is not practical
-    int32_t vidx8[8];
-    float vdis8[8];
-    _mm256_storeu_ps(vdis8, min_distances);
-    _mm256_storeu_si256((__m256i*)vidx8, min_indices);
-
-    for (size_t j = 0; j < 8; j++) {
-        if (min_dis > vdis8[j] || (min_dis == vdis8[j] && min_idx < vidx8[j])) {
-            min_idx = vidx8[j];
-            min_dis = vdis8[j];
-        }
-    }
-
-    // process last values. Vectorizing is doable, but is not practical
-    for (; iii < static_cast<size_t>(k); iii++) {
-        if (ids[iii] != -1 && dis[iii] <= min_dis) {
-            min_dis = dis[iii];
-            min_idx = iii;
-        }
-    }
-
-    if (min_idx == -1) {
-        return -1;
-    }
-
-    if (vmin_out) {
-        *vmin_out = min_dis;
-    }
-    int ret = ids[min_idx];
-    ids[min_idx] = -1;
-    --nvalid;
-    return ret;
-}
-
-#else
-
-// baseline non-vectorized version
-int HNSW::MinimaxHeap::pop_min(float* vmin_out) {
-    assert(k > 0);
-    // returns min. This is an O(n) operation
-    int i = k - 1;
-    while (i >= 0) {
-        if (ids[i] != -1) {
-            break;
-        }
-        i--;
-    }
-    if (i == -1) {
-        return -1;
-    }
-    int imin = i;
-    float vmin = dis[i];
-    i--;
-    while (i >= 0) {
-        if (ids[i] != -1 && dis[i] < vmin) {
-            vmin = dis[i];
-            imin = i;
-        }
-        i--;
-    }
-    if (vmin_out) {
-        *vmin_out = vmin;
-    }
-    int ret = ids[imin];
-    ids[imin] = -1;
-    --nvalid;
-
-    return ret;
-}
-#endif
-
-int HNSW::MinimaxHeap::count_below(float thresh) {
-    int n_below = 0;
-    for (int i = 0; i < k; i++) {
-        if (dis[i] < thresh) {
-            n_below++;
-        }
-    }
-
-    return n_below;
 }
 
 } // namespace faiss

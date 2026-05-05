@@ -8,6 +8,8 @@ import numpy as np
 import faiss
 import unittest
 
+from common_faiss_tests import for_all_simd_levels
+
 
 
 class PartitionTests:
@@ -44,6 +46,7 @@ def pointer_to_minus1():
     return np.array([-1], dtype='int64').view("uint64")
 
 
+@for_all_simd_levels
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
@@ -89,6 +92,7 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
+@for_all_simd_levels
 class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
@@ -140,6 +144,7 @@ class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
+@for_all_simd_levels
 class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=65536, seed=None):
@@ -185,7 +190,7 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
-
+@for_all_simd_levels
 class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=65536, seed=None):
@@ -233,6 +238,7 @@ class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
+@for_all_simd_levels
 class TestHistograms(unittest.TestCase):
 
     def do_test(self, nbin, n):

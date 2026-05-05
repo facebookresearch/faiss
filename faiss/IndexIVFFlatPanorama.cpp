@@ -20,6 +20,7 @@
 #include <faiss/impl/ResultHandler.h>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/utils.h>
 
@@ -31,20 +32,24 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
         size_t nlist_in,
         int n_levels_in,
         MetricType metric,
-        bool own_invlists_in)
+        bool own_invlists_in,
+        size_t batch_size_in)
         : IndexIVFFlat(quantizer_in, d_in, nlist_in, metric, false),
-          n_levels(n_levels_in) {
+          n_levels(n_levels_in),
+          batch_size(batch_size_in) {
     FAISS_THROW_IF_NOT(metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
 
     // We construct the inverted lists here so that we can use the
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
-    auto* pano = new PanoramaFlat(d, n_levels, Panorama::kDefaultBatchSize);
-    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
+    auto* pano = new PanoramaFlat(d, n_levels, batch_size);
+    this->invlists =
+            new ArrayInvertedListsPanorama(nlist, code_size, pano, batch_size);
     this->own_invlists = own_invlists_in;
 }
 
-IndexIVFFlatPanorama::IndexIVFFlatPanorama() : n_levels(0) {}
+IndexIVFFlatPanorama::IndexIVFFlatPanorama()
+        : n_levels(0), batch_size(Panorama::kDefaultBatchSize) {}
 
 namespace {
 
@@ -56,6 +61,15 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     using C = typename VectorDistance::C;
     static constexpr MetricType metric = VectorDistance::metric;
 
+    mutable std::vector<uint32_t> active_indices;
+    mutable std::vector<uint8_t> active_byteset;
+    mutable std::vector<float> exact_distances;
+    mutable std::vector<float> dot_buffer;
+
+    const float* xi = nullptr;
+    std::vector<float> cum_sums;
+    float q_norm = 0.0f;
+
     IVFFlatScannerPanorama(
             const VectorDistance& vd_in,
             const ArrayInvertedListsPanorama* storage_in,
@@ -64,18 +78,19 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
             : InvertedListScanner(store_pairs_in, sel_in),
               vd(vd_in),
               storage(storage_in),
-              pano_flat(
-                      dynamic_cast<const PanoramaFlat*>(
-                              storage_in->pano.get())) {
+              pano_flat(dynamic_cast<const PanoramaFlat*>(
+                      storage_in->pano.get())) {
         FAISS_THROW_IF_NOT(pano_flat);
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
-        cum_sums.resize(pano_flat->n_levels + 1);
+
+        cum_sums.resize(pano_flat->pano.n_levels + 1);
+        active_indices.resize(pano_flat->pano.batch_size);
+        active_byteset.resize(pano_flat->pano.batch_size);
+        exact_distances.resize(pano_flat->pano.batch_size);
+        dot_buffer.resize(pano_flat->pano.batch_size);
     }
 
-    const float* xi = nullptr;
-    std::vector<float> cum_sums;
-    float q_norm = 0.0f;
     void set_query(const float* query) override {
         this->xi = query;
         pano_flat->compute_query_cum_sums(query, cum_sums.data());
@@ -95,6 +110,7 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
     }
 
     using InvertedListScanner::scan_codes;
+
     size_t scan_codes(
             size_t list_size,
             const uint8_t* codes,
@@ -107,15 +123,11 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
         const float* cum_sums_data = storage->get_cum_sums(list_no);
 
-        std::vector<float> exact_distances(bs);
-        std::vector<uint32_t> active_indices(bs);
-
         PanoramaStats local_stats;
         local_stats.reset();
 
         for (size_t batch_no = 0; batch_no < n_batches; batch_no++) {
             size_t batch_start = batch_no * bs;
-
             size_t num_active = with_metric_type(metric, [&]<MetricType M>() {
                 return pano_flat->progressive_filter_batch<C, M>(
                         codes,
@@ -128,22 +140,30 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
                         ids,
                         use_sel,
                         active_indices,
+                        active_byteset,
                         exact_distances,
+                        dot_buffer,
                         handler.threshold,
                         local_stats);
             });
 
+            // num_active is the count of codes for which exact distance
+            // was computed in this batch (post-filter, post-pruning).
+            handler.stats.scan_cnt += num_active;
+
             // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
-                uint32_t idx = active_indices[i];
+                uint32_t idx = active_indices_[i];
                 size_t global_idx = batch_start + idx;
-                float dis = exact_distances[idx];
+                float dis = exact_distances_[idx];
 
                 if (C::cmp(handler.threshold, dis)) {
                     int64_t id = store_pairs ? lo_build(list_no, global_idx)
                                              : ids[global_idx];
-                    handler.add_result(dis, id);
-                    nup++;
+                    if (handler.add_result(dis, id)) {
+                        handler.stats.nheap_updates++;
+                        nup++;
+                    }
                 }
             }
         }

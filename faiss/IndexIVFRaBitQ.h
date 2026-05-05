@@ -13,7 +13,6 @@
 #include <faiss/Index.h>
 #include <faiss/IndexIVF.h>
 
-#include <faiss/impl/RaBitQStats.h>
 #include <faiss/impl/RaBitQuantizer.h>
 
 namespace faiss {
@@ -29,6 +28,8 @@ struct IndexIVFRaBitQ : IndexIVF {
 
     // the default number of bits to quantize a query with.
     // use '0' to disable quantization and use raw fp32 values.
+    // Note: qb=0 is NOT supported by FastScan variants, which require
+    // quantized queries for SIMD lookup table construction.
     uint8_t qb = 4;
 
     IndexIVFRaBitQ(

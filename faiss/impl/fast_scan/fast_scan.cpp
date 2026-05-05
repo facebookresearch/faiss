@@ -426,17 +426,10 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
         int64_t* ids,
         const IDSelector* sel,
         bool with_id_map) {
-    DISPATCH_SIMDLevel(
-            make_fast_scan_scanner_impl,
-            is_max,
-            impl,
-            nq,
-            ntotal,
-            k,
-            distances,
-            ids,
-            sel,
-            with_id_map);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_fast_scan_scanner_impl<SL>(
+                is_max, impl, nq, ntotal, k, distances, ids, sel, with_id_map);
+    });
 }
 
 std::unique_ptr<FastScanCodeScanner> make_range_scanner(
@@ -445,8 +438,9 @@ std::unique_ptr<FastScanCodeScanner> make_range_scanner(
         float radius,
         size_t ntotal,
         const IDSelector* sel) {
-    DISPATCH_SIMDLevel(
-            make_range_scanner_impl, is_max, rres, radius, ntotal, sel);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_range_scanner_impl<SL>(is_max, rres, radius, ntotal, sel);
+    });
 }
 
 std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
@@ -457,15 +451,10 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
         size_t q0,
         size_t q1,
         const IDSelector* sel) {
-    DISPATCH_SIMDLevel(
-            make_partial_range_scanner_impl,
-            is_max,
-            pres,
-            radius,
-            ntotal,
-            q0,
-            q1,
-            sel);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return make_partial_range_scanner_impl<SL>(
+                is_max, pres, radius, ntotal, q0, q1, sel);
+    });
 }
 
 std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner(
@@ -478,17 +467,18 @@ std::unique_ptr<FastScanCodeScanner> rabitq_make_knn_scanner(
         const IDSelector* sel,
         const FastScanDistancePostProcessing& context,
         bool is_multi_bit) {
-    DISPATCH_SIMDLevel(
-            rabitq_make_knn_scanner_impl,
-            index,
-            is_max,
-            nq,
-            k,
-            distances,
-            ids,
-            sel,
-            context,
-            is_multi_bit);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return rabitq_make_knn_scanner_impl<SL>(
+                index,
+                is_max,
+                nq,
+                k,
+                distances,
+                ids,
+                sel,
+                context,
+                is_multi_bit);
+    });
 }
 
 std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
@@ -498,18 +488,13 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner(
         size_t k,
         float* distances,
         int64_t* ids,
+        const IDSelector* sel,
         const FastScanDistancePostProcessing* context,
         bool multi_bit) {
-    DISPATCH_SIMDLevel(
-            rabitq_ivf_make_knn_scanner_impl,
-            is_max,
-            index,
-            nq,
-            k,
-            distances,
-            ids,
-            context,
-            multi_bit);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return rabitq_ivf_make_knn_scanner_impl<SL>(
+                is_max, index, nq, k, distances, ids, sel, context, multi_bit);
+    });
 }
 
 } // namespace faiss

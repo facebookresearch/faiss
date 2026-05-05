@@ -8,11 +8,13 @@ import unittest
 import numpy as np
 import faiss
 
+from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import datasets
 
 faiss.omp_set_num_threads(4)
 
 
+@for_all_simd_levels
 class TestFastScanFiltering(unittest.TestCase):
     """
     Test IDSelector filtering on IVF fast_scan indexes.
@@ -149,6 +151,7 @@ class TestFastScanFiltering(unittest.TestCase):
         self.do_test_filter("IVF32,PQ4x4fs", "batch", nb=150)
 
 
+@for_all_simd_levels
 class TestBlockSkipConsistency(unittest.TestCase):
     """
     Test that block-skip filtering produces consistent results
@@ -296,6 +299,7 @@ class TestBlockSkipConsistency(unittest.TestCase):
                     self.assertIn(idx, allowed)
 
 
+@for_all_simd_levels
 class TestFastScanRangeSearchFilter(unittest.TestCase):
     """Test range_search with IDSelector on fastscan IVF indexes."""
 

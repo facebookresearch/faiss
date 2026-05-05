@@ -125,7 +125,7 @@ void search_centroid(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
     index_ivf->quantizer->assign(n, x, centroid_ids);
 }
 
@@ -146,7 +146,7 @@ void search_and_return_centroids(
         index = index_pre->index;
     }
     faiss::IndexIVF* index_ivf = dynamic_cast<faiss::IndexIVF*>(index);
-    assert(index_ivf);
+    FAISS_THROW_IF_NOT_MSG(index_ivf, "could not extract IVF index");
 
     size_t nprobe = index_ivf->nprobe;
     std::vector<idx_t> cent_nos(n * nprobe);
@@ -465,7 +465,7 @@ IndexIVFResidualQuantizer* ivf_residual_from_quantizer(
     std::vector<size_t> nbits(nlevel);
     std::copy(rq.nbits.begin(), rq.nbits.begin() + nlevel, nbits.begin());
     std::unique_ptr<ResidualCoarseQuantizer> rcq(
-            new ResidualCoarseQuantizer(rq.d, nbits));
+            new ResidualCoarseQuantizer(static_cast<int>(rq.d), nbits));
 
     // set the coarse quantizer from the 2 first quantizers
     rcq->rq.initialize_from(rq);
@@ -492,7 +492,8 @@ IndexIVFResidualQuantizer* ivf_residual_from_quantizer(
                     faiss::METRIC_L2,
                     rq.search_type));
     index->own_fields = true;
-    rcq.release();
+    // Ownership transferred to index via own_fields = true
+    (void)rcq.release();
     index->by_residual = true;
     index->rq.initialize_from(rq, nlevel);
     index->is_trained = true;
@@ -528,14 +529,14 @@ void ivf_residual_add_from_flat_codes(
             for (idx_t i = 0; i < static_cast<idx_t>(nb); i++) {
                 const uint8_t* code = &raw_codes[i * code_size];
                 BitstringReader rd(code, code_size);
-                idx_t list_no = rd.read(rcq->rq.tot_bits);
+                idx_t list_no = rd.read(static_cast<int>(rcq->rq.tot_bits));
 
                 if (list_no % nt ==
                     rank) { // each thread takes care of 1/nt of the invlists
                     // copy AQ indexes one by one
                     BitstringWriter wr(tmp_code.data(), tmp_code.size());
                     for (size_t j = 0; j < rq.M; j++) {
-                        int nbit = rq.nbits[j];
+                        int nbit = static_cast<int>(rq.nbits[j]);
                         wr.write(rd.read(nbit), nbit);
                     }
                     // we need to recompute the norm
@@ -543,7 +544,9 @@ void ivf_residual_add_from_flat_codes(
                     // ok
                     index->rq.decode(tmp_code.data(), tmp.data(), 1);
                     float norm = fvec_norm_L2sqr<SL>(tmp.data(), rq.d);
-                    wr.write(rq.encode_norm(norm), rq.norm_bits);
+                    wr.write(
+                            rq.encode_norm(norm),
+                            static_cast<int>(rq.norm_bits));
 
                     // add code to the inverted list
                     invlists.add_entry(list_no, i, tmp_code.data());
@@ -601,10 +604,14 @@ void handle_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index(sharded_index, fname);
         delete sharded_index;
     }
@@ -655,10 +662,14 @@ void handle_binary_ivf(
                     sharded_centroids[i].data());
         }
         char fname[256];
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
         snprintf(fname, 256, filename_template.c_str(), i);
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
         faiss::write_index_binary(sharded_index, fname);
         delete sharded_index;
     }
