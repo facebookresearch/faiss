@@ -33,6 +33,7 @@ runs:
         miniforge-version: latest # ensures conda-forge channel is used.
         channels: conda-forge
         conda-remove-defaults: 'true'
+        activate-environment: 'base'
         # Set to runner.arch=aarch64 if we're on arm64 because
         # there's no miniforge ARM64 package, just aarch64.
         # They are the same thing, just named differently.
@@ -43,7 +44,7 @@ runs:
       run: |
         # Ensure starting packages are from conda-forge.
         conda list --show-channel-urls
-        conda install -y -q "conda!=24.11.0,<=25.07"
+        conda install -y -q "conda!=24.11.0,<25.7"
         conda install -y -q "conda-build=25.3.1" "liblief=0.14.1"
     - name: Enable anaconda uploads
       if: inputs.label != ''
