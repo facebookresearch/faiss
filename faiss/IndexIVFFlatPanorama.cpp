@@ -43,8 +43,7 @@ IndexIVFFlatPanorama::IndexIVFFlatPanorama(
     // level-oriented storage. This does not cause a leak as we constructed
     // IndexIVF first, with own_invlists set to false.
     auto* pano = new PanoramaFlat(d, n_levels, batch_size);
-    this->invlists =
-            new ArrayInvertedListsPanorama(nlist, code_size, pano, batch_size);
+    this->invlists = new ArrayInvertedListsPanorama(nlist, code_size, pano);
     this->own_invlists = own_invlists_in;
 }
 
@@ -84,11 +83,11 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
 
-        cum_sums.resize(pano_flat->pano.n_levels + 1);
-        active_indices.resize(pano_flat->pano.batch_size);
-        active_byteset.resize(pano_flat->pano.batch_size);
-        exact_distances.resize(pano_flat->pano.batch_size);
-        dot_buffer.resize(pano_flat->pano.batch_size);
+        cum_sums.resize(pano_flat->n_levels + 1);
+        active_indices.resize(pano_flat->batch_size);
+        active_byteset.resize(pano_flat->batch_size);
+        exact_distances.resize(pano_flat->batch_size);
+        dot_buffer.resize(pano_flat->batch_size);
     }
 
     void set_query(const float* query) override {
@@ -153,9 +152,9 @@ struct IVFFlatScannerPanorama : InvertedListScanner {
 
             // Add batch survivors to heap.
             for (size_t i = 0; i < num_active; i++) {
-                uint32_t idx = active_indices_[i];
+                uint32_t idx = active_indices[i];
                 size_t global_idx = batch_start + idx;
-                float dis = exact_distances_[idx];
+                float dis = exact_distances[idx];
 
                 if (C::cmp(handler.threshold, dis)) {
                     int64_t id = store_pairs ? lo_build(list_no, global_idx)

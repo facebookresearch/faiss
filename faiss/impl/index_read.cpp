@@ -573,8 +573,13 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         FAISS_THROW_IF_NOT_FMT(
                 n_levels > 0, "invalid ilp2 n_levels %zd", n_levels);
         FAISS_THROW_IF_NOT_FMT(bs > 0, "invalid ilp2 batch_size %zd", bs);
+        // Construct a PanoramaFlat placeholder; the IwPP reader will
+        // replace it with a real PanoramaPQ once the ProductQuantizer
+        // and quantizer have been deserialized.
+        auto* pano_placeholder = new PanoramaFlat(
+                std::max<size_t>(1, code_size / sizeof(float)), n_levels, bs);
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
-                nlist, code_size, n_levels, bs);
+                nlist, code_size, pano_placeholder);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
         size_t byte_limit = get_deserialization_vector_byte_limit();

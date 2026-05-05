@@ -16,6 +16,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/PanoramaPQ.h>
 #include <faiss/impl/PanoramaStats.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/invlists/InvertedLists.h>
 #include <faiss/utils/Heap.h>
 
@@ -121,13 +122,13 @@ struct IVFPQScannerPanorama : InvertedListScanner {
         FAISS_THROW_MSG("IndexIVFPQPanorama does not support distance_to_code");
     }
 
+    using InvertedListScanner::scan_codes;
+
     size_t scan_codes(
             size_t list_size,
             const uint8_t* /* codes (column-major in storage) */,
             const idx_t* ids,
-            float* distances,
-            idx_t* labels,
-            size_t k) const override {
+            ResultHandler& handler) const override {
         size_t nup = 0;
 
         const size_t bs = index.batch_size;
@@ -164,33 +165,28 @@ struct IVFPQScannerPanorama : InvertedListScanner {
                     active_indices,
                     bitset,
                     compressed_codes,
-                    distances[0],
+                    handler.threshold,
                     local_stats);
 
-            // Insert surviving candidates into heap.
+            handler.stats.scan_cnt += num_active;
+
+            // Insert surviving candidates via the result handler.
             for (size_t i = 0; i < num_active; i++) {
                 float dis = dis0 + exact_distances[i];
-                if (C::cmp(distances[0], dis)) {
+                if (C::cmp(handler.threshold, dis)) {
                     idx_t id = store_pairs
                             ? lo_build(list_no, active_indices[i])
                             : ids[active_indices[i]];
-                    heap_replace_top<C>(k, distances, labels, dis, id);
-                    nup++;
+                    if (handler.add_result(dis, id)) {
+                        handler.stats.nheap_updates++;
+                        nup++;
+                    }
                 }
             }
         }
 
         indexPanorama_stats.add(local_stats);
         return nup;
-    }
-
-    size_t scan_codes(
-            size_t n,
-            const uint8_t* codes,
-            const idx_t* ids,
-            ResultHandler& handler) const override {
-        FAISS_THROW_MSG(
-                "IndexIVFPQPanorama: ResultHandler scan_codes not supported");
     }
 };
 

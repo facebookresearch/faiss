@@ -133,14 +133,15 @@ void process_level(
         float* sim_table,
         uint8_t* compressed_codes,
         float* exact_distances) {
-    DISPATCH_SIMDLevel(
-            process_level_impl,
-            level_width_bytes,
-            max_batch_size,
-            num_active,
-            sim_table,
-            compressed_codes,
-            exact_distances);
+    with_simd_level([&]<SIMDLevel SL>() {
+        process_level_impl<SL>(
+                level_width_bytes,
+                max_batch_size,
+                num_active,
+                sim_table,
+                compressed_codes,
+                exact_distances);
+    });
 }
 
 size_t process_filtering(
@@ -175,14 +176,15 @@ std::pair<uint8_t*, size_t> process_code_compression(
         uint8_t* compressed_codes_begin,
         uint8_t* bitset,
         const uint8_t* codes) {
-    DISPATCH_SIMDLevel(
-            process_code_compression_impl,
-            next_num_active,
-            max_batch_size,
-            level_width_bytes,
-            compressed_codes_begin,
-            bitset,
-            codes);
+    return with_simd_level([&]<SIMDLevel SL>() {
+        return process_code_compression_impl<SL>(
+                next_num_active,
+                max_batch_size,
+                level_width_bytes,
+                compressed_codes_begin,
+                bitset,
+                codes);
+    });
 }
 
 } // namespace panorama_kernels

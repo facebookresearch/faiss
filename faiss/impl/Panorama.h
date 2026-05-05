@@ -375,12 +375,12 @@ struct PanoramaFlat : Panorama {
 
             float query_cum_norm = query_cum_sums[level + 1];
 
-            size_t level_offset = level * level_width * batch_size;
+            size_t level_offset = level * level_width_bytes * batch_size;
             const float* level_storage =
                     (const float*)(storage_base + level_offset);
-            const float* query_level = query + level * level_width_floats;
-            size_t actual_level_width = std::min(
-                    level_width_floats, d - level * level_width_floats);
+            const float* query_level = query + level * level_width_dims;
+            size_t actual_level_width =
+                    std::min(level_width_dims, d - level * level_width_dims);
 
             num_active = with_bool(
                     level == 0 && first_level_full, [&]<bool AllActive>() {
@@ -419,8 +419,6 @@ struct PanoramaFlat : Panorama {
         return num_active;
     }
 #endif // SWIG
-
-    void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
 } // namespace faiss
 
