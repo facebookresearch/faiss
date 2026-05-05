@@ -10,10 +10,10 @@
 
 // AVX512 HammingComputer and GenHammingComputer specializations.
 // Types without custom AVX512 code inherit from the NONE specializations
-// in hamming_computer-generic.h. Custom specializations for
-// HammingComputer64 and HammingComputerDefault use _mm512_popcnt_epi64
-// when __AVX512VPOPCNTDQ__ is available. GenHammingComputer classes
-// leverage SSE/AVX2 intrinsics.
+// in hamming_computer-generic.h. HammingComputer64 and
+// HammingComputerDefault use scalar popcount here; the VPOPCNTDQ fast
+// path lives in hamming_computer-avx512_spr.h (AVX512_SPR level).
+// GenHammingComputer classes leverage SSE/AVX2 intrinsics.
 
 #include <cassert>
 #include <cstdint>
@@ -74,18 +74,10 @@ struct HammingComputer64_tpl<SIMDLevel::AVX512> {
 
     inline int hamming(const uint8_t* b8) const {
         const uint64_t* b = reinterpret_cast<const uint64_t*>(b8);
-#ifdef __AVX512VPOPCNTDQ__
-        __m512i vxor =
-                _mm512_xor_si512(_mm512_loadu_si512(a), _mm512_loadu_si512(b));
-        __m512i vpcnt = _mm512_popcnt_epi64(vxor);
-        // reduce performs better than adding the lower and higher parts
-        return _mm512_reduce_add_epi32(vpcnt);
-#else
         return popcount64(b[0] ^ a0) + popcount64(b[1] ^ a1) +
                 popcount64(b[2] ^ a2) + popcount64(b[3] ^ a3) +
                 popcount64(b[4] ^ a4) + popcount64(b[5] ^ a5) +
                 popcount64(b[6] ^ a6) + popcount64(b[7] ^ a7);
-#endif
     }
 
     inline static constexpr int get_code_size() {
@@ -112,27 +104,11 @@ struct HammingComputerDefault_tpl<SIMDLevel::AVX512> {
     }
 
     int hamming(const uint8_t* b8) const {
-        int accu = 0;
-
         const uint64_t* a64 = reinterpret_cast<const uint64_t*>(a8);
         const uint64_t* b64 = reinterpret_cast<const uint64_t*>(b8);
 
-        int i = 0;
-#ifdef __AVX512VPOPCNTDQ__
-        int quotient64 = quotient8 / 8;
-        for (; i < quotient64; ++i) {
-            __m512i vxor = _mm512_xor_si512(
-                    _mm512_loadu_si512(&a64[i * 8]),
-                    _mm512_loadu_si512(&b64[i * 8]));
-            __m512i vpcnt = _mm512_popcnt_epi64(vxor);
-            // reduce performs better than adding the lower and higher parts
-            accu += _mm512_reduce_add_epi32(vpcnt);
-        }
-        i *= 8;
-#endif
-        accu += hamming_popcount_tail(
-                a64, b64, i, quotient8, a8, b8, remainder8);
-        return accu;
+        return hamming_popcount_tail(
+                a64, b64, 0, quotient8, a8, b8, remainder8);
     }
 
     inline int get_code_size() const {
