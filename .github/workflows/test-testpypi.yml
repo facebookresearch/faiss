@@ -1,0 +1,146 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+name: Verify testpypi wheel
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "faiss-cpu version on testpypi"
+        required: true
+        default: "1.14.1"
+  pull_request:
+    paths:
+      - ".github/workflows/test-testpypi.yml"
+
+jobs:
+  smoke-test:
+    name: ${{ matrix.os }} / py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - 2-core-ubuntu-arm
+          - macos-15-intel
+          - macos-14
+          - windows-2022
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install faiss-cpu from TestPyPI
+        shell: bash
+        env:
+          FAISS_VERSION: ${{ inputs.version || '1.14.1' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "faiss-cpu==${FAISS_VERSION}"
+
+      - name: Report environment
+        shell: bash
+        run: |
+          python -c "import sys, platform; print(sys.version); print(platform.platform()); print('machine:', platform.machine())"
+          python -c "import faiss; print('faiss version:', faiss.__version__); print('OMP threads:', faiss.omp_get_max_threads())"
+
+      - name: Smoke test
+        shell: python
+        run: |
+          import sys
+          import numpy as np
+          import faiss
+
+          def check(name, cond):
+              status = "OK" if cond else "FAIL"
+              print(f"[{status}] {name}", flush=True)
+              if not cond:
+                  raise AssertionError(name)
+
+          rng = np.random.default_rng(1234)
+          d, nb, nq, k = 64, 10_000, 100, 10
+          xb = rng.standard_normal((nb, d)).astype(np.float32)
+          xq = rng.standard_normal((nq, d)).astype(np.float32)
+
+          # IndexFlatL2 - exercises BLAS sgemm on large search
+          flat = faiss.IndexFlatL2(d)
+          flat.add(xb)
+          D, I = flat.search(xq, k)
+          check("IndexFlatL2 shape", D.shape == (nq, k) and I.shape == (nq, k))
+          check(
+              "IndexFlatL2 self-match",
+              np.array_equal(flat.search(xb[:5], 1)[1].ravel(), np.arange(5)),
+          )
+
+          # IndexFlatIP - inner product path
+          ip = faiss.IndexFlatIP(d)
+          ip.add(xb)
+          D, I = ip.search(xq, k)
+          check("IndexFlatIP shape", D.shape == (nq, k))
+
+          # IndexIVFPQ - training + quantization paths
+          quantizer = faiss.IndexFlatL2(d)
+          ivfpq = faiss.IndexIVFPQ(quantizer, d, 64, 8, 8)
+          ivfpq.train(xb)
+          ivfpq.add(xb)
+          ivfpq.nprobe = 8
+          D, I = ivfpq.search(xq, k)
+          check("IndexIVFPQ search", D.shape == (nq, k))
+
+          # IndexPQFastScan - exercises AVX2/AVX-512/NEON fastscan kernels
+          pqfs = faiss.IndexPQFastScan(d, 8, 4)
+          pqfs.train(xb)
+          pqfs.add(xb)
+          D, I = pqfs.search(xq, k)
+          check("IndexPQFastScan search", D.shape == (nq, k))
+
+          # IndexHNSWFlat - graph-based path
+          hnsw = faiss.IndexHNSWFlat(d, 16)
+          hnsw.add(xb)
+          D, I = hnsw.search(xq, k)
+          check("IndexHNSWFlat search", D.shape == (nq, k))
+
+          # IndexBinaryFlat - separate codepath, hamming distance
+          xb_bin = rng.integers(0, 256, size=(nb, d // 8), dtype=np.uint8)
+          xq_bin = rng.integers(0, 256, size=(nq, d // 8), dtype=np.uint8)
+          binflat = faiss.IndexBinaryFlat(d)
+          binflat.add(xb_bin)
+          D, I = binflat.search(xq_bin, k)
+          check("IndexBinaryFlat search", D.shape == (nq, k))
+
+          # OMP threading - serial vs parallel must agree
+          faiss.omp_set_num_threads(1)
+          D1, I1 = flat.search(xq, k)
+          faiss.omp_set_num_threads(4)
+          D4, I4 = flat.search(xq, k)
+          check(
+              "OMP determinism (flat L2)",
+              np.array_equal(I1, I4) and np.allclose(D1, D4, atol=1e-5),
+          )
+
+          # Serialization round-trip
+          buf = faiss.serialize_index(flat)
+          flat2 = faiss.deserialize_index(buf)
+          check("serialize round-trip ntotal", flat2.ntotal == flat.ntotal)
+          D_orig, _ = flat.search(xq[:5], k)
+          D_rt, _ = flat2.search(xq[:5], k)
+          check("serialize round-trip search", np.allclose(D_orig, D_rt, atol=1e-5))
+
+          # k-means clustering - exercises Clustering + assignment
+          kmeans = faiss.Kmeans(d, 16, niter=5, verbose=False)
+          kmeans.train(xb)
+          check("Kmeans centroids shape", kmeans.centroids.shape == (16, d))
+
+          print("\nAll smoke tests passed.")
+          sys.exit(0)
