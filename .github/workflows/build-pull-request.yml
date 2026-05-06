@@ -304,7 +304,6 @@ jobs:
           svs: ON
   linux-riscv64-DD-cmake:
     name: Linux riscv64 Dynamic Dispatch cross-compile (cmake)
-    needs: linux-x86_64-cmake
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
