@@ -12,65 +12,14 @@
 #import "MetalKernels.h"
 #include <mutex>
 
+#ifndef FAISS_METALLIB_PATH
+#error "FAISS_METALLIB_PATH must be defined by CMake"
+#endif
+
 namespace faiss {
 namespace gpu_metal {
 
 namespace {
-
-static NSString* loadMSLSource() {
-    NSFileManager* fm = [NSFileManager defaultManager];
-    NSString* metalPath = nil;
-
-    NSBundle* mainBundle = [NSBundle mainBundle];
-    metalPath =
-            [mainBundle pathForResource:@"MetalDistance" ofType:@"metal"];
-
-    if (!metalPath) {
-        NSString* cwd = [fm currentDirectoryPath];
-        NSString* relPath = [cwd stringByAppendingPathComponent:
-                                         @"faiss/gpu_metal/MetalDistance.metal"];
-        if ([fm fileExistsAtPath:relPath]) {
-            metalPath = relPath;
-        }
-    }
-
-    if (!metalPath) {
-        NSString* sourceFile = @(__FILE__);
-        NSString* sourceDir =
-                [sourceFile stringByDeletingLastPathComponent];
-        NSString* relPath = [sourceDir
-                stringByAppendingPathComponent:@"MetalDistance.metal"];
-        if ([fm fileExistsAtPath:relPath]) {
-            metalPath = relPath;
-        }
-    }
-
-    if (!metalPath) {
-        NSString* execPath = [[NSBundle mainBundle] executablePath];
-        if (execPath) {
-            NSString* execDir =
-                    [execPath stringByDeletingLastPathComponent];
-            NSString* relPath = [execDir stringByAppendingPathComponent:
-                                                 @"MetalDistance.metal"];
-            if ([fm fileExistsAtPath:relPath]) {
-                metalPath = relPath;
-            }
-        }
-    }
-
-    if (metalPath) {
-        NSError* err = nil;
-        NSString* source =
-                [NSString stringWithContentsOfFile:metalPath
-                                          encoding:NSUTF8StringEncoding
-                                             error:&err];
-        if (source && !err) {
-            return source;
-        }
-    }
-
-    return nil;
-}
 
 static const char* kThreadgroupNames[] = {
         "topk_threadgroup_32",
@@ -92,11 +41,10 @@ int MetalKernels::selectTopKVariantIndex(int k) {
 
 MetalKernels::MetalKernels(id<MTLDevice> device)
         : device_(device), library_(nil) {
-    NSString* src = loadMSLSource();
-    if (!src)
-        return;
+    NSString* path = @(FAISS_METALLIB_PATH);
+    NSURL* url = [NSURL fileURLWithPath:path];
     NSError* err = nil;
-    library_ = [device_ newLibraryWithSource:src options:nil error:&err];
+    library_ = [device_ newLibraryWithURL:url error:&err];
 }
 
 MetalKernels::~MetalKernels() = default;
