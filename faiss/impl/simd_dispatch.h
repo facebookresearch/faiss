@@ -51,6 +51,11 @@ constexpr int AVAILABLE_SIMD_LEVELS_A1 =
 constexpr int AVAILABLE_SIMD_LEVELS_A2 = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_SVE));
 
+// Partitioning: 256-bit simdlib-based path (NONE/AVX2/NEON) plus an
+// AVX512_SPR fast path that uses VBMI2 instructions (compress/expand).
+constexpr int AVAILABLE_SIMD_LEVELS_PARTITIONING =
+        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::AVX512_SPR));
+
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
 constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {

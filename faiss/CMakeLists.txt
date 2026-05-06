@@ -44,6 +44,15 @@ set(FAISS_SIMD_AVX512_SPR_SRC
   utils/simd_impl/rabitq_avx512_spr.cpp
   utils/hamming_distance/hamming_avx512_spr.cpp
 )
+# Dispatch TU only emits 256-bit AVX2 instantiations (THE_SL_256=AVX2);
+# kept separate so DD builds compile it with AVX2-only flags and avoid
+# AVX-512 instructions in .init_array on non-SPR CPUs.
+set(FAISS_SIMD_AVX512_SPR_DISPATCH_SRC
+  utils/simd_impl/partitioning_avx512_spr_dispatch.cpp
+)
+set(FAISS_SIMD_AVX512_SPR_VBMI2_SRC
+  utils/simd_impl/partitioning_avx512_spr.cpp
+)
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
@@ -74,7 +83,9 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC
     ${FAISS_SIMD_AVX2_SRC}
     ${FAISS_SIMD_AVX512_SRC}
-    ${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
+    ${FAISS_SIMD_AVX512_SPR_SRC}
+    ${FAISS_SIMD_AVX512_SPR_DISPATCH_SRC}
+    ${FAISS_SIMD_AVX512_SPR_VBMI2_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
@@ -362,6 +373,7 @@ set(FAISS_HEADERS
   utils/hamming.h
   utils/ordered_key_value.h
   utils/partitioning.h
+  utils/simd_impl/partitioning_avx512_spr.h
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
@@ -476,13 +488,13 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 ${FAISS_BMI2_FLAGS}>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16 -mavx512vbmi2 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
-target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC})
+target_sources(faiss_avx512_spr PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC} ${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_DISPATCH_SRC} ${FAISS_SIMD_AVX512_SPR_VBMI2_SRC})
 target_compile_definitions(faiss_avx512_spr PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512 COMPILE_SIMD_AVX512_SPR)
 
 add_library(faiss_sve ${FAISS_SRC})
@@ -546,7 +558,23 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
+          "-mavx2;-mfma;-mf16c;-mbmi2;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16"
+      )
+      # Dispatch TU: AVX2-only (no AVX-512). Its only contents are
+      # explicit instantiations using THE_SL_256=AVX2 plus thunks that
+      # call into the VBMI2 TU at runtime. Compiling it with AVX-512
+      # flags would let the compiler emit AVX-512 in .init_array for
+      # the file-scope `shifts`/`shifts2` statics, which SIGILLs at
+      # dlopen() on non-SPR CPUs.
+      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_DISPATCH_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx2;-mfma;-mf16c;-mbmi2;-mpopcnt"
+      )
+      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_VBMI2_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS
+          "-mavx2;-mfma;-mf16c;-mbmi2;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16;-mavx512vbmi2"
       )
     else()
       # Per-file SIMD flags (MSVC)
@@ -564,9 +592,13 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       # toolchains. (Newer MSVC supports __isa_available checks at
       # runtime; the SPR specialization is gated by COMPILE_SIMD_AVX512_SPR
       # at the source level, so this is safe.)
-      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
+      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC} ${FAISS_SIMD_AVX512_SPR_VBMI2_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS "/arch:AVX512"
+      )
+      set_source_files_properties(${FAISS_SIMD_AVX512_SPR_DISPATCH_SRC}
+        TARGET_DIRECTORY faiss
+        PROPERTIES COMPILE_OPTIONS "/arch:AVX2"
       )
     endif()
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
