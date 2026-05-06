@@ -596,6 +596,7 @@ struct RangeResultHandler : ResultHandlerT<C> {
     bool add_result(T dis, TI idx) final {
         if (C::cmp(threshold, dis)) {
             qr->add(dis, idx);
+            return true;
         }
         return false;
     }

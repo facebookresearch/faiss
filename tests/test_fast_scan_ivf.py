@@ -1074,8 +1074,8 @@ class TestFastScanEarlyTerminationKnobs(unittest.TestCase):
         k = 10
         params = faiss.SearchParametersIVF()
         params.nprobe = 16
-        params.max_codes = k // 2  # tight: forces truncation without
-                                    # ensure_topk_full
+        # k // 2 max_codes forces truncation without ensure_topk_full
+        params.max_codes = k // 2
         params.ensure_topk_full = False
         _, I_tight = index.search(q, k, params=params)
         params.ensure_topk_full = True

@@ -518,16 +518,19 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Do resize + read in a single pass per list. See the matching
+        // comment in the `ilar` branch below for rationale.
         size_t byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= byte_limit / sizeof(idx_t),
+                    n <= byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ailp->ids[i].resize(sizes[i]);
-            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
+                    n);
+            ailp->ids[i].resize(n);
+            size_t num_elems = ((n + bs - 1) / bs) * bs;
             size_t codes_bytes = mul_no_overflow(
                     num_elems, code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
@@ -549,9 +552,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     cum_sums_count);
             ailp->cum_sums[i].resize(cum_sums_count);
-        }
-        for (size_t i = 0; i < nlist; i++) {
-            size_t n = sizes[i];
             if (n > 0) {
                 read_vector_with_known_size(
                         ailp->codes[i], f, ailp->codes[i].size());
@@ -627,17 +627,23 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         ails->codes.resize(ails->nlist);
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Resize + read in a single pass per list so that each list's
+        // heap allocation is released by the mmap view-substitution
+        // before the next list is allocated. This bounds peak heap to
+        // one list's worth of memory, which matters for large IVF
+        // indexes (hundreds of GB) under IO_FLAG_MMAP_IFC.
         size_t ilar_byte_limit = get_deserialization_vector_byte_limit();
-        for (size_t i = 0; i < ails->nlist; i++) {
+        for (size_t i = 0; i < sizes.size(); i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= ilar_byte_limit / sizeof(idx_t),
+                    n <= ilar_byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ails->ids[i].resize(sizes[i]);
-            size_t codes_bytes = mul_no_overflow(
-                    sizes[i], ails->code_size, "inverted list codes");
+                    n);
+            ails->ids[i].resize(n);
+            size_t codes_bytes =
+                    mul_no_overflow(n, ails->code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
                     codes_bytes <= ilar_byte_limit,
                     "inverted list %zu codes size %zu exceeds "
@@ -645,9 +651,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     codes_bytes);
             ails->codes[i].resize(codes_bytes);
-        }
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
             if (n > 0) {
                 read_vector_with_known_size(
                         ails->codes[i],

@@ -48,10 +48,11 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Download all artifacts
+      - name: Download wheel artifacts
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  # v4.1.7
         with:
           path: dist
+          pattern: wheels-*
           merge-multiple: true
 
       - name: Publish to PyPI
@@ -69,10 +70,11 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Download all artifacts
+      - name: Download wheel artifacts
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  # v4.1.7
         with:
           path: dist
+          pattern: wheels-*
           merge-multiple: true
 
       - name: Publish to TestPyPI
@@ -80,3 +82,4 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
+          verbose: true

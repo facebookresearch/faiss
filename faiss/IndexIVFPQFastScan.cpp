@@ -16,7 +16,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
-#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>

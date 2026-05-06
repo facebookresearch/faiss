@@ -11,7 +11,7 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
-  impl/pq_code_distance/pq_code_distance-avx2.cpp
+  impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
   impl/approx_topk/avx2.cpp
   impl/binary_hamming/avx2.cpp
@@ -25,7 +25,7 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
-  impl/pq_code_distance/pq_code_distance-avx512.cpp
+  impl/pq_code_distance/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
@@ -39,6 +39,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   impl/binary_hamming/neon.cpp
+  impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/hamming_distance/hamming_neon.cpp
   utils/simd_impl/partitioning_neon.cpp
@@ -50,7 +51,12 @@ set(FAISS_SIMD_SVE_SRC
   utils/simd_impl/distances_arm_sve.cpp
 )
 set(FAISS_SIMD_RVV_SRC
+  impl/pq_code_distance/rvv.cpp
   impl/scalar_quantizer/sq-rvv.cpp
+  impl/binary_hamming/rvv.cpp
+  utils/simd_impl/distances_rvv.cpp
+  utils/hamming_distance/hamming_rvv.cpp
+  utils/simd_impl/rabitq_rvv.cpp
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
@@ -133,6 +139,7 @@ set(FAISS_SRC
   impl/PolysemousTraining.cpp
   impl/ProductQuantizer.cpp
   impl/pq_code_distance/pq_code_distance-generic.cpp
+  impl/pq_code_distance/IVFPQ_QueryTables.cpp
   impl/AdditiveQuantizer.cpp
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
@@ -311,8 +318,13 @@ set(FAISS_HEADERS
   impl/simd_dispatch.h
   impl/fast_scan/simd_result_handlers.h
   impl/zerocopy_io.h
-  utils/pq_code_distance.h
   impl/pq_code_distance/pq_code_distance-inl.h
+  impl/pq_code_distance/pq_code_distance-avx2.h
+  impl/pq_code_distance/pq_code_distance-avx512.h
+  impl/pq_code_distance/pq_code_distance-generic.h
+  impl/pq_code_distance/IVFPQ_QueryTables.h
+  impl/pq_code_distance/IVFPQScanner_impl.h
+  impl/pq_code_distance/PQDistanceComputer_impl.h
   invlists/BlockInvertedLists.h
   invlists/DirectMap.h
   invlists/InvertedLists.h
@@ -363,6 +375,7 @@ set(FAISS_HEADERS
   utils/hamming_distance/hamming_computer-avx512.h
   utils/hamming_distance/hamming_computer-generic.h
   utils/hamming_distance/hamming_computer-neon.h
+  utils/hamming_distance/hamming_computer-rvv.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h

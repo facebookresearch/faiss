@@ -30,6 +30,7 @@
 #include <svs/runtime/dynamic_vamana_index.h>
 
 #include <iostream>
+#include <type_traits>
 
 namespace faiss {
 
@@ -76,7 +77,9 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
         case SVS_LeanVec8x8:
             return svs_runtime::StorageKind::LeanVec8x8;
         default:
-            FAISS_ASSERT(false && "not supported SVS storage kind");
+            FAISS_THROW_FMT(
+                    "SVSStorageKind (%d) not supported",
+                    static_cast<std::underlying_type_t<SVSStorageKind>>(kind));
     }
 }
 

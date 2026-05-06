@@ -81,7 +81,9 @@ struct simd256_level_selector {
     static constexpr SIMDLevel value =
             (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_SPR)
             ? SIMDLevel::AVX2
-            : (SL == SIMDLevel::ARM_SVE ? SIMDLevel::ARM_NEON : SL);
+            : (SL == SIMDLevel::ARM_SVE             ? SIMDLevel::ARM_NEON
+                       : SL == SIMDLevel::RISCV_RVV ? SIMDLevel::NONE
+                                                    : SL);
 };
 
 /// SINGLE_SIMD_LEVEL mapped to 256-bit: use this for 256-bit simd types
@@ -100,8 +102,10 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
  ***************************************************************/
 template <SIMDLevel SL>
 struct simd512_level_selector {
-    static constexpr SIMDLevel value =
-            (SL == SIMDLevel::AVX512_SPR) ? SIMDLevel::AVX512 : SL;
+    static constexpr SIMDLevel value = (SL == SIMDLevel::AVX512_SPR)
+            ? SIMDLevel::AVX512
+            : (SL == SIMDLevel::RISCV_RVV) ? SIMDLevel::NONE
+                                           : SL;
 };
 
 /// SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types
