@@ -58,6 +58,9 @@
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
@@ -515,16 +518,19 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                 nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Do resize + read in a single pass per list. See the matching
+        // comment in the `ilar` branch below for rationale.
         size_t byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= byte_limit / sizeof(idx_t),
+                    n <= byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ailp->ids[i].resize(sizes[i]);
-            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
+                    n);
+            ailp->ids[i].resize(n);
+            size_t num_elems = ((n + bs - 1) / bs) * bs;
             size_t codes_bytes = mul_no_overflow(
                     num_elems, code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
@@ -546,9 +552,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     cum_sums_count);
             ailp->cum_sums[i].resize(cum_sums_count);
-        }
-        for (size_t i = 0; i < nlist; i++) {
-            size_t n = sizes[i];
             if (n > 0) {
                 read_vector_with_known_size(
                         ailp->codes[i], f, ailp->codes[i].size());
@@ -624,17 +627,23 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
         ails->codes.resize(ails->nlist);
         std::vector<size_t> sizes(ails->nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
+        // Resize + read in a single pass per list so that each list's
+        // heap allocation is released by the mmap view-substitution
+        // before the next list is allocated. This bounds peak heap to
+        // one list's worth of memory, which matters for large IVF
+        // indexes (hundreds of GB) under IO_FLAG_MMAP_IFC.
         size_t ilar_byte_limit = get_deserialization_vector_byte_limit();
-        for (size_t i = 0; i < ails->nlist; i++) {
+        for (size_t i = 0; i < sizes.size(); i++) {
+            size_t n = sizes[i];
             FAISS_THROW_IF_NOT_FMT(
-                    sizes[i] <= ilar_byte_limit / sizeof(idx_t),
+                    n <= ilar_byte_limit / sizeof(idx_t),
                     "inverted list %zu ids size %zu exceeds "
                     "deserialization byte limit",
                     i,
-                    sizes[i]);
-            ails->ids[i].resize(sizes[i]);
-            size_t codes_bytes = mul_no_overflow(
-                    sizes[i], ails->code_size, "inverted list codes");
+                    n);
+            ails->ids[i].resize(n);
+            size_t codes_bytes =
+                    mul_no_overflow(n, ails->code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
                     codes_bytes <= ilar_byte_limit,
                     "inverted list %zu codes size %zu exceeds "
@@ -642,9 +651,6 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     codes_bytes);
             ails->codes[i].resize(codes_bytes);
-        }
-        for (size_t i = 0; i < ails->nlist; i++) {
-            size_t n = ails->ids[i].size();
             if (n > 0) {
                 read_vector_with_known_size(
                         ails->codes[i],
@@ -2588,6 +2594,59 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             svs->deserialize_impl(is);
         }
         idx = std::move(svs);
+    } else if (
+            h == fourcc("ISIQ") || h == fourcc("ISIL") || h == fourcc("ISID")) {
+        std::unique_ptr<IndexSVSIVF> svs_ivf;
+        if (h == fourcc("ISIQ")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLVQ>();
+        } else if (h == fourcc("ISIL")) {
+            svs_ivf = std::make_unique<IndexSVSIVFLeanVec>();
+        } else if (h == fourcc("ISID")) {
+            svs_ivf = std::make_unique<IndexSVSIVF>();
+        }
+
+        read_index_header(*svs_ivf, f);
+        READ1(svs_ivf->num_centroids);
+        READ1(svs_ivf->minibatch_size);
+        READ1(svs_ivf->num_iterations);
+        READ1(svs_ivf->is_hierarchical);
+        READ1(svs_ivf->training_fraction);
+        READ1(svs_ivf->hierarchical_level1_clusters);
+        READ1(svs_ivf->seed);
+        READ1(svs_ivf->n_probes);
+        READ1(svs_ivf->k_reorder);
+        READ1(svs_ivf->num_threads);
+        READ1(svs_ivf->intra_query_threads);
+        READ1(svs_ivf->storage_kind);
+        READ1(svs_ivf->is_static);
+        if (h == fourcc("ISIL")) {
+            auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+            FAISS_THROW_IF_NOT_MSG(
+                    leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+            READ1(leanvec->leanvec_d);
+        }
+
+        bool initialized;
+        READ1(initialized);
+        if (initialized) {
+            faiss::svs_io::ReaderStreambuf rbuf(f);
+            std::istream is(&rbuf);
+            svs_ivf->deserialize_impl(is);
+        }
+        if (h == fourcc("ISIL")) {
+            bool trained;
+            READ1(trained);
+            if (trained) {
+                faiss::svs_io::ReaderStreambuf rbuf(f);
+                std::istream is(&rbuf);
+                auto* leanvec =
+                        dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
+                FAISS_THROW_IF_NOT_MSG(
+                        leanvec, "dynamic_cast to IndexSVSIVFLeanVec failed");
+                leanvec->deserialize_training_data(is);
+            }
+        }
+        idx = std::move(svs_ivf);
     }
 #endif // FAISS_ENABLE_SVS
     else if (h == fourcc("Iwrn") || h == fourcc("Iwrf")) {

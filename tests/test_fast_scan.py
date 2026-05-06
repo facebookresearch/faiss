@@ -12,7 +12,11 @@ import faiss
 
 from faiss.contrib import datasets
 
-from common_faiss_tests import for_all_simd_levels
+from common_faiss_tests import (
+    compare_binary_result_lists,
+    for_all_simd_levels,
+    NoneSIMDLevel,
+)
 
 # the tests tend to timeout in stress modes + dev otherwise
 faiss.omp_set_num_threads(4)
@@ -36,6 +40,54 @@ class TestSearch(unittest.TestCase):
         nq = Iref.shape[0]
         recall_at_1 = (Iref[:, 0] == Ia[:, 0]).sum() / nq
         assert recall_at_1 > 0.6
+
+    def test_PQ4_search_matches_none(self):
+        """Fast-scan PQ search dispatches via the 256/512-bit QBS path.
+
+        The integer QBS kernel is deterministic across SIMD levels *only if*
+        the upstream float PQ distance table is bit-identical. On some
+        toolchains (cmake aarch64 NEON/SVE) the float distance-table
+        computation reduces in a different order at NEON/SVE vs scalar,
+        producing a non-bit-identical LUT and thus different integer
+        distances. We diagnose which case applies, then assert accordingly:
+          - LUT identical -> assert (D, I) matches exactly (tie-tolerantly).
+          - LUT diverges  -> fall back to a recall@1 check (the integer
+            kernel can't be bit-exact if its input isn't).
+        """
+        ds = datasets.SyntheticDataset(32, 2000, 5000, 200)
+        index = faiss.index_factory(32, 'PQ16x4fs')
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        xq = ds.get_queries()
+        nq = xq.shape[0]
+        M, ksub = index.pq.M, index.pq.ksub
+
+        tab = np.zeros((nq, M, ksub), dtype='float32')
+        index.pq.compute_distance_tables(
+            nq, faiss.swig_ptr(xq), faiss.swig_ptr(tab))
+        D, I = index.search(xq, 10)
+
+        with NoneSIMDLevel():
+            tab_none = np.zeros((nq, M, ksub), dtype='float32')
+            index.pq.compute_distance_tables(
+                nq, faiss.swig_ptr(xq), faiss.swig_ptr(tab_none))
+            D_none, I_none = index.search(xq, 10)
+
+        lut_diffs = int((tab != tab_none).sum())
+        if lut_diffs == 0:
+            # Float LUT is bit-identical -> integer kernel must be too
+            # (modulo tied-index ordering).
+            compare_binary_result_lists(D, I, D_none, I_none)
+        else:
+            # Float LUT diverges across SIMD levels (float reductions are
+            # not order-stable across vector widths). Integer distances
+            # cannot be expected to match; check result-list overlap.
+            recall_at_1 = (I[:, 0] == I_none[:, 0]).mean()
+            self.assertGreater(
+                recall_at_1, 0.95,
+                f"LUT diverges ({lut_diffs} entries differ); "
+                f"recall@1 vs NONE = {recall_at_1:.3f}")
 
 
     # This is an experiment to see if we can catch performance

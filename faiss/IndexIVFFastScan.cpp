@@ -368,7 +368,11 @@ void IndexIVFFastScan::search_preassigned(
         IndexIVFStats* stats) const {
     size_t cur_nprobe = this->nprobe;
     if (params) {
-        FAISS_THROW_IF_NOT(params->max_codes == 0);
+        // Range-search-only option.
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_empty_result_buckets == 0,
+                "max_empty_result_buckets is a range-search knob and is "
+                "not honored by fastscan knn search");
         cur_nprobe = params->nprobe;
     }
 
@@ -395,6 +399,18 @@ void IndexIVFFastScan::range_search(
         params = dynamic_cast<const IVFSearchParameters*>(params_in);
         FAISS_THROW_IF_NOT_MSG(
                 params, "IndexIVFFastScan params have incorrect type");
+        // k-NN-only options.
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_lists_num == 0,
+                "max_lists_num is a knn knob and is not honored by "
+                "fastscan range search");
+        FAISS_THROW_IF_NOT_MSG(
+                !params->ensure_topk_full,
+                "ensure_topk_full is a knn knob and is not honored by "
+                "fastscan range search");
+        FAISS_THROW_IF_NOT_MSG(
+                params->max_codes == 0,
+                "max_codes is not honored by fastscan range search");
         cur_nprobe = params->nprobe;
     }
     FastScanDistancePostProcessing empty_context{};
@@ -526,8 +542,14 @@ void IndexIVFFastScan::search_dispatch_implem(
     // actual implementation used
     int impl = implem;
 
+    // Early-stop k-NN options require the per-query implementations.
+    const bool any_early_term_knob = params &&
+            (params->max_codes != 0 || params->max_lists_num != 0 ||
+             params->ensure_topk_full);
+
     if (impl == 0) {
-        if (bbs == 32) {
+        // Auto-select the per-query path when early-stop budgets are used.
+        if (bbs == 32 && !any_early_term_knob) {
             impl = 12;
         } else {
             impl = 10;
@@ -542,6 +564,15 @@ void IndexIVFFastScan::search_dispatch_implem(
     if (impl >= 100) {
         multiple_threads = false;
         impl -= 100;
+    }
+
+    if (any_early_term_knob) {
+        FAISS_THROW_IF_NOT_MSG(
+                impl == 10 || impl == 11,
+                "max_codes / max_lists_num / ensure_topk_full are only "
+                "supported by IndexIVFFastScan implem 10/11; set "
+                "index.implem = 10 (or 11 for k>20) explicitly, or leave it "
+                "at the default 0");
     }
 
     CoarseQuantizedWithBuffer cq(cq_in);
@@ -597,6 +628,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                     search_implem_10(
                             n,
                             x,
+                            k,
                             *handler,
                             cq,
                             &ndis,
@@ -658,6 +690,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                         search_implem_10(
                                 i1 - i0,
                                 x + i0 * d,
+                                k,
                                 *handler,
                                 cq_i,
                                 &ndis,
@@ -695,11 +728,23 @@ void IndexIVFFastScan::range_search_dispatch_implem(
     if (n == 0) {
         return;
     }
+    // FastScan range early-stop budget: enabled only for ordered per-query
+    // scanning below.
+    const bool use_empty_result_early_exit =
+            params && params->max_empty_result_buckets != 0;
+    const int pmode = this->parallel_mode & ~PARALLEL_MODE_NO_HEAP_INIT;
+    FAISS_THROW_IF_NOT_MSG(
+            !use_empty_result_early_exit || pmode == 0,
+            "max_empty_result_buckets supported only for parallel_mode = 0");
+
     // actual implementation used
     int impl = implem;
 
     if (impl == 0) {
-        if (bbs == 32) {
+        if (use_empty_result_early_exit) {
+            // Empty-bucket early stop needs per-query probe order.
+            impl = 10;
+        } else if (bbs == 32) {
             impl = 12;
         } else {
             impl = 10;
@@ -714,6 +759,11 @@ void IndexIVFFastScan::range_search_dispatch_implem(
         multiple_threads = false;
         impl -= 100;
     }
+
+    FAISS_THROW_IF_NOT_MSG(
+            !use_empty_result_early_exit || impl == 10,
+            "max_empty_result_buckets is only supported by "
+            "IndexIVFFastScan range-search implem 10");
 
     if (!multiple_threads && !cq.done()) {
         cq.quantize(quantizer, n, x, quantizer_params);
@@ -740,12 +790,13 @@ void IndexIVFFastScan::range_search_dispatch_implem(
             search_implem_10(
                     n,
                     x,
+                    /*k=*/0, // range search has no k
                     *handler,
                     cq,
                     &ndis,
                     &nlist_visited,
                     context,
-                    nullptr,
+                    params,
                     *scanner);
         } else {
             FAISS_THROW_FMT("Range search implem %d not implemented", impl);
@@ -784,12 +835,13 @@ void IndexIVFFastScan::range_search_dispatch_implem(
                     search_implem_10(
                             i1 - i0,
                             x + i0 * d,
+                            /*k=*/0,
                             *handler,
                             cq_i,
                             &ndis,
                             &nlist_visited,
                             context,
-                            nullptr,
+                            params,
                             *scanner);
                 }
             }
@@ -962,12 +1014,13 @@ void IndexIVFFastScan::search_implem_2(
 void IndexIVFFastScan::search_implem_10(
         idx_t n,
         const float* x,
+        idx_t k,
         SIMDResultHandlerToFloat& handler,
         const CoarseQuantized& cq,
         size_t* ndis_out,
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
-        const IVFSearchParameters* /* params */,
+        const IVFSearchParameters* params,
         FastScanCodeScanner& scanner) const {
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> dis_tables;
@@ -984,6 +1037,27 @@ void IndexIVFFastScan::search_implem_10(
     handler.begin(skip & 16 ? nullptr : normalizers.get());
     size_t cur_nprobe = cq.nprobe;
 
+    // Per-query early-stop options from SearchParametersIVF.
+    const size_t param_max_codes = params ? params->max_codes : 0;
+    const size_t param_max_lists_num = params ? params->max_lists_num : 0;
+    const bool ensure_topk_full = params ? params->ensure_topk_full : false;
+    const size_t cur_max_codes = (param_max_codes == 0)
+            ? std::numeric_limits<size_t>::max()
+            : param_max_codes;
+    const size_t cur_max_lists_num =
+            (param_max_lists_num == 0) ? cur_nprobe : param_max_lists_num;
+    // Effective budgets are the values tested in the probe loop below.
+    // ensure_topk_full raises small budgets to reduce empty result slots.
+    const size_t effective_max_codes = ensure_topk_full
+            ? std::max(cur_max_codes, (size_t)k)
+            : cur_max_codes;
+    const size_t effective_max_lists_num = ensure_topk_full
+            ? std::max(cur_max_lists_num, (size_t)k)
+            : cur_max_lists_num;
+    const bool is_range_search = k == 0;
+    const size_t max_empty_result_buckets =
+            (is_range_search && params) ? params->max_empty_result_buckets : 0;
+
     // Allocate probe_map once and reuse it
     std::vector<int> probe_map;
     probe_map.reserve(1);
@@ -995,7 +1069,24 @@ void IndexIVFFastScan::search_implem_10(
         if (single_LUT) {
             LUT = dis_tables.get() + i * dim12;
         }
+        // Per-query counters. For k-NN, the handler count excludes rows
+        // filtered by IDSelector.
+        const size_t scan0 = handler.count_scanned_rows();
+        size_t nscan_q = 0;
+        size_t nlists_visited_q = 0;
+        size_t nempty_result_buckets = 0;
         for (size_t j = 0; j < cur_nprobe; j++) {
+            if (!is_range_search) {
+                nscan_q = handler.count_scanned_rows() - scan0;
+            }
+            // Early-stop check: apply k-NN max_codes/max_lists_num before
+            // starting the next list. nscan_q excludes IDSelector-filtered
+            // rows.
+            if (nscan_q >= effective_max_codes ||
+                nlists_visited_q >= effective_max_lists_num) {
+                break;
+            }
+            const size_t prev_in_range_num = handler.in_range_num;
             size_t ij = i * cur_nprobe + j;
             if (!single_LUT) {
                 LUT = dis_tables.get() + ij * dim12;
@@ -1006,10 +1097,22 @@ void IndexIVFFastScan::search_implem_10(
 
             idx_t list_no = cq.ids[ij];
             if (list_no < 0) {
+                // Early-stop check: invalid probes count as empty range
+                // buckets.
+                if (max_empty_result_buckets > 0 &&
+                    ++nempty_result_buckets >= max_empty_result_buckets) {
+                    break;
+                }
                 continue;
             }
             size_t ls = invlists->list_size(list_no);
             if (ls == 0) {
+                // Early-stop check: empty inverted lists count as empty range
+                // buckets.
+                if (max_empty_result_buckets > 0 &&
+                    ++nempty_result_buckets >= max_empty_result_buckets) {
+                    break;
+                }
                 continue;
             }
 
@@ -1028,7 +1131,7 @@ void IndexIVFFastScan::search_implem_10(
                     1,
                     roundup(ls, bbs),
                     bbs,
-                    static_cast<int>(M2),
+                    M2,
                     codes.get(),
                     LUT,
                     context.pq2x4_scale,
@@ -1036,6 +1139,23 @@ void IndexIVFFastScan::search_implem_10(
 
             ndis += ls;
             nlist_visited++;
+            if (is_range_search) {
+                nscan_q += ls;
+            }
+            nlists_visited_q++;
+
+            if (max_empty_result_buckets > 0) {
+                // Early-stop check: apply the range-search empty-bucket
+                // budget after each visited list; any hit resets the counter.
+                if (handler.in_range_num == prev_in_range_num) {
+                    nempty_result_buckets++;
+                    if (nempty_result_buckets >= max_empty_result_buckets) {
+                        break;
+                    }
+                } else {
+                    nempty_result_buckets = 0;
+                }
+            }
         }
     }
 

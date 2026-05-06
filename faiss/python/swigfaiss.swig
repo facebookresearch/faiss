@@ -93,6 +93,7 @@ typedef uint64_t size_t;
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexAdditiveQuantizer.h>
+#include <faiss/impl/InvertedListScannerStats.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/Index2Layer.h>
@@ -214,6 +215,9 @@ typedef uint64_t size_t;
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif
 
 %}
@@ -547,6 +551,7 @@ void gpu_sync_all_devices()
 %ignore BlockInvertedListsIOHook;
 %include  <faiss/invlists/BlockInvertedLists.h>
 %include  <faiss/invlists/DirectMap.h>
+%include  <faiss/impl/InvertedListScannerStats.h>
 %include  <faiss/IndexIVF.h>
 // NOTE(hoss): SWIG (wrongly) believes the overloaded const version shadows the
 //   non-const one.
@@ -706,6 +711,9 @@ void gpu_sync_all_devices()
 %include  <faiss/svs/IndexSVSFlat.h>
 %include  <faiss/svs/IndexSVSVamanaLVQ.h>
 %include  <faiss/svs/IndexSVSVamanaLeanVec.h>
+%include  <faiss/svs/IndexSVSIVF.h>
+%include  <faiss/svs/IndexSVSIVFLVQ.h>
+%include  <faiss/svs/IndexSVSIVFLeanVec.h>
 #endif // FAISS_ENABLE_SVS
 
 #ifdef GPU_WRAPPER
@@ -847,6 +855,9 @@ void gpu_sync_all_devices()
     DOWNCAST ( IndexSVSVamanaLeanVec )
     DOWNCAST ( IndexSVSVamanaLVQ )
     DOWNCAST ( IndexSVSVamana )
+    DOWNCAST ( IndexSVSIVFLeanVec )
+    DOWNCAST ( IndexSVSIVFLVQ )
+    DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS

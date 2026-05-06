@@ -842,11 +842,12 @@ def handle_Index(the_class):
         n, d = x.shape
         assert d == self.d
         x = np.ascontiguousarray(x, dtype='float32')
+        code_size = self.sa_code_size()
 
         if codes is None:
-            codes = np.empty((n, self.sa_code_size()), dtype=np.uint8)
+            codes = np.empty((n, code_size), dtype=np.uint8)
         else:
-            assert codes.shape == (n, self.sa_code_size())
+            assert codes.shape == (n, code_size)
 
         self.sa_encode_c(n, swig_ptr(x), swig_ptr(codes))
         return codes
@@ -869,10 +870,12 @@ def handle_Index(the_class):
         assert cs == self.sa_code_size()
         codes = _check_dtype_uint8(codes)
 
+        ids_ptr = None
         if ids is not None:
             assert ids.shape == (n,)
-            ids = swig_ptr(ids)
-        self.add_sa_codes_c(n, swig_ptr(codes), ids)
+            ids = np.ascontiguousarray(ids, dtype="int64")
+            ids_ptr = swig_ptr(ids)
+        self.add_sa_codes_c(n, swig_ptr(codes), ids_ptr)
 
     def replacement_permute_entries(self, perm):
         n, = perm.shape

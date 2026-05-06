@@ -26,6 +26,7 @@
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/binary_hamming/dispatch.h>
 #include <faiss/utils/hamming.h>
 
@@ -103,17 +104,20 @@ struct IVFScanner : InvertedListScanner {
             size_t list_size,
             const uint8_t* codes,
             const idx_t* ids,
-            float* simi,
-            idx_t* idxi,
-            size_t k) const override {
+            ResultHandler& handler) const override {
         size_t nup = 0;
+        // get_InvertedListScanner asserts no IDSelector, so every code
+        // in the list has its distance computed.
         for (size_t j = 0; j < list_size; j++) {
             float dis = hc.hamming(codes);
+            handler.stats.scan_cnt++;
 
-            if (dis < simi[0]) {
+            if (dis < handler.threshold) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                maxheap_replace_top(k, simi, idxi, dis, id);
-                nup++;
+                if (handler.add_result(dis, id)) {
+                    handler.stats.nheap_updates++;
+                    nup++;
+                }
             }
             codes += code_size;
         }
@@ -128,9 +132,11 @@ struct IVFScanner : InvertedListScanner {
             RangeQueryResult& result) const override {
         for (size_t j = 0; j < list_size; j++) {
             float dis = hc.hamming(codes);
+            result.stats.scan_cnt++;
             if (dis < radius) {
                 int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 result.add(dis, id);
+                result.stats.nheap_updates++;
             }
             codes += code_size;
         }

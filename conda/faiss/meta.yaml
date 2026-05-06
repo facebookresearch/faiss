@@ -156,7 +156,8 @@ outputs:
       requires:
         - numpy >=2.0,<3.0
         - scipy
-        - pytorch-cpu >=2.7
+        - pytorch-cpu >=2.7  # [not win]
+        - pytorch >=2.7      # [win]
         {% if PY_VER == '3.10' or PY_VER == '3.11' %}
         - mkl >=2024.2.2  # [x86_64]
         - python_abi <3.12

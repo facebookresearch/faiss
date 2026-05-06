@@ -54,6 +54,9 @@
 
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSFlat.h>
+#include <faiss/svs/IndexSVSIVF.h>
+#include <faiss/svs/IndexSVSIVFLVQ.h>
+#include <faiss/svs/IndexSVSIVFLeanVec.h>
 #include <faiss/svs/IndexSVSVamana.h>
 #include <faiss/svs/IndexSVSVamanaLVQ.h>
 #include <faiss/svs/IndexSVSVamanaLeanVec.h>
@@ -597,6 +600,9 @@ SVSStorageKind parse_lvq(const std::string& lvq_string) {
     if (lvq_string == "LVQ4x8") {
         return SVSStorageKind::SVS_LVQ4x8;
     }
+    if (lvq_string == "LVQ8x0") {
+        return SVSStorageKind::SVS_LVQ8x0;
+    }
     FAISS_ASSERT(false && "not supported SVS LVQ level");
 }
 
@@ -628,28 +634,43 @@ Index* parse_svs_datatype(
         if (index_type == "Flat") {
             return new IndexSVSFlat(d, mt);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(d, std::stoul(arg_string), mt);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type");
     }
     if (re_match(datatype_string, "FP16", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for Float16");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_FP16);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for Float16");
     }
     if (re_match(datatype_string, "SQI8", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamana(
                     d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for SQI8");
+        if (index_type == "IVF") {
+            return new IndexSVSIVF(
+                    d, std::stoul(arg_string), mt, SVSStorageKind::SVS_SQI8);
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for SQI8");
     }
     if (re_match(datatype_string, "(LVQ[0-9]+x[0-9]+)", sm)) {
         if (index_type == "Vamana") {
             return new IndexSVSVamanaLVQ(
                     d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for LVQ");
+        if (index_type == "IVF") {
+            return new IndexSVSIVFLVQ(
+                    d, std::stoul(arg_string), mt, parse_lvq(sm[0].str()));
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for LVQ");
     }
     if (re_match(datatype_string, "(LeanVec[0-9]+x[0-9]+)(_[0-9]+)?", sm)) {
         std::string leanvec_d_string =
@@ -664,7 +685,15 @@ Index* parse_svs_datatype(
                     leanvec_d,
                     parse_leanvec(sm[1].str()));
         }
-        FAISS_ASSERT(false && "Unspported SVS index type for LeanVec");
+        if (index_type == "IVF") {
+            return new IndexSVSIVFLeanVec(
+                    d,
+                    std::stoul(arg_string),
+                    mt,
+                    leanvec_d,
+                    parse_leanvec(sm[1].str()));
+        }
+        FAISS_ASSERT(false && "Unsupported SVS index type for LeanVec");
     }
     return nullptr;
 }
@@ -684,7 +713,10 @@ Index* parse_IndexSVS(const std::string& code_string, int d, MetricType mt) {
                 "Vamana", degree_string, datatype_string, d, mt);
     }
     if (re_match(code_string, "IVF([0-9]+)(,.+)?", sm)) {
-        FAISS_ASSERT(false && "Unspported SVS index type");
+        std::string nlist_string = sm[1].str();
+        std::string datatype_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        return parse_svs_datatype("IVF", nlist_string, datatype_string, d, mt);
     }
     return nullptr;
 }
