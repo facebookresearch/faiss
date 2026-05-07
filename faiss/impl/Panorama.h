@@ -47,11 +47,6 @@ static inline void compute_level_dot_kernel(
         float* FAISS_RESTRICT dot_products,
         size_t stride = 0) {
     const size_t width = LevelWidth > 0 ? LevelWidth : level_width_dims;
-    // Per-vector stride in `level_storage`. Default (`stride == 0`) is
-    // the legacy "tightly packed per level" layout where consecutive
-    // vectors are `width` floats apart. Non-zero `stride` lets the
-    // K-pop HNSW search read row-major feats with stride d (each row's
-    // L*lw floats packed contiguously at the start of `codes`).
     const size_t row_stride = stride == 0 ? width : stride;
     size_t i = 0;
     for (; i + 4 <= num_active; i += 4) {
