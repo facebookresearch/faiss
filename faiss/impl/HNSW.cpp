@@ -807,22 +807,11 @@ int search_from_candidates_panorama(
     const size_t num_panorama_levels = pano.n_levels;
     const size_t level_width_floats = pano.level_width_floats;
 
-    // Adaptive K-pop multi-hop batching: each outer iteration pops up
-    // to `k_target` parents from the candidates heap, unions + dedupes
-    // their neighbors via the visited-table test-and-set, and runs ONE
-    // SIMD kernel pass over the unioned batch. After each iteration we
-    // grow or shrink `k_target` based on the post-dedup batch size so
-    // the SIMD kernel stays saturated near TARGET_BATCH candidates per
-    // dispatch.
-    constexpr size_t KPOP_MAX = 8;
-    const size_t TARGET_BATCH = 2 * M;
-    size_t k_target = 2;
-    std::array<int, KPOP_MAX> v0_batch;
-
-    // Buffers hold the unioned neighbor set: up to KPOP_MAX * M per
-    // outer iteration. Sized for KPOP_MAX so the adaptive policy never
-    // overflows.
-    const size_t buf_cap = KPOP_MAX * M;
+    // Setting this too high makes the algorithm not greedy enough,
+    // but setting it too low makes the algorithm cause too many cache misses.
+    // 128 is a good compromise.
+    constexpr size_t kTargetBatch = 128;
+    const size_t buf_cap = kTargetBatch + M;
     std::vector<uint32_t> index_array(buf_cap);
     std::vector<float> exact_distances(buf_cap);
     std::vector<float> dot_buffer(buf_cap);
@@ -831,15 +820,8 @@ int search_from_candidates_panorama(
     const float* query = flat_codes_qdis->q;
     const size_t d = static_cast<size_t>(panorama_index->d);
 
-    // The panorama index uses the chunked layout: cum-sums live in a
-    // separate per-vector array (stride n_levels+1 floats) and feature
-    // bytes are packed bare in the storage's `codes` vector at d
-    // floats per row. The K-pop kernel needs both bases + both strides
-    // because cs and feats no longer share a single per-row stride.
     const float* cum_base = panorama_index->get_cum_sum(0);
     const size_t cum_stride = num_panorama_levels + 1;
-    // The storage is an IndexFlatL2 (chosen by IndexHNSWFlat); its
-    // `codes` vector holds bare floats packed at d floats per row.
     const auto* flat_storage =
             static_cast<const IndexFlat*>(panorama_index->storage);
     const float* xb_base =
@@ -857,22 +839,18 @@ int search_from_candidates_panorama(
 
     bool stop_flag = false;
     while (candidates.size() > 0 && !stop_flag) {
-        // Pop up to k_target parents this iteration. Always process at
-        // least one (so progress is guaranteed); subsequent pops honor
-        // the standard do_dis_check early-stop. Total nodes-popped
-        // stays bounded the same as the single-pop path (within at
-        // most k_target - 1 of the original stopping point).
+        size_t initial_size = 0;
         size_t k_popped = 0;
-        while (k_popped < k_target && candidates.size() > 0) {
+        while (initial_size < kTargetBatch && candidates.size() > 0) {
             float d0 = 0;
             int v0 = candidates.pop_min(&d0);
             if (do_dis_check) {
                 int n_dis_below = candidates.count_below(d0);
                 if (n_dis_below >= efSearch) {
                     if (k_popped == 0) {
-                        // Standard early-stop: we haven't queued any
-                        // work this iteration, so terminate the outer
-                        // loop entirely (matching single-pop behavior).
+                        // Standard early-stop: nothing queued this
+                        // iteration, terminate the outer loop entirely
+                        // (matches the single-pop path's behavior).
                         stop_flag = true;
                     } else {
                         // We already have parents queued; un-pop this
@@ -883,20 +861,10 @@ int search_from_candidates_panorama(
                     break;
                 }
             }
-            v0_batch[k_popped++] = v0;
-        }
-        if (k_popped == 0) {
-            break;
-        }
+            k_popped++;
 
-        // Union over k_popped parents. The vt.set test-and-set
-        // naturally dedupes neighbors that are shared across parents
-        // in this K-batch, so no extra dedup structure is needed.
-        size_t initial_size = 0;
-        for (size_t p = 0; p < k_popped; p++) {
             size_t begin, end;
-            hnsw.neighbor_range(v0_batch[p], level, &begin, &end);
-
+            hnsw.neighbor_range(v0, level, &begin, &end);
             for (size_t j = begin; j < end; j++) {
                 int v1 = hnsw.neighbors[j];
                 if (v1 < 0) {
@@ -906,28 +874,16 @@ int search_from_candidates_panorama(
                 bool is_new = vt.set(v1);
                 bool is_selected = !sel || sel->is_member(v1);
                 if (is_new && is_selected) {
-                    // cs[0] of v1 = full norm, used to seed the L2 init.
                     const float vsum =
                             cum_base[static_cast<size_t>(v1) * cum_stride];
                     index_array[initial_size] = v1;
-                    exact_distances[initial_size] =
-                            query_norm_sq + vsum * vsum;
+                    exact_distances[initial_size] = query_norm_sq + vsum * vsum;
                     initial_size++;
                 }
             }
         }
 
         local_pano_stats.total_dims += initial_size * d;
-
-        // Adapt k_target for the next iteration based on this iter's
-        // post-dedup batch. Bumping by +-1 (rather than directly
-        // setting) keeps adaptation gentle so we don't oscillate
-        // around the saturation point.
-        if (initial_size < TARGET_BATCH && k_target < KPOP_MAX) {
-            k_target++;
-        } else if (initial_size > 2 * TARGET_BATCH && k_target > 1) {
-            k_target--;
-        }
 
         size_t batch_size = initial_size;
         size_t curr_panorama_level = 0;
@@ -943,9 +899,6 @@ int search_from_candidates_panorama(
 
             // Compute all dot products for this level at once via the
             // compile-time-width-specialized kernel from Panorama.h.
-            // Feats are packed bare in `codes` at `d` floats per row,
-            // so we pass `feat_stride = d` as the per-row stride to
-            // the kernel.
             const float* level_base = xb_base + start_dim;
 
             with_level_width(dim_span, [&]<size_t W>() {
@@ -961,10 +914,6 @@ int search_from_candidates_panorama(
             ndis += batch_size;
 
             // Prune based on computed dot products.
-            // ne = exact_distances - 2*dot_buffer  (true L2 over [0, end_dim))
-            // cs_bound = 2 * query_cum_norm * cum_sum[level+1]
-            // lb = ne - cs_bound  (lower bound on full-d L2)
-            // keep iff lb <= threshold; pruned go back to candidates heap.
             size_t next_batch_size = 0;
 
             for (size_t i = 0; i < batch_size; i++) {
