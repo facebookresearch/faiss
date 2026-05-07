@@ -171,35 +171,6 @@ TEST(BlockL2, ScalarMatchesReference) {
     }
 }
 
-TEST(BlockL2, Avx512MatchesScalar) {
-#if defined(__x86_64__) && defined(__AVX512F__)
-    constexpr int N = 64;
-    std::mt19937 rng(43);
-    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
-    std::vector<float> x(N), y(N);
-    for (int m = 0; m < N; ++m) {
-        x[m] = dist(rng);
-        y[m] = dist(rng);
-    }
-
-    const float scalar = faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
-            x.data(), y.data(), N);
-    const float avx512 = faiss::detail::block_l2<faiss::SIMDLevel::AVX512>(
-            x.data(), y.data(), N);
-    EXPECT_NEAR(avx512, scalar, 1e-4f);
-
-    for (int n = 1; n < N; ++n) {
-        const float s = faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
-                x.data(), y.data(), n);
-        const float a = faiss::detail::block_l2<faiss::SIMDLevel::AVX512>(
-                x.data(), y.data(), n);
-        EXPECT_NEAR(a, s, 1e-4f) << "n=" << n;
-    }
-#else
-    GTEST_SKIP() << "AVX-512 test requires __AVX512F__";
-#endif
-}
-
 TEST(BlockL2, DispatchMatchesScalar) {
     constexpr int N = 64;
     std::mt19937 rng(44);

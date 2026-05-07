@@ -126,6 +126,24 @@ def handle_Clustering(the_class):
     replace_method(the_class, 'train_encoded', replacement_train_encoded)
 
 
+def handle_SuperKMeans(the_class):
+
+    def replacement_train(self, x):
+        """Perform SuperKMeans clustering on a set of vectors.
+
+        Parameters
+        ----------
+        x : array_like
+            Training vectors, shape (n, self.d). `dtype` must be float32.
+        """
+        n, d = x.shape
+        assert d == self.d
+        x = np.ascontiguousarray(x, dtype='float32')
+        self.train_c(n, swig_ptr(x))
+
+    replace_method(the_class, 'train', replacement_train)
+
+
 def handle_Clustering1D(the_class):
 
     def replacement_train_exact(self, x):
