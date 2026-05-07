@@ -12462,6 +12462,7 @@
     <member refid="structfaiss_1_1VisitedTable_1ab1f81f4d8bd0309e705f51bc64bdba0a" kind="variable"><name>visno</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a6765ef117312689df98edce81c52e93b" kind="function"><name>VisitedTable</name></member>
     <member refid="structfaiss_1_1VisitedTable_1ab974710f3530d1ecbde01b2a4ce55fc4" kind="function"><name>set</name></member>
+    <member refid="structfaiss_1_1VisitedTable_1a0fde83ed4a92e4470072d48aae24126b" kind="function"><name>reserve</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a3bf601159737dfbdcfbc8be1262b2034" kind="function"><name>get</name></member>
     <member refid="structfaiss_1_1VisitedTable_1ad3d2376dfcd6a8204ec5abf96248006c" kind="function"><name>prefetch</name></member>
     <member refid="structfaiss_1_1VisitedTable_1a76223893c8c3a577473092b3bb8a2446" kind="function"><name>advance</name></member>
