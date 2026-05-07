@@ -20070,6 +20070,9 @@
 <para>Objective-C++ header (uses Metal types).</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
+<para>MetalKernels: typed wrapper around Metal compute kernels. Owns library compilation, pipeline caching, and dispatch encoding.</para>
+<para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
+<para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>
 <para>This header uses Objective-C types (Metal framework: id, nil, MTLDevice, etc.). For correct IDE/linter behavior, associate this file with &quot;Objective-C++&quot;:</para>
 <para>Copyright (c) Meta Platforms, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.</para>

@@ -7,6 +7,7 @@
     <innerfile refid="MetalFlatKernels_8h">MetalFlatKernels.h</innerfile>
     <innerfile refid="MetalIndex_8h">MetalIndex.h</innerfile>
     <innerfile refid="MetalIndexFlat_8h">MetalIndexFlat.h</innerfile>
+    <innerfile refid="MetalKernels_8h">MetalKernels.h</innerfile>
     <innerfile refid="MetalResources_8h">MetalResources.h</innerfile>
     <innerfile refid="StandardMetalResources_8h">StandardMetalResources.h</innerfile>
     <briefdescription>

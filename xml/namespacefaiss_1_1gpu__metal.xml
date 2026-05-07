@@ -5,6 +5,7 @@
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndex" prot="public">faiss::gpu_metal::MetalIndex</innerclass>
     <innerclass refid="structfaiss_1_1gpu__metal_1_1MetalIndexConfig" prot="public">faiss::gpu_metal::MetalIndexConfig</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalIndexFlat" prot="public">faiss::gpu_metal::MetalIndexFlat</innerclass>
+    <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalKernels" prot="public">faiss::gpu_metal::MetalKernels</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1MetalResources" prot="public">faiss::gpu_metal::MetalResources</innerclass>
     <innerclass refid="classfaiss_1_1gpu__metal_1_1StandardMetalResources" prot="public">faiss::gpu_metal::StandardMetalResources</innerclass>
     <sectiondef kind="enum">
@@ -213,6 +214,24 @@
         <inbodydescription>
         </inbodydescription>
         <location file="faiss/gpu_metal/MetalFlatKernels.h" line="26" column="6" declfile="faiss/gpu_metal/MetalFlatKernels.h" declline="26" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="MetalKernels_8h_1af8ab30db0a71d9b6001b88ecc531e061" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu__metal_1_1MetalKernels" kindref="compound">MetalKernels</ref> &amp;</type>
+        <definition>MetalKernels &amp; faiss::gpu_metal::getMetalKernels</definition>
+        <argsstring>(id&lt; MTLDevice &gt; device)</argsstring>
+        <name>getMetalKernels</name>
+        <qualifiedname>faiss::gpu_metal::getMetalKernels</qualifiedname>
+        <param>
+          <type>id&lt; MTLDevice &gt;</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu_metal/MetalKernels.h" line="63" column="14" declfile="faiss/gpu_metal/MetalKernels.h" declline="63" declcolumn="14"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

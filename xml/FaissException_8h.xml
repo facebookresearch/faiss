@@ -518,23 +518,25 @@
         </childnode>
         <childnode refid="127" relation="include">
         </childnode>
-        <childnode refid="139" relation="include">
+        <childnode refid="128" relation="include">
         </childnode>
-        <childnode refid="142" relation="include">
+        <childnode refid="140" relation="include">
         </childnode>
-        <childnode refid="144" relation="include">
-        </childnode>
-        <childnode refid="153" relation="include">
-        </childnode>
-        <childnode refid="106" relation="include">
-        </childnode>
-        <childnode refid="154" relation="include">
+        <childnode refid="143" relation="include">
         </childnode>
         <childnode refid="145" relation="include">
         </childnode>
+        <childnode refid="154" relation="include">
+        </childnode>
+        <childnode refid="106" relation="include">
+        </childnode>
+        <childnode refid="155" relation="include">
+        </childnode>
+        <childnode refid="146" relation="include">
+        </childnode>
         <childnode refid="117" relation="include">
         </childnode>
-        <childnode refid="149" relation="include">
+        <childnode refid="150" relation="include">
         </childnode>
       </node>
       <node id="45">
@@ -565,7 +567,7 @@
         <label>faiss/gpu/GpuDistance.h</label>
         <link refid="GpuDistance_8h_source"/>
       </node>
-      <node id="155">
+      <node id="156">
         <label>faiss/gpu/GpuFaissAssert.h</label>
         <link refid="GpuFaissAssert_8h_source"/>
       </node>
@@ -631,23 +633,23 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="156">
+      <node id="157">
         <label>faiss/gpu/GpuResources.h</label>
         <link refid="GpuResources_8h_source"/>
         <childnode refid="95" relation="include">
         </childnode>
         <childnode refid="68" relation="include">
         </childnode>
-        <childnode refid="157" relation="include">
+        <childnode refid="158" relation="include">
         </childnode>
-        <childnode refid="143" relation="include">
+        <childnode refid="144" relation="include">
         </childnode>
         <childnode refid="126" relation="include">
         </childnode>
-        <childnode refid="158" relation="include">
+        <childnode refid="159" relation="include">
         </childnode>
       </node>
-      <node id="157">
+      <node id="158">
         <label>faiss/gpu/StandardGpuResources.h</label>
         <link refid="StandardGpuResources_8h_source"/>
         <childnode refid="74" relation="include">
@@ -661,7 +663,7 @@
         <label>faiss/gpu/impl/RemapIndices.h</label>
         <link refid="RemapIndices_8h_source"/>
       </node>
-      <node id="159">
+      <node id="160">
         <label>faiss/gpu/perf/IndexWrapper-inl.h</label>
         <link refid="IndexWrapper-inl_8h_source"/>
         <childnode refid="74" relation="include">
@@ -675,7 +677,7 @@
         <label>faiss/gpu/test/TestUtils.h</label>
         <link refid="TestUtils_8h_source"/>
       </node>
-      <node id="143">
+      <node id="144">
         <label>faiss/gpu/utils/CuvsFilterConvert.h</label>
         <link refid="CuvsFilterConvert_8h_source"/>
       </node>
@@ -683,16 +685,16 @@
         <label>faiss/gpu/utils/CuvsUtils.h</label>
         <link refid="CuvsUtils_8h_source"/>
       </node>
-      <node id="160">
+      <node id="161">
         <label>faiss/gpu/utils/DeviceUtils.h</label>
         <link refid="DeviceUtils_8h_source"/>
-        <childnode refid="157" relation="include">
+        <childnode refid="158" relation="include">
         </childnode>
       </node>
-      <node id="158">
+      <node id="159">
         <label>faiss/gpu/utils/StackDeviceMemory.h</label>
         <link refid="StackDeviceMemory_8h_source"/>
-        <childnode refid="157" relation="include">
+        <childnode refid="158" relation="include">
         </childnode>
       </node>
       <node id="103">
@@ -715,6 +717,10 @@
         <childnode refid="103" relation="include">
         </childnode>
       </node>
+      <node id="127">
+        <label>faiss/gpu_metal/MetalKernels.h</label>
+        <link refid="MetalKernels_8h_source"/>
+      </node>
       <node id="83">
         <label>faiss/impl/AdditiveQuantizer.h</label>
         <link refid="AdditiveQuantizer_8h_source"/>
@@ -733,10 +739,10 @@
         <childnode refid="59" relation="include">
         </childnode>
       </node>
-      <node id="127">
+      <node id="128">
         <label>faiss/impl/AuxIndexStructures.h</label>
         <link refid="AuxIndexStructures_8h_source"/>
-        <childnode refid="128" relation="include">
+        <childnode refid="129" relation="include">
         </childnode>
         <childnode refid="107" relation="include">
         </childnode>
@@ -748,24 +754,24 @@
         </childnode>
         <childnode refid="117" relation="include">
         </childnode>
-        <childnode refid="137" relation="include">
-        </childnode>
         <childnode refid="138" relation="include">
+        </childnode>
+        <childnode refid="139" relation="include">
         </childnode>
       </node>
       <node id="47">
         <label>faiss/impl/ClusteringHelpers.h</label>
         <link refid="ClusteringHelpers_8h_source"/>
       </node>
-      <node id="139">
+      <node id="140">
         <label>faiss/impl/CodePacker.h</label>
         <link refid="CodePacker_8h_source"/>
-        <childnode refid="140" relation="include">
-        </childnode>
         <childnode refid="141" relation="include">
         </childnode>
+        <childnode refid="142" relation="include">
+        </childnode>
       </node>
-      <node id="140">
+      <node id="141">
         <label>faiss/impl/CodePackerRaBitQ.h</label>
         <link refid="CodePackerRaBitQ_8h_source"/>
       </node>
@@ -792,15 +798,15 @@
         </childnode>
         <childnode refid="125" relation="include">
         </childnode>
-        <childnode refid="155" relation="include">
-        </childnode>
         <childnode refid="156" relation="include">
         </childnode>
-        <childnode refid="159" relation="include">
+        <childnode refid="157" relation="include">
+        </childnode>
+        <childnode refid="160" relation="include">
         </childnode>
         <childnode refid="99" relation="include">
         </childnode>
-        <childnode refid="160" relation="include">
+        <childnode refid="161" relation="include">
         </childnode>
         <childnode refid="105" relation="include">
         </childnode>
@@ -808,27 +814,27 @@
         </childnode>
         <childnode refid="114" relation="include">
         </childnode>
-        <childnode refid="128" relation="include">
-        </childnode>
-        <childnode refid="161" relation="include">
+        <childnode refid="129" relation="include">
         </childnode>
         <childnode refid="162" relation="include">
+        </childnode>
+        <childnode refid="163" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="130" relation="include">
-        </childnode>
-        <childnode refid="132" relation="include">
+        <childnode refid="131" relation="include">
         </childnode>
         <childnode refid="133" relation="include">
         </childnode>
-        <childnode refid="129" relation="include">
+        <childnode refid="134" relation="include">
         </childnode>
-        <childnode refid="165" relation="include">
+        <childnode refid="130" relation="include">
         </childnode>
         <childnode refid="166" relation="include">
+        </childnode>
+        <childnode refid="167" relation="include">
         </childnode>
         <childnode refid="26" relation="include">
         </childnode>
@@ -838,23 +844,23 @@
         </childnode>
         <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="169" relation="include">
-        </childnode>
-        <childnode refid="171" relation="include">
-        </childnode>
-        <childnode refid="117" relation="include">
-        </childnode>
-        <childnode refid="149" relation="include">
-        </childnode>
-        <childnode refid="137" relation="include">
-        </childnode>
-        <childnode refid="151" relation="include">
+        <childnode refid="170" relation="include">
         </childnode>
         <childnode refid="172" relation="include">
         </childnode>
+        <childnode refid="117" relation="include">
+        </childnode>
+        <childnode refid="150" relation="include">
+        </childnode>
         <childnode refid="138" relation="include">
         </childnode>
+        <childnode refid="152" relation="include">
+        </childnode>
         <childnode refid="173" relation="include">
+        </childnode>
+        <childnode refid="139" relation="include">
+        </childnode>
+        <childnode refid="174" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -862,7 +868,7 @@
         <link refid="FaissException_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="128" relation="include">
+        <childnode refid="129" relation="include">
         </childnode>
       </node>
       <node id="105">
@@ -873,20 +879,20 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="142">
+      <node id="143">
         <label>faiss/impl/IDSelector.h</label>
         <link refid="IDSelector_8h_source"/>
         <childnode refid="71" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="143" relation="include">
-        </childnode>
         <childnode refid="144" relation="include">
         </childnode>
-        <childnode refid="128" relation="include">
+        <childnode refid="145" relation="include">
         </childnode>
         <childnode refid="129" relation="include">
+        </childnode>
+        <childnode refid="130" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
@@ -896,13 +902,13 @@
         </childnode>
         <childnode refid="117" relation="include">
         </childnode>
-        <childnode refid="149" relation="include">
+        <childnode refid="150" relation="include">
         </childnode>
-        <childnode refid="152" relation="include">
-        </childnode>
-        <childnode refid="137" relation="include">
+        <childnode refid="153" relation="include">
         </childnode>
         <childnode refid="138" relation="include">
+        </childnode>
+        <childnode refid="139" relation="include">
         </childnode>
       </node>
       <node id="84">
@@ -929,14 +935,14 @@
         <childnode refid="32" relation="include">
         </childnode>
       </node>
-      <node id="144">
+      <node id="145">
         <label>faiss/impl/Panorama.h</label>
         <link refid="Panorama_8h_source"/>
         <childnode refid="81" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="145" relation="include">
+        <childnode refid="146" relation="include">
         </childnode>
       </node>
       <node id="53">
@@ -977,16 +983,16 @@
         <childnode refid="58" relation="include">
         </childnode>
       </node>
-      <node id="153">
+      <node id="154">
         <label>faiss/impl/RaBitQUtils.h</label>
         <link refid="RaBitQUtils_8h_source"/>
         <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="79" relation="include">
         </childnode>
-        <childnode refid="154" relation="include">
+        <childnode refid="155" relation="include">
         </childnode>
-        <childnode refid="133" relation="include">
+        <childnode refid="134" relation="include">
         </childnode>
       </node>
       <node id="106">
@@ -1001,7 +1007,7 @@
         <childnode refid="79" relation="include">
         </childnode>
       </node>
-      <node id="154">
+      <node id="155">
         <label>faiss/impl/RaBitQuantizerMultiBit.h</label>
         <link refid="RaBitQuantizerMultiBit_8h_source"/>
       </node>
@@ -1015,20 +1021,20 @@
         <childnode refid="62" relation="include">
         </childnode>
       </node>
-      <node id="128">
+      <node id="129">
         <label>faiss/impl/ResultHandler.h</label>
         <link refid="ResultHandler_8h_source"/>
         <childnode refid="29" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
-        <childnode refid="129" relation="include">
+        <childnode refid="130" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="134" relation="include">
+        <childnode refid="135" relation="include">
         </childnode>
-        <childnode refid="136" relation="include">
+        <childnode refid="137" relation="include">
         </childnode>
       </node>
       <node id="107">
@@ -1051,7 +1057,7 @@
         <childnode refid="112" relation="include">
         </childnode>
       </node>
-      <node id="161">
+      <node id="162">
         <label>faiss/impl/ThreadedIndex-inl.h</label>
         <link refid="ThreadedIndex-inl_8h_source"/>
         <childnode refid="76" relation="include">
@@ -1065,27 +1071,27 @@
         <childnode refid="75" relation="include">
         </childnode>
       </node>
-      <node id="163">
+      <node id="164">
         <label>faiss/impl/approx_topk/approx_topk.h</label>
         <link refid="approx__topk_8h_source"/>
         <childnode refid="64" relation="include">
         </childnode>
         <childnode refid="59" relation="include">
         </childnode>
-        <childnode refid="164" relation="include">
+        <childnode refid="165" relation="include">
         </childnode>
         <childnode refid="116" relation="include">
         </childnode>
-        <childnode refid="152" relation="include">
+        <childnode refid="153" relation="include">
         </childnode>
       </node>
-      <node id="162">
+      <node id="163">
         <label>faiss/impl/approx_topk/generic.h</label>
         <link refid="generic_8h_source"/>
-        <childnode refid="163" relation="include">
+        <childnode refid="164" relation="include">
         </childnode>
       </node>
-      <node id="164">
+      <node id="165">
         <label>faiss/impl/approx_topk/simdlib256-inl.h</label>
         <link refid="simdlib256-inl_8h_source"/>
       </node>
@@ -1117,28 +1123,28 @@
         <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="130">
+      <node id="131">
         <label>faiss/impl/fast_scan/accumulate_loops.h</label>
         <link refid="accumulate__loops_8h"/>
-        <childnode refid="131" relation="include">
+        <childnode refid="132" relation="include">
         </childnode>
       </node>
-      <node id="132">
+      <node id="133">
         <label>faiss/impl/fast_scan/decompose_qbs.h</label>
         <link refid="decompose__qbs_8h_source"/>
       </node>
-      <node id="131">
+      <node id="132">
         <label>faiss/impl/fast_scan/dispatching.h</label>
         <link refid="dispatching_8h"/>
       </node>
-      <node id="141">
+      <node id="142">
         <label>faiss/impl/fast_scan/fast_scan.h</label>
         <link refid="fast__scan_8h_source"/>
         <childnode refid="78" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="131" relation="include">
+        <childnode refid="132" relation="include">
         </childnode>
         <childnode refid="18" relation="include">
         </childnode>
@@ -1147,25 +1153,25 @@
         <label>faiss/impl/fast_scan/rabitq_dispatching.h</label>
         <link refid="rabitq__dispatching_8h"/>
       </node>
-      <node id="133">
+      <node id="134">
         <label>faiss/impl/fast_scan/rabitq_result_handler.h</label>
         <link refid="rabitq__result__handler_8h_source"/>
         <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="129">
+      <node id="130">
         <label>faiss/impl/fast_scan/simd_result_handlers.h</label>
         <link refid="simd__result__handlers_8h_source"/>
         <childnode refid="79" relation="include">
         </childnode>
-        <childnode refid="130" relation="include">
-        </childnode>
-        <childnode refid="132" relation="include">
+        <childnode refid="131" relation="include">
         </childnode>
         <childnode refid="133" relation="include">
         </childnode>
+        <childnode refid="134" relation="include">
+        </childnode>
       </node>
-      <node id="165">
+      <node id="166">
         <label>faiss/impl/hnsw/LockVector.h</label>
         <link refid="LockVector_8h_source"/>
         <childnode refid="65" relation="include">
@@ -1177,7 +1183,7 @@
         <label>faiss/impl/index_read_utils.h</label>
         <link refid="index__read__utils_8h_source"/>
       </node>
-      <node id="167">
+      <node id="168">
         <label>faiss/impl/io_macros.h</label>
         <link refid="io__macros_8h_source"/>
       </node>
@@ -1185,11 +1191,11 @@
         <label>faiss/impl/kmeans1d.h</label>
         <link refid="kmeans1d_8h_source"/>
       </node>
-      <node id="168">
+      <node id="169">
         <label>faiss/impl/mapped_io.h</label>
         <link refid="mapped__io_8h_source"/>
       </node>
-      <node id="166">
+      <node id="167">
         <label>faiss/impl/maybe_owned_vector.h</label>
         <link refid="maybe__owned__vector_8h_source"/>
         <childnode refid="64" relation="include">
@@ -1198,11 +1204,11 @@
         </childnode>
         <childnode refid="105" relation="include">
         </childnode>
-        <childnode refid="167" relation="include">
-        </childnode>
         <childnode refid="168" relation="include">
         </childnode>
-        <childnode refid="145" relation="include">
+        <childnode refid="169" relation="include">
+        </childnode>
+        <childnode refid="146" relation="include">
         </childnode>
       </node>
       <node id="25">
@@ -1295,10 +1301,10 @@
         <label>faiss/impl/scalar_quantizer/training.h</label>
         <link refid="training_8h_source"/>
       </node>
-      <node id="169">
+      <node id="170">
         <label>faiss/impl/simd_dispatch.h</label>
         <link refid="simd__dispatch_8h"/>
-        <childnode refid="163" relation="include">
+        <childnode refid="164" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
@@ -1306,12 +1312,12 @@
         </childnode>
         <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="150" relation="include">
+        <childnode refid="151" relation="include">
         </childnode>
-        <childnode refid="170" relation="include">
+        <childnode refid="171" relation="include">
         </childnode>
       </node>
-      <node id="171">
+      <node id="172">
         <label>faiss/impl/simdlib/simdlib_neon.h</label>
         <link refid="simdlib__neon_8h_source"/>
       </node>
@@ -1319,11 +1325,11 @@
         <label>faiss/index_factory.h</label>
         <link refid="index__factory_8h_source"/>
       </node>
-      <node id="146">
+      <node id="147">
         <label>faiss/invlists/BlockInvertedLists.h</label>
         <link refid="BlockInvertedLists_8h_source"/>
       </node>
-      <node id="147">
+      <node id="148">
         <label>faiss/invlists/DirectMap.h</label>
         <link refid="DirectMap_8h_source"/>
         <childnode refid="11" relation="include">
@@ -1331,28 +1337,28 @@
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="145">
+      <node id="146">
         <label>faiss/invlists/InvertedLists.h</label>
         <link refid="InvertedLists_8h_source"/>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="99" relation="include">
         </childnode>
-        <childnode refid="133" relation="include">
-        </childnode>
-        <childnode refid="146" relation="include">
+        <childnode refid="134" relation="include">
         </childnode>
         <childnode refid="147" relation="include">
         </childnode>
         <childnode refid="148" relation="include">
         </childnode>
+        <childnode refid="149" relation="include">
+        </childnode>
         <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="148">
+      <node id="149">
         <label>faiss/invlists/InvertedListsIOHook.h</label>
         <link refid="InvertedListsIOHook_8h_source"/>
-        <childnode refid="146" relation="include">
+        <childnode refid="147" relation="include">
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
@@ -1413,31 +1419,31 @@
         <label>faiss/svs/IndexSVSVamanaLeanVec.h</label>
         <link refid="IndexSVSVamanaLeanVec_8h_source"/>
       </node>
-      <node id="150">
+      <node id="151">
         <label>faiss/utils/distances_dispatch.h</label>
         <link refid="distances__dispatch_8h"/>
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="134">
+      <node id="135">
         <label>faiss/utils/distances_fused/distances_fused.h</label>
         <link refid="distances__fused_8h_source"/>
-        <childnode refid="135" relation="include">
+        <childnode refid="136" relation="include">
         </childnode>
       </node>
-      <node id="135">
+      <node id="136">
         <label>faiss/utils/distances_fused/simdlib_kernel-inl.h</label>
         <link refid="simdlib__kernel-inl_8h_source"/>
       </node>
-      <node id="149">
+      <node id="150">
         <label>faiss/utils/extra_distances.h</label>
         <link refid="extra__distances_8h_source"/>
-        <childnode refid="150" relation="include">
-        </childnode>
         <childnode refid="151" relation="include">
         </childnode>
+        <childnode refid="152" relation="include">
+        </childnode>
       </node>
-      <node id="152">
+      <node id="153">
         <label>faiss/utils/hamming.h</label>
         <link refid="hamming_8h_source"/>
         <childnode refid="69" relation="include">
@@ -1452,12 +1458,12 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="137" relation="include">
-        </childnode>
         <childnode refid="138" relation="include">
         </childnode>
+        <childnode refid="139" relation="include">
+        </childnode>
       </node>
-      <node id="137">
+      <node id="138">
         <label>faiss/utils/hamming_distance/hamming_impl.h</label>
         <link refid="hamming__distance_2hamming__impl_8h_source"/>
       </node>
@@ -1469,27 +1475,27 @@
         <label>faiss/utils/simd_impl/IVFFlatScanner-inl.h</label>
         <link refid="IVFFlatScanner-inl_8h_source"/>
       </node>
-      <node id="151">
+      <node id="152">
         <label>faiss/utils/simd_impl/distances_autovec-inl.h</label>
         <link refid="distances__autovec-inl_8h_source"/>
       </node>
-      <node id="172">
+      <node id="173">
         <label>faiss/utils/simd_impl/distances_simdlib256.h</label>
         <link refid="distances__simdlib256_8h_source"/>
       </node>
-      <node id="136">
+      <node id="137">
         <label>faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h</label>
         <link refid="exhaustive__L2sqr__blas__cmax_8h_source"/>
       </node>
-      <node id="138">
+      <node id="139">
         <label>faiss/utils/simd_impl/hamming_impl.h</label>
         <link refid="simd__impl_2hamming__impl_8h_source"/>
       </node>
-      <node id="173">
+      <node id="174">
         <label>faiss/utils/simd_impl/partitioning_simdlib256.h</label>
         <link refid="partitioning__simdlib256_8h"/>
       </node>
-      <node id="170">
+      <node id="171">
         <label>faiss/utils/simd_impl/super_kmeans_dispatch.h</label>
         <link refid="super__kmeans__dispatch_8h_source"/>
       </node>
