@@ -103,9 +103,6 @@ struct IndexFlatL2 : IndexFlat {
 struct IndexFlatPanorama : IndexFlat {
     const size_t batch_size;
     const size_t n_levels;
-    /// Empty when `pano.inline_layout == true` (cum-sums live inside
-    /// `codes` in that case); otherwise holds the per-batch cum-sums in
-    /// the legacy chunked layout.
     std::vector<float> cum_sums;
     Panorama pano;
 
@@ -114,35 +111,21 @@ struct IndexFlatPanorama : IndexFlat {
      * @param metric metric type
      * @param n_levels number of Panorama levels
      * @param batch_size batch size for Panorama storage
-     * @param inline_layout when true (default), use the unified
-     *        `[cs[0] | feat[0] | cs[1] | feat[1] | ... | cs[L]]`
-     *        per-batch layout (single `codes` buffer, no separate
-     *        cum_sums). When false, use the legacy chunked layout for
-     *        backward compat with on-disk indexes.
      */
     explicit IndexFlatPanorama(
             idx_t d_in,
             MetricType metric,
             size_t n_levels_in,
-            size_t batch_size_in,
-            bool inline_layout_in = true)
+            size_t batch_size_in)
             : IndexFlat(d_in, metric),
               batch_size(batch_size_in),
               n_levels(n_levels_in),
-              pano(code_size,
-                   n_levels_in,
-                   batch_size_in,
-                   inline_layout_in) {
+              pano(code_size, n_levels_in, batch_size_in) {
         FAISS_THROW_IF_NOT(
                 metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT);
     }
 
     void add(idx_t n, const float* x) override;
-
-    /// Override to return a per-row-stride-aware computer when in the
-    /// inline B=1 layout (each row is `[cs (L+1) | feats (L*lw)]`);
-    /// otherwise inherits the base behavior.
-    FlatCodesDistanceComputer* get_FlatCodesDistanceComputer() const override;
 
     void search(
             idx_t n,
@@ -181,7 +164,7 @@ struct IndexFlatPanorama : IndexFlat {
     void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids)
             override;
 
-    void permute_entries(const idx_t* perm) override;
+    void permute_entries(const idx_t* perm);
 };
 
 struct IndexFlatL2Panorama : IndexFlatPanorama {
@@ -189,19 +172,12 @@ struct IndexFlatL2Panorama : IndexFlatPanorama {
      * @param d dimensionality of the input vectors
      * @param n_levels number of Panorama levels
      * @param batch_size batch size for Panorama storage
-     * @param inline_layout see IndexFlatPanorama (default true)
      */
     explicit IndexFlatL2Panorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512,
-            bool inline_layout_in = true)
-            : IndexFlatPanorama(
-                      d_in,
-                      METRIC_L2,
-                      n_levels_in,
-                      batch_size_in,
-                      inline_layout_in) {}
+            size_t batch_size_in = 512)
+            : IndexFlatPanorama(d_in, METRIC_L2, n_levels_in, batch_size_in) {}
 };
 
 struct IndexFlatIPPanorama : IndexFlatPanorama {
@@ -209,19 +185,16 @@ struct IndexFlatIPPanorama : IndexFlatPanorama {
      * @param d dimensionality of the input vectors
      * @param n_levels number of Panorama levels
      * @param batch_size batch size for Panorama storage
-     * @param inline_layout see IndexFlatPanorama (default true)
      */
     explicit IndexFlatIPPanorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512,
-            bool inline_layout_in = true)
+            size_t batch_size_in = 512)
             : IndexFlatPanorama(
                       d_in,
                       METRIC_INNER_PRODUCT,
                       n_levels_in,
-                      batch_size_in,
-                      inline_layout_in) {}
+                      batch_size_in) {}
 };
 
 /// optimized version for 1D "vectors".

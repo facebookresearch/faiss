@@ -57,12 +57,10 @@ inline void compute_cum_sums_impl(
 Panorama::Panorama(
         size_t code_size_in,
         size_t n_levels_in,
-        size_t batch_size_in,
-        bool inline_layout_in)
+        size_t batch_size_in)
         : code_size(code_size_in),
           n_levels(n_levels_in),
-          batch_size(batch_size_in),
-          inline_layout(inline_layout_in) {
+          batch_size(batch_size_in) {
     set_derived_values();
 }
 
@@ -85,18 +83,15 @@ void Panorama::copy_codes_to_level_layout(
         size_t offset,
         size_t n_entry,
         const uint8_t* code) {
-    // Inline mode prepends a per-batch cum-sums prefix; chunked mode
-    // starts the feature region at the batch boundary. `batch_byte_offset`
-    // and `feat_region_byte_offset` collapse the two cases.
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
         size_t current_pos = offset + entry_idx;
 
+        // Determine which batch we're in and position within that batch.
         size_t batch_no = current_pos / batch_size;
         size_t pos_in_batch = current_pos % batch_size;
 
-        uint8_t* batch_feats = codes + batch_byte_offset(batch_no) +
-                feat_region_byte_offset();
-
+        // Copy entry into level-oriented layout for this batch.
+        size_t batch_offset = batch_no * batch_size * code_size;
         for (size_t level = 0; level < n_levels; level++) {
             size_t level_offset = level * level_width * batch_size;
             size_t start_byte = level * level_width;
@@ -104,7 +99,7 @@ void Panorama::copy_codes_to_level_layout(
                     std::min(level_width, code_size - level * level_width);
 
             const uint8_t* src = code + entry_idx * code_size + start_byte;
-            uint8_t* dest = batch_feats + level_offset +
+            uint8_t* dest = codes + batch_offset + level_offset +
                     pos_in_batch * actual_level_width;
 
             memcpy(dest, src, actual_level_width);
@@ -117,25 +112,13 @@ void Panorama::compute_cumulative_sums(
         size_t offset,
         size_t n_entry,
         const float* vectors) const {
-    // Per-batch cum-sums shape is identical for both layouts:
-    //   [cs[0]_0..B-1 | cs[1]_0..B-1 | ... | cs[L]_0..B-1]
-    // BUT the per-batch *stride* in the destination buffer differs:
-    //   chunked: cum_sums is a separate vector packed tightly at
-    //     stride cs_floats_per_batch() floats per batch.
-    //   inline: the cum-sums prefix sits at the head of each batch in
-    //     `codes`, but each batch in `codes` is `inline_batch_bytes()`
-    //     long (cum-sums prefix + feature region), so the stride
-    //     between batch starts is the larger inline batch width.
-    const size_t batch_stride_floats = inline_layout
-            ? (inline_batch_bytes() / sizeof(float))
-            : cs_floats_per_batch();
     for (size_t entry_idx = 0; entry_idx < n_entry; entry_idx++) {
         size_t current_pos = offset + entry_idx;
         size_t batch_no = current_pos / batch_size;
         size_t pos_in_batch = current_pos % batch_size;
 
         const float* vector = vectors + entry_idx * d;
-        size_t cumsum_batch_offset = batch_no * batch_stride_floats;
+        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
 
         auto get_offset = [&](size_t level) {
             return cumsum_batch_offset + level * batch_size + pos_in_batch;
@@ -162,15 +145,14 @@ void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
         const {
     uint8_t* recons_buffer = reinterpret_cast<uint8_t*>(recons);
 
-    size_t batch_no = static_cast<size_t>(key) / batch_size;
-    size_t pos_in_batch = static_cast<size_t>(key) % batch_size;
-    const uint8_t* batch_feats = codes_base + batch_byte_offset(batch_no) +
-            feat_region_byte_offset();
+    size_t batch_no = key / batch_size;
+    size_t pos_in_batch = key % batch_size;
+    size_t batch_offset = batch_no * batch_size * code_size;
 
     for (size_t level = 0; level < n_levels; level++) {
         size_t level_offset = level * level_width * batch_size;
-        const uint8_t* src =
-                batch_feats + level_offset + pos_in_batch * level_width;
+        const uint8_t* src = codes_base + batch_offset + level_offset +
+                pos_in_batch * level_width;
         uint8_t* dest = recons_buffer + level * level_width;
         size_t copy_size =
                 std::min(level_width, code_size - level * level_width);
@@ -191,22 +173,12 @@ void Panorama::copy_entry(
     size_t dest_batch_no = dest_idx / batch_size;
     size_t dest_pos_in_batch = dest_idx % batch_size;
 
-    // Per-batch byte/float offsets.
-    //   feat region: chunked starts at the batch boundary; inline sits
-    //     past the per-batch cum-sums prefix inside `*_codes`.
-    //   cum_sums: chunked is packed tightly (stride cs_floats_per_batch
-    //     floats per batch); inline sits at the head of each batch in
-    //     `*_codes` so the float* base stride is inline_batch_bytes /
-    //     sizeof(float).
-    const uint8_t* src_feats = src_codes + batch_byte_offset(src_batch_no) +
-            feat_region_byte_offset();
-    uint8_t* dest_feats = dest_codes + batch_byte_offset(dest_batch_no) +
-            feat_region_byte_offset();
-    const size_t cs_batch_stride = inline_layout
-            ? (inline_batch_bytes() / sizeof(float))
-            : cs_floats_per_batch();
-    const size_t src_cumsum_batch_offset = src_batch_no * cs_batch_stride;
-    const size_t dest_cumsum_batch_offset = dest_batch_no * cs_batch_stride;
+    // Calculate offsets
+    size_t src_batch_offset = src_batch_no * batch_size * code_size;
+    size_t dest_batch_offset = dest_batch_no * batch_size * code_size;
+    size_t src_cumsum_batch_offset = src_batch_no * batch_size * (n_levels + 1);
+    size_t dest_cumsum_batch_offset =
+            dest_batch_no * batch_size * (n_levels + 1);
 
     for (size_t level = 0; level < n_levels; level++) {
         // Copy code
@@ -214,9 +186,9 @@ void Panorama::copy_entry(
         size_t actual_level_width =
                 std::min(level_width, code_size - level * level_width);
 
-        const uint8_t* src = src_feats + level_offset +
+        const uint8_t* src = src_codes + src_batch_offset + level_offset +
                 src_pos_in_batch * actual_level_width;
-        uint8_t* dest = dest_feats + level_offset +
+        uint8_t* dest = dest_codes + dest_batch_offset + level_offset +
                 dest_pos_in_batch * actual_level_width;
         memcpy(dest, src, actual_level_width);
 

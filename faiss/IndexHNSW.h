@@ -176,30 +176,17 @@ struct IndexHNSWFlatPanorama : IndexHNSWFlat {
             int num_panorama_levels,
             MetricType metric = METRIC_L2);
 
-    /// Pointer to the first cum-sum (cs[0] = full norm) of vector `i`
-    /// in the underlying inline IndexFlatPanorama storage. Combined
-    /// with `inline_row_stride()` (in floats), this exposes the unified
-    /// row layout to the HNSW Panorama search hot path:
-    ///   row floats = [cs[0], cs[1], ..., cs[L], feat[0], feat[1], ...,
-    ///                 feat[L-1]]
-    ///   stride per row = (L+1) + L * level_width_floats
-    /// All L+1 cum-sums sit contiguously at the head of the row, so
-    /// `get_cum_sum(i)[k]` returns cs[k] for k in [0, L].
-    const float* get_cum_sum(idx_t i) const;
+    void add(idx_t n, const float* x) override;
+    void reset() override;
+    void permute_entries(const idx_t* perm) override;
 
-    /// Pointer to vector `i`'s level-0 features inside the inline
-    /// storage (= get_cum_sum(i) + (n_levels + 1)).
-    const float* get_inline_xb(idx_t i) const;
+    /// Inline for performance - called frequently in search hot path.
+    const float* get_cum_sum(idx_t i) const {
+        return cum_sums.data() + i * (pano.n_levels + 1);
+    }
 
-    /// Number of floats per row in the inline storage:
-    ///   (n_levels + 1) cum-sum entries + n_levels feat blocks of
-    ///   level_width_floats floats each.
-    size_t inline_row_stride() const;
-
-    /// Read-only view of the underlying Panorama config (n_levels,
-    /// level_width_floats, etc.) without exposing the storage.
-    const Panorama& get_pano() const;
-
+    std::vector<float> cum_sums;
+    Panorama pano;
     const size_t num_panorama_levels;
 };
 

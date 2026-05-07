@@ -505,49 +505,77 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     " WARN! inverted lists not stored with IVF object\n");
         }
         return nullptr;
-    } else if (
-            (h == fourcc("ilpn") || h == fourcc("ilp2") ||
-             h == fourcc("ilpi") || h == fourcc("ilp3")) &&
-            !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
-        // Inverted-list Panorama format detection:
-        //   ilpn / ilpi: legacy / inline, default batch_size (no bs in header)
-        //   ilp2 / ilp3: legacy / inline, custom batch_size (bs in header)
-        const bool has_bs = (h == fourcc("ilp2") || h == fourcc("ilp3"));
-        const bool inl = (h == fourcc("ilpi") || h == fourcc("ilp3"));
-        const char* fourcc_str = (h == fourcc("ilpn"))   ? "ilpn"
-                : (h == fourcc("ilp2"))                  ? "ilp2"
-                : (h == fourcc("ilpi"))                  ? "ilpi"
-                                                         : "ilp3";
-
-        size_t nlist, code_size, n_levels, bs;
+    } else if (h == fourcc("ilpn") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        size_t nlist, code_size, n_levels;
         READ1(nlist);
-        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, fourcc_str);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilpn nlist");
         READ1(code_size);
         READ1(n_levels);
-        if (has_bs) {
-            READ1(bs);
-            FAISS_THROW_IF_NOT_FMT(bs > 0, "invalid %s batch_size %zd",
-                    fourcc_str, bs);
-        } else {
-            bs = Panorama::kDefaultBatchSize;
-        }
         FAISS_THROW_IF_NOT_FMT(
-                n_levels > 0, "invalid %s n_levels %zd", fourcc_str, n_levels);
-
+                n_levels > 0, "invalid ilpn n_levels %zd", n_levels);
+        constexpr size_t bs = Panorama::kDefaultBatchSize;
         auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
-                nlist, code_size, n_levels, bs, inl);
+                nlist, code_size, n_levels, bs);
         std::vector<size_t> sizes(nlist);
         read_ArrayInvertedLists_sizes(f, sizes);
-        const size_t byte_limit = get_deserialization_vector_byte_limit();
-
-        // Per-batch byte budget for the codes vector. Inline mode
-        // includes the cum-sums prefix; chunked mode does not.
-        const size_t batch_codes_bytes = inl
-                ? ailp->pano.inline_batch_bytes()
-                : (bs * code_size);
-        const size_t cs_per_batch = (n_levels + 1) * bs;
-
-        // Stage 1: validate and resize all lists.
+        // Do resize + read in a single pass per list. See the matching
+        // comment in the `ilar` branch below for rationale.
+        size_t byte_limit = get_deserialization_vector_byte_limit();
+        for (size_t i = 0; i < nlist; i++) {
+            size_t n = sizes[i];
+            FAISS_THROW_IF_NOT_FMT(
+                    n <= byte_limit / sizeof(idx_t),
+                    "inverted list %zu ids size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    n);
+            ailp->ids[i].resize(n);
+            size_t num_elems = ((n + bs - 1) / bs) * bs;
+            size_t codes_bytes = mul_no_overflow(
+                    num_elems, code_size, "inverted list codes");
+            FAISS_THROW_IF_NOT_FMT(
+                    codes_bytes <= byte_limit,
+                    "inverted list %zu codes size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    codes_bytes);
+            ailp->codes[i].resize(codes_bytes);
+            size_t cum_sums_count = mul_no_overflow(
+                    num_elems,
+                    add_no_overflow(
+                            n_levels, 1, "inverted list cum_sums n_levels"),
+                    "inverted list cum_sums");
+            FAISS_THROW_IF_NOT_FMT(
+                    cum_sums_count <= byte_limit / sizeof(ailp->cum_sums[0][0]),
+                    "inverted list %zu cum_sums size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    cum_sums_count);
+            ailp->cum_sums[i].resize(cum_sums_count);
+            if (n > 0) {
+                read_vector_with_known_size(
+                        ailp->codes[i], f, ailp->codes[i].size());
+                read_vector_with_known_size(ailp->ids[i], f, n);
+                read_vector_with_known_size(
+                        ailp->cum_sums[i], f, ailp->cum_sums[i].size());
+            }
+        }
+        return ailp;
+    } else if (h == fourcc("ilp2") && !(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
+        size_t nlist, code_size, n_levels, bs;
+        READ1(nlist);
+        FAISS_CHECK_DESERIALIZATION_LOOP_LIMIT(nlist, "ilp2 nlist");
+        READ1(code_size);
+        READ1(n_levels);
+        READ1(bs);
+        FAISS_THROW_IF_NOT_FMT(
+                n_levels > 0, "invalid ilp2 n_levels %zd", n_levels);
+        FAISS_THROW_IF_NOT_FMT(bs > 0, "invalid ilp2 batch_size %zd", bs);
+        auto ailp = std::make_unique<ArrayInvertedListsPanorama>(
+                nlist, code_size, n_levels, bs);
+        std::vector<size_t> sizes(nlist);
+        read_ArrayInvertedLists_sizes(f, sizes);
+        size_t byte_limit = get_deserialization_vector_byte_limit();
         for (size_t i = 0; i < nlist; i++) {
             FAISS_THROW_IF_NOT_FMT(
                     sizes[i] <= byte_limit / sizeof(idx_t),
@@ -556,9 +584,9 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     sizes[i]);
             ailp->ids[i].resize(sizes[i]);
-            size_t num_batches_i = (sizes[i] + bs - 1) / bs;
+            size_t num_elems = ((sizes[i] + bs - 1) / bs) * bs;
             size_t codes_bytes = mul_no_overflow(
-                    num_batches_i, batch_codes_bytes, "inverted list codes");
+                    num_elems, code_size, "inverted list codes");
             FAISS_THROW_IF_NOT_FMT(
                     codes_bytes <= byte_limit,
                     "inverted list %zu codes size %zu exceeds "
@@ -566,35 +594,27 @@ std::unique_ptr<InvertedLists> read_InvertedLists_up(
                     i,
                     codes_bytes);
             ailp->codes[i].resize(codes_bytes);
-            if (!inl) {
-                size_t cum_sums_count = mul_no_overflow(
-                        num_batches_i, cs_per_batch, "inverted list cum_sums");
-                FAISS_THROW_IF_NOT_FMT(
-                        cum_sums_count <=
-                                byte_limit / sizeof(ailp->cum_sums[0][0]),
-                        "inverted list %zu cum_sums size %zu exceeds "
-                        "deserialization byte limit",
-                        i,
-                        cum_sums_count);
-                ailp->cum_sums[i].resize(cum_sums_count);
-            }
+            size_t cum_sums_count = mul_no_overflow(
+                    num_elems,
+                    add_no_overflow(
+                            n_levels, 1, "inverted list cum_sums n_levels"),
+                    "inverted list cum_sums");
+            FAISS_THROW_IF_NOT_FMT(
+                    cum_sums_count <= byte_limit / sizeof(ailp->cum_sums[0][0]),
+                    "inverted list %zu cum_sums size %zu exceeds "
+                    "deserialization byte limit",
+                    i,
+                    cum_sums_count);
+            ailp->cum_sums[i].resize(cum_sums_count);
         }
-
-        // Stage 2: read codes (+ ids + chunked-only cum_sums) per list.
-        // The default-batch-size legacy path (ilpn) historically did
-        // resize-and-read in the same loop; both orders are
-        // equivalent at read time, so we use a uniform two-stage
-        // structure that matches the bs-aware path.
         for (size_t i = 0; i < nlist; i++) {
             size_t n = sizes[i];
             if (n > 0) {
                 read_vector_with_known_size(
                         ailp->codes[i], f, ailp->codes[i].size());
                 read_vector_with_known_size(ailp->ids[i], f, n);
-                if (!inl) {
-                    read_vector_with_known_size(
-                            ailp->cum_sums[i], f, ailp->cum_sums[i].size());
-                }
+                read_vector_with_known_size(
+                        ailp->cum_sums[i], f, ailp->cum_sums[i].size());
             }
         }
         return ailp;
@@ -1445,14 +1465,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     if (h == fourcc("null")) {
         // denotes a missing index, useful for some cases
         return idx;
-    } else if (
-            h == fourcc("IxFP") || h == fourcc("IxFp") ||
-            h == fourcc("IxQP") || h == fourcc("IxQp")) {
-        // IxFP / IxFp: legacy chunked layout (separate cum_sums vector).
-        // IxQP / IxQp: inline layout (cum-sums prefix lives inside
-        // `codes`); no separate cum_sums on disk.
-        const bool inl = (h == fourcc("IxQP") || h == fourcc("IxQp"));
-        const bool is_l2 = (h == fourcc("IxFP") || h == fourcc("IxQP"));
+    } else if (h == fourcc("IxFP") || h == fourcc("IxFp")) {
         int d;
         size_t n_levels, batch_size;
         READ1(d);
@@ -1460,19 +1473,17 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         FAISS_THROW_IF_NOT_FMT(n_levels > 0, "invalid n_levels %zd", n_levels);
         READ1(batch_size);
         std::unique_ptr<IndexFlatPanorama> idxp;
-        if (is_l2) {
+        if (h == fourcc("IxFP")) {
             idxp = std::make_unique<IndexFlatL2Panorama>(
-                    d, n_levels, batch_size, inl);
+                    d, n_levels, batch_size);
         } else {
             idxp = std::make_unique<IndexFlatIPPanorama>(
-                    d, n_levels, batch_size, inl);
+                    d, n_levels, batch_size);
         }
         READ1(idxp->ntotal);
         READ1(idxp->is_trained);
         READVECTOR(idxp->codes);
-        if (!inl) {
-            READVECTOR(idxp->cum_sums);
-        }
+        READVECTOR(idxp->cum_sums);
         idxp->verbose = false;
         idx = std::move(idxp);
     } else if (
@@ -2170,11 +2181,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             size_t nlevels;
             READ1(nlevels);
             const_cast<size_t&>(idx_panorama->num_panorama_levels) = nlevels;
-            // The cum-sums and vector data both live inside the
-            // underlying inline-layout IndexFlatPanorama storage and
-            // are deserialized via the storage's read path below
-            // (`write_index(idxhnsw->storage, ...)` paired with the
-            // matching `read_index`).
+            const_cast<Panorama&>(idx_panorama->pano) =
+                    Panorama(idx_panorama->d * sizeof(float), nlevels, 1);
+            READVECTOR(idx_panorama->cum_sums);
         }
         if (h == fourcc("IHNc") || h == fourcc("IHc2")) {
             READ1(idxhnsw->keep_max_size_level0);

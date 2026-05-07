@@ -802,9 +802,10 @@ int search_from_candidates_panorama(
             flat_codes_qdis,
             "DistanceComputer must be a FlatCodesDistanceComputer");
 
-    const auto& pano = panorama_index->get_pano();
+    const auto& pano = panorama_index->pano;
     const size_t M = static_cast<size_t>(hnsw.nb_neighbors(0));
     const size_t num_panorama_levels = pano.n_levels;
+    const size_t level_width_floats = pano.level_width_floats;
 
     // Adaptive K-pop multi-hop batching: each outer iteration pops up
     // to `k_target` parents from the candidates heap, unions + dedupes
@@ -828,24 +829,28 @@ int search_from_candidates_panorama(
     std::vector<float> query_cum_sums_buf(num_panorama_levels + 1);
 
     const float* query = flat_codes_qdis->q;
-    const size_t level_width_floats = pano.level_width_floats;
-    // The panorama index stores each row inline as
-    //   [cs[0], cs[1], ..., cs[L], feat[0], feat[1], ..., feat[L-1]]
-    // inside the underlying inline-layout IndexFlatPanorama storage.
-    // `cum_stride` (in floats) is the per-row stride; `cum_base` points
-    // at cs[0] of the first row; `xb_base` points at feat[0] of the
-    // first row (= cum_base + L+1). Since all L+1 cum-sums sit
-    // contiguously at the head of each row, `cum_base[v1*cum_stride +
-    // k]` is cs[k] for any v1 and k in [0, L].
-    const size_t cum_stride = panorama_index->inline_row_stride();
+    const size_t d = static_cast<size_t>(panorama_index->d);
+
+    // The panorama index uses the chunked layout: cum-sums live in a
+    // separate per-vector array (stride n_levels+1 floats) and feature
+    // bytes are packed bare in the storage's `codes` vector at d
+    // floats per row. The K-pop kernel needs both bases + both strides
+    // because cs and feats no longer share a single per-row stride.
     const float* cum_base = panorama_index->get_cum_sum(0);
-    const float* xb_base = panorama_index->get_inline_xb(0);
+    const size_t cum_stride = num_panorama_levels + 1;
+    // The storage is an IndexFlatL2 (chosen by IndexHNSWFlat); its
+    // `codes` vector holds bare floats packed at d floats per row.
+    const auto* flat_storage =
+            static_cast<const IndexFlat*>(panorama_index->storage);
+    const float* xb_base =
+            reinterpret_cast<const float*>(flat_storage->codes.data());
+    const size_t feat_stride = d;
+
     pano.compute_query_cum_sums(query, query_cum_sums_buf.data());
     const float* query_cum_sums = query_cum_sums_buf.data();
     const float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
 
     int nstep = 0;
-    const size_t d = static_cast<size_t>(panorama_index->d);
 
     PanoramaStats local_pano_stats;
     local_pano_stats.reset();
@@ -901,6 +906,7 @@ int search_from_candidates_panorama(
                 bool is_new = vt.set(v1);
                 bool is_selected = !sel || sel->is_member(v1);
                 if (is_new && is_selected) {
+                    // cs[0] of v1 = full norm, used to seed the L2 init.
                     const float vsum =
                             cum_base[static_cast<size_t>(v1) * cum_stride];
                     index_array[initial_size] = v1;
@@ -912,7 +918,6 @@ int search_from_candidates_panorama(
         }
 
         local_pano_stats.total_dims += initial_size * d;
-        local_pano_stats.n_visited += initial_size;
 
         // Adapt k_target for the next iteration based on this iter's
         // post-dedup batch. Bumping by +-1 (rather than directly
@@ -938,10 +943,9 @@ int search_from_candidates_panorama(
 
             // Compute all dot products for this level at once via the
             // compile-time-width-specialized kernel from Panorama.h.
-            // The base of the vector data inside the inline storage is
-            // `xb_base`; rows are spaced `cum_stride` floats apart
-            // (= (L+1) + L*lw), so we pass `cum_stride` as the stride
-            // to the kernel rather than `d`.
+            // Feats are packed bare in `codes` at `d` floats per row,
+            // so we pass `feat_stride = d` as the per-row stride to
+            // the kernel.
             const float* level_base = xb_base + start_dim;
 
             with_level_width(dim_span, [&]<size_t W>() {
@@ -952,7 +956,7 @@ int search_from_candidates_panorama(
                         batch_size,
                         dim_span,
                         dot_buffer.data(),
-                        cum_stride);
+                        feat_stride);
             });
             ndis += batch_size;
 
@@ -979,13 +983,9 @@ int search_from_candidates_panorama(
             }
 
             local_pano_stats.total_dims_scanned += batch_size * dim_span;
-            if (curr_panorama_level == 0) {
-                local_pano_stats.n_after_level0 += next_batch_size;
-            }
             batch_size = next_batch_size;
             curr_panorama_level++;
         }
-        local_pano_stats.n_full_dist += batch_size;
 
         // Add surviving candidates to the result handler.
         for (size_t i = 0; i < batch_size; i++) {

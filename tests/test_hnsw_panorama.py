@@ -83,11 +83,7 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         index.add(xb)
 
         self.assertEqual(index.ntotal, nb)
-        # Inline storage: each row holds (n_levels + 1) cum_sums followed
-        # by n_levels feature blocks (level_width_floats each). With
-        # batch_size = 1, codes.size() in bytes equals
-        # ntotal * row_floats * 4.
-        self.assertEqual(index.inline_row_stride(), (8 + 1) + 8 * 16)
+        self.assertEqual(index.cum_sums.size(), nb * (8 + 1))
 
         # Search
         D, I = index.search(xq, k)
@@ -290,11 +286,13 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         index.add(xb)
 
         self.assertEqual(index.ntotal, nb)
+        self.assertGreater(index.cum_sums.size(), 0)
 
         # Reset
         index.reset()
 
         self.assertEqual(index.ntotal, 0)
+        self.assertEqual(index.cum_sums.size(), 0)
 
     def test_high_dimensional(self):
         """Test with high-dimensional data (Panorama is designed for this)."""
@@ -348,6 +346,10 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         index.add(xb_add)
 
         self.assertEqual(index.ntotal, nb_initial + nb_add)
+        self.assertEqual(
+            index.cum_sums.size(),
+            (nb_initial + nb_add) * (index.num_panorama_levels + 1)
+        )
 
         # Search again - should work correctly with all vectors
         D_after, I_after = index.search(xq, k)
@@ -399,33 +401,23 @@ class TestIndexHNSWFlatPanorama(unittest.TestCase):
         # Create a permutation (reverse order for simplicity)
         perm = np.arange(nb - 1, -1, -1, dtype=np.int64)
 
-        # Cum-sums for the inline layout sit at the head of each row in
-        # the underlying IndexFlatPanorama storage. Reach in by reading
-        # the storage's codes vector and reshaping to the per-row layout
-        # `[cs (L+1) | feat (L*lw)]`. The per-row stride is exposed via
-        # `IndexHNSWFlatPanorama.inline_row_stride()`.
-        n_levels = index.num_panorama_levels
-        storage = faiss.downcast_index(index.storage)
-        row_floats = index.inline_row_stride()
-
-        codes_before = faiss.vector_to_array(storage.codes).view(np.float32)
-        cum_sums_before = (
-            codes_before.reshape(nb, row_floats)[:, : n_levels + 1].copy()
-        )
+        # Store cum_sums before permutation for verification
+        cum_sums_before = faiss.vector_to_array(index.cum_sums).copy()
 
         # Apply permutation
         index.permute_entries(perm)
 
         # Verify cum_sums were permuted correctly
-        codes_after = faiss.vector_to_array(storage.codes).view(np.float32)
-        cum_sums_after = codes_after.reshape(nb, row_floats)[:, : n_levels + 1]
+        cum_sums_after = faiss.vector_to_array(index.cum_sums)
         for i in range(nb):
             src = perm[i]
-            np.testing.assert_array_equal(
-                cum_sums_after[i],
-                cum_sums_before[src],
-                err_msg=f"cum_sums not permuted correctly at i={i}",
-            )
+            for j in range(index.num_panorama_levels + 1):
+                expected = cum_sums_before[src * (index.num_panorama_levels + 1) + j]
+                actual = cum_sums_after[i * (index.num_panorama_levels + 1) + j]
+                self.assertEqual(
+                    actual, expected,
+                    f"cum_sums not permuted correctly at i={i}, j={j}"
+                )
 
         # Search after permutation
         D_after, I_after = index.search(xq, k)
