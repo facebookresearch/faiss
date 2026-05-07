@@ -895,10 +895,7 @@ int search_from_candidates_panorama(
             end_dim = std::min(end_dim, d);
             const size_t dim_span = end_dim - start_dim;
 
-            // Compute all dot products for this level at once via the
-            // compile-time-width-specialized kernel from Panorama.h.
             const float* level_base = xb_base + start_dim;
-
             with_level_width(dim_span, [&]<size_t W>() {
                 compute_level_dot_kernel<false, W>(
                         query + start_dim,
