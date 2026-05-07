@@ -30,7 +30,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         python-version: '3.12'
-        miniforge-version: latest # ensures conda-forge channel is used.
+        miniforge-version: latest
         channels: conda-forge
         conda-remove-defaults: 'true'
         activate-environment: 'base'
@@ -81,7 +81,7 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        conda build faiss-gpu --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c nvidia/label/cuda-${{ inputs.cuda }} -c nvidia
     - name: Conda build (GPU) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs == ''
@@ -99,7 +99,7 @@ runs:
       working-directory: conda
       run: |
         conda list --show-channel-urls
-        conda build faiss-gpu-cuvs --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
+        conda build faiss-gpu-cuvs --python 3.12 --variants '{ "cudatoolkit": "${{ inputs.cuda }}" }' \
             -c pytorch -c rapidsai -c rapidsai-nightly -c conda-forge -c nvidia
     - name: Conda build (GPU w/ cuVS) w/ anaconda upload
       if: inputs.label != '' && inputs.cuda != '' && inputs.cuvs != ''

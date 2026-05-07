@@ -655,7 +655,10 @@ void exhaustive_L2sqr_blas_cmax<SIMDLevel::ARM_SVE>(
                        ip_block.get(),
                        &nyi);
             }
-            for (int64_t i = i0; i < i1; i++) {
+#pragma omp parallel for schedule(static) if ((i1 - i0) >= 16)
+            for (int64_t i = static_cast<int64_t>(i0);
+                 i < static_cast<int64_t>(i1);
+                 i++) {
                 const size_t count = j1 - j0;
                 float* ip_line = ip_block.get() + (i - i0) * count;
 
