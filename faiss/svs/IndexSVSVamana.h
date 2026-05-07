@@ -31,6 +31,7 @@
 
 #include <iostream>
 #include <type_traits>
+#include <vector>
 
 namespace faiss {
 
@@ -111,6 +112,8 @@ struct IndexSVSVamana : Index {
 
     void add(idx_t n, const float* x) override;
 
+    void reconstruct(idx_t key, float* recons) const override;
+
     void search(
             idx_t n,
             const float* x,
@@ -136,6 +139,12 @@ struct IndexSVSVamana : Index {
 
     /* The actual SVS implementation */
     svs_runtime::DynamicVamanaIndex* impl{nullptr};
+
+    // The SVS runtime API does not expose vector retrieval, so we keep a copy
+    // of added vectors to support reconstruct(). When used as a coarse
+    // quantizer this holds only nlist centroids.
+    std::vector<float> stored_vectors;
+    bool stored_vectors_valid{true};
 
    protected:
     /* Initializes the implementation*/

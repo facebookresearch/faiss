@@ -130,6 +130,11 @@ char get_trains_alone(const Index* coarse_quantizer) {
     if (dynamic_cast<const IndexHNSWFlat*>(coarse_quantizer)) {
         return 2;
     }
+#ifdef FAISS_ENABLE_SVS
+    if (dynamic_cast<const IndexSVSVamana*>(coarse_quantizer)) {
+        return 2;
+    }
+#endif
     return 2; // for complicated indexes, we assume they can't be used as a
               // kmeans index
 }
@@ -299,6 +304,13 @@ Index* parse_coarse_quantizer(
         int R = std::stoi(sm[2]);
         return new IndexNSGFlat(d, R, mt);
     }
+#ifdef FAISS_ENABLE_SVS
+    if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)")) {
+        nlist = parse_nlist(sm[1].str());
+        int degree = sm[2].length() > 0 ? std::stoi(sm[2]) : 32;
+        return new IndexSVSVamana(d, degree, mt);
+    }
+#endif
     if (match("IVF([0-9]+[kM]?)\\(Index([0-9])\\)")) {
         nlist = parse_nlist(sm[1].str());
         int no = std::stoi(sm[2].str());
