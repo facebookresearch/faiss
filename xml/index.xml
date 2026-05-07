@@ -8191,6 +8191,8 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -8201,6 +8203,7 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a2706df16183bfdf4598694b16904f7c2" kind="function"><name>IndexSVSVamana</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1afd7ae8529a4e6c8c3214e6375bb78543" kind="function"><name>~IndexSVSVamana</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a47c20187774a20a2b280c5da652ca736" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a26fb705776df212640d3ed8a1202f80e" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a019544f0725293e7cfe4d675d53eeaa0" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4ae46d56b2782329c2c46a9553b3ce5a" kind="function"><name>remove_ids</name></member>
@@ -8216,7 +8219,6 @@
     <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" kind="function"><name>search_ex</name></member>
     <member refid="structfaiss_1_1Index_1a702675e1ef409b9d88038cc8e3043d75" kind="function"><name>search1</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
-    <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
     <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
@@ -8248,6 +8250,8 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>
@@ -8263,6 +8267,7 @@
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a3d9b0af6fd46386a1b83aea806bdcb1d" kind="function"><name>reset</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a07298f5256668319a9983fa215c37c66" kind="function"><name>serialize_training_data</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLeanVec_1a4dfda02c5a8612432e328eb7f446dcb7" kind="function"><name>deserialize_training_data</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a26fb705776df212640d3ed8a1202f80e" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a019544f0725293e7cfe4d675d53eeaa0" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4ae46d56b2782329c2c46a9553b3ce5a" kind="function"><name>remove_ids</name></member>
@@ -8275,7 +8280,6 @@
     <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" kind="function"><name>search_ex</name></member>
     <member refid="structfaiss_1_1Index_1a702675e1ef409b9d88038cc8e3043d75" kind="function"><name>search1</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
-    <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
     <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
@@ -8299,6 +8303,7 @@
     <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1ab2dd7097af5b8d3c3304a3ad0f0c3ceb" kind="function"><name>IndexSVSVamanaLVQ</name></member>
     <member refid="structfaiss_1_1IndexSVSVamanaLVQ_1abc49ed5f7e89f73d1d9f71b530850f5f" kind="function"><name>~IndexSVSVamanaLVQ</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a47c20187774a20a2b280c5da652ca736" kind="function"><name>add</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1a26fb705776df212640d3ed8a1202f80e" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a019544f0725293e7cfe4d675d53eeaa0" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a9d9b2ff0114ac59965bcf990b09b844c" kind="function"><name>range_search</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a4ae46d56b2782329c2c46a9553b3ce5a" kind="function"><name>remove_ids</name></member>
@@ -8314,7 +8319,6 @@
     <member refid="structfaiss_1_1Index_1a06690b86bad667d42a0387c7cd3359e9" kind="function"><name>search_ex</name></member>
     <member refid="structfaiss_1_1Index_1a702675e1ef409b9d88038cc8e3043d75" kind="function"><name>search1</name></member>
     <member refid="structfaiss_1_1Index_1a010ae05c4ba70d309f9821d9b03182aa" kind="function"><name>assign</name></member>
-    <member refid="structfaiss_1_1Index_1afaf9673009f9fe5a53ed6db522a5f69c" kind="function"><name>reconstruct</name></member>
     <member refid="structfaiss_1_1Index_1a1dbf5eac7d05ca6271d2fd9bee568218" kind="function"><name>reconstruct_batch</name></member>
     <member refid="structfaiss_1_1Index_1ae7c0b683e1fd5c8770ea2b3e1a82ce7f" kind="function"><name>reconstruct_n</name></member>
     <member refid="structfaiss_1_1Index_1aed4bdbec95c0c3583e139f8e268ea0a6" kind="function"><name>search_and_reconstruct</name></member>
@@ -8338,6 +8342,8 @@
     <member refid="structfaiss_1_1IndexSVSVamana_1a462092757186a2e0a701555d4ca24a98" kind="variable"><name>use_full_search_history</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1a567013895533970f56fecadfab20484b" kind="variable"><name>storage_kind</name></member>
     <member refid="structfaiss_1_1IndexSVSVamana_1aa9e48aef39386f12d20b9e29bafb8b7e" kind="variable"><name>impl</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aeb7b6f7d87351e59e619257c208467b2" kind="variable"><name>stored_vectors</name></member>
+    <member refid="structfaiss_1_1IndexSVSVamana_1aa8b1c652e8b8d9e6aa530ccda7715e42" kind="variable"><name>stored_vectors_valid</name></member>
     <member refid="structfaiss_1_1Index_1a2a002388d2c081c2dbab8508dcefe73d" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1Index_1a6970683faa021b7a6f1a0865c0d4eccd" kind="variable"><name>ntotal</name></member>
     <member refid="structfaiss_1_1Index_1a5590d847c5c2b958affd2a05e58a6f23" kind="variable"><name>verbose</name></member>

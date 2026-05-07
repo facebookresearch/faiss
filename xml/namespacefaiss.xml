@@ -1143,7 +1143,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="43" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="43" bodyend="55"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="44" column="1" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="44" bodyend="56"/>
       </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1a337b16cea2a5084cf0316bfb33353a9e" prot="public" static="no" strong="yes">
         <type></type>
@@ -9477,7 +9477,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/svs/IndexSVSVamana.h" line="57" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="57" bodyend="84"/>
+        <location file="faiss/svs/IndexSVSVamana.h" line="58" column="33" bodyfile="faiss/svs/IndexSVSVamana.h" bodystart="58" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1a80366c0d6f4ee6aea791c7bccf391f73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
