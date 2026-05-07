@@ -813,6 +813,143 @@ void IndexFlatPanorama::permute_entries(const idx_t* perm) {
     std::swap(cum_sums, new_cum_sums);
 }
 
+namespace {
+
+constexpr size_t kRefineBlock = 64;
+
+// Block-wise refine: process candidates in mini-batches so the
+// L1-resident query level is reused across many vectors and the inner
+// `compute_level_dot_kernel` runs with a compile-time-constant width
+// (full unroll, query held in registers).
+//
+// Per block (mirrors `Panorama::progressive_filter_batch` from the IVF
+// path: `vec_ids` and `exact_distances` are indexed by position-in-batch
+// and never moved; `active_indices` holds the live positions and is the
+// only array compacted between levels via `compact_active_kernel`):
+//   1. Collect valid candidate ids; initialize `exact_distances` and
+//      `active_indices` for ALL positions in the batch.
+//   2. Per level: gather the level's cum-sums for the active positions,
+//      run width-templated dot kernel, prune, compact `active_indices`.
+//   3. Survivors are at exact distance — push to heap.
+template <typename C, MetricType M, bool is_sim>
+static void refine_panorama_block(
+        const IndexFlatPanorama& index,
+        idx_t i,
+        const idx_t* FAISS_RESTRICT idsi,
+        idx_t k_base,
+        const float* FAISS_RESTRICT xi,
+        const float* FAISS_RESTRICT query_cum_norms,
+        float query_cum_norm_sq,
+        typename HeapBlockResultHandler<C, false>::SingleResultHandler& res,
+        std::vector<uint32_t>& vec_ids,
+        std::vector<uint32_t>& active_indices,
+        std::vector<float>& exact_distances,
+        std::vector<float>& dot_buffer,
+        std::vector<float>& level_cs_buffer,
+        std::vector<uint8_t>& active_byteset,
+        PanoramaStats& local_stats) {
+    const size_t d = index.d;
+    const auto& pano = index.pano;
+    const size_t n_levels = pano.n_levels;
+    const size_t level_width_floats = pano.level_width_floats;
+    const size_t cum_stride = n_levels + 1;
+    const float* cum_base = index.cum_sums.data();
+    const float* codes_base =
+            reinterpret_cast<const float*>(index.codes.data());
+
+    res.begin(i);
+
+    for (idx_t block_start = 0; block_start < k_base;
+         block_start += static_cast<idx_t>(kRefineBlock)) {
+        const idx_t block_end = std::min<idx_t>(
+                block_start + static_cast<idx_t>(kRefineBlock), k_base);
+
+        size_t batch_size = 0;
+        for (idx_t j = block_start; j < block_end; j++) {
+            const idx_t idx = idsi[j];
+            if (idx < 0) {
+                continue;
+            }
+            const float cum0 = cum_base[static_cast<size_t>(idx) * cum_stride];
+            vec_ids[batch_size] = static_cast<uint32_t>(idx);
+            active_indices[batch_size] = static_cast<uint32_t>(batch_size);
+            if constexpr (is_sim) {
+                exact_distances[batch_size] = 0.0f;
+            } else {
+                exact_distances[batch_size] = query_cum_norm_sq + cum0 * cum0;
+            }
+            batch_size++;
+        }
+
+        if (batch_size == 0) {
+            continue;
+        }
+
+        local_stats.total_dims += batch_size * d;
+
+        size_t num_active = batch_size;
+        size_t curr_level = 0;
+        while (curr_level < n_levels && num_active > 0) {
+            const size_t cs_level_idx = curr_level + 1;
+            const float query_cum_norm = query_cum_norms[cs_level_idx];
+            const size_t start_dim = curr_level * level_width_floats;
+            const size_t end_dim =
+                    std::min((curr_level + 1) * level_width_floats, d);
+            const size_t dim_span = end_dim - start_dim;
+
+            const float* query_level = xi + start_dim;
+            const float* level_base = codes_base + start_dim;
+
+            uint32_t active_vec_ids[kRefineBlock];
+            for (size_t k = 0; k < num_active; k++) {
+                const uint32_t pos = active_indices[k];
+                const uint32_t vid = vec_ids[pos];
+                active_vec_ids[k] = vid;
+                level_cs_buffer[pos] = cum_base
+                        [static_cast<size_t>(vid) * cum_stride + cs_level_idx];
+            }
+
+            with_level_width(dim_span, [&]<size_t W>() {
+                compute_level_dot_kernel</*AllActive=*/false, W>(
+                        query_level,
+                        level_base,
+                        active_vec_ids,
+                        num_active,
+                        dim_span,
+                        dot_buffer.data(),
+                        d);
+            });
+
+            local_stats.total_dims_scanned += num_active * dim_span;
+
+            const float threshold = res.heap_dis[0];
+            prune_kernel</*AllActive=*/false, C, M>(
+                    exact_distances.data(),
+                    dot_buffer.data(),
+                    level_cs_buffer.data(),
+                    active_byteset.data(),
+                    active_indices.data(),
+                    static_cast<uint32_t>(num_active),
+                    query_cum_norm,
+                    threshold);
+
+            num_active = compact_active_kernel(
+                    active_indices.data(), active_byteset.data(), num_active);
+            curr_level++;
+        }
+
+        for (size_t k = 0; k < num_active; k++) {
+            const uint32_t pos = active_indices[k];
+            res.add_result(
+                    exact_distances[pos], static_cast<idx_t>(vec_ids[pos]));
+        }
+    }
+
+    res.end();
+}
+
+} // namespace
+
 void IndexFlatPanorama::search_subset(
         idx_t n,
         const float* x,
@@ -821,136 +958,65 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    with_simd_level([&]<SIMDLevel SL>() {
-        with_metric_type(metric_type, [&]<MetricType M>() {
-            constexpr bool is_sim = is_similarity_metric(M);
-            using C = std::conditional_t<
-                    is_sim,
-                    CMin<float, int64_t>,
-                    CMax<float, int64_t>>;
-            using SingleResultHandler =
-                    typename HeapBlockResultHandler<C, false>::
-                            SingleResultHandler;
-            HeapBlockResultHandler<C, false> handler(
-                    size_t(n), distances, labels, size_t(k), nullptr);
+    with_metric_type(metric_type, [&]<MetricType M>() {
+        constexpr bool is_sim = is_similarity_metric(M);
+        using C = std::conditional_t<
+                is_sim,
+                CMin<float, int64_t>,
+                CMax<float, int64_t>>;
+        HeapBlockResultHandler<C, false> handler(
+                size_t(n), distances, labels, size_t(k), nullptr);
 
-            FAISS_THROW_IF_NOT(k > 0);
-            FAISS_THROW_IF_NOT(batch_size == 1);
+        FAISS_THROW_IF_NOT(k > 0);
+        FAISS_THROW_IF_NOT(batch_size == 1);
 
-            [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
+        [[maybe_unused]] int nt = std::min(int(n), omp_get_max_threads());
 
 #pragma omp parallel num_threads(nt)
-            {
-                SingleResultHandler res(handler);
+        {
+            typename HeapBlockResultHandler<C, false>::SingleResultHandler res(
+                    handler);
 
-                std::vector<float> query_cum_norms(n_levels + 1);
+            std::vector<float> query_cum_norms(n_levels + 1);
+            std::vector<uint32_t> vec_ids(kRefineBlock);
+            std::vector<uint32_t> active_indices(kRefineBlock);
+            std::vector<float> exact_distances(kRefineBlock);
+            std::vector<float> dot_buffer(kRefineBlock);
+            std::vector<float> level_cs_buffer(kRefineBlock);
+            std::vector<uint8_t> active_byteset(kRefineBlock);
 
-                // Panorama's optimized point-wise refinement (Algorithm 2):
-                // Batch-wise Panorama, as implemented in Panorama.h, incurs
-                // overhead from maintaining active_indices and exact_distances.
-                // This optimized implementation has minimal overhead and is
-                // thus preferred for IndexRefine's use case.
-                // 1. Initialize exact distance as ||y||^2 + ||x||^2.
-                // 2. For each level, refine distance incrementally:
-                //    - Compute dot product for current level: exact_dist -=
-                //    2*<x,y>.
-                //    - Use Cauchy-Schwarz bound on remaining levels to get
-                //    lower bound.
-                //    - If there are less than k points in the heap, add the
-                //    point to the heap.
-                //    - Else, prune if lower bound exceeds k-th best distance.
-                // 3. After all levels, update heap if the point survived.
 #pragma omp for
-                for (idx_t i = 0; i < n; i++) {
-                    const idx_t* __restrict idsi = base_labels + i * k_base;
-                    const float* xi = x + i * d;
+            for (idx_t i = 0; i < n; i++) {
+                const idx_t* idsi = base_labels + i * k_base;
+                const float* xi = x + i * d;
 
-                    PanoramaStats local_stats;
-                    local_stats.reset();
+                PanoramaStats local_stats;
+                local_stats.reset();
 
-                    pano.compute_query_cum_sums(xi, query_cum_norms.data());
-                    float query_cum_norm =
-                            query_cum_norms[0] * query_cum_norms[0];
+                pano.compute_query_cum_sums(xi, query_cum_norms.data());
+                const float query_cum_norm_sq =
+                        query_cum_norms[0] * query_cum_norms[0];
 
-                    res.begin(i);
+                refine_panorama_block<C, M, is_sim>(
+                        *this,
+                        i,
+                        idsi,
+                        k_base,
+                        xi,
+                        query_cum_norms.data(),
+                        query_cum_norm_sq,
+                        res,
+                        vec_ids,
+                        active_indices,
+                        exact_distances,
+                        dot_buffer,
+                        level_cs_buffer,
+                        active_byteset,
+                        local_stats);
 
-                    for (idx_t j = 0; j < k_base; j++) {
-                        idx_t idx = idsi[j];
-
-                        if (idx < 0) {
-                            continue;
-                        }
-
-                        size_t cum_sum_offset = (n_levels + 1) * idx;
-                        float cum_sum = cum_sums[cum_sum_offset];
-                        float exact_distance = 0.0f;
-                        if constexpr (!is_sim) {
-                            exact_distance = cum_sum * cum_sum + query_cum_norm;
-                        }
-                        cum_sum_offset++;
-
-                        const float* x_ptr = xi;
-                        const float* p_ptr =
-                                reinterpret_cast<const float*>(codes.data()) +
-                                d * idx;
-
-                        local_stats.total_dims += d;
-
-                        bool pruned = false;
-                        for (size_t level = 0; level < n_levels; level++) {
-                            local_stats.total_dims_scanned +=
-                                    pano.level_width_floats;
-
-                            // Refine distance
-                            size_t actual_level_width = std::min(
-                                    pano.level_width_floats,
-                                    d - level * pano.level_width_floats);
-                            float dot_product = fvec_inner_product<SL>(
-                                    x_ptr, p_ptr, actual_level_width);
-                            if constexpr (is_sim) {
-                                exact_distance += dot_product;
-                            } else {
-                                exact_distance -= 2 * dot_product;
-                            }
-
-                            float level_cum_sum = cum_sums[cum_sum_offset];
-                            float cauchy_schwarz_bound;
-                            if constexpr (is_sim) {
-                                cauchy_schwarz_bound = -level_cum_sum *
-                                        query_cum_norms[level + 1];
-                            } else {
-                                cauchy_schwarz_bound = 2.0f * level_cum_sum *
-                                        query_cum_norms[level + 1];
-                            }
-                            float bound = exact_distance - cauchy_schwarz_bound;
-
-                            // Prune using Cauchy-Schwarz bound
-                            bool should_prune = false;
-                            if constexpr (is_sim) {
-                                should_prune = bound < res.heap_dis[0];
-                            } else {
-                                should_prune = bound > res.heap_dis[0];
-                            }
-                            if (should_prune) {
-                                pruned = true;
-                                break;
-                            }
-
-                            cum_sum_offset++;
-                            x_ptr += pano.level_width_floats;
-                            p_ptr += pano.level_width_floats;
-                        }
-
-                        if (!pruned) {
-                            res.add_result(exact_distance, idx);
-                        }
-                    }
-
-                    res.end();
-                    indexPanorama_stats.add(local_stats);
-                }
+                indexPanorama_stats.add(local_stats);
             }
-        });
+        }
     });
 }
 } // namespace faiss
