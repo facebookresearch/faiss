@@ -803,12 +803,11 @@ int search_from_candidates_panorama(
             "DistanceComputer must be a FlatCodesDistanceComputer");
 
     const auto& pano = panorama_index->pano;
-    const size_t nb_per_parent =
-            static_cast<size_t>(hnsw.nb_neighbors(level));
+    const size_t nb_per_parent = static_cast<size_t>(hnsw.nb_neighbors(level));
     const size_t num_panorama_levels = pano.n_levels;
     const size_t level_width_floats = pano.level_width_floats;
 
-    const size_t kTargetBatch = 4 * nb_per_parent;
+    constexpr size_t kTargetBatch = 64;
     const size_t buf_cap = kTargetBatch + nb_per_parent;
     std::vector<uint32_t> index_array(buf_cap);
     std::vector<float> exact_distances(buf_cap);
@@ -908,7 +907,6 @@ int search_from_candidates_panorama(
             });
             ndis += batch_size;
 
-            // Prune based on computed dot products.
             size_t next_batch_size = 0;
 
             for (size_t i = 0; i < batch_size; i++) {
@@ -941,9 +939,6 @@ int search_from_candidates_panorama(
             candidates.push(idx, exact_distances[i]);
         }
 
-        // Bound total nodes-popped at efSearch (when do_dis_check is
-        // off). Increment by k_popped so the K-pop path budgets the
-        // same total expansion work as the single-pop path.
         nstep += static_cast<int>(k_popped);
         if (!do_dis_check && nstep > efSearch) {
             break;
