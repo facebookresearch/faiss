@@ -103,8 +103,8 @@ def benchmark_dataset(ds, dataset_name, k=10, nlevels=8, M=32):
 
     plot_data = []
 
-    # HNSW Flat baseline
-    eval_and_plot(f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data)
+    # HNSW Flat baseline (skipped intentionally for cross-build pano comparison)
+    # eval_and_plot(f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data)
 
     # HNSW Flat Panorama (with PCA to concentrate energy)
     eval_and_plot(
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     datasets = [
         (DatasetSIFT1M(), "SIFT1M", 2),
         (DatasetGIST1M(), "GIST1M", 8),
-        (SyntheticDataset(d=2048), "Synthetic2048D", 8),
+        # (SyntheticDataset(d=2048), "Synthetic2048D", 8),
     ]
 
     for ds, name, nlevels in datasets:

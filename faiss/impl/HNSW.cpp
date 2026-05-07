@@ -803,15 +803,13 @@ int search_from_candidates_panorama(
             "DistanceComputer must be a FlatCodesDistanceComputer");
 
     const auto& pano = panorama_index->pano;
-    const size_t M = static_cast<size_t>(hnsw.nb_neighbors(0));
+    const size_t nb_per_parent =
+            static_cast<size_t>(hnsw.nb_neighbors(level));
     const size_t num_panorama_levels = pano.n_levels;
     const size_t level_width_floats = pano.level_width_floats;
 
-    // Setting this too high makes the algorithm not greedy enough,
-    // but setting it too low makes the algorithm cause too many cache misses.
-    // 128 is a good compromise.
-    constexpr size_t kTargetBatch = 128;
-    const size_t buf_cap = kTargetBatch + M;
+    const size_t kTargetBatch = 4 * nb_per_parent;
+    const size_t buf_cap = kTargetBatch + nb_per_parent;
     std::vector<uint32_t> index_array(buf_cap);
     std::vector<float> exact_distances(buf_cap);
     std::vector<float> dot_buffer(buf_cap);
