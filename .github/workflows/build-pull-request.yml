@@ -302,6 +302,109 @@ jobs:
         uses: ./.github/actions/build_cmake
         with:
           svs: ON
+  linux-riscv64-DD-cmake:
+    name: Linux riscv64 Dynamic Dispatch cross-compile (cmake)
+    needs: linux-x86_64-cmake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up riscv64 cross-compilation environment
+        run: |
+          sudo dpkg --add-architecture riscv64
+
+          # Restrict existing apt sources to amd64/i386 so that apt does not
+          # try (and fail) to fetch riscv64 packages from the main Ubuntu
+          # mirror, which does not carry riscv64.
+          if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
+            # Ubuntu 24.04+ deb822 format: insert Architectures field.
+            sudo sed -i '/^Types: deb$/a Architectures: amd64 i386' \
+              /etc/apt/sources.list.d/ubuntu.sources
+          fi
+          if grep -q '^deb http' /etc/apt/sources.list 2>/dev/null; then
+            # Ubuntu 22.04 traditional .list format.
+            sudo sed -i 's|^deb http|deb [arch=amd64,i386] http|g' \
+              /etc/apt/sources.list
+          fi
+
+          # Add Ubuntu Ports as the riscv64 package source.
+          CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+          echo "deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME} main restricted universe" \
+            | sudo tee    /etc/apt/sources.list.d/riscv64-ports.list
+          echo "deb [arch=riscv64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME}-updates main restricted universe" \
+            | sudo tee -a /etc/apt/sources.list.d/riscv64-ports.list
+
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            cmake \
+            gcc-riscv64-linux-gnu \
+            g++-riscv64-linux-gnu \
+            libopenblas-dev:riscv64 \
+            libgomp1:riscv64 \
+            qemu-user-static
+
+          # Bridge Ubuntu's multiarch library directory into the sysroot so
+          # that CMake's find_library() (ONLY mode, root=/usr/riscv64-linux-gnu)
+          # can reach packages installed as :riscv64.
+          # CMake searches ${root}/usr/lib/<multiarch-tuple>/ thanks to the
+          # compiler's -print-multiarch output (riscv64-linux-gnu).
+          sudo mkdir -p /usr/riscv64-linux-gnu/usr/lib
+          sudo ln -sfn /usr/lib/riscv64-linux-gnu \
+            /usr/riscv64-linux-gnu/usr/lib/riscv64-linux-gnu
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: linux-riscv64-dd
+          max-size: 2G
+          update-package-index: true
+
+      - name: Configure (cmake)
+        run: |
+          cmake -B build \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/riscv64-linux-gnu.cmake \
+            -DBUILD_TESTING=ON \
+            -DBUILD_SHARED_LIBS=ON \
+            -DFAISS_ENABLE_GPU=OFF \
+            -DFAISS_OPT_LEVEL=dd \
+            -DFAISS_ENABLE_PYTHON=OFF \
+            -DFAISS_ENABLE_C_API=OFF \
+            -DBLA_VENDOR=OpenBLAS \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_RPATH=/usr/lib/riscv64-linux-gnu \
+            .
+
+      - name: Build faiss_test (includes test_factory_tools)
+        run: cmake --build build --target faiss_test -j$(nproc)
+
+      - name: Verify binary with ldd (via qemu)
+        run: |
+          file build/tests/faiss_test
+          file build/tests/faiss_test | grep -q "RISC-V" || \
+            { echo "ERROR: not a RISC-V binary"; exit 1; }
+
+          # Expose riscv64 libs inside the qemu sysroot so the riscv64 ld.so
+          # launched by qemu can resolve NEEDED entries.
+          sudo mkdir -p /usr/riscv64-linux-gnu/usr/lib
+          sudo ln -sfn /usr/lib/riscv64-linux-gnu \
+            /usr/riscv64-linux-gnu/usr/lib/riscv64-linux-gnu
+
+          # Invoke the riscv64 dynamic linker under qemu with --list, which
+          # is exactly what ldd does on native hardware.
+          RISCV64_LD=$(find /usr/riscv64-linux-gnu/lib \
+            -name "ld-linux-riscv64-*.so.1" | head -1)
+          qemu-riscv64-static -L /usr/riscv64-linux-gnu \
+            "$RISCV64_LD" --list build/tests/faiss_test
+
+      - name: Run test_simd_levels (via QEMU)
+        run: |
+          qemu-riscv64-static -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="SIMDConfig.*:SIMDLevel.*:CompileOptions.*"
+
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake
     name: Index serialization backward compatibility
