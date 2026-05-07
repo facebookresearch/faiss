@@ -31,11 +31,23 @@ namespace faiss {
 
 /// Compute dot products between query_level and active vectors.
 ///
-/// @tparam AllActive  If true, vectors are at sequential positions 0..N-1
-///                    (first level, full batch). If false, positions come
-///                    from active_indices (subsequent levels after pruning).
+/// @tparam AllActive  If true, vectors are at sequential row positions
+///                    0..num_active-1 (first level, full batch, no prior
+///                    pruning); the compiler then sees a simple strided
+///                    access pattern and can vectorize aggressively.
+///                    If false, row positions are gathered via
+///                    `active_indices`.
 /// @tparam LevelWidth Compile-time level width in floats (0 = use runtime
-///                    level_width_dims). Enables full loop unrolling.
+///                    `level_width_dims`). Enables full loop unrolling
+///                    and permanent query-register allocation
+///                    (e.g. for LevelWidth=32, the query stays in 2 zmm
+///                    registers across all vectors regardless of dataset).
+///
+/// `stride` is the per-row stride in floats inside `level_storage`. Pass 0
+/// to use a tightly-packed level layout where the row stride equals the
+/// level width (legacy chunked Panorama). Pass a larger value (e.g. the
+/// full row stride for a row-interleaved `[cum_sums | xb]` storage) to
+/// stride past the cum-sums prefix and any other per-row payload.
 FAISS_PRAGMA_IMPRECISE_FUNCTION_BEGIN
 template <bool AllActive = false, size_t LevelWidth = 0>
 static inline void compute_level_dot_kernel(
@@ -44,18 +56,20 @@ static inline void compute_level_dot_kernel(
         const uint32_t* active_indices,
         const size_t num_active,
         const size_t level_width_dims,
-        float* FAISS_RESTRICT dot_products) {
+        float* FAISS_RESTRICT dot_products,
+        size_t stride = 0) {
     const size_t width = LevelWidth > 0 ? LevelWidth : level_width_dims;
+    const size_t row_stride = stride == 0 ? width : stride;
     size_t i = 0;
     for (; i + 4 <= num_active; i += 4) {
         const float* y0 = level_storage +
-                (AllActive ? (i + 0) : active_indices[i + 0]) * width;
+                (AllActive ? (i + 0) : active_indices[i + 0]) * row_stride;
         const float* y1 = level_storage +
-                (AllActive ? (i + 1) : active_indices[i + 1]) * width;
+                (AllActive ? (i + 1) : active_indices[i + 1]) * row_stride;
         const float* y2 = level_storage +
-                (AllActive ? (i + 2) : active_indices[i + 2]) * width;
+                (AllActive ? (i + 2) : active_indices[i + 2]) * row_stride;
         const float* y3 = level_storage +
-                (AllActive ? (i + 3) : active_indices[i + 3]) * width;
+                (AllActive ? (i + 3) : active_indices[i + 3]) * row_stride;
 
         float dp0 = 0, dp1 = 0, dp2 = 0, dp3 = 0;
         FAISS_PRAGMA_IMPRECISE_LOOP
@@ -73,8 +87,8 @@ static inline void compute_level_dot_kernel(
         dot_products[i + 3] = dp3;
     }
     for (; i < num_active; i++) {
-        const float* yj =
-                level_storage + (AllActive ? i : active_indices[i]) * width;
+        const float* yj = level_storage +
+                (AllActive ? i : active_indices[i]) * row_stride;
         float dp = 0;
         FAISS_PRAGMA_IMPRECISE_LOOP
         for (size_t j = 0; j < width; j++) {
@@ -231,12 +245,72 @@ struct Panorama {
     size_t level_width_floats = 0;
     size_t batch_size = 0;
 
-    explicit Panorama(size_t code_size, size_t n_levels, size_t batch_size);
+    /// When true, each batch in the `codes` buffer is prefixed with its
+    /// own (n_levels + 1) * batch_size cum-sums block (laid out
+    /// `[cs[0]_0..cs[0]_{B-1}, cs[1]_0..cs[1]_{B-1}, ..., cs[L]_0..cs[L]_{B-1}]`)
+    /// followed by the same `n_levels` feature blocks the legacy chunked
+    /// layout uses. Eliminates the separate `cum_sums` vector while
+    /// keeping the feature region byte-identical to the legacy layout, so
+    /// the SIMD kernels (`compute_level_dot_kernel`, `prune_kernel`)
+    /// don't need a second variant.
+    ///
+    /// With `batch_size = 1` the per-row layout becomes
+    /// `[cs[0], cs[1], ..., cs[L], feat[0], feat[1], ..., feat[L-1]]`,
+    /// which packs each row's cum-sums at the start of the same cache
+    /// line as its level-0 features \u2014 a 1 cache-line-fetch hot path for
+    /// random-access workloads (e.g. HNSW).
+    ///
+    /// When false (legacy), `codes` holds only feature levels in the
+    /// classic level-major batched layout and a separate `cum_sums` array
+    /// is required.
+    bool inline_layout = false;
+
+    Panorama(size_t code_size,
+             size_t n_levels,
+             size_t batch_size,
+             bool inline_layout = false);
 
     void set_derived_values();
 
+    /// Number of cum-sum floats per batch (= (n_levels + 1) * batch_size).
+    /// In inline mode this prefix sits at the start of every batch in
+    /// `codes`; in chunked mode it lives at the same offset inside the
+    /// separate `cum_sums` vector.
+    size_t cs_floats_per_batch() const {
+        return (n_levels + 1) * batch_size;
+    }
+
+    /// Byte size of a batch in inline-layout `codes`:
+    ///   cum-sums prefix (cs_floats_per_batch * 4 bytes) + feature
+    ///   region (n_levels * level_width * batch_size bytes).
+    /// Returns 0 when inline_layout is false (codes holds only the
+    /// feature region in that case, cum_sums lives in a separate vector).
+    size_t inline_batch_bytes() const {
+        return inline_layout
+                ? cs_floats_per_batch() * sizeof(float) +
+                        n_levels * level_width * batch_size
+                : 0;
+    }
+
+    /// Byte offset of batch `batch_no`'s start within the `codes`
+    /// buffer. Inline mode includes the cum-sums prefix; chunked mode
+    /// does not.
+    size_t batch_byte_offset(size_t batch_no) const {
+        return inline_layout ? batch_no * inline_batch_bytes()
+                             : batch_no * batch_size * code_size;
+    }
+
+    /// Byte offset of the feature region within a batch in `codes`.
+    /// Inline mode skips the cum-sums prefix; chunked mode is 0.
+    size_t feat_region_byte_offset() const {
+        return inline_layout ? cs_floats_per_batch() * sizeof(float) : 0;
+    }
+
     /// Helper method to copy codes into level-oriented batch layout at a given
     /// offset in the list.
+    /// In inline mode, `codes` is expected to be sized so that each batch
+    /// is `inline_batch_bytes()` long; this helper writes to the feature
+    /// region, leaving the cum-sums prefix to `compute_cumulative_sums`.
     void copy_codes_to_level_layout(
             uint8_t* codes,
             size_t offset,
@@ -246,6 +320,10 @@ struct Panorama {
     /// Helper method to compute the cumulative sums of the codes.
     /// The cumsums also follow the level-oriented batch layout to minimize the
     /// number of random memory accesses.
+    /// `cumsum_base` points either at the start of a separate cum_sums
+    /// vector (chunked layout) or at the start of the inline `codes`
+    /// buffer (inline layout); the per-batch offset is the same in both
+    /// cases since the layouts share the same per-batch cum-sums shape.
     void compute_cumulative_sums(
             float* cumsum_base,
             size_t offset,
@@ -257,6 +335,10 @@ struct Panorama {
             const;
 
     /// Copy single entry (code and cum_sum) from one location to another.
+    /// In inline mode the caller passes `codes + batch0` for both codes
+    /// pointers and `codes + 0` (reinterpreted as float*) for both
+    /// cum_sums pointers \u2014 the per-batch offset math is identical to
+    /// the chunked layout because the cs prefix shape didn't change.
     void copy_entry(
             uint8_t* dest_codes,
             uint8_t* src_codes,
@@ -301,13 +383,28 @@ struct Panorama {
         size_t batch_start = batch_no * batch_size;
         size_t curr_batch_size = std::min(list_size - batch_start, batch_size);
 
-        size_t cumsum_batch_offset = batch_no * batch_size * (n_levels + 1);
+        // cs prefix shape (per-batch (n_levels+1)*B floats) is identical
+        // for both layouts, but the per-batch *stride* differs:
+        //   chunked: cum_sums is a separate buffer packed tightly at
+        //     stride cs_floats_per_batch() floats per batch.
+        //   inline: cum_sums points into `codes_base` reinterpreted as
+        //     float*, where each batch is inline_batch_bytes() long
+        //     (cum-sums prefix + feature region), so the stride between
+        //     batch starts is the larger inline batch width.
+        const size_t cs_batch_stride = inline_layout
+                ? (inline_batch_bytes() / sizeof(float))
+                : cs_floats_per_batch();
+        const size_t cumsum_batch_offset = batch_no * cs_batch_stride;
         const float* batch_cum_sums = cum_sums + cumsum_batch_offset;
         const float* level_cum_sums = batch_cum_sums + batch_size;
         float q_norm = query_cum_sums[0] * query_cum_sums[0];
 
-        size_t batch_offset = batch_no * batch_size * code_size;
-        const uint8_t* storage_base = codes_base + batch_offset;
+        // In inline mode, the feature region sits past the cum-sums
+        // prefix inside `codes_base`'s batch; in chunked mode it
+        // starts at the batch boundary. `batch_byte_offset` and
+        // `feat_region_byte_offset` collapse the two cases.
+        const uint8_t* storage_base = codes_base + batch_byte_offset(batch_no) +
+                feat_region_byte_offset();
 
         // Initialize active set with ID-filtered vectors.
         size_t num_active = 0;
@@ -384,6 +481,10 @@ struct Panorama {
     }
 #endif // SWIG
 
+    /// Reconstruct the raw float vector for `key` from the codes buffer.
+    /// Works for both layouts: the only difference is the per-batch
+    /// stride into `codes_base`, which `batch_byte_offset()` /
+    /// `feat_region_byte_offset()` handle uniformly.
     void reconstruct(idx_t key, float* recons, const uint8_t* codes_base) const;
 };
 } // namespace faiss

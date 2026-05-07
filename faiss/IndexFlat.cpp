@@ -653,11 +653,19 @@ inline void flat_pano_search_core(
                     threshold = res.heap_dis[0];
                 }
 
+                // In inline mode, the per-batch cum-sums prefix lives
+                // at the head of `index.codes`, so we pass the codes
+                // pointer reinterpreted as float*. In chunked mode, the
+                // separate cum_sums vector is the right one.
+                const float* cs_ptr = index.pano.inline_layout
+                        ? reinterpret_cast<const float*>(index.codes.data())
+                        : index.cum_sums.data();
+
                 size_t num_active = with_metric_type(
                         index.metric_type, [&]<MetricType M>() {
                             return index.pano.progressive_filter_batch<C, M>(
                                     index.codes.data(),
-                                    index.cum_sums.data(),
+                                    cs_ptr,
                                     xi,
                                     query_cum_norms.data(),
                                     batch_no,
@@ -697,12 +705,22 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     ntotal += n;
     size_t num_batches = (ntotal + batch_size - 1) / batch_size;
 
-    codes.resize(num_batches * batch_size * code_size);
-    cum_sums.resize(num_batches * batch_size * (n_levels + 1));
-
     const uint8_t* code = reinterpret_cast<const uint8_t*>(x);
-    pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
-    pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+
+    if (pano.inline_layout) {
+        // Inline layout: codes holds both the cum-sums prefix and the
+        // feature region per batch. cum_sums vector stays empty.
+        codes.resize(num_batches * pano.inline_batch_bytes());
+        cum_sums.clear();
+        pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
+        pano.compute_cumulative_sums(
+                reinterpret_cast<float*>(codes.data()), offset, n, x);
+    } else {
+        codes.resize(num_batches * batch_size * code_size);
+        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        pano.copy_codes_to_level_layout(codes.data(), offset, n, code);
+        pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
+    }
 }
 
 void IndexFlatPanorama::search(
@@ -749,6 +767,13 @@ void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
 }
 
 size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
+    // In inline mode, the cum-sums prefix lives at the head of `codes`,
+    // so we pass `(float*)codes` for both cum_sums pointers in the
+    // copy_entry helper. In chunked mode, the separate cum_sums vector
+    // is the right pointer.
+    float* cs_ptr = pano.inline_layout ? reinterpret_cast<float*>(codes.data())
+                                       : cum_sums.data();
+
     idx_t j = 0;
     for (idx_t i = 0; i < ntotal; i++) {
         if (sel.is_member(i)) {
@@ -756,12 +781,7 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
         } else {
             if (i > j) {
                 pano.copy_entry(
-                        codes.data(),
-                        codes.data(),
-                        cum_sums.data(),
-                        cum_sums.data(),
-                        j,
-                        i);
+                        codes.data(), codes.data(), cs_ptr, cs_ptr, j, i);
             }
             j++;
         }
@@ -770,8 +790,12 @@ size_t IndexFlatPanorama::remove_ids(const IDSelector& sel) {
     if (nremove > 0) {
         ntotal = j;
         size_t num_batches = (ntotal + batch_size - 1) / batch_size;
-        codes.resize(num_batches * batch_size * code_size);
-        cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        if (pano.inline_layout) {
+            codes.resize(num_batches * pano.inline_batch_bytes());
+        } else {
+            codes.resize(num_batches * batch_size * code_size);
+            cum_sums.resize(num_batches * batch_size * (n_levels + 1));
+        }
     }
     return nremove;
 }
@@ -797,20 +821,31 @@ void IndexFlatPanorama::add_sa_codes(
 
 void IndexFlatPanorama::permute_entries(const idx_t* perm) {
     MaybeOwnedVector<uint8_t> new_codes(codes.size());
-    std::vector<float> new_cum_sums(cum_sums.size());
 
-    for (idx_t i = 0; i < ntotal; i++) {
-        pano.copy_entry(
-                new_codes.data(),
-                codes.data(),
-                new_cum_sums.data(),
-                cum_sums.data(),
-                i,
-                perm[i]);
+    if (pano.inline_layout) {
+        // Cum-sums prefix lives at the head of each batch in `codes`,
+        // so the cum_sums pointers reuse the codes buffers.
+        float* dst_cs = reinterpret_cast<float*>(new_codes.data());
+        float* src_cs = reinterpret_cast<float*>(codes.data());
+        for (idx_t i = 0; i < ntotal; i++) {
+            pano.copy_entry(
+                    new_codes.data(), codes.data(), dst_cs, src_cs, i, perm[i]);
+        }
+        std::swap(codes, new_codes);
+    } else {
+        std::vector<float> new_cum_sums(cum_sums.size());
+        for (idx_t i = 0; i < ntotal; i++) {
+            pano.copy_entry(
+                    new_codes.data(),
+                    codes.data(),
+                    new_cum_sums.data(),
+                    cum_sums.data(),
+                    i,
+                    perm[i]);
+        }
+        std::swap(codes, new_codes);
+        std::swap(cum_sums, new_cum_sums);
     }
-
-    std::swap(codes, new_codes);
-    std::swap(cum_sums, new_cum_sums);
 }
 
 void IndexFlatPanorama::search_subset(
@@ -874,6 +909,22 @@ void IndexFlatPanorama::search_subset(
 
                     res.begin(i);
 
+                    // Per-row pointers are layout-dependent but the
+                    // per-level inner loop is identical once we pin
+                    // down (cs_base, feat_base, cs_stride):
+                    //   inline: each row is [cs[0..L] | feat[0..L-1]],
+                    //     with stride (L+1) + L*lw floats; cs and feats
+                    //     for vector idx live at the same row.
+                    //   chunked: cs and feats live in different buffers;
+                    //     cs has stride (L+1) floats per vector (= idx
+                    //     * (L+1)) and feats have stride d floats.
+                    const bool inl = pano.inline_layout;
+                    const size_t lw = pano.level_width_floats;
+                    const size_t row_floats_inline =
+                            (n_levels + 1) + n_levels * lw;
+                    const float* codes_floats =
+                            reinterpret_cast<const float*>(codes.data());
+
                     for (idx_t j = 0; j < k_base; j++) {
                         idx_t idx = idsi[j];
 
@@ -881,30 +932,32 @@ void IndexFlatPanorama::search_subset(
                             continue;
                         }
 
-                        size_t cum_sum_offset = (n_levels + 1) * idx;
-                        float cum_sum = cum_sums[cum_sum_offset];
+                        // Pin cs and feat bases for this row.
+                        const float* row_cs = inl
+                                ? (codes_floats + idx * row_floats_inline)
+                                : (cum_sums.data() + idx * (n_levels + 1));
+                        const float* row_feats = inl
+                                ? (codes_floats + idx * row_floats_inline +
+                                   (n_levels + 1))
+                                : (codes_floats + d * idx);
+
+                        float cum_sum = row_cs[0];
                         float exact_distance = 0.0f;
                         if constexpr (!is_sim) {
                             exact_distance = cum_sum * cum_sum + query_cum_norm;
                         }
-                        cum_sum_offset++;
 
                         const float* x_ptr = xi;
-                        const float* p_ptr =
-                                reinterpret_cast<const float*>(codes.data()) +
-                                d * idx;
+                        const float* p_ptr = row_feats;
 
                         local_stats.total_dims += d;
 
                         bool pruned = false;
                         for (size_t level = 0; level < n_levels; level++) {
-                            local_stats.total_dims_scanned +=
-                                    pano.level_width_floats;
+                            local_stats.total_dims_scanned += lw;
 
-                            // Refine distance
-                            size_t actual_level_width = std::min(
-                                    pano.level_width_floats,
-                                    d - level * pano.level_width_floats);
+                            size_t actual_level_width =
+                                    std::min(lw, d - level * lw);
                             float dot_product = fvec_inner_product<SL>(
                                     x_ptr, p_ptr, actual_level_width);
                             if constexpr (is_sim) {
@@ -913,7 +966,7 @@ void IndexFlatPanorama::search_subset(
                                 exact_distance -= 2 * dot_product;
                             }
 
-                            float level_cum_sum = cum_sums[cum_sum_offset];
+                            float level_cum_sum = row_cs[level + 1];
                             float cauchy_schwarz_bound;
                             if constexpr (is_sim) {
                                 cauchy_schwarz_bound = -level_cum_sum *
@@ -924,7 +977,6 @@ void IndexFlatPanorama::search_subset(
                             }
                             float bound = exact_distance - cauchy_schwarz_bound;
 
-                            // Prune using Cauchy-Schwarz bound
                             bool should_prune = false;
                             if constexpr (is_sim) {
                                 should_prune = bound < res.heap_dis[0];
@@ -936,9 +988,8 @@ void IndexFlatPanorama::search_subset(
                                 break;
                             }
 
-                            cum_sum_offset++;
-                            x_ptr += pano.level_width_floats;
-                            p_ptr += pano.level_width_floats;
+                            x_ptr += lw;
+                            p_ptr += lw;
                         }
 
                         if (!pruned) {
@@ -953,4 +1004,110 @@ void IndexFlatPanorama::search_subset(
         });
     });
 }
+
+namespace {
+
+/// Distance computer over `IndexFlatPanorama` storage in inline mode
+/// with `batch_size = 1`. Each row is laid out as
+///   [ cs (n_levels + 1 floats) | feats (n_levels * level_width_floats
+///     floats, last level may have slack) ]
+/// so we (1) bump `code_size` up to the per-row byte stride and (2)
+/// rebase the `codes` pointer past the per-row cs prefix. The inherited
+/// L2 SIMD kernels (`fvec_L2sqr`, `fvec_L2sqr_batch_4`) then walk each
+/// row's feats correctly without any further per-method overrides.
+///
+/// `partial_dot_product` and friends are intentionally NOT overridden:
+/// the only HNSW search path that used them in the chunked layout has
+/// been replaced by the K-pop kernel that calls
+/// `compute_level_dot_kernel` directly on raw pointers, so nothing
+/// inside the Panorama codebase asks the storage's DC for partial
+/// products anymore.
+template <SIMDLevel SL>
+struct FlatPanoramaInlineL2Dis : FlatCodesDistanceComputer {
+    size_t d;
+    idx_t nb;
+    size_t ndis;
+
+    explicit FlatPanoramaInlineL2Dis(
+            const IndexFlatPanorama& storage,
+            const float* q_ = nullptr)
+            : FlatCodesDistanceComputer(
+                      // Rebase past the per-row cs prefix so
+                      // `codes + i * code_size` lands at row i's feats.
+                      storage.codes.data() +
+                              (storage.n_levels + 1) * sizeof(float),
+                      // batch_size = 1 means each "batch" is one row of
+                      // `[cs | feats]` floats: that's the per-row
+                      // stride the inherited kernels expect.
+                      storage.pano.inline_batch_bytes(),
+                      q_),
+              d(storage.d),
+              nb(storage.ntotal),
+              ndis(0) {}
+
+    void set_query(const float* x) override {
+        q = x;
+    }
+
+    float distance_to_code(const uint8_t* code) final override {
+        ndis++;
+        return fvec_L2sqr<SL>(q, (const float*)code, d);
+    }
+
+    float symmetric_dis(idx_t i, idx_t j) override {
+        const float* yi = reinterpret_cast<const float*>(codes + i * code_size);
+        const float* yj = reinterpret_cast<const float*>(codes + j * code_size);
+        return fvec_L2sqr<SL>(yj, yi, d);
+    }
+
+    void distances_batch_4(
+            const idx_t idx0,
+            const idx_t idx1,
+            const idx_t idx2,
+            const idx_t idx3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) final override {
+        ndis += 4;
+        const float* __restrict y0 =
+                reinterpret_cast<const float*>(codes + idx0 * code_size);
+        const float* __restrict y1 =
+                reinterpret_cast<const float*>(codes + idx1 * code_size);
+        const float* __restrict y2 =
+                reinterpret_cast<const float*>(codes + idx2 * code_size);
+        const float* __restrict y3 =
+                reinterpret_cast<const float*>(codes + idx3 * code_size);
+
+        float dp0 = 0, dp1 = 0, dp2 = 0, dp3 = 0;
+        fvec_L2sqr_batch_4<SL>(q, y0, y1, y2, y3, d, dp0, dp1, dp2, dp3);
+        dis0 = dp0;
+        dis1 = dp1;
+        dis2 = dp2;
+        dis3 = dp3;
+    }
+};
+
+} // anonymous namespace
+
+FlatCodesDistanceComputer* IndexFlatPanorama::get_FlatCodesDistanceComputer()
+        const {
+    if (pano.inline_layout && batch_size == 1) {
+        // Inline B=1 layout: each row in `codes` is
+        //   [cs (L+1 floats) | feats (L*lw floats)]
+        // so we use a per-row-stride-aware distance computer that
+        // skips the cs prefix.
+        FlatCodesDistanceComputer* dc = nullptr;
+        with_simd_level([&]<SIMDLevel SL>() {
+            dc = new FlatPanoramaInlineL2Dis<SL>(*this);
+        });
+        return dc;
+    }
+    // Chunked layout (or inline B>1, currently unused): fall back to
+    // the standard per-vector distance computer. For chunked Panorama
+    // this is correct because `code_size = d * sizeof(float)` and the
+    // codes vector holds bare features.
+    return IndexFlat::get_FlatCodesDistanceComputer();
+}
+
 } // namespace faiss

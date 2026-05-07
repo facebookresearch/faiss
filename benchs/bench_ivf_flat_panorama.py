@@ -20,6 +20,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--dataset", default="gist1m", choices=["sift1m", "gist1m"]
 )
+parser.add_argument(
+    "--skip-baseline",
+    action="store_true",
+    help="Skip the vanilla IVFFlat baseline (useful when comparing two "
+    "Panorama builds against a baseline that's already been recorded).",
+)
+parser.add_argument(
+    "--label",
+    default="",
+    help="Suffix appended to the output PNG filename so multiple runs "
+    "don't overwrite each other.",
+)
 args = parser.parse_args()
 
 if args.dataset == "sift1m":
@@ -96,8 +108,9 @@ nlist = 128
 
 plt.figure(figsize=(8, 6), dpi=80)
 
-# IVFFlat
-eval_and_plot(f"IVF{nlist},Flat")
+# IVFFlat (vanilla baseline) — skip when comparing two Panorama builds.
+if not args.skip_baseline:
+    eval_and_plot(f"IVF{nlist},Flat")
 
 # IVFFlatPanorama (with PCA transform to concentrate energy in early dimensions)
 eval_and_plot(f"PCA{d},IVF{nlist},FlatPanorama{nlevels}_{1024}")
@@ -108,4 +121,8 @@ plt.xlabel(f"Recall@{k}")
 plt.ylabel("QPS")
 plt.yscale("log")
 plt.legend(bbox_to_anchor=(1.02, 0.1), loc="upper left", borderaxespad=0)
-plt.savefig(f"bench_ivf_flat_panorama_{args.dataset}.png", bbox_inches="tight")
+suffix = f"_{args.label}" if args.label else ""
+plt.savefig(
+    f"bench_ivf_flat_panorama_{args.dataset}{suffix}.png",
+    bbox_inches="tight",
+)

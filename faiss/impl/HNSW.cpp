@@ -7,6 +7,7 @@
 
 #include <faiss/impl/HNSW.h>
 
+#include <array>
 #include <cinttypes>
 #include <cstddef>
 #include <cstdlib>
@@ -801,15 +802,47 @@ int search_from_candidates_panorama(
             flat_codes_qdis,
             "DistanceComputer must be a FlatCodesDistanceComputer");
 
-    // Allocate space for the index array and exact distances.
-    size_t M = hnsw.nb_neighbors(0);
-    std::vector<idx_t> index_array(M);
-    std::vector<float> exact_distances(M);
+    const auto& pano = panorama_index->get_pano();
+    const size_t M = static_cast<size_t>(hnsw.nb_neighbors(0));
+    const size_t num_panorama_levels = pano.n_levels;
+
+    // Adaptive K-pop multi-hop batching: each outer iteration pops up
+    // to `k_target` parents from the candidates heap, unions + dedupes
+    // their neighbors via the visited-table test-and-set, and runs ONE
+    // SIMD kernel pass over the unioned batch. After each iteration we
+    // grow or shrink `k_target` based on the post-dedup batch size so
+    // the SIMD kernel stays saturated near TARGET_BATCH candidates per
+    // dispatch.
+    constexpr size_t KPOP_MAX = 8;
+    const size_t TARGET_BATCH = 2 * M;
+    size_t k_target = 2;
+    std::array<int, KPOP_MAX> v0_batch;
+
+    // Buffers hold the unioned neighbor set: up to KPOP_MAX * M per
+    // outer iteration. Sized for KPOP_MAX so the adaptive policy never
+    // overflows.
+    const size_t buf_cap = KPOP_MAX * M;
+    std::vector<uint32_t> index_array(buf_cap);
+    std::vector<float> exact_distances(buf_cap);
+    std::vector<float> dot_buffer(buf_cap);
+    std::vector<float> query_cum_sums_buf(num_panorama_levels + 1);
 
     const float* query = flat_codes_qdis->q;
-    std::vector<float> query_cum_sums(panorama_index->pano.n_levels + 1);
-    panorama_index->pano.compute_query_cum_sums(query, query_cum_sums.data());
-    float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
+    const size_t level_width_floats = pano.level_width_floats;
+    // The panorama index stores each row inline as
+    //   [cs[0], cs[1], ..., cs[L], feat[0], feat[1], ..., feat[L-1]]
+    // inside the underlying inline-layout IndexFlatPanorama storage.
+    // `cum_stride` (in floats) is the per-row stride; `cum_base` points
+    // at cs[0] of the first row; `xb_base` points at feat[0] of the
+    // first row (= cum_base + L+1). Since all L+1 cum-sums sit
+    // contiguously at the head of each row, `cum_base[v1*cum_stride +
+    // k]` is cs[k] for any v1 and k in [0, L].
+    const size_t cum_stride = panorama_index->inline_row_stride();
+    const float* cum_base = panorama_index->get_cum_sum(0);
+    const float* xb_base = panorama_index->get_inline_xb(0);
+    pano.compute_query_cum_sums(query, query_cum_sums_buf.data());
+    const float* query_cum_sums = query_cum_sums_buf.data();
+    const float query_norm_sq = query_cum_sums[0] * query_cum_sums[0];
 
     int nstep = 0;
     const size_t d = static_cast<size_t>(panorama_index->d);
@@ -817,164 +850,142 @@ int search_from_candidates_panorama(
     PanoramaStats local_pano_stats;
     local_pano_stats.reset();
 
-    while (candidates.size() > 0) {
-        float d0 = 0;
-        int v0 = candidates.pop_min(&d0);
-
-        if (do_dis_check) {
-            // tricky stopping condition: there are more than ef
-            // distances that are processed already that are smaller
-            // than d0
-
-            int n_dis_below = candidates.count_below(d0);
-            if (n_dis_below >= efSearch) {
-                break;
+    bool stop_flag = false;
+    while (candidates.size() > 0 && !stop_flag) {
+        // Pop up to k_target parents this iteration. Always process at
+        // least one (so progress is guaranteed); subsequent pops honor
+        // the standard do_dis_check early-stop. Total nodes-popped
+        // stays bounded the same as the single-pop path (within at
+        // most k_target - 1 of the original stopping point).
+        size_t k_popped = 0;
+        while (k_popped < k_target && candidates.size() > 0) {
+            float d0 = 0;
+            int v0 = candidates.pop_min(&d0);
+            if (do_dis_check) {
+                int n_dis_below = candidates.count_below(d0);
+                if (n_dis_below >= efSearch) {
+                    if (k_popped == 0) {
+                        // Standard early-stop: we haven't queued any
+                        // work this iteration, so terminate the outer
+                        // loop entirely (matching single-pop behavior).
+                        stop_flag = true;
+                    } else {
+                        // We already have parents queued; un-pop this
+                        // one so the next outer iteration sees it and
+                        // re-applies the stop check from a clean state.
+                        candidates.push(v0, d0);
+                    }
+                    break;
+                }
             }
+            v0_batch[k_popped++] = v0;
+        }
+        if (k_popped == 0) {
+            break;
         }
 
-        size_t begin, end;
-        hnsw.neighbor_range(v0, level, &begin, &end);
-
-        // Unlike the vanilla HNSW, we already remove (and compact) the visited
-        // nodes from the candidates list at this stage. We also remove nodes
-        // that are not selected.
+        // Union over k_popped parents. The vt.set test-and-set
+        // naturally dedupes neighbors that are shared across parents
+        // in this K-batch, so no extra dedup structure is needed.
         size_t initial_size = 0;
-        for (size_t j = begin; j < end; j++) {
-            int v1 = hnsw.neighbors[j];
-            if (v1 < 0) {
-                break;
+        for (size_t p = 0; p < k_popped; p++) {
+            size_t begin, end;
+            hnsw.neighbor_range(v0_batch[p], level, &begin, &end);
+
+            for (size_t j = begin; j < end; j++) {
+                int v1 = hnsw.neighbors[j];
+                if (v1 < 0) {
+                    break;
+                }
+
+                bool is_new = vt.set(v1);
+                bool is_selected = !sel || sel->is_member(v1);
+                if (is_new && is_selected) {
+                    const float vsum =
+                            cum_base[static_cast<size_t>(v1) * cum_stride];
+                    index_array[initial_size] = v1;
+                    exact_distances[initial_size] =
+                            query_norm_sq + vsum * vsum;
+                    initial_size++;
+                }
             }
-
-            const float* cum_sums_v1 = panorama_index->get_cum_sum(v1);
-            index_array[initial_size] = v1;
-            exact_distances[initial_size] =
-                    query_norm_sq + cum_sums_v1[0] * cum_sums_v1[0];
-
-            bool is_selected = !sel || sel->is_member(v1);
-            initial_size += is_selected && vt.set(v1) ? 1 : 0;
         }
 
         local_pano_stats.total_dims += initial_size * d;
+        local_pano_stats.n_visited += initial_size;
+
+        // Adapt k_target for the next iteration based on this iter's
+        // post-dedup batch. Bumping by +-1 (rather than directly
+        // setting) keeps adaptation gentle so we don't oscillate
+        // around the saturation point.
+        if (initial_size < TARGET_BATCH && k_target < KPOP_MAX) {
+            k_target++;
+        } else if (initial_size > 2 * TARGET_BATCH && k_target > 1) {
+            k_target--;
+        }
+
         size_t batch_size = initial_size;
         size_t curr_panorama_level = 0;
-        const size_t num_panorama_levels = panorama_index->pano.n_levels;
         while (curr_panorama_level < num_panorama_levels && batch_size > 0) {
-            float query_cum_norm = query_cum_sums[curr_panorama_level + 1];
+            const size_t cs_level_idx = curr_panorama_level + 1;
+            const float query_cum_norm = query_cum_sums[cs_level_idx];
+            const float two_qc = 2.0f * query_cum_norm;
 
-            size_t start_dim = curr_panorama_level *
-                    panorama_index->pano.level_width_floats;
-            size_t end_dim = (curr_panorama_level + 1) *
-                    panorama_index->pano.level_width_floats;
-            end_dim = std::min(end_dim, static_cast<size_t>(panorama_index->d));
+            const size_t start_dim = curr_panorama_level * level_width_floats;
+            size_t end_dim = (curr_panorama_level + 1) * level_width_floats;
+            end_dim = std::min(end_dim, d);
+            const size_t dim_span = end_dim - start_dim;
 
-            size_t i = 0;
+            // Compute all dot products for this level at once via the
+            // compile-time-width-specialized kernel from Panorama.h.
+            // The base of the vector data inside the inline storage is
+            // `xb_base`; rows are spaced `cum_stride` floats apart
+            // (= (L+1) + L*lw), so we pass `cum_stride` as the stride
+            // to the kernel rather than `d`.
+            const float* level_base = xb_base + start_dim;
+
+            with_level_width(dim_span, [&]<size_t W>() {
+                compute_level_dot_kernel<false, W>(
+                        query + start_dim,
+                        level_base,
+                        index_array.data(),
+                        batch_size,
+                        dim_span,
+                        dot_buffer.data(),
+                        cum_stride);
+            });
+            ndis += batch_size;
+
+            // Prune based on computed dot products.
+            // ne = exact_distances - 2*dot_buffer  (true L2 over [0, end_dim))
+            // cs_bound = 2 * query_cum_norm * cum_sum[level+1]
+            // lb = ne - cs_bound  (lower bound on full-d L2)
+            // keep iff lb <= threshold; pruned go back to candidates heap.
             size_t next_batch_size = 0;
-            for (; i + 3 < batch_size; i += 4) {
-                idx_t idx_0 = index_array[i];
-                idx_t idx_1 = index_array[i + 1];
-                idx_t idx_2 = index_array[i + 2];
-                idx_t idx_3 = index_array[i + 3];
 
-                float dp[4];
-                flat_codes_qdis->partial_dot_product_batch_4(
-                        idx_0,
-                        idx_1,
-                        idx_2,
-                        idx_3,
-                        dp[0],
-                        dp[1],
-                        dp[2],
-                        dp[3],
-                        start_dim,
-                        end_dim - start_dim);
-                ndis += 4;
-
-                float new_exact_0 = exact_distances[i + 0] - 2 * dp[0];
-                float new_exact_1 = exact_distances[i + 1] - 2 * dp[1];
-                float new_exact_2 = exact_distances[i + 2] - 2 * dp[2];
-                float new_exact_3 = exact_distances[i + 3] - 2 * dp[3];
-
-                float cum_sum_0 = panorama_index->get_cum_sum(
-                        idx_0)[curr_panorama_level + 1];
-                float cum_sum_1 = panorama_index->get_cum_sum(
-                        idx_1)[curr_panorama_level + 1];
-                float cum_sum_2 = panorama_index->get_cum_sum(
-                        idx_2)[curr_panorama_level + 1];
-                float cum_sum_3 = panorama_index->get_cum_sum(
-                        idx_3)[curr_panorama_level + 1];
-
-                float cs_bound_0 = 2.0f * cum_sum_0 * query_cum_norm;
-                float cs_bound_1 = 2.0f * cum_sum_1 * query_cum_norm;
-                float cs_bound_2 = 2.0f * cum_sum_2 * query_cum_norm;
-                float cs_bound_3 = 2.0f * cum_sum_3 * query_cum_norm;
-
-                float lower_bound_0 = new_exact_0 - cs_bound_0;
-                float lower_bound_1 = new_exact_1 - cs_bound_1;
-                float lower_bound_2 = new_exact_2 - cs_bound_2;
-                float lower_bound_3 = new_exact_3 - cs_bound_3;
-
-                // The following code is not the most branch friendly (due to
-                // the maintenance of the candidate heap), but micro-benchmarks
-                // have shown that it is not worth it to write horrible code to
-                // squeeze out those cycles.
-                if (lower_bound_0 <= threshold) {
-                    exact_distances[next_batch_size] = new_exact_0;
-                    index_array[next_batch_size] = idx_0;
-                    next_batch_size += 1;
+            for (size_t i = 0; i < batch_size; i++) {
+                float ne = exact_distances[i] - 2.0f * dot_buffer[i];
+                float cum = cum_base
+                        [static_cast<size_t>(index_array[i]) * cum_stride +
+                         cs_level_idx];
+                float lb = ne - two_qc * cum;
+                if (lb <= threshold) {
+                    exact_distances[next_batch_size] = ne;
+                    index_array[next_batch_size] = index_array[i];
+                    next_batch_size++;
                 } else {
-                    candidates.push(idx_0, new_exact_0);
-                }
-                if (lower_bound_1 <= threshold) {
-                    exact_distances[next_batch_size] = new_exact_1;
-                    index_array[next_batch_size] = idx_1;
-                    next_batch_size += 1;
-                } else {
-                    candidates.push(idx_1, new_exact_1);
-                }
-                if (lower_bound_2 <= threshold) {
-                    exact_distances[next_batch_size] = new_exact_2;
-                    index_array[next_batch_size] = idx_2;
-                    next_batch_size += 1;
-                } else {
-                    candidates.push(idx_2, new_exact_2);
-                }
-                if (lower_bound_3 <= threshold) {
-                    exact_distances[next_batch_size] = new_exact_3;
-                    index_array[next_batch_size] = idx_3;
-                    next_batch_size += 1;
-                } else {
-                    candidates.push(idx_3, new_exact_3);
+                    candidates.push(index_array[i], ne);
                 }
             }
 
-            // Process the remaining candidates.
-            for (; i < batch_size; i++) {
-                idx_t idx = index_array[i];
-
-                float dp = flat_codes_qdis->partial_dot_product(
-                        idx, start_dim, end_dim - start_dim);
-                ndis += 1;
-                float new_exact = exact_distances[i] - 2.0f * dp;
-
-                float cum_sum = panorama_index->get_cum_sum(
-                        idx)[curr_panorama_level + 1];
-                float cs_bound = 2.0f * cum_sum * query_cum_norm;
-                float lower_bound = new_exact - cs_bound;
-
-                if (lower_bound <= threshold) {
-                    exact_distances[next_batch_size] = new_exact;
-                    index_array[next_batch_size] = idx;
-                    next_batch_size += 1;
-                } else {
-                    candidates.push(idx, new_exact);
-                }
+            local_pano_stats.total_dims_scanned += batch_size * dim_span;
+            if (curr_panorama_level == 0) {
+                local_pano_stats.n_after_level0 += next_batch_size;
             }
-
-            local_pano_stats.total_dims_scanned +=
-                    batch_size * (end_dim - start_dim);
             batch_size = next_batch_size;
             curr_panorama_level++;
         }
+        local_pano_stats.n_full_dist += batch_size;
 
         // Add surviving candidates to the result handler.
         for (size_t i = 0; i < batch_size; i++) {
@@ -986,7 +997,10 @@ int search_from_candidates_panorama(
             candidates.push(idx, exact_distances[i]);
         }
 
-        nstep++;
+        // Bound total nodes-popped at efSearch (when do_dis_check is
+        // off). Increment by k_popped so the K-pop path budgets the
+        // same total expansion work as the single-pop path.
+        nstep += static_cast<int>(k_popped);
         if (!do_dis_check && nstep > efSearch) {
             break;
         }

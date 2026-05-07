@@ -707,21 +707,45 @@ IndexHNSWFlat::IndexHNSWFlat(int d_in, int M, MetricType metric)
  **************************************************************/
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama()
-        : IndexHNSWFlat(), cum_sums(), pano(0, 1, 1), num_panorama_levels(0) {}
+        : IndexHNSWFlat(), num_panorama_levels(0) {}
 
 IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
         int d_in,
         int M,
         int num_panorama_levels_in,
         MetricType metric)
-        : IndexHNSWFlat(d_in, M, metric),
-          cum_sums(),
-          pano(d_in * sizeof(float), num_panorama_levels_in, 1),
+        : IndexHNSWFlat(),
           num_panorama_levels(num_panorama_levels_in) {
     // For now, we only support L2 distance.
     // Supporting dot product and cosine distance is a trivial addition
     // left for future work.
     FAISS_THROW_IF_NOT(metric == METRIC_L2);
+
+    // Initialize the Index/IndexHNSW state and install an inline-layout
+    // IndexFlatL2Panorama as the storage. With batch_size = 1 each row
+    // in the storage's `codes` is laid out as
+    //   [cs[0], cs[1], ..., cs[L], feat[0], feat[1], ..., feat[L-1]]
+    // so a single cache-line fetch per visited candidate covers both
+    // the cum-sums needed for pruning and (often) the level-0 vector
+    // data needed for the partial dot product.
+    //
+    // Use the L2-typed subclass (instead of the base IndexFlatPanorama)
+    // because Cloner::clone_Index dispatches on the most-derived type
+    // it knows about; IndexFlatL2Panorama is in the dispatch table but
+    // the bare base class is not, so cloning a base-typed storage would
+    // slice the codes layout down to a plain IndexFlat.
+    d = d_in;
+    metric_type = metric;
+    hnsw = HNSW(M);
+    storage = new IndexFlatL2Panorama(
+            d_in,
+            num_panorama_levels_in,
+            /*batch_size=*/1,
+            /*inline_layout=*/true);
+    storage->is_trained = true;
+    metric_arg = storage->metric_arg;
+    own_fields = true;
+    is_trained = true;
 
     // Enable Panorama search mode.
     // This is not ideal, but is still more simple than making a subclass of
@@ -729,30 +753,23 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
     hnsw.is_panorama = true;
 }
 
-void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
-    idx_t n0 = ntotal;
-    cum_sums.resize((ntotal + n) * (pano.n_levels + 1));
-    pano.compute_cumulative_sums(cum_sums.data(), n0, n, x);
-    IndexHNSWFlat::add(n, x);
+const float* IndexHNSWFlatPanorama::get_cum_sum(idx_t i) const {
+    const auto* s = static_cast<const IndexFlatPanorama*>(storage);
+    return reinterpret_cast<const float*>(s->codes.data()) +
+            static_cast<size_t>(i) * inline_row_stride();
 }
 
-void IndexHNSWFlatPanorama::reset() {
-    cum_sums.clear();
-    IndexHNSWFlat::reset();
+const float* IndexHNSWFlatPanorama::get_inline_xb(idx_t i) const {
+    return get_cum_sum(i) + (num_panorama_levels + 1);
 }
 
-void IndexHNSWFlatPanorama::permute_entries(const idx_t* perm) {
-    std::vector<float> new_cum_sums(ntotal * (pano.n_levels + 1));
+size_t IndexHNSWFlatPanorama::inline_row_stride() const {
+    const auto* s = static_cast<const IndexFlatPanorama*>(storage);
+    return (s->n_levels + 1) + s->n_levels * s->pano.level_width_floats;
+}
 
-    for (idx_t i = 0; i < ntotal; i++) {
-        idx_t src = perm[i];
-        memcpy(&new_cum_sums[i * (pano.n_levels + 1)],
-               &cum_sums[src * (pano.n_levels + 1)],
-               (pano.n_levels + 1) * sizeof(float));
-    }
-
-    std::swap(cum_sums, new_cum_sums);
-    IndexHNSWFlat::permute_entries(perm);
+const Panorama& IndexHNSWFlatPanorama::get_pano() const {
+    return static_cast<const IndexFlatPanorama*>(storage)->pano;
 }
 
 /**************************************************************

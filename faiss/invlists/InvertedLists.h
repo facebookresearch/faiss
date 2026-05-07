@@ -297,6 +297,17 @@ struct ArrayInvertedLists : InvertedLists {
 
 /// Level-oriented storage as defined in the IVFFlat section of Panorama
 /// (https://www.arxiv.org/pdf/2510.00566).
+///
+/// Two storage layouts are supported, selected by `pano.inline_layout`:
+///   inline (default): each list's `codes` buffer holds, per batch, the
+///     `(n_levels + 1) * batch_size` cum-sums prefix immediately followed
+///     by the legacy level-major feature region. The `cum_sums` per-list
+///     vector stays empty in this mode \u2014 the cum-sums prefix can be
+///     accessed via `(float*)codes[list_no].data()`.
+///   chunked (legacy): codes hold only the feature region and `cum_sums`
+///     is a per-list float vector with the matching shape. Used for
+///     backward compatibility with on-disk indexes serialized with the
+///     `ilpn` / `ilp2` fourccs.
 struct ArrayInvertedListsPanorama : ArrayInvertedLists {
     std::vector<MaybeOwnedVector<float>> cum_sums;
     const size_t n_levels;
@@ -307,7 +318,8 @@ struct ArrayInvertedListsPanorama : ArrayInvertedLists {
             size_t nlist_in,
             size_t code_size_in,
             size_t n_levels_in,
-            size_t batch_size = Panorama::kDefaultBatchSize);
+            size_t batch_size = Panorama::kDefaultBatchSize,
+            bool inline_layout = true);
 
     const float* get_cum_sums(size_t list_no) const;
 

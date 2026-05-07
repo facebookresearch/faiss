@@ -361,14 +361,15 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
         size_t nlist_in,
         size_t code_size_in,
         size_t n_levels_in,
-        size_t batch_size)
+        size_t batch_size,
+        bool inline_layout_in)
         : ArrayInvertedLists(nlist_in, code_size_in),
           n_levels(n_levels_in),
           level_width(
                   (((code_size_in / sizeof(float)) + n_levels_in - 1) /
                    n_levels_in) *
                   sizeof(float)),
-          pano(code_size_in, n_levels_in, batch_size) {
+          pano(code_size_in, n_levels_in, batch_size, inline_layout_in) {
     FAISS_THROW_IF_NOT(n_levels_in > 0);
     FAISS_THROW_IF_NOT(code_size_in % sizeof(float) == 0);
     FAISS_THROW_IF_NOT_MSG(
@@ -381,6 +382,10 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
     assert(list_no < nlist);
+    if (pano.inline_layout) {
+        // Cum-sums prefix lives at the head of `codes[list_no]`.
+        return reinterpret_cast<const float*>(codes[list_no].data());
+    }
     return cum_sums[list_no].data();
 }
 
@@ -397,14 +402,30 @@ size_t ArrayInvertedListsPanorama::add_entries(
 
     size_t new_size = o + n_entry;
     size_t num_batches = (new_size + pano.batch_size - 1) / pano.batch_size;
-    codes[list_no].resize(num_batches * pano.batch_size * code_size);
-    cum_sums[list_no].resize(num_batches * pano.batch_size * (n_levels + 1));
 
     // Cast to float* is safe here as we guarantee codes are always float
     // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
     const float* vectors = reinterpret_cast<const float*>(code);
-    pano.copy_codes_to_level_layout(codes[list_no].data(), o, n_entry, code);
-    pano.compute_cumulative_sums(cum_sums[list_no].data(), o, n_entry, vectors);
+
+    if (pano.inline_layout) {
+        // Inline: codes[list_no] holds [cs prefix | feat region] per batch.
+        codes[list_no].resize(num_batches * pano.inline_batch_bytes());
+        pano.copy_codes_to_level_layout(
+                codes[list_no].data(), o, n_entry, code);
+        pano.compute_cumulative_sums(
+                reinterpret_cast<float*>(codes[list_no].data()),
+                o,
+                n_entry,
+                vectors);
+    } else {
+        codes[list_no].resize(num_batches * pano.batch_size * code_size);
+        cum_sums[list_no].resize(
+                num_batches * pano.batch_size * (n_levels + 1));
+        pano.copy_codes_to_level_layout(
+                codes[list_no].data(), o, n_entry, code);
+        pano.compute_cumulative_sums(
+                cum_sums[list_no].data(), o, n_entry, vectors);
+    }
 
     return o;
 }
@@ -423,18 +444,32 @@ void ArrayInvertedListsPanorama::update_entries(
     // Cast to float* is safe here as we guarantee codes are always float
     // vectors for `IndexIVFFlatPanorama` (verified by the constructor).
     const float* vectors = reinterpret_cast<const float*>(code);
+
     pano.copy_codes_to_level_layout(
             codes[list_no].data(), offset, n_entry, code);
-    pano.compute_cumulative_sums(
-            cum_sums[list_no].data(), offset, n_entry, vectors);
+    if (pano.inline_layout) {
+        pano.compute_cumulative_sums(
+                reinterpret_cast<float*>(codes[list_no].data()),
+                offset,
+                n_entry,
+                vectors);
+    } else {
+        pano.compute_cumulative_sums(
+                cum_sums[list_no].data(), offset, n_entry, vectors);
+    }
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
     ids[list_no].resize(new_size);
 
     size_t num_batches = (new_size + pano.batch_size - 1) / pano.batch_size;
-    codes[list_no].resize(num_batches * pano.batch_size * code_size);
-    cum_sums[list_no].resize(num_batches * pano.batch_size * (n_levels + 1));
+    if (pano.inline_layout) {
+        codes[list_no].resize(num_batches * pano.inline_batch_bytes());
+    } else {
+        codes[list_no].resize(num_batches * pano.batch_size * code_size);
+        cum_sums[list_no].resize(
+                num_batches * pano.batch_size * (n_levels + 1));
+    }
 }
 
 const uint8_t* ArrayInvertedListsPanorama::get_single_code(

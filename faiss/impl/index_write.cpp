@@ -272,14 +272,19 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
     } else if (
             const auto& ailp =
                     dynamic_cast<const ArrayInvertedListsPanorama*>(ils)) {
+        // Inline-layout (default) gets its own fourccs ("ilpi" /
+        // "ilp3") so old readers reject the format up front. Legacy
+        // chunked-layout indexes keep "ilpn" / "ilp2" for round-trip
+        // compatibility.
+        const bool inl = ailp->pano.inline_layout;
         if (ailp->pano.batch_size == Panorama::kDefaultBatchSize) {
-            uint32_t h = fourcc("ilpn");
+            uint32_t h = fourcc(inl ? "ilpi" : "ilpn");
             WRITE1(h);
             WRITE1(ailp->nlist);
             WRITE1(ailp->code_size);
             WRITE1(ailp->n_levels);
         } else {
-            uint32_t h = fourcc("ilp2");
+            uint32_t h = fourcc(inl ? "ilp3" : "ilp2");
             WRITE1(h);
             WRITE1(ailp->nlist);
             WRITE1(ailp->code_size);
@@ -295,14 +300,19 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
         }
         WRITEVECTOR(sizes);
 
-        // Write codes, ids, and cum_sums
+        // Write codes, ids, and (chunked-only) cum_sums. In inline
+        // mode the per-list `codes` already includes the cum-sums
+        // prefix so there's no separate cum_sums to serialize.
         for (size_t i = 0; i < ailp->nlist; i++) {
             size_t n = ailp->ids[i].size();
             if (n > 0) {
                 WRITEANDCHECK(ailp->codes[i].data(), ailp->codes[i].size());
                 WRITEANDCHECK(ailp->ids[i].data(), n);
-                WRITEANDCHECK(
-                        ailp->cum_sums[i].data(), ailp->cum_sums[i].size());
+                if (!inl) {
+                    WRITEANDCHECK(
+                            ailp->cum_sums[i].data(),
+                            ailp->cum_sums[i].size());
+                }
             }
         }
     } else if (
@@ -471,7 +481,14 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexFlatPanorama* idxpan =
                     dynamic_cast<const IndexFlatPanorama*>(idx)) {
-        uint32_t h = fourcc(idxpan->metric_type == METRIC_L2 ? "IxFP" : "IxFp");
+        // Inline-layout indexes use a new fourcc (IxQP / IxQp) so older
+        // readers can detect the format up front and reject it cleanly,
+        // while the legacy (chunked) IxFP / IxFp path stays
+        // backward-compatible for indexes saved before the layout flip.
+        const bool inl = idxpan->pano.inline_layout;
+        uint32_t h = fourcc(
+                inl ? (idxpan->metric_type == METRIC_L2 ? "IxQP" : "IxQp")
+                    : (idxpan->metric_type == METRIC_L2 ? "IxFP" : "IxFp"));
         WRITE1(h);
         WRITE1(idxpan->d);
         WRITE1(idxpan->n_levels);
@@ -479,7 +496,12 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxpan->ntotal);
         WRITE1(idxpan->is_trained);
         WRITEVECTOR(idxpan->codes);
-        WRITEVECTOR(idxpan->cum_sums);
+        if (!inl) {
+            // Legacy layout: cum-sums live in a separate per-batch
+            // vector. In the inline layout they're already inside
+            // `codes` so there's nothing extra to serialize.
+            WRITEVECTOR(idxpan->cum_sums);
+        }
     } else if (const IndexFlat* idxf = dynamic_cast<const IndexFlat*>(idx)) {
         uint32_t h =
                 fourcc(idxf->metric_type == METRIC_INNER_PRODUCT ? "IxFI"
@@ -879,7 +901,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             auto idx_panorama =
                     dynamic_cast<const IndexHNSWFlatPanorama*>(idxhnsw);
             WRITE1(idx_panorama->num_panorama_levels);
-            WRITEVECTOR(idx_panorama->cum_sums);
+            // Cum-sums and vector data live inside the underlying
+            // IndexFlatPanoramaInline storage (row-interleaved
+            // [cum_sums | xb]) and get serialized via write_index(storage)
+            // below.
         }
         if (h == fourcc("IHc2")) {
             WRITE1(idxhnsw->keep_max_size_level0);

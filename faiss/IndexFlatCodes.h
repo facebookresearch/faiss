@@ -88,7 +88,7 @@ struct IndexFlatCodes : Index {
             override;
 
     // permute_entries. perm of size ntotal maps new to old positions
-    void permute_entries(const idx_t* perm);
+    virtual void permute_entries(const idx_t* perm);
 };
 
 } // namespace faiss

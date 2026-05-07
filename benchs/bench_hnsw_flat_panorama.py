@@ -103,8 +103,8 @@ def benchmark_dataset(ds, dataset_name, k=10, nlevels=8, M=32):
 
     plot_data = []
 
-    # HNSW Flat (baseline)
-    eval_and_plot(f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data)
+    # HNSW Flat baseline (skipped intentionally for cross-build pano comparison)
+    # eval_and_plot(f"HNSW{M},Flat", ds, k=k, nlevels=nlevels, plot_data=plot_data)
 
     # HNSW Flat Panorama (with PCA to concentrate energy)
     eval_and_plot(
@@ -135,21 +135,33 @@ def benchmark_dataset(ds, dataset_name, k=10, nlevels=8, M=32):
 
 if __name__ == "__main__":
     k = 10
-    nlevels = 8
     M = 32
 
-    # Test on 3 datasets with varying dimensionality:
-    # SIFT1M (128d), GIST1M (960d), and Synthetic high-dim (2048d)
+    # Force the dense-bitset VisitedTable path (faiss switches to a
+    # std::unordered_set above 500K nodes by default for memory savings,
+    # but the hashset's malloc + insert costs dominate search at our
+    # scale and confound the comparison between Panorama variants).
+    faiss.cvar.visited_table_hashset_threshold = 10**12
+
+    # Per-dataset Panorama level count, picked to maximize QPS at
+    # iso-recall (see benchs/sweep_sift_levels.py for the SIFT sweep
+    # showing nlevels=2 wins flat across recall while doubling levels
+    # costs ~12% qps each).
+    #   SIFT1M (d=128): 2 levels (PCA already concentrates energy in
+    #     the first half; finer levels add dispatch overhead without
+    #     improving prune rate)
+    #   GIST1M (d=960): 8 levels (high-d datasets benefit from finer
+    #     progressive pruning)
+    # Synthetic 2048D skipped \u2014 no precomputed groundtruth means it
+    # takes forever to compute the exact NN reference per run.
     datasets = [
-        (DatasetSIFT1M(), "SIFT1M"),
-        (DatasetGIST1M(), "GIST1M"),
-        # Synthetic high-dimensional dataset: 2048d, 100k train, 1M database, 10k queries
-        (SyntheticDataset(2048, 100000, 1000000, 10000), "Synthetic2048D"),
+        (DatasetSIFT1M(), "SIFT1M", 2),
+        (DatasetGIST1M(), "GIST1M", 8),
     ]
 
-    for ds, name in datasets:
+    for ds, name, nlevels in datasets:
         print(f"\n{'='*60}")
-        print(f"Benchmarking on {name}")
+        print(f"Benchmarking on {name} (nlevels={nlevels})")
         print(f"{'='*60}")
         benchmark_dataset(ds, name, k=k, nlevels=nlevels, M=M)
 

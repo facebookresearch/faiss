@@ -15,6 +15,9 @@ void PanoramaStats::reset() {
     total_dims_scanned = 0;
     total_dims = 0;
     ratio_dims_scanned = 1.0f;
+    n_visited = 0;
+    n_after_level0 = 0;
+    n_full_dist = 0;
 }
 
 void PanoramaStats::add(const PanoramaStats& other) {
@@ -26,6 +29,9 @@ void PanoramaStats::add(const PanoramaStats& other) {
     } else {
         ratio_dims_scanned = 1.0f;
     }
+    n_visited += other.n_visited;
+    n_after_level0 += other.n_after_level0;
+    n_full_dist += other.n_full_dist;
 }
 
 PanoramaStats indexPanorama_stats;
