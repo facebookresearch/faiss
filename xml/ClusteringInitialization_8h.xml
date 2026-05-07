@@ -31,13 +31,15 @@
         </childnode>
         <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
         <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="43" relation="include">
         </childnode>
-        <childnode refid="54" relation="include">
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
         </childnode>
       </node>
       <node id="4">
@@ -50,13 +52,13 @@
         <label>faiss/Index2Layer.h</label>
         <link refid="Index2Layer_8h_source"/>
       </node>
-      <node id="55">
+      <node id="56">
         <label>faiss/IndexAdditiveQuantizer.h</label>
         <link refid="IndexAdditiveQuantizer_8h_source"/>
-        <childnode refid="56" relation="include">
+        <childnode refid="57" relation="include">
         </childnode>
       </node>
-      <node id="56">
+      <node id="57">
         <label>faiss/IndexAdditiveQuantizerFastScan.h</label>
         <link refid="IndexAdditiveQuantizerFastScan_8h_source"/>
       </node>
@@ -190,7 +192,7 @@
         <label>faiss/IndexNSG.h</label>
         <link refid="IndexNSG_8h_source"/>
       </node>
-      <node id="44">
+      <node id="45">
         <label>faiss/IndexPQ.h</label>
         <link refid="IndexPQ_8h_source"/>
         <childnode refid="8" relation="include">
@@ -201,14 +203,14 @@
         </childnode>
         <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
         <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
         </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
       </node>
-      <node id="45">
+      <node id="46">
         <label>faiss/IndexPQFastScan.h</label>
         <link refid="IndexPQFastScan_8h_source"/>
       </node>
@@ -227,6 +229,10 @@
         <link refid="IndexShardsIVF_8h_source"/>
       </node>
       <node id="41">
+        <label>faiss/SuperKMeans.h</label>
+        <link refid="SuperKMeans_8h_source"/>
+      </node>
+      <node id="42">
         <label>faiss/gpu/GpuCloner.h</label>
         <link refid="GpuCloner_8h_source"/>
       </node>
@@ -264,7 +270,7 @@
         <label>faiss/gpu/GpuIndexIVFScalarQuantizer.h</label>
         <link refid="GpuIndexIVFScalarQuantizer_8h_source"/>
       </node>
-      <node id="42">
+      <node id="43">
         <label>faiss/impl/ClusteringHelpers.h</label>
         <link refid="ClusteringHelpers_8h_source"/>
       </node>
@@ -274,52 +280,52 @@
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="49">
         <label>faiss/impl/PolysemousTraining.h</label>
         <link refid="PolysemousTraining_8h_source"/>
-        <childnode refid="44" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
-      <node id="57">
+      <node id="58">
         <label>faiss/impl/ProductAdditiveQuantizer.h</label>
         <link refid="ProductAdditiveQuantizer_8h_source"/>
-        <childnode refid="55" relation="include">
-        </childnode>
         <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="43">
+      <node id="44">
         <label>faiss/impl/ProductQuantizer.h</label>
         <link refid="ProductQuantizer_8h_source"/>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="44" relation="include">
-        </childnode>
         <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
+        <childnode refid="49" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="49" relation="include">
+        <childnode refid="50" relation="include">
         </childnode>
-        <childnode refid="53" relation="include">
+        <childnode refid="54" relation="include">
         </childnode>
       </node>
-      <node id="54">
+      <node id="55">
         <label>faiss/impl/ResidualQuantizer.h</label>
         <link refid="ResidualQuantizer_8h_source"/>
-        <childnode refid="55" relation="include">
+        <childnode refid="56" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="57" relation="include">
+        <childnode refid="58" relation="include">
         </childnode>
       </node>
       <node id="6">
@@ -330,7 +336,7 @@
         <label>faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h</label>
         <link refid="IndexIVFSpectralHash__impl_8h_source"/>
       </node>
-      <node id="46">
+      <node id="47">
         <label>faiss/impl/binary_hamming/IndexPQ_impl.h</label>
         <link refid="IndexPQ__impl_8h_source"/>
       </node>
@@ -360,34 +366,34 @@
         <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="47">
+      <node id="48">
         <label>faiss/impl/pq_code_distance/PQDistanceComputer_impl.h</label>
         <link refid="PQDistanceComputer__impl_8h_source"/>
       </node>
-      <node id="50">
+      <node id="51">
         <label>faiss/impl/pq_code_distance/pq_code_distance-avx2.h</label>
         <link refid="pq__code__distance-avx2_8h_source"/>
       </node>
-      <node id="51">
+      <node id="52">
         <label>faiss/impl/pq_code_distance/pq_code_distance-avx512.h</label>
         <link refid="pq__code__distance-avx512_8h_source"/>
       </node>
-      <node id="52">
+      <node id="53">
         <label>faiss/impl/pq_code_distance/pq_code_distance-generic.h</label>
         <link refid="pq__code__distance-generic_8h_source"/>
       </node>
-      <node id="49">
+      <node id="50">
         <label>faiss/impl/pq_code_distance/pq_code_distance-inl.h</label>
         <link refid="pq__code__distance-inl_8h"/>
         <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
-        </childnode>
-        <childnode refid="50" relation="include">
+        <childnode refid="48" relation="include">
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
         <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
         </childnode>
       </node>
       <node id="37">
@@ -408,7 +414,7 @@
         <label>faiss/python/python_callbacks.h</label>
         <link refid="python__callbacks_8h_source"/>
       </node>
-      <node id="53">
+      <node id="54">
         <label>faiss/utils/pq_code_distance.h</label>
         <link refid="pq__code__distance_8h_source"/>
       </node>

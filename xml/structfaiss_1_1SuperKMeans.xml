@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1SuperKMeans" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::SuperKMeans</compoundname>
+    <includes refid="SuperKMeans_8h" local="no">SuperKMeans.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1a971807c8fb000bdb1363510f61e63f96" prot="public" static="no" mutable="no">
+        <type><ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref></type>
+        <definition>SuperKMeansParameters faiss::SuperKMeans::cp</definition>
+        <argsstring></argsstring>
+        <name>cp</name>
+        <qualifiedname>faiss::SuperKMeans::cp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="71" column="27" bodyfile="faiss/SuperKMeans.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1a8ba59af67139c84ee6460154e8e60796" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SuperKMeans::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::SuperKMeans::d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="72" column="9" bodyfile="faiss/SuperKMeans.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1abea467844bc52bb17771af20fba756fc" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::SuperKMeans::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <qualifiedname>faiss::SuperKMeans::k</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="73" column="9" bodyfile="faiss/SuperKMeans.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeans::centroids</definition>
+        <argsstring></argsstring>
+        <name>centroids</name>
+        <qualifiedname>faiss::SuperKMeans::centroids</qualifiedname>
+        <briefdescription>
+<para>Output: k * d floats, row-major, un-rotated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="76" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structfaiss_1_1ClusteringIterationStats" kindref="compound">ClusteringIterationStats</ref> &gt;</type>
+        <definition>std::vector&lt;ClusteringIterationStats&gt; faiss::SuperKMeans::iteration_stats</definition>
+        <argsstring></argsstring>
+        <name>iteration_stats</name>
+        <qualifiedname>faiss::SuperKMeans::iteration_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Per-iter stats. <computeroutput>obj</computeroutput>, <computeroutput>time</computeroutput>, and <computeroutput>nsplit</computeroutput> are populated faithfully. <computeroutput>time_search</computeroutput> mirrors <computeroutput>time</computeroutput> (phases not timed separately) and <computeroutput>imbalance_factor</computeroutput> is set to NaN (not computed). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="81" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::SuperKMeans::gemm_pruning_rates</definition>
+        <argsstring></argsstring>
+        <name>gemm_pruning_rates</name>
+        <qualifiedname>faiss::SuperKMeans::gemm_pruning_rates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Per-iter fraction of (vector, centroid) pairs pruned at the d_prime GEMM-boundary chi-squared check. Per-PDX-block early-exits are NOT counted. iter 0 uses full GEMM, so gemm_pruning_rates[0] == 0.0f. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="86" column="17" bodyfile="faiss/SuperKMeans.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>faiss::SuperKMeans::SuperKMeans</definition>
+        <argsstring>(int d, int k, const SuperKMeansParameters &amp;cp={})</argsstring>
+        <name>SuperKMeans</name>
+        <qualifiedname>faiss::SuperKMeans::SuperKMeans</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1SuperKMeansParameters" kindref="compound">SuperKMeansParameters</ref> &amp;</type>
+          <declname>cp</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="88" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::SuperKMeans::train</definition>
+        <argsstring>(idx_t n, const float *x)</argsstring>
+        <name>train</name>
+        <qualifiedname>faiss::SuperKMeans::train</qualifiedname>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const float *</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Train on <computeroutput>n</computeroutput> row-major vectors of dimension <computeroutput>d</computeroutput>. Honors the applicable <ref refid="structfaiss_1_1ClusteringParameters" kindref="compound">ClusteringParameters</ref> fields (niter, seed, verbose, max_points_per_centroid, use_faster_subsampling, check_input_data_for_NaNs). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/SuperKMeans.h" line="94" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Drop-in faster k-means: same interface as <ref refid="structfaiss_1_1Clustering" kindref="compound">faiss::Clustering</ref>. Per iteration: iter 0: full GEMM over all d dims (vanilla Lloyd&apos;s). iter 1..niter-1: GEMM over front d_prime dims, then ADSampling progressive pruning over PDX-laid trailing dims.</para>
+<para>Trains in a randomly-rotated space; centroids are un-rotated before return. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>faiss::ClusteringParameters</label>
+        <link refid="structfaiss_1_1ClusteringParameters"/>
+      </node>
+      <node id="1">
+        <label>faiss::SuperKMeans</label>
+        <link refid="structfaiss_1_1SuperKMeans"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cp</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::SuperKMeansParameters</label>
+        <link refid="structfaiss_1_1SuperKMeansParameters"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/SuperKMeans.h" line="70" column="1" bodyfile="faiss/SuperKMeans.h" bodystart="70" bodyend="95"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>centroids</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a971807c8fb000bdb1363510f61e63f96" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>cp</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a8ba59af67139c84ee6460154e8e60796" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>d</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>gemm_pruning_rates</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>iteration_stats</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1abea467844bc52bb17771af20fba756fc" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>k</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>SuperKMeans</name></member>
+      <member refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" prot="public" virt="non-virtual"><scope>faiss::SuperKMeans</scope><name>train</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

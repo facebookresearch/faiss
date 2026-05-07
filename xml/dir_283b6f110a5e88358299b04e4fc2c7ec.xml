@@ -65,6 +65,7 @@
     <innerfile refid="MatrixStats_8h">MatrixStats.h</innerfile>
     <innerfile refid="MetaIndexes_8h">MetaIndexes.h</innerfile>
     <innerfile refid="MetricType_8h">MetricType.h</innerfile>
+    <innerfile refid="SuperKMeans_8h">SuperKMeans.h</innerfile>
     <innerfile refid="VectorTransform_8h">VectorTransform.h</innerfile>
     <briefdescription>
     </briefdescription>

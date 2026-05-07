@@ -12227,6 +12227,44 @@
     <member refid="structfaiss_1_1simd__result__handlers_1_1StoreResultHandler_1a52370624697a0a43fc50809ac46cab76" kind="function"><name>set_block_origin</name></member>
     <member refid="structfaiss_1_1SIMDResultHandler_1aa32e37a5068c5e4627b11bc3db6e95d8" kind="function"><name>handle</name></member>
   </compound>
+  <compound refid="structfaiss_1_1SuperKMeans" kind="struct"><name>faiss::SuperKMeans</name>
+    <member refid="structfaiss_1_1SuperKMeans_1a971807c8fb000bdb1363510f61e63f96" kind="variable"><name>cp</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1a8ba59af67139c84ee6460154e8e60796" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1abea467844bc52bb17771af20fba756fc" kind="variable"><name>k</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1accc435109ae7fd150745f49210017e2c" kind="variable"><name>centroids</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1a89139ba42d136789c4d6fa02f2869d82" kind="variable"><name>iteration_stats</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1ada5ee156bca84dccc1a2a5a5566fddb0" kind="variable"><name>gemm_pruning_rates</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1a6ccc8a3ab08caaef496c072db242ccb4" kind="function"><name>SuperKMeans</name></member>
+    <member refid="structfaiss_1_1SuperKMeans_1a905922667c3c88fd9e5a30f59b630c10" kind="function"><name>train</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1SuperKMeansParameters" kind="struct"><name>faiss::SuperKMeansParameters</name>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a708c4c222c46005b1fe7722ae036f9cf" kind="variable"><name>d_prime_fraction</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a8a5eb7416db54a603aa5623a6280cbca" kind="variable"><name>pdx_block_size</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a5a7caa98e5786937e9b0c897f440dd5b" kind="variable"><name>ad_epsilon_factor</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1ab040e20edc3895b5cb2d9fd8bce33aa0" kind="variable"><name>pruning_target_low</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a177d7cb9369e92b62fef0d8435505ae9" kind="variable"><name>pruning_target_high</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a5634e760e792b6dc352b023ffa8e6093" kind="variable"><name>d_prime_adjust</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1ab6e71f639d4191ff739f506bad342ba6" kind="variable"><name>d_prime_min</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a3f52a33a7c28e886a7a4b1a70ad1bfaa" kind="variable"><name>x_batch</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a3c366e01a032f0dae8509c3ce83fa462" kind="variable"><name>y_batch</name></member>
+    <member refid="structfaiss_1_1SuperKMeansParameters_1a96e65f6e670ba9f2815ee0ce464e03e1" kind="variable"><name>omp_chunk</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5c7c6f05c75e1668befdb3be148fd5f9" kind="variable"><name>niter</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a11a049c40c376c57ac6cc3b8d5d1d58b" kind="variable"><name>nredo</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a932139ba9b62b37d9121b4c6a4518b52" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad997fb511f574f7ddc69938c21612f8d" kind="variable"><name>spherical</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ae01573d8d4cbff7c3d6eaded883537a4" kind="variable"><name>int_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a27d6192097920fa981cff0acedfaac91" kind="variable"><name>update_index</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ad142063e035f2a0414233f9711e16215" kind="variable"><name>frozen_centroids</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a5af907901147a9b1e748b13305839924" kind="variable"><name>min_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a993e0a035248faad6e292a5ef9af1953" kind="variable"><name>max_points_per_centroid</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a509c65e2ebe6ecabebd163ecb03c5579" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a46448d2ab0341faedc18a613264ad44f" kind="variable"><name>decode_block_size</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1a469bb5268d7ca59704f1c1cc839ce73a" kind="variable"><name>check_input_data_for_NaNs</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff5ba035913f4d228329302b56971089" kind="variable"><name>use_faster_subsampling</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aff8bc9b060e71281fa5f71a9ffe050f5" kind="variable"><name>init_method</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1aa2bc579bc412e9b8f466156fef6b4eff" kind="variable"><name>afkmc2_chain_length</name></member>
+    <member refid="structfaiss_1_1ClusteringParameters_1ae8330537c993d9e649196c85b31066fa" kind="variable"><name>early_stop_threshold</name></member>
+  </compound>
   <compound refid="structfaiss_1_1nn_1_1Tensor2DTemplate" kind="struct"><name>faiss::nn::Tensor2DTemplate</name>
     <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a29281a69927dd6b140690dfbdbd87cfb" kind="variable"><name>shape</name></member>
     <member refid="structfaiss_1_1nn_1_1Tensor2DTemplate_1a7fe379fb1606acb25874ccd2962849aa" kind="variable"><name>v</name></member>
@@ -13182,19 +13220,19 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d139" kind="namespace"><name>faiss::@139</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d211" kind="namespace"><name>faiss::@211</name>
+  <compound refid="namespacefaiss_1_1_0d212" kind="namespace"><name>faiss::@212</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d215" kind="namespace"><name>faiss::@215</name>
+  <compound refid="namespacefaiss_1_1_0d216" kind="namespace"><name>faiss::@216</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d219" kind="namespace"><name>faiss::@219</name>
+  <compound refid="namespacefaiss_1_1_0d220" kind="namespace"><name>faiss::@220</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d230" kind="namespace"><name>faiss::@230</name>
+  <compound refid="namespacefaiss_1_1_0d231" kind="namespace"><name>faiss::@231</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d242" kind="namespace"><name>faiss::@242</name>
+  <compound refid="namespacefaiss_1_1_0d243" kind="namespace"><name>faiss::@243</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d245" kind="namespace"><name>faiss::@245</name>
+  <compound refid="namespacefaiss_1_1_0d246" kind="namespace"><name>faiss::@246</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d247" kind="namespace"><name>faiss::@247</name>
+  <compound refid="namespacefaiss_1_1_0d248" kind="namespace"><name>faiss::@248</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d62" kind="namespace"><name>faiss::@62</name>
   </compound>
@@ -14175,6 +14213,8 @@
   <compound refid="MetricType_8h" kind="file"><name>MetricType.h</name>
   </compound>
   <compound refid="python__callbacks_8h" kind="file"><name>python_callbacks.h</name>
+  </compound>
+  <compound refid="SuperKMeans_8h" kind="file"><name>SuperKMeans.h</name>
   </compound>
   <compound refid="IndexSVSFaissUtils_8h" kind="file"><name>IndexSVSFaissUtils.h</name>
     <member refid="IndexSVSFaissUtils_8h_1a9e03f5d7e7cb9971973a0b4315de5ac5" kind="function"><name>SVS_RUNTIME_CREATE_API_ALIAS</name></member>

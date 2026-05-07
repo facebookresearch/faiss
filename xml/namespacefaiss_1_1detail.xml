@@ -64,7 +64,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Build ADSampling threshold table of size <computeroutput>d + 1</computeroutput>: coeff[p] = chi2_quantile_wh(p, 1 - epsilon) / d.</para>
-<para>Indexing: coeff[0] is reserved (left at 0.0f). coeff[1..15] are computed but NOT accuracy-bounded — callers requiring the 2% scipy tolerance must consume only coeff[16..d]. SuperKMeans enforces this via its <computeroutput>d_prime_min = 16</computeroutput> parameter. </para>
+<para>Indexing: coeff[0] is reserved (left at 0.0f). coeff[1..15] are computed but NOT accuracy-bounded — callers requiring the 2% scipy tolerance must consume only coeff[16..d]. <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> enforces this via its <computeroutput>d_prime_min = 16</computeroutput> parameter. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -503,7 +503,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>norms[i] = sum_{m&lt;p} X[i, m]^2 for row-major X of shape (n, d). Parallel over rows. Used by SuperKMeans to keep partial-norm caches in sync with the current d_prime. </para>
+<para>norms[i] = sum_{m&lt;p} X[i, m]^2 for row-major X of shape (n, d). Parallel over rows. Used by <ref refid="structfaiss_1_1SuperKMeans" kindref="compound">SuperKMeans</ref> to keep partial-norm caches in sync with the current d_prime. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

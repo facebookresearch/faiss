@@ -351,6 +351,8 @@
     <innerclass refid="structfaiss_1_1SliceInvertedLists" prot="public">faiss::SliceInvertedLists</innerclass>
     <innerclass refid="structfaiss_1_1SplitMix64RandomGenerator" prot="public">faiss::SplitMix64RandomGenerator</innerclass>
     <innerclass refid="structfaiss_1_1StopWordsInvertedLists" prot="public">faiss::StopWordsInvertedLists</innerclass>
+    <innerclass refid="structfaiss_1_1SuperKMeans" prot="public">faiss::SuperKMeans</innerclass>
+    <innerclass refid="structfaiss_1_1SuperKMeansParameters" prot="public">faiss::SuperKMeansParameters</innerclass>
     <innerclass refid="classfaiss_1_1ThreadedIndex" prot="public">faiss::ThreadedIndex</innerclass>
     <innerclass refid="structfaiss_1_1TimeoutCallback" prot="public">faiss::TimeoutCallback</innerclass>
     <innerclass refid="structfaiss_1_1Top1BlockResultHandler" prot="public">faiss::Top1BlockResultHandler</innerclass>

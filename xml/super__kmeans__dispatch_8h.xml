@@ -130,7 +130,7 @@
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>scalar<sp/>primary<sp/>template;<sp/>adding<sp/>NEON/SVE<sp/>means<sp/>just<sp/>adding<sp/>a<sp/>new</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>specialization<sp/>file<sp/>alongside<sp/>the<sp/>AVX<sp/>ones.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Known<sp/>perf<sp/>gap:<sp/>aarch64<sp/>(NEON/SVE)<sp/>specializations<sp/>are<sp/>not<sp/>implemented<sp/>in<sp/>v1.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Known<sp/>perf<sp/>gap:<sp/>aarch64<sp/>(NEON/SVE)<sp/>specializations<sp/>are<sp/>not<sp/>implemented<sp/>yet.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//<sp/>aarch64<sp/>falls<sp/>through<sp/>to<sp/>the<sp/>scalar<sp/>primary<sp/>template.<sp/>Validating<sp/>SVE<sp/>requires</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>a<sp/>Graviton-class<sp/>host;<sp/>deferred<sp/>to<sp/>a<sp/>focused<sp/>follow-up.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
