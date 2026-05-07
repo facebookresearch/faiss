@@ -3798,6 +3798,107 @@ TEST(ReadIndexDeserialize, IndexLatticeCodeSizeTooLarge) {
     expect_read_throws_with(buf, "code_size");
 }
 
+// -----------------------------------------------------------------------
+// Test: ProductQuantizer with M*ksub exceeding the deserialization byte
+// limit is rejected. ProductQuantizer::set_derived_values only validates
+// d % M == 0, which is satisfied by any M when d == 0, so a crafted PQ
+// header could carry an enormous M alongside an empty centroids vector.
+// Without the read-side bound, downstream allocations sized M*ksub (e.g.
+// IVFPQ residual norms in initialize_IVFPQ_precomputed_table) reach
+// std::vector::max_size() and abort the process via std::length_error.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductQuantizerMKsubExceedsByteLimit) {
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPq");
+    push_index_header(buf, /*d=*/0, /*ntotal=*/0);
+    // PQ: d=0 (so 0 % M == 0 holds), M=1<<20, nbits=8 -> ksub=256
+    // M * ksub = 2^28 floats = 1 GB, well above the 1 MB byte limit.
+    push_pq(buf,
+            /*d=*/0,
+            /*M=*/(size_t{1} << 20),
+            /*nbits=*/8,
+            /*centroids=*/{});
+
+    expect_read_throws_with(buf, "M*ksub");
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: initialize_IVFPQ_precomputed_table rejects parameter combinations
+// whose nlist * pq.M * pq.ksub * sizeof(float) computation overflows
+// size_t. Without overflow-checked multiplication, the wrapped value
+// silently bypasses the precomputed_table_max_bytes guard and the
+// subsequent r_norms allocation aborts the process.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, InitializeIVFPQPrecomputedTableOverflowRejected) {
+    // Construct a PQ with M*ksub already saturating most of size_t. The
+    // nlist factor (taken from the quantizer's ntotal) then forces overflow
+    // when multiplied in.
+    ProductQuantizer pq;
+    pq.d = 0;
+    pq.M = size_t{1} << 40;
+    pq.nbits = 24;
+    pq.ksub = size_t{1} << pq.nbits;
+    pq.dsub = 0;
+    pq.code_size = 0;
+    // Skip set_derived_values (which would resize centroids); we are
+    // exercising initialize_IVFPQ_precomputed_table's arithmetic guard, not
+    // PQ training.
+
+    IndexFlatL2 quantizer(/*d_in=*/0);
+    quantizer.ntotal = size_t{1} << 20; // nlist
+    AlignedTable<float> precomputed_table;
+    int use_precomputed_table = 0;
+
+    EXPECT_THROW(
+            initialize_IVFPQ_precomputed_table(
+                    use_precomputed_table,
+                    &quantizer,
+                    pq,
+                    precomputed_table,
+                    /*by_residual=*/true,
+                    /*verbose=*/false),
+            faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: initialize_IVFPQ_precomputed_table rejects an overflowing M*ksub
+// even when the caller has pre-set use_precomputed_table to 1, which
+// bypasses the in-function size-class branch. Protects in-memory IVFPQ
+// callers (training, IndexHNSW, IndexIVFPQFastScan) and the
+// IndexIVFIndependentQuantizer deserialization path that reads
+// use_precomputed_table directly from the stream.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize,
+     InitializeIVFPQPrecomputedTableUserSetFlagOverflowRejected) {
+    ProductQuantizer pq;
+    pq.d = 0;
+    pq.M = size_t{1} << 40;
+    pq.nbits = 24;
+    pq.ksub = size_t{1} << pq.nbits;
+    pq.dsub = 0;
+    pq.code_size = 0;
+
+    IndexFlatL2 quantizer(/*d_in=*/0);
+    quantizer.ntotal = 1; // nlist
+    AlignedTable<float> precomputed_table;
+    int use_precomputed_table = 1; // caller pre-selects table type 1
+
+    EXPECT_THROW(
+            initialize_IVFPQ_precomputed_table(
+                    use_precomputed_table,
+                    &quantizer,
+                    pq,
+                    precomputed_table,
+                    /*by_residual=*/true,
+                    /*verbose=*/false),
+            faiss::FaissException);
+}
+
 // ============================================================
 // SVS fourcc rejection / deserialization safety (Group F: T262015608)
 // ============================================================

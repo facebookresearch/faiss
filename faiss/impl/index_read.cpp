@@ -712,6 +712,13 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
         FAISS_THROW_IF_NOT_MSG(
                 n < get_deserialization_vector_byte_limit() / sizeof(float),
                 "PQ centroids allocation would exceed deserialization byte limit");
+        // Per-subquantizer tables (e.g. IVFPQ residual norms, search-time
+        // distance tables) are sized M * ksub.
+        size_t m_ksub = mul_no_overflow(pq->M, ksub, "PQ M*ksub");
+        FAISS_THROW_IF_NOT_MSG(
+                m_ksub <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ M*ksub allocation would exceed deserialization byte limit");
     }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
