@@ -2522,13 +2522,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     }
 #ifdef FAISS_ENABLE_SVS
     else if (
-            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
+            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD") ||
+            h == fourcc("ISV2")) {
         std::unique_ptr<IndexSVSVamana> svs;
         if (h == fourcc("ILVQ")) {
             svs = std::make_unique<IndexSVSVamanaLVQ>();
         } else if (h == fourcc("ISVL")) {
             svs = std::make_unique<IndexSVSVamanaLeanVec>();
-        } else if (h == fourcc("ISVD")) {
+        } else if (h == fourcc("ISVD") || h == fourcc("ISV2")) {
             svs = std::make_unique<IndexSVSVamana>();
         }
 
@@ -2579,6 +2580,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                         "dynamic_cast to IndexSVSVamanaLeanVec failed");
                 leanvec->deserialize_training_data(is);
             }
+        }
+        if (h == fourcc("ISV2")) {
+            READVECTOR(svs->stored_vectors);
+        } else {
+            svs->stored_vectors_valid = false;
         }
         idx = std::move(svs);
     } else if (h == fourcc("ISVF")) {
