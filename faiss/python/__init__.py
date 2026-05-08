@@ -22,8 +22,8 @@ from faiss.gpu_wrappers import *
 from faiss.array_conversions import *
 from faiss.extra_wrappers import kmin, kmax, pairwise_distances, rand, randint, \
     lrand, randn, rand_smooth_vectors, eval_intersection, normalize_L2, \
-    ResultHeap, knn, Kmeans, checksum, matrix_bucket_sort_inplace, bucket_sort, \
-    merge_knn_results, MapInt64ToInt64, knn_hamming, \
+    ResultHeap, knn, Kmeans, SuperKmeans, checksum, matrix_bucket_sort_inplace, \
+    bucket_sort, merge_knn_results, MapInt64ToInt64, knn_hamming, \
     pack_bitstrings, unpack_bitstrings
 
 
@@ -34,6 +34,7 @@ __version__ = "%d.%d.%d" % (FAISS_VERSION_MAJOR,
 logger = logging.getLogger(__name__)
 
 class_wrappers.handle_Clustering(Clustering)
+class_wrappers.handle_SuperKMeans(SuperKMeans)
 class_wrappers.handle_Clustering1D(Clustering1D)
 class_wrappers.handle_MatrixStats(MatrixStats)
 class_wrappers.handle_IOWriter(IOWriter)

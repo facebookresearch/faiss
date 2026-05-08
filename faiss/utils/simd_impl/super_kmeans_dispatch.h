@@ -13,7 +13,7 @@
 // scalar primary template; adding NEON/SVE means just adding a new
 // specialization file alongside the AVX ones.
 //
-// Known perf gap: aarch64 (NEON/SVE) specializations are not implemented in v1.
+// Known perf gap: aarch64 (NEON/SVE) specializations are not implemented yet.
 // aarch64 falls through to the scalar primary template. Validating SVE requires
 // a Graviton-class host; deferred to a focused follow-up.
 
