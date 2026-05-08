@@ -32,7 +32,7 @@ namespace gpu_metal {
 /// Currently delegates to an internal CPU IndexIVFFlat; later phases
 /// may move list scanning to GPU.
 class MetalIndexIVFFlat : public MetalIndex {
-public:
+   public:
     struct AppendDebugStats {
         size_t relayoutEvents = 0;
         size_t movedLists = 0;
@@ -139,7 +139,7 @@ public:
     AppendDebugStats appendDebugStats() const;
     void resetAppendDebugStats();
 
-private:
+   private:
     std::unique_ptr<faiss::IndexIVFFlat> cpuIndex_;
     std::unique_ptr<MetalIVFFlatImpl> gpuIvf_;
     faiss::gpu::IndicesOptions indicesOptions_;
@@ -148,33 +148,30 @@ private:
     // Persistent search buffers — allocated once, grown lazily.
     // Declared mutable so search() (const) can resize them.
     mutable id<MTLBuffer> searchQueriesBuf_ = nil;
-    mutable id<MTLBuffer> searchCoarseBuf_  = nil;
+    mutable id<MTLBuffer> searchCoarseBuf_ = nil;
     mutable id<MTLBuffer> searchOutDistBuf_ = nil;
-    mutable id<MTLBuffer> searchOutIdxBuf_  = nil;
+    mutable id<MTLBuffer> searchOutIdxBuf_ = nil;
     mutable size_t searchQueriesCap_ = 0; // bytes
-    mutable size_t searchCoarseCap_  = 0;
+    mutable size_t searchCoarseCap_ = 0;
     mutable size_t searchOutDistCap_ = 0;
-    mutable size_t searchOutIdxCap_  = 0;
+    mutable size_t searchOutIdxCap_ = 0;
     mutable id<MTLBuffer> searchPerListDistBuf_ = nil;
-    mutable id<MTLBuffer> searchPerListIdxBuf_  = nil;
+    mutable id<MTLBuffer> searchPerListIdxBuf_ = nil;
     mutable size_t searchPerListDistCap_ = 0;
-    mutable size_t searchPerListIdxCap_  = 0;
+    mutable size_t searchPerListIdxCap_ = 0;
 
     // GPU coarse quantizer buffers (cached, rebuilt on train)
-    mutable id<MTLBuffer> centroidBuf_          = nil;
-    mutable id<MTLBuffer> centroidNormsBuf_     = nil; // pre-computed ||c||²
-    mutable id<MTLBuffer> coarseOutDistBuf_     = nil;
-    mutable id<MTLBuffer> coarseOutIdxBuf_      = nil;
-    mutable size_t coarseOutDistCap_  = 0;
-    mutable size_t coarseOutIdxCap_   = 0;
-    mutable id<MTLBuffer> distMatrixBuf_        = nil;
-    mutable size_t distMatrixCap_     = 0;
+    mutable id<MTLBuffer> centroidBuf_ = nil;
+    mutable id<MTLBuffer> centroidNormsBuf_ = nil; // pre-computed ||c||²
+    mutable id<MTLBuffer> coarseOutDistBuf_ = nil;
+    mutable id<MTLBuffer> coarseOutIdxBuf_ = nil;
+    mutable size_t coarseOutDistCap_ = 0;
+    mutable size_t coarseOutIdxCap_ = 0;
+    mutable id<MTLBuffer> distMatrixBuf_ = nil;
+    mutable size_t distMatrixCap_ = 0;
 
     /// Ensures buf is at least `needed` bytes, reallocating if necessary.
-    void ensureSearchBuf_(
-            id<MTLBuffer>& buf,
-            size_t& cap,
-            size_t needed) const;
+    void ensureSearchBuf_(id<MTLBuffer>& buf, size_t& cap, size_t needed) const;
 
     /// (Re)uploads quantizer centroids to centroidBuf_.
     void uploadCentroids_() const;

@@ -18,8 +18,8 @@
 #include <memory>
 #include <vector>
 
-#include <faiss/MetricType.h>
 #include <faiss/Index.h>
+#include <faiss/MetricType.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu_metal/MetalResources.h>
 
@@ -30,7 +30,7 @@ namespace gpu_metal {
 /// Layout: all lists are stored contiguously in a single codes/ids buffer;
 /// lists are described by (listOffset[list], listLength[list]).
 class MetalIVFFlatImpl {
-public:
+   public:
     struct AppendDebugStats {
         size_t relayoutEvents = 0;
         size_t movedLists = 0;
@@ -130,7 +130,7 @@ public:
         appendStats_ = AppendDebugStats{};
     }
 
-private:
+   private:
     struct FreeSegment {
         size_t offset = 0;
         size_t length = 0;
@@ -146,7 +146,10 @@ private:
             bool forceFullUpload);
     void rebuildInterleavedBuffers_();
     size_t allocSegment_(size_t length);
-    void freeSegment_(size_t offset, size_t length, bool allowTailShrink = true);
+    void freeSegment_(
+            size_t offset,
+            size_t length,
+            bool allowTailShrink = true);
     void coalesceFreeSegments_();
     void tryShrinkTail_();
 
@@ -175,8 +178,8 @@ private:
     // GPU storage
     id<MTLBuffer> codesBuffer_;
     id<MTLBuffer> idsBuffer_;
-    id<MTLBuffer> listOffsetBuf_;  // (nlist) uint32_t, list element offsets
-    id<MTLBuffer> listLengthBuf_;  // (nlist) uint32_t, list sizes
+    id<MTLBuffer> listOffsetBuf_; // (nlist) uint32_t, list element offsets
+    id<MTLBuffer> listLengthBuf_; // (nlist) uint32_t, list sizes
 
     // Interleaved codes layout (blocks of 32 vectors, dims interleaved)
     id<MTLBuffer> interleavedCodesBuf_;
