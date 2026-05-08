@@ -12,8 +12,11 @@ set(FAISS_METAL_SRC
   MetalResources.mm
   MetalIndex.mm
   MetalKernels.mm
+  MetalDistance.mm
   MetalFlatKernels.mm
   MetalIndexFlat.mm
+  MetalIndexIVFFlat.mm
+  impl/MetalIVFFlat.mm
   StandardMetalResources.mm
   MetalCloner.mm
 )

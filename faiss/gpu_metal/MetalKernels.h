@@ -19,13 +19,15 @@
 namespace faiss {
 namespace gpu_metal {
 
+enum class IVFScanVariant { Standard, Small, Interleaved };
+
 class MetalKernels {
    public:
     explicit MetalKernels(id<MTLDevice> device);
     ~MetalKernels();
 
     bool isValid() const;
-    static constexpr int kMaxK = 256;
+    static constexpr int kMaxK = 2048;
 
     void encodeDistanceMatrix(
             id<MTLComputeCommandEncoder> enc,
@@ -37,6 +39,23 @@ class MetalKernels {
             int d,
             MetricType metric);
 
+    void encodeL2WithNorms(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> vectors,
+            id<MTLBuffer> distances,
+            id<MTLBuffer> vecNorms,
+            int nq,
+            int nb,
+            int d);
+
+    void encodeComputeNorms(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> vectors,
+            id<MTLBuffer> norms,
+            int nb,
+            int d);
+
     void encodeTopKThreadgroup(
             id<MTLComputeCommandEncoder> enc,
             id<MTLBuffer> distances,
@@ -47,6 +66,31 @@ class MetalKernels {
             int k,
             bool wantMin);
 
+    void encodeIVFScanList(
+            id<MTLComputeCommandEncoder> enc,
+            IVFScanVariant variant,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> paramsBuf,
+            int nq,
+            int nprobe,
+            id<MTLBuffer> ilCodesOffset = nil);
+
+    void encodeIVFMergeLists(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            id<MTLBuffer> paramsBuf,
+            int nq);
+
     static int selectTopKVariantIndex(int k);
 
    private:
@@ -56,8 +100,9 @@ class MetalKernels {
     id<MTLLibrary> library_;
     std::unordered_map<std::string, id<MTLComputePipelineState>> cache_;
 
-    static constexpr int kTopKVariantSizes[] = {32, 64, 128, 256};
-    static constexpr int kNumTopKVariants = 4;
+    static constexpr int kTopKVariantSizes[] =
+            {32, 64, 128, 256, 512, 1024, 2048};
+    static constexpr int kNumTopKVariants = 7;
 };
 
 MetalKernels& getMetalKernels(id<MTLDevice> device);
