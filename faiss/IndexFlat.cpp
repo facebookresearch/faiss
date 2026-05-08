@@ -817,20 +817,31 @@ namespace {
 
 constexpr size_t kRefineBlock = 64;
 
-// Block-wise refine: process candidates in mini-batches so the
-// L1-resident query level is reused across many vectors and the inner
-// `compute_level_dot_kernel` runs with a compile-time-constant width
-// (full unroll, query held in registers).
+// Panorama's optimized refinement (Algorithm 2 in arXiv:2510.00566),
+// adapted for IndexRefine's row-major candidate layout and applied
+// block-wise so the L1-resident query level is reused across many
+// vectors and the inner `compute_level_dot_kernel` runs with a
+// compile-time-constant width.
 //
-// Per block (mirrors `Panorama::progressive_filter_batch` from the IVF
-// path: `vec_ids` and `exact_distances` are indexed by position-in-batch
-// and never moved; `active_indices` holds the live positions and is the
-// only array compacted between levels via `compact_active_kernel`):
-//   1. Collect valid candidate ids; initialize `exact_distances` and
-//      `active_indices` for ALL positions in the batch.
-//   2. Per level: gather the level's cum-sums for the active positions,
-//      run width-templated dot kernel, prune, compact `active_indices`.
-//   3. Survivors are at exact distance — push to heap.
+// Per block of up to kRefineBlock candidates:
+// 1. Initialize exact distance as ||y||^2 + ||x||^2 (or 0 for IP).
+// 2. For each Panorama level, incrementally refine:
+//    - Add the current level's partial dot product:
+//      exact_dist -= 2*<x_level, y_level>  (or += for IP).
+//    - Apply the Cauchy-Schwarz bound on the remaining levels to
+//      derive a lower bound on the final distance.
+//    - Prune candidates whose lower bound exceeds the heap threshold
+//      (branchless via prune_kernel writing into active_byteset).
+//    - Compact active_indices to drop pruned candidates
+//      (BMI2/AVX2-vectorized via compact_active_kernel).
+// 3. After the last level, survivors hold exact distances and are
+//    pushed into the result heap.
+//
+// Mirrors the position-in-batch + active_indices pattern from
+// Panorama::progressive_filter_batch (the IVF batched search): only
+// active_indices is compacted between levels; vec_ids, exact_distances
+// and level_cs_buffer stay indexed by the candidate's stable
+// position-in-batch slot, so no float compaction is needed.
 template <typename C, MetricType M, bool is_sim>
 static void refine_panorama_block(
         const IndexFlatPanorama& index,
