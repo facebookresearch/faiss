@@ -208,7 +208,7 @@ runs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_PREFIX_PATH="$(brew --prefix libomp)" \
               .
-        cmake --build build --target faiss_metal TestMetalIndexFlat -j$(sysctl -n hw.logicalcpu)
+        cmake --build build --target faiss_metal TestMetalIndexFlat TestMetalIndexIVFFlat -j$(sysctl -n hw.logicalcpu)
     - name: C++ tests
       if: inputs.metal != 'ON'
       shell: bash
@@ -219,7 +219,7 @@ runs:
     - name: C++ tests (Metal)
       if: inputs.metal == 'ON'
       shell: bash
-      run: cd build && ctest -R TestMetalIndexFlat --output-on-failure
+      run: cd build && ctest -R TestMetalIndex --output-on-failure
     - name: C++ perf benchmarks
       if: inputs.rocm == 'OFF' && inputs.metal != 'ON'
       shell: bash
