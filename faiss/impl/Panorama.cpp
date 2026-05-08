@@ -66,8 +66,8 @@ Panorama::Panorama(
 
 void Panorama::set_derived_values() {
     FAISS_THROW_IF_NOT_MSG(n_levels > 0, "Panorama: n_levels must be > 0");
-    FAISS_THROW_IF_NOT_MSG(n_levels <= d, "Panorama: n_levels must be <= d");
     this->d = code_size / sizeof(float);
+    FAISS_THROW_IF_NOT_MSG(n_levels <= d, "Panorama: n_levels must be <= d");
     this->level_width_floats = ((d + n_levels - 1) / n_levels);
     this->level_width = this->level_width_floats * sizeof(float);
     size_t n_real_levels = d / level_width_floats;
