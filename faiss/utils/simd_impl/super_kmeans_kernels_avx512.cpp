@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#if defined(__x86_64__) && defined(__AVX512F__)
+#ifdef COMPILE_SIMD_AVX512
 
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
 
@@ -42,4 +42,4 @@ float block_l2<SIMDLevel::AVX512>(const float* x, const float* y, int n) {
 } // namespace detail
 } // namespace faiss
 
-#endif // __x86_64__ && __AVX512F__
+#endif // COMPILE_SIMD_AVX512

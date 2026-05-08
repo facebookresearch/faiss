@@ -73,6 +73,7 @@ endif()
 set(FAISS_SRC
   AutoTune.cpp
   Clustering.cpp
+  SuperKMeans.cpp
   IVFlib.cpp
   Index.cpp
   Index2Layer.cpp
@@ -200,6 +201,7 @@ endif()
 set(FAISS_HEADERS
   AutoTune.h
   Clustering.h
+  SuperKMeans.h
   IVFlib.h
   Index.h
   Index2Layer.h

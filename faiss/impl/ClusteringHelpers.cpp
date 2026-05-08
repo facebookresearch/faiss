@@ -78,7 +78,7 @@ idx_t subsample_training_set(
             "subsample_training_set: perm size %zu < required nx %" PRId64,
             perm.size(),
             nx);
-    assert(!perm.empty()); // pattern for clang-tidy LocalUncheckedArrayBounds
+    assert(!perm.empty());
 
     uint8_t* x_new = new uint8_t[nx * line_size];
     *x_out = x_new;
@@ -116,15 +116,6 @@ void compute_centroids(
 
     size_t line_size = codec ? codec->sa_code_size() : d * sizeof(float);
 
-    // NOTE: FAISS_THROW_IF_NOT inside this OMP region is formally UB per the
-    // OpenMP spec (exceptions cannot propagate out of a parallel region).
-    // In practice, most runtimes terminate the process, which is acceptable
-    // for a corrupted-assignment invariant violation. Inherited from
-    // Clustering.cpp; not worth refactoring without a broader FAISS effort.
-    //
-    // Thread safety of hassign[ci]: each thread owns the exclusive slice
-    // [c0, c1) and only writes hassign[ci] when ci falls in that slice
-    // (same guard as centroids[ci*d]). No two threads share an index.
 #pragma omp parallel
     {
         int nt = omp_get_num_threads();

@@ -644,7 +644,9 @@ class TestSVSIVFAdapter(unittest.TestCase):
         self.xq = np.random.random((self.nq, self.d)).astype('float32')
 
     def _create_instance(self):
-        return self.target_class(self.d, self.nlist)
+        idx = self.target_class(self.d, self.nlist)
+        idx.num_threads = 4
+        return idx
 
     def test_ivf_construction(self):
         """Test construction and basic properties"""
@@ -731,16 +733,20 @@ class TestSVSIVFAdapter(unittest.TestCase):
 class TestSVSIVFAdapterFP16(TestSVSIVFAdapter):
     """Repeat IVF tests for FP16 variant"""
     def _create_instance(self):
-        return self.target_class(self.d, self.nlist, faiss.METRIC_L2,
-                                 faiss.SVS_FP16)
+        idx = self.target_class(self.d, self.nlist, faiss.METRIC_L2,
+                                faiss.SVS_FP16)
+        idx.num_threads = 4
+        return idx
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSIVFAdapterSQI8(TestSVSIVFAdapter):
     """Repeat IVF tests for SQI8 variant"""
     def _create_instance(self):
-        return self.target_class(self.d, self.nlist, faiss.METRIC_L2,
-                                 faiss.SVS_SQI8)
+        idx = self.target_class(self.d, self.nlist, faiss.METRIC_L2,
+                                faiss.SVS_SQI8)
+        idx.num_threads = 4
+        return idx
 
 
 @unittest.skipIf(_SKIP_SVS_LL, _SKIP_SVS_LL_REASON)
@@ -754,6 +760,7 @@ class TestSVSIVFAdapterLVQ4x4(TestSVSIVFAdapter):
     def _create_instance(self):
         idx = self.target_class(self.d, self.nlist)
         idx.storage_kind = faiss.SVS_LVQ4x4
+        idx.num_threads = 4
         return idx
 
 
@@ -768,6 +775,7 @@ class TestSVSIVFAdapterLVQ4x8(TestSVSIVFAdapter):
     def _create_instance(self):
         idx = self.target_class(self.d, self.nlist)
         idx.storage_kind = faiss.SVS_LVQ4x8
+        idx.num_threads = 4
         return idx
 
 
@@ -782,6 +790,7 @@ class TestSVSIVFAdapterLVQ8x0(TestSVSIVFAdapter):
     def _create_instance(self):
         idx = self.target_class(self.d, self.nlist)
         idx.storage_kind = faiss.SVS_LVQ8x0
+        idx.num_threads = 4
         return idx
 
 
@@ -794,9 +803,11 @@ class TestSVSIVFAdapterLeanVec4x4(TestSVSIVFAdapter):
         cls.target_class = faiss.IndexSVSIVFLeanVec
 
     def _create_instance(self):
-        return self.target_class(
+        idx = self.target_class(
             self.d, self.nlist, faiss.METRIC_L2, 0,
             faiss.SVS_LeanVec4x4)
+        idx.num_threads = 4
+        return idx
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
@@ -892,6 +903,7 @@ class TestSVSIVFParameters(unittest.TestCase):
         index.num_iterations = 15
         index.minibatch_size = 128
         index.seed = 77
+        index.num_threads = 4
 
         # Train and add
         index.train(self.xb)
@@ -1085,17 +1097,23 @@ class TestSVSStaticIVF(unittest.TestCase):
         self.xb = np.random.random((self.nb, self.d)).astype('float32')
         self.xq = np.random.random((self.nq, self.d)).astype('float32')
 
+    def _create_static(self, storage=None):
+        if storage is None:
+            storage = faiss.SVS_FP32
+        idx = faiss.IndexSVSIVF(
+            self.d, self.nlist, faiss.METRIC_L2, storage, True)
+        idx.num_threads = 4
+        return idx
+
     def test_static_ivf_construction(self):
         """Test construction sets is_static flag"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         self.assertTrue(index.is_static)
         self.assertFalse(index.is_trained)
 
     def test_static_ivf_train_and_search(self):
         """Train includes all data; search works normally"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         index.train(self.xb)
         self.assertTrue(index.is_trained)
         self.assertEqual(index.ntotal, self.nb)
@@ -1107,8 +1125,7 @@ class TestSVSStaticIVF(unittest.TestCase):
 
     def test_static_ivf_add_throws(self):
         """add() must raise on a static index"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         index.train(self.xb)
         extra = np.random.random((100, self.d)).astype('float32')
         with self.assertRaises(RuntimeError):
@@ -1116,8 +1133,7 @@ class TestSVSStaticIVF(unittest.TestCase):
 
     def test_static_ivf_remove_throws(self):
         """remove_ids() must raise on a static index"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         index.train(self.xb)
         ids = np.arange(0, 10, dtype=np.int64)
         sel = faiss.IDSelectorArray(len(ids), faiss.swig_ptr(ids))
@@ -1126,8 +1142,7 @@ class TestSVSStaticIVF(unittest.TestCase):
 
     def test_static_ivf_serialization(self):
         """Serialize/deserialize preserves is_static and search results"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         index.train(self.xb)
 
         D_before, I_before = index.search(self.xq, 4)
@@ -1142,8 +1157,7 @@ class TestSVSStaticIVF(unittest.TestCase):
 
     def test_static_ivf_fp16(self):
         """Static IVF with FP16 storage"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP16, True)
+        index = self._create_static(faiss.SVS_FP16)
         index.train(self.xb)
         self.assertTrue(index.is_trained)
         self.assertTrue(index.is_static)
@@ -1153,8 +1167,7 @@ class TestSVSStaticIVF(unittest.TestCase):
 
     def test_static_ivf_reset(self):
         """reset() clears the static index so it can be retrained"""
-        index = faiss.IndexSVSIVF(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_FP32, True)
+        index = self._create_static()
         index.train(self.xb)
         self.assertTrue(index.is_trained)
 
@@ -1181,10 +1194,15 @@ class TestSVSStaticIVFLVQ(unittest.TestCase):
         self.xb = np.random.random((self.nb, self.d)).astype('float32')
         self.xq = np.random.random((self.nq, self.d)).astype('float32')
 
+    def _create_static_lvq(self):
+        idx = faiss.IndexSVSIVFLVQ(
+            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True)
+        idx.num_threads = 4
+        return idx
+
     def test_static_ivf_lvq_train_search(self):
         """Static IVF LVQ: train and search"""
-        index = faiss.IndexSVSIVFLVQ(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True)
+        index = self._create_static_lvq()
         index.train(self.xb)
         self.assertTrue(index.is_static)
         self.assertTrue(index.is_trained)
@@ -1194,16 +1212,14 @@ class TestSVSStaticIVFLVQ(unittest.TestCase):
 
     def test_static_ivf_lvq_add_throws(self):
         """Static IVF LVQ: add() must raise"""
-        index = faiss.IndexSVSIVFLVQ(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True)
+        index = self._create_static_lvq()
         index.train(self.xb)
         with self.assertRaises(RuntimeError):
             index.add(self.xb)
 
     def test_static_ivf_lvq_serialization(self):
         """Static IVF LVQ: serialization round-trip"""
-        index = faiss.IndexSVSIVFLVQ(
-            self.d, self.nlist, faiss.METRIC_L2, faiss.SVS_LVQ4x4, True)
+        index = self._create_static_lvq()
         index.train(self.xb)
 
         D_before, _ = index.search(self.xq, 4)
@@ -1229,11 +1245,16 @@ class TestSVSStaticIVFLeanVec(unittest.TestCase):
         self.xb = np.random.random((self.nb, self.d)).astype('float32')
         self.xq = np.random.random((self.nq, self.d)).astype('float32')
 
-    def test_static_ivf_leanvec_train_search(self):
-        """Static IVF LeanVec: train and search"""
-        index = faiss.IndexSVSIVFLeanVec(
+    def _create_static_leanvec(self):
+        idx = faiss.IndexSVSIVFLeanVec(
             self.d, self.nlist, faiss.METRIC_L2, 0,
             faiss.SVS_LeanVec4x4, True)
+        idx.num_threads = 4
+        return idx
+
+    def test_static_ivf_leanvec_train_search(self):
+        """Static IVF LeanVec: train and search"""
+        index = self._create_static_leanvec()
         index.train(self.xb)
         self.assertTrue(index.is_static)
         self.assertTrue(index.is_trained)
@@ -1243,18 +1264,14 @@ class TestSVSStaticIVFLeanVec(unittest.TestCase):
 
     def test_static_ivf_leanvec_add_throws(self):
         """Static IVF LeanVec: add() must raise"""
-        index = faiss.IndexSVSIVFLeanVec(
-            self.d, self.nlist, faiss.METRIC_L2, 0,
-            faiss.SVS_LeanVec4x4, True)
+        index = self._create_static_leanvec()
         index.train(self.xb)
         with self.assertRaises(RuntimeError):
             index.add(self.xb)
 
     def test_static_ivf_leanvec_serialization(self):
         """Static IVF LeanVec: serialization round-trip"""
-        index = faiss.IndexSVSIVFLeanVec(
-            self.d, self.nlist, faiss.METRIC_L2, 0,
-            faiss.SVS_LeanVec4x4, True)
+        index = self._create_static_leanvec()
         index.train(self.xb)
 
         D_before, _ = index.search(self.xq, 4)
@@ -1268,9 +1285,7 @@ class TestSVSStaticIVFLeanVec(unittest.TestCase):
 
     def test_static_ivf_leanvec_ood_train_search(self):
         """Static IVF LeanVec OOD: train with queries and search"""
-        index = faiss.IndexSVSIVFLeanVec(
-            self.d, self.nlist, faiss.METRIC_L2, 0,
-            faiss.SVS_LeanVec4x4, True)
+        index = self._create_static_leanvec()
         index.train(self.xb, xq_train=self.xq)
         self.assertTrue(index.is_static)
         self.assertTrue(index.is_trained)

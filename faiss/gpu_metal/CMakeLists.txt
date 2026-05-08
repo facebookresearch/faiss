@@ -11,6 +11,7 @@
 set(FAISS_METAL_SRC
   MetalResources.mm
   MetalIndex.mm
+  MetalKernels.mm
   MetalFlatKernels.mm
   MetalIndexFlat.mm
   StandardMetalResources.mm
@@ -43,4 +44,31 @@ target_compile_definitions(faiss_metal PRIVATE FAISS_METAL_ENABLED=1)
 set_target_properties(faiss_metal PROPERTIES
   OBJCXX_STANDARD 17
   OBJCXX_STANDARD_REQUIRED ON
+)
+
+# Pre-compile Metal shaders: .metal -> .air -> .metallib
+find_program(XCRUN xcrun REQUIRED)
+set(METAL_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/MetalDistance.metal)
+set(METAL_AIR ${CMAKE_CURRENT_BINARY_DIR}/MetalDistance.air)
+set(METAL_LIB ${CMAKE_CURRENT_BINARY_DIR}/MetalDistance.metallib)
+
+add_custom_command(
+  OUTPUT ${METAL_AIR}
+  COMMAND ${XCRUN} -sdk macosx metal -c ${METAL_SOURCE} -o ${METAL_AIR}
+  DEPENDS ${METAL_SOURCE}
+  COMMENT "Compiling MetalDistance.metal -> .air"
+)
+
+add_custom_command(
+  OUTPUT ${METAL_LIB}
+  COMMAND ${XCRUN} -sdk macosx metallib ${METAL_AIR} -o ${METAL_LIB}
+  DEPENDS ${METAL_AIR}
+  COMMENT "Linking MetalDistance.air -> .metallib"
+)
+
+add_custom_target(metal_shaders DEPENDS ${METAL_LIB})
+add_dependencies(faiss_metal metal_shaders)
+
+target_compile_definitions(faiss_metal PRIVATE
+  FAISS_METALLIB_PATH="${METAL_LIB}"
 )

@@ -1027,6 +1027,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             h = fourcc("ILVQ"); // LVQ
         } else if (lean != nullptr) {
             h = fourcc("ISVL"); // LeanVec
+        } else if (svs->stored_vectors_valid && !svs->stored_vectors.empty()) {
+            h = fourcc("ISV2"); // uncompressed + stored_vectors
         } else {
             h = fourcc("ISVD"); // uncompressed
         }
@@ -1068,6 +1070,10 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 lean->serialize_training_data(os);
                 os.flush();
             }
+        }
+
+        if (h == fourcc("ISV2")) {
+            WRITEVECTOR(svs->stored_vectors);
         }
     } else if (
             const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {

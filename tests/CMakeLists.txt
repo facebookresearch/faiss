@@ -146,7 +146,11 @@ target_link_libraries(faiss_test PRIVATE
 
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
-if(WIN32)
+if(CMAKE_CROSSCOMPILING)
+  # Skip test discovery when cross-compiling: the binary cannot run on the
+  # host, so gtest_discover_tests() would fail.  The build itself verifies
+  # that the binary compiles and links correctly.
+elseif(WIN32)
   # On Windows, defer test discovery to ctest time (PRE_TEST) instead of
   # build time (POST_BUILD) because faiss.dll is not in PATH during build.
   gtest_discover_tests(faiss_test DISCOVERY_MODE PRE_TEST)

@@ -27,15 +27,17 @@ inline float block_l2(const float* x, const float* y, int n) {
     return s;
 }
 
-// Mirrors the impl-file guards; turns off-arch direct calls into a
-// compile-time error instead of a linker error.
-#if defined(__x86_64__)
+// COMPILE_SIMD_* is a build-system define (link-time promise that the
+// specialization will be available). Mirrors the impl-file guards.
+#ifdef COMPILE_SIMD_AVX2
 template <>
 float block_l2<SIMDLevel::AVX2>(const float* x, const float* y, int n);
+#endif
 
+#ifdef COMPILE_SIMD_AVX512
 template <>
 float block_l2<SIMDLevel::AVX512>(const float* x, const float* y, int n);
-#endif // __x86_64__
+#endif
 
 } // namespace detail
 } // namespace faiss
