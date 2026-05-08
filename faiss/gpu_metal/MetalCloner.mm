@@ -71,7 +71,12 @@ faiss::Index* index_metal_gpu_to_cpu(const faiss::Index* index) {
     const auto* metalIvf =
             dynamic_cast<const MetalIndexIVFFlat*>(index);
     if (metalIvf) {
-        auto* cpu = new faiss::IndexIVFFlat();
+        auto* quantizer = (metalIvf->metric_type == METRIC_INNER_PRODUCT)
+                ? (faiss::IndexFlat*)new faiss::IndexFlatIP(metalIvf->d)
+                : (faiss::IndexFlat*)new faiss::IndexFlatL2(metalIvf->d);
+        auto* cpu = new faiss::IndexIVFFlat(
+                quantizer, metalIvf->d, metalIvf->nlist());
+        cpu->own_fields = true;
         metalIvf->copyTo(cpu);
         return cpu;
     }
