@@ -66,9 +66,21 @@ Panorama::Panorama(
 
 void Panorama::set_derived_values() {
     FAISS_THROW_IF_NOT_MSG(n_levels > 0, "Panorama: n_levels must be > 0");
+    FAISS_THROW_IF_NOT_MSG(n_levels <= d, "Panorama: n_levels must be <= d");
     this->d = code_size / sizeof(float);
     this->level_width_floats = ((d + n_levels - 1) / n_levels);
     this->level_width = this->level_width_floats * sizeof(float);
+    size_t n_real_levels = d / level_width_floats;
+    if (d > n_real_levels * level_width_floats) {
+        n_real_levels++;
+    }
+    if (this->n_levels != n_real_levels) {
+        fprintf(stderr,
+                "WARNING truncating nlevels from %zu to %zu\n",
+                this->n_levels,
+                n_real_levels);
+        this->n_levels = n_real_levels;
+    }
 }
 
 /**
@@ -151,12 +163,12 @@ void Panorama::reconstruct(idx_t key, float* recons, const uint8_t* codes_base)
 
     for (size_t level = 0; level < n_levels; level++) {
         size_t level_offset = level * level_width * batch_size;
-        const uint8_t* src = codes_base + batch_offset + level_offset +
-                pos_in_batch * level_width;
-        uint8_t* dest = recons_buffer + level * level_width;
-        size_t copy_size =
+        size_t actual_level_width =
                 std::min(level_width, code_size - level * level_width);
-        memcpy(dest, src, copy_size);
+        const uint8_t* src = codes_base + batch_offset + level_offset +
+                pos_in_batch * actual_level_width;
+        uint8_t* dest = recons_buffer + level * level_width;
+        memcpy(dest, src, actual_level_width);
     }
 }
 

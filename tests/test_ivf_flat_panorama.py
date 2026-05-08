@@ -280,7 +280,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
 
     def test_uneven_dimension_division(self):
         """Test when n_levels doesn't evenly divide dimension"""
-        test_cases = [(65, 4), (63, 8), (100, 7)]
+        test_cases = [(65, 4), (63, 8), (100, 7), (960, 128), (964, 128)]
 
         # TODO(aknayar): Test functions like get_single_code().
 
