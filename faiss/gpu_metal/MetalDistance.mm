@@ -233,7 +233,9 @@ bool runMetalIVFFlatFullSearch(
         int avgListLen,
         id<MTLBuffer> interleavedCodes,
         id<MTLBuffer> interleavedCodesOffset,
+        bool centroidsAreFP16,
         bool waitForCompletion) {
+    (void)centroidsAreFP16;
     bool useIL =
             (interleavedCodes != nil && interleavedCodesOffset != nil);
     if (!device || !queue || !queries || !centroids ||

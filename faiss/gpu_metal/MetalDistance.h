@@ -80,6 +80,7 @@ bool runMetalIVFFlatFullSearch(
         int avgListLen = 256,
         id<MTLBuffer> interleavedCodes = nil,
         id<MTLBuffer> interleavedCodesOffset = nil,
+        bool centroidsAreFP16 = false,
         bool waitForCompletion = true);
 
 } // namespace gpu_metal
