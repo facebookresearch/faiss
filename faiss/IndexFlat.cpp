@@ -832,16 +832,12 @@ constexpr size_t kRefineBlock = 64;
 //      derive a lower bound on the final distance.
 //    - Prune candidates whose lower bound exceeds the heap threshold
 //      (branchless via prune_kernel writing into active_byteset).
-//    - Compact active_indices to drop pruned candidates
-//      (BMI2/AVX2-vectorized via compact_active_kernel).
+//    - Compact active_indices to drop pruned candidates.
 // 3. After the last level, survivors hold exact distances and are
 //    pushed into the result heap.
 //
 // Mirrors the position-in-batch + active_indices pattern from
-// Panorama::progressive_filter_batch (the IVF batched search): only
-// active_indices is compacted between levels; vec_ids, exact_distances
-// and level_cs_buffer stay indexed by the candidate's stable
-// position-in-batch slot, so no float compaction is needed.
+// Panorama::progressive_filter_batch (the IVF batched search).
 template <typename C, MetricType M, bool is_sim>
 static void refine_panorama_block(
         const IndexFlatPanorama& index,

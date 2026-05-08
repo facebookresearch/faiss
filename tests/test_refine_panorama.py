@@ -475,17 +475,8 @@ class TestIndexRefinePanorama(unittest.TestCase):
 
                 expected_ratios = [1 / nlevels for nlevels in nlevels_list]
 
-                # The block-wise refine kernel processes candidates in
-                # mini-batches of kRefineBlock; the heap threshold only
-                # tightens between batches, not within a batch. The
-                # very first batch sees an empty heap (threshold =
-                # +inf) so every candidate scans all dims, bumping the
-                # measured ratio slightly above the asymptotic
-                # 1/nlevels minimum. Allow a few percent slack for
-                # this batched-pruning lag; the search results
-                # themselves are still bit-exact (asserted above).
                 np.testing.assert_allclose(
-                    ratios, expected_ratios, atol=5e-2
+                    ratios, expected_ratios, atol=1e-3
                 )
 
                 faiss.omp_set_num_threads(nt)
