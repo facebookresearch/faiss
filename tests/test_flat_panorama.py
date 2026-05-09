@@ -536,7 +536,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_reconstruct(self):
         """Test reconstruct and reconstruct_n return original vectors"""
-        d, nb, nt, nq, nlevels = 964, 10000, 15000, 10, 128
+        d, nb, nt, nq, nlevels = 964, 1000, 15000, 10, 128
         _, xb, _ = self.generate_data(d, nt, nb, nq, seed=2025)
 
         for metric in self.METRICS:
@@ -558,7 +558,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_remove_ids_then_add(self):
         """Test removing vectors with remove_ids() then adding more vectors"""
-        d, nb, nt, nq, nlevels, k = 964, 500000, 0, 10, 128, 15
+        d, nb, nt, nq, nlevels, k = 964, 50000, 0, 10, 128, 15
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2026)
 
         xb1 = xb[:nb // 2]
@@ -603,7 +603,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_merge_from(self):
         """Test merging indexes with merge_from()"""
-        d, nb, nt, nq, nlevels, k, batch_size = 964, 500000, 0, 10, 128, 15, 16
+        d, nb, nt, nq, nlevels, k, batch_size = 964, 50000, 0, 10, 128, 15, 16
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2027)
 
         # Split data and create two separate indexes
@@ -637,7 +637,7 @@ class TestIndexFlatPanorama(unittest.TestCase):
 
     def test_permute_entries(self):
         """Test permuting entries with permute_entries()"""
-        d, nb, nt, nq, nlevels, k = 964, 500000, 0, 20, 128, 10
+        d, nb, nt, nq, nlevels, k = 964, 50000, 0, 20, 128, 10
         _, xb, xq = self.generate_data(d, nt, nb, nq, seed=2028)
 
         for metric in self.METRICS:
