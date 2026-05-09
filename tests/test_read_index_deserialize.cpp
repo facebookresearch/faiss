@@ -22,6 +22,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
@@ -4153,3 +4154,127 @@ TEST(ReadIndexDeserialize, SVSVamanaFourccRejected) {
 }
 
 #endif // FAISS_ENABLE_SVS
+
+// -----------------------------------------------------------------------
+// IndexIDMap deserialization invariant: id_map.size(), idxmap.ntotal,
+// and the inner index's ntotal must all agree. The outer IDMap header
+// and the inner index header carry independent ntotal fields on disk,
+// so deserialization must reject payloads where they disagree.
+// -----------------------------------------------------------------------
+
+namespace {
+
+/// Build a serialized IxMp/IxM2 payload. The inner IxF2 (IndexFlat) carries
+/// codes sized to match its own ntotal, so it passes the inner deserializer's
+/// codes-vs-ntotal check and the IDMap-vs-inner-ntotal check is exercised
+/// in isolation.
+std::vector<uint8_t> make_idmap_payload(
+        const char fourcc[4],
+        int64_t outer_ntotal,
+        int64_t inner_ntotal,
+        size_t id_map_size) {
+    constexpr int d = 4;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_index_header(buf, d, outer_ntotal);
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, d, inner_ntotal);
+    // IndexFlat codes are written via WRITEXBVECTOR: a size_t prefix of
+    // (byte_count / 4) followed by byte_count bytes. For inner_ntotal
+    // float vectors of dimension d, byte_count = inner_ntotal * d * 4.
+    const size_t byte_count =
+            static_cast<size_t>(inner_ntotal) * d * sizeof(float);
+    push_val<size_t>(buf, byte_count / 4);
+    buf.insert(buf.end(), byte_count, uint8_t{0});
+    std::vector<int64_t> id_map(id_map_size, 0);
+    push_vector<int64_t>(buf, id_map);
+    return buf;
+}
+
+std::vector<uint8_t> make_binary_idmap_payload(
+        const char fourcc[4],
+        int64_t outer_ntotal,
+        int64_t inner_ntotal,
+        size_t id_map_size) {
+    constexpr int d = 8;
+    constexpr int code_size = d / 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_binary_index_header(buf, d, outer_ntotal);
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, d, inner_ntotal);
+    std::vector<uint8_t> codes(inner_ntotal * code_size, 0);
+    push_vector<uint8_t>(buf, codes);
+    std::vector<int64_t> id_map(id_map_size, 0);
+    push_vector<int64_t>(buf, id_map);
+    return buf;
+}
+
+} // namespace
+
+TEST(ReadIndexDeserialize, IndexIDMapInnerNtotalMismatchRejected) {
+    // Outer IDMap ntotal=0 agrees with id_map.size()=0, but the inner
+    // IndexFlat reports ntotal=3.
+    auto buf = make_idmap_payload(
+            "IxMp", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexIDMap2InnerNtotalMismatchRejected) {
+    auto buf = make_idmap_payload(
+            "IxM2", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexBinaryIDMapInnerNtotalMismatchRejected) {
+    auto buf = make_binary_idmap_payload(
+            "IBMp", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_binary_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexBinaryIDMap2InnerNtotalMismatchRejected) {
+    auto buf = make_binary_idmap_payload(
+            "IBM2", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_binary_read_throws_with(buf, "inner index ntotal");
+}
+
+// A well-formed IxMp payload with matching ntotals deserializes cleanly.
+TEST(ReadIndexDeserialize, IndexIDMapMatchingNtotalsAccepted) {
+    auto buf = make_idmap_payload(
+            "IxMp", /*outer_ntotal=*/0, /*inner_ntotal=*/0, /*id_map_size=*/0);
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW({
+        auto idx = read_index_up(&reader);
+        EXPECT_NE(idx, nullptr);
+    });
+}
+
+// -----------------------------------------------------------------------
+// IndexIDMap::search_ex maps each inner-index label through id_map. When
+// inner.ntotal exceeds id_map.size() (e.g. mid-construction, or after a
+// recoverable failure in add_with_ids_ex / add_sa_codes / merge_from
+// leaves the IDMap layer behind the inner index), inner labels can land
+// outside id_map. Such labels must be remapped to the -1 "no result"
+// sentinel.
+// -----------------------------------------------------------------------
+TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
+    constexpr int d = 4;
+    constexpr int nb = 3;
+    std::vector<float> xb(nb * d, 0.0f);
+    for (int i = 0; i < nb; i++) {
+        xb[i * d] = static_cast<float>(i);
+    }
+
+    IndexFlat inner(d, METRIC_L2);
+    IndexIDMap idmap(&inner);
+    // inner.ntotal == nb, idmap.id_map is empty.
+    inner.add(nb, xb.data());
+
+    std::vector<float> xq(d, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<faiss::idx_t> labels(1, 0);
+    EXPECT_NO_THROW(
+            idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
+    EXPECT_EQ(labels[0], -1);
+}
