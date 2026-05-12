@@ -305,10 +305,25 @@ Index* parse_coarse_quantizer(
         return new IndexNSGFlat(d, R, mt);
     }
 #ifdef FAISS_ENABLE_SVS
-    if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)")) {
+    if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)(_.+)?")) {
         nlist = parse_nlist(sm[1].str());
         int degree = sm[2].length() > 0 ? std::stoi(sm[2]) : 32;
-        return new IndexSVSVamana(d, degree, mt);
+        SVSStorageKind storage = SVSStorageKind::SVS_FP32;
+        if (sm[3].matched) {
+            std::string s = sm[3].str().substr(1);
+            if (s == "SQI8") {
+                storage = SVSStorageKind::SVS_SQI8;
+            } else if (s == "FP16") {
+                storage = SVSStorageKind::SVS_FP16;
+            } else if (s == "FP32") {
+                storage = SVSStorageKind::SVS_FP32;
+            } else {
+                FAISS_THROW_FMT(
+                        "unsupported SVSVamana coarse quantizer storage: %s",
+                        s.c_str());
+            }
+        }
+        return new IndexSVSVamana(d, degree, mt, storage);
     }
 #endif
     if (match("IVF([0-9]+[kM]?)\\(Index([0-9])\\)")) {

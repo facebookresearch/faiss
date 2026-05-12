@@ -309,6 +309,35 @@ class TestSVSFactoryLVQLeanVec(unittest.TestCase):
 
 
 @unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
+class TestSVSIVFCoarseQuantizerFactory(unittest.TestCase):
+    """Test that IVF with SVSVamana coarse quantizer supports storage kinds"""
+
+    def test_ivf_svsvamana_default(self):
+        index = faiss.index_factory(32, "IVF256_SVSVamana32,Flat")
+        self.assertEqual(index.d, 32)
+        self.assertEqual(index.nlist, 256)
+
+    def test_ivf_svsvamana_sqi8(self):
+        index = faiss.index_factory(32, "IVF256_SVSVamana32_SQI8,Flat")
+        self.assertEqual(index.d, 32)
+        self.assertEqual(index.nlist, 256)
+
+    def test_ivf_svsvamana_fp16(self):
+        index = faiss.index_factory(32, "IVF256_SVSVamana32_FP16,Flat")
+        self.assertEqual(index.d, 32)
+        self.assertEqual(index.nlist, 256)
+
+    def test_ivf_svsvamana_fp32_explicit(self):
+        index = faiss.index_factory(32, "IVF256_SVSVamana32_FP32,Flat")
+        self.assertEqual(index.d, 32)
+        self.assertEqual(index.nlist, 256)
+
+    def test_ivf_svsvamana_invalid_storage(self):
+        with self.assertRaises(RuntimeError):
+            faiss.index_factory(32, "IVF256_SVSVamana32_INVALID,Flat")
+
+
+@unittest.skipIf(_SKIP_SVS, _SKIP_REASON)
 class TestSVSAdapterFP16(TestSVSAdapter):
     """Repeat all tests for SVS Float16 variant"""
     def _create_instance(self):
