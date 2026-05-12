@@ -712,6 +712,13 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
         FAISS_THROW_IF_NOT_MSG(
                 n < get_deserialization_vector_byte_limit() / sizeof(float),
                 "PQ centroids allocation would exceed deserialization byte limit");
+        // Per-subquantizer tables (e.g. IVFPQ residual norms, search-time
+        // distance tables) are sized M * ksub.
+        size_t m_ksub = mul_no_overflow(pq->M, ksub, "PQ M*ksub");
+        FAISS_THROW_IF_NOT_MSG(
+                m_ksub <
+                        get_deserialization_vector_byte_limit() / sizeof(float),
+                "PQ M*ksub allocation would exceed deserialization byte limit");
     }
     pq->set_derived_values();
     READVECTOR(pq->centroids);
@@ -2120,6 +2127,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 ") does not match ntotal (%" PRId64 ")",
                 int64_t(idxmap->id_map.size()),
                 idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->index->ntotal == idxmap->ntotal,
+                "IndexIDMap inner index ntotal (%" PRId64
+                ") does not match IndexIDMap ntotal (%" PRId64 ")",
+                idxmap->index->ntotal,
+                idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexIDMap2*>(idxmap.get())->construct_rev_map();
         }
@@ -2522,13 +2535,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
     }
 #ifdef FAISS_ENABLE_SVS
     else if (
-            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD")) {
+            h == fourcc("ILVQ") || h == fourcc("ISVL") || h == fourcc("ISVD") ||
+            h == fourcc("ISV2")) {
         std::unique_ptr<IndexSVSVamana> svs;
         if (h == fourcc("ILVQ")) {
             svs = std::make_unique<IndexSVSVamanaLVQ>();
         } else if (h == fourcc("ISVL")) {
             svs = std::make_unique<IndexSVSVamanaLeanVec>();
-        } else if (h == fourcc("ISVD")) {
+        } else if (h == fourcc("ISVD") || h == fourcc("ISV2")) {
             svs = std::make_unique<IndexSVSVamana>();
         }
 
@@ -2579,6 +2593,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                         "dynamic_cast to IndexSVSVamanaLeanVec failed");
                 leanvec->deserialize_training_data(is);
             }
+        }
+        if (h == fourcc("ISV2")) {
+            READVECTOR(svs->stored_vectors);
+        } else {
+            svs->stored_vectors_valid = false;
         }
         idx = std::move(svs);
     } else if (h == fourcc("ISVF")) {
@@ -3009,7 +3028,18 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
-        FAISS_THROW_IF_NOT(idxmap->id_map.size() == idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->id_map.size() == idxmap->ntotal,
+                "IndexBinaryIDMap id_map size (%" PRId64
+                ") does not match ntotal (%" PRId64 ")",
+                int64_t(idxmap->id_map.size()),
+                idxmap->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxmap->index->ntotal == idxmap->ntotal,
+                "IndexBinaryIDMap inner index ntotal (%" PRId64
+                ") does not match IndexBinaryIDMap ntotal (%" PRId64 ")",
+                idxmap->index->ntotal,
+                idxmap->ntotal);
         if (is_map2) {
             static_cast<IndexBinaryIDMap2*>(idxmap.get())->construct_rev_map();
         }
