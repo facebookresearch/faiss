@@ -3908,11 +3908,12 @@ TEST(ReadIndexDeserialize,
 
 #include <faiss/svs/IndexSVSVamana.h>
 
-// An invalid storage_kind value should be rejected at deserialization time
-// with a FaissException, not abort via FAISS_ASSERT in to_svs_storage_kind().
-TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
-    std::vector<uint8_t> buf;
-    push_fourcc(buf, "ISVD");
+namespace {
+
+/// Append the IndexSVSVamana on-disk fields up to and including storage_kind.
+/// Caller may then push initialized=true (to trigger the SVS deserialize_impl
+/// path) or any other trailing fields needed to reach the validation site.
+void push_svs_vamana_prefix(std::vector<uint8_t>& buf, int storage_kind) {
     push_index_header(buf, 8, 0);
     push_val<size_t>(buf, 32);  // graph_max_degree
     push_val<float>(buf, 1.2f); // alpha
@@ -3922,10 +3923,85 @@ TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
     push_val<size_t>(buf, 750); // max_candidate_pool_size
     push_val<size_t>(buf, 28);  // prune_to
     push_val<bool>(buf, false); // use_full_search_history
-    push_val<int>(
-            buf,
-            static_cast<int>(SVS_count)); // storage_kind — first invalid value
-    push_val<bool>(buf, true);            // initialized
+    push_val<int>(buf, storage_kind);
+}
+
+/// Append the IndexSVSIVF on-disk fields up to and including storage_kind.
+/// Used to exercise the validation guard at the ISIQ/ISIL/ISID read sites.
+void push_svs_ivf_prefix(std::vector<uint8_t>& buf, int storage_kind) {
+    push_index_header(buf, 8, 0);
+    push_val<size_t>(buf, 8);   // num_centroids
+    push_val<size_t>(buf, 64);  // minibatch_size
+    push_val<size_t>(buf, 1);   // num_iterations
+    push_val<bool>(buf, false); // is_hierarchical
+    push_val<float>(buf, 0.1f); // training_fraction
+    push_val<size_t>(buf, 0);   // hierarchical_level1_clusters
+    push_val<size_t>(buf, 0);   // seed
+    push_val<size_t>(buf, 1);   // n_probes
+    push_val<float>(buf, 1.0f); // k_reorder (float, not size_t)
+    push_val<size_t>(buf, 1);   // num_threads
+    push_val<size_t>(buf, 1);   // intra_query_threads
+    push_val<int>(buf, storage_kind);
+}
+
+} // namespace
+
+// An invalid storage_kind value should be rejected at deserialization time
+// with a FaissException, not abort via FAISS_ASSERT in to_svs_storage_kind().
+TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_svs_vamana_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count));
+    push_val<bool>(buf, true); // initialized
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+// The Vamana validator must reject negative storage_kind values too — the
+// shared helper takes a signed int because READ1 reads four bytes that could
+// be either sign.
+TEST(ReadIndexDeserialize, SVSVamanaNegativeStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_svs_vamana_prefix(buf, /*storage_kind=*/-1);
+    push_val<bool>(buf, true);
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+// IVF Vamana flavours (ISIQ = IndexSVSIVFLVQ, ISIL = IndexSVSIVFLeanVec,
+// ISID = IndexSVSIVF) all share the same storage_kind read site and must
+// reject out-of-range values at the deserialization boundary, mirroring the
+// Vamana branch above. Without the shared validator the bad value would
+// propagate into IndexSVSIVF::deserialize_impl and only get rejected from
+// to_svs_storage_kind() after several allocations and an SVS-runtime call.
+TEST(ReadIndexDeserialize, SVSIVFInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISID");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count));
+    push_val<bool>(buf, true); // is_static
+    push_val<bool>(buf, true); // initialized
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+TEST(ReadIndexDeserialize, SVSIVFLVQInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISIQ");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/-1);
+    push_val<bool>(buf, true);
+    push_val<bool>(buf, true);
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+TEST(ReadIndexDeserialize, SVSIVFLeanVecInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISIL");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count) + 7);
+    push_val<bool>(buf, true); // is_static
+    push_val<size_t>(buf, 8);  // leanvec_d (only on ISIL path)
+    push_val<bool>(buf, true); // initialized
 
     expect_read_throws_with(buf, "storage_kind");
 }
