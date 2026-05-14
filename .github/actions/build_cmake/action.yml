@@ -58,7 +58,7 @@ runs:
 
         # install base packages for ARM64
         if [ "${{ runner.arch }}" = "ARM64" ]; then
-          conda install -y -q -c conda-forge openblas=0.3.29 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
+          conda install -y -q -c conda-forge openblas=0.3.33 gxx_linux-aarch64=14.2 sysroot_linux-aarch64=2.17
         fi
 
         # install base packages for X86_64
@@ -77,6 +77,10 @@ runs:
         # and CUDA from cuVS channel for cuVS builds
         elif [ "${{ inputs.cuvs }}" = "ON" ]; then
           conda install -y -q libcuvs=26.02 'cuda-version=12.9' sysroot_linux-64=2.34 -c rapidsai -c rapidsai-nightly -c conda-forge
+          # Clean index cache to prevent sqlite3 "database is locked" errors
+          # from conda-libmamba-solver's shards cache between consecutive installs.
+          # See: https://github.com/conda/conda-libmamba-solver/issues/667
+          conda clean --index-cache 2>/dev/null || true
         fi
 
         # install SVS runtime for SVS builds

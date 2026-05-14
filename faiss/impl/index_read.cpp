@@ -86,6 +86,24 @@ namespace faiss {
 namespace {
 size_t deserialization_loop_limit_ = 0;
 size_t deserialization_vector_byte_limit_ = uint64_t{1} << 40; // 1 TB
+
+#ifdef FAISS_ENABLE_SVS
+// Read and validate an SVSStorageKind from the stream. Centralizes the
+// [0, SVS_count) range check so every SVS read site rejects out-of-range
+// values uniformly at the deserialization boundary, instead of letting
+// to_svs_storage_kind() surface the failure later from inside an SVS
+// runtime load.
+SVSStorageKind read_svs_storage_kind(IOReader* f) {
+    int sk;
+    READ1(sk);
+    FAISS_THROW_IF_NOT_FMT(
+            sk >= 0 && sk < static_cast<int>(SVS_count),
+            "invalid SVS storage_kind=%d (must be in [0, %d))",
+            sk,
+            static_cast<int>(SVS_count));
+    return static_cast<SVSStorageKind>(sk);
+}
+#endif // FAISS_ENABLE_SVS
 } // namespace
 
 size_t get_deserialization_loop_limit() {
@@ -2556,14 +2574,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs->prune_to);
         READ1(svs->use_full_search_history);
 
-        int sk;
-        READ1(sk);
-        FAISS_THROW_IF_NOT_FMT(
-                sk >= 0 && sk < static_cast<int>(SVS_count),
-                "invalid SVS storage_kind=%d (must be in [0, %d))",
-                sk,
-                static_cast<int>(SVS_count));
-        svs->storage_kind = static_cast<SVSStorageKind>(sk);
+        svs->storage_kind = read_svs_storage_kind(f);
 
         if (h == fourcc("ISVL")) {
             auto* leanvec = dynamic_cast<IndexSVSVamanaLeanVec*>(svs.get());
@@ -2636,7 +2647,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(svs_ivf->k_reorder);
         READ1(svs_ivf->num_threads);
         READ1(svs_ivf->intra_query_threads);
-        READ1(svs_ivf->storage_kind);
+        svs_ivf->storage_kind = read_svs_storage_kind(f);
         READ1(svs_ivf->is_static);
         if (h == fourcc("ISIL")) {
             auto* leanvec = dynamic_cast<IndexSVSIVFLeanVec*>(svs_ivf.get());
