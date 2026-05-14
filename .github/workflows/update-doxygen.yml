@@ -5,6 +5,8 @@ on:
       - main
     paths:
       - 'faiss/**'
+permissions:
+  contents: write
 jobs:
   doxygen:
     runs-on: ubuntu-latest

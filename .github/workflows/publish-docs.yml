@@ -9,6 +9,8 @@ on:
     workflows: [update-doxygen]
     types:
       - completed
+permissions:
+  contents: write
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest

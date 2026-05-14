@@ -5,6 +5,8 @@ on:
 env:
   OMP_NUM_THREADS: '10'
   MKL_THREADING_LAYER: GNU
+permissions:
+  contents: read
 jobs:
   linux-x86_64-nightly:
     name: Linux x86_64 nightlies
