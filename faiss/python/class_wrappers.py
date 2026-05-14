@@ -1316,11 +1316,9 @@ class RememberSwigOwnership:
 
 
 def handle_SearchParameters(the_class):
-    """ this wrapper is to enable initializations of the form
-    SearchParametersXX(a=3, b=SearchParamsYY)
-    This also requires the enclosing class to keep a reference on the
-    sub-object, since the C++ code assumes the object ownership is
-    handled externally.
+    """Protect SearchParameters from leaking SWIG-owned sub-objects assigned
+    via either kwargs construction (SearchParametersXX(sel=x)) or bare
+    attribute assignment (params.sel = x).
     """
     the_class.original_init = the_class.__init__
 
@@ -1328,12 +1326,32 @@ def handle_SearchParameters(the_class):
         self.original_init()
         for k, v in args.items():
             assert hasattr(self, k)
-            with RememberSwigOwnership(v):
-                setattr(self, k, v)
-            if type(v) not in (int, float, bool, str):
-                add_to_referenced_objects(self, v)
+            setattr(self, k, v)
 
     the_class.__init__ = replacement_init
+
+    # Install __setattr__ once per hierarchy; subclasses inherit via MRO.
+    if getattr(the_class, "_protected_setattr", False):
+        return
+    parent_setattr = the_class.__setattr__
+
+    def replacement_setattr(self, k, v):
+        # Per-field ref dict. Reassigning the same field drops the prior
+        # ref instead of accumulating, so a long-lived SearchParameters
+        # with repeated `params.sel = ...` does not leak.
+        if v is not None and hasattr(v, "thisown"):
+            if not hasattr(self, "_sp_field_refs"):
+                parent_setattr(self, "_sp_field_refs", {})
+            with RememberSwigOwnership(v):
+                parent_setattr(self, k, v)
+            self._sp_field_refs[k] = v
+        else:
+            parent_setattr(self, k, v)
+            if hasattr(self, "_sp_field_refs"):
+                self._sp_field_refs.pop(k, None)
+
+    the_class.__setattr__ = replacement_setattr
+    the_class._protected_setattr = True
 
 
 def handle_IDSelectorSubset(the_class, class_owns, force_int64=True):

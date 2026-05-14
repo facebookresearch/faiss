@@ -56,7 +56,7 @@ IndexSVSVamanaLeanVec::~IndexSVSVamanaLeanVec() {
         FAISS_ASSERT(status.ok());
         training_data = nullptr;
     }
-    IndexSVSVamana::~IndexSVSVamana();
+    // Base class destructor handles impl cleanup
 }
 
 void IndexSVSVamanaLeanVec::add(idx_t n, const float* x) {
