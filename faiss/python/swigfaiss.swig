@@ -727,6 +727,25 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
 #ifdef FAISS_ENABLE_CUVS
+// IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
+// cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
+// SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
+// which Python users cannot construct, so the fields are effectively
+// read-only from Python and the documented values (CUDA_R_16F, CUDA_R_8U)
+// are not exported. Treat cudaDataType_t as int for SWIG and expose the
+// relevant enum values so:
+//
+//     c = faiss.IVFPQSearchCagraConfig()
+//     c.lut_dtype = faiss.CUDA_R_16F
+//
+// works as expected. Values match cudaDataType_t in <library_types.h>.
+typedef int cudaDataType_t;
+%apply int { cudaDataType_t };
+%constant int CUDA_R_32F = 0;
+%constant int CUDA_R_64F = 1;
+%constant int CUDA_R_16F = 2;
+%constant int CUDA_R_8I  = 3;
+%constant int CUDA_R_8U  = 8;
 %include  <faiss/gpu/GpuIndexCagra.h>
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
