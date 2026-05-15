@@ -14300,14 +14300,6 @@
   </compound>
   <compound refid="hamming__computer_8h" kind="file"><name>hamming_computer.h</name>
   </compound>
-  <compound refid="hamming__distance_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
-    <member refid="hamming__distance_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
-    <member refid="hamming__distance_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
-  </compound>
-  <compound refid="simd__impl_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
-    <member refid="simd__impl_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
-    <member refid="simd__impl_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
-  </compound>
   <compound refid="Heap_8h" kind="file"><name>Heap.h</name>
   </compound>
   <compound refid="NeuralNet_8h" kind="file"><name>NeuralNet.h</name>
@@ -14342,6 +14334,14 @@
     <member refid="distances__sse-inl_8h_1a4b09b278342a95c1ed54e1073cf35489" kind="define"><name>DISPATCH</name></member>
   </compound>
   <compound refid="exhaustive__L2sqr__blas__cmax_8h" kind="file"><name>exhaustive_L2sqr_blas_cmax.h</name>
+  </compound>
+  <compound refid="hamming__distance_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="hamming__distance_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="hamming__distance_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
+  </compound>
+  <compound refid="simd__impl_2hamming__impl_8h" kind="file"><name>hamming_impl.h</name>
+    <member refid="simd__impl_2hamming__impl_8h_1a15b4526a0483019900e4e5867d8423fd" kind="define"><name>HANDLE_APPROX</name></member>
+    <member refid="simd__impl_2hamming__impl_8h_1ada20e7a03deaa04f1a4ee77acf8c3363" kind="define"><name>C64</name></member>
   </compound>
   <compound refid="IVFFlatScanner-inl_8h" kind="file"><name>IVFFlatScanner-inl.h</name>
     <member refid="IVFFlatScanner-inl_8h_1aa4e05f9f08dc770d3a5a2972334f9b19" kind="define"><name>DEFINE_IVFFLAT_SCANNER_METHODS</name></member>
