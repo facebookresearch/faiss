@@ -22,6 +22,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 #include <faiss/IndexIVFFlat.h>
@@ -3798,6 +3799,107 @@ TEST(ReadIndexDeserialize, IndexLatticeCodeSizeTooLarge) {
     expect_read_throws_with(buf, "code_size");
 }
 
+// -----------------------------------------------------------------------
+// Test: ProductQuantizer with M*ksub exceeding the deserialization byte
+// limit is rejected. ProductQuantizer::set_derived_values only validates
+// d % M == 0, which is satisfied by any M when d == 0, so a crafted PQ
+// header could carry an enormous M alongside an empty centroids vector.
+// Without the read-side bound, downstream allocations sized M*ksub (e.g.
+// IVFPQ residual norms in initialize_IVFPQ_precomputed_table) reach
+// std::vector::max_size() and abort the process via std::length_error.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, ProductQuantizerMKsubExceedsByteLimit) {
+    const size_t old_limit = get_deserialization_vector_byte_limit();
+    set_deserialization_vector_byte_limit(1 << 20); // 1 MB
+
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "IxPq");
+    push_index_header(buf, /*d=*/0, /*ntotal=*/0);
+    // PQ: d=0 (so 0 % M == 0 holds), M=1<<20, nbits=8 -> ksub=256
+    // M * ksub = 2^28 floats = 1 GB, well above the 1 MB byte limit.
+    push_pq(buf,
+            /*d=*/0,
+            /*M=*/(size_t{1} << 20),
+            /*nbits=*/8,
+            /*centroids=*/{});
+
+    expect_read_throws_with(buf, "M*ksub");
+
+    set_deserialization_vector_byte_limit(old_limit);
+}
+
+// -----------------------------------------------------------------------
+// Test: initialize_IVFPQ_precomputed_table rejects parameter combinations
+// whose nlist * pq.M * pq.ksub * sizeof(float) computation overflows
+// size_t. Without overflow-checked multiplication, the wrapped value
+// silently bypasses the precomputed_table_max_bytes guard and the
+// subsequent r_norms allocation aborts the process.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize, InitializeIVFPQPrecomputedTableOverflowRejected) {
+    // Construct a PQ with M*ksub already saturating most of size_t. The
+    // nlist factor (taken from the quantizer's ntotal) then forces overflow
+    // when multiplied in.
+    ProductQuantizer pq;
+    pq.d = 0;
+    pq.M = size_t{1} << 40;
+    pq.nbits = 24;
+    pq.ksub = size_t{1} << pq.nbits;
+    pq.dsub = 0;
+    pq.code_size = 0;
+    // Skip set_derived_values (which would resize centroids); we are
+    // exercising initialize_IVFPQ_precomputed_table's arithmetic guard, not
+    // PQ training.
+
+    IndexFlatL2 quantizer(/*d_in=*/0);
+    quantizer.ntotal = size_t{1} << 20; // nlist
+    AlignedTable<float> precomputed_table;
+    int use_precomputed_table = 0;
+
+    EXPECT_THROW(
+            initialize_IVFPQ_precomputed_table(
+                    use_precomputed_table,
+                    &quantizer,
+                    pq,
+                    precomputed_table,
+                    /*by_residual=*/true,
+                    /*verbose=*/false),
+            faiss::FaissException);
+}
+
+// -----------------------------------------------------------------------
+// Test: initialize_IVFPQ_precomputed_table rejects an overflowing M*ksub
+// even when the caller has pre-set use_precomputed_table to 1, which
+// bypasses the in-function size-class branch. Protects in-memory IVFPQ
+// callers (training, IndexHNSW, IndexIVFPQFastScan) and the
+// IndexIVFIndependentQuantizer deserialization path that reads
+// use_precomputed_table directly from the stream.
+// -----------------------------------------------------------------------
+TEST(ReadIndexDeserialize,
+     InitializeIVFPQPrecomputedTableUserSetFlagOverflowRejected) {
+    ProductQuantizer pq;
+    pq.d = 0;
+    pq.M = size_t{1} << 40;
+    pq.nbits = 24;
+    pq.ksub = size_t{1} << pq.nbits;
+    pq.dsub = 0;
+    pq.code_size = 0;
+
+    IndexFlatL2 quantizer(/*d_in=*/0);
+    quantizer.ntotal = 1; // nlist
+    AlignedTable<float> precomputed_table;
+    int use_precomputed_table = 1; // caller pre-selects table type 1
+
+    EXPECT_THROW(
+            initialize_IVFPQ_precomputed_table(
+                    use_precomputed_table,
+                    &quantizer,
+                    pq,
+                    precomputed_table,
+                    /*by_residual=*/true,
+                    /*verbose=*/false),
+            faiss::FaissException);
+}
+
 // ============================================================
 // SVS fourcc rejection / deserialization safety (Group F: T262015608)
 // ============================================================
@@ -3806,11 +3908,12 @@ TEST(ReadIndexDeserialize, IndexLatticeCodeSizeTooLarge) {
 
 #include <faiss/svs/IndexSVSVamana.h>
 
-// An invalid storage_kind value should be rejected at deserialization time
-// with a FaissException, not abort via FAISS_ASSERT in to_svs_storage_kind().
-TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
-    std::vector<uint8_t> buf;
-    push_fourcc(buf, "ISVD");
+namespace {
+
+/// Append the IndexSVSVamana on-disk fields up to and including storage_kind.
+/// Caller may then push initialized=true (to trigger the SVS deserialize_impl
+/// path) or any other trailing fields needed to reach the validation site.
+void push_svs_vamana_prefix(std::vector<uint8_t>& buf, int storage_kind) {
     push_index_header(buf, 8, 0);
     push_val<size_t>(buf, 32);  // graph_max_degree
     push_val<float>(buf, 1.2f); // alpha
@@ -3820,10 +3923,85 @@ TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
     push_val<size_t>(buf, 750); // max_candidate_pool_size
     push_val<size_t>(buf, 28);  // prune_to
     push_val<bool>(buf, false); // use_full_search_history
-    push_val<int>(
-            buf,
-            static_cast<int>(SVS_count)); // storage_kind — first invalid value
-    push_val<bool>(buf, true);            // initialized
+    push_val<int>(buf, storage_kind);
+}
+
+/// Append the IndexSVSIVF on-disk fields up to and including storage_kind.
+/// Used to exercise the validation guard at the ISIQ/ISIL/ISID read sites.
+void push_svs_ivf_prefix(std::vector<uint8_t>& buf, int storage_kind) {
+    push_index_header(buf, 8, 0);
+    push_val<size_t>(buf, 8);   // num_centroids
+    push_val<size_t>(buf, 64);  // minibatch_size
+    push_val<size_t>(buf, 1);   // num_iterations
+    push_val<bool>(buf, false); // is_hierarchical
+    push_val<float>(buf, 0.1f); // training_fraction
+    push_val<size_t>(buf, 0);   // hierarchical_level1_clusters
+    push_val<size_t>(buf, 0);   // seed
+    push_val<size_t>(buf, 1);   // n_probes
+    push_val<float>(buf, 1.0f); // k_reorder (float, not size_t)
+    push_val<size_t>(buf, 1);   // num_threads
+    push_val<size_t>(buf, 1);   // intra_query_threads
+    push_val<int>(buf, storage_kind);
+}
+
+} // namespace
+
+// An invalid storage_kind value should be rejected at deserialization time
+// with a FaissException, not abort via FAISS_ASSERT in to_svs_storage_kind().
+TEST(ReadIndexDeserialize, SVSVamanaInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_svs_vamana_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count));
+    push_val<bool>(buf, true); // initialized
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+// The Vamana validator must reject negative storage_kind values too — the
+// shared helper takes a signed int because READ1 reads four bytes that could
+// be either sign.
+TEST(ReadIndexDeserialize, SVSVamanaNegativeStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISVD");
+    push_svs_vamana_prefix(buf, /*storage_kind=*/-1);
+    push_val<bool>(buf, true);
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+// IVF Vamana flavours (ISIQ = IndexSVSIVFLVQ, ISIL = IndexSVSIVFLeanVec,
+// ISID = IndexSVSIVF) all share the same storage_kind read site and must
+// reject out-of-range values at the deserialization boundary, mirroring the
+// Vamana branch above. Without the shared validator the bad value would
+// propagate into IndexSVSIVF::deserialize_impl and only get rejected from
+// to_svs_storage_kind() after several allocations and an SVS-runtime call.
+TEST(ReadIndexDeserialize, SVSIVFInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISID");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count));
+    push_val<bool>(buf, true); // is_static
+    push_val<bool>(buf, true); // initialized
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+TEST(ReadIndexDeserialize, SVSIVFLVQInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISIQ");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/-1);
+    push_val<bool>(buf, true);
+    push_val<bool>(buf, true);
+
+    expect_read_throws_with(buf, "storage_kind");
+}
+
+TEST(ReadIndexDeserialize, SVSIVFLeanVecInvalidStorageKind) {
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, "ISIL");
+    push_svs_ivf_prefix(buf, /*storage_kind=*/static_cast<int>(SVS_count) + 7);
+    push_val<bool>(buf, true); // is_static
+    push_val<size_t>(buf, 8);  // leanvec_d (only on ISIL path)
+    push_val<bool>(buf, true); // initialized
 
     expect_read_throws_with(buf, "storage_kind");
 }
@@ -4052,3 +4230,127 @@ TEST(ReadIndexDeserialize, SVSVamanaFourccRejected) {
 }
 
 #endif // FAISS_ENABLE_SVS
+
+// -----------------------------------------------------------------------
+// IndexIDMap deserialization invariant: id_map.size(), idxmap.ntotal,
+// and the inner index's ntotal must all agree. The outer IDMap header
+// and the inner index header carry independent ntotal fields on disk,
+// so deserialization must reject payloads where they disagree.
+// -----------------------------------------------------------------------
+
+namespace {
+
+/// Build a serialized IxMp/IxM2 payload. The inner IxF2 (IndexFlat) carries
+/// codes sized to match its own ntotal, so it passes the inner deserializer's
+/// codes-vs-ntotal check and the IDMap-vs-inner-ntotal check is exercised
+/// in isolation.
+std::vector<uint8_t> make_idmap_payload(
+        const char fourcc[4],
+        int64_t outer_ntotal,
+        int64_t inner_ntotal,
+        size_t id_map_size) {
+    constexpr int d = 4;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_index_header(buf, d, outer_ntotal);
+    push_fourcc(buf, "IxF2");
+    push_index_header(buf, d, inner_ntotal);
+    // IndexFlat codes are written via WRITEXBVECTOR: a size_t prefix of
+    // (byte_count / 4) followed by byte_count bytes. For inner_ntotal
+    // float vectors of dimension d, byte_count = inner_ntotal * d * 4.
+    const size_t byte_count =
+            static_cast<size_t>(inner_ntotal) * d * sizeof(float);
+    push_val<size_t>(buf, byte_count / 4);
+    buf.insert(buf.end(), byte_count, uint8_t{0});
+    std::vector<int64_t> id_map(id_map_size, 0);
+    push_vector<int64_t>(buf, id_map);
+    return buf;
+}
+
+std::vector<uint8_t> make_binary_idmap_payload(
+        const char fourcc[4],
+        int64_t outer_ntotal,
+        int64_t inner_ntotal,
+        size_t id_map_size) {
+    constexpr int d = 8;
+    constexpr int code_size = d / 8;
+    std::vector<uint8_t> buf;
+    push_fourcc(buf, fourcc);
+    push_binary_index_header(buf, d, outer_ntotal);
+    push_fourcc(buf, "IBxF");
+    push_binary_index_header(buf, d, inner_ntotal);
+    std::vector<uint8_t> codes(inner_ntotal * code_size, 0);
+    push_vector<uint8_t>(buf, codes);
+    std::vector<int64_t> id_map(id_map_size, 0);
+    push_vector<int64_t>(buf, id_map);
+    return buf;
+}
+
+} // namespace
+
+TEST(ReadIndexDeserialize, IndexIDMapInnerNtotalMismatchRejected) {
+    // Outer IDMap ntotal=0 agrees with id_map.size()=0, but the inner
+    // IndexFlat reports ntotal=3.
+    auto buf = make_idmap_payload(
+            "IxMp", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexIDMap2InnerNtotalMismatchRejected) {
+    auto buf = make_idmap_payload(
+            "IxM2", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexBinaryIDMapInnerNtotalMismatchRejected) {
+    auto buf = make_binary_idmap_payload(
+            "IBMp", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_binary_read_throws_with(buf, "inner index ntotal");
+}
+
+TEST(ReadIndexDeserialize, IndexBinaryIDMap2InnerNtotalMismatchRejected) {
+    auto buf = make_binary_idmap_payload(
+            "IBM2", /*outer_ntotal=*/0, /*inner_ntotal=*/3, /*id_map_size=*/0);
+    expect_binary_read_throws_with(buf, "inner index ntotal");
+}
+
+// A well-formed IxMp payload with matching ntotals deserializes cleanly.
+TEST(ReadIndexDeserialize, IndexIDMapMatchingNtotalsAccepted) {
+    auto buf = make_idmap_payload(
+            "IxMp", /*outer_ntotal=*/0, /*inner_ntotal=*/0, /*id_map_size=*/0);
+    VectorIOReader reader;
+    reader.data = buf;
+    EXPECT_NO_THROW({
+        auto idx = read_index_up(&reader);
+        EXPECT_NE(idx, nullptr);
+    });
+}
+
+// -----------------------------------------------------------------------
+// IndexIDMap::search_ex maps each inner-index label through id_map. When
+// inner.ntotal exceeds id_map.size() (e.g. mid-construction, or after a
+// recoverable failure in add_with_ids_ex / add_sa_codes / merge_from
+// leaves the IDMap layer behind the inner index), inner labels can land
+// outside id_map. Such labels must be remapped to the -1 "no result"
+// sentinel.
+// -----------------------------------------------------------------------
+TEST(IndexIDMapSafety, SearchRemapsOutOfRangeLabelsToSentinel) {
+    constexpr int d = 4;
+    constexpr int nb = 3;
+    std::vector<float> xb(nb * d, 0.0f);
+    for (int i = 0; i < nb; i++) {
+        xb[i * d] = static_cast<float>(i);
+    }
+
+    IndexFlat inner(d, METRIC_L2);
+    IndexIDMap idmap(&inner);
+    // inner.ntotal == nb, idmap.id_map is empty.
+    inner.add(nb, xb.data());
+
+    std::vector<float> xq(d, 0.0f);
+    std::vector<float> distances(1);
+    std::vector<faiss::idx_t> labels(1, 0);
+    EXPECT_NO_THROW(
+            idmap.search(1, xq.data(), 1, distances.data(), labels.data()));
+    EXPECT_EQ(labels[0], -1);
+}

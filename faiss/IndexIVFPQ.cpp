@@ -404,6 +404,9 @@ void initialize_IVFPQ_precomputed_table(
         return;
     }
 
+    const size_t m_ksub =
+            mul_no_overflow(pq.M, pq.ksub, "IVFPQ precomputed_table");
+
     if (use_precomputed_table == 0) { // then choose the type of table
         if (!(quantizer->metric_type == METRIC_L2 && by_residual)) {
             if (verbose) {
@@ -418,7 +421,10 @@ void initialize_IVFPQ_precomputed_table(
         if (miq && pq.M % miq->pq.M == 0) {
             use_precomputed_table = 2;
         } else {
-            size_t table_size = pq.M * pq.ksub * nlist * sizeof(float);
+            size_t table_size = mul_no_overflow(
+                    mul_no_overflow(m_ksub, nlist, "IVFPQ precomputed_table"),
+                    sizeof(float),
+                    "IVFPQ precomputed_table");
             if (table_size > precomputed_table_max_bytes) {
                 if (verbose) {
                     printf("IndexIVFPQ::precompute_table: not precomputing table, "
@@ -438,7 +444,7 @@ void initialize_IVFPQ_precomputed_table(
     }
 
     // squared norms of the PQ centroids
-    std::vector<float> r_norms(pq.M * pq.ksub, NAN);
+    std::vector<float> r_norms(m_ksub, NAN);
     for (size_t m = 0; m < pq.M; m++) {
         for (size_t j = 0; j < pq.ksub; j++) {
             r_norms[m * pq.ksub + j] =
@@ -447,15 +453,16 @@ void initialize_IVFPQ_precomputed_table(
     }
 
     if (use_precomputed_table == 1) {
-        precomputed_table.resize(nlist * pq.M * pq.ksub);
+        precomputed_table.resize(
+                mul_no_overflow(nlist, m_ksub, "IVFPQ precomputed_table"));
         std::vector<float> centroid(d);
 
         for (size_t i = 0; i < nlist; i++) {
             quantizer->reconstruct(i, centroid.data());
 
-            float* tab = &precomputed_table[i * pq.M * pq.ksub];
+            float* tab = &precomputed_table[i * m_ksub];
             pq.compute_inner_prod_table(centroid.data(), tab);
-            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            fvec_madd_dispatch(m_ksub, r_norms.data(), 2.0, tab, tab);
         }
     } else if (use_precomputed_table == 2) {
         const MultiIndexQuantizer* miq =
@@ -464,7 +471,8 @@ void initialize_IVFPQ_precomputed_table(
         const ProductQuantizer& cpq = miq->pq;
         FAISS_THROW_IF_NOT(pq.M % cpq.M == 0);
 
-        precomputed_table.resize(cpq.ksub * pq.M * pq.ksub);
+        precomputed_table.resize(
+                mul_no_overflow(cpq.ksub, m_ksub, "IVFPQ precomputed_table"));
 
         // reorder PQ centroid table
         std::vector<float> centroids(d * cpq.ksub, NAN);
@@ -481,8 +489,8 @@ void initialize_IVFPQ_precomputed_table(
                 cpq.ksub, centroids.data(), precomputed_table.data());
 
         for (size_t i = 0; i < cpq.ksub; i++) {
-            float* tab = &precomputed_table[i * pq.M * pq.ksub];
-            fvec_madd_dispatch(pq.M * pq.ksub, r_norms.data(), 2.0, tab, tab);
+            float* tab = &precomputed_table[i * m_ksub];
+            fvec_madd_dispatch(m_ksub, r_norms.data(), 2.0, tab, tab);
         }
     }
 }

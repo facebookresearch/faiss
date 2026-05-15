@@ -52,7 +52,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda create -n faiss_conda_read -y python=3.12
           conda activate faiss_conda_read
-          conda install -y -c pytorch -c conda-forge faiss-cpu=1.14.1
+          conda install -y -c pytorch -c conda-forge faiss-cpu=1.14.1 "mkl>=2024.2.2,<2026"
           conda list
 
       - name: Run Conda reader (read Faiss index and verify)
@@ -89,7 +89,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda create -n faiss_conda_write -y python=3.12
           conda activate faiss_conda_write
-          conda install -y -c pytorch -c conda-forge faiss-cpu=1.14.1
+          conda install -y -c pytorch -c conda-forge faiss-cpu=1.14.1 "mkl>=2024.2.2,<2026"
           conda list
 
       - name: Create shared data directory
